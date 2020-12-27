@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+
+body, input, button, select, textarea {
+  font-family: "Open Sans",sans-serif;
+}

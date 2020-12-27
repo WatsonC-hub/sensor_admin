@@ -1,24 +1,44 @@
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import {
+  getSensorData,
+} from './api';
+import SimpleTabs from './components/SimpleTabs';
+import LocationDrawer from './LocationDrawer';
+import LocationContext from './LocationContext';
+
+/*
+Libraries to explore for this app:
+- react-query => for http requests instead of fetch, 
+- hapi/joy => schema validation (joy.dev)
+- react/route or reach-router
+*/
+
 
 function App() {
+  const [sensors, setSensors] = useState([]);
+  const [userId, setUserId] = useState(0);
+  const [locationId, setLocationId] = useState(-1);
+
+  useEffect(() => {
+    getSensorData()
+      .then(res =>{
+        setSensors(res.data);
+      });
+
+  }, [userId]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <LocationContext.Provider value={{locationId,setLocationId}}>
+      <div className="App">
+        {
+          locationId === -1 ? <SimpleTabs sensors={sensors} />
+                      :  <LocationDrawer /> 
+        }
+        
+      </div>
+      
+    </LocationContext.Provider>
   );
 }
 
