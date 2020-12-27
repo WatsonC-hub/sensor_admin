@@ -2,11 +2,11 @@ Links og andre nyttige info:
 
 ### schemaer:
 
-sensor_test.location
-sensor_test.station
-sensor_test.waterlevel
-sensor_test.watlevmp
-sensor_test.sensorhistorik
+- sensor_test.location
+- sensor_test.station
+- sensor_test.waterlevel
+- sensor_test.watlevmp
+- sensor_test.sensorhistorik
 
 hent data i tabellerne:
 
@@ -17,3 +17,7 @@ https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=SELECT * from sensor_
 https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=SELECT * from sensor_test.watlevmp
 https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=SELECT * from sensor_test.sensorhistorik
 ```
+
+Mapcentia SQL manual:
+
+<http://mapcentia.screenstepslive.com/s/da/m/24713/l/936374-sql>
