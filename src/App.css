@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  /* text-align: center; */
 }
 
 .App-logo {
@@ -37,6 +37,10 @@
   }
 }
 
-body, input, button, select, textarea {
-  font-family: "Open Sans",sans-serif;
+body,
+input,
+button,
+select,
+textarea {
+  font-family: "Open Sans", sans-serif;
 }

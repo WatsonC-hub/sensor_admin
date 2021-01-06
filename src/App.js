@@ -1,11 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import './App.css';
-import {
-  getSensorData,
-} from './api';
-import SimpleTabs from './components/SimpleTabs';
-import LocationDrawer from './LocationDrawer';
-import LocationContext from './LocationContext';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { getSensorData } from "./api";
+import SimpleTabs from "./components/SimpleTabs";
+import LocationDrawer from "./LocationDrawer";
+import LocationContext from "./LocationContext";
 
 /*
 Libraries to explore for this app:
@@ -14,30 +12,29 @@ Libraries to explore for this app:
 - react/route or reach-router
 */
 
-
 function App() {
   const [sensors, setSensors] = useState([]);
   const [userId, setUserId] = useState(0);
   const [locationId, setLocationId] = useState(-1);
+  const [stationId, setStationId] = useState(-1);
 
   useEffect(() => {
-    getSensorData()
-      .then(res =>{
-        setSensors(res.data);
-      });
-
+    getSensorData().then((res) => {
+      setSensors(res.data);
+    });
   }, [userId]);
 
   return (
-    <LocationContext.Provider value={{locationId,setLocationId}}>
-      <div className="App">
-        {
-          locationId === -1 ? <SimpleTabs sensors={sensors} />
-                      :  <LocationDrawer /> 
-        }
-        
+    <LocationContext.Provider
+      value={{ locationId, setLocationId, stationId, setStationId }}
+    >
+      <div className='App'>
+        {locationId === -1 ? (
+          <SimpleTabs sensors={sensors} />
+        ) : (
+          <LocationDrawer />
+        )}
       </div>
-      
     </LocationContext.Provider>
   );
 }

@@ -94,7 +94,7 @@ const TitleCell = (props) => {
 };
 
 const columns = [
-  { name: "locid", title: "Redigere", width: 50 },
+  { name: "station_loc_id", title: "Redigere", width: 50 },
   { name: "stationname", title: "Stationsnavn", width: 200 },
   { name: "parameter", title: "Parameter", width: 200 },
   { name: "loc_owner", title: "Ejer", width: 200 },
@@ -119,16 +119,17 @@ export default ({ setLocation }) => {
 
   let rows = data.map((s, index) => ({
     ...s.properties,
+    station_loc_id: s.properties.locid + "_" + s.properties.stationid,
     id: index,
   }));
 
   return (
     <Paper>
       {loading && <CircularProgress />}
-      <Grid rows={rows} columns={columns} style={{ height: 900 }}>
-        <LocationTypeProvider for={["locid"]} />
+      <Grid rows={rows} columns={columns} style={{ height: 1200 }}>
+        <LocationTypeProvider for={["station_loc_id"]} />
         <RowDetailState defaultExpandedRowIds={[]} />
-        <VirtualTable height={900} cellComponent={Cell} />
+        <VirtualTable height={1200} cellComponent={Cell} />
         <TableHeaderRow titleComponent={TitleCell} />
         <TableRowDetail contentComponent={RowDetail} />
       </Grid>

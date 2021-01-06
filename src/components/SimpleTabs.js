@@ -52,10 +52,10 @@ export default function SimpleTabs(props) {
           <Tab icon={TableIcon} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={value} index={1}>
         <Map data={props.sensors} />
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel value={value} index={0}>
         <DevExTable {...props} />
       </TabPanel>
     </div>
