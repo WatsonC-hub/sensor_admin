@@ -23,22 +23,42 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 
-export default function PejlingForm({ setShowForm }) {
-  // const [showForm, setShowForm] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [usage, setUsage] = React.useState("0");
-
+export default function PejlingForm({
+  stationId,
+  setShowForm,
+  formData,
+  changeFormData,
+  handleSubmit,
+  resetFormData,
+}) {
   const handleUsageChange = (e) => {
-    console.log("target value: ", e.target.value);
-    setUsage(e.target.value);
+    changeFormData("useforcorrection", e.target.value);
+  };
+
+  const formatedTimestamp = (d) => {
+    const date = d.toISOString().split("T")[0];
+    const time = d.toTimeString().split(" ")[0];
+    return `${date} ${time}`;
   };
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    const _date = formatedTimestamp(date);
+    //alert(_date);
+    changeFormData("timeofmeas", _date);
   };
+
+  const handleCommentChange = (e) => {
+    changeFormData("comment", e.target.value);
+  };
+
+  const handleDistanceChange = (e) => {
+    changeFormData("disttowatertable_m", e.target.value);
+  };
+
   const handleSave = () => {
     setShowForm(false);
   };
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
       <Card style={{ marginBottom: 25 }}>
@@ -60,7 +80,7 @@ export default function PejlingForm({ setShowForm }) {
                     Dato
                   </Typography>
                 }
-                value={selectedDate}
+                value={formData.timeofmeas}
                 onChange={handleDateChange}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
@@ -78,16 +98,18 @@ export default function PejlingForm({ setShowForm }) {
                     Tidspunkt
                   </Typography>
                 }
-                value={selectedDate}
+                value={formData.timeofmeas}
                 onChange={handleDateChange}
                 KeyboardButtonProps={{
                   "aria-label": "change time",
                 }}
                 fullWidth
+                ampm={false}
               />
             </Grid>
             <Grid item xs={8}>
               <TextField
+                type='number'
                 variant='outlined'
                 label={
                   <Typography variant='h6' component='h3'>
@@ -96,6 +118,8 @@ export default function PejlingForm({ setShowForm }) {
                 }
                 InputLabelProps={{ shrink: true }}
                 fullWidth
+                value={formData.disttowatertable_m}
+                onChange={handleDistanceChange}
               />
             </Grid>
             <Grid item xs={4}>
@@ -108,11 +132,13 @@ export default function PejlingForm({ setShowForm }) {
                     Kommentar
                   </Typography>
                 }
+                value={formData.comment}
                 variant='outlined'
                 multiline
                 rows={4}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
+                onChange={handleCommentChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -120,7 +146,10 @@ export default function PejlingForm({ setShowForm }) {
                 <FormLabel component='h6'>
                   Hvordan skal pejlingen anvendes?
                 </FormLabel>
-                <RadioGroup value={usage} onChange={handleUsageChange}>
+                <RadioGroup
+                  value={formData.useforcorrection + ""}
+                  onChange={handleUsageChange}
+                >
                   <FormControlLabel
                     value='0'
                     control={<Radio />}
@@ -144,7 +173,7 @@ export default function PejlingForm({ setShowForm }) {
               <Button
                 autoFocus
                 style={{ backgroundColor: "#ffa137" }}
-                onClick={(e) => handleSave(false)}
+                onClick={() => handleSubmit(stationId)}
               >
                 Gem
               </Button>
@@ -153,7 +182,7 @@ export default function PejlingForm({ setShowForm }) {
               <Button
                 autoFocus
                 style={{ backgroundColor: "#ffa137" }}
-                onClick={(e) => handleSave(false)}
+                onClick={resetFormData}
               >
                 Annullere
               </Button>

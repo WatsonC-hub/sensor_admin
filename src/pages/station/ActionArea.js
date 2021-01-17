@@ -1,29 +1,31 @@
 import React, { useState } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
-//import classes from '*.module.css';
-import {
-  Add,
-  AddCircle,
-  Camera,
-  Edit,
-  EditRounded,
-  PhotoCamera,
-  PhotoCameraRounded,
-} from "@material-ui/icons";
-import { Icon } from "@material-ui/core";
-import AddBearingForm from "./AddBearingForm";
-//import classes from '*.module.css';
+import clsx from "clsx";
+import { AddCircle, EditRounded, PhotoCameraRounded } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
     top: "auto",
     bottom: 0,
+  },
+  appBar1: {
+    top: "auto",
+    bottom: 0,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    width: `calc(100% - 240px)`,
+    marginLeft: 240,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
   grow: {
     flexGrow: 1,
@@ -55,13 +57,19 @@ const ColorButton = withStyles((theme) => ({
   },
 }))(Button);
 
-export default function ActionArea({ showForm, setShowForm }) {
+export default function ActionArea({ showForm, setShowForm, open }) {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
 
   return (
     <>
-      <AppBar position='fixed' color='inherit' className={classes.appBar}>
+      <AppBar
+        position='fixed'
+        color='inherit'
+        className={clsx(classes.appBar1, {
+          [classes.appBarShift]: open,
+        })}
+      >
         <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
           <ColorButton
             onClick={(e) => {
@@ -81,7 +89,6 @@ export default function ActionArea({ showForm, setShowForm }) {
           </ColorButton>
         </Toolbar>
       </AppBar>
-      {/* <AddBearingForm handleDialogClose={setOpenDialog}  dialogOpen={openDialog} /> */}
     </>
   );
 }

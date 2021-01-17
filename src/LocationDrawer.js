@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -84,10 +84,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const MyListItem = withStyles({
+  root: {
+    "&$selected": {
+      backgroundColor: "lightseagreen",
+      color: "white",
+    },
+  },
+  selected: {},
+})(ListItem);
+
 export default function LocationDrawer() {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [currStation, setCurrStation] = useState(null);
   const [stationList, setStationList] = useState([]);
@@ -117,12 +127,13 @@ export default function LocationDrawer() {
   useEffect(() => {
     const [locId, statId] = context.locationId.split("_");
     console.log("loc_stat_id : ", statId, "---", locId);
+    setSelectedItem(parseInt(statId));
     getStations(locId).then((res) => {
       setCurrStation(currentStation(statId, res.data.features));
       setStationList(res.data.features);
       console.log(res);
     });
-  }, []);
+  }, [context.locationId]);
 
   return (
     <div className={classes.root}>
@@ -177,17 +188,19 @@ export default function LocationDrawer() {
         <Divider />
         <List>
           {stationList.map((_station, index) => (
-            <ListItem
+            <MyListItem
+              key={_station.properties.stationid}
               button
               key={_station.properties.stationid}
               onClick={() => {
                 setSelectedItem(_station.properties.stationid);
                 setCurrStation(_station);
-                setOpen(false);
+                //setOpen(false);
               }}
+              selected={_station.properties.stationid === selectedItem}
             >
               <ListItemText primary={_station.properties.stationname} />
-            </ListItem>
+            </MyListItem>
           ))}
         </List>
         <Divider />
@@ -199,6 +212,7 @@ export default function LocationDrawer() {
       >
         <div className={classes.drawerHeader} />
         <Station
+          open={open}
           stationId={getSelectedItem()}
           showForm={showForm}
           setShowForm={setShowForm}
