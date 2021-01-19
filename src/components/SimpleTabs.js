@@ -48,15 +48,15 @@ export default function SimpleTabs(props) {
           variant='fullWidth'
           aria-label='simple tabs example'
         >
-          <Tab icon={KortIcon} />
           <Tab icon={TableIcon} />
+          <Tab icon={KortIcon} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={1}>
-        <Map data={props.sensors} />
-      </TabPanel>
       <TabPanel value={value} index={0}>
         <DevExTable {...props} />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <Map data={props.sensors} />
       </TabPanel>
     </div>
   );

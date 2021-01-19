@@ -1,25 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
 import Plot from "react-plotly.js";
 import { getGraphData, getControlData } from "../../api";
-
-const useStyles = makeStyles({
-  root: {
-    maxWidth: 1000,
-    marginBottom: 25,
-  },
-  media: {
-    height: 274,
-    backgroundPosition: "unset",
-  },
-});
 
 const selectorOptions = {
   buttons: [
@@ -51,17 +33,13 @@ const selectorOptions = {
 };
 
 const layout2 = {
-  width: 900,
+  autosize: true,
   xaxis: {
     rangeselector: selectorOptions,
-    /*rangeslider: {},*/
     autorange: true,
     type: "date",
-    //range:["2020-12-01T00:00:00", A],
     domain: [0, 0.97],
   },
-
-  //xaxis: {domain: [0, 0.9]},
   yaxis: {
     title: {
       text: "Vandstand, kote [m]",
@@ -110,8 +88,8 @@ function PlotGraph({ graphData, controlData }) {
     <Plot
       data={[
         {
-          x: xData, //[1, 2, 3],
-          y: yData, //[2, 6, 3],
+          x: xData,
+          y: yData,
           type: "scattergl",
           line: { width: 1 },
           mode: "lines+markers",
@@ -131,13 +109,14 @@ function PlotGraph({ graphData, controlData }) {
         },
       ]}
       layout={layout2}
-      // layout={{ width: 900, height: 500, title: "" }}
+      config={{ responsive: true }}
+      useResizeHandler={true}
+      style={{ width: "100%", height: "100%" }}
     />
   );
 }
 
 export default function BearingGraph({ stationId }) {
-  const classes = useStyles();
   const [graphData, setGraphData] = useState([]);
   const [controlData, setControlData] = useState([]);
 
@@ -158,15 +137,15 @@ export default function BearingGraph({ stationId }) {
   }, [stationId]);
 
   return (
-    // <Card className={classes.root}>
-    //   <CardActionArea>
-    //     <CardMedia
-    //       className={classes.media}
-    //       image='/images/JinNrc.png'
-    //       title='Contemplative Reptile'
-    //     />
-    //   </CardActionArea>
-    // </Card>
-    <PlotGraph graphData={graphData} controlData={controlData} />
+    <div
+      style={{
+        width: "auto",
+        height: "500px",
+        marginBottom: "20px",
+        border: "2px solid gray",
+      }}
+    >
+      <PlotGraph graphData={graphData} controlData={controlData} />
+    </div>
   );
 }
