@@ -94,6 +94,9 @@ function PlotGraph({ graphData, controlData }) {
           line: { width: 1 },
           mode: "lines+markers",
           marker: { symbol: "100", size: "4" },
+          marker: {
+            color: "rgb(44,160,44)",
+          },
         },
         {
           x: xControl,
