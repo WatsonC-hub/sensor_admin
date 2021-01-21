@@ -79,10 +79,17 @@ const layout2 = {
 };
 
 function PlotGraph({ graphData, controlData }) {
+  // console.log(graphData);
+  const [stationName, setStationName] = useState("stationnavn");
+  const name = graphData[0] ? graphData[0].properties.stationname : "";
   const xData = graphData.map((d) => d.properties.timeofmeas);
   const yData = graphData.map((d) => d.properties.measurement);
   const xControl = controlData.map((d) => d.properties.timeofmeas);
   const yControl = controlData.map((d) => d.properties.waterlevel);
+
+  useEffect(() => {
+    if (graphData[0]) setStationName(graphData[0].properties.stationname);
+  }, [graphData]);
 
   return (
     <Plot
@@ -90,6 +97,7 @@ function PlotGraph({ graphData, controlData }) {
         {
           x: xData,
           y: yData,
+          name: name,
           type: "scattergl",
           line: { width: 1 },
           mode: "lines+markers",
@@ -101,6 +109,7 @@ function PlotGraph({ graphData, controlData }) {
         {
           x: xControl,
           y: yControl,
+          name: "Kontrolpejlinger",
           type: "scatter",
           mode: "markers",
           marker: {
