@@ -64,13 +64,7 @@ function Map(props) {
         L.marker([element.properties.lat, element.properties.long], {
           icon: stationIcon,
         })
-          .bindPopup(
-            //element.properties.mouseover
-
-            ReactDOMServer.renderToString(
-              <MarkerText text='hello' elem={element} />
-            )
-          )
+          .bindPopup(element.properties.mouseover)
           .addTo(layerRef.current);
       });
     }

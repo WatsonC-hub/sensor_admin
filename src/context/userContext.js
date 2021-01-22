@@ -4,6 +4,14 @@ const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const getUser = () => sleep(1000).then(() => ({ username: "elmo" }));
 
+const login = () => {};
+const logout = () => {};
+const [state, setState] = React.useState({
+  status: "initial",
+  error: null,
+  user: null,
+});
+
 const AuthContext = () => React.createContext();
 
 function AuthProvider({ children }) {
@@ -12,6 +20,7 @@ function AuthProvider({ children }) {
     error: null,
     user: null,
   });
+
   React.useEffect(() => {
     getUser().then(
       (user) => setState({ status: "success", error: null, user }),
