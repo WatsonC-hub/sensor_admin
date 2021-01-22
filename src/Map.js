@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import ReactDOMServer from "react-dom/server";
 import ReactDOM from "react-dom";
 import L from "leaflet";
+import LocationContext from "./LocationContext";
 
 const style = {
   width: "100%",
@@ -23,7 +24,12 @@ function MarkerText(props) {
 }
 
 function Map(props) {
+  const context = useContext(LocationContext);
   const mapRef = React.useRef(null);
+  const popupsRef = React.useRef([]);
+  const onPopupClick = (markerId) => {
+    alert("clicked popup " + markerId);
+  };
 
   const renderMap = () => {
     const myAttributionText =
@@ -60,19 +66,22 @@ function Map(props) {
   const renderFeatures = (data) => {
     if (data) {
       data.forEach((element) => {
-        console.log(element);
-        L.marker([element.properties.lat, element.properties.long], {
-          icon: stationIcon,
-        })
-          .bindPopup(element.properties.mouseover)
-          .addTo(layerRef.current);
+        const marker = L.marker(
+          [element.properties.lat, element.properties.long],
+          {
+            icon: stationIcon,
+          }
+        ).bindPopup(element.properties.mouseover);
+        const popup = marker.getPopup();
+        popupsRef.current.push(popup);
+        popup.on("click", () => onPopupClick(element.properties.lat));
+        marker.addTo(layerRef.current);
       });
     }
   };
 
   useEffect(() => {
     mapRef.current = renderMap();
-    // clean up function
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
@@ -88,7 +97,26 @@ function Map(props) {
 
   useEffect(() => {
     layerRef.current.clearLayers();
-    renderFeatures(props.data.features);
+    const data = props.data.features;
+    if (data) {
+      data.forEach((element) => {
+        const point = [element.properties.lat, element.properties.long];
+        const marker = L.marker(point, {
+          icon: stationIcon,
+        }).bindPopup(element.properties.mouseover);
+        marker.on("click", () => {
+          let _popup = document.getElementsByClassName(
+            "leaflet-popup-content-wrapper"
+          );
+          if (_popup && _popup.length > 0) {
+            L.DomEvent.on(_popup[0], "click", () => {
+              context.setLocationId(element.properties.locid + "_");
+            });
+          }
+        });
+        marker.addTo(layerRef.current);
+      });
+    }
   }, [props.data.features]);
 
   return <div id='map' style={style}></div>;

@@ -125,13 +125,21 @@ export default function LocationDrawer() {
   };
 
   useEffect(() => {
-    const [locId, statId] = context.locationId.split("_");
+    let [locId, statId] = context.locationId.split("_");
     console.log("loc_stat_id : ", statId, "---", locId);
-    setSelectedItem(parseInt(statId));
+    if (statId) {
+      //if location is set from the map, stationId is not known
+      setSelectedItem(parseInt(statId));
+    }
     getStations(locId).then((res) => {
+      if (!statId) {
+        statId = res.data.features[0].properties.stationid;
+        console.log("selecteditem =>", parseInt(statId));
+        setSelectedItem(parseInt(statId));
+      }
       setCurrStation(currentStation(statId, res.data.features));
       setStationList(res.data.features);
-      console.log(res);
+      console.log(res.data.features);
     });
   }, [context.locationId]);
 
