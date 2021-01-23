@@ -31,7 +31,10 @@ const EditButton = ({ locationId }) => {
   return (
     <IconButton
       aria-label='Edit'
-      onClick={(e) => context.setLocationId(locationId)}
+      onClick={(e) => {
+        context.setLocationId(locationId);
+        context.setTabValue(0);
+      }}
     >
       <EditIcon />
     </IconButton>
@@ -105,7 +108,7 @@ const columns = [
   },
 ];
 
-export default ({ setLocation }) => {
+export default ({ setLocation, goToTable }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -127,7 +130,7 @@ export default ({ setLocation }) => {
     <Paper>
       {loading && <CircularProgress />}
       <Grid rows={rows} columns={columns} style={{ height: 1200 }}>
-        <LocationTypeProvider for={["station_loc_id"]} />
+        <LocationTypeProvider for={["station_loc_id"]} goToTable={goToTable} />
         <RowDetailState defaultExpandedRowIds={[]} />
         <VirtualTable height={1200} cellComponent={Cell} />
         <TableHeaderRow titleComponent={TitleCell} />

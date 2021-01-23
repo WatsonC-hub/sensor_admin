@@ -31,6 +31,18 @@ function Map(props) {
     alert("clicked popup " + markerId);
   };
 
+  const onClickHandler = (element) => () => {
+    let _popup = document.getElementsByClassName(
+      "leaflet-popup-content-wrapper"
+    );
+    if (_popup && _popup.length > 0) {
+      L.DomEvent.on(_popup[0], "click", () => {
+        context.setLocationId(element.properties.locid + "_");
+        context.setTabValue(1);
+      });
+    }
+  };
+
   const renderMap = () => {
     const myAttributionText =
       '&copy; <a target="_blank" href="https://download.kortforsyningen.dk/content/vilk%C3%A5r-og-betingelser">Styrelsen for Dataforsyning og Effektivisering</a>';
@@ -104,16 +116,7 @@ function Map(props) {
         const marker = L.marker(point, {
           icon: stationIcon,
         }).bindPopup(element.properties.mouseover);
-        marker.on("click", () => {
-          let _popup = document.getElementsByClassName(
-            "leaflet-popup-content-wrapper"
-          );
-          if (_popup && _popup.length > 0) {
-            L.DomEvent.on(_popup[0], "click", () => {
-              context.setLocationId(element.properties.locid + "_");
-            });
-          }
-        });
+        marker.on("click", onClickHandler(element));
         marker.addTo(layerRef.current);
       });
     }

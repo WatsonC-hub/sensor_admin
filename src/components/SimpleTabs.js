@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Paper from "@material-ui/core/Paper";
@@ -11,6 +11,7 @@ import TabPanel from "./TabPanel";
 import Map from "../Map";
 import Table from "../Table";
 import DevExTable from "../DevExTable";
+import LocationContext from "../LocationContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,10 +23,15 @@ const useStyles = makeStyles((theme) => ({
 export default function SimpleTabs(props) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
+  const locationContext = useContext(LocationContext);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    //setValue(newValue);
+    locationContext.setTabValue(newValue);
   };
+
+  const goToMap = () => setValue(1);
+  const goToTable = () => setValue(0);
 
   const KortIcon = (
     <Tooltip title='Kort'>
@@ -43,7 +49,7 @@ export default function SimpleTabs(props) {
     <div>
       <AppBar position='static' style={{ backgroundColor: "lightseagreen" }}>
         <Tabs
-          value={value}
+          value={locationContext.tabValue}
           onChange={handleChange}
           variant='fullWidth'
           aria-label='simple tabs example'
@@ -52,10 +58,10 @@ export default function SimpleTabs(props) {
           <Tab icon={KortIcon} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0}>
+      <TabPanel value={locationContext.tabValue} index={0}>
         <DevExTable {...props} />
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel value={locationContext.tabValue} index={1}>
         <Map data={props.sensors} />
       </TabPanel>
     </div>

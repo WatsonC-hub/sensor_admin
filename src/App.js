@@ -17,6 +17,7 @@ function App() {
   const [userId, setUserId] = useState(0);
   const [locationId, setLocationId] = useState(-1);
   const [stationId, setStationId] = useState(-1);
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     getSensorData().then((res) => {
@@ -26,7 +27,14 @@ function App() {
 
   return (
     <LocationContext.Provider
-      value={{ locationId, setLocationId, stationId, setStationId }}
+      value={{
+        locationId,
+        setLocationId,
+        stationId,
+        setStationId,
+        tabValue,
+        setTabValue,
+      }}
     >
       <div className='App'>
         {locationId === -1 ? (
