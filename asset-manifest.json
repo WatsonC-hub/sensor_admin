@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/sensor_admin/static/css/main.94d9bc3b.chunk.css",
+    "main.js": "/sensor_admin/static/js/main.473a28fe.chunk.js",
+    "main.js.map": "/sensor_admin/static/js/main.473a28fe.chunk.js.map",
+    "runtime-main.js": "/sensor_admin/static/js/runtime-main.bf6cdeab.js",
+    "runtime-main.js.map": "/sensor_admin/static/js/runtime-main.bf6cdeab.js.map",
+    "static/js/2.f3b931c6.chunk.js": "/sensor_admin/static/js/2.f3b931c6.chunk.js",
+    "static/js/2.f3b931c6.chunk.js.map": "/sensor_admin/static/js/2.f3b931c6.chunk.js.map",
+    "static/js/3.23e10ea1.chunk.js": "/sensor_admin/static/js/3.23e10ea1.chunk.js",
+    "static/js/3.23e10ea1.chunk.js.map": "/sensor_admin/static/js/3.23e10ea1.chunk.js.map",
+    "index.html": "/sensor_admin/index.html",
+    "precache-manifest.82eea2d109214a78d3a40f9829b46ad9.js": "/sensor_admin/precache-manifest.82eea2d109214a78d3a40f9829b46ad9.js",
+    "service-worker.js": "/sensor_admin/service-worker.js",
+    "static/css/main.94d9bc3b.chunk.css.map": "/sensor_admin/static/css/main.94d9bc3b.chunk.css.map",
+    "static/js/2.f3b931c6.chunk.js.LICENSE.txt": "/sensor_admin/static/js/2.f3b931c6.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.bf6cdeab.js",
+    "static/js/2.f3b931c6.chunk.js",
+    "static/css/main.94d9bc3b.chunk.css",
+    "static/js/main.473a28fe.chunk.js"
+  ]
+}
