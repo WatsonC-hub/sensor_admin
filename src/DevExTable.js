@@ -108,7 +108,7 @@ const columns = [
   },
 ];
 
-export default ({ setLocation, goToTable }) => {
+export default ({ setLocation }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -130,7 +130,7 @@ export default ({ setLocation, goToTable }) => {
     <Paper>
       {loading && <CircularProgress />}
       <Grid rows={rows} columns={columns} style={{ height: 1200 }}>
-        <LocationTypeProvider for={["station_loc_id"]} goToTable={goToTable} />
+        <LocationTypeProvider for={["station_loc_id"]} />
         <RowDetailState defaultExpandedRowIds={[]} />
         <VirtualTable height={1200} cellComponent={Cell} />
         <TableHeaderRow titleComponent={TitleCell} />
