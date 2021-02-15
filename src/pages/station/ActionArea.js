@@ -1,12 +1,17 @@
 import React, { useState } from "react";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import clsx from "clsx";
 import { AddCircle, EditRounded, PhotoCameraRounded } from "@material-ui/icons";
+import BottomNavigation from "@material-ui/core/BottomNavigation";
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: "#ffa137",
+  },
   appBar: {
     top: "auto",
     bottom: 0,
@@ -61,34 +66,60 @@ export default function ActionArea({ showForm, setShowForm, open }) {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
 
+  // return (
+  //   <>
+  //     <AppBar
+  //       position='fixed'
+  //       color='inherit'
+  //       className={clsx(classes.appBar1, {
+  //         [classes.appBarShift]: open,
+  //       })}
+  //     >
+  //       <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
+  //         <ColorButton
+  //           onClick={(e) => {
+  //             setShowForm(true);
+  //           }}
+  //         >
+  //           <AddCircle />
+  //           Indberet pejling
+  //         </ColorButton>
+  //         <ColorButton>
+  //           <EditRounded />
+  //           Ret stamdata
+  //         </ColorButton>
+  //         <ColorButton>
+  //           <PhotoCameraRounded />
+  //           Tag billede
+  //         </ColorButton>
+  //       </Toolbar>
+  //     </AppBar>
+  //   </>
+  // );
+  return <BottomNav showForm={showForm} setShowForm={setShowForm} />;
+}
+
+function BottomNav({ showForm, setShowForm, open }) {
+  const [value, setValue] = useState(-1);
+  const classes = useStyles();
   return (
-    <>
-      <AppBar
-        position='fixed'
-        color='inherit'
-        className={clsx(classes.appBar1, {
-          [classes.appBarShift]: open,
-        })}
-      >
-        <Toolbar style={{ display: "flex", justifyContent: "space-between" }}>
-          <ColorButton
-            onClick={(e) => {
-              setShowForm(true);
-            }}
-          >
-            <AddCircle />
-            Indberet pejling
-          </ColorButton>
-          <ColorButton>
-            <EditRounded />
-            Ret stamdata
-          </ColorButton>
-          <ColorButton>
-            <PhotoCameraRounded />
-            Tag billede
-          </ColorButton>
-        </Toolbar>
-      </AppBar>
-    </>
+    <BottomNavigation
+      className={classes.root}
+      value={value}
+      onChange={(event, newValue) => {
+        //setValue(newValue);
+        if (newValue === 0) {
+          setShowForm(true);
+        }
+      }}
+      showLabels
+    >
+      <BottomNavigationAction label='Indberet pejling' icon={<AddCircle />} />
+      <BottomNavigationAction label='Ret stamdata' icon={<EditRounded />} />
+      <BottomNavigationAction
+        label='Tag billede'
+        icon={<PhotoCameraRounded />}
+      />
+    </BottomNavigation>
   );
 }

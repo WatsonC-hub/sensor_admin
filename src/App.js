@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import "./App.css";
-import { getSensorData } from "./api";
-import SimpleTabs from "./components/SimpleTabs";
-import LocationDrawer from "./LocationDrawer";
-import LocationContext from "./LocationContext";
+import AuthenticatedApp from "./AuthenticatedApp";
+import UnAuntenticatedApp from "./UnauthenticatedApp";
+// import "./App.css";
+// import { getSensorData } from "./api";
+// import SimpleTabs from "./components/SimpleTabs";
+// import LocationDrawer from "./LocationDrawer";
+// import LocationContext from "./LocationContext";
 
 /*
 Libraries to explore for this app:
@@ -13,38 +15,45 @@ Libraries to explore for this app:
 */
 
 function App() {
-  const [sensors, setSensors] = useState([]);
-  const [userId, setUserId] = useState(0);
-  const [locationId, setLocationId] = useState(-1);
-  const [stationId, setStationId] = useState(-1);
-  const [tabValue, setTabValue] = useState(0);
+  const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    getSensorData().then((res) => {
-      setSensors(res.data);
-    });
-  }, [userId]);
+  if (!token) {
+    return <UnAuntenticatedApp setToken={setToken} />;
+  }
 
-  return (
-    <LocationContext.Provider
-      value={{
-        locationId,
-        setLocationId,
-        stationId,
-        setStationId,
-        tabValue,
-        setTabValue,
-      }}
-    >
-      <div className='App'>
-        {locationId === -1 ? (
-          <SimpleTabs sensors={sensors} />
-        ) : (
-          <LocationDrawer />
-        )}
-      </div>
-    </LocationContext.Provider>
-  );
+  return <AuthenticatedApp setToken={setToken} />;
+  // const [sensors, setSensors] = useState([]);
+  // const [userId, setUserId] = useState(0);
+  // const [locationId, setLocationId] = useState(-1);
+  // const [stationId, setStationId] = useState(-1);
+  // const [tabValue, setTabValue] = useState(0);
+
+  // useEffect(() => {
+  //   getSensorData().then((res) => {
+  //     setSensors(res.data);
+  //   });
+  // }, [userId]);
+
+  // return (
+  //   <LocationContext.Provider
+  //     value={{
+  //       locationId,
+  //       setLocationId,
+  //       stationId,
+  //       setStationId,
+  //       tabValue,
+  //       setTabValue,
+  //     }}
+  //   >
+  //     <div className='App'>
+  //       {locationId === -1 ? (
+  //         <SimpleTabs sensors={sensors} />
+  //       ) : (
+  //         <LocationDrawer />
+  //       )}
+  //     </div>
+  //   </LocationContext.Provider>
+  // );
 }
 
 export default App;

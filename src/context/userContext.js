@@ -1,11 +1,24 @@
 import React from "react";
+import axios from "axios";
 
 const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const getUser = () => sleep(1000).then(() => ({ username: "elmo" }));
 
-const login = () => {};
-const logout = () => {};
+const login = ({ email, password }) => {
+  let sessionUrl = "https://watsonc.admin.gc2.io/api/v2/session/start";
+  let _loginData = {
+    user: email,
+    password: password,
+    schema: null,
+  };
+  axios.post(sessionUrl, _loginData);
+};
+const logout = () => {
+  let sessionUrl = "https://watsonc.admin.gc2.io/api/v2/session/stop";
+  return axios.get(sessionUrl);
+};
+
 const [state, setState] = React.useState({
   status: "initial",
   error: null,

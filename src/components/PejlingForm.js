@@ -67,7 +67,7 @@ export default function PejlingForm({
             Indberet pejling
           </Typography>
           <Grid container spacing={3}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <KeyboardDatePicker
                 disableToolbar
                 variant='inline'
@@ -88,7 +88,7 @@ export default function PejlingForm({
                 fullWidth
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <KeyboardTimePicker
                 inputVariant='outlined'
                 margin='normal'
@@ -107,7 +107,7 @@ export default function PejlingForm({
                 ampm={false}
               />
             </Grid>
-            <Grid item xs={8}>
+            <Grid item xs={12} sm={8}>
               <TextField
                 type='number'
                 variant='outlined'
@@ -122,10 +122,10 @@ export default function PejlingForm({
                 onChange={handleDistanceChange}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={12} sm={4}>
               <Typography>Afstand fra pejlpunktskote til vandspejl</Typography>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={12}>
               <TextField
                 label={
                   <Typography variant='h6' component='h3'>
@@ -141,7 +141,7 @@ export default function PejlingForm({
                 onChange={handleCommentChange}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={12}>
               <FormControl component='fieldset'>
                 <FormLabel component='h6'>
                   Hvordan skal pejlingen anvendes?
@@ -168,8 +168,8 @@ export default function PejlingForm({
                 </RadioGroup>
               </FormControl>
             </Grid>
-            <Grid item xs={4}></Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2} sm={4}></Grid>
+            <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
                 style={{ backgroundColor: "#ffa137" }}
@@ -178,7 +178,7 @@ export default function PejlingForm({
                 Gem
               </Button>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
                 style={{ backgroundColor: "#ffa137" }}
@@ -187,7 +187,7 @@ export default function PejlingForm({
                 Annullere
               </Button>
             </Grid>
-            <Grid item xs={4}></Grid>
+            <Grid item xs={2} sm={4}></Grid>
           </Grid>
         </CardContent>
       </Card>

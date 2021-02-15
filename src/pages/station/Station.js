@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import HistoricMeasurements from "./HistoricMeasurements";
+import MobileMeasurements from "./MobileMeasurements";
 import BearingGraph from "./BearingGraph";
 import ActionArea from "./ActionArea";
 import PejlingForm from "../../components/PejlingForm";
@@ -12,6 +13,8 @@ import {
   getMeasurements,
 } from "../../api";
 import { Toolbar } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -20,6 +23,8 @@ function formatedTimestamp(d) {
 }
 
 export default function Station({ stationId, showForm, setShowForm, open }) {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [formData, setFormData] = useState({
     gid: -1,
     timeofmeas: formatedTimestamp(new Date()),
@@ -82,7 +87,7 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
 
   return (
     <>
-      <Paper>
+      <div>
         {stationId !== -1 && <BearingGraph stationId={stationId} />}
         <Grid item xs={12}></Grid>
         <Grid item xs={12}></Grid>
@@ -96,13 +101,30 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
             resetFormData={resetFormData}
           />
         )}
-        <HistoricMeasurements
+        {matches ? (
+          <MobileMeasurements
+            measurements={measurements}
+            updated={updated}
+            stationId={stationId}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
+        ) : (
+          <HistoricMeasurements
+            measurements={measurements}
+            updated={updated}
+            stationId={stationId}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
+        )}
+        {/* <HistoricMeasurements
           measurements={measurements}
           updated={updated}
           stationId={stationId}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
-        />
+        /> */}
         <Toolbar />
         <ActionArea
           open={open}
@@ -110,7 +132,7 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
           showForm={showForm}
           setShowForm={setShowForm}
         />
-      </Paper>
+      </div>
     </>
   );
 }
