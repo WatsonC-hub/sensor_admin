@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles, withStyles, useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
@@ -102,6 +103,8 @@ export default function ActionArea({ showForm, setShowForm, open }) {
 function BottomNav({ showForm, setShowForm, open }) {
   const [value, setValue] = useState(-1);
   const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <BottomNavigation
       className={classes.root}
@@ -110,6 +113,9 @@ function BottomNav({ showForm, setShowForm, open }) {
         //setValue(newValue);
         if (newValue === 0) {
           setShowForm(true);
+          setTimeout(() => {
+            window.scrollTo({ top: matches ? 300 : 500, behavior: "smooth" });
+          }, 200);
         }
       }}
       showLabels

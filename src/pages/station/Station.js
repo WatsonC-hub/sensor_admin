@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import HistoricMeasurements from "./HistoricMeasurements";
 import MobileMeasurements from "./MobileMeasurements";
 import BearingGraph from "./BearingGraph";
@@ -76,6 +76,7 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
     setFormData(data); // Fill form data on Edit
     setShowForm(true); // update to use state machine
     setUpdated(new Date());
+    //window.scrollTo({ top: 300, behavior: "smooth" });
   };
 
   const handleDelete = (gid) => {

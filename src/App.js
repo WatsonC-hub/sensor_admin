@@ -15,13 +15,17 @@ Libraries to explore for this app:
 */
 
 function App() {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(
+    sessionStorage.getItem("sessionId") || null
+  );
 
-  if (!token) {
-    return <UnAuntenticatedApp setToken={setToken} />;
+  const [user, setUser] = useState(sessionStorage.getItem("user") || null);
+
+  if (!user) {
+    return <UnAuntenticatedApp setUser={setUser} />;
   }
 
-  return <AuthenticatedApp setToken={setToken} />;
+  return <AuthenticatedApp setUser={setUser} />;
   // const [sensors, setSensors] = useState([]);
   // const [userId, setUserId] = useState(0);
   // const [locationId, setLocationId] = useState(-1);

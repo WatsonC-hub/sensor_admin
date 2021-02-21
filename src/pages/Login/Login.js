@@ -47,22 +47,26 @@ function loginUser(user, password) {
   const loginData = {
     user,
     password,
-    schema: "watsonc",
+    schema: null,
   };
   return axios.post(sessionUrl, loginData);
 }
 
-export default function Login({ setToken }) {
+export default function Login({ setUser }) {
   const classes = useStyles();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // loginUser(userName, password).then((res) => {
-    //   console.log(res.data);
-    // });
-    setToken("random-token");
+    loginUser(userName, password).then((res) => {
+      if (res.data.success) {
+        sessionStorage.setItem("user", res.data.data);
+        setUser(res.data.data);
+      }
+      //console.log(res.data);
+    });
+    //setToken("random-token");
   };
 
   return (

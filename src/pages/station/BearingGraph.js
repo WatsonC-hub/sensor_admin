@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Plot from "react-plotly.js";
 import { getGraphData, getControlData } from "../../api";
 
@@ -131,6 +132,8 @@ function PlotGraph({ graphData, controlData }) {
 export default function BearingGraph({ stationId }) {
   const [graphData, setGraphData] = useState([]);
   const [controlData, setControlData] = useState([]);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     getGraphData(stationId).then((res) => {
@@ -152,7 +155,7 @@ export default function BearingGraph({ stationId }) {
     <div
       style={{
         width: "auto",
-        height: "500px",
+        height: matches ? "300px" : "500px",
         marginBottom: "20px",
         border: "2px solid gray",
       }}

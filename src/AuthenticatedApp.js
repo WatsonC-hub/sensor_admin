@@ -15,7 +15,7 @@ Libraries to explore for this app:
 - react/route or reach-router
 */
 
-function AuthenticatedApp({ setToken }) {
+function AuthenticatedApp({ setUser }) {
   const [sensors, setSensors] = useState([]);
   const [userId, setUserId] = useState(0);
   const [locationId, setLocationId] = useState(-1);
@@ -23,7 +23,8 @@ function AuthenticatedApp({ setToken }) {
   const [tabValue, setTabValue] = useState(0);
 
   const handleLogout = () => {
-    setToken(null);
+    sessionStorage.removeItem("sessionId");
+    setUser(null);
   };
 
   useEffect(() => {
@@ -52,7 +53,7 @@ function AuthenticatedApp({ setToken }) {
           </Toolbar>
         </AppBar>
         {locationId === -1 ? (
-          <SimpleTabs sensors={sensors} setToken={setToken} />
+          <SimpleTabs sensors={sensors} setUser={setUser} />
         ) : (
           <LocationDrawer />
         )}
