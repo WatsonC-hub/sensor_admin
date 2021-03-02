@@ -56,16 +56,22 @@ export default function Login({ setUser }) {
   const classes = useStyles();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    loginUser(userName, password).then((res) => {
-      if (res.data.success) {
-        sessionStorage.setItem("user", res.data.data);
-        setUser(res.data.data);
-      }
-      //console.log(res.data);
-    });
+    loginUser(userName, password)
+      .then((res) => {
+        if (res.data.success) {
+          sessionStorage.setItem("user", res.data.data);
+          setUser(res.data.data);
+          setLoginError(false);
+        }
+        //console.log(res.data);
+      })
+      .catch((r) => {
+        setLoginError(true);
+      });
     //setToken("random-token");
   };
 
@@ -94,6 +100,7 @@ export default function Login({ setUser }) {
             autoComplete='email'
             autoFocus
             onChange={(e) => setUserName(e.target.value)}
+            error={loginError}
           />
           <TextField
             variant='outlined'
@@ -106,6 +113,10 @@ export default function Login({ setUser }) {
             id='password'
             autoComplete='current-password'
             onChange={(e) => setPassword(e.target.value)}
+            error={loginError}
+            helperText={
+              loginError ? "brugernavn eller password er forkert." : ""
+            }
           />
           <Button
             type='submit'
@@ -113,6 +124,7 @@ export default function Login({ setUser }) {
             variant='contained'
             style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
             className={classes.submit}
+            disabled={userName === "" || password === ""}
           >
             Log på
           </Button>

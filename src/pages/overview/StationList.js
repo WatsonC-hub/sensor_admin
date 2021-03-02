@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
+import SearchIcon from "@material-ui/icons/Search";
+import TextField from "@material-ui/core/TextField";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -31,6 +34,16 @@ export default function StationList(props) {
   return (
     // <Paper>
     <List>
+      {/* <ListItem>
+        <Grid container spacing={1} alignItems='flex-end'>
+          <Grid item>
+            <SearchIcon />
+          </Grid>
+          <Grid item>
+            <TextField id='input-with-icon-grid' label='With a grid' />
+          </Grid>
+        </Grid>
+      </ListItem> */}
       {data &&
         data.map((r, index) => {
           return (
@@ -55,7 +68,7 @@ export default function StationList(props) {
 
 function StatusText(props) {
   return (
-    <div
+    <span
       style={{
         display: "flex",
         flexDirection: "row",
@@ -64,7 +77,7 @@ function StatusText(props) {
     >
       <Typography>{props.row.properties.parameter}</Typography>
       <Typography>{getStatusComp(props.row.properties.alarm)}</Typography>
-    </div>
+    </span>
   );
 }
 

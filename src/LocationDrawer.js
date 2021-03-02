@@ -21,6 +21,7 @@ import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import LocationContext from "./LocationContext";
 import Station from "./pages/station";
 import { getStations } from "./api";
+import MinimalSelect from "./pages/Location/MinimalSelect";
 
 const drawerWidth = 240;
 
@@ -73,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    marginLeft: -drawerWidth,
+    //marginLeft: -drawerWidth,
   },
   contentShift: {
     transition: theme.transitions.create("margin", {
@@ -97,7 +98,7 @@ const MyListItem = withStyles({
 export default function LocationDrawer() {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [currStation, setCurrStation] = useState(null);
   const [stationList, setStationList] = useState([]);
@@ -114,7 +115,7 @@ export default function LocationDrawer() {
 
   const currentStation = (id, stations) => {
     if (stations.length === 0) return null;
-    return stations.find((s) => s.properties.stationid + "" === id);
+    return stations.find((s) => s.properties.stationid + "" === id + "");
     //console.log("current station id =>", id);
     //return stations[0];
   };
@@ -154,7 +155,7 @@ export default function LocationDrawer() {
         style={{ backgroundColor: "lightseagreen" }}
       >
         <Toolbar>
-          <IconButton
+          {/* <IconButton
             color='inherit'
             aria-label='open drawer'
             onClick={handleDrawerOpen}
@@ -162,10 +163,10 @@ export default function LocationDrawer() {
             className={clsx(classes.menuButton, open && classes.hide)}
           >
             <MenuIcon style={{ color: "#ffa137" }} />
-          </IconButton>
-          <Typography variant='h6' className={classes.title}>
+          </IconButton> */}
+          {/* <Typography variant='h6' className={classes.title}>
             {currStation && currStation.properties.stationname}
-          </Typography>
+          </Typography> */}
           <IconButton
             className={classes.backButton}
             color='inherit'
@@ -173,9 +174,16 @@ export default function LocationDrawer() {
           >
             <KeyboardBackspaceIcon />
           </IconButton>
+          <MinimalSelect
+            stationList={stationList}
+            selectedStation={selectedItem}
+            setSelectedItem={setSelectedItem}
+            setCurrStation={setCurrStation}
+            currentStation={currentStation}
+          />
         </Toolbar>
       </AppBar>
-      <Drawer
+      {/* <Drawer
         className={classes.drawer}
         variant='persistent'
         anchor='left'
@@ -212,12 +220,8 @@ export default function LocationDrawer() {
           ))}
         </List>
         <Divider />
-      </Drawer>
-      <main
-        className={clsx(classes.content, {
-          [classes.contentShift]: open,
-        })}
-      >
+      </Drawer> */}
+      <main className={classes.content}>
         <div className={classes.drawerHeader} />
         <Station
           open={open}
