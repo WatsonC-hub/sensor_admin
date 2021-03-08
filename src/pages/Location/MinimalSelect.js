@@ -20,6 +20,7 @@ const MinimalSelect = ({
   currentStation,
 }) => {
   const [stationId, setStationId] = useState(selectedStation + "");
+  const [isOpen, setIsOpen] = useState(true);
 
   const handleChange = (event) => {
     setStationId(event.target.value);
@@ -29,7 +30,11 @@ const MinimalSelect = ({
     console.log("currentStation =>", station);
     setSelectedItem(event.target.value);
     setCurrStation(station);
+    setIsOpen(false);
   };
+
+  const handleClose = () => setIsOpen(false);
+  const handleOpen = () => setIsOpen(true);
 
   React.useEffect(() => {
     setStationId(selectedStation);
@@ -71,6 +76,9 @@ const MinimalSelect = ({
         IconComponent={iconComponent}
         value={stationId}
         onChange={handleChange}
+        open={isOpen}
+        onOpen={handleOpen}
+        onClose={handleClose}
       >
         {/* <MenuItem value={0}>Principle</MenuItem>
         <MenuItem value={1}>Sketch</MenuItem>

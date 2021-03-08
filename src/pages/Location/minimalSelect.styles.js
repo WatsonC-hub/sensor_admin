@@ -40,14 +40,14 @@ export default () => ({
       paddingBottom: 2,
     },
     "& li:hover": {
-      background: deepPurple[100],
+      background: "lightseagreen",
     },
     "& li.Mui-selected": {
       color: "white",
-      background: deepPurple[400],
+      background: "lightseagreen",
     },
     "& li.Mui-selected:hover": {
-      background: deepPurple[500],
+      background: "lightseagreen",
     },
   },
 });
