@@ -17,6 +17,7 @@ import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
+import CaptureBearing from "./CaptureBearing";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -44,13 +45,13 @@ export default function Station({
 
   const [updated, setUpdated] = useState(new Date());
   const [measurements, setMeasurements] = useState([]);
-  const [canEdit, setCanEdit] = useState(false);
+  const [canEdit, setCanEdit] = useState(true);
 
   useEffect(() => {
     getMeasurements(stationId, sessionStorage.getItem("session_id")).then(
       (res) => {
         setMeasurements(res.data.result);
-        setCanEdit(res.data.can_edit);
+        //setCanEdit(res.data.can_edit);
       }
     );
   }, [updated, stationId]);
@@ -121,6 +122,9 @@ export default function Station({
         )}
         {formToShow === "RET_STAMDATA" && (
           <EditStamdata setFormToShow={setFormToShow} />
+        )}
+        {formToShow === "TAG_BILLEDE" && (
+          <CaptureBearing setFormToShow={setFormToShow} />
         )}
         {showMeasurements && (
           <PejlingMeasurements
