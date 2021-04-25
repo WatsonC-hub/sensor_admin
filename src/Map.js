@@ -17,9 +17,7 @@ let stationIcon = L.icon({
 function MarkerText(props) {
   const { elem, text } = props;
   return (
-    <button onClick={() => console.log("clicled: ", elem.properties.lat)}>
-      {text}
-    </button>
+    <button onClick={() => console.log("clicled: ", elem.lat)}>{text}</button>
   );
 }
 
@@ -37,7 +35,7 @@ function Map(props) {
     );
     if (_popup && _popup.length > 0) {
       L.DomEvent.on(_popup[0], "click", () => {
-        context.setLocationId(element.properties.locid + "_");
+        context.setLocationId(element.locid + "_");
         context.setTabValue(1);
       });
     }
@@ -78,15 +76,12 @@ function Map(props) {
   const renderFeatures = (data) => {
     if (data) {
       data.forEach((element) => {
-        const marker = L.marker(
-          [element.properties.lat, element.properties.long],
-          {
-            icon: stationIcon,
-          }
-        ).bindPopup(element.properties.mouseover);
+        const marker = L.marker([element.lat, element.long], {
+          icon: stationIcon,
+        }).bindPopup(element.mouseover);
         const popup = marker.getPopup();
         popupsRef.current.push(popup);
-        popup.on("click", () => onPopupClick(element.properties.lat));
+        popup.on("click", () => onPopupClick(element.lat));
         marker.addTo(layerRef.current);
       });
     }
@@ -109,18 +104,18 @@ function Map(props) {
 
   useEffect(() => {
     layerRef.current.clearLayers();
-    const data = props.data.features;
+    const data = props.data.data;
     if (data) {
       data.forEach((element) => {
-        const point = [element.properties.lat, element.properties.long];
+        const point = [element.lat, element.long];
         const marker = L.marker(point, {
           icon: stationIcon,
-        }).bindPopup(element.properties.mouseover);
+        }).bindPopup(element.mouseover);
         marker.on("click", onClickHandler(element));
         marker.addTo(layerRef.current);
       });
     }
-  }, [props.data.features]);
+  }, [props.data.data]);
 
   return <div id='map' style={style}></div>;
 }

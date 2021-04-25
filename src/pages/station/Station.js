@@ -15,6 +15,8 @@ import {
 import { Toolbar } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import EditStamdata from "./EditStamdata";
+import PejlingMeasurements from "./PejlingMeasurements";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -22,7 +24,14 @@ function formatedTimestamp(d) {
   return `${date} ${time}`;
 }
 
-export default function Station({ stationId, showForm, setShowForm, open }) {
+export default function Station({
+  stationId,
+  showForm,
+  setShowForm,
+  open,
+  formToShow,
+  setFormToShow,
+}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [formData, setFormData] = useState({
@@ -35,11 +44,15 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
 
   const [updated, setUpdated] = useState(new Date());
   const [measurements, setMeasurements] = useState([]);
+  const [canEdit, setCanEdit] = useState(false);
 
   useEffect(() => {
-    getMeasurements(stationId).then((res) => {
-      setMeasurements(res.data.features);
-    });
+    getMeasurements(stationId, sessionStorage.getItem("session_id")).then(
+      (res) => {
+        setMeasurements(res.data.result);
+        setCanEdit(res.data.can_edit);
+      }
+    );
   }, [updated, stationId]);
 
   const changeFormData = (field, value) => {
@@ -58,13 +71,16 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
       comment: "",
     });
 
-    setShowForm(false);
+    setFormToShow(null);
   };
 
   const isPut = () => formData.gid !== -1;
+  const showGraph =
+    stationId !== -1 && (formToShow === null || formToShow === "ADDPEJLING");
+  const showMeasurements = formToShow === null || formToShow === "ADDPEJLING";
 
   const handleSubmit = (stationId) => {
-    setShowForm(false);
+    setFormToShow(null);
     const method = isPut() ? updateMeasurement : insertMeasurement;
     method(stationId, formData).then((res) => {
       resetFormData();
@@ -74,7 +90,7 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
 
   const handleEdit = (data) => {
     setFormData(data); // Fill form data on Edit
-    setShowForm(true); // update to use state machine
+    setFormToShow("ADDPEJLING"); // update to use state machine
     setUpdated(new Date());
     //window.scrollTo({ top: 300, behavior: "smooth" });
   };
@@ -89,10 +105,10 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
   return (
     <>
       <div>
-        {stationId !== -1 && <BearingGraph stationId={stationId} />}
+        {showGraph && <BearingGraph stationId={stationId} />}
         <Grid item xs={12}></Grid>
         <Grid item xs={12}></Grid>
-        {showForm && (
+        {formToShow === "ADDPEJLING" && (
           <PejlingForm
             stationId={stationId}
             setShowForm={setShowForm}
@@ -100,38 +116,29 @@ export default function Station({ stationId, showForm, setShowForm, open }) {
             changeFormData={changeFormData}
             handleSubmit={handleSubmit}
             resetFormData={resetFormData}
+            canEdit={canEdit}
           />
         )}
-        {matches ? (
-          <MobileMeasurements
+        {formToShow === "RET_STAMDATA" && (
+          <EditStamdata setFormToShow={setFormToShow} />
+        )}
+        {showMeasurements && (
+          <PejlingMeasurements
             measurements={measurements}
             updated={updated}
             stationId={stationId}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-          />
-        ) : (
-          <HistoricMeasurements
-            measurements={measurements}
-            updated={updated}
-            stationId={stationId}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
+            canEdit={canEdit}
           />
         )}
-        {/* <HistoricMeasurements
-          measurements={measurements}
-          updated={updated}
-          stationId={stationId}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-        /> */}
         <Toolbar />
         <ActionArea
           open={open}
           stationId={stationId}
-          showForm={showForm}
-          setShowForm={setShowForm}
+          formToShow={formToShow}
+          setFormToShow={setFormToShow}
+          canEdit={canEdit}
         />
       </div>
     </>

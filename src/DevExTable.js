@@ -114,15 +114,16 @@ export default ({ setLocation }) => {
 
   useEffect(() => {
     setLoading(true);
-    getTableData().then((res) => {
+    getTableData(sessionStorage.getItem("session_id")).then((res) => {
+      console.log(res);
       setLoading(false);
-      setData(res.data.features);
+      setData(res.data.result);
     });
   }, []);
 
-  let rows = data.map((s, index) => ({
-    ...s.properties,
-    station_loc_id: s.properties.locid + "_" + s.properties.stationid,
+  let rows = data.map((elem, index) => ({
+    ...elem,
+    station_loc_id: elem.locid + "_" + elem.stationid,
     id: index,
   }));
 

@@ -39,6 +39,7 @@ export default function MobileMeasurements({
   measurements,
   handleEdit,
   handleDelete,
+  canEdit,
 }) {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -118,12 +119,12 @@ export default function MobileMeasurements({
             // </ListItem>
             <ListItem dense>
               <ListItemText
-                primary={row.properties.timeofmeas}
+                primary={row.timeofmeas}
                 secondary={
                   "pejling:" +
-                  row.properties.disttowatertable_m +
+                  row.disttowatertable_m +
                   "\u00a0\u00a0\u00a0\u00a0anv: " +
-                  row.properties.useforcorrection
+                  row.useforcorrection
                 }
               />
 
@@ -133,22 +134,25 @@ export default function MobileMeasurements({
               <ListItemText
                 secondary={row.properties.timeofmeas.substr(0, 10)}
               /> */}
+
               <ListItemSecondaryAction>
                 <IconButton
                   edge='end'
                   onClick={() => {
                     //window.scrollTo({ top: 0, behavior: "smooth" });
-                    handleEdit(row.properties);
+                    handleEdit(row);
                     setTimeout(() => {
                       window.scrollTo({ top: 300, behavior: "smooth" });
                     }, 200);
                   }}
+                  disabled={!canEdit}
                 >
                   <EditIcon />
                 </IconButton>
                 <IconButton
                   edge='end'
-                  onClick={() => onDeleteBtnClick(row.properties.gid)}
+                  onClick={() => onDeleteBtnClick(row.gid)}
+                  disabled={!canEdit}
                 >
                   <DeleteIcon />
                 </IconButton>

@@ -25,7 +25,7 @@ function App() {
     return <UnAuntenticatedApp setUser={setUser} />;
   }
 
-  return <AuthenticatedApp setUser={setUser} />;
+  return <AuthenticatedApp user={user} setUser={setUser} />;
   // const [sensors, setSensors] = useState([]);
   // const [userId, setUserId] = useState(0);
   // const [locationId, setLocationId] = useState(-1);

@@ -23,15 +23,16 @@ function AuthenticatedApp({ setUser }) {
   const [tabValue, setTabValue] = useState(0);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("sessionId");
+    sessionStorage.removeItem("session_id");
     setUser(null);
   };
 
   useEffect(() => {
-    getSensorData().then((res) => {
+    let sessionId = sessionStorage.getItem("session_id");
+    getSensorData(sessionId).then((res) => {
       setSensors(res.data);
     });
-  }, [userId]);
+  }, []);
 
   return (
     <LocationContext.Provider

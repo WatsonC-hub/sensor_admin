@@ -100,6 +100,7 @@ export default function LocationDrawer() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [formToShow, setFormToShow] = useState(null);
   const [currStation, setCurrStation] = useState(null);
   const [stationList, setStationList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(-1);
@@ -115,14 +116,14 @@ export default function LocationDrawer() {
 
   const currentStation = (id, stations) => {
     if (stations.length === 0) return null;
-    return stations.find((s) => s.properties.stationid + "" === id + "");
+    return stations.find((s) => s.stationid + "" === id + "");
     //console.log("current station id =>", id);
     //return stations[0];
   };
 
   const getSelectedItem = () => {
     if (selectedItem !== -1) return selectedItem;
-    return currStation ? currStation.properties.stationid : -1;
+    return currStation ? currStation.stationid : -1;
   };
 
   useEffect(() => {
@@ -132,15 +133,16 @@ export default function LocationDrawer() {
       //if location is set from the map, stationId is not known
       setSelectedItem(parseInt(statId));
     }
-    getStations(locId).then((res) => {
+    getStations(locId, sessionStorage.getItem("session_id")).then((res) => {
+      console.log(res);
       if (!statId) {
-        statId = res.data.features[0].properties.stationid;
+        statId = res.data.res[0].stationid;
         console.log("selecteditem =>", parseInt(statId));
         setSelectedItem(parseInt(statId));
       }
-      setCurrStation(currentStation(statId, res.data.features));
-      setStationList(res.data.features);
-      console.log(res.data.features);
+      setCurrStation(currentStation(statId, res.data.res));
+      setStationList(res.data.res);
+      console.log(res.data.res);
     });
   }, [context.locationId]);
 
@@ -226,8 +228,8 @@ export default function LocationDrawer() {
         <Station
           open={open}
           stationId={getSelectedItem()}
-          showForm={showForm}
-          setShowForm={setShowForm}
+          formToShow={formToShow}
+          setFormToShow={setFormToShow}
         />
       </main>
     </div>

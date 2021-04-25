@@ -18,14 +18,14 @@ export default function StationList(props) {
   const [data, setData] = useState([]);
   const context = useContext(LocationContext);
 
-  const handleClick = (properties) => {
-    context.setLocationId(properties.locid + "_" + properties.stationid);
+  const handleClick = (elem) => {
+    context.setLocationId(elem.locid + "_" + elem.stationid);
     context.setTabValue(0);
   };
 
   useEffect(() => {
-    getTableData().then((res) => {
-      setData(res.data.features);
+    getTableData(sessionStorage.getItem("session_id")).then((res) => {
+      setData(res.data.result);
     });
   }, []);
 
@@ -45,18 +45,18 @@ export default function StationList(props) {
         </Grid>
       </ListItem> */}
       {data &&
-        data.map((r, index) => {
+        data.map((elem, index) => {
           return (
             <ListItem
               key={index}
               button
-              onClick={(e) => handleClick(r.properties)}
+              onClick={(e) => handleClick(elem)}
               dense
             >
               <ListItemText
-                primary={r.properties.stationname}
+                primary={elem.stationname}
                 // secondary={r.properties.parameter}
-                secondary={<StatusText row={r} />}
+                secondary={<StatusText row={elem} />}
               />
             </ListItem>
           );
@@ -75,8 +75,8 @@ function StatusText(props) {
         justifyContent: "space-between",
       }}
     >
-      <Typography>{props.row.properties.parameter}</Typography>
-      <Typography>{getStatusComp(props.row.properties.alarm)}</Typography>
+      <Typography>{props.row.parameter}</Typography>
+      <Typography>{getStatusComp(props.row.alarm)}</Typography>
     </span>
   );
 }

@@ -63,7 +63,12 @@ const ColorButton = withStyles((theme) => ({
   },
 }))(Button);
 
-export default function ActionArea({ showForm, setShowForm, open }) {
+export default function ActionArea({
+  open,
+  formToShow,
+  setFormToShow,
+  canEdit,
+}) {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -97,10 +102,16 @@ export default function ActionArea({ showForm, setShowForm, open }) {
   //     </AppBar>
   //   </>
   // );
-  return <BottomNav showForm={showForm} setShowForm={setShowForm} />;
+  return (
+    <BottomNav
+      formToShow={formToShow}
+      setFormToShow={setFormToShow}
+      canEdit={canEdit}
+    />
+  );
 }
 
-function BottomNav({ showForm, setShowForm, open }) {
+function BottomNav({ open, formToShow, setFormToShow, canEdit }) {
   const [value, setValue] = useState(-1);
   const classes = useStyles();
   const theme = useTheme();
@@ -112,17 +123,33 @@ function BottomNav({ showForm, setShowForm, open }) {
       onChange={(event, newValue) => {
         //setValue(newValue);
         if (newValue === 0) {
-          setShowForm(true);
+          setFormToShow("ADDPEJLING");
           setTimeout(() => {
             window.scrollTo({ top: matches ? 300 : 500, behavior: "smooth" });
           }, 200);
         }
+        if (newValue === 1) {
+          setFormToShow("RET_STAMDATA");
+        }
+
+        if (newValue === 2) {
+          setFormToShow("TAG_BILLEDE");
+        }
       }}
       showLabels
     >
-      <BottomNavigationAction label='Indberet pejling' icon={<AddCircle />} />
-      <BottomNavigationAction label='Ret stamdata' icon={<EditRounded />} />
       <BottomNavigationAction
+        disabled={!canEdit}
+        label='Indberet pejling'
+        icon={<AddCircle />}
+      />
+      <BottomNavigationAction
+        disabled={!canEdit}
+        label='Ret stamdata'
+        icon={<EditRounded />}
+      />
+      <BottomNavigationAction
+        disabled={!canEdit}
         label='Tag billede'
         icon={<PhotoCameraRounded />}
       />

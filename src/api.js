@@ -4,18 +4,32 @@ import { queries, testQueries } from "./config";
 const endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
 const testEndpoint = `https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=`;
 const apiKey = "&key=2a528b3bc396ca7f544b7b6a4bc52bb7";
+const localEndpoint = "http://localhost:8080/extensions/sensor_app/api";
+const extEndpoint =
+  "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
 
 const getData = (key) => axios.get(`${testEndpoint}${queries[key]}`);
 
-const getSensorData = () => getData("getLocations");
+const getSensorData = (sessionId) => {
+  const url = `${localEndpoint}/sensordata?session_id=${sessionId}`;
+  const data = axios.get(url);
+  console.log(data);
+  return data;
+}; //=> getData("getLocations");
 
-const getTableData = () => getData("getTableData"); //axios.get('data.json');
+const getTableData = (sessionId) => {
+  const url = `${localEndpoint}/tabledata?session_id=${sessionId}`;
+  return axios.get(url);
+}; //getData("getTableData"); //axios.get('data.json');
 
 const getSingleElem = () => getData("getSingleElem");
 
-const getStations = (locid) => {
-  const sql = `${testEndpoint}SELECT * from sensor_test.station WHERE locid=${locid}`;
-  return axios.get(sql);
+const getStations = (locid, sessionId) => {
+  //const sql = `${testEndpoint}SELECT * from sensor_test.station WHERE locid=${locid}`;
+  const url = `${localEndpoint}/station/${locid}/${sessionId}`;
+  const data = axios.get(url);
+  //console.log(data);
+  return data;
 };
 
 const getControlData = (stationId) => {
@@ -56,9 +70,10 @@ const deleteMeasurement = (gid) => {
   return axios.get(sql);
 };
 
-const getMeasurements = (stationId) => {
+const getMeasurements = (stationId, sessionId) => {
   const sql = `${testEndpoint}SELECT * FROM sensor_test.waterlevel WHERE stationid=${stationId} ORDER BY timeofmeas DESC`;
-  return axios.get(sql);
+  const url = `${localEndpoint}/station/measurements/${stationId}?session_id=${sessionId}`;
+  return axios.get(url);
 };
 
 export {

@@ -21,6 +21,7 @@ export default function HistoricMeasurements({
   measurements,
   handleEdit,
   handleDelete,
+  canEdit,
 }) {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -61,25 +62,22 @@ export default function HistoricMeasurements({
             {measurements.map((row, index) => (
               <TableRow key={index}>
                 <TableCell component='th' scope='row'>
-                  {row.properties.timeofmeas}
+                  {row.timeofmeas}
                 </TableCell>
+                <TableCell align='right'>{row.disttowatertable_m}</TableCell>
+                <TableCell align='right'>{row.useforcorrection}</TableCell>
+                <TableCell align='right'>{row.comment}</TableCell>
                 <TableCell align='right'>
-                  {row.properties.disttowatertable_m}
-                </TableCell>
-                <TableCell align='right'>
-                  {row.properties.useforcorrection}
-                </TableCell>
-                <TableCell align='right'>{row.properties.comment}</TableCell>
-                <TableCell align='right'>
-                  <Button onClick={() => handleEdit(row.properties)}>
+                  <Button onClick={() => handleEdit(row)} disabled={!canEdit}>
                     Edit
                   </Button>
                 </TableCell>
                 <TableCell align='right'>
                   <Button
                     onClick={() => {
-                      onDeleteBtnClick(row.properties.gid);
+                      onDeleteBtnClick(row.gid);
                     }}
+                    disabled={!canEdit}
                   >
                     Delete
                   </Button>

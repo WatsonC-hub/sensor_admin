@@ -85,8 +85,8 @@ const MinimalSelect = ({
         <MenuItem value={2}>Photoshop</MenuItem>
         <MenuItem value={3}>Framer</MenuItem> */}
         {stationList.map((station, index) => (
-          <MenuItem key={index} value={station.properties.stationid}>
-            {station.properties.stationname}
+          <MenuItem key={index} value={station.stationid}>
+            {station.stationname}
           </MenuItem>
         ))}
       </Select>
