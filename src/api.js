@@ -11,14 +11,14 @@ const extEndpoint =
 const getData = (key) => axios.get(`${testEndpoint}${queries[key]}`);
 
 const getSensorData = (sessionId) => {
-  const url = `${localEndpoint}/sensordata?session_id=${sessionId}`;
+  const url = `${extEndpoint}/sensordata?session_id=${sessionId}`;
   const data = axios.get(url);
   console.log(data);
   return data;
 }; //=> getData("getLocations");
 
 const getTableData = (sessionId) => {
-  const url = `${localEndpoint}/tabledata?session_id=${sessionId}`;
+  const url = `${extEndpoint}/tabledata?session_id=${sessionId}`;
   return axios.get(url);
 }; //getData("getTableData"); //axios.get('data.json');
 
@@ -26,7 +26,7 @@ const getSingleElem = () => getData("getSingleElem");
 
 const getStations = (locid, sessionId) => {
   //const sql = `${testEndpoint}SELECT * from sensor_test.station WHERE locid=${locid}`;
-  const url = `${localEndpoint}/station/${locid}/${sessionId}`;
+  const url = `${extEndpoint}/station/${locid}/${sessionId}`;
   const data = axios.get(url);
   //console.log(data);
   return data;
@@ -72,7 +72,7 @@ const deleteMeasurement = (gid) => {
 
 const getMeasurements = (stationId, sessionId) => {
   const sql = `${testEndpoint}SELECT * FROM sensor_test.waterlevel WHERE stationid=${stationId} ORDER BY timeofmeas DESC`;
-  const url = `${localEndpoint}/station/measurements/${stationId}?session_id=${sessionId}`;
+  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${sessionId}`;
   return axios.get(url);
 };
 

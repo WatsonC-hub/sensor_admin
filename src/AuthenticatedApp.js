@@ -7,6 +7,9 @@ import LocationContext from "./LocationContext";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
+import IconButton from "@material-ui/core/IconButton";
+import { PhotoCameraRounded } from "@material-ui/icons";
+import CaptureDialog from "./pages/station/CaptureDialog";
 
 /*
 Libraries to explore for this app:
@@ -21,6 +24,15 @@ function AuthenticatedApp({ setUser }) {
   const [locationId, setLocationId] = useState(-1);
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleLogout = () => {
     sessionStorage.removeItem("session_id");
@@ -46,8 +58,18 @@ function AuthenticatedApp({ setUser }) {
       }}
     >
       <div className='App'>
+        <CaptureDialog open={open} handleClose={handleClose} />
         <AppBar position='static' style={{ backgroundColor: "lightseagreen" }}>
-          <Toolbar style={{ flexGrow: 1, flexDirection: "row-reverse" }}>
+          <Toolbar
+            style={{
+              flexGrow: 1,
+              // flexDirection: "row-reverse",
+              justifyContent: "space-between",
+            }}
+          >
+            <IconButton color='inherit' onClick={handleClickOpen}>
+              <PhotoCameraRounded />
+            </IconButton>
             <Button color='inherit' onClick={handleLogout}>
               Logout
             </Button>
