@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -28,12 +29,15 @@ const showDetails = (loc) => alert(loc);
 
 const EditButton = ({ locationId }) => {
   const context = useContext(LocationContext);
+  const history = useHistory();
   return (
     <IconButton
       aria-label='Edit'
       onClick={(e) => {
         context.setLocationId(locationId);
         context.setTabValue(0);
+        let [loc, stat] = locationId.split("_");
+        history.push(`location/${loc}/${stat}`);
       }}
     >
       <EditIcon />

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 //import { useMinimalSelectStyles } from '@mui-treasury/styles/select/minimal';
 import minimalSelectStyles from "./minimalSelect.styles";
@@ -6,6 +7,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import LocationContext from "../../LocationContext";
 
 // Original design here: https://github.com/siriwatknp/mui-treasury/issues/540
 const useMinimalSelectStyles = makeStyles(minimalSelectStyles, {
@@ -13,6 +15,7 @@ const useMinimalSelectStyles = makeStyles(minimalSelectStyles, {
 });
 
 const MinimalSelect = ({
+  locid,
   stationList,
   selectedStation,
   setSelectedItem,
@@ -21,15 +24,19 @@ const MinimalSelect = ({
 }) => {
   const [stationId, setStationId] = useState(selectedStation + "");
   const [isOpen, setIsOpen] = useState(true);
+  const context = useContext(LocationContext);
+  const history = useHistory();
 
   const handleChange = (event) => {
-    setStationId(event.target.value);
-    console.log("stationId : ", event.target.value);
-    console.log("stationList :", stationList);
-    const station = currentStation(event.target.value, stationList);
-    console.log("currentStation =>", station);
+    // setStationId(event.target.value);
+    // console.log("stationId : ", event.target.value);
+    // console.log("stationList :", stationList);
+    // const station = currentStation(event.target.value, stationList);
+    // console.log("currentStation =>", station);
     setSelectedItem(event.target.value);
-    setCurrStation(station);
+    // setCurrStation(station);
+    history.replace(`/location/${locid}/${event.target.value}`);
+
     setIsOpen(false);
   };
 

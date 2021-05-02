@@ -72,6 +72,7 @@ export default function Login({ setUser }) {
       })
       .catch((r) => {
         setLoginError(true);
+        console.log("login error => ", r);
       });
     //setToken("random-token");
   };

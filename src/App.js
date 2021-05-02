@@ -21,11 +21,11 @@ function App() {
 
   const [user, setUser] = useState(sessionStorage.getItem("user") || null);
 
-  if (!user) {
-    return <UnAuntenticatedApp setUser={setUser} />;
-  }
+  // if (!user) {
+  //   return <UnAuntenticatedApp setUser={setUser} />;
+  // }
 
-  return <AuthenticatedApp user={user} setUser={setUser} />;
+  return <AuthenticatedApp setUser={setUser} />;
   // const [sensors, setSensors] = useState([]);
   // const [userId, setUserId] = useState(0);
   // const [locationId, setLocationId] = useState(-1);

@@ -32,6 +32,11 @@ const getStations = (locid, sessionId) => {
   return data;
 };
 
+const getLocidFromLabel = (labelId) => {
+  const sql = `${endpoint}SELECT locid FROM sensor.qrid_to_stationid where label_id =${labelId}`;
+  return axios.get(sql);
+};
+
 const getControlData = (stationId) => {
   const sql = `${endpoint}SELECT * FROM sensor.station_pejlinger WHERE stationid=${stationId} ORDER BY timeofmeas`;
   return axios.get(sql);
@@ -87,4 +92,5 @@ export {
   deleteMeasurement,
   getControlData,
   getGraphData,
+  getLocidFromLabel,
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import SearchIcon from "@material-ui/icons/Search";
@@ -17,10 +18,12 @@ import { CircularProgress } from "@material-ui/core";
 export default function StationList(props) {
   const [data, setData] = useState([]);
   const context = useContext(LocationContext);
+  const history = useHistory();
 
   const handleClick = (elem) => {
     context.setLocationId(elem.locid + "_" + elem.stationid);
     context.setTabValue(0);
+    history.push(`/location/${elem.locid}/${elem.stationid}`);
   };
 
   useEffect(() => {

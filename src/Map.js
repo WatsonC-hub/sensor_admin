@@ -1,4 +1,5 @@
 import React, { useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import ReactDOM from "react-dom";
 import L from "leaflet";
@@ -23,6 +24,7 @@ function MarkerText(props) {
 
 function Map(props) {
   const context = useContext(LocationContext);
+  const history = useHistory();
   const mapRef = React.useRef(null);
   const popupsRef = React.useRef([]);
   const onPopupClick = (markerId) => {
@@ -36,6 +38,7 @@ function Map(props) {
     if (_popup && _popup.length > 0) {
       L.DomEvent.on(_popup[0], "click", () => {
         context.setLocationId(element.locid + "_");
+        history.push("location/" + element.locid);
         context.setTabValue(1);
       });
     }

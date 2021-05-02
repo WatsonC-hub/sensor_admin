@@ -22,6 +22,7 @@ import LocationContext from "./LocationContext";
 import Station from "./pages/station";
 import { getStations } from "./api";
 import MinimalSelect from "./pages/Location/MinimalSelect";
+import { useParams, useHistory } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -104,7 +105,14 @@ export default function LocationDrawer() {
   const [currStation, setCurrStation] = useState(null);
   const [stationList, setStationList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(-1);
+  const [selectedLocid, setSelectedLocid] = useState(-1);
   const context = useContext(LocationContext);
+
+  const params = useParams();
+  const history = useHistory();
+  //context.setLocationId(params.locid);
+
+  console.log("useparams => ", params.locid, " statid: ", params.statid);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -127,7 +135,9 @@ export default function LocationDrawer() {
   };
 
   useEffect(() => {
-    let [locId, statId] = context.locationId.split("_");
+    //let [locId, statId] = context.locationId.split("_");
+    let locId = params.locid;
+    let statId = params.statid;
     console.log("loc_stat_id : ", statId, "---", locId);
     if (statId) {
       //if location is set from the map, stationId is not known
@@ -144,6 +154,7 @@ export default function LocationDrawer() {
       setStationList(res.data.res);
       console.log(res.data.res);
     });
+    setSelectedLocid(locId);
   }, [context.locationId]);
 
   return (
@@ -172,11 +183,14 @@ export default function LocationDrawer() {
           <IconButton
             className={classes.backButton}
             color='inherit'
-            onClick={(e) => context.setLocationId(-1)}
+            onClick={
+              (e) => history.push("/") //context.setLocationId(-1)
+            }
           >
             <KeyboardBackspaceIcon />
           </IconButton>
           <MinimalSelect
+            locid={selectedLocid}
             stationList={stationList}
             selectedStation={selectedItem}
             setSelectedItem={setSelectedItem}
