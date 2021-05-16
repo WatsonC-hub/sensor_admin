@@ -1,6 +1,6 @@
 {
   "name": "sensor-app",
-  "homepage": "https://watsonc-hub.github.io/sensor_admin",
+  "homepage": "https://watsonc-hub.github.io/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

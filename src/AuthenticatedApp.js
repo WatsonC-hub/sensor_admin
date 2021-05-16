@@ -70,13 +70,13 @@ function AuthenticatedApp({ setUser }) {
           <Toolbar
             style={{
               flexGrow: 1,
-              // flexDirection: "row-reverse",
+              flexDirection: "row-reverse",
               justifyContent: "space-between",
             }}
           >
-            <IconButton color='inherit' onClick={handleClickOpen}>
+            {/* <IconButton color='inherit' onClick={handleClickOpen}>
               <PhotoCameraRounded />
-            </IconButton>
+            </IconButton> */}
             <Button color='inherit' onClick={handleLogout}>
               Logout
             </Button>

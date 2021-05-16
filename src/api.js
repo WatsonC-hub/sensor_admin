@@ -4,7 +4,7 @@ import { queries, testQueries } from "./config";
 const endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
 const testEndpoint = `https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=`;
 const apiKey = "&key=2a528b3bc396ca7f544b7b6a4bc52bb7";
-const localEndpoint = "http://localhost:8080/extensions/sensor_app/api";
+const localEndpoint = "http://localhost:8080/extensions/sensor_api/api";
 const extEndpoint =
   "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
 
@@ -15,20 +15,18 @@ const getSensorData = (sessionId) => {
   const data = axios.get(url);
   console.log(data);
   return data;
-}; //=> getData("getLocations");
+};
 
 const getTableData = (sessionId) => {
   const url = `${extEndpoint}/tabledata?session_id=${sessionId}`;
   return axios.get(url);
-}; //getData("getTableData"); //axios.get('data.json');
+};
 
 const getSingleElem = () => getData("getSingleElem");
 
 const getStations = (locid, sessionId) => {
-  //const sql = `${testEndpoint}SELECT * from sensor_test.station WHERE locid=${locid}`;
   const url = `${extEndpoint}/station/${locid}/${sessionId}`;
   const data = axios.get(url);
-  //console.log(data);
   return data;
 };
 
@@ -47,32 +45,24 @@ const getGraphData = (stationId) => {
   return axios.get(sql);
 };
 
-const insertMeasurement = (stationId, formData) => {
-  const sql = `${testEndpoint}INSERT INTO sensor_test.waterlevel (stationid,timeofmeas,disttowatertable_m,useforcorrection,comment)
-                      VALUES(${stationId},'${formData.timeofmeas}',${formData.disttowatertable_m},${formData.useforcorrection},'${formData.comment}')${apiKey}
-  `;
-  return axios.get(sql);
+const insertMeasurement = (sessionId, stationId, formData) => {
+  formData["timeofmeas"] = formData["timeofmeas"].split("+")[0];
+  formData["stationid"] = stationId;
+  const url = `${extEndpoint}/station/measurements/${stationId}/10?session_id=${sessionId}`;
+  return axios.post(url, formData);
 };
 
-const updateMeasurement = (stationId, formData) => {
-  const columns = Object.keys(formData);
-  const gid = formData.gid;
-  const updateString = columns
-    .filter((k) => k !== "gid" || k !== "stationid")
-    .map((k) => {
-      if (k === "timeofmeas") return `${k}='${formData[k].split("+")[0]}'`;
-      return `${k}='${formData[k]}'`;
-    })
-    .join(",");
-
-  const sql = `${testEndpoint}UPDATE sensor_test.waterlevel SET ${updateString} WHERE gid = ${gid}${apiKey}`;
-  return axios.get(sql);
+const updateMeasurement = (sessionId, stationId, formData) => {
+  const gid = formData["gid"];
+  formData["timeofmeas"] = formData["timeofmeas"].split("+")[0];
+  const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${sessionId}`;
+  return axios.put(url, formData);
 };
 
-const deleteMeasurement = (gid) => {
+const deleteMeasurement = (sessionId, stationId, gid) => {
   if (!gid) return;
-  const sql = `${testEndpoint}DELETE FROM sensor_test.waterlevel WHERE gid=${gid}${apiKey}`;
-  return axios.get(sql);
+  const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${sessionId}`;
+  return axios.delete(url);
 };
 
 const getMeasurements = (stationId, sessionId) => {

@@ -83,10 +83,12 @@ export default function Station({
   const handleSubmit = (stationId) => {
     setFormToShow(null);
     const method = isPut() ? updateMeasurement : insertMeasurement;
-    method(stationId, formData).then((res) => {
-      resetFormData();
-      setUpdated(new Date());
-    });
+    method(sessionStorage.getItem("session_id"), stationId, formData).then(
+      (res) => {
+        resetFormData();
+        setUpdated(new Date());
+      }
+    );
   };
 
   const handleEdit = (data) => {
@@ -97,7 +99,11 @@ export default function Station({
   };
 
   const handleDelete = (gid) => {
-    deleteMeasurement(gid).then((res) => {
+    deleteMeasurement(
+      sessionStorage.getItem("session_id"),
+      stationId,
+      gid
+    ).then((res) => {
       resetFormData();
       setUpdated(new Date());
     });
