@@ -63,8 +63,9 @@ export default function Login({ setUser }) {
     loginUser(userName, password)
       .then((res) => {
         if (res.data.success) {
-          sessionStorage.setItem("user", res.data.data);
+          sessionStorage.setItem("user", res.data.data.screen_name);
           sessionStorage.setItem("session_id", res.data.data.session_id);
+          console.log("user : ", res.data.data);
           setUser(res.data.data);
           setLoginError(false);
         }

@@ -83,7 +83,9 @@ export default function Station({
   const handleSubmit = (stationId) => {
     setFormToShow(null);
     const method = isPut() ? updateMeasurement : insertMeasurement;
-    method(sessionStorage.getItem("session_id"), stationId, formData).then(
+    const userId = sessionStorage.getItem("user");
+    const payload = { ...formData, userid: userId };
+    method(sessionStorage.getItem("session_id"), stationId, payload).then(
       (res) => {
         resetFormData();
         setUpdated(new Date());
