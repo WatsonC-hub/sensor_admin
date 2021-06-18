@@ -5,60 +5,35 @@ import Plot from "react-plotly.js";
 import { getGraphData, getControlData } from "../../api";
 
 const selectorOptions = {
-  buttons: [
-    {
-      step: "day",
-      stepmode: "backward",
-      count: 1,
-      label: "1 dag",
-    },
-    {
-      step: "day",
-      stepmode: "backward",
-      count: 7,
-      label: "1 uge",
-    },
-    {
-      step: "month",
-      stepmode: "backward",
-      count: 1,
-      label: "1 måned",
-    },
-    {
-      step: "year",
-      stepmode: "backward",
-      count: 1,
-      label: "1 år",
-    },
-  ],
+    buttons: [ {
+        step: 'day',
+        stepmode: 'backward',
+        count: 7,
+        label: '1 uge'
+    },  {
+        step: 'year',
+        stepmode: 'backward',
+        count: 1,
+        label: '1 år'
+    },{
+	step: 'all'
+	}]
 };
-
 const layout2 = {
   autosize: true,
   xaxis: {
     rangeselector: selectorOptions,
     autorange: true,
     type: "date",
-    domain: [0, 0.97],
   },
   yaxis: {
     title: {
-      text: "Vandstand, kote [m]",
+      text: "Sensor output",
       font: { size: 14 },
     },
+    	  	  showline: true
   },
-  yaxis2: {
-    showgrid: false,
-    overlaying: "y1",
-    side: "right",
-    fixedrange: true,
-    range: [0, 15],
-    position: 0.97,
-    title: {
-      text: "Nedbør [mm]",
-      font: { size: 14 },
-    },
-  },
+
 
   showlegend: true,
   legend: {
@@ -67,14 +42,14 @@ const layout2 = {
     orientation: "h",
   },
   margin: {
-    l: 70,
-    r: 20,
-    b: 50,
+    l: 60,
+    r: 0,
+    b: 30,
     t: 10,
     pad: 4,
   },
   font: {
-    size: 14,
+    size: 12,
     color: "rgb(0, 0, 0)",
   },
 };
@@ -99,12 +74,12 @@ function PlotGraph({ graphData, controlData }) {
           x: xData,
           y: yData,
           name: name,
-          type: "scattergl",
-          line: { width: 1 },
-          mode: "lines+markers",
+          type: "scatter",
+          line: { width: 2 },
+          mode: "lines",
           marker: { symbol: "100", size: "4" },
           marker: {
-            color: "rgb(44,160,44)",
+            color: "hex#177FC1",
           },
         },
         {
@@ -115,9 +90,9 @@ function PlotGraph({ graphData, controlData }) {
           mode: "markers",
           marker: {
             symbol: "200",
-            size: "12",
-            color: "hex#FF0000",
-            line: { color: "rgb(0,0,255)", width: 1 },
+            size: "8",
+            color: "hex#177FC1",
+            line: { color: "rgb(0,0,0)", width: 1 },
           },
         },
       ]}
