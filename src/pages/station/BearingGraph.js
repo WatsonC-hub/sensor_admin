@@ -97,7 +97,9 @@ function PlotGraph({ graphData, controlData }) {
         },
       ]}
       layout={layout2}
-      config={{ responsive: true }}
+      config={{ responsive: true, modeBarButtonsToRemove: 
+	      ['pan2d','select2d','lasso2d','autoScale2d','hoverCompareCartesian','hoverClosestCartesian','toggleSpikelines'],
+		      displaylogo: false }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
     />
