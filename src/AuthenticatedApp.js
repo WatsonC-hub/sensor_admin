@@ -65,8 +65,8 @@ function AuthenticatedApp({ setUser }) {
       }}
     >
       <div className='App'>
-        <CaptureDialog open={open} handleClose={handleClose} />
-        <AppBar position='static' style={{ backgroundColor: "lightseagreen" }}>
+        {/* <CaptureDialog open={open} handleClose={handleClose} /> */}
+        <AppBar position='sticky' style={{ backgroundColor: "lightseagreen" }}>
           <Toolbar
             style={{
               flexGrow: 1,
