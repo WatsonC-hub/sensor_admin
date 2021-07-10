@@ -66,106 +66,106 @@ export default function Login({ setUser }) {
     //setToken("random-token");
   };
 
-  // return (
-  //   <form className={classes.form} onSubmit={handleSubmit} noValidate>
-  //     <TextField
-  //       variant='outlined'
-  //       margin='normal'
-  //       required
-  //       fullWidth
-  //       id='email'
-  //       label='Email'
-  //       name='email'
-  //       autoComplete='email'
-  //       autoFocus
-  //       onChange={(e) => setUserName(e.target.value)}
-  //       error={loginError}
-  //     />
-  //     <TextField
-  //       variant='outlined'
-  //       margin='normal'
-  //       required
-  //       fullWidth
-  //       name='password'
-  //       label='Password'
-  //       type='password'
-  //       id='password'
-  //       autoComplete='current-password'
-  //       onChange={(e) => setPassword(e.target.value)}
-  //       error={loginError}
-  //       helperText={loginError ? "brugernavn eller password er forkert." : ""}
-  //     />
-  //     <Button
-  //       type='submit'
-  //       fullWidth
-  //       variant='contained'
-  //       style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
-  //       className={classes.submit}
-  //       disabled={userName === "" || password === ""}
-  //     >
-  //       Log på
-  //     </Button>
-  //   </form>
-  // );
-  // return (
-  //   <div>
-  //     <Container component='main' maxWidth='xs'>
-  //       <CssBaseline />
-  //       <div className={classes.paper}>
-  //         <div
-  //           style={{
-  //             backgroundColor: "rgb(0,150,136)",
-  //             width: "100%",
-  //             textAlign: "center",
-  //           }}
-  //         >
-  //           {/* <CalypsoLogo /> */}
-  //           <img src={logo} alt='logo' />
-  //         </div>
-  //         <form className={classes.form} onSubmit={handleSubmit} noValidate>
-  //           <TextField
-  //             variant='outlined'
-  //             margin='normal'
-  //             required
-  //             fullWidth
-  //             id='email'
-  //             label='Email'
-  //             name='email'
-  //             autoComplete='email'
-  //             autoFocus
-  //             onChange={(e) => setUserName(e.target.value)}
-  //             error={loginError}
-  //           />
-  //           <TextField
-  //             variant='outlined'
-  //             margin='normal'
-  //             required
-  //             fullWidth
-  //             name='password'
-  //             label='Password'
-  //             type='password'
-  //             id='password'
-  //             autoComplete='current-password'
-  //             onChange={(e) => setPassword(e.target.value)}
-  //             error={loginError}
-  //             helperText={
-  //               loginError ? "brugernavn eller password er forkert." : ""
-  //             }
-  //           />
-  //           <Button
-  //             type='submit'
-  //             fullWidth
-  //             variant='contained'
-  //             style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
-  //             className={classes.submit}
-  //             disabled={userName === "" || password === ""}
-  //           >
-  //             Log på
-  //           </Button>
-  //         </form>
-  //       </div>
-  //     </Container>
-  //   </div>
-  // );
+  return (
+    <form className={classes.form} onSubmit={handleSubmit} noValidate>
+      <TextField
+        variant='outlined'
+        margin='normal'
+        required
+        fullWidth
+        id='email'
+        label='Email'
+        name='email'
+        autoComplete='email'
+        autoFocus
+        onChange={(e) => setUserName(e.target.value)}
+        error={loginError}
+      />
+      <TextField
+        variant='outlined'
+        margin='normal'
+        required
+        fullWidth
+        name='password'
+        label='Password'
+        type='password'
+        id='password'
+        autoComplete='current-password'
+        onChange={(e) => setPassword(e.target.value)}
+        error={loginError}
+        helperText={loginError ? "brugernavn eller password er forkert." : ""}
+      />
+      <Button
+        type='submit'
+        fullWidth
+        variant='contained'
+        style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
+        className={classes.submit}
+        disabled={userName === "" || password === ""}
+      >
+        Log på
+      </Button>
+    </form>
+  );
+  return (
+    <div>
+      <Container component='main' maxWidth='xs'>
+        <CssBaseline />
+        <div className={classes.paper}>
+          <div
+            style={{
+              backgroundColor: "rgb(0,150,136)",
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            {/* <CalypsoLogo /> */}
+            <img src={logo} alt='logo' />
+          </div>
+          <form className={classes.form} onSubmit={handleSubmit} noValidate>
+            <TextField
+              variant='outlined'
+              margin='normal'
+              required
+              fullWidth
+              id='email'
+              label='Email'
+              name='email'
+              autoComplete='email'
+              autoFocus
+              onChange={(e) => setUserName(e.target.value)}
+              error={loginError}
+            />
+            <TextField
+              variant='outlined'
+              margin='normal'
+              required
+              fullWidth
+              name='password'
+              label='Password'
+              type='password'
+              id='password'
+              autoComplete='current-password'
+              onChange={(e) => setPassword(e.target.value)}
+              error={loginError}
+              helperText={
+                loginError ? "brugernavn eller password er forkert." : ""
+              }
+            />
+            <Button
+              type='submit'
+              fullWidth
+              variant='contained'
+              style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
+              className={classes.submit}
+              disabled={userName === "" || password === ""}
+            >
+              Log på
+            </Button>
+          </form>
+        </div>
+      </Container>
+    </div>
+  );
   return <p>I can log in</p>;
 }
