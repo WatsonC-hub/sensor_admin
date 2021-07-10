@@ -19,6 +19,7 @@ Libraries to explore for this app:
 - react-query => for http requests instead of fetch, 
 - hapi/joy => schema validation (joy.dev)
 - react/route or reach-router
+- test azure web apps
 */
 
 function AuthenticatedApp({ setUser }) {
