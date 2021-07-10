@@ -7,20 +7,8 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { ReactComponent as CalypsoLogo } from "../../calypso.svg";
+import logo from "../../calypso.svg";
 import axios from "axios";
-
-function Copyright() {
-  return (
-    <Typography variant='body2' color='textSecondary' align='center'>
-      {"Copyright © "}
-      <Link color='inherit' href='https://material-ui.com/'>
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function loginUser(user, password) {
+const loginUser = (user, password) => {
   let sessionUrl = "https://watsonc-test.admin.gc2.io/api/v2/session/start";
   const loginData = {
     user,
@@ -50,7 +38,7 @@ function loginUser(user, password) {
     schema: null,
   };
   return axios.post(sessionUrl, loginData);
-}
+};
 
 export default function Login({ setUser }) {
   const classes = useStyles();
@@ -78,61 +66,105 @@ export default function Login({ setUser }) {
     //setToken("random-token");
   };
 
+  // return (
+  //   <form className={classes.form} onSubmit={handleSubmit} noValidate>
+  //     <TextField
+  //       variant='outlined'
+  //       margin='normal'
+  //       required
+  //       fullWidth
+  //       id='email'
+  //       label='Email'
+  //       name='email'
+  //       autoComplete='email'
+  //       autoFocus
+  //       onChange={(e) => setUserName(e.target.value)}
+  //       error={loginError}
+  //     />
+  //     <TextField
+  //       variant='outlined'
+  //       margin='normal'
+  //       required
+  //       fullWidth
+  //       name='password'
+  //       label='Password'
+  //       type='password'
+  //       id='password'
+  //       autoComplete='current-password'
+  //       onChange={(e) => setPassword(e.target.value)}
+  //       error={loginError}
+  //       helperText={loginError ? "brugernavn eller password er forkert." : ""}
+  //     />
+  //     <Button
+  //       type='submit'
+  //       fullWidth
+  //       variant='contained'
+  //       style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
+  //       className={classes.submit}
+  //       disabled={userName === "" || password === ""}
+  //     >
+  //       Log på
+  //     </Button>
+  //   </form>
+  // );
   return (
-    <Container component='main' maxWidth='xs'>
-      <CssBaseline />
-      <div className={classes.paper}>
-        <div
-          style={{
-            backgroundColor: "rgb(0,150,136)",
-            width: "100%",
-            textAlign: "center",
-          }}
-        >
-          <CalypsoLogo />
-        </div>
-        <form className={classes.form} onSubmit={handleSubmit} noValidate>
-          <TextField
-            variant='outlined'
-            margin='normal'
-            required
-            fullWidth
-            id='email'
-            label='Email'
-            name='email'
-            autoComplete='email'
-            autoFocus
-            onChange={(e) => setUserName(e.target.value)}
-            error={loginError}
-          />
-          <TextField
-            variant='outlined'
-            margin='normal'
-            required
-            fullWidth
-            name='password'
-            label='Password'
-            type='password'
-            id='password'
-            autoComplete='current-password'
-            onChange={(e) => setPassword(e.target.value)}
-            error={loginError}
-            helperText={
-              loginError ? "brugernavn eller password er forkert." : ""
-            }
-          />
-          <Button
-            type='submit'
-            fullWidth
-            variant='contained'
-            style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
-            className={classes.submit}
-            disabled={userName === "" || password === ""}
+    <div>
+      <Container component='main' maxWidth='xs'>
+        <CssBaseline />
+        <div className={classes.paper}>
+          <div
+            style={{
+              backgroundColor: "rgb(0,150,136)",
+              width: "100%",
+              textAlign: "center",
+            }}
           >
-            Log på
-          </Button>
-        </form>
-      </div>
-    </Container>
+            {/* <CalypsoLogo /> */}
+            <img src={logo} alt='logo' />
+          </div>
+          <form className={classes.form} onSubmit={handleSubmit} noValidate>
+            <TextField
+              variant='outlined'
+              margin='normal'
+              required
+              fullWidth
+              id='email'
+              label='Email'
+              name='email'
+              autoComplete='email'
+              autoFocus
+              onChange={(e) => setUserName(e.target.value)}
+              error={loginError}
+            />
+            <TextField
+              variant='outlined'
+              margin='normal'
+              required
+              fullWidth
+              name='password'
+              label='Password'
+              type='password'
+              id='password'
+              autoComplete='current-password'
+              onChange={(e) => setPassword(e.target.value)}
+              error={loginError}
+              helperText={
+                loginError ? "brugernavn eller password er forkert." : ""
+              }
+            />
+            <Button
+              type='submit'
+              fullWidth
+              variant='contained'
+              style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
+              className={classes.submit}
+              disabled={userName === "" || password === ""}
+            >
+              Log på
+            </Button>
+          </form>
+        </div>
+      </Container>
+    </div>
   );
 }

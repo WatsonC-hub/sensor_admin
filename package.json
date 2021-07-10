@@ -9,7 +9,6 @@
     "@devexpress/dx-react-grid": "^2.7.3",
     "@devexpress/dx-react-grid-material-ui": "^2.7.3",
     "@material-ui/core": "^4.11.0",
-    "@material-ui/data-grid": "^4.0.0-alpha.10",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/pickers": "^3.2.10",
     "@testing-library/jest-dom": "^5.11.6",
@@ -27,7 +26,7 @@
     "react-plotly.js": "^2.5.1",
     "react-qr-scanner": "^1.0.0-alpha.7",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.4",
+    "react-scripts": "^1.1.5",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -45,11 +44,7 @@
     ]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

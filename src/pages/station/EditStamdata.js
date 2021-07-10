@@ -273,7 +273,7 @@ function EditStamdata() {
 
 export default function RestStamdata(props) {
   return (
-    <>
+    <div>
       <Typography variant='h6' component='h3'>
         Stamdata
       </Typography>
@@ -308,6 +308,6 @@ export default function RestStamdata(props) {
           </Button>
         </Grid>
       </Grid>
-    </>
+    </div>
   );
 }

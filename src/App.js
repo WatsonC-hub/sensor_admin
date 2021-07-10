@@ -14,6 +14,13 @@ Libraries to explore for this app:
 - react/route or reach-router
 */
 
+/*
+ *">0.2%",
+      "not dead",
+      "not op_mini all" 
+ * @returns 
+ */
+
 function App() {
   const [token, setToken] = useState(
     sessionStorage.getItem("sessionId") || null

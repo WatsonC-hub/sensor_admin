@@ -17,6 +17,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteAlert from "./DeleteAlert";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import LocationContext from "../../LocationContext";
+import { Fragment } from "react";
 
 const useStyles = makeStyles({
   root: {
@@ -54,7 +55,7 @@ export default function MobileMeasurements({
   };
 
   return (
-    <>
+    <Fragment>
       <DeleteAlert
         measurementId={measurementId}
         dialogOpen={dialogOpen}
@@ -64,7 +65,7 @@ export default function MobileMeasurements({
       <Typography gutterBottom variant='h5' component='h2'>
         Tidligere pejlinger
       </Typography>
-      <>
+      <Fragment>
         <List>
           {measurements.map((row, index) => (
             //   <Card className={classes.root} variant='outlined'>
@@ -160,7 +161,7 @@ export default function MobileMeasurements({
             </ListItem>
           ))}
         </List>
-      </>
-    </>
+      </Fragment>
+    </Fragment>
   );
 }

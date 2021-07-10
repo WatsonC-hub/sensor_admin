@@ -10,6 +10,7 @@ import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteAlert from "./DeleteAlert";
 import LocationContext from "../../LocationContext";
+import { Fragment } from "react";
 
 const useStyles = makeStyles({
   table: {
@@ -38,7 +39,7 @@ export default function HistoricMeasurements({
   };
 
   return (
-    <>
+    <Fragment>
       <DeleteAlert
         measurementId={measurementId}
         dialogOpen={dialogOpen}
@@ -87,6 +88,6 @@ export default function HistoricMeasurements({
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+    </Fragment>
   );
 }

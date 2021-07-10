@@ -127,47 +127,47 @@ export default function Station({
   };
 
   return (
-    <>
-      <div>
-        {showGraph && <BearingGraph stationId={stationId} />}
-        <Grid item xs={12}></Grid>
-        <Grid item xs={12}></Grid>
-        {formToShow === "ADDPEJLING" && (
-          <PejlingForm
-            stationId={stationId}
-            setShowForm={setShowForm}
-            formData={formData}
-            changeFormData={changeFormData}
-            handleSubmit={handleSubmit}
-            resetFormData={resetFormData}
-            canEdit={canEdit}
-          />
-        )}
-        {formToShow === "RET_STAMDATA" && (
-          <EditStamdata setFormToShow={setFormToShow} />
-        )}
-        {formToShow === "TAG_BILLEDE" && (
-          <CaptureBearing setFormToShow={setFormToShow} />
-        )}
-        {showMeasurements && (
-          <PejlingMeasurements
-            measurements={measurements}
-            updated={updated}
-            stationId={stationId}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            canEdit={canEdit}
-          />
-        )}
-        <Toolbar />
-        <ActionArea
-          open={open}
+    // <>
+    <div>
+      {showGraph && <BearingGraph stationId={stationId} />}
+      <Grid item xs={12}></Grid>
+      <Grid item xs={12}></Grid>
+      {formToShow === "ADDPEJLING" && (
+        <PejlingForm
           stationId={stationId}
-          formToShow={formToShow}
-          setFormToShow={setFormToShow}
+          setShowForm={setShowForm}
+          formData={formData}
+          changeFormData={changeFormData}
+          handleSubmit={handleSubmit}
+          resetFormData={resetFormData}
           canEdit={canEdit}
         />
-      </div>
-    </>
+      )}
+      {formToShow === "RET_STAMDATA" && (
+        <EditStamdata setFormToShow={setFormToShow} />
+      )}
+      {formToShow === "TAG_BILLEDE" && (
+        <CaptureBearing setFormToShow={setFormToShow} />
+      )}
+      {showMeasurements && (
+        <PejlingMeasurements
+          measurements={measurements}
+          updated={updated}
+          stationId={stationId}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          canEdit={canEdit}
+        />
+      )}
+      <Toolbar />
+      <ActionArea
+        open={open}
+        stationId={stationId}
+        formToShow={formToShow}
+        setFormToShow={setFormToShow}
+        canEdit={canEdit}
+      />
+    </div>
+    // </>
   );
 }
