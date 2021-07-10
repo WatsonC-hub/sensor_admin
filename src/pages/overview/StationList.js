@@ -35,9 +35,9 @@ export default function StationList(props) {
   if (!data) return <CircularProgress />;
 
   return (
-    <Paper>
-      <List style={{ height: "700px", overflow: "scroll" }}>
-        {/* <ListItem>
+    // <Paper> style={{ height: "700px", overflow: "scroll" }}
+    <List>
+      {/* <ListItem>
         <Grid container spacing={1} alignItems='flex-end'>
           <Grid item>
             <SearchIcon />
@@ -47,25 +47,25 @@ export default function StationList(props) {
           </Grid>
         </Grid>
       </ListItem> */}
-        {data &&
-          data.map((elem, index) => {
-            return (
-              <ListItem
-                key={index}
-                button
-                onClick={(e) => handleClick(elem)}
-                dense
-              >
-                <ListItemText
-                  primary={elem.stationname}
-                  // secondary={r.properties.parameter}
-                  secondary={<StatusText row={elem} />}
-                />
-              </ListItem>
-            );
-          })}
-      </List>
-    </Paper>
+      {data &&
+        data.map((elem, index) => {
+          return (
+            <ListItem
+              key={index}
+              button
+              onClick={(e) => handleClick(elem)}
+              dense
+            >
+              <ListItemText
+                primary={elem.stationname}
+                // secondary={r.properties.parameter}
+                secondary={<StatusText row={elem} />}
+              />
+            </ListItem>
+          );
+        })}
+    </List>
+    // </Paper>
   );
 }
 

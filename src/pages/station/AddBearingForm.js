@@ -102,6 +102,7 @@ export default function AddBearingForm({ dialogOpen, handleDialogClose }) {
                   inputVariant='outlined'
                   format='yyyy-MM-dd'
                   margin='normal'
+                  readOnly={true}
                   id='date-picker-inline'
                   label={
                     <Typography variant='h6' component='h3'>
@@ -109,7 +110,7 @@ export default function AddBearingForm({ dialogOpen, handleDialogClose }) {
                     </Typography>
                   }
                   value={selectedDate}
-                  onChange={handleDateChange}
+                  onChange={(date) => handleDateChange(date)}
                   KeyboardButtonProps={{
                     "aria-label": "change date",
                   }}
@@ -120,13 +121,14 @@ export default function AddBearingForm({ dialogOpen, handleDialogClose }) {
                   inputVariant='outlined'
                   margin='normal'
                   id='overnat_start_tid'
+                  readOnly={true}
                   label={
                     <Typography variant='h6' component='h3'>
                       Tidspunkt
                     </Typography>
                   }
                   value={selectedDate}
-                  onChange={handleDateChange}
+                  onChange={(date) => handleDateChange(date)}
                   KeyboardButtonProps={{
                     "aria-label": "change time",
                   }}

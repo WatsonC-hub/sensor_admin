@@ -5,19 +5,23 @@ import Plot from "react-plotly.js";
 import { getGraphData, getControlData } from "../../api";
 
 const selectorOptions = {
-    buttons: [ {
-        step: 'day',
-        stepmode: 'backward',
-        count: 7,
-        label: '1 uge'
-    },  {
-        step: 'year',
-        stepmode: 'backward',
-        count: 1,
-        label: '1 år'
-    },{
-	step: 'all'
-	}]
+  buttons: [
+    {
+      step: "day",
+      stepmode: "backward",
+      count: 7,
+      label: "1 uge",
+    },
+    {
+      step: "year",
+      stepmode: "backward",
+      count: 1,
+      label: "1 år",
+    },
+    {
+      step: "all",
+    },
+  ],
 };
 const layout2 = {
   autosize: true,
@@ -29,11 +33,10 @@ const layout2 = {
   yaxis: {
     title: {
       text: "Sensor output",
-      font: { size: 14 },
+      font: { size: 12 },
     },
-    	  	  showline: true
+    showline: true,
   },
-
 
   showlegend: true,
   legend: {
@@ -68,6 +71,7 @@ function PlotGraph({ graphData, controlData }) {
   }, [graphData]);
 
   return (
+    // <div>
     <Plot
       data={[
         {
@@ -97,12 +101,23 @@ function PlotGraph({ graphData, controlData }) {
         },
       ]}
       layout={layout2}
-      config={{ responsive: true, modeBarButtonsToRemove: 
-	      ['pan2d','select2d','lasso2d','autoScale2d','hoverCompareCartesian','hoverClosestCartesian','toggleSpikelines'],
-		      displaylogo: false }}
+      config={{
+        responsive: true,
+        modeBarButtonsToRemove: [
+          "pan2d",
+          "select2d",
+          "lasso2d",
+          "autoScale2d",
+          "hoverCompareCartesian",
+          "hoverClosestCartesian",
+          "toggleSpikelines",
+        ],
+        displaylogo: false,
+      }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
     />
+    // </div>
   );
 }
 
@@ -133,7 +148,9 @@ export default function BearingGraph({ stationId }) {
       style={{
         width: "auto",
         height: matches ? "300px" : "500px",
-        marginBottom: "20px",
+        marginBottom: "10px",
+        marginTop: "-10px",
+        paddingTop: "5px",
         border: "2px solid gray",
       }}
     >

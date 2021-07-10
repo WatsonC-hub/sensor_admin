@@ -18,6 +18,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
 import CaptureBearing from "./CaptureBearing";
+import { format } from "date-fns";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -63,6 +64,18 @@ export default function Station({
     });
   };
 
+  // const formatedTimestamp = (d) => {
+  //   //let _date = moment(d, "yyyy-MM-dd");
+  //   if (!isValid(d)) {
+  //     //console.log("date not valid: ", d);
+  //     return;
+  //   }
+  //   //console.log("date is valid");
+  //   const date = d.toISOString().split("T")[0];
+  //   const time = d.toTimeString().split(" ")[0];
+  //   return `${date} ${time}`;
+  // };
+
   const resetFormData = () => {
     setFormData({
       gid: -1,
@@ -85,6 +98,7 @@ export default function Station({
     const method = isPut() ? updateMeasurement : insertMeasurement;
     const userId = sessionStorage.getItem("user");
     const payload = { ...formData, userid: userId };
+    payload.timeofmeas = formatedTimestamp(payload.timeofmeas);
     method(sessionStorage.getItem("session_id"), stationId, payload).then(
       (res) => {
         resetFormData();
@@ -94,6 +108,7 @@ export default function Station({
   };
 
   const handleEdit = (data) => {
+    data.timeofmeas = data.timeofmeas.replace(" ", "T").substr(0, 19);
     setFormData(data); // Fill form data on Edit
     setFormToShow("ADDPEJLING"); // update to use state machine
     setUpdated(new Date());

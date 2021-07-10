@@ -14,8 +14,8 @@ import {
   FormControl,
   FormLabel,
 } from "@material-ui/core";
-import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
+import { isValid, format } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import {
   MuiPickersUtilsProvider,
@@ -31,20 +31,18 @@ export default function PejlingForm({
   handleSubmit,
   resetFormData,
 }) {
+  const [currDate, setCurrDate] = useState(formData.timeofmeas);
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
 
-  const formatedTimestamp = (d) => {
-    const date = d.toISOString().split("T")[0];
-    const time = d.toTimeString().split(" ")[0];
-    return `${date} ${time}`;
-  };
-
   const handleDateChange = (date) => {
-    const _date = formatedTimestamp(date);
-    //alert(_date);
-    changeFormData("timeofmeas", _date);
+    setCurrDate(date);
+    //only change submit data when date is valid
+    if (isValid(date)) {
+      console.log("date is valid again: ", date);
+      changeFormData("timeofmeas", date);
+    }
   };
 
   const handleCommentChange = (e) => {
@@ -53,10 +51,6 @@ export default function PejlingForm({
 
   const handleDistanceChange = (e) => {
     changeFormData("disttowatertable_m", e.target.value);
-  };
-
-  const handleSave = () => {
-    setShowForm(false);
   };
 
   return (
@@ -80,8 +74,9 @@ export default function PejlingForm({
                     Dato
                   </Typography>
                 }
-                value={formData.timeofmeas}
-                onChange={handleDateChange}
+                InputLabelProps={{ shrink: true }}
+                value={new Date(currDate)}
+                onChange={(date) => handleDateChange(date)}
                 KeyboardButtonProps={{
                   "aria-label": "change date",
                 }}
@@ -90,6 +85,7 @@ export default function PejlingForm({
             </Grid>
             <Grid item xs={12} sm={6}>
               <KeyboardTimePicker
+                placeholder={currDate}
                 inputVariant='outlined'
                 margin='normal'
                 id='overnat_start_tid'
@@ -98,8 +94,9 @@ export default function PejlingForm({
                     Tidspunkt
                   </Typography>
                 }
-                value={formData.timeofmeas}
-                onChange={handleDateChange}
+                InputLabelProps={{ shrink: true }}
+                value={new Date(currDate)}
+                onChange={(date) => handleDateChange(date)}
                 KeyboardButtonProps={{
                   "aria-label": "change time",
                 }}
