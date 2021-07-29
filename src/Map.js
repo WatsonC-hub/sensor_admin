@@ -73,6 +73,7 @@ function Map(props) {
       center: [55.876823, 8.961644],
       zoom: 8,
       layers: [toposkaermkortwmts, kommuneWms],
+      tap:false
     });
   };
 
