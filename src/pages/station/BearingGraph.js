@@ -5,6 +5,8 @@ import Plot from "react-plotly.js";
 import { getGraphData, getControlData } from "../../api";
 
 const selectorOptions = {
+  x:0.5,
+  //y:0.4,
   buttons: [
     {
       step: "day",
@@ -57,6 +59,54 @@ const layout2 = {
   },
 };
 
+const layout3 = {
+  modebar:{
+    orientation:'v'
+  },
+  //position
+  autosize: true,
+  xaxis: {
+    rangeselector: selectorOptions,
+    autorange: true,
+    type: "date",
+    margin:{
+      t:0
+    }
+  },
+  title: {
+    text: "Sensor output",
+    font: { size: 14 },
+    xref: 'paper',
+    y: 1.03,
+    x:0,
+    margin:{
+     // b:10
+    }
+  },
+  yaxis: {
+    showline: true,
+    y:1
+  },
+
+  showlegend: true,
+  legend: {
+    x: 0,
+    y: -0.15,
+    orientation: "h",
+  },
+  margin: {
+    l: 30,
+    r: 30,
+    b: 30,
+    t: 10,
+    pad: 4,
+  },
+  font: {
+    size: 12,
+    color: "rgb(0, 0, 0)",
+  },
+};
+
 function PlotGraph({ graphData, controlData }) {
   // console.log(graphData);
   const [stationName, setStationName] = useState("stationnavn");
@@ -65,6 +115,8 @@ function PlotGraph({ graphData, controlData }) {
   const yData = graphData.map((d) => d.properties.measurement);
   const xControl = controlData.map((d) => d.properties.timeofmeas);
   const yControl = controlData.map((d) => d.properties.waterlevel);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     if (graphData[0]) setStationName(graphData[0].properties.stationname);
@@ -100,7 +152,7 @@ function PlotGraph({ graphData, controlData }) {
           },
         },
       ]}
-      layout={layout2}
+      layout={matches ? layout3 : layout2}
       config={{
         responsive: true,
         modeBarButtonsToRemove: [
