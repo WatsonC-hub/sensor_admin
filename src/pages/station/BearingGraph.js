@@ -5,7 +5,7 @@ import Plot from "react-plotly.js";
 import { getGraphData, getControlData } from "../../api";
 
 const selectorOptions = {
-  x:0.5,
+  //x:0.5,
   //y:0.4,
   buttons: [
     {
@@ -25,6 +25,50 @@ const selectorOptions = {
     },
   ],
 };
+
+const layout1 ={
+  xaxis: {
+      rangeselector: selectorOptions,
+    /*rangeslider: {},*/
+    autorange: true,
+    type: 'date',
+    //range:["2020-12-01T00:00:00", A],
+  //domain: [0, 0.97],
+              showline: true
+  },
+
+  //xaxis: {domain: [0, 0.9]},
+yaxis: {
+  title: {
+    text: 'Niveau, kote',
+  font: { size: 12 }
+  },
+      showline: true
+
+},
+
+
+
+showlegend: true,
+legend: {
+  x: 0,
+  y: -0.15,
+  orientation:"h"
+},
+margin: {
+  l: 50,
+  r: 0,
+  b: 30,
+  t: 10,
+  pad: 4
+},
+font:{
+  size:12,
+color:'rgb(0, 0, 0)',
+},
+
+};
+
 const layout2 = {
   autosize: true,
   xaxis: {
@@ -73,16 +117,14 @@ const layout3 = {
       t:0
     }
   },
-  title: {
-    text: "Sensor output",
-    font: { size: 14 },
-    xref: 'paper',
-    y: 1.03,
-    x:0,
-    margin:{
-     // b:10
-    }
-  },
+  // title: {
+  //   text: "Sensor output",
+  //   font: { size: 14 },
+  //   xref: 'paper',
+  //   y: 1.03,
+  //   x:0,
+    
+  // },
   yaxis: {
     showline: true,
     y:1
@@ -133,9 +175,9 @@ function PlotGraph({ graphData, controlData }) {
           type: "scatter",
           line: { width: 2 },
           mode: "lines",
-          marker: { symbol: "100", size: "4" },
+          marker: { symbol: "100", size: "3" },
           marker: {
-            color: "hex#177FC1",
+            color: "#177FC1",
           },
         },
         {
@@ -147,12 +189,12 @@ function PlotGraph({ graphData, controlData }) {
           marker: {
             symbol: "200",
             size: "8",
-            color: "hex#177FC1",
+            color: "#177FC1",
             line: { color: "rgb(0,0,0)", width: 1 },
           },
         },
       ]}
-      layout={matches ? layout3 : layout2}
+      layout={matches ? layout3 : layout1}
       config={{
         responsive: true,
         modeBarButtonsToRemove: [
