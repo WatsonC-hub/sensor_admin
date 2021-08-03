@@ -1,9 +1,10 @@
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import ReactDOM from "react-dom";
 import L from "leaflet";
 import LocationContext from "./LocationContext";
+import  {getSensorData} from "./api"
 
 const style = {
   width: "100%",
@@ -27,6 +28,7 @@ function Map(props) {
   const history = useHistory();
   const mapRef = React.useRef(null);
   const popupsRef = React.useRef([]);
+  const [sensorData, setSensorData] = useState([]);
   const onPopupClick = (markerId) => {
     alert("clicked popup " + markerId);
   };
@@ -91,6 +93,12 @@ function Map(props) {
     }
   };
 
+  useEffect(()=> {
+    let sessionId = sessionStorage.getItem("session_id");
+
+    getSensorData(sessionId).then(res => setSensorData(res.data.data));
+  },[]);
+
   useEffect(() => {
     mapRef.current = renderMap();
     return () => {
@@ -108,7 +116,7 @@ function Map(props) {
 
   useEffect(() => {
     layerRef.current.clearLayers();
-    const data = props.data.data;
+    const data = sensorData;// props.data.data;
     if (data) {
       data.forEach((element) => {
         const point = [element.lat, element.long];
@@ -119,7 +127,7 @@ function Map(props) {
         marker.addTo(layerRef.current);
       });
     }
-  }, [props.data.data]);
+  }, [sensorData]);
 
   return <div id='map' style={style}></div>;
 }

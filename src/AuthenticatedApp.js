@@ -44,13 +44,13 @@ function AuthenticatedApp({ setUser }) {
     setUser(null);
   };
 
-  useEffect(() => {
-    let sessionId = sessionStorage.getItem("session_id");
+  // useEffect(() => {
+  //   let sessionId = sessionStorage.getItem("session_id");
 
-    getSensorData(sessionId).then((res) => {
-      setSensors(res.data);
-    });
-  }, []);
+  //   getSensorData(sessionId).then((res) => {
+  //     setSensors(res.data);
+  //   });
+  // }, []);
 
   return sessionStorage.getItem("session_id") === null ? (
     <Login setUser={setUser} />
