@@ -37,7 +37,7 @@ export default function PejlingForm({
   };
 
   const handleDateChange = (date) => {
-    if(isValid(date)){
+    if (isValid(date)) {
       setCurrDate(date);
     }
     //only change submit data when date is valid
@@ -67,7 +67,7 @@ export default function PejlingForm({
               <KeyboardDatePicker
                 disableToolbar
                 variant='inline'
-                inputProps={{readOnly:true}}
+                inputProps={{ readOnly: true }}
                 inputVariant='outlined'
                 format='yyyy-MM-dd'
                 margin='normal'
@@ -90,7 +90,7 @@ export default function PejlingForm({
               <KeyboardTimePicker
                 placeholder={currDate}
                 inputVariant='outlined'
-                inputProps={{readOnly:true}}
+                inputProps={{ readOnly: true }}
                 margin='normal'
                 id='overnat_start_tid'
                 label={
@@ -185,7 +185,7 @@ export default function PejlingForm({
                 style={{ backgroundColor: "#ffa137" }}
                 onClick={resetFormData}
               >
-                Annullere
+                Annuler
               </Button>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>

@@ -98,7 +98,10 @@ export default function Station({
     const method = isPut() ? updateMeasurement : insertMeasurement;
     const userId = sessionStorage.getItem("user");
     const payload = { ...formData, userid: userId };
-    payload.timeofmeas = formatedTimestamp(payload.timeofmeas);
+    var _date = Date.parse(payload.timeofmeas);
+    console.log("time before parse: ", payload.timeofmeas);
+    console.log("time after parse: ", _date);
+    payload.timeofmeas = formatedTimestamp(new Date(_date));
     method(sessionStorage.getItem("session_id"), stationId, payload).then(
       (res) => {
         resetFormData();
