@@ -86,6 +86,66 @@ function Locality(props) {
           margin='dense'
         />
       </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant='outlined'
+          type='text'
+          label='Terrænkote'
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          margin='dense'
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant='outlined'
+          type='text'
+          label='Terrænkote'
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          margin='dense'
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant='outlined'
+          type='text'
+          label='Terrænkote'
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          margin='dense'
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant='outlined'
+          type='text'
+          label='Terrænkote'
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          margin='dense'
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant='outlined'
+          type='text'
+          label='Terrænkote'
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          margin='dense'
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant='outlined'
+          type='text'
+          label='Terrænkote'
+          InputLabelProps={{ shrink: true }}
+          fullWidth
+          margin='dense'
+        />
+      </Grid>
     </Grid>
   );
 }
@@ -271,7 +331,7 @@ function EditStamdata() {
   );
 }
 
-export default function RestStamdata(props) {
+export default function RetStamdata(props) {
   return (
     <div>
       <Typography variant='h6' component='h3'>

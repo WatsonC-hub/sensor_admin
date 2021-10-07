@@ -25,6 +25,7 @@
     "react-dom": "^16.8.0",
     "react-plotly.js": "^2.5.1",
     "react-qr-scanner": "^1.0.0-alpha.7",
+    "react-query": "^3.24.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
     "web-vitals": "^0.2.4"

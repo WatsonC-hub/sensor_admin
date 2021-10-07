@@ -16,6 +16,11 @@ const getSensorData = (sessionId) => {
   return data;
 };
 
+const getStamData = () => {
+  const url = `${endpoint}SELECT * FROM sensor_test.stamdata_sensorapp`;
+  return axios.get(url);
+};
+
 const getTableData = (sessionId) => {
   const url = `${extEndpoint}/tabledata?session_id=${sessionId}`;
   return axios.get(url);
@@ -69,6 +74,11 @@ const getMeasurements = (stationId, sessionId) => {
   return axios.get(url);
 };
 
+const getStationTypes = () =>
+  axios.get(
+    `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
+  );
+
 export {
   getSensorData,
   getTableData,
@@ -81,4 +91,6 @@ export {
   getControlData,
   getGraphData,
   getLocidFromLabel,
+  getStamData,
+  getStationTypes,
 };

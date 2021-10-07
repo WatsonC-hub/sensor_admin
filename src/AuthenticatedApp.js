@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import "./App.css";
 import { getSensorData } from "./api";
 import SimpleTabs from "./components/SimpleTabs";
@@ -13,6 +13,7 @@ import IconButton from "@material-ui/core/IconButton";
 import { PhotoCameraRounded } from "@material-ui/icons";
 import CaptureDialog from "./pages/station/CaptureDialog";
 import ScanComponent from "./components/ScanComponent";
+import OpretForm from "./pages/Stamdata/OpretForm";
 
 /*
 Libraries to explore for this app:
@@ -29,6 +30,7 @@ function AuthenticatedApp({ setUser }) {
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
   const [open, setOpen] = useState(false);
+  const history = useHistory();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -71,13 +73,22 @@ function AuthenticatedApp({ setUser }) {
           <Toolbar
             style={{
               flexGrow: 1,
-              flexDirection: "row-reverse",
+              flexDirection: "row",
               justifyContent: "space-between",
             }}
           >
             {/* <IconButton color='inherit' onClick={handleClickOpen}>
               <PhotoCameraRounded />
             </IconButton> */}
+            <Button
+              color='inherit'
+              style={{ backgroundColor: "#4472c4" }}
+              onClick={() => {
+                history.push("/stamdata");
+              }}
+            >
+              Tilføj Station
+            </Button>
             <Button color='inherit' onClick={handleLogout}>
               Logout
             </Button>
@@ -97,6 +108,9 @@ function AuthenticatedApp({ setUser }) {
           </Route>
           <Route path='/location/:locid'>
             <LocationDrawer />
+          </Route>
+          <Route path='/stamdata'>
+            <OpretForm />
           </Route>
           <Route path='/:labelid'>
             <ScanComponent />
