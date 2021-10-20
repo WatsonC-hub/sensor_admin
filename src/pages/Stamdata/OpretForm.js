@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Container,
@@ -68,6 +68,7 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [location, setLocatition] = React.useState(0);
+  const [localities, setLocalities] = React.useState([]);
   const [
     locality,
     setLocality,
@@ -81,51 +82,55 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
   console.log("context locality: " + locality);
   //console.log(locations.default.data);
   const locationNames = (features) => {
-    const names = features.map((l) => l.properties.locname);
+    const names = features.map((l) => l.loc_name);
     return [...new Set(names)];
   };
   //const locationItems = [];
 
   const populateFormData = (features, locname) => {
-    const locData = features.find((f) => f.properties.locname === locname);
+    const locData = features.find((f) => f.loc_name === locname);
     console.log(locname, locData);
     if (locData) {
       setValues("location", {
-        locname: locData.properties.locname,
-        mainloc: locData.properties.mainloc,
-        subloc: locData.properties.subloc,
-        subsubloc: locData.properties.subsubloc,
-        x: locData.properties.x,
-        y: locData.properties.y,
-        terrainqual: locData.properties.terrainqual,
-        terrainlevel: locData.properties.terrainlevel,
+        locname: locData.loc_name,
+        mainloc: locData.mainloc,
+        subloc: locData.subloc,
+        subsubloc: locData.subsubloc,
+        x: locData.x,
+        y: locData.y,
+        terrainqual: locData.terrainqual,
+        terrainlevel: locData.terrainlevel,
         description: "",
       });
 
       setValues("udstyr", {
-        terminal: locData.properties.terminal,
-        terminalid: locData.properties.terminalid,
-        sensorid: locData.properties.sensorid,
-        sensorinfo: locData.properties.sensorinfo,
-        parameter: locData.properties.parameter,
-        calypso_id: locData.properties.calypso_id,
-        batteriskift: locData.properties.batteriskift,
-        startdato: locData.properties.startdato,
-        slutdato: locData.properties.slutdato,
+        terminal: locData.terminal,
+        terminalid: locData.terminal_id,
+        sensorid: locData.sensor_id,
+        sensorinfo: locData.sensorinfo,
+        parameter: locData.parameter,
+        calypso_id: locData.calypso_id,
+        batteriskift: locData.batteriskift,
+        startdato: locData.startdato,
+        slutdato: locData.slutdato,
       });
     }
   };
 
-  const locationItems = locationNames(locations.default.features).map(
-    (name) => <MenuItem value={name}>{name}</MenuItem>
-  );
+  const locationItems = locationNames(localities).map((name) => (
+    <MenuItem value={name}>{name}</MenuItem>
+  ));
 
   const handleChange = (event) => {
     console.log(formData);
     setLocality(event.target.value);
     console.log("before populateformdata");
-    populateFormData(locations.default.features, event.target.value);
+    populateFormData(localities, event.target.value);
   };
+
+  useEffect(() => {
+    getStamData().then((res) => setLocalities(res.data.data));
+  }, []);
 
   const desktopChooser = (
     <>
@@ -269,7 +274,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
         <TextField
           variant='outlined'
           type='text'
-          label='Mainloc'
+          label='Hoved lokation'
           value={formData.location.mainloc}
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -280,7 +285,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
         <TextField
           variant='outlined'
           type='text'
-          label='Subloc'
+          label='Under lokation'
           value={formData.location.subloc}
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -291,7 +296,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
         <TextField
           variant='outlined'
           type='text'
-          label='Subsubloc'
+          label='Under-under lokation'
           value={formData.location.subsubloc}
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -348,7 +353,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
         <TextField
           variant='outlined'
           type='text'
-          label='Description'
+          label='Kommentar'
           value={formData.location.description}
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -360,6 +365,34 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
 }
 
 function StationForm(props) {
+  const StationTypeSelect = (props) => {
+    const [stationTypes, setStationTypes] = React.useState([]);
+    const [selected, setSelected] = React.useState(-1);
+    const handleSelection = (event) => {
+      setSelected(event.target.value);
+    };
+
+    useEffect(() => {
+      getStationTypes().then(
+        (res) => res && setStationTypes(res.data.features)
+      );
+    }, []);
+
+    let menuItems = stationTypes
+      .filter((i) => i.properties.tstype_id !== 0)
+      .map((item) => (
+        <MenuItem value={item.properties.tstype_id}>
+          {item.properties.tstype_name}
+        </MenuItem>
+      ));
+    return (
+      <Select value={selected} onChange={handleSelection}>
+        <MenuItem value={-1}>Vælg type</MenuItem>
+        {menuItems}
+      </Select>
+    );
+  };
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
@@ -373,14 +406,15 @@ function StationForm(props) {
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <TextField
+        {/* <TextField
           variant='outlined'
           type='text'
           label='Type'
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin='dense'
-        />
+        /> */}
+        <StationTypeSelect />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField

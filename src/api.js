@@ -5,9 +5,10 @@ const endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
 const testEndpoint = `https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=`;
 const apiKey = "&key=2a528b3bc396ca7f544b7b6a4bc52bb7";
 const localEndpoint = "http://localhost:8080/extensions/sensor_app/api";
-const extEndpoint =
+const remoteEndpoint =
   "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
 
+const extEndpoint = localEndpoint;
 const getData = (key) => axios.get(`${testEndpoint}${queries[key]}`);
 
 const getSensorData = (sessionId) => {
@@ -17,7 +18,7 @@ const getSensorData = (sessionId) => {
 };
 
 const getStamData = () => {
-  const url = `${endpoint}SELECT * FROM sensor_test.stamdata_sensorapp`;
+  const url = `${extEndpoint}/stamdata`;
   return axios.get(url);
 };
 

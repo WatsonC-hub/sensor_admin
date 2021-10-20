@@ -124,14 +124,14 @@ export default function LocationDrawer() {
 
   const currentStation = (id, stations) => {
     if (stations.length === 0) return null;
-    return stations.find((s) => s.stationid + "" === id + "");
+    return stations.find((s) => s.ts_id + "" === id + "");
     //console.log("current station id =>", id);
     //return stations[0];
   };
 
   const getSelectedItem = () => {
     if (selectedItem !== -1) return selectedItem;
-    return currStation ? currStation.stationid : -1;
+    return currStation ? currStation.ts_id : -1;
   };
 
   useEffect(() => {
@@ -146,7 +146,7 @@ export default function LocationDrawer() {
     getStations(locId, sessionStorage.getItem("session_id")).then((res) => {
       console.log(res);
       if (!statId) {
-        statId = res.data.res[0].stationid;
+        statId = res.data.res[0].ts_id;
         console.log("selecteditem =>", parseInt(statId));
         setSelectedItem(parseInt(statId));
       }

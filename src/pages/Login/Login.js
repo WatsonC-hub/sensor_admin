@@ -31,7 +31,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const loginUser = (user, password) => {
-  let sessionUrl = "https://watsonc-test.admin.gc2.io/api/v2/session/start";
+  let sessionUrl = "https://watsonc.admin.gc2.io/api/v2/session/start";
+  sessionUrl = "http://localhost:8080/api/v2/session/start";
   const loginData = {
     user,
     password,

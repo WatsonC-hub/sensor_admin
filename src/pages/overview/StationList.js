@@ -21,9 +21,9 @@ export default function StationList(props) {
   const history = useHistory();
 
   const handleClick = (elem) => {
-    context.setLocationId(elem.locid + "_" + elem.stationid);
+    context.setLocationId(elem.locid + "_" + elem.ts_id);
     context.setTabValue(0);
-    history.push(`/location/${elem.locid}/${elem.stationid}`);
+    history.push(`/location/${elem.locid}/${elem.ts_id}`);
   };
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function StationList(props) {
               dense
             >
               <ListItemText
-                primary={elem.stationname}
+                primary={elem.ts_name}
                 // secondary={r.properties.parameter}
                 secondary={<StatusText row={elem} />}
               />
