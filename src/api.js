@@ -80,6 +80,9 @@ const getStationTypes = () =>
     `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
   );
 
+const getAvailableUnits = () =>
+  axios.get(`${extEndpoint}/stamdata/units`).then((res) => res.data.data);
+
 export {
   getSensorData,
   getTableData,
@@ -94,4 +97,5 @@ export {
   getLocidFromLabel,
   getStamData,
   getStationTypes,
+  getAvailableUnits,
 };

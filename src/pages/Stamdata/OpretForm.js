@@ -104,11 +104,11 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
       });
 
       setValues("udstyr", {
-        terminal: locData.terminal,
+        terminal: locData.terminal_type,
         terminalid: locData.terminal_id,
         sensorid: locData.sensor_id,
         sensorinfo: locData.sensorinfo,
-        parameter: locData.parameter,
+        parameter: locData.tstype_name,
         calypso_id: locData.calypso_id,
         batteriskift: locData.batteriskift,
         startdato: locData.startdato,
@@ -386,10 +386,19 @@ function StationForm(props) {
         </MenuItem>
       ));
     return (
-      <Select value={selected} onChange={handleSelection}>
+      <TextField
+        autoFocus
+        variant='outlined'
+        select
+        margin='dense'
+        value={selected}
+        onChange={handleSelection}
+        label='Sensor type'
+        fullWidth
+      >
         <MenuItem value={-1}>Vælg type</MenuItem>
         {menuItems}
-      </Select>
+      </TextField>
     );
   };
 
@@ -406,14 +415,6 @@ function StationForm(props) {
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        {/* <TextField
-          variant='outlined'
-          type='text'
-          label='Type'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        /> */}
         <StationTypeSelect />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -620,6 +621,10 @@ export default function RetStamdata(props) {
     });
   };
 
+  const saveChosenUnit = (unitData) => {};
+
+  const saveLocationFormData = (locFormData) => {};
+
   return (
     <StamdataContext.Provider
       value={[
@@ -637,10 +642,13 @@ export default function RetStamdata(props) {
         <AddUdstyrForm
           ustyrDialogOpen={ustyrDialogOpen}
           setUdstyrDialogOpen={setUdstyrDialogOpen}
+          saveChosenUnit={saveChosenUnit}
+          tstype_id={1}
         />
         <AddLocationForm
           locationDialogOpen={locationDialogOpen}
           setLocationDialogOpen={setLocationDialogOpen}
+          saveLocationFormData={saveLocationFormData}
         />
         <Container fixed>
           <Typography variant='h6' component='h3'>

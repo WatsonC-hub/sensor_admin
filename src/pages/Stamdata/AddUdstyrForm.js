@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -9,17 +10,65 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DateFnsUtils from "@date-io/date-fns";
 import { isValid, format } from "date-fns";
 import daLocale from "date-fns/locale/da";
+import { getAvailableUnits } from "../../api";
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import { MenuItem } from "@material-ui/core";
 
 export default function AddUdstyrForm({
   ustyrDialogOpen,
   setUdstyrDialogOpen,
+  saveChosenUnit,
+  tstype_id,
 }) {
   const [open, setOpen] = React.useState(false);
+  const [chosenUnit, setChosenUnit] = useState(null);
+
+  const [udstyrFormData, setUdstyrFormData] = useState({
+    calypso_id: -1,
+    sensor_id: -1,
+    fra: new Date(),
+  });
+
+  const [availableUnits, setAvailableUnits] = useState([]);
+
+  const uniqueCalypsoIds = () => [
+    ...new Set(availableUnits.map((x) => x.calypso_id)),
+  ];
+
+  const sensorsForCalyspoId = (id) =>
+    availableUnits.filter(
+      (unit) => unit.calypso_id === id && unit.sensortypeid === tstype_id
+    );
+
+  const handleCalypsoId = (event) => {
+    setUdstyrFormData({
+      ...udstyrFormData,
+      calypso_id: event.target.value,
+    });
+  };
+
+  const handleSensorId = (event) => {
+    setUdstyrFormData({
+      ...udstyrFormData,
+      sensor_id: event.target.value,
+    });
+  };
+
+  const handleDateChange = (date) => {
+    setUdstyrFormData({
+      ...udstyrFormData,
+      fra: new Date(date),
+    });
+  };
+
+  const handleSave = () => {
+    saveChosenUnit(udstyrFormData);
+    setUdstyrDialogOpen(false);
+  };
 
   const handleClickOpen = () => {
     setUdstyrDialogOpen(true);
@@ -29,52 +78,98 @@ export default function AddUdstyrForm({
     setUdstyrDialogOpen(false);
   };
 
+  useEffect(() => {
+    getAvailableUnits().then((res) => setAvailableUnits(res));
+  }, []);
+
   return (
     <div>
-      {/* <Button variant='outlined' color='primary' onClick={handleClickOpen}>
-        Open form dialog
-      </Button> */}
-      <Dialog
-        open={ustyrDialogOpen}
-        onClose={handleClose}
-        aria-labelledby='form-dialog-title'
-      >
-        <DialogTitle id='form-dialog-title'>Tilføj Udstyr</DialogTitle>
-        <DialogContent>
-          <TextField
+      <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
+        <Dialog
+          open={ustyrDialogOpen}
+          onClose={handleClose}
+          aria-labelledby='form-dialog-title'
+        >
+          <DialogTitle id='form-dialog-title'>Tilføj Udstyr</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              select
+              margin='dense'
+              value={udstyrFormData.calypso_id}
+              onChange={handleCalypsoId}
+              id='calypso_id'
+              label='Calypso ID'
+              fullWidth
+            >
+              <MenuItem key={-1} value={-1}>
+                Vælg calypso ID
+              </MenuItem>
+              {uniqueCalypsoIds().map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              autoFocus
+              select
+              margin='dense'
+              value={udstyrFormData.sensor_id}
+              onChange={handleSensorId}
+              id='sensor_id'
+              label='Sensor / Sensor ID'
+              type='email'
+              fullWidth
+            >
+              <MenuItem key={-1} value={-1}>
+                Vælg Sensor ID
+              </MenuItem>
+              {sensorsForCalyspoId(udstyrFormData.calypso_id).map((option) => (
+                <MenuItem key={option.sensor_id} value={option.sensor_id}>
+                  {option.channel} - {option.sensortypename}
+                </MenuItem>
+              ))}
+            </TextField>
+            <KeyboardDatePicker
+              disableToolbar
+              variant='inline'
+              inputProps={{ readOnly: true }}
+              format='yyyy-MM-dd'
+              margin='normal'
+              id='Fra'
+              label={
+                <Typography variant='h6' component='h3'>
+                  Fra
+                </Typography>
+              }
+              InputLabelProps={{ shrink: true }}
+              value={udstyrFormData.fra}
+              onChange={(date) => handleDateChange(date)}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+              fullWidth
+            />
+            {/* <TextField
             autoFocus
             margin='dense'
-            id='name'
-            label='Calypso ID'
-            type='email'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='name'
-            label='Sensor / Sensor ID'
-            type='email'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='name'
+            id='fra'
             label='Fra'
             type='email'
             fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color='primary'>
-            Gem
-          </Button>
-          <Button onClick={handleClose} color='primary'>
-            Annuller
-          </Button>
-        </DialogActions>
-      </Dialog>
+          /> */}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleSave} color='primary'>
+              Gem
+            </Button>
+            <Button onClick={handleClose} color='primary'>
+              Annuller
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </MuiPickersUtilsProvider>
     </div>
   );
 }

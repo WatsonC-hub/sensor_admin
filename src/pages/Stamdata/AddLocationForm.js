@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -18,8 +18,33 @@ import {
 export default function AddLocationForm({
   locationDialogOpen,
   setLocationDialogOpen,
+  saveLocationFormData,
 }) {
   const [open, setOpen] = React.useState(false);
+  const [locationData, setLocationData] = useState({
+    locname: "",
+    x: "",
+    y: "",
+    terrainlevel: "",
+    terrainqual: "",
+    mainloc: "",
+    subloc: "",
+    subsubloc: "",
+    description: "",
+  });
+
+  const handleChange = (event) => {
+    setLocationData({
+      ...locationData,
+      [event.target.id]: event.target.value,
+    });
+  };
+
+  const handleSave = () => {
+    // TODO: validate data.
+    saveLocationFormData(locationData);
+    setLocationDialogOpen(false);
+  };
 
   const handleClickOpen = () => {
     setLocationDialogOpen(true);
@@ -31,9 +56,6 @@ export default function AddLocationForm({
 
   return (
     <div>
-      {/* <Button variant='outlined' color='primary' onClick={handleClickOpen}>
-        Open form dialog
-      </Button> */}
       <Dialog
         open={locationDialogOpen}
         onClose={handleClose}
@@ -44,78 +66,96 @@ export default function AddLocationForm({
           <TextField
             autoFocus
             margin='dense'
-            id='name'
-            label='Calypso ID'
-            type='email'
+            id='locname'
+            label='Navn'
+            value={locationData.locname}
+            onChange={handleChange}
+            type='text'
             fullWidth
           />
           <TextField
             autoFocus
             margin='dense'
-            id='name'
+            id='mainloc'
+            label='Hoved lokation'
+            value={locationData.mainloc}
+            onChange={handleChange}
+            type='text'
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin='dense'
+            id='subloc'
+            label='Under lokation'
+            value={locationData.subloc}
+            onChange={handleChange}
+            type='text'
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin='dense'
+            id='subsubloc'
+            label='Under-under lokation'
+            value={locationData.subsubloc}
+            onChange={handleChange}
+            type='text'
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin='dense'
+            id='x'
             label='X-koordinat(UTM)'
-            type='email'
+            value={locationData.x}
+            onChange={handleChange}
+            type='text'
             fullWidth
           />
           <TextField
             autoFocus
             margin='dense'
-            id='name'
+            id='y'
             label='Y-koordinat (UTM)'
-            type='email'
+            value={locationData.y}
+            onChange={handleChange}
+            type='text'
             fullWidth
           />
           <TextField
             autoFocus
             margin='dense'
-            id='name'
+            id='terrainlevel'
             label='Terrænkote'
-            type='email'
+            value={locationData.terrainlevel}
+            onChange={handleChange}
+            type='text'
             fullWidth
           />
           <TextField
             autoFocus
             margin='dense'
-            id='name'
-            label='Mainloc'
-            type='email'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='name'
-            label='Subloc'
-            type='email'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='name'
-            label='Subsubloc'
-            type='email'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='name'
-            label='Description'
-            type='email'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='name'
+            id='terrainqual'
             label='Type af terrænkote'
-            type='email'
+            value={locationData.terrainqual}
+            onChange={handleChange}
+            type='text'
+            fullWidth
+          />
+          <TextField
+            autoFocus
+            margin='dense'
+            id='description'
+            label='Kommentar'
+            value={locationData.description}
+            onChange={handleChange}
+            type='text'
             fullWidth
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color='primary'>
+          <Button onClick={handleSave} color='primary'>
             Gem
           </Button>
           <Button onClick={handleClose} color='primary'>
