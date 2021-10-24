@@ -17,11 +17,12 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import { MenuItem } from "@material-ui/core";
+import { StamdataContext } from "./StamdataContext";
 
 export default function AddUdstyrForm({
   ustyrDialogOpen,
   setUdstyrDialogOpen,
-  saveChosenUnit,
+  saveUdstyrFormData,
   tstype_id,
 }) {
   const [open, setOpen] = React.useState(false);
@@ -30,6 +31,7 @@ export default function AddUdstyrForm({
   const [udstyrFormData, setUdstyrFormData] = useState({
     calypso_id: -1,
     sensor_id: -1,
+    uuid: "",
     fra: new Date(),
   });
 
@@ -66,8 +68,27 @@ export default function AddUdstyrForm({
   };
 
   const handleSave = () => {
-    saveChosenUnit(udstyrFormData);
+    // TODO 1 : use form data to find the right unit
+    // and use context.setValues() to populate opretfrom - udstyr
+    //saveUdstyrFormData(udstyrFormData);
     setUdstyrDialogOpen(false);
+    let unit = availableUnits.find(
+      (x) => x.unit_uuid === udstyrFormData.sensor_id
+    );
+
+    console.log(unit);
+
+    saveUdstyrFormData({
+      terminal: unit.terminal_type,
+      terminalid: unit.terminal_id,
+      sensorid: unit.sensor_id,
+      sensorinfo: unit.sensorinfo,
+      parameter: unit.tstype_name,
+      calypso_id: unit.calypso_id,
+      batteriskift: unit.batteriskift,
+      startdato: udstyrFormData.fra,
+      slutdato: unit.slutdato,
+    });
   };
 
   const handleClickOpen = () => {
@@ -77,6 +98,17 @@ export default function AddUdstyrForm({
   const handleClose = () => {
     setUdstyrDialogOpen(false);
   };
+
+  const [
+    locality,
+    setLocality,
+    formData,
+    setFormData,
+    setValues,
+    setLocationValue,
+    setStationValue,
+    setUdstyrValue,
+  ] = React.useContext(StamdataContext);
 
   useEffect(() => {
     getAvailableUnits().then((res) => setAvailableUnits(res));
@@ -126,7 +158,7 @@ export default function AddUdstyrForm({
                 Vælg Sensor ID
               </MenuItem>
               {sensorsForCalyspoId(udstyrFormData.calypso_id).map((option) => (
-                <MenuItem key={option.sensor_id} value={option.sensor_id}>
+                <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
                   {option.channel} - {option.sensortypename}
                 </MenuItem>
               ))}

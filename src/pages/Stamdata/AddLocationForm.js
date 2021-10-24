@@ -14,6 +14,7 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import { StamdataContext } from "./StamdataContext";
 
 export default function AddLocationForm({
   locationDialogOpen,
@@ -32,6 +33,17 @@ export default function AddLocationForm({
     subsubloc: "",
     description: "",
   });
+
+  const [
+    locality,
+    setLocality,
+    formData,
+    setFormData,
+    setValues,
+    setLocationValue,
+    setStationValue,
+    setUdstyrValue,
+  ] = React.useContext(StamdataContext);
 
   const handleChange = (event) => {
     setLocationData({

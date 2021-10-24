@@ -103,17 +103,17 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
         description: "",
       });
 
-      setValues("udstyr", {
-        terminal: locData.terminal_type,
-        terminalid: locData.terminal_id,
-        sensorid: locData.sensor_id,
-        sensorinfo: locData.sensorinfo,
-        parameter: locData.tstype_name,
-        calypso_id: locData.calypso_id,
-        batteriskift: locData.batteriskift,
-        startdato: locData.startdato,
-        slutdato: locData.slutdato,
-      });
+      // setValues("udstyr", {
+      //   terminal: locData.terminal_type,
+      //   terminalid: locData.terminal_id,
+      //   sensorid: locData.sensor_id,
+      //   sensorinfo: locData.sensorinfo,
+      //   parameter: locData.tstype_name,
+      //   calypso_id: locData.calypso_id,
+      //   batteriskift: locData.batteriskift,
+      //   startdato: locData.startdato,
+      //   slutdato: locData.slutdato,
+      //});
     }
   };
 
@@ -365,11 +365,11 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
 }
 
 function StationForm(props) {
-  const StationTypeSelect = (props) => {
+  const StationTypeSelect = () => {
     const [stationTypes, setStationTypes] = React.useState([]);
-    const [selected, setSelected] = React.useState(-1);
+    const { selectedStationType, setSelectedStationType } = props;
     const handleSelection = (event) => {
-      setSelected(event.target.value);
+      setSelectedStationType(event.target.value);
     };
 
     useEffect(() => {
@@ -391,7 +391,7 @@ function StationForm(props) {
         variant='outlined'
         select
         margin='dense'
-        value={selected}
+        value={selectedStationType}
         onChange={handleSelection}
         label='Sensor type'
         fullWidth
@@ -578,6 +578,7 @@ export default function RetStamdata(props) {
   //const [formData, setFormData] = React.useState(data);
 
   const [locality, setLocality] = React.useState(0);
+  const [selectedStationType, setSelectedStationType] = useState(-1);
 
   const setLocationValue = (key, value) => {
     setFormData((formData) => ({
@@ -621,9 +622,33 @@ export default function RetStamdata(props) {
     });
   };
 
-  const saveChosenUnit = (unitData) => {};
+  const saveUdstyrFormData = (unitData) => {
+    setValues("udstyr", {
+      terminal: unitData.terminal_type,
+      terminalid: unitData.terminal_id,
+      sensorid: unitData.sensor_id,
+      sensorinfo: unitData.sensorinfo,
+      parameter: unitData.tstype_name,
+      calypso_id: unitData.calypso_id,
+      batteriskift: unitData.batteriskift,
+      startdato: unitData.fra,
+      slutdato: unitData.slutdato,
+    });
+  };
 
-  const saveLocationFormData = (locFormData) => {};
+  const saveLocationFormData = (locationData) => {
+    setValues("location", {
+      locname: locationData.locname,
+      mainloc: locationData.mainloc,
+      subloc: locationData.subloc,
+      subsubloc: locationData.subsubloc,
+      x: locationData.x,
+      y: locationData.y,
+      terrainqual: locationData.terrainqual,
+      terrainlevel: locationData.terrainlevel,
+      description: locationData.description,
+    });
+  };
 
   return (
     <StamdataContext.Provider
@@ -642,7 +667,7 @@ export default function RetStamdata(props) {
         <AddUdstyrForm
           ustyrDialogOpen={ustyrDialogOpen}
           setUdstyrDialogOpen={setUdstyrDialogOpen}
-          saveChosenUnit={saveChosenUnit}
+          saveUdstyrFormData={saveUdstyrFormData}
           tstype_id={1}
         />
         <AddLocationForm
@@ -660,7 +685,10 @@ export default function RetStamdata(props) {
             setLocationDialogOpen={setLocationDialogOpen}
           />
           <Typography>Station</Typography>
-          <StationForm />
+          <StationForm
+            selectedStationType={selectedStationType}
+            setSelectedStationType={setSelectedStationType}
+          />
           <div style={flex1}>
             <Typography>Udstyr</Typography>
             <Button
