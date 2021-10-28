@@ -56,6 +56,10 @@ export default function AddLocationForm({
     // TODO: validate data.
     saveLocationFormData(locationData);
     setLocationDialogOpen(false);
+    // We'are adding new location, so locid is empty.
+    // locid used to determine whether we're updating or inserting
+    // new location.
+    setUdstyrValue("locid", "");
   };
 
   const handleClickOpen = () => {

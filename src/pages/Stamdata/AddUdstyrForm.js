@@ -79,11 +79,11 @@ export default function AddUdstyrForm({
     console.log(unit);
 
     saveUdstyrFormData({
-      terminal: unit.terminal_type,
+      terminal: unit.type,
       terminalid: unit.terminal_id,
       sensorid: unit.sensor_id,
       sensorinfo: unit.sensorinfo,
-      parameter: unit.tstype_name,
+      parameter: unit.sensorinfo,
       calypso_id: unit.calypso_id,
       batteriskift: unit.batteriskift,
       startdato: udstyrFormData.fra,

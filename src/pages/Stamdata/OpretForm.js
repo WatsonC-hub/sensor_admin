@@ -92,6 +92,8 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
     console.log(locname, locData);
     if (locData) {
       setValues("location", {
+        // TODO: Awaiting locid from Mathias
+        //locid:  locData.locid,
         locname: locData.loc_name,
         mainloc: locData.mainloc,
         subloc: locData.subloc,
@@ -209,7 +211,7 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
     </>
   );
 
-  return matches ? mobileChooser1 : desktopChooser;
+  return matches ? mobileChooser : desktopChooser;
 }
 
 function Locality({ locationDialogOpen, setLocationDialogOpen }) {
@@ -232,25 +234,6 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
 
   return (
     <Grid container spacing={2}>
-      {/* <Grid item xs={12} sm={6}>
-        <div style={flex}>
-          <span>Lokalitet</span>
-          <Select value={"none"}>
-            <MenuItem value={"none"}>
-              Gyrup2– Thisted Kommune– N2000 omr. 27
-            </MenuItem>
-            <MenuItem value={"one"}>one</MenuItem>
-            <MenuItem value={"two"}>two</MenuItem>
-            <MenuItem value={"three"}>three</MenuItem>
-          </Select>
-
-          <Button style={{ backgroundColor: "#4472c4" }}>
-            Tilføj lokation
-          </Button>
-        </div>
-      </Grid>
-      <Grid item xs={12} sm={6}></Grid> */}
-
       <LocationChooser
         locationDialogOpen={locationDialogOpen}
         setLocationDialogOpen={setLocationDialogOpen}
@@ -364,43 +347,57 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
   );
 }
 
-function StationForm(props) {
-  const StationTypeSelect = () => {
-    const [stationTypes, setStationTypes] = React.useState([]);
-    const { selectedStationType, setSelectedStationType } = props;
-    const handleSelection = (event) => {
-      setSelectedStationType(event.target.value);
-    };
-
-    useEffect(() => {
-      getStationTypes().then(
-        (res) => res && setStationTypes(res.data.features)
-      );
-    }, []);
-
-    let menuItems = stationTypes
-      .filter((i) => i.properties.tstype_id !== 0)
-      .map((item) => (
-        <MenuItem value={item.properties.tstype_id}>
-          {item.properties.tstype_name}
-        </MenuItem>
-      ));
-    return (
-      <TextField
-        autoFocus
-        variant='outlined'
-        select
-        margin='dense'
-        value={selectedStationType}
-        onChange={handleSelection}
-        label='Sensor type'
-        fullWidth
-      >
-        <MenuItem value={-1}>Vælg type</MenuItem>
-        {menuItems}
-      </TextField>
-    );
+const StationTypeSelect = (props) => {
+  const { selectedStationType, setSelectedStationType, stationTypes } = props;
+  const handleSelection = (event) => {
+    setSelectedStationType(event.target.value);
   };
+
+  let menuItems = stationTypes
+    .filter((i) => i.properties.tstype_id !== 0)
+    .map((item) => (
+      <MenuItem value={item.properties.tstype_id}>
+        {item.properties.tstype_name}
+      </MenuItem>
+    ));
+  return (
+    <TextField
+      autoFocus
+      variant='outlined'
+      select
+      margin='dense'
+      value={selectedStationType}
+      onChange={handleSelection}
+      label='Sensor type'
+      fullWidth
+    >
+      <MenuItem value={-1}>Vælg type</MenuItem>
+      {menuItems}
+    </TextField>
+  );
+};
+
+function StationForm(props) {
+  const [stationTypes, setStationTypes] = React.useState([]);
+  useEffect(() => {
+    if (stationTypes.length > 0) {
+      console.log("station more than zero");
+    } else {
+      console.log("station are 0");
+    }
+    getStationTypes().then((res) => res && setStationTypes(res.data.features));
+  }, []);
+
+  const [
+    locality,
+    setLocality,
+    formData,
+    setFormData,
+    setValues,
+    setLocationValue,
+    setStationValue,
+    setUdstyrValue,
+  ] = React.useContext(StamdataContext);
 
   return (
     <Grid container spacing={2}>
@@ -409,22 +406,26 @@ function StationForm(props) {
           variant='outlined'
           type='text'
           label='Navn'
+          value={formData.station.stationname}
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin='dense'
+          onChange={(e) => setStationValue("stationname", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
-        <StationTypeSelect />
+        <StationTypeSelect {...props} stationTypes={stationTypes} />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
           variant='outlined'
           type='text'
           label=' Målepunktskote'
+          value={formData.station.maalepunktskote}
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin='dense'
+          onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -432,9 +433,11 @@ function StationForm(props) {
           variant='outlined'
           type='text'
           label='Evt. loggerdybde'
+          value={formData.station.terrainlevel}
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin='dense'
+          onChange={(e) => setStationValue("terrainlevel", e.target.value)}
         />
       </Grid>
     </Grid>
@@ -450,6 +453,9 @@ function UdstyrForm(props) {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <TextField
+            InputProps={{
+              readOnly: true,
+            }}
             variant='outlined'
             type='text'
             id='terminal'
@@ -463,6 +469,9 @@ function UdstyrForm(props) {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
+            InputProps={{
+              readOnly: true,
+            }}
             variant='outlined'
             type='text'
             label='Terminal ID'
@@ -475,6 +484,9 @@ function UdstyrForm(props) {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
+            InputProps={{
+              readOnly: true,
+            }}
             variant='outlined'
             type='text'
             label='CALYPSO ID'
@@ -487,6 +499,9 @@ function UdstyrForm(props) {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
+            InputProps={{
+              readOnly: true,
+            }}
             variant='outlined'
             type='text'
             label='Sensor'
@@ -499,6 +514,9 @@ function UdstyrForm(props) {
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
+            InputProps={{
+              readOnly: true,
+            }}
             variant='outlined'
             type='text'
             label='Sensor ID'
@@ -510,15 +528,25 @@ function UdstyrForm(props) {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          {/* <TextField
-          variant='outlined'
-          type='text'
-          label='Startdato'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        /> */}
-          <KeyboardDateTimePicker
+          <TextField
+            InputProps={{
+              readOnly: true,
+            }}
+            variant='outlined'
+            type='text'
+            label='Startdato'
+            value={
+              formData.udstyr.startdato
+                ? new Date(formData.udstyr.startdato)
+                    .toISOString()
+                    .split("T")[0]
+                : ""
+            }
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            margin='dense'
+          />
+          {/* <KeyboardDateTimePicker
             disableToolbar
             inputProps={{ readOnly: true }}
             inputVariant='outlined'
@@ -533,14 +561,14 @@ function UdstyrForm(props) {
               "aria-label": "change date",
             }}
             fullWidth
-          />
+          /> */}
         </Grid>
       </Grid>
     </MuiPickersUtilsProvider>
   );
 }
 
-export default function RetStamdata(props) {
+export default function RetStamdata({ setAddStationDisabled }) {
   const history = useHistory();
   const [ustyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
@@ -579,6 +607,27 @@ export default function RetStamdata(props) {
 
   const [locality, setLocality] = React.useState(0);
   const [selectedStationType, setSelectedStationType] = useState(-1);
+
+  const changeSelectedStationType = (selectedType) => {
+    if (selectedType !== selectedStationType) {
+      resetUdStyrForm();
+    }
+    setSelectedStationType(selectedType);
+  };
+
+  const resetUdStyrForm = () => {
+    saveUdstyrFormData({
+      terminal: "",
+      terminalid: "",
+      sensorid: "",
+      sensorinfo: "",
+      parameter: "",
+      calypso_id: "",
+      batteriskift: "",
+      startdato: "",
+      slutdato: "",
+    });
+  };
 
   const setLocationValue = (key, value) => {
     setFormData((formData) => ({
@@ -623,17 +672,7 @@ export default function RetStamdata(props) {
   };
 
   const saveUdstyrFormData = (unitData) => {
-    setValues("udstyr", {
-      terminal: unitData.terminal_type,
-      terminalid: unitData.terminal_id,
-      sensorid: unitData.sensor_id,
-      sensorinfo: unitData.sensorinfo,
-      parameter: unitData.tstype_name,
-      calypso_id: unitData.calypso_id,
-      batteriskift: unitData.batteriskift,
-      startdato: unitData.fra,
-      slutdato: unitData.slutdato,
-    });
+    setValues("udstyr", unitData);
   };
 
   const saveLocationFormData = (locationData) => {
@@ -668,7 +707,7 @@ export default function RetStamdata(props) {
           ustyrDialogOpen={ustyrDialogOpen}
           setUdstyrDialogOpen={setUdstyrDialogOpen}
           saveUdstyrFormData={saveUdstyrFormData}
-          tstype_id={1}
+          tstype_id={selectedStationType}
         />
         <AddLocationForm
           locationDialogOpen={locationDialogOpen}
@@ -687,11 +726,12 @@ export default function RetStamdata(props) {
           <Typography>Station</Typography>
           <StationForm
             selectedStationType={selectedStationType}
-            setSelectedStationType={setSelectedStationType}
+            setSelectedStationType={changeSelectedStationType}
           />
           <div style={flex1}>
             <Typography>Udstyr</Typography>
             <Button
+              disabled={selectedStationType === -1}
               size='small'
               style={{
                 backgroundColor: "#4472c4",
@@ -712,6 +752,7 @@ export default function RetStamdata(props) {
                 style={{ backgroundColor: "#ffa137" }}
                 onClick={() => {
                   history.push("/");
+                  setAddStationDisabled(false);
                 }}
               >
                 Gem
@@ -723,6 +764,7 @@ export default function RetStamdata(props) {
                 style={{ backgroundColor: "#ffa137" }}
                 onClick={() => {
                   history.push("/");
+                  setAddStationDisabled(false);
                 }}
               >
                 Annullere

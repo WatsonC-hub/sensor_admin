@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 let data = {
   location: {
+    locid: "",
     locname: "",
     mainloc: "",
     subloc: "",

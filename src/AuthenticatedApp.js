@@ -30,6 +30,7 @@ function AuthenticatedApp({ setUser }) {
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
   const [open, setOpen] = useState(false);
+  const [addStationDisabled, setAddStationDisabled] = useState(false);
   const history = useHistory();
 
   const handleClickOpen = () => {
@@ -81,10 +82,12 @@ function AuthenticatedApp({ setUser }) {
               <PhotoCameraRounded />
             </IconButton> */}
             <Button
+              disabled={addStationDisabled}
               color='inherit'
               style={{ backgroundColor: "#4472c4" }}
               onClick={() => {
                 history.push("/stamdata");
+                setAddStationDisabled(true);
               }}
             >
               Tilføj Station
@@ -110,7 +113,7 @@ function AuthenticatedApp({ setUser }) {
             <LocationDrawer />
           </Route>
           <Route path='/stamdata'>
-            <OpretForm />
+            <OpretForm setAddStationDisabled={setAddStationDisabled} />
           </Route>
           <Route path='/:labelid'>
             <ScanComponent />
