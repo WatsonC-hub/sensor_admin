@@ -32,10 +32,13 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import AddUdstyrForm from "./AddUdstyrForm";
 import AddLocationForm from "./AddLocationForm";
+import LocalityForm from "./components/LocalityForm";
+import StationForm from "./components/StationForm";
 import * as locations from "./location-data";
-import { StamdataContext } from "./StamdataContext";
-import { getStamData, getStationTypes } from "../../api";
+import { StamdataContext, StamdataProvider } from "./StamdataContext";
+import { getStamData, getStationTypes, postStamdata } from "../../api";
 import { useQuery } from "react-query";
+import UdstyrForm from "./components/UdstyrForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -92,8 +95,7 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
     console.log(locname, locData);
     if (locData) {
       setValues("location", {
-        // TODO: Awaiting locid from Mathias
-        //locid:  locData.locid,
+        locid: locData.loc_id,
         locname: locData.loc_name,
         mainloc: locData.mainloc,
         subloc: locData.subloc,
@@ -215,22 +217,22 @@ function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
 }
 
 function Locality({ locationDialogOpen, setLocationDialogOpen }) {
-  const flex = {
-    display: "flex",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-  };
+  // const flex = {
+  //   display: "flex",
+  //   alignItems: "baseline",
+  //   justifyContent: "space-between",
+  // };
 
-  const [
-    locality,
-    setLocality,
-    formData,
-    setFormData,
-    setValues,
-    setLocationValue,
-    setStationValue,
-    setUdstyrValue,
-  ] = React.useContext(StamdataContext);
+  // const [
+  //   locality,
+  //   setLocality,
+  //   formData,
+  //   setFormData,
+  //   setValues,
+  //   setLocationValue,
+  //   setStationValue,
+  //   setUdstyrValue,
+  // ] = React.useContext(StamdataContext);
 
   return (
     <Grid container spacing={2}>
@@ -238,10 +240,11 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
         locationDialogOpen={locationDialogOpen}
         setLocationDialogOpen={setLocationDialogOpen}
       />
+      <LocalityForm />
       {/* <Grid item xs={12} sm={12}>
         <InputLabel>Lokalitet</InputLabel>
       </Grid> */}
-      <Grid item xs={12} sm={6}>
+      {/* <Grid item xs={12} sm={6}>
         <TextField
           variant='outlined'
           type='text'
@@ -289,7 +292,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
       <Grid item xs={12} sm={6}>
         <TextField
           variant='outlined'
-          type='text'
+          type='number'
           label='X-koordinat (UTM)'
           value={formData.location.x}
           InputLabelProps={{ shrink: true }}
@@ -300,7 +303,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
       <Grid item xs={12} sm={6}>
         <TextField
           variant='outlined'
-          type='text'
+          type='number'
           label='Y-koordinat (UTM)'
           value={formData.location.y}
           InputLabelProps={{ shrink: true }}
@@ -311,7 +314,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
       <Grid item xs={12} sm={6}>
         <TextField
           variant='outlined'
-          type='text'
+          type='number'
           label='Terrænkote'
           value={formData.location.terrainlevel}
           InputLabelProps={{ shrink: true }}
@@ -342,109 +345,101 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
           fullWidth
           margin='dense'
         />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }
 
-const StationTypeSelect = (props) => {
-  const { selectedStationType, setSelectedStationType, stationTypes } = props;
-  const handleSelection = (event) => {
-    setSelectedStationType(event.target.value);
-  };
+// const StationTypeSelect = (props) => {
+//   const { selectedStationType, setSelectedStationType, stationTypes } = props;
+//   const handleSelection = (event) => {
+//     setSelectedStationType(event.target.value);
+//   };
 
-  let menuItems = stationTypes
-    .filter((i) => i.properties.tstype_id !== 0)
-    .map((item) => (
-      <MenuItem value={item.properties.tstype_id}>
-        {item.properties.tstype_name}
-      </MenuItem>
-    ));
-  return (
-    <TextField
-      autoFocus
-      variant='outlined'
-      select
-      margin='dense'
-      value={selectedStationType}
-      onChange={handleSelection}
-      label='Sensor type'
-      fullWidth
-    >
-      <MenuItem value={-1}>Vælg type</MenuItem>
-      {menuItems}
-    </TextField>
-  );
-};
+//   let menuItems = stationTypes
+//     .filter((i) => i.properties.tstype_id !== 0)
+//     .map((item) => (
+//       <MenuItem value={item.properties.tstype_id}>
+//         {item.properties.tstype_name}
+//       </MenuItem>
+//     ));
+//   return (
+//     <TextField
+//       autoFocus
+//       variant='outlined'
+//       select
+//       margin='dense'
+//       value={selectedStationType}
+//       onChange={handleSelection}
+//       label='Sensor type'
+//       fullWidth
+//     >
+//       <MenuItem value={-1}>Vælg type</MenuItem>
+//       {menuItems}
+//     </TextField>
+//   );
+// };
 
-function StationForm(props) {
-  const [stationTypes, setStationTypes] = React.useState([]);
-  useEffect(() => {
-    if (stationTypes.length > 0) {
-      console.log("station more than zero");
-    } else {
-      console.log("station are 0");
-    }
-    getStationTypes().then((res) => res && setStationTypes(res.data.features));
-  }, []);
+// function StationForm(props) {
+//   const [stationTypes, setStationTypes] = React.useState([]);
+//   useEffect(() => {
+//     if (stationTypes.length > 0) {
+//       console.log("station more than zero");
+//     } else {
+//       console.log("station are 0");
+//     }
+//     getStationTypes().then((res) => res && setStationTypes(res.data.features));
+//   }, []);
 
-  const [
-    locality,
-    setLocality,
-    formData,
-    setFormData,
-    setValues,
-    setLocationValue,
-    setStationValue,
-    setUdstyrValue,
-  ] = React.useContext(StamdataContext);
+//   const [, , formData, , , , setStationValue, ,] =
+//     React.useContext(StamdataContext);
 
-  return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Navn'
-          value={formData.station.stationname}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-          onChange={(e) => setStationValue("stationname", e.target.value)}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <StationTypeSelect {...props} stationTypes={stationTypes} />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label=' Målepunktskote'
-          value={formData.station.maalepunktskote}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-          onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Evt. loggerdybde'
-          value={formData.station.terrainlevel}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-          onChange={(e) => setStationValue("terrainlevel", e.target.value)}
-        />
-      </Grid>
-    </Grid>
-  );
-}
+//   return (
+//     <Grid container spacing={2}>
+//       <Grid item xs={12} sm={6}>
+//         <TextField
+//           variant='outlined'
+//           type='text'
+//           label='Navn'
+//           value={formData.station.stationname}
+//           InputLabelProps={{ shrink: true }}
+//           fullWidth
+//           margin='dense'
+//           onChange={(e) => setStationValue("stationname", e.target.value)}
+//         />
+//       </Grid>
+//       <Grid item xs={12} sm={6}>
+//         <StationTypeSelect {...props} stationTypes={stationTypes} />
+//       </Grid>
+//       <Grid item xs={12} sm={6}>
+//         <TextField
+//           variant='outlined'
+//           type='number'
+//           label=' Målepunktskote'
+//           value={formData.station.maalepunktskote}
+//           InputLabelProps={{ shrink: true }}
+//           fullWidth
+//           margin='dense'
+//           onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
+//         />
+//       </Grid>
+//       <Grid item xs={12} sm={6}>
+//         <TextField
+//           variant='outlined'
+//           type='text'
+//           label='Evt. loggerdybde'
+//           value={formData.station.terrainlevel}
+//           InputLabelProps={{ shrink: true }}
+//           fullWidth
+//           margin='dense'
+//           onChange={(e) => setStationValue("terrainlevel", e.target.value)}
+//         />
+//       </Grid>
+//     </Grid>
+//   );
+// }
 
-function UdstyrForm(props) {
+function Udstyr(props) {
   const [, , formData, , setValues, , , setUdstyrValue] =
     React.useContext(StamdataContext);
 
@@ -546,22 +541,6 @@ function UdstyrForm(props) {
             fullWidth
             margin='dense'
           />
-          {/* <KeyboardDateTimePicker
-            disableToolbar
-            inputProps={{ readOnly: true }}
-            inputVariant='outlined'
-            format='yyyy-MM-dd HH:mm'
-            margin='normal'
-            id='date-picker-inline'
-            label='Startdato'
-            InputLabelProps={{ shrink: true }}
-            value={formData.udstyr.startdato}
-            onChange={(date) => setUdstyrValue("startdato", date)}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-            }}
-            fullWidth
-          /> */}
         </Grid>
       </Grid>
     </MuiPickersUtilsProvider>
@@ -690,7 +669,7 @@ export default function RetStamdata({ setAddStationDisabled }) {
   };
 
   return (
-    <StamdataContext.Provider
+    <StamdataProvider
       value={[
         locality,
         setLocality,
@@ -706,13 +685,13 @@ export default function RetStamdata({ setAddStationDisabled }) {
         <AddUdstyrForm
           ustyrDialogOpen={ustyrDialogOpen}
           setUdstyrDialogOpen={setUdstyrDialogOpen}
-          saveUdstyrFormData={saveUdstyrFormData}
+          //saveUdstyrFormData={saveUdstyrFormData}
           tstype_id={selectedStationType}
         />
         <AddLocationForm
           locationDialogOpen={locationDialogOpen}
           setLocationDialogOpen={setLocationDialogOpen}
-          saveLocationFormData={saveLocationFormData}
+          //saveLocationFormData={saveLocationFormData}
         />
         <Container fixed>
           <Typography variant='h6' component='h3'>
@@ -725,6 +704,7 @@ export default function RetStamdata({ setAddStationDisabled }) {
           />
           <Typography>Station</Typography>
           <StationForm
+            mode='add'
             selectedStationType={selectedStationType}
             setSelectedStationType={changeSelectedStationType}
           />
@@ -743,8 +723,7 @@ export default function RetStamdata({ setAddStationDisabled }) {
               Tilføj Udstyr
             </Button>
           </div>
-          <UdstyrForm />
-          <Typography>Period</Typography>
+          <UdstyrForm mode='add' />
           <Grid container spacing={3}>
             <Grid item xs={4} sm={2}>
               <Button
@@ -753,6 +732,7 @@ export default function RetStamdata({ setAddStationDisabled }) {
                 onClick={() => {
                   history.push("/");
                   setAddStationDisabled(false);
+                  postStamdata(formData);
                 }}
               >
                 Gem
@@ -773,6 +753,6 @@ export default function RetStamdata({ setAddStationDisabled }) {
           </Grid>
         </Container>
       </div>
-    </StamdataContext.Provider>
+    </StamdataProvider>
   );
 }

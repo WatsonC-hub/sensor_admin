@@ -19,7 +19,7 @@ import { StamdataContext } from "./StamdataContext";
 export default function AddLocationForm({
   locationDialogOpen,
   setLocationDialogOpen,
-  saveLocationFormData,
+  /*saveLocationFormData,*/
 }) {
   const [open, setOpen] = React.useState(false);
   const [locationData, setLocationData] = useState({
@@ -35,7 +35,7 @@ export default function AddLocationForm({
   });
 
   const [
-    locality,
+    llocality,
     setLocality,
     formData,
     setFormData,
@@ -43,6 +43,8 @@ export default function AddLocationForm({
     setLocationValue,
     setStationValue,
     setUdstyrValue,
+    saveUdstyrFormData,
+    saveLocationFormData,
   ] = React.useContext(StamdataContext);
 
   const handleChange = (event) => {
@@ -59,7 +61,7 @@ export default function AddLocationForm({
     // We'are adding new location, so locid is empty.
     // locid used to determine whether we're updating or inserting
     // new location.
-    setUdstyrValue("locid", "");
+    setLocationValue("locid", "");
   };
 
   const handleClickOpen = () => {
@@ -126,7 +128,7 @@ export default function AddLocationForm({
             label='X-koordinat(UTM)'
             value={locationData.x}
             onChange={handleChange}
-            type='text'
+            type='number'
             fullWidth
           />
           <TextField
@@ -136,7 +138,7 @@ export default function AddLocationForm({
             label='Y-koordinat (UTM)'
             value={locationData.y}
             onChange={handleChange}
-            type='text'
+            type='number'
             fullWidth
           />
           <TextField
@@ -146,7 +148,7 @@ export default function AddLocationForm({
             label='Terrænkote'
             value={locationData.terrainlevel}
             onChange={handleChange}
-            type='text'
+            type='number'
             fullWidth
           />
           <TextField

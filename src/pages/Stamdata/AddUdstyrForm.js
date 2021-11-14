@@ -22,7 +22,7 @@ import { StamdataContext } from "./StamdataContext";
 export default function AddUdstyrForm({
   ustyrDialogOpen,
   setUdstyrDialogOpen,
-  saveUdstyrFormData,
+  /*saveUdstyrFormData,*/
   tstype_id,
 }) {
   const [open, setOpen] = React.useState(false);
@@ -34,6 +34,9 @@ export default function AddUdstyrForm({
     uuid: "",
     fra: new Date(),
   });
+
+  const [, , , , , , , , saveUdstyrFormData] =
+    React.useContext(StamdataContext);
 
   const [availableUnits, setAvailableUnits] = useState([]);
 
@@ -77,6 +80,8 @@ export default function AddUdstyrForm({
     );
 
     console.log(unit);
+
+    if (!unit) return;
 
     saveUdstyrFormData({
       terminal: unit.type,
