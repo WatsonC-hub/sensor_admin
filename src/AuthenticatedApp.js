@@ -14,6 +14,7 @@ import { PhotoCameraRounded } from "@material-ui/icons";
 import CaptureDialog from "./pages/station/CaptureDialog";
 import ScanComponent from "./components/ScanComponent";
 import OpretForm from "./pages/Stamdata/OpretForm";
+import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
 
 /*
 Libraries to explore for this app:
@@ -113,7 +114,9 @@ function AuthenticatedApp({ setUser }) {
             <LocationDrawer />
           </Route>
           <Route path='/stamdata'>
-            <OpretForm setAddStationDisabled={setAddStationDisabled} />
+            <StamdataProvider>
+              <OpretForm setAddStationDisabled={setAddStationDisabled} />
+            </StamdataProvider>
           </Route>
           <Route path='/:labelid'>
             <ScanComponent />

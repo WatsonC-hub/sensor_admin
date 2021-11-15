@@ -39,3 +39,31 @@ import { StamdataContext } from "./StamdataContext";
 import { getStamData, getStationTypes, postStamdata } from "../../api";
 import { useQuery } from "react-query";
 import UdstyrForm from "./components/UdstyrForm";
+
+export default function EditStamdataForm() {
+  const [
+    locality,
+    setLocality,
+    formData,
+    setFormData,
+    setValues,
+    setLocationValue,
+    setStationValue,
+    setUdstyrValue,
+    saveUdstyrFormData,
+    saveLocationFormData,
+  ] = React.useContext(StamdataContext);
+
+  return (
+    <Container fixed>
+      <Typography variant='h6' component='h3'>
+        Stamdata
+      </Typography>
+      <Grid container spacing={2}>
+        <LocalityForm />
+      </Grid>
+      <StationForm mode='edit' />
+      <UdstyrForm mode='edit' />
+    </Container>
+  );
+}

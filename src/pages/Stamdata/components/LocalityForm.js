@@ -9,7 +9,7 @@ export default function LocalityForm() {
   console.log("got formdata => ", formData);
 
   return (
-    <>
+    <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
@@ -155,6 +155,6 @@ export default function LocalityForm() {
           margin='dense'
         />
       </Grid>
-    </>
+    </Grid>
   );
 }

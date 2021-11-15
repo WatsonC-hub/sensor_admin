@@ -131,7 +131,7 @@ const StamdataProvider = (props) => {
 
   const saveLocationFormData = (locationData) => {
     setValues("location", {
-      locname: locationData.locname,
+      locname: locationData.loc_name,
       mainloc: locationData.mainloc,
       subloc: locationData.subloc,
       subsubloc: locationData.subsubloc,

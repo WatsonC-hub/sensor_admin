@@ -19,6 +19,7 @@ import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
 import CaptureBearing from "./CaptureBearing";
 import { format } from "date-fns";
+import { StamdataProvider } from "../Stamdata/StamdataContext";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -147,7 +148,9 @@ export default function Station({
         />
       )}
       {formToShow === "RET_STAMDATA" && (
-        <EditStamdata setFormToShow={setFormToShow} />
+        <StamdataProvider>
+          <EditStamdata setFormToShow={setFormToShow} stationId={stationId} />
+        </StamdataProvider>
       )}
       {formToShow === "TAG_BILLEDE" && (
         <CaptureBearing setFormToShow={setFormToShow} />

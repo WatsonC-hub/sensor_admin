@@ -551,40 +551,52 @@ export default function RetStamdata({ setAddStationDisabled }) {
   const history = useHistory();
   const [ustyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
-  const [formData, setFormData] = React.useState({
-    location: {
-      locname: "",
-      mainloc: "",
-      subloc: "",
-      subsubloc: "",
-      x: "",
-      y: "",
-      terrainqual: "",
-      //terrainlevel:"",
-      description: "",
-    },
-    station: {
-      stationname: "",
-      stationtypename: "",
-      parameter: "",
-      maalepunktskote: "",
-      terrainlevel: "",
-    },
-    udstyr: {
-      terminal: "",
-      terminalid: "",
-      sensorid: "",
-      sensorinfo: "",
-      calypso_id: "",
-      batteriskift: "",
-      startdato: "",
-      slutdato: "",
-    },
-  });
+  const [
+    locality,
+    setLocality,
+    formData,
+    setFormData,
+    setValues,
+    setLocationValue,
+    setStationValue,
+    setUdstyrValue,
+    saveUdstyrFormData,
+    saveLocationFormData,
+  ] = React.useContext(StamdataContext);
+  // const [formData, setFormData] = React.useState({
+  //   location: {
+  //     locname: "",
+  //     mainloc: "",
+  //     subloc: "",
+  //     subsubloc: "",
+  //     x: "",
+  //     y: "",
+  //     terrainqual: "",
+  //     //terrainlevel:"",
+  //     description: "",
+  //   },
+  //   station: {
+  //     stationname: "",
+  //     stationtypename: "",
+  //     parameter: "",
+  //     maalepunktskote: "",
+  //     terrainlevel: "",
+  //   },
+  //   udstyr: {
+  //     terminal: "",
+  //     terminalid: "",
+  //     sensorid: "",
+  //     sensorinfo: "",
+  //     calypso_id: "",
+  //     batteriskift: "",
+  //     startdato: "",
+  //     slutdato: "",
+  //   },
+  // });
 
-  //const [formData, setFormData] = React.useState(data);
+  // //const [formData, setFormData] = React.useState(data);
 
-  const [locality, setLocality] = React.useState(0);
+  // const [locality, setLocality] = React.useState(0);
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
   const changeSelectedStationType = (selectedType) => {
@@ -608,151 +620,153 @@ export default function RetStamdata({ setAddStationDisabled }) {
     });
   };
 
-  const setLocationValue = (key, value) => {
-    setFormData((formData) => ({
-      ...formData,
-      location: {
-        ...formData.location,
-        [key]: value,
-      },
-    }));
-  };
+  // const setLocationValue = (key, value) => {
+  //   setFormData((formData) => ({
+  //     ...formData,
+  //     location: {
+  //       ...formData.location,
+  //       [key]: value,
+  //     },
+  //   }));
+  // };
 
-  const setStationValue = (key, value) => {
-    setFormData((formData) => ({
-      ...formData,
-      station: {
-        ...formData.station,
-        [key]: value,
-      },
-    }));
-  };
+  // const setStationValue = (key, value) => {
+  //   setFormData((formData) => ({
+  //     ...formData,
+  //     station: {
+  //       ...formData.station,
+  //       [key]: value,
+  //     },
+  //   }));
+  // };
 
-  const setUdstyrValue = (key, value) => {
-    setFormData((formData) => ({
-      ...formData,
-      udstyr: {
-        ...formData.udstyr,
-        [key]: value,
-      },
-    }));
-  };
+  // const setUdstyrValue = (key, value) => {
+  //   setFormData((formData) => ({
+  //     ...formData,
+  //     udstyr: {
+  //       ...formData.udstyr,
+  //       [key]: value,
+  //     },
+  //   }));
+  // };
 
-  const setValues = (part, keyValues) => {
-    Object.keys(keyValues).forEach((k) => {
-      if (part === "location") {
-        setLocationValue(k, keyValues[k]);
-      } else if (part === "station") {
-        setStationValue(k, keyValues[k]);
-      } else if (part === "udstyr") {
-        setUdstyrValue(k, keyValues[k]);
-      }
-    });
-  };
+  // const setValues = (part, keyValues) => {
+  //   Object.keys(keyValues).forEach((k) => {
+  //     if (part === "location") {
+  //       setLocationValue(k, keyValues[k]);
+  //     } else if (part === "station") {
+  //       setStationValue(k, keyValues[k]);
+  //     } else if (part === "udstyr") {
+  //       setUdstyrValue(k, keyValues[k]);
+  //     }
+  //   });
+  // };
 
-  const saveUdstyrFormData = (unitData) => {
-    setValues("udstyr", unitData);
-  };
+  // const saveUdstyrFormData = (unitData) => {
+  //   setValues("udstyr", unitData);
+  // };
 
-  const saveLocationFormData = (locationData) => {
-    setValues("location", {
-      locname: locationData.locname,
-      mainloc: locationData.mainloc,
-      subloc: locationData.subloc,
-      subsubloc: locationData.subsubloc,
-      x: locationData.x,
-      y: locationData.y,
-      terrainqual: locationData.terrainqual,
-      terrainlevel: locationData.terrainlevel,
-      description: locationData.description,
-    });
-  };
+  // const saveLocationFormData = (locationData) => {
+  //   setValues("location", {
+  //     locname: locationData.locname,
+  //     mainloc: locationData.mainloc,
+  //     subloc: locationData.subloc,
+  //     subsubloc: locationData.subsubloc,
+  //     x: locationData.x,
+  //     y: locationData.y,
+  //     terrainqual: locationData.terrainqual,
+  //     terrainlevel: locationData.terrainlevel,
+  //     description: locationData.description,
+  //   });
+  // };
 
   return (
-    <StamdataProvider
-      value={[
-        locality,
-        setLocality,
-        formData,
-        setFormData,
-        setValues,
-        setLocationValue,
-        setStationValue,
-        setUdstyrValue,
-      ]}
-    >
-      <div>
-        <AddUdstyrForm
-          ustyrDialogOpen={ustyrDialogOpen}
-          setUdstyrDialogOpen={setUdstyrDialogOpen}
-          //saveUdstyrFormData={saveUdstyrFormData}
-          tstype_id={selectedStationType}
-        />
-        <AddLocationForm
+    // <StamdataProvider
+    //   value={[
+    //     locality,
+    //     setLocality,
+    //     formData,
+    //     setFormData,
+    //     setValues,
+    //     setLocationValue,
+    //     setStationValue,
+    //     setUdstyrValue,
+    //     saveUdstyrFormData,
+    //     saveLocationFormData,
+    //   ]}
+    // >
+    <div>
+      <AddUdstyrForm
+        ustyrDialogOpen={ustyrDialogOpen}
+        setUdstyrDialogOpen={setUdstyrDialogOpen}
+        //saveUdstyrFormData={saveUdstyrFormData}
+        tstype_id={selectedStationType}
+      />
+      <AddLocationForm
+        locationDialogOpen={locationDialogOpen}
+        setLocationDialogOpen={setLocationDialogOpen}
+        //saveLocationFormData={saveLocationFormData}
+      />
+      <Container fixed>
+        <Typography variant='h6' component='h3'>
+          Stamdata
+        </Typography>
+
+        <Locality
           locationDialogOpen={locationDialogOpen}
           setLocationDialogOpen={setLocationDialogOpen}
-          //saveLocationFormData={saveLocationFormData}
         />
-        <Container fixed>
-          <Typography variant='h6' component='h3'>
-            Stamdata
-          </Typography>
-
-          <Locality
-            locationDialogOpen={locationDialogOpen}
-            setLocationDialogOpen={setLocationDialogOpen}
-          />
-          <Typography>Station</Typography>
-          <StationForm
-            mode='add'
-            selectedStationType={selectedStationType}
-            setSelectedStationType={changeSelectedStationType}
-          />
-          <div style={flex1}>
-            <Typography>Udstyr</Typography>
+        <Typography>Station</Typography>
+        <StationForm
+          mode='add'
+          selectedStationType={selectedStationType}
+          setSelectedStationType={changeSelectedStationType}
+        />
+        <div style={flex1}>
+          <Typography>Udstyr</Typography>
+          <Button
+            disabled={selectedStationType === -1}
+            size='small'
+            style={{
+              backgroundColor: "#4472c4",
+              textTransform: "none",
+              marginLeft: "12px",
+            }}
+            onClick={() => setUdstyrDialogOpen(true)}
+          >
+            Tilføj Udstyr
+          </Button>
+        </div>
+        <UdstyrForm mode='add' />
+        <Grid container spacing={3}>
+          <Grid item xs={4} sm={2}>
             <Button
-              disabled={selectedStationType === -1}
-              size='small'
-              style={{
-                backgroundColor: "#4472c4",
-                textTransform: "none",
-                marginLeft: "12px",
+              autoFocus
+              style={{ backgroundColor: "#ffa137" }}
+              onClick={() => {
+                history.push("/");
+                setAddStationDisabled(false);
+                postStamdata(formData);
               }}
-              onClick={() => setUdstyrDialogOpen(true)}
             >
-              Tilføj Udstyr
+              Gem
             </Button>
-          </div>
-          <UdstyrForm mode='add' />
-          <Grid container spacing={3}>
-            <Grid item xs={4} sm={2}>
-              <Button
-                autoFocus
-                style={{ backgroundColor: "#ffa137" }}
-                onClick={() => {
-                  history.push("/");
-                  setAddStationDisabled(false);
-                  postStamdata(formData);
-                }}
-              >
-                Gem
-              </Button>
-            </Grid>
-            <Grid item xs={4} sm={2}>
-              <Button
-                autoFocus
-                style={{ backgroundColor: "#ffa137" }}
-                onClick={() => {
-                  history.push("/");
-                  setAddStationDisabled(false);
-                }}
-              >
-                Annullere
-              </Button>
-            </Grid>
           </Grid>
-        </Container>
-      </div>
-    </StamdataProvider>
+          <Grid item xs={4} sm={2}>
+            <Button
+              autoFocus
+              style={{ backgroundColor: "#ffa137" }}
+              onClick={() => {
+                history.push("/");
+                setAddStationDisabled(false);
+              }}
+            >
+              Annullere
+            </Button>
+          </Grid>
+        </Grid>
+      </Container>
+    </div>
+    // </StamdataProvider>
   );
 }
