@@ -43,7 +43,7 @@ export default function UdstyrForm(props) {
             variant='outlined'
             type='text'
             label='Terminal ID'
-            value={formData.udstyr.terminalid}
+            value={formData.udstyr.terminal_id}
             InputLabelProps={{ shrink: true }}
             fullWidth
             margin='dense'
@@ -73,7 +73,7 @@ export default function UdstyrForm(props) {
             variant='outlined'
             type='text'
             label='Sensor'
-            value={formData.udstyr.parameter}
+            value={formData.udstyr.sensorinfo}
             InputLabelProps={{ shrink: true }}
             fullWidth
             margin='dense'
@@ -88,7 +88,7 @@ export default function UdstyrForm(props) {
             variant='outlined'
             type='text'
             label='Sensor ID'
-            value={formData.udstyr.sensorid}
+            value={formData.udstyr.sensor_id}
             InputLabelProps={{ shrink: true }}
             fullWidth
             margin='dense'

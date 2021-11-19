@@ -125,8 +125,26 @@ const StamdataProvider = (props) => {
     });
   };
 
+  const saveStationFormData = (station) => {
+    setValues("station", {
+      stationname: station.ts_name,
+      tstype_name: station.tstype_name,
+      maalepunktskote: station.maalepunktskote,
+      terrainlevel: station.terrainlevel,
+    });
+  };
+
   const saveUdstyrFormData = (unitData) => {
-    setValues("udstyr", unitData);
+    setValues("udstyr", {
+      terminal: unitData.terminal,
+      terminal_id: unitData.terminal_id,
+      sensor_id: unitData.sensor_id,
+      sensorinfo: unitData.sensorinfo,
+      calypso_id: unitData.calypso_id,
+      batteriskift: unitData.batteriskift,
+      startdato: unitData.startdato,
+      slutdato: unitData.slutdato,
+    });
   };
 
   const saveLocationFormData = (locationData) => {
@@ -156,6 +174,7 @@ const StamdataProvider = (props) => {
         setUdstyrValue,
         saveUdstyrFormData,
         saveLocationFormData,
+        saveStationFormData,
       ]}
     >
       {props.children}

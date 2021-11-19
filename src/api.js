@@ -85,6 +85,12 @@ const getAvailableUnits = () =>
 
 const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
 
+const getStamdataByStation = (stId) =>
+  axios.get(`${extEndpoint}/stamdata/station/${stId}`);
+
+const getUnitHistory = (stationId) =>
+  axios.get(`${extEndpoint}/stamdata/unithistory/${stationId}`);
+
 export {
   getSensorData,
   getTableData,
@@ -101,4 +107,6 @@ export {
   getStationTypes,
   getAvailableUnits,
   postStamdata,
+  getStamdataByStation,
+  getUnitHistory,
 };

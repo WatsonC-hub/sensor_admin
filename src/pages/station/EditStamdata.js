@@ -13,6 +13,8 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -30,7 +32,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import LocalityForm from "../Stamdata/components/LocalityForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
-import { getStamData } from "../../api";
+import { getStamdataByStation, getUnitHistory } from "../../api";
 import { StamdataContext } from "../Stamdata/StamdataContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -258,6 +260,38 @@ const useStyles = makeStyles((theme) => ({
 //     </Grid>
 //   );
 // }
+const UdStyrReplace = ({ stationId }) => {
+  const [unit, setUnit] = React.useState(0);
+  const handleChange = (event) => {
+    setUnit(event.target.value);
+  };
+  const [data, setData] = React.useState([]);
+  useEffect(() => {
+    getUnitHistory(stationId).then((res) => {
+      if (res.data.success) setData(res.data.data);
+    });
+  }, [stationId]);
+
+  return (
+    <>
+      <Grid item xs={6} sm={6}>
+        <Select value={unit} onChange={handleChange}>
+          <MenuItem value={0}>Ingen udstyr</MenuItem>
+          {data.map((item) => (
+            <MenuItem key={item.unit_uuid} value={item.unit_uuid}>
+              {`${item.startdate} - ${item.enddate}`}
+            </MenuItem>
+          ))}
+        </Select>
+      </Grid>
+      <Grid item xs={6} sm={6}>
+        <Button style={{ backgroundColor: "#4472c4" }} onClick={() => {}}>
+          Hjemtag udstyr
+        </Button>
+      </Grid>
+    </>
+  );
+};
 
 export default function RetStamdata(props) {
   const [
@@ -271,6 +305,7 @@ export default function RetStamdata(props) {
     setUdstyrValue,
     saveUdstyrFormData,
     saveLocationFormData,
+    saveStationFormData,
   ] = React.useContext(StamdataContext);
 
   useEffect(() => {
@@ -278,11 +313,24 @@ export default function RetStamdata(props) {
     -get stamdata. choose the one corresponding to stationId.
     set that to formData.
      */
-    getStamData().then((res) => {
-      let st = res.data.data.find((s) => s.ts_id === props.stationId);
-      saveLocationFormData(st);
+    getStamdataByStation(props.stationId).then((res) => {
+      //let st = res.data.data.find((s) => s.ts_id === props.stationId);
+      if (res.data.success) {
+        saveLocationFormData(res.data.data);
+        saveUdstyrFormData(res.data.data);
+        saveStationFormData(res.data.data);
+      }
     });
-  }, []);
+  }, [props.stationId]);
+
+  /*
+  TODO:
+  1. save data
+  2. Error handling if no data
+  3. hjemmetage udstyr component
+  4. Skift batteri
+  5. show that data is loading (login, dropdown .... ) 
+  */
   return (
     <div>
       <Container fixed>
@@ -294,6 +342,7 @@ export default function RetStamdata(props) {
         <Typography>Station</Typography>
         <StationForm />
         <Typography>Udstyr</Typography>
+        <UdStyrReplace stationId={props.stationId} />
         <UdstyrForm />
         <Grid container spacing={3}>
           <Grid item xs={4} sm={2}>

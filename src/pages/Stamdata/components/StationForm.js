@@ -42,7 +42,7 @@ export default function StationForm(props) {
     } else {
       console.log("station are 0");
     }
-    if (mode === "edit") return;
+    if (mode === "add") return;
     getStationTypes().then((res) => res && setStationTypes(res.data.features));
   }, []);
 
@@ -73,7 +73,7 @@ export default function StationForm(props) {
             }}
             variant='outlined'
             type='text'
-            label='Navn'
+            label='Station type'
             value={formData.station.tstype_name}
             InputLabelProps={{ shrink: true }}
             fullWidth
