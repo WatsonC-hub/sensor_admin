@@ -15,6 +15,9 @@ import {
   FormLabel,
   Select,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -23,6 +26,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
+  KeyboardDateTimePicker,
 } from "@material-ui/pickers";
 import { makeStyles } from "@material-ui/core/styles";
 import Accordion from "@material-ui/core/Accordion";
@@ -260,36 +264,99 @@ const useStyles = makeStyles((theme) => ({
 //     </Grid>
 //   );
 // }
+
+const UnitEndDateDialog = () => {
+  return (
+    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
+      <Dialog>
+        <DialogTitle>Set slutdato</DialogTitle>
+        <DialogContent>
+          <KeyboardDateTimePicker
+            disableToolbar
+            variant='inline'
+            inputProps={{ readOnly: true }}
+            format='yyyy-MM-dd'
+            margin='normal'
+            id='Fra'
+            label={
+              <Typography variant='h6' component='h3'>
+                Fra
+              </Typography>
+            }
+            InputLabelProps={{ shrink: true }}
+            value={new Date()}
+            onChange={(date) => {}}
+            KeyboardButtonProps={{
+              "aria-label": "change date",
+            }}
+            fullWidth
+          />
+          <TextField
+            InputProps={{
+              readOnly: false,
+            }}
+            variant='outlined'
+            type='text'
+            label='Kommentar'
+            value=''
+            onChange={(event) => {}}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            margin='dense'
+          />
+        </DialogContent>
+      </Dialog>
+    </MuiPickersUtilsProvider>
+  );
+};
+
 const UdStyrReplace = ({ stationId }) => {
   const [unit, setUnit] = React.useState(0);
   const handleChange = (event) => {
     setUnit(event.target.value);
   };
+  const flex1 = {
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+  };
+
   const [data, setData] = React.useState([]);
   useEffect(() => {
     getUnitHistory(stationId).then((res) => {
-      if (res.data.success) setData(res.data.data);
+      if (res.data.success) {
+        setData(res.data.data);
+        setUnit(res.data.data[0].unit_uuid);
+      }
     });
   }, [stationId]);
 
   return (
-    <>
+    <Grid container spacing={2}>
       <Grid item xs={6} sm={6}>
-        <Select value={unit} onChange={handleChange}>
-          <MenuItem value={0}>Ingen udstyr</MenuItem>
-          {data.map((item) => (
-            <MenuItem key={item.unit_uuid} value={item.unit_uuid}>
-              {`${item.startdate} - ${item.enddate}`}
-            </MenuItem>
-          ))}
-        </Select>
+        <div style={flex1}>
+          <Typography>Udstyr</Typography>
+          <Select value={unit} onChange={handleChange}>
+            <MenuItem value={0}>Ingen udstyr</MenuItem>
+            {data.map((item) => {
+              let endDate =
+                new Date() < new Date(item.enddate) ? "nu" : item.enddate;
+
+              return (
+                <MenuItem key={item.unit_uuid} value={item.unit_uuid}>
+                  {`${item.startdate} - ${endDate}`}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </div>
       </Grid>
       <Grid item xs={6} sm={6}>
         <Button style={{ backgroundColor: "#4472c4" }} onClick={() => {}}>
           Hjemtag udstyr
         </Button>
       </Grid>
-    </>
+    </Grid>
   );
 };
 
@@ -341,7 +408,7 @@ export default function RetStamdata(props) {
         <LocalityForm />
         <Typography>Station</Typography>
         <StationForm />
-        <Typography>Udstyr</Typography>
+
         <UdStyrReplace stationId={props.stationId} />
         <UdstyrForm />
         <Grid container spacing={3}>
