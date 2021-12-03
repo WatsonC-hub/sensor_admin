@@ -33,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
 const loginUser = (user, password) => {
   let sessionUrl = "https://watsonc.admin.gc2.io/api/v2/session/start";
   sessionUrl = "http://localhost:8080/api/v2/session/start";
+  console.log(sessionUrl)
   const loginData = {
     user,
     password,
@@ -58,7 +59,7 @@ export default function Login({ setUser }) {
           setUser(res.data.data);
           setLoginError(false);
         }
-        //console.log(res.data);
+        console.log(res.data);
       })
       .catch((r) => {
         setLoginError(true);

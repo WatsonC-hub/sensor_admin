@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
 import { getSensorData } from "./api";
 import SimpleTabs from "./components/SimpleTabs";
@@ -15,6 +15,7 @@ import CaptureDialog from "./pages/station/CaptureDialog";
 import ScanComponent from "./components/ScanComponent";
 import OpretForm from "./pages/Stamdata/OpretForm";
 import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
+import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 
 /*
 Libraries to explore for this app:
@@ -33,6 +34,7 @@ function AuthenticatedApp({ setUser }) {
   const [open, setOpen] = useState(false);
   const [addStationDisabled, setAddStationDisabled] = useState(false);
   const history = useHistory();
+  let location = useLocation();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -47,6 +49,12 @@ function AuthenticatedApp({ setUser }) {
     setSessionId(null);
     setUser(null);
   };
+
+  // if (history.location.pathname !== '/stamdata') {
+  //   setAddStationDisabled(false)
+  // }
+  console.log(location.pathname)
+  console.log(location.pathname !== '/stamdata')
 
   // useEffect(() => {
   //   let sessionId = sessionStorage.getItem("session_id");
@@ -79,30 +87,28 @@ function AuthenticatedApp({ setUser }) {
               justifyContent: "space-between",
             }}
           >
-            {/* <IconButton color='inherit' onClick={handleClickOpen}>
-              <PhotoCameraRounded />
-            </IconButton> */}
-            <Button
-              disabled={addStationDisabled}
+            { (location.pathname !== '/stamdata') ? <Button
               color='inherit'
               style={{ backgroundColor: "#4472c4" }}
               onClick={() => {
                 history.push("/stamdata");
-                setAddStationDisabled(true);
+                // setAddStationDisabled(true);
               }}
             >
-              Tilføj Station
-            </Button>
+              Opret station
+            </Button> :  <IconButton
+            color='inherit'
+            onClick={
+              (e) => history.push("/") //context.setLocationId(-1)
+            }
+          >
+            <KeyboardBackspaceIcon />
+          </IconButton>}
             <Button color='inherit' onClick={handleLogout}>
-              Logout
+              Log ud
             </Button>
           </Toolbar>
         </AppBar>
-        {/* {locationId === -1 ? (
-          <SimpleTabs sensors={sensors} setUser={setUser} />
-        ) : (
-          <LocationDrawer />
-        )} */}
         <Switch>
           <Route path='/' exact>
             <SimpleTabs sensors={sensors} setUser={setUser} />
