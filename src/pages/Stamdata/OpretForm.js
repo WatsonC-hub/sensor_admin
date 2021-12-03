@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
-  Container,
-  Grid,
-  Typography,
-  TextField,
-  Button,
-  InputLabel,
-  Select,
-  MenuItem,
-  Card,
-  CardContent,
-  CardActions,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
+    Container,
+    Grid,
+    Typography,
+    TextField,
+    Button,
+    InputLabel,
+    Select,
+    MenuItem,
+    Card,
+    CardContent,
+    CardActions,
+    Radio,
+    RadioGroup,
+    FormControlLabel,
+    FormControl,
+    FormLabel,
 } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import daLocale from "date-fns/locale/da";
 import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-  KeyboardDateTimePicker,
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+    KeyboardDatePicker,
+    KeyboardDateTimePicker,
 } from "@material-ui/pickers";
 import { makeStyles } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
@@ -41,732 +41,401 @@ import { useQuery } from "react-query";
 import UdstyrForm from "./components/UdstyrForm";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
+    root: {
+        width: "100%",
+    },
+    heading: {
+        fontSize: theme.typography.pxToRem(15),
+        flexBasis: "33.33%",
+        flexShrink: 0,
+    },
+    secondaryHeading: {
+        fontSize: theme.typography.pxToRem(15),
+        color: theme.palette.text.secondary,
+    },
 }));
 
 const flex1 = {
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "start",
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "start",
 };
 
 function LocationChooser({ locationDialogOpen, setLocationDialogOpen }) {
-  const flex = {
-    display: "flex",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-  };
+    const flex = {
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "space-between",
+    };
 
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
-  const [location, setLocatition] = React.useState(0);
-  const [localities, setLocalities] = React.useState([]);
-  const [
-    locality,
-    setLocality,
-    formData,
-    setFormData,
-    setValues,
-    setLocationValue,
-    setStationValue,
-    setUdstyrValue,
-  ] = React.useContext(StamdataContext);
-  console.log("context locality: " + locality);
-  //console.log(locations.default.data);
-  const locationNames = (features) => {
-    const names = features.map((l) => l.loc_name);
-    return [...new Set(names)];
-  };
-  //const locationItems = [];
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.down("sm"));
+    const [location, setLocatition] = React.useState(0);
+    const [localities, setLocalities] = React.useState([]);
+    const [
+        locality,
+        setLocality,
+        formData,
+        setFormData,
+        setValues,
+        setLocationValue,
+        setStationValue,
+        setUdstyrValue,
+    ] = React.useContext(StamdataContext);
+    console.log("context locality: " + locality);
+    //console.log(locations.default.data);
+    const locationNames = (features) => {
+        const names = features.map((l) => l.loc_name);
+        return [...new Set(names)];
+    };
+    //const locationItems = [];
 
-  const populateFormData = (features, locname) => {
-    const locData = features.find((f) => f.loc_name === locname);
-    console.log(locname, locData);
-    if (locData) {
-      setValues("location", {
-        locid: locData.loc_id,
-        locname: locData.loc_name,
-        mainloc: locData.mainloc,
-        subloc: locData.subloc,
-        subsubloc: locData.subsubloc,
-        x: locData.x,
-        y: locData.y,
-        terrainqual: locData.terrainqual,
-        terrainlevel: locData.terrainlevel,
-        description: "",
-      });
+    const populateFormData = (features, locname) => {
+        const locData = features.find((f) => f.loc_name === locname);
+        console.log(locname, locData);
+        if (locData) {
+            setValues("location", {
+                locid: locData.loc_id,
+                locname: locData.loc_name,
+                mainloc: locData.mainloc,
+                subloc: locData.subloc,
+                subsubloc: locData.subsubloc,
+                x: locData.x,
+                y: locData.y,
+                terrainqual: locData.terrainqual,
+                terrainlevel: locData.terrainlevel,
+                description: "",
+            });
 
-      // setValues("udstyr", {
-      //   terminal: locData.terminal_type,
-      //   terminalid: locData.terminal_id,
-      //   sensorid: locData.sensor_id,
-      //   sensorinfo: locData.sensorinfo,
-      //   parameter: locData.tstype_name,
-      //   calypso_id: locData.calypso_id,
-      //   batteriskift: locData.batteriskift,
-      //   startdato: locData.startdato,
-      //   slutdato: locData.slutdato,
-      //});
-    }
-  };
+            // setValues("udstyr", {
+            //   terminal: locData.terminal_type,
+            //   terminalid: locData.terminal_id,
+            //   sensorid: locData.sensor_id,
+            //   sensorinfo: locData.sensorinfo,
+            //   parameter: locData.tstype_name,
+            //   calypso_id: locData.calypso_id,
+            //   batteriskift: locData.batteriskift,
+            //   startdato: locData.startdato,
+            //   slutdato: locData.slutdato,
+            //});
+        }
+    };
 
-  const locationItems = locationNames(localities).map((name) => (
-    <MenuItem value={name}>{name}</MenuItem>
-  ));
+    const locationItems = locationNames(localities).map((name) => (
+        <MenuItem value={name}>{name}</MenuItem>
+    ));
 
-  const handleChange = (event) => {
-    console.log(formData);
-    setLocality(event.target.value);
-    console.log("before populateformdata");
-    populateFormData(localities, event.target.value);
-  };
+    const handleChange = (event) => {
+        console.log(formData);
+        setLocality(event.target.value);
+        console.log("before populateformdata");
+        populateFormData(localities, event.target.value);
+    };
 
-  useEffect(() => {
-    getStamData().then((res) => setLocalities(res.data.data));
-  }, []);
+    useEffect(() => {
+        getStamData().then((res) => setLocalities(res.data.data));
+    }, []);
 
-  const desktopChooser = (
-    <>
-      <Grid item xs={12} sm={6}>
-        <div style={flex}>
-          <span>Lokalitet</span>
-          <Select value={locality} onChange={handleChange}>
-            <MenuItem value={0}>Vælg Lokalitet</MenuItem>
-            {locationItems}
-          </Select>
+    const desktopChooser = (
+        <>
+            <Grid item xs={12} sm={6}>
+                <div style={flex}>
+                    <span>Lokalitet</span>
+                    <Select value={locality} onChange={handleChange}>
+                        <MenuItem value={0}>Vælg Lokalitet</MenuItem>
+                        {locationItems}
+                    </Select>
 
-          <Button
-            style={{ backgroundColor: "#4472c4" }}
-            onClick={() => setLocationDialogOpen(true)}
-          >
-            Tilføj lokation
-          </Button>
-        </div>
-      </Grid>
-      <Grid item xs={12} sm={6}></Grid>
-    </>
-  );
+                    <Button
+                        style={{ backgroundColor: "#4472c4" }}
+                        onClick={() => setLocationDialogOpen(true)}
+                    >
+                        Tilføj lokation
+                    </Button>
+                </div>
+            </Grid>
+            <Grid item xs={12} sm={6}></Grid>
+        </>
+    );
 
-  const mobileChooser = (
-    <>
-      <Grid item xs={6}>
-        <FormControl>
-          <InputLabel id='localityId'>Lokalitet</InputLabel>
-          <Select value={location} onChange={handleChange}>
-            <MenuItem value={0}>Vælg Lokalitet</MenuItem>
-            {locationItems}
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item xs={6}>
-        <Button
-          style={{ backgroundColor: "#4472c4", textTransform: "none" }}
-          onClick={() => setLocationDialogOpen(true)}
-        >
-          Tilføj lokation
-        </Button>
-      </Grid>
-    </>
-  );
+    const mobileChooser = (
+        <>
+            <Grid item xs={6}>
+                <FormControl>
+                    <InputLabel id='localityId'>Lokalitet</InputLabel>
+                    <Select value={location} onChange={handleChange}>
+                        <MenuItem value={0}>Vælg Lokalitet</MenuItem>
+                        {locationItems}
+                    </Select>
+                </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+                <Button
+                    style={{ backgroundColor: "#4472c4", textTransform: "none" }}
+                    onClick={() => setLocationDialogOpen(true)}
+                >
+                    Tilføj lokation
+                </Button>
+            </Grid>
+        </>
+    );
 
-  const mobileChooser1 = (
-    <>
-      <Grid item xs={12}>
-        <div style={flex}>
-          <Typography id='localityId'>Lokalitet</Typography>
-          <Button
-            size='small'
-            style={{ backgroundColor: "#4472c4", textTransform: "none" }}
-          >
-            Tilføj lokation
-          </Button>
-        </div>
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          select
-          label=''
-          labelId='localityId'
-          value={"none"}
-          variant='outlined'
-        >
-          <MenuItem value={"none"}>
-            Gyrup2– kalundborg kommune - Danmark
-          </MenuItem>
-          <MenuItem value={"one"}>one</MenuItem>
-          <MenuItem value={"two"}>two</MenuItem>
-          <MenuItem value={"three"}>three</MenuItem>
-        </TextField>
-      </Grid>
-    </>
-  );
 
-  return matches ? mobileChooser : desktopChooser;
+    return matches ? mobileChooser : desktopChooser;
 }
 
 function Locality({ locationDialogOpen, setLocationDialogOpen }) {
-  // const flex = {
-  //   display: "flex",
-  //   alignItems: "baseline",
-  //   justifyContent: "space-between",
-  // };
+    // const flex = {
+    //   display: "flex",
+    //   alignItems: "baseline",
+    //   justifyContent: "space-between",
+    // };
 
-  // const [
-  //   locality,
-  //   setLocality,
-  //   formData,
-  //   setFormData,
-  //   setValues,
-  //   setLocationValue,
-  //   setStationValue,
-  //   setUdstyrValue,
-  // ] = React.useContext(StamdataContext);
+    // const [
+    //   locality,
+    //   setLocality,
+    //   formData,
+    //   setFormData,
+    //   setValues,
+    //   setLocationValue,
+    //   setStationValue,
+    //   setUdstyrValue,
+    // ] = React.useContext(StamdataContext);
 
-  return (
-    <Grid container spacing={2}>
-      <LocationChooser
-        locationDialogOpen={locationDialogOpen}
-        setLocationDialogOpen={setLocationDialogOpen}
-      />
-      <LocalityForm />
-      {/* <Grid item xs={12} sm={12}>
-        <InputLabel>Lokalitet</InputLabel>
-      </Grid> */}
-      {/* <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Navn'
-          value={formData.location.locname}
-          //onChange={(event) => setLocationValue("locname", event.target.value)}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Hoved lokation'
-          value={formData.location.mainloc}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Under lokation'
-          value={formData.location.subloc}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Under-under lokation'
-          value={formData.location.subsubloc}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='number'
-          label='X-koordinat (UTM)'
-          value={formData.location.x}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='number'
-          label='Y-koordinat (UTM)'
-          value={formData.location.y}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='number'
-          label='Terrænkote'
-          value={formData.location.terrainlevel}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Type af terrænkote'
-          value={formData.location.terrainqual}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Kommentar'
-          value={formData.location.description}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid> */}
-    </Grid>
-  );
+    return (
+        <Grid container>
+            <LocationChooser
+                locationDialogOpen={locationDialogOpen}
+                setLocationDialogOpen={setLocationDialogOpen}
+            />
+            <LocalityForm />
+        </Grid>
+    );
 }
 
-// const StationTypeSelect = (props) => {
-//   const { selectedStationType, setSelectedStationType, stationTypes } = props;
-//   const handleSelection = (event) => {
-//     setSelectedStationType(event.target.value);
-//   };
-
-//   let menuItems = stationTypes
-//     .filter((i) => i.properties.tstype_id !== 0)
-//     .map((item) => (
-//       <MenuItem value={item.properties.tstype_id}>
-//         {item.properties.tstype_name}
-//       </MenuItem>
-//     ));
-//   return (
-//     <TextField
-//       autoFocus
-//       variant='outlined'
-//       select
-//       margin='dense'
-//       value={selectedStationType}
-//       onChange={handleSelection}
-//       label='Sensor type'
-//       fullWidth
-//     >
-//       <MenuItem value={-1}>Vælg type</MenuItem>
-//       {menuItems}
-//     </TextField>
-//   );
-// };
-
-// function StationForm(props) {
-//   const [stationTypes, setStationTypes] = React.useState([]);
-//   useEffect(() => {
-//     if (stationTypes.length > 0) {
-//       console.log("station more than zero");
-//     } else {
-//       console.log("station are 0");
-//     }
-//     getStationTypes().then((res) => res && setStationTypes(res.data.features));
-//   }, []);
-
-//   const [, , formData, , , , setStationValue, ,] =
-//     React.useContext(StamdataContext);
-
-//   return (
-//     <Grid container spacing={2}>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Navn'
-//           value={formData.station.stationname}
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//           onChange={(e) => setStationValue("stationname", e.target.value)}
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <StationTypeSelect {...props} stationTypes={stationTypes} />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='number'
-//           label=' Målepunktskote'
-//           value={formData.station.maalepunktskote}
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//           onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Evt. loggerdybde'
-//           value={formData.station.terrainlevel}
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//           onChange={(e) => setStationValue("terrainlevel", e.target.value)}
-//         />
-//       </Grid>
-//     </Grid>
-//   );
-// }
 
 function Udstyr(props) {
-  const [, , formData, , setValues, , , setUdstyrValue] =
-    React.useContext(StamdataContext);
+    const [, , formData, , setValues, , , setUdstyrValue] =
+        React.useContext(StamdataContext);
 
-  return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            variant='outlined'
-            type='text'
-            id='terminal'
-            value={formData.udstyr.terminal}
-            label='Terminal'
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            margin='dense'
-            onChange={(e) => setUdstyrValue("terminal", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            variant='outlined'
-            type='text'
-            label='Terminal ID'
-            value={formData.udstyr.terminalid}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            margin='dense'
-            onChange={(e) => setUdstyrValue("terminalid", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            variant='outlined'
-            type='text'
-            label='CALYPSO ID'
-            value={formData.udstyr.calypso_id}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            margin='dense'
-            onChange={(e) => setUdstyrValue("calypso_id", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            variant='outlined'
-            type='text'
-            label='Sensor'
-            value={formData.udstyr.parameter}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            margin='dense'
-            onChange={(e) => setUdstyrValue("sensorinfo", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            variant='outlined'
-            type='text'
-            label='Sensor ID'
-            value={formData.udstyr.sensorid}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            margin='dense'
-            onChange={(e) => setUdstyrValue("sensorid", e.target.value)}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            InputProps={{
-              readOnly: true,
-            }}
-            variant='outlined'
-            type='text'
-            label='Startdato'
-            value={
-              formData.udstyr.startdato
-                ? new Date(formData.udstyr.startdato)
-                    .toISOString()
-                    .split("T")[0]
-                : ""
-            }
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-            margin='dense'
-          />
-        </Grid>
-      </Grid>
-    </MuiPickersUtilsProvider>
-  );
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
+            <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant='outlined'
+                        type='text'
+                        id='terminal'
+                        value={formData.udstyr.terminal}
+                        label='Terminal'
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        margin='dense'
+                        onChange={(e) => setUdstyrValue("terminal", e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant='outlined'
+                        type='text'
+                        label='Terminal ID'
+                        value={formData.udstyr.terminalid}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        margin='dense'
+                        onChange={(e) => setUdstyrValue("terminalid", e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant='outlined'
+                        type='text'
+                        label='CALYPSO ID'
+                        value={formData.udstyr.calypso_id}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        margin='dense'
+                        onChange={(e) => setUdstyrValue("calypso_id", e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant='outlined'
+                        type='text'
+                        label='Sensor'
+                        value={formData.udstyr.parameter}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        margin='dense'
+                        onChange={(e) => setUdstyrValue("sensorinfo", e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant='outlined'
+                        type='text'
+                        label='Sensor ID'
+                        value={formData.udstyr.sensorid}
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        margin='dense'
+                        onChange={(e) => setUdstyrValue("sensorid", e.target.value)}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <TextField
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                        variant='outlined'
+                        type='text'
+                        label='Startdato'
+                        value={
+                            formData.udstyr.startdato
+                                ? new Date(formData.udstyr.startdato)
+                                    .toISOString()
+                                    .split("T")[0]
+                                : ""
+                        }
+                        InputLabelProps={{ shrink: true }}
+                        fullWidth
+                        margin='dense'
+                    />
+                </Grid>
+            </Grid>
+        </MuiPickersUtilsProvider>
+    );
 }
 
 export default function RetStamdata({ setAddStationDisabled }) {
-  const history = useHistory();
-  const [ustyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
-  const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
-  const [
-    locality,
-    setLocality,
-    formData,
-    setFormData,
-    setValues,
-    setLocationValue,
-    setStationValue,
-    setUdstyrValue,
-    saveUdstyrFormData,
-    saveLocationFormData,
-  ] = React.useContext(StamdataContext);
-  // const [formData, setFormData] = React.useState({
-  //   location: {
-  //     locname: "",
-  //     mainloc: "",
-  //     subloc: "",
-  //     subsubloc: "",
-  //     x: "",
-  //     y: "",
-  //     terrainqual: "",
-  //     //terrainlevel:"",
-  //     description: "",
-  //   },
-  //   station: {
-  //     stationname: "",
-  //     stationtypename: "",
-  //     parameter: "",
-  //     maalepunktskote: "",
-  //     terrainlevel: "",
-  //   },
-  //   udstyr: {
-  //     terminal: "",
-  //     terminalid: "",
-  //     sensorid: "",
-  //     sensorinfo: "",
-  //     calypso_id: "",
-  //     batteriskift: "",
-  //     startdato: "",
-  //     slutdato: "",
-  //   },
-  // });
+    const history = useHistory();
+    const [ustyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
+    const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
+    const [
+        locality,
+        setLocality,
+        formData,
+        setFormData,
+        setValues,
+        setLocationValue,
+        setStationValue,
+        setUdstyrValue,
+        saveUdstyrFormData,
+        saveLocationFormData,
+    ] = React.useContext(StamdataContext);
 
-  // //const [formData, setFormData] = React.useState(data);
+    const [selectedStationType, setSelectedStationType] = useState(-1);
 
-  // const [locality, setLocality] = React.useState(0);
-  const [selectedStationType, setSelectedStationType] = useState(-1);
+    const changeSelectedStationType = (selectedType) => {
+        if (selectedType !== selectedStationType) {
+            resetUdStyrForm();
+        }
+        setSelectedStationType(selectedType);
+    };
 
-  const changeSelectedStationType = (selectedType) => {
-    if (selectedType !== selectedStationType) {
-      resetUdStyrForm();
-    }
-    setSelectedStationType(selectedType);
-  };
+    const resetUdStyrForm = () => {
+        saveUdstyrFormData({
+            terminal: "",
+            terminalid: "",
+            sensorid: "",
+            sensorinfo: "",
+            parameter: "",
+            calypso_id: "",
+            batteriskift: "",
+            startdato: "",
+            slutdato: "",
+        });
+    };
 
-  const resetUdStyrForm = () => {
-    saveUdstyrFormData({
-      terminal: "",
-      terminalid: "",
-      sensorid: "",
-      sensorinfo: "",
-      parameter: "",
-      calypso_id: "",
-      batteriskift: "",
-      startdato: "",
-      slutdato: "",
-    });
-  };
+    
+    return (
+        <div>
+            <AddUdstyrForm
+                ustyrDialogOpen={ustyrDialogOpen}
+                setUdstyrDialogOpen={setUdstyrDialogOpen}
+                //saveUdstyrFormData={saveUdstyrFormData}
+                tstype_id={selectedStationType}
+            />
+            <AddLocationForm
+                locationDialogOpen={locationDialogOpen}
+                setLocationDialogOpen={setLocationDialogOpen}
+            //saveLocationFormData={saveLocationFormData}
+            />
+            <Container fixed>
+                <Typography variant='h6' component='h3'>
+                    Stamdata
+                </Typography>
 
-  // const setLocationValue = (key, value) => {
-  //   setFormData((formData) => ({
-  //     ...formData,
-  //     location: {
-  //       ...formData.location,
-  //       [key]: value,
-  //     },
-  //   }));
-  // };
-
-  // const setStationValue = (key, value) => {
-  //   setFormData((formData) => ({
-  //     ...formData,
-  //     station: {
-  //       ...formData.station,
-  //       [key]: value,
-  //     },
-  //   }));
-  // };
-
-  // const setUdstyrValue = (key, value) => {
-  //   setFormData((formData) => ({
-  //     ...formData,
-  //     udstyr: {
-  //       ...formData.udstyr,
-  //       [key]: value,
-  //     },
-  //   }));
-  // };
-
-  // const setValues = (part, keyValues) => {
-  //   Object.keys(keyValues).forEach((k) => {
-  //     if (part === "location") {
-  //       setLocationValue(k, keyValues[k]);
-  //     } else if (part === "station") {
-  //       setStationValue(k, keyValues[k]);
-  //     } else if (part === "udstyr") {
-  //       setUdstyrValue(k, keyValues[k]);
-  //     }
-  //   });
-  // };
-
-  // const saveUdstyrFormData = (unitData) => {
-  //   setValues("udstyr", unitData);
-  // };
-
-  // const saveLocationFormData = (locationData) => {
-  //   setValues("location", {
-  //     locname: locationData.locname,
-  //     mainloc: locationData.mainloc,
-  //     subloc: locationData.subloc,
-  //     subsubloc: locationData.subsubloc,
-  //     x: locationData.x,
-  //     y: locationData.y,
-  //     terrainqual: locationData.terrainqual,
-  //     terrainlevel: locationData.terrainlevel,
-  //     description: locationData.description,
-  //   });
-  // };
-
-  return (
-    // <StamdataProvider
-    //   value={[
-    //     locality,
-    //     setLocality,
-    //     formData,
-    //     setFormData,
-    //     setValues,
-    //     setLocationValue,
-    //     setStationValue,
-    //     setUdstyrValue,
-    //     saveUdstyrFormData,
-    //     saveLocationFormData,
-    //   ]}
-    // >
-    <div>
-      <AddUdstyrForm
-        ustyrDialogOpen={ustyrDialogOpen}
-        setUdstyrDialogOpen={setUdstyrDialogOpen}
-        //saveUdstyrFormData={saveUdstyrFormData}
-        tstype_id={selectedStationType}
-      />
-      <AddLocationForm
-        locationDialogOpen={locationDialogOpen}
-        setLocationDialogOpen={setLocationDialogOpen}
-        //saveLocationFormData={saveLocationFormData}
-      />
-      <Container fixed>
-        <Typography variant='h6' component='h3'>
-          Stamdata
-        </Typography>
-
-        <Locality
-          locationDialogOpen={locationDialogOpen}
-          setLocationDialogOpen={setLocationDialogOpen}
-        />
-        <Typography>Station</Typography>
-        <StationForm
-          mode='add'
-          selectedStationType={selectedStationType}
-          setSelectedStationType={changeSelectedStationType}
-        />
-        <div style={flex1}>
-          <Typography>Udstyr</Typography>
-          <Button
-            disabled={selectedStationType === -1}
-            size='small'
-            style={{
-              backgroundColor: "#4472c4",
-              textTransform: "none",
-              marginLeft: "12px",
-            }}
-            onClick={() => setUdstyrDialogOpen(true)}
-          >
-            Tilføj Udstyr
-          </Button>
+                <Locality
+                    locationDialogOpen={locationDialogOpen}
+                    setLocationDialogOpen={setLocationDialogOpen}
+                />
+                <Typography>Station</Typography>
+                <StationForm
+                    mode='add'
+                    selectedStationType={selectedStationType}
+                    setSelectedStationType={changeSelectedStationType}
+                />
+                <div style={flex1}>
+                    <Typography>Udstyr</Typography>
+                    <Button
+                        disabled={selectedStationType === -1}
+                        size='small'
+                        style={{
+                            backgroundColor: "#4472c4",
+                            textTransform: "none",
+                            marginLeft: "12px",
+                        }}
+                        onClick={() => setUdstyrDialogOpen(true)}
+                    >
+                        Tilføj Udstyr
+                    </Button>
+                </div>
+                <UdstyrForm mode='add' />
+                <Grid container spacing={3}>
+                    <Grid item xs={4} sm={2}>
+                        <Button
+                            autoFocus
+                            style={{ backgroundColor: "#ffa137" }}
+                            onClick={() => {
+                                history.push("/");
+                                setAddStationDisabled(false);
+                                postStamdata(formData);
+                            }}
+                        >
+                            Gem
+                        </Button>
+                    </Grid>
+                    <Grid item xs={4} sm={2}>
+                        <Button
+                            autoFocus
+                            style={{ backgroundColor: "#ffa137" }}
+                            onClick={() => {
+                                history.push("/");
+                                setAddStationDisabled(false);
+                            }}
+                        >
+                            Annuller
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Container>
         </div>
-        <UdstyrForm mode='add' />
-        <Grid container spacing={3}>
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              style={{ backgroundColor: "#ffa137" }}
-              onClick={() => {
-                history.push("/");
-                setAddStationDisabled(false);
-                postStamdata(formData);
-              }}
-            >
-              Gem
-            </Button>
-          </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              style={{ backgroundColor: "#ffa137" }}
-              onClick={() => {
-                history.push("/");
-                setAddStationDisabled(false);
-              }}
-            >
-              Annullere
-            </Button>
-          </Grid>
-        </Grid>
-      </Container>
-    </div>
-    // </StamdataProvider>
-  );
+        // </StamdataProvider>
+    );
 }

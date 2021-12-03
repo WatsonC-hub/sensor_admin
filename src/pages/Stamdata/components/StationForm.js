@@ -10,7 +10,7 @@ const StationTypeSelect = (props) => {
     };
     console.log(stationTypes);
     let menuItems = stationTypes.filter((i) => i.properties.tstype_id !== 0).map((item) => (
-        <MenuItem value={item.properties.tstype_id}>
+        <MenuItem value={item.properties.tstype_id} key={item.properties.tstype_id}>
             {item.properties.tstype_name}
         </MenuItem>
     ));

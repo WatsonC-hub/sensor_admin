@@ -15,13 +15,13 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import { StamdataContext } from "./StamdataContext";
+import { MenuItem } from "@material-ui/core";
 
 export default function AddLocationForm({
   locationDialogOpen,
   setLocationDialogOpen,
   /*saveLocationFormData,*/
 }) {
-  const [open, setOpen] = React.useState(false);
   const [locationData, setLocationData] = useState({
     locname: "",
     x: "",
@@ -48,9 +48,17 @@ export default function AddLocationForm({
   ] = React.useContext(StamdataContext);
 
   const handleChange = (event) => {
+    console.log(event.target)
     setLocationData({
       ...locationData,
       [event.target.id]: event.target.value,
+    });
+  };
+
+  const handleSelector = (event) => {
+    setLocationData({
+      ...locationData,
+      "terrainqual": event.target.value,
     });
   };
 
@@ -64,9 +72,6 @@ export default function AddLocationForm({
     setLocationValue("locid", "");
   };
 
-  const handleClickOpen = () => {
-    setLocationDialogOpen(true);
-  };
 
   const handleClose = () => {
     setLocationDialogOpen(false);
@@ -97,26 +102,6 @@ export default function AddLocationForm({
             id='mainloc'
             label='Hoved lokation'
             value={locationData.mainloc}
-            onChange={handleChange}
-            type='text'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='subloc'
-            label='Under lokation'
-            value={locationData.subloc}
-            onChange={handleChange}
-            type='text'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='subsubloc'
-            label='Under-under lokation'
-            value={locationData.subsubloc}
             onChange={handleChange}
             type='text'
             fullWidth
@@ -157,10 +142,18 @@ export default function AddLocationForm({
             id='terrainqual'
             label='Type af terrænkote'
             value={locationData.terrainqual}
-            onChange={handleChange}
-            type='text'
+            onChange={handleSelector}
+            select
             fullWidth
-          />
+          >
+            <MenuItem value={-1}> Vælg type </MenuItem>
+            <MenuItem value="dGPS">
+              dGPS
+            </MenuItem>
+            <MenuItem value="DTM">
+              DTM
+            </MenuItem>
+          </TextField>
           <TextField
             autoFocus
             margin='dense'

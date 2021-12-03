@@ -10,6 +10,7 @@ import {
   KeyboardDateTimePicker,
 } from "@material-ui/pickers";
 import { StamdataContext } from "../StamdataContext";
+import moment from "moment";
 
 export default function UdstyrForm(props) {
   const editMode = props.mode === "edit";
@@ -22,8 +23,9 @@ export default function UdstyrForm(props) {
         <Grid item xs={12} sm={6}>
           <TextField
             InputProps={{
-              readOnly: !editMode,
+              style: { color: 'black'}
             }}
+            disabled={formData.location.locname === "" ? true : false}
             variant='outlined'
             type='text'
             id='terminal'
@@ -38,8 +40,9 @@ export default function UdstyrForm(props) {
         <Grid item xs={12} sm={6}>
           <TextField
             InputProps={{
-              readOnly: !editMode,
+              style: { color: 'black'}
             }}
+            disabled={formData.location.locname === "" ? true : false}
             variant='outlined'
             type='text'
             label='Terminal ID'
@@ -53,8 +56,10 @@ export default function UdstyrForm(props) {
         <Grid item xs={12} sm={6}>
           <TextField
             InputProps={{
-              readOnly: !editMode,
+              style: { color: 'black'}
             }}
+            disabled={formData.location.locname === "" ? true : false}
+            focused={false}
             variant='outlined'
             type='text'
             label='CALYPSO ID'
@@ -68,8 +73,9 @@ export default function UdstyrForm(props) {
         <Grid item xs={12} sm={6}>
           <TextField
             InputProps={{
-              readOnly: !editMode,
+              style: { color: 'black'}
             }}
+            disabled={formData.location.locname === "" ? true : false}
             variant='outlined'
             type='text'
             label='Sensor'
@@ -83,8 +89,9 @@ export default function UdstyrForm(props) {
         <Grid item xs={12} sm={6}>
           <TextField
             InputProps={{
-              readOnly: !editMode,
+              style: { color: 'black'}
             }}
+            disabled={formData.location.locname === "" ? true : false}
             variant='outlined'
             type='text'
             label='Sensor ID'
@@ -99,16 +106,15 @@ export default function UdstyrForm(props) {
           {!editMode ? (
             <TextField
               InputProps={{
-                readOnly: true,
+                style: { color: 'black'}
               }}
+              disabled={formData.location.locname === "" ? true : false}
               variant='outlined'
               type='text'
               label='Startdato'
               value={
                 formData.udstyr.startdato
-                  ? new Date(formData.udstyr.startdato)
-                      .toISOString()
-                      .split("T")[0]
+                  ? moment(formData.udstyr.startdato).format('YYYY-MM-DD HH:mm')
                   : ""
               }
               InputLabelProps={{ shrink: true }}

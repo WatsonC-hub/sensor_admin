@@ -15,6 +15,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
+  DateTimePicker
 } from "@material-ui/pickers";
 import { MenuItem } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
@@ -64,9 +65,10 @@ export default function AddUdstyrForm({
   };
 
   const handleDateChange = (date) => {
+    console.log(date)
     setUdstyrFormData({
       ...udstyrFormData,
-      fra: new Date(date),
+      fra: date,
     });
   };
 
@@ -168,11 +170,12 @@ export default function AddUdstyrForm({
                 </MenuItem>
               ))}
             </TextField>
-            <KeyboardDatePicker
+            <DateTimePicker
+              autoOk
               disableToolbar
               variant='inline'
               inputProps={{ readOnly: true }}
-              format='yyyy-MM-dd'
+              format='yyyy-MM-dd HH:mm'
               margin='normal'
               id='Fra'
               label={
