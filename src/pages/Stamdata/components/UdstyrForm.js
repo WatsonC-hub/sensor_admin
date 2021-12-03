@@ -50,7 +50,7 @@ export default function UdstyrForm(props) {
             InputLabelProps={{ shrink: true }}
             fullWidth
             margin='dense'
-            onChange={(e) => setUdstyrValue("terminalid", e.target.value)}
+            onChange={(e) => setUdstyrValue("terminal_id", e.target.value)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -99,7 +99,7 @@ export default function UdstyrForm(props) {
             InputLabelProps={{ shrink: true }}
             fullWidth
             margin='dense'
-            onChange={(e) => setUdstyrValue("sensorid", e.target.value)}
+            onChange={(e) => setUdstyrValue("sensor_id", e.target.value)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>

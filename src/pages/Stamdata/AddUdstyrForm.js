@@ -60,7 +60,7 @@ export default function AddUdstyrForm({
   const handleSensorId = (event) => {
     setUdstyrFormData({
       ...udstyrFormData,
-      sensor_id: event.target.value,
+      uuid: event.target.value,
     });
   };
 
@@ -78,23 +78,24 @@ export default function AddUdstyrForm({
     //saveUdstyrFormData(udstyrFormData);
     setUdstyrDialogOpen(false);
     let unit = availableUnits.find(
-      (x) => x.unit_uuid === udstyrFormData.sensor_id
+      (x) => x.unit_uuid === udstyrFormData.uuid
     );
 
     console.log(unit);
 
     if (!unit) return;
-
+    
     saveUdstyrFormData({
       terminal: unit.type,
-      terminalid: unit.terminal_id,
-      sensorid: unit.sensor_id,
+      terminal_id: unit.terminal_id,
+      sensor_id: unit.sensor_id,
       sensorinfo: unit.sensorinfo,
       parameter: unit.sensorinfo,
       calypso_id: unit.calypso_id,
       batteriskift: unit.batteriskift,
       startdato: udstyrFormData.fra,
       slutdato: unit.slutdato,
+      uuid: unit.unit_uuid
     });
   };
 
