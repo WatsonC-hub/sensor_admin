@@ -1,13 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
-  Container,
   Grid,
   Typography,
   TextField,
   Button,
   Card,
   CardContent,
-  CardActions,
   Radio,
   RadioGroup,
   FormControlLabel,
@@ -15,7 +13,7 @@ import {
   FormLabel,
 } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
-import { isValid, format } from "date-fns";
+import { isValid } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import {
   MuiPickersUtilsProvider,
@@ -25,7 +23,6 @@ import {
 
 export default function PejlingForm({
   stationId,
-  setShowForm,
   formData,
   changeFormData,
   handleSubmit,
@@ -40,7 +37,6 @@ export default function PejlingForm({
     if (isValid(date)) {
       setCurrDate(date);
     }
-    //only change submit data when date is valid
     if (isValid(date)) {
       console.log("date is valid again: ", date);
       changeFormData("timeofmeas", date);

@@ -25,8 +25,6 @@ const LocationTypeProvider = (props) => (
 
 const LocationFormatter = ({ value }) => <EditButton locationId={value} />;
 
-const showDetails = (loc) => alert(loc);
-
 const EditButton = ({ locationId }) => {
   const context = useContext(LocationContext);
   const history = useHistory();
@@ -57,17 +55,6 @@ const RowDetail = ({ row }) => (
     </ListItem>
   </List>
 );
-
-const getBackgroundColor = (status) => {
-  switch (status) {
-    case "OK":
-      return "rgba(157, 255, 118, 0.49)";
-    case "!":
-      return "#d47483";
-    default:
-      return "";
-  }
-};
 
 const getStatusComp = (status) => {
   switch (status) {
@@ -112,7 +99,7 @@ const columns = [
   },
 ];
 
-export default ({ setLocation }) => {
+export default () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 

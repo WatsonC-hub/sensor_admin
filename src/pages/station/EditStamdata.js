@@ -5,14 +5,6 @@ import {
   Typography,
   TextField,
   Button,
-  Card,
-  CardContent,
-  CardActions,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
   Select,
   MenuItem,
   Dialog,
@@ -24,246 +16,14 @@ import DateFnsUtils from "@date-io/date-fns";
 import daLocale from "date-fns/locale/da";
 import {
   MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
   KeyboardDateTimePicker,
 } from "@material-ui/pickers";
-import { makeStyles } from "@material-ui/core/styles";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 import LocalityForm from "../Stamdata/components/LocalityForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
 import { getStamdataByStation, getUnitHistory } from "../../api";
 import { StamdataContext } from "../Stamdata/StamdataContext";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-}));
-
-// function Locality(props) {
-//   return (
-//     <Grid container spacing={2}>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Navn'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='X-koordinat (UTM)'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Y-koordinat (UTM)'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terrænkote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terrænkote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terrænkote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terrænkote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terrænkote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terrænkote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terrænkote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//     </Grid>
-//   );
-// }
-
-// function StationForm(props) {
-//   return (
-//     <Grid container spacing={2}>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Navn'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Type'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label=' Målepunktskote'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Evt. loggerdybde'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//     </Grid>
-//   );
-// }
-
-// function UdstyrForm(props) {
-//   return (
-//     <Grid container spacing={2}>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terminal'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Terminal ID'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='CALYPSO ID'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Sensor'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//       <Grid item xs={12} sm={6}>
-//         <TextField
-//           variant='outlined'
-//           type='text'
-//           label='Sensor ID'
-//           InputLabelProps={{ shrink: true }}
-//           fullWidth
-//           margin='dense'
-//         />
-//       </Grid>
-//     </Grid>
-//   );
-// }
 
 const UnitEndDateDialog = () => {
   return (
@@ -326,7 +86,7 @@ const UdStyrReplace = ({ stationId }) => {
     getUnitHistory(stationId).then((res) => {
       if (res.data.success) {
         setData(res.data.data);
-        setUnit(res.data.data[0].unit_uuid);
+        setUnit(res.data.data[0].gid);
       }
     });
   }, [stationId]);
@@ -343,7 +103,7 @@ const UdStyrReplace = ({ stationId }) => {
                 new Date() < new Date(item.enddate) ? "nu" : item.enddate;
 
               return (
-                <MenuItem key={item.unit_uuid} value={item.unit_uuid}>
+                <MenuItem key={item.gid} value={item.gid}>
                   {`${item.startdate} - ${endDate}`}
                 </MenuItem>
               );
@@ -360,16 +120,16 @@ const UdStyrReplace = ({ stationId }) => {
   );
 };
 
-export default function RetStamdata(props) {
+export default function EditStamdata(props) {
   const [
-    locality,
-    setLocality,
-    formData,
-    setFormData,
-    setValues,
-    setLocationValue,
-    setStationValue,
-    setUdstyrValue,
+    ,
+    ,
+    ,
+    ,
+    ,
+    ,
+    ,
+    ,
     saveUdstyrFormData,
     saveLocationFormData,
     saveStationFormData,

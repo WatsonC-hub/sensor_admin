@@ -133,22 +133,6 @@ export default function UdstyrForm(props) {
               fullWidth
             />
           )}
-          {/* <KeyboardDateTimePicker
-              disableToolbar
-              inputProps={{ readOnly: true }}
-              inputVariant='outlined'
-              format='yyyy-MM-dd HH:mm'
-              margin='normal'
-              id='date-picker-inline'
-              label='Startdato'
-              InputLabelProps={{ shrink: true }}
-              value={formData.udstyr.startdato}
-              onChange={(date) => setUdstyrValue("startdato", date)}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              fullWidth
-            /> */}
         </Grid>
       </Grid>
     </MuiPickersUtilsProvider>

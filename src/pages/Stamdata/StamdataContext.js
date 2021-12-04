@@ -1,44 +1,11 @@
-import React, { useState } from "react";
-
-let data = {
-  location: {
-    locid: "",
-    locname: "",
-    mainloc: "",
-    subloc: "",
-    subsubloc: "",
-    x: "",
-    y: "",
-    terrainqual: "",
-    description: "",
-  },
-  station: {
-    stationname: "",
-    stationtypename: "",
-    parameter: "",
-    maalepunktskote: "",
-    terrainlevel: "",
-  },
-  udstyr: {
-    terminal: "",
-    terminalid: "",
-    sensorid: "",
-    sensorinfo: "",
-    calypso_id: "",
-    batteriskift: "",
-    startdato: "",
-    slutdato: "",
-  },
-};
+import React from "react";
 
 const StamdataContext = React.createContext([
   0,
   () => {},
   {},
   () => {},
-  () => {
-    console.log("I am still empty");
-  },
+  () => {},
   () => {},
   () => {},
   () => {},
@@ -112,10 +79,8 @@ const StamdataProvider = (props) => {
   };
 
   const setValues = (part, keyValues) => {
-    console.log("I was called from context ", part);
     Object.keys(keyValues).forEach((k) => {
       if (part === "location") {
-        console.log(k, " => ", keyValues[k]);
         setLocationValue(k, keyValues[k]);
       } else if (part === "station") {
         setStationValue(k, keyValues[k]);

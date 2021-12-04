@@ -1,11 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import HistoricMeasurements from "./HistoricMeasurements";
-import MobileMeasurements from "./MobileMeasurements";
+import React, { useEffect, useState } from "react";
 import BearingGraph from "./BearingGraph";
 import ActionArea from "./ActionArea";
 import PejlingForm from "../../components/PejlingForm";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import {
   insertMeasurement,
   updateMeasurement,
@@ -13,12 +10,9 @@ import {
   getMeasurements,
 } from "../../api";
 import { Toolbar } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
 import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
 import CaptureBearing from "./CaptureBearing";
-import { format } from "date-fns";
 import { StamdataProvider } from "../Stamdata/StamdataContext";
 
 function formatedTimestamp(d) {
@@ -29,14 +23,11 @@ function formatedTimestamp(d) {
 
 export default function Station({
   stationId,
-  showForm,
   setShowForm,
   open,
   formToShow,
   setFormToShow,
 }) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [formData, setFormData] = useState({
     gid: -1,
     timeofmeas: formatedTimestamp(new Date()),
@@ -47,13 +38,12 @@ export default function Station({
 
   const [updated, setUpdated] = useState(new Date());
   const [measurements, setMeasurements] = useState([]);
-  const [canEdit, setCanEdit] = useState(true);
+  const [canEdit] = useState(true);
 
   useEffect(() => {
     getMeasurements(stationId, sessionStorage.getItem("session_id")).then(
       (res) => {
         setMeasurements(res.data.result);
-        //setCanEdit(res.data.can_edit);
       }
     );
   }, [updated, stationId]);
@@ -64,18 +54,6 @@ export default function Station({
       [field]: value,
     });
   };
-
-  // const formatedTimestamp = (d) => {
-  //   //let _date = moment(d, "yyyy-MM-dd");
-  //   if (!isValid(d)) {
-  //     //console.log("date not valid: ", d);
-  //     return;
-  //   }
-  //   //console.log("date is valid");
-  //   const date = d.toISOString().split("T")[0];
-  //   const time = d.toTimeString().split(" ")[0];
-  //   return `${date} ${time}`;
-  // };
 
   const resetFormData = () => {
     setFormData({
@@ -116,7 +94,6 @@ export default function Station({
     setFormData(data); // Fill form data on Edit
     setFormToShow("ADDPEJLING"); // update to use state machine
     setUpdated(new Date());
-    //window.scrollTo({ top: 300, behavior: "smooth" });
   };
 
   const handleDelete = (gid) => {
@@ -174,6 +151,5 @@ export default function Station({
         canEdit={canEdit}
       />
     </div>
-    // </>
   );
 }

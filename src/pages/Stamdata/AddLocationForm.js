@@ -4,24 +4,14 @@ import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import DateFnsUtils from "@date-io/date-fns";
-import { isValid, format } from "date-fns";
-import daLocale from "date-fns/locale/da";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
+
 import { StamdataContext } from "./StamdataContext";
 
 export default function AddLocationForm({
   locationDialogOpen,
   setLocationDialogOpen,
-  /*saveLocationFormData,*/
 }) {
-  const [open, setOpen] = React.useState(false);
   const [locationData, setLocationData] = useState({
     locname: "",
     x: "",
@@ -34,18 +24,8 @@ export default function AddLocationForm({
     description: "",
   });
 
-  const [
-    llocality,
-    setLocality,
-    formData,
-    setFormData,
-    setValues,
-    setLocationValue,
-    setStationValue,
-    setUdstyrValue,
-    saveUdstyrFormData,
-    saveLocationFormData,
-  ] = React.useContext(StamdataContext);
+  const [, , , , , setLocationValue, , , , saveLocationFormData] =
+    React.useContext(StamdataContext);
 
   const handleChange = (event) => {
     setLocationData({
@@ -62,10 +42,6 @@ export default function AddLocationForm({
     // locid used to determine whether we're updating or inserting
     // new location.
     setLocationValue("locid", "");
-  };
-
-  const handleClickOpen = () => {
-    setLocationDialogOpen(true);
   };
 
   const handleClose = () => {

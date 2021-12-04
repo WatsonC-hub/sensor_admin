@@ -1,22 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
-import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
+import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import InboxIcon from "@material-ui/icons/MoveToInbox";
-import MailIcon from "@material-ui/icons/Mail";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import LocationContext from "./LocationContext";
 import Station from "./pages/station";
@@ -86,21 +74,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const MyListItem = withStyles({
-  root: {
-    "&$selected": {
-      backgroundColor: "lightseagreen",
-      color: "white",
-    },
-  },
-  selected: {},
-})(ListItem);
-
 export default function LocationDrawer() {
   const classes = useStyles();
-  const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [showForm, setShowForm] = useState(false);
   const [formToShow, setFormToShow] = useState(null);
   const [currStation, setCurrStation] = useState(null);
   const [stationList, setStationList] = useState([]);
@@ -110,23 +86,10 @@ export default function LocationDrawer() {
 
   const params = useParams();
   const history = useHistory();
-  //context.setLocationId(params.locid);
-
-  console.log("useparams => ", params.locid, " statid: ", params.statid);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   const currentStation = (id, stations) => {
     if (stations.length === 0) return null;
     return stations.find((s) => s.ts_id + "" === id + "");
-    //console.log("current station id =>", id);
-    //return stations[0];
   };
 
   const getSelectedItem = () => {
@@ -135,24 +98,18 @@ export default function LocationDrawer() {
   };
 
   useEffect(() => {
-    //let [locId, statId] = context.locationId.split("_");
     let locId = params.locid;
     let statId = params.statid;
-    console.log("loc_stat_id : ", statId, "---", locId);
     if (statId) {
-      //if location is set from the map, stationId is not known
       setSelectedItem(parseInt(statId));
     }
     getStations(locId, sessionStorage.getItem("session_id")).then((res) => {
-      console.log(res);
       if (!statId) {
         statId = res.data.res[0].ts_id;
-        console.log("selecteditem =>", parseInt(statId));
         setSelectedItem(parseInt(statId));
       }
       setCurrStation(currentStation(statId, res.data.res));
       setStationList(res.data.res);
-      console.log(res.data.res);
     });
     setSelectedLocid(locId);
   }, [context.locationId]);
@@ -168,24 +125,10 @@ export default function LocationDrawer() {
         style={{ backgroundColor: "lightseagreen" }}
       >
         <Toolbar>
-          {/* <IconButton
-            color='inherit'
-            aria-label='open drawer'
-            onClick={handleDrawerOpen}
-            edge='start'
-            className={clsx(classes.menuButton, open && classes.hide)}
-          >
-            <MenuIcon style={{ color: "#ffa137" }} />
-          </IconButton> */}
-          {/* <Typography variant='h6' className={classes.title}>
-            {currStation && currStation.properties.stationname}
-          </Typography> */}
           <IconButton
             className={classes.backButton}
             color='inherit'
-            onClick={
-              (e) => history.push("/") //context.setLocationId(-1)
-            }
+            onClick={(e) => history.push("/")}
           >
             <KeyboardBackspaceIcon />
           </IconButton>
@@ -199,44 +142,7 @@ export default function LocationDrawer() {
           />
         </Toolbar>
       </AppBar>
-      {/* <Drawer
-        className={classes.drawer}
-        variant='persistent'
-        anchor='left'
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "ltr" ? (
-              <ChevronLeftIcon />
-            ) : (
-              <ChevronRightIcon />
-            )}
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          {stationList.map((_station, index) => (
-            <MyListItem
-              key={_station.properties.stationid}
-              button
-              key={_station.properties.stationid}
-              onClick={() => {
-                setSelectedItem(_station.properties.stationid);
-                setCurrStation(_station);
-                //setOpen(false);
-              }}
-              selected={_station.properties.stationid === selectedItem}
-            >
-              <ListItemText primary={_station.properties.stationname} />
-            </MyListItem>
-          ))}
-        </List>
-        <Divider />
-      </Drawer> */}
+
       <main className={classes.content}>
         <div className={classes.drawerHeader} />
         <Station

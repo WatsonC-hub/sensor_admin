@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
 import "./App.css";
-import { getSensorData } from "./api";
 import SimpleTabs from "./components/SimpleTabs";
-import Login from "./pages/Login/Login";
 import LocationDrawer from "./LocationDrawer";
 import LocationContext from "./LocationContext";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
-import { PhotoCameraRounded } from "@material-ui/icons";
-import CaptureDialog from "./pages/station/CaptureDialog";
+
 import ScanComponent from "./components/ScanComponent";
-import OpretForm from "./pages/Stamdata/OpretForm";
+import OpretStamdata from "./pages/Stamdata/OpretStamdata";
 import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
 
 /*
@@ -25,22 +21,12 @@ Libraries to explore for this app:
 */
 
 function AuthenticatedApp({ setUser }) {
-  const [sensors, setSensors] = useState([]);
-  const [sessionId, setSessionId] = useState(null);
+  const [, setSessionId] = useState(null);
   const [locationId, setLocationId] = useState(-1);
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
-  const [open, setOpen] = useState(false);
   const [addStationDisabled, setAddStationDisabled] = useState(false);
   const history = useHistory();
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const handleLogout = () => {
     sessionStorage.removeItem("session_id");
@@ -48,17 +34,7 @@ function AuthenticatedApp({ setUser }) {
     setUser(null);
   };
 
-  // useEffect(() => {
-  //   let sessionId = sessionStorage.getItem("session_id");
-
-  //   getSensorData(sessionId).then((res) => {
-  //     setSensors(res.data);
-  //   });
-  // }, []);
-
-  return sessionStorage.getItem("session_id") === null ? (
-    <Login setUser={setUser} />
-  ) : (
+  return (
     <LocationContext.Provider
       value={{
         locationId,
@@ -70,7 +46,6 @@ function AuthenticatedApp({ setUser }) {
       }}
     >
       <div className='App'>
-        {/* <CaptureDialog open={open} handleClose={handleClose} /> */}
         <AppBar position='sticky' style={{ backgroundColor: "lightseagreen" }}>
           <Toolbar
             style={{
@@ -79,9 +54,6 @@ function AuthenticatedApp({ setUser }) {
               justifyContent: "space-between",
             }}
           >
-            {/* <IconButton color='inherit' onClick={handleClickOpen}>
-              <PhotoCameraRounded />
-            </IconButton> */}
             <Button
               disabled={addStationDisabled}
               color='inherit'
@@ -98,14 +70,10 @@ function AuthenticatedApp({ setUser }) {
             </Button>
           </Toolbar>
         </AppBar>
-        {/* {locationId === -1 ? (
-          <SimpleTabs sensors={sensors} setUser={setUser} />
-        ) : (
-          <LocationDrawer />
-        )} */}
+
         <Switch>
           <Route path='/' exact>
-            <SimpleTabs sensors={sensors} setUser={setUser} />
+            <SimpleTabs setUser={setUser} />
           </Route>
           <Route path='/location/:locid/:statid'>
             <LocationDrawer />
@@ -115,7 +83,7 @@ function AuthenticatedApp({ setUser }) {
           </Route>
           <Route path='/stamdata'>
             <StamdataProvider>
-              <OpretForm setAddStationDisabled={setAddStationDisabled} />
+              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
             </StamdataProvider>
           </Route>
           <Route path='/:labelid'>

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Plot from "react-plotly.js";
 import { getGraphData, getControlData } from "../../api";
 
 const selectorOptions = {
-  //x:0.5,
-  //y:0.4,
   buttons: [
     {
       step: "day",
@@ -26,59 +24,21 @@ const selectorOptions = {
   ],
 };
 
-const layout1 ={
+const layout1 = {
   xaxis: {
-      rangeselector: selectorOptions,
+    rangeselector: selectorOptions,
     /*rangeslider: {},*/
     autorange: true,
-    type: 'date',
+    type: "date",
     //range:["2020-12-01T00:00:00", A],
-  //domain: [0, 0.97],
-              showline: true
+    //domain: [0, 0.97],
+    showline: true,
   },
 
   //xaxis: {domain: [0, 0.9]},
-yaxis: {
-  title: {
-    text: 'Niveau, kote',
-  font: { size: 12 }
-  },
-      showline: true
-
-},
-
-
-
-showlegend: true,
-legend: {
-  x: 0,
-  y: -0.15,
-  orientation:"h"
-},
-margin: {
-  l: 50,
-  r: 0,
-  b: 30,
-  t: 10,
-  pad: 4
-},
-font:{
-  size:12,
-color:'rgb(0, 0, 0)',
-},
-
-};
-
-const layout2 = {
-  autosize: true,
-  xaxis: {
-    rangeselector: selectorOptions,
-    autorange: true,
-    type: "date",
-  },
   yaxis: {
     title: {
-      text: "Sensor output",
+      text: "Niveau, kote",
       font: { size: 12 },
     },
     showline: true,
@@ -91,7 +51,7 @@ const layout2 = {
     orientation: "h",
   },
   margin: {
-    l: 60,
+    l: 50,
     r: 0,
     b: 30,
     t: 10,
@@ -104,30 +64,22 @@ const layout2 = {
 };
 
 const layout3 = {
-  modebar:{
-    orientation:'v'
+  modebar: {
+    orientation: "v",
   },
-  //position
   autosize: true,
   xaxis: {
     rangeselector: selectorOptions,
     autorange: true,
     type: "date",
-    margin:{
-      t:0
-    }
+    margin: {
+      t: 0,
+    },
   },
-  // title: {
-  //   text: "Sensor output",
-  //   font: { size: 14 },
-  //   xref: 'paper',
-  //   y: 1.03,
-  //   x:0,
-    
-  // },
+
   yaxis: {
     showline: true,
-    y:1
+    y: 1,
   },
 
   showlegend: true,
@@ -150,7 +102,6 @@ const layout3 = {
 };
 
 function PlotGraph({ graphData, controlData }) {
-  // console.log(graphData);
   const [stationName, setStationName] = useState("stationnavn");
   const name = graphData[0] ? graphData[0].properties.stationname : "";
   const xData = graphData.map((d) => d.properties.timeofmeas);
@@ -165,7 +116,6 @@ function PlotGraph({ graphData, controlData }) {
   }, [graphData]);
 
   return (
-    // <div>
     <Plot
       data={[
         {
@@ -211,7 +161,6 @@ function PlotGraph({ graphData, controlData }) {
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
     />
-    // </div>
   );
 }
 

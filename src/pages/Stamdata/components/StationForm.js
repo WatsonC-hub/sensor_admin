@@ -42,7 +42,7 @@ export default function StationForm(props) {
     } else {
       console.log("station are 0");
     }
-    if (mode === "add") return;
+    if (mode === "edit") return;
     getStationTypes().then((res) => res && setStationTypes(res.data.features));
   }, []);
 

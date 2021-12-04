@@ -5,15 +5,12 @@ import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DateFnsUtils from "@date-io/date-fns";
-import { isValid, format } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import { getAvailableUnits } from "../../api";
 import {
   MuiPickersUtilsProvider,
-  KeyboardTimePicker,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import { MenuItem } from "@material-ui/core";
@@ -22,12 +19,8 @@ import { StamdataContext } from "./StamdataContext";
 export default function AddUdstyrForm({
   ustyrDialogOpen,
   setUdstyrDialogOpen,
-  /*saveUdstyrFormData,*/
   tstype_id,
 }) {
-  const [open, setOpen] = React.useState(false);
-  const [chosenUnit, setChosenUnit] = useState(null);
-
   const [udstyrFormData, setUdstyrFormData] = useState({
     calypso_id: -1,
     sensor_id: -1,
@@ -71,15 +64,10 @@ export default function AddUdstyrForm({
   };
 
   const handleSave = () => {
-    // TODO 1 : use form data to find the right unit
-    // and use context.setValues() to populate opretfrom - udstyr
-    //saveUdstyrFormData(udstyrFormData);
     setUdstyrDialogOpen(false);
     let unit = availableUnits.find(
       (x) => x.unit_uuid === udstyrFormData.sensor_id
     );
-
-    console.log(unit);
 
     if (!unit) return;
 
@@ -96,24 +84,9 @@ export default function AddUdstyrForm({
     });
   };
 
-  const handleClickOpen = () => {
-    setUdstyrDialogOpen(true);
-  };
-
   const handleClose = () => {
     setUdstyrDialogOpen(false);
   };
-
-  const [
-    locality,
-    setLocality,
-    formData,
-    setFormData,
-    setValues,
-    setLocationValue,
-    setStationValue,
-    setUdstyrValue,
-  ] = React.useContext(StamdataContext);
 
   useEffect(() => {
     getAvailableUnits().then((res) => setAvailableUnits(res));
@@ -188,14 +161,6 @@ export default function AddUdstyrForm({
               }}
               fullWidth
             />
-            {/* <TextField
-            autoFocus
-            margin='dense'
-            id='fra'
-            label='Fra'
-            type='email'
-            fullWidth
-          /> */}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleSave} color='primary'>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Redirect } from "react-router-dom";
 import { getLocidFromLabel } from "../api";
 

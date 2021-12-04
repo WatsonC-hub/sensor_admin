@@ -1,7 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-import ReactDOMServer from "react-dom/server";
-import ReactDOM from "react-dom";
 import L from "leaflet";
 import LocationContext from "./LocationContext";
 import { getSensorData } from "./api";
@@ -17,22 +15,11 @@ let stationIcon = L.icon({
   iconSize: [15, 15],
 });
 
-function MarkerText(props) {
-  const { elem, text } = props;
-  return (
-    <button onClick={() => console.log("clicled: ", elem.lat)}>{text}</button>
-  );
-}
-
-function Map(props) {
+function Map() {
   const context = useContext(LocationContext);
   const history = useHistory();
   const mapRef = React.useRef(null);
-  const popupsRef = React.useRef([]);
   const [sensorData, setSensorData] = useState([]);
-  const onPopupClick = (markerId) => {
-    alert("clicked popup " + markerId);
-  };
 
   const onClickHandler = (element) => () => {
     let _popup = document.getElementsByClassName(
@@ -80,20 +67,6 @@ function Map(props) {
     });
   };
 
-  const renderFeatures = (data) => {
-    if (data) {
-      data.forEach((element) => {
-        const marker = L.marker([element.lat, element.long], {
-          icon: stationIcon,
-        }).bindPopup(element.mouseover);
-        const popup = marker.getPopup();
-        popupsRef.current.push(popup);
-        popup.on("click", () => onPopupClick(element.lat));
-        marker.addTo(layerRef.current);
-      });
-    }
-  };
-
   useEffect(() => {
     let sessionId = sessionStorage.getItem("session_id");
 
@@ -117,7 +90,7 @@ function Map(props) {
 
   useEffect(() => {
     layerRef.current.clearLayers();
-    const data = sensorData; // props.data.data;
+    const data = sensorData;
     if (data) {
       data.forEach((element) => {
         const point = [element.lat, element.long];

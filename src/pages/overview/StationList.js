@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import SearchIcon from "@material-ui/icons/Search";
-import TextField from "@material-ui/core/TextField";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -21,9 +17,10 @@ export default function StationList(props) {
   const history = useHistory();
 
   const handleClick = (elem) => {
-    context.setLocationId(elem.locid + "_" + elem.ts_id);
+    console.log("elem loc: ", elem);
+    context.setLocationId(elem.locid + "_" + elem.stationid);
     context.setTabValue(0);
-    history.push(`/location/${elem.locid}/${elem.ts_id}`);
+    history.push(`location/${elem.locid}/${elem.stationid}`);
   };
 
   useEffect(() => {
@@ -35,18 +32,7 @@ export default function StationList(props) {
   if (!data) return <CircularProgress />;
 
   return (
-    // <Paper> style={{ height: "700px", overflow: "scroll" }}
     <List>
-      {/* <ListItem>
-        <Grid container spacing={1} alignItems='flex-end'>
-          <Grid item>
-            <SearchIcon />
-          </Grid>
-          <Grid item>
-            <TextField id='input-with-icon-grid' label='With a grid' />
-          </Grid>
-        </Grid>
-      </ListItem> */}
       {data &&
         data.map((elem, index) => {
           return (
@@ -58,14 +44,12 @@ export default function StationList(props) {
             >
               <ListItemText
                 primary={elem.ts_name}
-                // secondary={r.properties.parameter}
                 secondary={<StatusText row={elem} />}
               />
             </ListItem>
           );
         })}
     </List>
-    // </Paper>
   );
 }
 
@@ -78,7 +62,7 @@ function StatusText(props) {
         justifyContent: "space-between",
       }}
     >
-      <Typography>{props.row.parameter}</Typography>
+      <Typography>{props.row.stationname}</Typography>
       <Typography>{getStatusComp(props.row.alarm)}</Typography>
     </span>
   );

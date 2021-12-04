@@ -1,6 +1,8 @@
 import axios from "axios";
 import { queries, testQueries } from "./config";
 
+const locHost = "http://localhost:8080";
+const remoteHost = "https://watsonc.admin.gc2.io";
 const endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
 const testEndpoint = `https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=`;
 const apiKey = "&key=2a528b3bc396ca7f544b7b6a4bc52bb7";
@@ -8,6 +10,7 @@ const localEndpoint = "http://localhost:8080/extensions/sensor_app/api";
 const remoteEndpoint =
   "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
 
+const host = locHost; // change to remoteHost before deployment
 const extEndpoint = localEndpoint;
 const getData = (key) => axios.get(`${testEndpoint}${queries[key]}`);
 
@@ -91,6 +94,16 @@ const getStamdataByStation = (stId) =>
 const getUnitHistory = (stationId) =>
   axios.get(`${extEndpoint}/stamdata/unithistory/${stationId}`);
 
+const loginUser = (user, password) => {
+  let sessionUrl = `${host}/api/v2/session/start`;
+  const loginData = {
+    user,
+    password,
+    schema: null,
+  };
+  return axios.post(sessionUrl, loginData);
+};
+
 export {
   getSensorData,
   getTableData,
@@ -109,4 +122,5 @@ export {
   postStamdata,
   getStamdataByStation,
   getUnitHistory,
+  loginUser,
 };
