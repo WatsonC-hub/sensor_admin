@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, MenuItem, TextField } from "@material-ui/core";
 import { StamdataContext } from "../StamdataContext";
 
 export default function LocalityForm() {
@@ -15,6 +15,7 @@ export default function LocalityForm() {
           InputProps={{
             readOnly: formData.location.locname === "",
           }}
+          disabled={formData.location.locname === "" ? true : false}
           variant='outlined'
           type='text'
           label='Navn'
@@ -30,6 +31,7 @@ export default function LocalityForm() {
           InputProps={{
             readOnly: formData.location.locname === "",
           }}
+          disabled={formData.location.locname === "" ? true : false}
           variant='outlined'
           type='text'
           label='Hoved lokation'
@@ -45,38 +47,7 @@ export default function LocalityForm() {
           InputProps={{
             readOnly: formData.location.locname === "",
           }}
-          variant='outlined'
-          type='text'
-          label='Under lokation'
-          value={formData.location.subloc}
-          onChange={(event) => setLocationValue("subloc", event.target.value)}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          InputProps={{
-            readOnly: formData.location.locname === "",
-          }}
-          variant='outlined'
-          type='text'
-          label='Under-under lokation'
-          value={formData.location.subsubloc}
-          onChange={(event) =>
-            setLocationValue("subsubloc", event.target.value)
-          }
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          InputProps={{
-            readOnly: formData.location.locname === "",
-          }}
+          disabled={formData.location.locname === "" ? true : false}
           variant='outlined'
           type='number'
           label='X-koordinat (UTM)'
@@ -92,6 +63,7 @@ export default function LocalityForm() {
           InputProps={{
             readOnly: formData.location.locname === "",
           }}
+          disabled={formData.location.locname === "" ? true : false}
           variant='outlined'
           type='number'
           label='Y-koordinat (UTM)'
@@ -107,6 +79,7 @@ export default function LocalityForm() {
           InputProps={{
             readOnly: formData.location.locname === "",
           }}
+          disabled={formData.location.locname === "" ? true : false}
           variant='outlined'
           type='number'
           label='Terrænkote'
@@ -125,8 +98,11 @@ export default function LocalityForm() {
           InputProps={{
             readOnly: formData.location.locname === "",
           }}
+          disabled={formData.location.locname === "" ? true : false}
+          autoFocus
           variant='outlined'
-          type='text'
+          select
+          margin='dense'
           label='Type af terrænkote'
           value={formData.location.terrainqual}
           onChange={(event) =>
@@ -134,8 +110,15 @@ export default function LocalityForm() {
           }
           InputLabelProps={{ shrink: true }}
           fullWidth
-          margin='dense'
-        />
+        >
+          <MenuItem value={-1}> Vælg type </MenuItem>
+          <MenuItem value="dGPS">
+            dGPS
+          </MenuItem>
+          <MenuItem value="DTM">
+            DTM
+          </MenuItem>
+        </TextField>
       </Grid>
 
       <Grid item xs={12} sm={6}>
@@ -143,6 +126,7 @@ export default function LocalityForm() {
           InputProps={{
             readOnly: formData.location.locname === "",
           }}
+          disabled={formData.location.locname === "" ? true : false}
           variant='outlined'
           type='text'
           label='Kommentar'

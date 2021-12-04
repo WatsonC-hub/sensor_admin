@@ -8,14 +8,18 @@ const StationTypeSelect = (props) => {
   const handleSelection = (event) => {
     setSelectedStationType(event.target.value);
   };
-
+  console.log(stationTypes);
   let menuItems = stationTypes
     .filter((i) => i.properties.tstype_id !== 0)
     .map((item) => (
-      <MenuItem value={item.properties.tstype_id}>
+      <MenuItem
+        value={item.properties.tstype_id}
+        key={item.properties.tstype_id}
+      >
         {item.properties.tstype_name}
       </MenuItem>
     ));
+
   return (
     <TextField
       autoFocus
@@ -46,7 +50,7 @@ export default function StationForm(props) {
     getStationTypes().then((res) => res && setStationTypes(res.data.features));
   }, []);
 
-  const [, , formData, , , , setStationValue, ,] =
+  const [, , formData, , , , setStationValue] =
     React.useContext(StamdataContext);
 
   return (
@@ -57,7 +61,9 @@ export default function StationForm(props) {
           type='text'
           label='Navn'
           value={formData.station.stationname}
-          InputLabelProps={{ shrink: true }}
+          InputLabelProps={{
+            shrink: true,
+          }}
           fullWidth
           margin='dense'
           onChange={(e) => setStationValue("stationname", e.target.value)}
@@ -75,7 +81,9 @@ export default function StationForm(props) {
             type='text'
             label='Station type'
             value={formData.station.tstype_name}
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{
+              shrink: true,
+            }}
             fullWidth
             margin='dense'
           />
@@ -87,7 +95,9 @@ export default function StationForm(props) {
           type='number'
           label=' Målepunktskote'
           value={formData.station.maalepunktskote}
-          InputLabelProps={{ shrink: true }}
+          InputLabelProps={{
+            shrink: true,
+          }}
           fullWidth
           margin='dense'
           onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
@@ -99,7 +109,9 @@ export default function StationForm(props) {
           type='text'
           label='Evt. loggerdybde'
           value={formData.station.terrainlevel}
-          InputLabelProps={{ shrink: true }}
+          InputLabelProps={{
+            shrink: true,
+          }}
           fullWidth
           margin='dense'
           onChange={(e) => setStationValue("terrainlevel", e.target.value)}

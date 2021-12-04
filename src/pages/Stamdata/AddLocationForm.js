@@ -7,6 +7,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 import { StamdataContext } from "./StamdataContext";
+import { MenuItem } from "@material-ui/core";
 
 export default function AddLocationForm({
   locationDialogOpen,
@@ -28,9 +29,17 @@ export default function AddLocationForm({
     React.useContext(StamdataContext);
 
   const handleChange = (event) => {
+    console.log(event.target);
     setLocationData({
       ...locationData,
       [event.target.id]: event.target.value,
+    });
+  };
+
+  const handleSelector = (event) => {
+    setLocationData({
+      ...locationData,
+      terrainqual: event.target.value,
     });
   };
 
@@ -80,26 +89,6 @@ export default function AddLocationForm({
           <TextField
             autoFocus
             margin='dense'
-            id='subloc'
-            label='Under lokation'
-            value={locationData.subloc}
-            onChange={handleChange}
-            type='text'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
-            id='subsubloc'
-            label='Under-under lokation'
-            value={locationData.subsubloc}
-            onChange={handleChange}
-            type='text'
-            fullWidth
-          />
-          <TextField
-            autoFocus
-            margin='dense'
             id='x'
             label='X-koordinat(UTM)'
             value={locationData.x}
@@ -133,10 +122,14 @@ export default function AddLocationForm({
             id='terrainqual'
             label='Type af terrænkote'
             value={locationData.terrainqual}
-            onChange={handleChange}
-            type='text'
+            onChange={handleSelector}
+            select
             fullWidth
-          />
+          >
+            <MenuItem value={-1}> Vælg type </MenuItem>
+            <MenuItem value='dGPS'>dGPS</MenuItem>
+            <MenuItem value='DTM'>DTM</MenuItem>
+          </TextField>
           <TextField
             autoFocus
             margin='dense'

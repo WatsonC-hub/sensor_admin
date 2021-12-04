@@ -35,13 +35,14 @@ const StamdataProvider = (props) => {
     },
     udstyr: {
       terminal: "",
-      terminalid: "",
-      sensorid: "",
+      terminal_id: "",
+      sensor_id: "",
       sensorinfo: "",
       calypso_id: "",
       batteriskift: "",
       startdato: "",
       slutdato: "",
+      uuid: "",
     },
   });
 
@@ -109,6 +110,7 @@ const StamdataProvider = (props) => {
       batteriskift: unitData.batteriskift,
       startdato: unitData.startdato,
       slutdato: unitData.slutdato,
+      uuid: unitData.uuid,
     });
   };
 

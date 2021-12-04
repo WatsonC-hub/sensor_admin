@@ -12,6 +12,7 @@ import { getAvailableUnits } from "../../api";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
+  DateTimePicker
 } from "@material-ui/pickers";
 import { MenuItem } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
@@ -52,35 +53,37 @@ export default function AddUdstyrForm({
   const handleSensorId = (event) => {
     setUdstyrFormData({
       ...udstyrFormData,
-      sensor_id: event.target.value,
+      uuid: event.target.value,
     });
   };
 
   const handleDateChange = (date) => {
+    console.log(date)
     setUdstyrFormData({
       ...udstyrFormData,
-      fra: new Date(date),
+      fra: date,
     });
   };
 
   const handleSave = () => {
     setUdstyrDialogOpen(false);
     let unit = availableUnits.find(
-      (x) => x.unit_uuid === udstyrFormData.sensor_id
+      (x) => x.unit_uuid === udstyrFormData.uuid
     );
 
     if (!unit) return;
-
+    
     saveUdstyrFormData({
       terminal: unit.type,
-      terminalid: unit.terminal_id,
-      sensorid: unit.sensor_id,
+      terminal_id: unit.terminal_id,
+      sensor_id: unit.sensor_id,
       sensorinfo: unit.sensorinfo,
       parameter: unit.sensorinfo,
       calypso_id: unit.calypso_id,
       batteriskift: unit.batteriskift,
       startdato: udstyrFormData.fra,
       slutdato: unit.slutdato,
+      uuid: unit.unit_uuid
     });
   };
 
@@ -141,11 +144,12 @@ export default function AddUdstyrForm({
                 </MenuItem>
               ))}
             </TextField>
-            <KeyboardDatePicker
+            <DateTimePicker
+              autoOk
               disableToolbar
               variant='inline'
               inputProps={{ readOnly: true }}
-              format='yyyy-MM-dd'
+              format='yyyy-MM-dd HH:mm'
               margin='normal'
               id='Fra'
               label={
