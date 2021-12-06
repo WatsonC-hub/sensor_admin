@@ -46,7 +46,7 @@ export default function Station({
         setMeasurements(res.data.result);
       }
     );
-  }, [updated, stationId]);
+  }, [stationId]);
 
   const changeFormData = (field, value) => {
     setFormData({
@@ -68,9 +68,10 @@ export default function Station({
   };
 
   const isPut = () => formData.gid !== -1;
-  const showGraph =
-    stationId !== -1 && (formToShow === null || formToShow === "ADDPEJLING");
-  const showMeasurements = formToShow === null || formToShow === "ADDPEJLING";
+  // const showGraph =
+  //   stationId !== -1 && (formToShow === null || formToShow === "ADDPEJLING");
+  // const showMeasurements = formToShow === null || formToShow === "ADDPEJLING";
+  console.log(stationId);
 
   const handleSubmit = (stationId) => {
     setFormToShow(null);
@@ -110,7 +111,9 @@ export default function Station({
   return (
     // <>
     <div>
-      {showGraph && <BearingGraph stationId={stationId} />}
+      {(formToShow === null || formToShow === "ADDPEJLING") && (
+        <BearingGraph stationId={stationId} />
+      )}
       <Grid item xs={12}></Grid>
       <Grid item xs={12}></Grid>
       {formToShow === "ADDPEJLING" && (
@@ -132,7 +135,8 @@ export default function Station({
       {formToShow === "TAG_BILLEDE" && (
         <CaptureBearing setFormToShow={setFormToShow} />
       )}
-      {showMeasurements && (
+
+      {(formToShow === null || formToShow === "ADDPEJLING") && (
         <PejlingMeasurements
           measurements={measurements}
           updated={updated}
@@ -142,6 +146,7 @@ export default function Station({
           canEdit={canEdit}
         />
       )}
+
       <Toolbar />
       <ActionArea
         open={open}

@@ -9,8 +9,11 @@ import {
   Select,
   MenuItem,
   FormControl,
+  TextField,
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import "date-fns";
+import _ from "lodash";
 //import DateFnsUtils from "@date-io/date-fns";
 //import daLocale from "date-fns/locale/da";
 //import { MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -54,8 +57,8 @@ function LocationChooser({ setLocationDialogOpen }) {
     console.log(locname, locData);
     if (locData) {
       setValues("location", {
-        locid: locData.loc_id,
-        locname: locData.loc_name,
+        loc_id: locData.loc_id,
+        loc_name: locData.loc_name,
         mainloc: locData.mainloc,
         subloc: locData.subloc,
         subsubloc: locData.subsubloc,
@@ -65,19 +68,37 @@ function LocationChooser({ setLocationDialogOpen }) {
         terrainlevel: locData.terrainlevel,
         description: "",
       });
+    } else {
+      setValues("location", {
+        loc_id: "",
+        loc_name: "",
+        mainloc: "",
+        subloc: "",
+        subsubloc: "",
+        x: "",
+        y: "",
+        terrainqual: "",
+        terrainlevel: "",
+        description: "",
+      });
     }
   };
 
   const locationItems = locationNames(localities).map((name) => (
     <MenuItem value={name}>{name}</MenuItem>
   ));
-
+  const loc_items = _.uniqBy(localities, "loc_id");
+  console.log(loc_items);
   const handleChange = (event) => {
-    console.log(formData);
-    setLocality(event.target.value);
+    const value =
+      event.target.textContent === "" ? 0 : event.target.textContent;
+    console.log(value);
+    setLocality(value);
     console.log("before populateformdata");
-    populateFormData(localities, event.target.value);
+    populateFormData(localities, value);
   };
+
+  const handleClear = (event) => {};
 
   useEffect(() => {
     getStamData().then((res) => setLocalities(res.data.data));
@@ -88,10 +109,23 @@ function LocationChooser({ setLocationDialogOpen }) {
       <Grid item xs={12} sm={6}>
         <div style={flex}>
           <span>Lokalitet</span>
-          <Select value={locality} onChange={handleChange}>
+          <Autocomplete
+            options={loc_items}
+            getOptionLabel={(option) => option.loc_name}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Vælg lokalitet"
+                variant="outlined"
+              />
+            )}
+            style={{ width: 300 }}
+            onChange={handleChange}
+          />
+          {/* <Select value={locality} onChange={handleChange}>
             <MenuItem value={0}>Vælg Lokalitet</MenuItem>
             {locationItems}
-          </Select>
+          </Select> */}
 
           <Button
             style={{ backgroundColor: "#4472c4" }}
@@ -107,16 +141,23 @@ function LocationChooser({ setLocationDialogOpen }) {
 
   const mobileChooser = (
     <>
-      <Grid item xs={6}>
-        <FormControl>
-          <InputLabel id='localityId'>Lokalitet</InputLabel>
-          <Select value={location} onChange={handleChange}>
+      <Grid item xs={8}>
+        {/* <InputLabel id="localityId">Lokalitet</InputLabel> */}
+        <Autocomplete
+          options={loc_items}
+          getOptionLabel={(option) => option.loc_name}
+          renderInput={(params) => (
+            <TextField {...params} label="Vælg lokalitet" variant="outlined" />
+          )}
+          disableClearable
+          onChange={handleChange}
+        />
+        {/* <Select value={location} onChange={handleChange}>
             <MenuItem value={0}>Vælg Lokalitet</MenuItem>
             {locationItems}
-          </Select>
-        </FormControl>
+          </Select> */}
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={4}>
         <Button
           style={{ backgroundColor: "#4472c4", textTransform: "none" }}
           onClick={() => setLocationDialogOpen(true)}
@@ -132,7 +173,7 @@ function LocationChooser({ setLocationDialogOpen }) {
 
 function Locality({ locationDialogOpen, setLocationDialogOpen }) {
   return (
-    <Grid container spacing={2}>
+    <Grid container>
       <LocationChooser
         locationDialogOpen={locationDialogOpen}
         setLocationDialogOpen={setLocationDialogOpen}
@@ -161,14 +202,15 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   const resetUdStyrForm = () => {
     saveUdstyrFormData({
       terminal: "",
-      terminalid: "",
-      sensorid: "",
+      terminal_id: "",
+      sensor_id: "",
       sensorinfo: "",
       parameter: "",
       calypso_id: "",
       batteriskift: "",
       startdato: "",
       slutdato: "",
+      uuid: "",
     });
   };
 
@@ -184,7 +226,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
         setLocationDialogOpen={setLocationDialogOpen}
       />
       <Container fixed>
-        <Typography variant='h6' component='h3'>
+        <Typography variant="h6" component="h3">
           Stamdata
         </Typography>
 
@@ -194,7 +236,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
         />
         <Typography>Station</Typography>
         <StationForm
-          mode='add'
+          mode="add"
           selectedStationType={selectedStationType}
           setSelectedStationType={changeSelectedStationType}
         />
@@ -202,7 +244,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           <Typography>Udstyr</Typography>
           <Button
             disabled={selectedStationType === -1}
-            size='small'
+            size="small"
             style={{
               backgroundColor: "#4472c4",
               textTransform: "none",
@@ -213,7 +255,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
             Tilføj Udstyr
           </Button>
         </div>
-        <UdstyrForm mode='add' />
+        <UdstyrForm mode="add" />
         <Grid container spacing={3}>
           <Grid item xs={4} sm={2}>
             <Button
@@ -237,7 +279,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
                 setAddStationDisabled(false);
               }}
             >
-              Annullere
+              Annuller
             </Button>
           </Grid>
         </Grid>

@@ -7,7 +7,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import LocationContext from "./LocationContext";
-import Station from "./pages/station";
+import Station from "./pages/station/Station";
 import { getStations } from "./api";
 import MinimalSelect from "./pages/Location/MinimalSelect";
 import { useParams, useHistory } from "react-router-dom";
@@ -92,11 +92,6 @@ export default function LocationDrawer() {
     return stations.find((s) => s.ts_id + "" === id + "");
   };
 
-  const getSelectedItem = () => {
-    if (selectedItem !== -1) return selectedItem;
-    return currStation ? currStation.ts_id : -1;
-  };
-
   useEffect(() => {
     let locId = params.locid;
     let statId = params.statid;
@@ -118,7 +113,7 @@ export default function LocationDrawer() {
     <div className={classes.root}>
       <CssBaseline />
       <AppBar
-        position='fixed'
+        position="fixed"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: open,
         })}
@@ -127,7 +122,7 @@ export default function LocationDrawer() {
         <Toolbar>
           <IconButton
             className={classes.backButton}
-            color='inherit'
+            color="inherit"
             onClick={(e) => history.push("/")}
           >
             <KeyboardBackspaceIcon />
@@ -138,7 +133,7 @@ export default function LocationDrawer() {
             selectedStation={selectedItem}
             setSelectedItem={setSelectedItem}
             setCurrStation={setCurrStation}
-            currentStation={currentStation}
+            currentStation={currStation}
           />
         </Toolbar>
       </AppBar>
@@ -147,7 +142,7 @@ export default function LocationDrawer() {
         <div className={classes.drawerHeader} />
         <Station
           open={open}
-          stationId={getSelectedItem()}
+          stationId={currStation ? currStation.ts_id : -1}
           formToShow={formToShow}
           setFormToShow={setFormToShow}
         />

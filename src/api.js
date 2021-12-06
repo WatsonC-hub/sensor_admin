@@ -39,7 +39,7 @@ const getStations = (locid, sessionId) => {
 };
 
 const getLocidFromLabel = (labelId) => {
-  const sql = `${endpoint}SELECT locid FROM sensor.qrid_to_stationid where label_id =${labelId}`;
+  const sql = `${endpoint}SELECT loc_id FROM sensor.qrid_to_stationid where calypso_id =${labelId}`;
   return axios.get(sql);
 };
 
@@ -56,7 +56,7 @@ const getGraphData = (stationId) => {
 const insertMeasurement = (sessionId, stationId, formData) => {
   formData["timeofmeas"] = formData["timeofmeas"].split("+")[0];
   formData["stationid"] = stationId;
-  const url = `${extEndpoint}/station/measurements/${stationId}/10?session_id=${sessionId}`;
+  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${sessionId}`;
   return axios.post(url, formData);
 };
 

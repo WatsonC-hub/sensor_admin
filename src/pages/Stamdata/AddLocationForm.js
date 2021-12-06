@@ -14,7 +14,7 @@ export default function AddLocationForm({
   setLocationDialogOpen,
 }) {
   const [locationData, setLocationData] = useState({
-    locname: "",
+    loc_name: "",
     x: "",
     y: "",
     terrainlevel: "",
@@ -29,7 +29,7 @@ export default function AddLocationForm({
     React.useContext(StamdataContext);
 
   const handleChange = (event) => {
-    console.log(event.target);
+    //console.log(event.target);
     setLocationData({
       ...locationData,
       [event.target.id]: event.target.value,
@@ -62,90 +62,90 @@ export default function AddLocationForm({
       <Dialog
         open={locationDialogOpen}
         onClose={handleClose}
-        aria-labelledby='form-dialog-title'
+        aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id='form-dialog-title'>Tilføj lokation</DialogTitle>
+        <DialogTitle id="form-dialog-title">Tilføj lokation</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
-            margin='dense'
-            id='locname'
-            label='Navn'
-            value={locationData.locname}
+            margin="dense"
+            id="loc_name"
+            label="Navn"
+            value={locationData.loc_name}
             onChange={handleChange}
-            type='text'
+            type="text"
             fullWidth
           />
           <TextField
             autoFocus
-            margin='dense'
-            id='mainloc'
-            label='Hoved lokation'
+            margin="dense"
+            id="mainloc"
+            label="Hoved lokation"
             value={locationData.mainloc}
             onChange={handleChange}
-            type='text'
+            type="text"
             fullWidth
           />
           <TextField
             autoFocus
-            margin='dense'
-            id='x'
-            label='X-koordinat(UTM)'
+            margin="dense"
+            id="x"
+            label="X-koordinat(UTM)"
             value={locationData.x}
             onChange={handleChange}
-            type='number'
+            type="number"
             fullWidth
           />
           <TextField
             autoFocus
-            margin='dense'
-            id='y'
-            label='Y-koordinat (UTM)'
+            margin="dense"
+            id="y"
+            label="Y-koordinat (UTM)"
             value={locationData.y}
             onChange={handleChange}
-            type='number'
+            type="number"
             fullWidth
           />
           <TextField
             autoFocus
-            margin='dense'
-            id='terrainlevel'
-            label='Terrænkote'
+            margin="dense"
+            id="terrainlevel"
+            label="Terrænkote"
             value={locationData.terrainlevel}
             onChange={handleChange}
-            type='number'
+            type="number"
             fullWidth
           />
           <TextField
             autoFocus
-            margin='dense'
-            id='terrainqual'
-            label='Type af terrænkote'
+            margin="dense"
+            id="terrainqual"
+            label="Type af terrænkote"
             value={locationData.terrainqual}
             onChange={handleSelector}
             select
             fullWidth
           >
             <MenuItem value={-1}> Vælg type </MenuItem>
-            <MenuItem value='dGPS'>dGPS</MenuItem>
-            <MenuItem value='DTM'>DTM</MenuItem>
+            <MenuItem value="dGPS">dGPS</MenuItem>
+            <MenuItem value="DTM">DTM</MenuItem>
           </TextField>
           <TextField
             autoFocus
-            margin='dense'
-            id='description'
-            label='Kommentar'
+            margin="dense"
+            id="description"
+            label="Kommentar"
             value={locationData.description}
             onChange={handleChange}
-            type='text'
+            type="text"
             fullWidth
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleSave} color='primary'>
+          <Button onClick={handleSave} color="primary">
             Gem
           </Button>
-          <Button onClick={handleClose} color='primary'>
+          <Button onClick={handleClose} color="primary">
             Annuller
           </Button>
         </DialogActions>

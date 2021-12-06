@@ -3,10 +3,17 @@ import { Grid, TextField, MenuItem } from "@material-ui/core";
 import { StamdataContext } from "../StamdataContext";
 import { getStationTypes } from "../../../api";
 
-const StationTypeSelect = (props) => {
-  const { selectedStationType, setSelectedStationType, stationTypes } = props;
+const StationTypeSelect = ({
+  selectedStationType,
+  setSelectedStationType,
+  stationTypes,
+  onChange,
+}) => {
   const handleSelection = (event) => {
+    console.log(event.target.value);
     setSelectedStationType(event.target.value);
+    console.log(event.target);
+    onChange(event);
   };
   console.log(stationTypes);
   let menuItems = stationTypes
@@ -23,12 +30,12 @@ const StationTypeSelect = (props) => {
   return (
     <TextField
       autoFocus
-      variant='outlined'
+      variant="outlined"
       select
-      margin='dense'
+      margin="dense"
       value={selectedStationType}
       onChange={handleSelection}
-      label='Station type'
+      label="Station type"
       fullWidth
     >
       <MenuItem value={-1}>Vælg type</MenuItem>
@@ -37,9 +44,12 @@ const StationTypeSelect = (props) => {
   );
 };
 
-export default function StationForm(props) {
+export default function StationForm({
+  mode,
+  selectedStationType,
+  setSelectedStationType,
+}) {
   const [stationTypes, setStationTypes] = React.useState([]);
-  const mode = props.mode;
   useEffect(() => {
     if (stationTypes.length > 0) {
       console.log("station more than zero");
@@ -57,64 +67,69 @@ export default function StationForm(props) {
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
         <TextField
-          variant='outlined'
-          type='text'
-          label='Navn'
+          variant="outlined"
+          type="text"
+          label="Navn"
           value={formData.station.stationname}
           InputLabelProps={{
             shrink: true,
           }}
           fullWidth
-          margin='dense'
-          onChange={(e) => setStationValue("stationname", e.target.value)}
+          margin="dense"
+          onChange={(e) => setStationValue("ts_name", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         {mode === "add" ? (
-          <StationTypeSelect {...props} stationTypes={stationTypes} />
+          <StationTypeSelect
+            selectedStationType={selectedStationType}
+            setSelectedStationType={setSelectedStationType}
+            stationTypes={stationTypes}
+            onChange={(e) => setStationValue("tstype_id", e.target.value)}
+          />
         ) : (
           <TextField
             InputProps={{
               readOnly: true,
             }}
-            variant='outlined'
-            type='text'
-            label='Station type'
+            variant="outlined"
+            type="text"
+            label="Station type"
             value={formData.station.tstype_name}
             InputLabelProps={{
               shrink: true,
             }}
             fullWidth
-            margin='dense'
+            margin="dense"
           />
         )}
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
-          variant='outlined'
-          type='number'
-          label=' Målepunktskote'
+          variant="outlined"
+          type="number"
+          label=" Målepunktskote"
           value={formData.station.maalepunktskote}
           InputLabelProps={{
             shrink: true,
           }}
           fullWidth
-          margin='dense'
+          margin="dense"
           onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
-          variant='outlined'
-          type='text'
-          label='Evt. loggerdybde'
+          variant="outlined"
+          type="number"
+          label="Evt. loggerdybde"
           value={formData.station.terrainlevel}
           InputLabelProps={{
             shrink: true,
           }}
           fullWidth
-          margin='dense'
-          onChange={(e) => setStationValue("terrainlevel", e.target.value)}
+          margin="dense"
+          onChange={(e) => setStationValue("sensor_depth_m", e.target.value)}
         />
       </Grid>
     </Grid>

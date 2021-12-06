@@ -13,97 +13,97 @@ export default function LocalityForm() {
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.locname === "",
+            readOnly: formData.location.loc_name === "",
           }}
-          disabled={formData.location.locname === "" ? true : false}
-          variant='outlined'
-          type='text'
-          label='Navn'
-          value={formData.location.locname}
-          onChange={(event) => setLocationValue("locname", event.target.value)}
+          disabled={formData.location.loc_name === "" ? true : false}
+          variant="outlined"
+          type="text"
+          label="Navn"
+          value={formData.location.loc_name}
+          onChange={(event) => setLocationValue("loc_name", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
-          margin='dense'
+          margin="dense"
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.locname === "",
+            readOnly: formData.location.loc_name === "",
           }}
-          disabled={formData.location.locname === "" ? true : false}
-          variant='outlined'
-          type='text'
-          label='Hoved lokation'
+          disabled={formData.location.loc_name === "" ? true : false}
+          variant="outlined"
+          type="text"
+          label="Hoved lokation"
           value={formData.location.mainloc}
           onChange={(event) => setLocationValue("mainloc", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
-          margin='dense'
+          margin="dense"
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.locname === "",
+            readOnly: formData.location.loc_name === "",
           }}
-          disabled={formData.location.locname === "" ? true : false}
-          variant='outlined'
-          type='number'
-          label='X-koordinat (UTM)'
+          disabled={formData.location.loc_name === "" ? true : false}
+          variant="outlined"
+          type="number"
+          label="X-koordinat (UTM)"
           value={formData.location.x}
           onChange={(event) => setLocationValue("x", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
-          margin='dense'
+          margin="dense"
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.locname === "",
+            readOnly: formData.location.loc_name === "",
           }}
-          disabled={formData.location.locname === "" ? true : false}
-          variant='outlined'
-          type='number'
-          label='Y-koordinat (UTM)'
+          disabled={formData.location.loc_name === "" ? true : false}
+          variant="outlined"
+          type="number"
+          label="Y-koordinat (UTM)"
           value={formData.location.y}
           onChange={(event) => setLocationValue("y", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
-          margin='dense'
+          margin="dense"
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.locname === "",
+            readOnly: formData.location.loc_name === "",
           }}
-          disabled={formData.location.locname === "" ? true : false}
-          variant='outlined'
-          type='number'
-          label='Terrænkote'
+          disabled={formData.location.loc_name === "" ? true : false}
+          variant="outlined"
+          type="number"
+          label="Terrænkote"
           value={formData.location.terrainlevel}
           onChange={(event) =>
             setLocationValue("terrainlevel", event.target.value)
           }
           InputLabelProps={{ shrink: true }}
           fullWidth
-          margin='dense'
+          margin="dense"
         />
       </Grid>
 
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.locname === "",
+            readOnly: formData.location.loc_name === "",
           }}
-          disabled={formData.location.locname === "" ? true : false}
+          disabled={formData.location.loc_name === "" ? true : false}
           autoFocus
-          variant='outlined'
+          variant="outlined"
           select
-          margin='dense'
-          label='Type af terrænkote'
+          margin="dense"
+          label="Type af terrænkote"
           value={formData.location.terrainqual}
           onChange={(event) =>
             setLocationValue("terrainqual", event.target.value)
@@ -112,31 +112,27 @@ export default function LocalityForm() {
           fullWidth
         >
           <MenuItem value={-1}> Vælg type </MenuItem>
-          <MenuItem value="dGPS">
-            dGPS
-          </MenuItem>
-          <MenuItem value="DTM">
-            DTM
-          </MenuItem>
+          <MenuItem value="dGPS">dGPS</MenuItem>
+          <MenuItem value="DTM">DTM</MenuItem>
         </TextField>
       </Grid>
 
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.locname === "",
+            readOnly: formData.location.loc_name === "",
           }}
-          disabled={formData.location.locname === "" ? true : false}
-          variant='outlined'
-          type='text'
-          label='Kommentar'
+          disabled={formData.location.loc_name === "" ? true : false}
+          variant="outlined"
+          type="text"
+          label="Kommentar"
           value={formData.location.description}
           onChange={(event) =>
             setLocationValue("description", event.target.value)
           }
           InputLabelProps={{ shrink: true }}
           fullWidth
-          margin='dense'
+          margin="dense"
         />
       </Grid>
     </Grid>

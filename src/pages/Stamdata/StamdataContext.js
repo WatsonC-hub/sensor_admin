@@ -16,8 +16,8 @@ const StamdataContext = React.createContext([
 const StamdataProvider = (props) => {
   const [formData, setFormData] = React.useState({
     location: {
-      locid: "",
-      locname: "",
+      loc_id: "",
+      loc_name: "",
       mainloc: "",
       subloc: "",
       subsubloc: "",
@@ -27,11 +27,11 @@ const StamdataProvider = (props) => {
       description: "",
     },
     station: {
-      stationname: "",
-      stationtypename: "",
+      ts_name: "",
+      tstype_id: "",
       parameter: "",
       maalepunktskote: "",
-      terrainlevel: "",
+      sensor_depth_m: "",
     },
     udstyr: {
       terminal: "",
@@ -93,10 +93,10 @@ const StamdataProvider = (props) => {
 
   const saveStationFormData = (station) => {
     setValues("station", {
-      stationname: station.ts_name,
+      ts_name: station.ts_name,
       tstype_name: station.tstype_name,
       maalepunktskote: station.maalepunktskote,
-      terrainlevel: station.terrainlevel,
+      sensor_depth_m: station.sensor_depth_m,
     });
   };
 
@@ -116,7 +116,7 @@ const StamdataProvider = (props) => {
 
   const saveLocationFormData = (locationData) => {
     setValues("location", {
-      locname: locationData.loc_name,
+      loc_name: locationData.loc_name,
       mainloc: locationData.mainloc,
       subloc: locationData.subloc,
       subsubloc: locationData.subsubloc,

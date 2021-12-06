@@ -16,6 +16,7 @@ const MinimalSelect = ({
   stationList,
   selectedStation,
   setSelectedItem,
+  setCurrStation,
 }) => {
   const [stationId, setStationId] = useState(selectedStation + "");
   const [isOpen, setIsOpen] = useState(true);
@@ -24,7 +25,9 @@ const MinimalSelect = ({
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
     history.replace(`/location/${locid}/${event.target.value}`);
-
+    setCurrStation(
+      stationList.find((s) => s.ts_id + "" === event.target.value + "")
+    );
     setIsOpen(false);
   };
 

@@ -12,7 +12,7 @@ import { getAvailableUnits } from "../../api";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
-  DateTimePicker
+  DateTimePicker,
 } from "@material-ui/pickers";
 import { MenuItem } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
@@ -58,7 +58,7 @@ export default function AddUdstyrForm({
   };
 
   const handleDateChange = (date) => {
-    console.log(date)
+    console.log(date);
     setUdstyrFormData({
       ...udstyrFormData,
       fra: date,
@@ -67,12 +67,10 @@ export default function AddUdstyrForm({
 
   const handleSave = () => {
     setUdstyrDialogOpen(false);
-    let unit = availableUnits.find(
-      (x) => x.unit_uuid === udstyrFormData.uuid
-    );
+    let unit = availableUnits.find((x) => x.unit_uuid === udstyrFormData.uuid);
 
     if (!unit) return;
-    
+
     saveUdstyrFormData({
       terminal: unit.type,
       terminal_id: unit.terminal_id,
@@ -83,7 +81,7 @@ export default function AddUdstyrForm({
       batteriskift: unit.batteriskift,
       startdato: udstyrFormData.fra,
       slutdato: unit.slutdato,
-      uuid: unit.unit_uuid
+      uuid: unit.unit_uuid,
     });
   };
 
@@ -101,18 +99,18 @@ export default function AddUdstyrForm({
         <Dialog
           open={ustyrDialogOpen}
           onClose={handleClose}
-          aria-labelledby='form-dialog-title'
+          aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id='form-dialog-title'>Tilføj Udstyr</DialogTitle>
+          <DialogTitle id="form-dialog-title">Tilføj Udstyr</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
               select
-              margin='dense'
+              margin="dense"
               value={udstyrFormData.calypso_id}
               onChange={handleCalypsoId}
-              id='calypso_id'
-              label='Calypso ID'
+              id="calypso_id"
+              label="Calypso ID"
               fullWidth
             >
               <MenuItem key={-1} value={-1}>
@@ -127,12 +125,11 @@ export default function AddUdstyrForm({
             <TextField
               autoFocus
               select
-              margin='dense'
-              value={udstyrFormData.sensor_id}
+              margin="dense"
+              value={udstyrFormData.uuid}
               onChange={handleSensorId}
-              id='sensor_id'
-              label='Sensor / Sensor ID'
-              type='email'
+              id="sensor_id"
+              label="Sensor / Sensor ID"
               fullWidth
             >
               <MenuItem key={-1} value={-1}>
@@ -147,13 +144,13 @@ export default function AddUdstyrForm({
             <DateTimePicker
               autoOk
               disableToolbar
-              variant='inline'
+              variant="inline"
               inputProps={{ readOnly: true }}
-              format='yyyy-MM-dd HH:mm'
-              margin='normal'
-              id='Fra'
+              format="yyyy-MM-dd HH:mm"
+              margin="normal"
+              id="Fra"
               label={
-                <Typography variant='h6' component='h3'>
+                <Typography variant="h6" component="h3">
                   Fra
                 </Typography>
               }
@@ -167,10 +164,10 @@ export default function AddUdstyrForm({
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleSave} color='primary'>
+            <Button onClick={handleSave} color="primary">
               Gem
             </Button>
-            <Button onClick={handleClose} color='primary'>
+            <Button onClick={handleClose} color="primary">
               Annuller
             </Button>
           </DialogActions>
