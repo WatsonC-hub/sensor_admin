@@ -22,17 +22,14 @@ import {
   DateTimePicker,
 } from "@material-ui/pickers";
 
-export default function PejlingForm({
+export default function MaalepunktForm({
   stationId,
   formData,
   changeFormData,
   handleSubmit,
   resetFormData,
 }) {
-  const [currDate, setCurrDate] = useState(formData.timeofmeas);
-  const handleUsageChange = (e) => {
-    changeFormData("useforcorrection", e.target.value);
-  };
+  const [currDate, setCurrDate] = useState(formData.startdate);
 
   const handleDateChange = (date) => {
     if (isValid(date)) {
@@ -40,16 +37,16 @@ export default function PejlingForm({
     }
     if (isValid(date)) {
       console.log("date is valid again: ", date);
-      changeFormData("timeofmeas", date);
+      changeFormData("startdate", date);
     }
   };
 
   const handleCommentChange = (e) => {
-    changeFormData("comment", e.target.value);
+    changeFormData("mp_description", e.target.value);
   };
 
-  const handleDistanceChange = (e) => {
-    changeFormData("disttowatertable_m", e.target.value);
+  const handleElevationChange = (e) => {
+    changeFormData("elevation", e.target.value);
   };
 
   return (
@@ -57,7 +54,7 @@ export default function PejlingForm({
       <Card style={{ marginBottom: 25 }}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            Indberet pejling
+            Indberet målepunkt
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
@@ -68,14 +65,13 @@ export default function PejlingForm({
                 variant="outlined"
                 format="yyyy-MM-dd HH:mm"
                 id="Fra"
-                value={currDate}
                 label={
                   <Typography variant="h6" component="h3">
                     Startdato
                   </Typography>
                 }
                 InputLabelProps={{ shrink: true }}
-                value={formData.timeofmeas}
+                value={formData.startdate}
                 onChange={(date) => handleDateChange(date)}
                 fullWidth
               />
@@ -86,13 +82,13 @@ export default function PejlingForm({
                 variant="outlined"
                 label={
                   <Typography variant="h6" component="h3">
-                    Pejling (nedstik) [m]
+                    Pejlepunkt [m]
                   </Typography>
                 }
                 InputLabelProps={{ shrink: true }}
                 fullWidth
-                value={formData.disttowatertable_m}
-                onChange={handleDistanceChange}
+                value={formData.elevation}
+                onChange={handleElevationChange}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
@@ -102,7 +98,7 @@ export default function PejlingForm({
                     Kommentar
                   </Typography>
                 }
-                value={formData.comment}
+                value={formData.mp_description}
                 variant="outlined"
                 multiline
                 rows={4}
@@ -110,33 +106,6 @@ export default function PejlingForm({
                 fullWidth
                 onChange={handleCommentChange}
               />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <FormControl component="fieldset">
-                <FormLabel component="h6">
-                  Hvordan skal pejlingen anvendes?
-                </FormLabel>
-                <RadioGroup
-                  value={formData.useforcorrection + ""}
-                  onChange={handleUsageChange}
-                >
-                  <FormControlLabel
-                    value="0"
-                    control={<Radio />}
-                    label="(0) Anvendes ikke"
-                  />
-                  <FormControlLabel
-                    value="1"
-                    control={<Radio />}
-                    label="(1) Anvendes til korrektion fremadrettet"
-                  />
-                  <FormControlLabel
-                    value="2"
-                    control={<Radio />}
-                    label="(2) Anvendes til korrektion bagud og fremadrettet"
-                  />
-                </RadioGroup>
-              </FormControl>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>
             <Grid item xs={4} sm={2}>

@@ -8,10 +8,13 @@ import {
   updateMeasurement,
   deleteMeasurement,
   getMeasurements,
+  insertMp,
+  updateMp,
 } from "../../api";
 import { Toolbar } from "@material-ui/core";
 import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
+import MaalepunktForm from "../../components/MaalepunktForm";
 import CaptureBearing from "./CaptureBearing";
 import { StamdataProvider } from "../Stamdata/StamdataContext";
 
@@ -28,12 +31,20 @@ export default function Station({
   formToShow,
   setFormToShow,
 }) {
-  const [formData, setFormData] = useState({
+  const [pejlingData, setPejlingData] = useState({
     gid: -1,
     timeofmeas: formatedTimestamp(new Date()),
     disttowatertable_m: 0,
     useforcorrection: 0,
     comment: "",
+  });
+
+  const [mpData, setMpData] = useState({
+    gid: -1,
+    startdate: formatedTimestamp(new Date()),
+    enddate: formatedTimestamp(new Date("2099-01-01")),
+    elevation: 0,
+    mp_description: 0,
   });
 
   const [updated, setUpdated] = useState(new Date());
@@ -48,15 +59,15 @@ export default function Station({
     );
   }, [stationId]);
 
-  const changeFormData = (field, value) => {
-    setFormData({
-      ...formData,
+  const changePejlingData = (field, value) => {
+    setPejlingData({
+      ...pejlingData,
       [field]: value,
     });
   };
 
-  const resetFormData = () => {
-    setFormData({
+  const resetPejlingData = () => {
+    setPejlingData({
       gid: -1,
       timeofmeas: formatedTimestamp(new Date()),
       disttowatertable_m: 0,
@@ -67,24 +78,60 @@ export default function Station({
     setFormToShow(null);
   };
 
-  const isPut = () => formData.gid !== -1;
+  const changeMpData = (field, value) => {
+    setMpData({
+      ...mpData,
+      [field]: value,
+    });
+  };
+
+  const resetMpData = () => {
+    setMpData({
+      gid: -1,
+      startdate: formatedTimestamp(new Date()),
+      enddate: formatedTimestamp(new Date("2099-01-01")),
+      elevation: 0,
+      mp_description: "",
+    });
+
+    setFormToShow(null);
+  };
+
+  const isPut = () => pejlingData.gid !== -1;
   // const showGraph =
   //   stationId !== -1 && (formToShow === null || formToShow === "ADDPEJLING");
   // const showMeasurements = formToShow === null || formToShow === "ADDPEJLING";
   console.log(stationId);
 
-  const handleSubmit = (stationId) => {
+  const handlePejlingSubmit = (stationId) => {
     setFormToShow(null);
     const method = isPut() ? updateMeasurement : insertMeasurement;
     const userId = sessionStorage.getItem("user");
-    const payload = { ...formData, userid: userId };
+    const payload = { ...pejlingData, userid: userId };
     var _date = Date.parse(payload.timeofmeas);
     console.log("time before parse: ", payload.timeofmeas);
     console.log("time after parse: ", _date);
     payload.timeofmeas = formatedTimestamp(new Date(_date));
     method(sessionStorage.getItem("session_id"), stationId, payload).then(
       (res) => {
-        resetFormData();
+        resetPejlingData();
+        setUpdated(new Date());
+      }
+    );
+  };
+
+  const handleMpSubmit = () => {
+    setFormToShow(null);
+    const method = mpData.gid !== -1 ? updateMp : insertMp;
+    const userId = sessionStorage.getItem("user");
+    const payload = { ...mpData, userid: userId };
+    var _date = Date.parse(payload.startdate);
+    console.log("time before parse: ", payload.startdate);
+    console.log("time after parse: ", _date);
+    payload.startdate = formatedTimestamp(new Date(_date));
+    method(sessionStorage.getItem("session_id"), stationId, payload).then(
+      (res) => {
+        resetMpData();
         setUpdated(new Date());
       }
     );
@@ -92,7 +139,7 @@ export default function Station({
 
   const handleEdit = (data) => {
     data.timeofmeas = data.timeofmeas.replace(" ", "T").substr(0, 19);
-    setFormData(data); // Fill form data on Edit
+    setPejlingData(data); // Fill form data on Edit
     setFormToShow("ADDPEJLING"); // update to use state machine
     setUpdated(new Date());
   };
@@ -103,7 +150,7 @@ export default function Station({
       stationId,
       gid
     ).then((res) => {
-      resetFormData();
+      resetPejlingData();
       setUpdated(new Date());
     });
   };
@@ -120,10 +167,10 @@ export default function Station({
         <PejlingForm
           stationId={stationId}
           setShowForm={setShowForm}
-          formData={formData}
-          changeFormData={changeFormData}
-          handleSubmit={handleSubmit}
-          resetFormData={resetFormData}
+          formData={pejlingData}
+          changeFormData={changePejlingData}
+          handleSubmit={handlePejlingSubmit}
+          resetFormData={resetPejlingData}
           canEdit={canEdit}
         />
       )}
@@ -132,8 +179,16 @@ export default function Station({
           <EditStamdata setFormToShow={setFormToShow} stationId={stationId} />
         </StamdataProvider>
       )}
-      {formToShow === "TAG_BILLEDE" && (
-        <CaptureBearing setFormToShow={setFormToShow} />
+      {formToShow === "ADDMAALEPUNKT" && (
+        <MaalepunktForm
+          stationId={stationId}
+          setShowForm={setShowForm}
+          formData={mpData}
+          changeFormData={changeMpData}
+          handleSubmit={handleMpSubmit}
+          resetFormData={resetMpData}
+          canEdit={canEdit}
+        />
       )}
 
       {(formToShow === null || formToShow === "ADDPEJLING") && (

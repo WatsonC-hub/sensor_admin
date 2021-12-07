@@ -38,6 +38,12 @@ export default function HistoricMeasurements({
     handleDelete(id);
   };
 
+  const correction_map = {
+    0: "Kontrol",
+    1: "Korrektion fremadrettet",
+    2: "Korrektion frem og tilbage",
+  };
+
   return (
     <Fragment>
       <DeleteAlert
@@ -46,41 +52,43 @@ export default function HistoricMeasurements({
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant='h5' component='h2'>
+      <Typography gutterBottom variant="h5" component="h2">
         Kontrolmålinger
       </Typography>
       <TableContainer>
-        <Table className={classes.table} aria-label='simple table'>
+        <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Dato</TableCell>
-              <TableCell align='right'>Pejling</TableCell>
-              <TableCell align='right'>Anvendelse</TableCell>
-              <TableCell align='right'>Kommentar</TableCell>
+              <TableCell align="right">Pejling (nedstik) [m]</TableCell>
+              <TableCell align="right">Anvendelse</TableCell>
+              <TableCell align="right">Kommentar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {measurements.map((row, index) => (
               <TableRow key={index}>
-                <TableCell component='th' scope='row'>
+                <TableCell component="th" scope="row">
                   {row.timeofmeas}
                 </TableCell>
-                <TableCell align='right'>{row.disttowatertable_m}</TableCell>
-                <TableCell align='right'>{row.useforcorrection}</TableCell>
-                <TableCell align='right'>{row.comment}</TableCell>
-                <TableCell align='right'>
+                <TableCell align="right">{row.disttowatertable_m}</TableCell>
+                <TableCell align="right">
+                  {correction_map[row.useforcorrection]}
+                </TableCell>
+                <TableCell align="right">{row.comment}</TableCell>
+                <TableCell align="right">
                   <Button onClick={() => handleEdit(row)} disabled={!canEdit}>
-                    Edit
+                    Rediger
                   </Button>
                 </TableCell>
-                <TableCell align='right'>
+                <TableCell align="right">
                   <Button
                     onClick={() => {
                       onDeleteBtnClick(row.gid);
                     }}
                     disabled={!canEdit}
                   >
-                    Delete
+                    Slet
                   </Button>
                 </TableCell>
               </TableRow>

@@ -33,13 +33,13 @@ const UnitEndDateDialog = () => {
         <DialogContent>
           <KeyboardDateTimePicker
             disableToolbar
-            variant='inline'
+            variant="inline"
             inputProps={{ readOnly: true }}
-            format='yyyy-MM-dd'
-            margin='normal'
-            id='Fra'
+            format="yyyy-MM-dd"
+            margin="normal"
+            id="Fra"
             label={
-              <Typography variant='h6' component='h3'>
+              <Typography variant="h6" component="h3">
                 Fra
               </Typography>
             }
@@ -55,14 +55,14 @@ const UnitEndDateDialog = () => {
             InputProps={{
               readOnly: false,
             }}
-            variant='outlined'
-            type='text'
-            label='Kommentar'
-            value=''
+            variant="outlined"
+            type="text"
+            label="Kommentar"
+            value=""
             onChange={(event) => {}}
             InputLabelProps={{ shrink: true }}
             fullWidth
-            margin='dense'
+            margin="dense"
           />
         </DialogContent>
       </Dialog>
@@ -120,7 +120,7 @@ const UdStyrReplace = ({ stationId }) => {
   );
 };
 
-export default function EditStamdata(props) {
+export default function EditStamdata({ setFormToShow, stationId }) {
   const [
     ,
     ,
@@ -140,7 +140,7 @@ export default function EditStamdata(props) {
     -get stamdata. choose the one corresponding to stationId.
     set that to formData.
      */
-    getStamdataByStation(props.stationId).then((res) => {
+    getStamdataByStation(stationId).then((res) => {
       //let st = res.data.data.find((s) => s.ts_id === props.stationId);
       if (res.data.success) {
         saveLocationFormData(res.data.data);
@@ -148,7 +148,7 @@ export default function EditStamdata(props) {
         saveStationFormData(res.data.data);
       }
     });
-  }, [props.stationId]);
+  }, [stationId]);
 
   /*
   TODO:
@@ -161,7 +161,7 @@ export default function EditStamdata(props) {
   return (
     <div>
       <Container fixed>
-        <Typography variant='h6' component='h3'>
+        <Typography variant="h6" component="h3">
           Stamdata
         </Typography>
         <Typography>Lokalitet</Typography>
@@ -169,7 +169,7 @@ export default function EditStamdata(props) {
         <Typography>Station</Typography>
         <StationForm />
 
-        <UdStyrReplace stationId={props.stationId} />
+        <UdStyrReplace stationId={stationId} />
         <UdstyrForm />
         <Grid container spacing={3}>
           <Grid item xs={4} sm={2}>
@@ -177,7 +177,7 @@ export default function EditStamdata(props) {
               autoFocus
               style={{ backgroundColor: "#ffa137" }}
               onClick={() => {
-                props.setFormToShow(null);
+                setFormToShow(null);
               }}
             >
               Gem
@@ -188,7 +188,7 @@ export default function EditStamdata(props) {
               autoFocus
               style={{ backgroundColor: "#ffa137" }}
               onClick={() => {
-                props.setFormToShow(null);
+                setFormToShow(null);
               }}
             >
               Annullere

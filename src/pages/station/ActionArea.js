@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { AddCircle, EditRounded, PhotoCameraRounded } from "@material-ui/icons";
+import {
+  AddCircle,
+  EditRounded,
+  PhotoCameraRounded,
+  Straighten,
+} from "@material-ui/icons";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 
@@ -68,31 +73,36 @@ function BottomNav({ setFormToShow, canEdit }) {
             window.scrollTo({ top: matches ? 300 : 500, behavior: "smooth" });
           }, 200);
         }
-        if (newValue === 1) {
+        if (newValue === 2) {
           setFormToShow("RET_STAMDATA");
         }
 
-        if (newValue === 2) {
-          setFormToShow("TAG_BILLEDE");
+        if (newValue === 1) {
+          setFormToShow("ADDMAALEPUNKT");
         }
       }}
       showLabels
     >
       <BottomNavigationAction
         disabled={!canEdit}
-        label='Indberet pejling'
+        label="Indberet pejling"
         icon={<AddCircle />}
       />
       <BottomNavigationAction
         disabled={!canEdit}
-        label='Ret stamdata'
-        icon={<EditRounded />}
+        label="Indberet målepunkt"
+        icon={<Straighten />}
       />
       <BottomNavigationAction
         disabled={!canEdit}
+        label="Ret stamdata"
+        icon={<EditRounded />}
+      />
+      {/* <BottomNavigationAction
+        disabled={!canEdit}
         label='Tag billede'
         icon={<PhotoCameraRounded />}
-      />
+      /> */}
     </BottomNavigation>
   );
 }

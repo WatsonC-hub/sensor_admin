@@ -67,6 +67,20 @@ const updateMeasurement = (sessionId, stationId, formData) => {
   return axios.put(url, formData);
 };
 
+const insertMp = (sessionId, stationId, formData) => {
+  formData["timeofmeas"] = formData["timeofmeas"].split("+")[0];
+  formData["stationid"] = stationId;
+  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${sessionId}`;
+  return axios.post(url, formData);
+};
+
+const updateMp = (sessionId, stationId, formData) => {
+  const gid = formData["gid"];
+  formData["timeofmeas"] = formData["timeofmeas"].split("+")[0];
+  const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${sessionId}`;
+  return axios.put(url, formData);
+};
+
 const deleteMeasurement = (sessionId, stationId, gid) => {
   if (!gid) return;
   const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${sessionId}`;
@@ -113,6 +127,8 @@ export {
   insertMeasurement,
   updateMeasurement,
   deleteMeasurement,
+  insertMp,
+  updateMp,
   getControlData,
   getGraphData,
   getLocidFromLabel,
