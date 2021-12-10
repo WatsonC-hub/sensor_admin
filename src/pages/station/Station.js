@@ -71,9 +71,11 @@ export default function Station({
   const [canEdit] = useState(true);
 
   useEffect(() => {
-    if (stationId !== -1) {
+    console.log(stationId);
+    if (stationId !== -1 && stationId !== null) {
       getStamdataByStation(stationId).then((res) => {
         //let st = res.data.data.find((s) => s.ts_id === props.stationId);
+        console.log(res);
         if (res.data.success) {
           saveLocationFormData(res.data.data);
           saveUdstyrFormData(res.data.data);

@@ -101,10 +101,11 @@ export default function LocationDrawer() {
     }
     getStations(locId, sessionStorage.getItem("session_id")).then((res) => {
       if (!statId) {
-        statId = res.data.res[0].ts_id;
+        statId = -1;
         setSelectedItem(parseInt(statId));
+      } else {
+        setCurrStation(currentStation(statId, res.data.res));
       }
-      setCurrStation(currentStation(statId, res.data.res));
       setStationList(res.data.res);
     });
     setSelectedLocid(locId);
@@ -118,7 +119,7 @@ export default function LocationDrawer() {
         className={clsx(classes.appBar, {
           [classes.appBarShift]: open,
         })}
-        style={{ backgroundColor: "lightseagreen" }}
+        style={{ backgroundColor: "rgb(0,120,109)" }}
       >
         <Toolbar>
           <IconButton

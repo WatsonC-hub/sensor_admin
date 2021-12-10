@@ -127,6 +127,9 @@ const getAvailableUnits = () =>
 
 const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
 
+const updateStamdata = (data, sessionId) =>
+  axios.put(`${extEndpoint}/stamdata?session_id=${sessionId}`, data);
+
 const getStamdataByStation = (stationId) =>
   axios.get(`${extEndpoint}/stamdata/station/${stationId}`);
 
@@ -141,6 +144,11 @@ const loginUser = (user, password) => {
     schema: null,
   };
   return axios.post(sessionUrl, loginData);
+};
+
+const takeHomeEquipment = (gid, data, sessionId) => {
+  const url = `${extEndpoint}/stamdata/unithistory/${gid}?session_id=${sessionId}`;
+  return axios.put(url, data);
 };
 
 export {
@@ -166,4 +174,6 @@ export {
   loginUser,
   getMP,
   deleteMP,
+  takeHomeEquipment,
+  updateStamdata,
 };

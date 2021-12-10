@@ -29,12 +29,12 @@ export default function UdstyrForm(props) {
             variant="outlined"
             type="text"
             id="terminal"
-            value={formData.udstyr.terminal}
+            value={formData.udstyr.terminal_type}
             label="Terminal"
             InputLabelProps={{ shrink: true }}
             fullWidth
             margin="dense"
-            onChange={(e) => setUdstyrValue("terminal", e.target.value)}
+            onChange={(e) => setUdstyrValue("terminal_type", e.target.value)}
           />
         </Grid>
         <Grid item xs={12} sm={6}>

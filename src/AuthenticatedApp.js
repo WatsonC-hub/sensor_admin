@@ -48,8 +48,8 @@ function AuthenticatedApp({ setUser }) {
         setTabValue,
       }}
     >
-      <div className='App'>
-        <AppBar position='sticky' style={{ backgroundColor: "lightseagreen" }}>
+      <div className="App">
+        <AppBar position="sticky" style={{ backgroundColor: "rgb(0,120,109)" }}>
           <Toolbar
             style={{
               flexGrow: 1,
@@ -60,8 +60,8 @@ function AuthenticatedApp({ setUser }) {
             {location.pathname !== "/stamdata" ? (
               <Button
                 disabled={addStationDisabled}
-                color='inherit'
-                style={{ backgroundColor: "#4472c4" }}
+                color="inherit"
+                style={{ backgroundColor: "#FFA137" }}
                 onClick={() => {
                   history.push("/stamdata");
                   //setAddStationDisabled(true);
@@ -71,7 +71,7 @@ function AuthenticatedApp({ setUser }) {
               </Button>
             ) : (
               <IconButton
-                color='inherit'
+                color="inherit"
                 onClick={
                   (e) => history.push("/") //context.setLocationId(-1)
                 }
@@ -79,27 +79,27 @@ function AuthenticatedApp({ setUser }) {
                 <KeyboardBackspaceIcon />
               </IconButton>
             )}
-            <Button color='inherit' onClick={handleLogout}>
+            <Button color="inherit" onClick={handleLogout}>
               Log ud
             </Button>
           </Toolbar>
         </AppBar>
         <Switch>
-          <Route path='/' exact>
+          <Route path="/" exact>
             <SimpleTabs setUser={setUser} />
           </Route>
-          <Route path='/location/:locid/:statid'>
+          <Route path="/location/:locid/:statid">
             <LocationDrawer />
           </Route>
-          <Route path='/location/:locid'>
+          <Route path="/location/:locid">
             <LocationDrawer />
           </Route>
-          <Route path='/stamdata'>
+          <Route path="/stamdata">
             <StamdataProvider>
               <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
             </StamdataProvider>
           </Route>
-          <Route path='/:labelid'>
+          <Route path="/:labelid">
             <ScanComponent />
           </Route>
         </Switch>

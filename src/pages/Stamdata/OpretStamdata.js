@@ -135,7 +135,7 @@ function LocationChooser({ setLocationDialogOpen }) {
           <Button
             size="small"
             style={{
-              backgroundColor: "#4472c4",
+              backgroundColor: "#ffa137",
               textTransform: "none",
               marginLeft: "12px",
             }}
@@ -169,7 +169,7 @@ function LocationChooser({ setLocationDialogOpen }) {
       </Grid>
       <Grid item xs={4}>
         <Button
-          style={{ backgroundColor: "#4472c4", textTransform: "none" }}
+          style={{ backgroundColor: "#ffa137", textTransform: "none" }}
           onClick={() => setLocationDialogOpen(true)}
         >
           Tilføj lokation
@@ -195,7 +195,7 @@ function Locality({ locationDialogOpen, setLocationDialogOpen }) {
 
 export default function OpretStamdata({ setAddStationDisabled }) {
   const history = useHistory();
-  const [ustyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
+  const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
   const [, , formData, , , , , , saveUdstyrFormData] =
     React.useContext(StamdataContext);
@@ -257,7 +257,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   return (
     <div>
       <AddUdstyrForm
-        ustyrDialogOpen={ustyrDialogOpen}
+        udstyrDialogOpen={udstyrDialogOpen}
         setUdstyrDialogOpen={setUdstyrDialogOpen}
         tstype_id={selectedStationType}
       />
@@ -286,7 +286,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
             disabled={selectedStationType === -1}
             size="small"
             style={{
-              backgroundColor: "#4472c4",
+              backgroundColor: "#ffa137",
               textTransform: "none",
               marginLeft: "12px",
             }}
@@ -322,7 +322,9 @@ export default function OpretStamdata({ setAddStationDisabled }) {
       </Container>
       <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity}>
-          Oprettelse af station fejlede
+          {severity === "success"
+            ? "Oprettelse af station lykkedes"
+            : "Oprettelse af station fejlede"}
         </Alert>
       </Snackbar>
     </div>

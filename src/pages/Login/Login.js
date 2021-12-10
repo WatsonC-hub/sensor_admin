@@ -3,7 +3,6 @@ import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-
 import { loginUser } from "../../api";
 
 const useStyles = makeStyles((theme) => ({
@@ -51,40 +50,40 @@ export default function Login({ setUser }) {
   };
 
   return (
-    <Container fixed>
+    <Container fixed maxWidth="sm">
       <form className={classes.form} onSubmit={handleSubmit} noValidate>
         <TextField
-          variant='outlined'
-          margin='normal'
+          variant="outlined"
+          margin="normal"
           required
           fullWidth
-          id='email'
-          label='Email'
-          name='email'
-          autoComplete='email'
+          id="email"
+          label="Email"
+          name="email"
+          autoComplete="email"
           autoFocus
           onChange={(e) => setUserName(e.target.value)}
           error={loginError}
         />
         <TextField
-          variant='outlined'
-          margin='normal'
+          variant="outlined"
+          margin="normal"
           required
           fullWidth
-          name='password'
-          label='Password'
-          type='password'
-          id='password'
-          autoComplete='current-password'
+          name="password"
+          label="Password"
+          type="password"
+          id="password"
+          autoComplete="current-password"
           onChange={(e) => setPassword(e.target.value)}
           error={loginError}
           helperText={loginError ? "brugernavn eller password er forkert." : ""}
         />
         <Button
-          type='submit'
+          type="submit"
           fullWidth
-          variant='contained'
-          style={{ backgroundColor: "rgb(0,150,136)", color: "white" }}
+          variant="contained"
+          style={{ backgroundColor: "rgb(0,120,109)", color: "white" }}
           className={classes.submit}
           disabled={userName === "" || password === ""}
         >

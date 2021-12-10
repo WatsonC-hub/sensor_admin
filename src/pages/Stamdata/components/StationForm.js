@@ -71,7 +71,7 @@ export default function StationForm({
           variant="outlined"
           type="text"
           label="Navn"
-          value={formData.station.stationname}
+          value={formData.station.ts_name}
           InputLabelProps={{
             shrink: true,
           }}
@@ -129,7 +129,7 @@ export default function StationForm({
           <TextField
             variant="outlined"
             type="text"
-            label="Målepunkt beskrivelse"
+            label="Målepunkt placering"
             value={formData.station.mp_description}
             InputLabelProps={{
               shrink: true,
@@ -144,8 +144,8 @@ export default function StationForm({
         <TextField
           variant="outlined"
           type="number"
-          label="Evt. loggerdybde"
-          value={formData.station.terrainlevel}
+          label="Evt. loggerdybde under målepunkt"
+          value={formData.station.sensor_depth_m}
           InputLabelProps={{
             shrink: true,
           }}

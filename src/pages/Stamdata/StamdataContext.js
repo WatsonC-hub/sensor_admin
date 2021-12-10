@@ -27,6 +27,7 @@ const StamdataProvider = (props) => {
       description: "",
     },
     station: {
+      ts_id: "",
       ts_name: "",
       tstype_id: "",
       parameter: "",
@@ -35,7 +36,7 @@ const StamdataProvider = (props) => {
       sensor_depth_m: "",
     },
     udstyr: {
-      terminal: "",
+      terminal_type: "",
       terminal_id: "",
       sensor_id: "",
       sensorinfo: "",
@@ -94,8 +95,10 @@ const StamdataProvider = (props) => {
 
   const saveStationFormData = (station) => {
     setValues("station", {
+      ts_id: station.ts_id,
       ts_name: station.ts_name,
       tstype_name: station.tstype_name,
+      tstype_id: station.tstype_id,
       maalepunktskote: station.maalepunktskote,
       mp_description: station.mp_description,
       sensor_depth_m: station.sensor_depth_m,
@@ -104,7 +107,7 @@ const StamdataProvider = (props) => {
 
   const saveUdstyrFormData = (unitData) => {
     setValues("udstyr", {
-      terminal: unitData.terminal,
+      terminal_type: unitData.terminal_type,
       terminal_id: unitData.terminal_id,
       sensor_id: unitData.sensor_id,
       sensorinfo: unitData.sensorinfo,
@@ -118,6 +121,7 @@ const StamdataProvider = (props) => {
 
   const saveLocationFormData = (locationData) => {
     setValues("location", {
+      loc_id: locationData.loc_id,
       loc_name: locationData.loc_name,
       mainloc: locationData.mainloc,
       subloc: locationData.subloc,

@@ -18,7 +18,7 @@ import { MenuItem } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 
 export default function AddUdstyrForm({
-  ustyrDialogOpen,
+  udstyrDialogOpen,
   setUdstyrDialogOpen,
   tstype_id,
 }) {
@@ -50,7 +50,7 @@ export default function AddUdstyrForm({
     });
   };
 
-  const handleSensorId = (event) => {
+  const handleSensorUUID = (event) => {
     setUdstyrFormData({
       ...udstyrFormData,
       uuid: event.target.value,
@@ -67,12 +67,13 @@ export default function AddUdstyrForm({
 
   const handleSave = () => {
     setUdstyrDialogOpen(false);
+
     let unit = availableUnits.find((x) => x.unit_uuid === udstyrFormData.uuid);
 
     if (!unit) return;
 
     saveUdstyrFormData({
-      terminal: unit.type,
+      terminal_type: unit.type,
       terminal_id: unit.terminal_id,
       sensor_id: unit.sensor_id,
       sensorinfo: unit.sensorinfo,
@@ -90,14 +91,20 @@ export default function AddUdstyrForm({
   };
 
   useEffect(() => {
-    getAvailableUnits().then((res) => setAvailableUnits(res));
+    getAvailableUnits().then((res) => {
+      if (typeof res === "undefined") {
+        setAvailableUnits([]);
+      } else {
+        setAvailableUnits(res);
+      }
+    });
   }, []);
 
   return (
     <div>
       <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
         <Dialog
-          open={ustyrDialogOpen}
+          open={udstyrDialogOpen}
           onClose={handleClose}
           aria-labelledby="form-dialog-title"
         >
@@ -127,7 +134,7 @@ export default function AddUdstyrForm({
               select
               margin="dense"
               value={udstyrFormData.uuid}
-              onChange={handleSensorId}
+              onChange={handleSensorUUID}
               id="sensor_id"
               label="Sensor / Sensor ID"
               fullWidth
@@ -164,10 +171,19 @@ export default function AddUdstyrForm({
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleSave} color="primary">
+            <Button
+              onClick={handleSave}
+              style={{ backgroundColor: "#ffa137" }}
+              disabled={
+                udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === -1
+              }
+            >
               Gem
             </Button>
-            <Button onClick={handleClose} color="primary">
+            <Button
+              onClick={handleClose}
+              style={{ backgroundColor: "#ffa137" }}
+            >
               Annuller
             </Button>
           </DialogActions>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import minimalSelectStyles from "./minimalSelect.styles";
 import Select from "@material-ui/core/Select";
@@ -17,9 +17,12 @@ const MinimalSelect = ({
   selectedStation,
   setSelectedItem,
   setCurrStation,
+  currentStation,
 }) => {
   const [stationId, setStationId] = useState(selectedStation + "");
-  const [isOpen, setIsOpen] = useState(true);
+  const params = useParams();
+
+  const [isOpen, setIsOpen] = useState(params.statid ? false : true);
   const history = useHistory();
 
   const handleChange = (event) => {
@@ -37,6 +40,10 @@ const MinimalSelect = ({
   React.useEffect(() => {
     setStationId(selectedStation);
   }, [selectedStation]);
+
+  // useEffect(() => {
+  //   currentStation === -1 ? setIsOpen(true) : setIsOpen(false);
+  // }, [currentStation]);
 
   const minimalSelectClasses = useMinimalSelectStyles();
 
