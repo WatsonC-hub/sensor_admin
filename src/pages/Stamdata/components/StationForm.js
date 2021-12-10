@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Grid, TextField, MenuItem } from "@material-ui/core";
 import { StamdataContext } from "../StamdataContext";
 import { getStationTypes } from "../../../api";
+import { InputAdornment } from "@material-ui/core";
 
 const StationTypeSelect = ({
   selectedStationType,
@@ -104,20 +105,41 @@ export default function StationForm({
           />
         )}
       </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant="outlined"
-          type="number"
-          label=" Målepunktskote"
-          value={formData.station.maalepunktskote}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          fullWidth
-          margin="dense"
-          onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
-        />
-      </Grid>
+      {mode === "add" && (
+        <Grid item xs={3} sm={2}>
+          <TextField
+            variant="outlined"
+            type="number"
+            label="Målepunktskote"
+            value={formData.station.maalepunktskote}
+            InputProps={{
+              endAdornment: <InputAdornment position="start">m</InputAdornment>,
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            fullWidth
+            margin="dense"
+            onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
+          />
+        </Grid>
+      )}
+      {mode === "add" && (
+        <Grid item xs={9} sm={4}>
+          <TextField
+            variant="outlined"
+            type="text"
+            label="Målepunkt beskrivelse"
+            value={formData.station.mp_description}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            fullWidth
+            margin="dense"
+            onChange={(e) => setStationValue("mp_description", e.target.value)}
+          />
+        </Grid>
+      )}
       <Grid item xs={12} sm={6}>
         <TextField
           variant="outlined"
@@ -126,6 +148,9 @@ export default function StationForm({
           value={formData.station.terrainlevel}
           InputLabelProps={{
             shrink: true,
+          }}
+          InputProps={{
+            endAdornment: <InputAdornment position="start">m</InputAdornment>,
           }}
           fullWidth
           margin="dense"

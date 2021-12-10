@@ -5,7 +5,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-
+import { InputAdornment } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 import { MenuItem } from "@material-ui/core";
 
@@ -112,6 +112,9 @@ export default function AddLocationForm({
             id="terrainlevel"
             label="Terrænkote"
             value={locationData.terrainlevel}
+            InputProps={{
+              endAdornment: <InputAdornment position="start">m</InputAdornment>,
+            }}
             onChange={handleChange}
             type="number"
             fullWidth

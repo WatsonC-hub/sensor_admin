@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
     right: 0,
     margin: "0 auto",
   },
+  icon: {
+    transform: "rotate(90deg)",
+  },
 }));
 
 export default function ActionArea({ formToShow, setFormToShow, canEdit }) {
@@ -91,7 +94,7 @@ function BottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         disabled={!canEdit}
         label="Indberet målepunkt"
-        icon={<Straighten />}
+        icon={<Straighten className={classes.icon} />}
       />
       <BottomNavigationAction
         disabled={!canEdit}

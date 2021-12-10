@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid, MenuItem, TextField } from "@material-ui/core";
 import { StamdataContext } from "../StamdataContext";
+import { InputAdornment } from "@material-ui/core";
 
 export default function LocalityForm() {
   const [, , formData, , , setLocationValue, , ,] =
@@ -78,6 +79,7 @@ export default function LocalityForm() {
         <TextField
           InputProps={{
             readOnly: formData.location.loc_name === "",
+            endAdornment: <InputAdornment position="start">m</InputAdornment>,
           }}
           disabled={formData.location.loc_name === "" ? true : false}
           variant="outlined"

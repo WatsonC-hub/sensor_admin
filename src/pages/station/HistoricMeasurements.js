@@ -6,6 +6,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import TablePagination from "@material-ui/core/TablePagination";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteAlert from "./DeleteAlert";
@@ -27,7 +28,13 @@ export default function HistoricMeasurements({
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
+  const [page, setPage] = React.useState(0);
+  const rowsPerPage = 5;
   const context = useContext(LocationContext);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
@@ -66,36 +73,48 @@ export default function HistoricMeasurements({
             </TableRow>
           </TableHead>
           <TableBody>
-            {measurements.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell component="th" scope="row">
-                  {row.timeofmeas}
-                </TableCell>
-                <TableCell align="right">{row.disttowatertable_m}</TableCell>
-                <TableCell align="right">
-                  {correction_map[row.useforcorrection]}
-                </TableCell>
-                <TableCell align="right">{row.comment}</TableCell>
-                <TableCell align="right">
-                  <Button onClick={() => handleEdit(row)} disabled={!canEdit}>
-                    Rediger
-                  </Button>
-                </TableCell>
-                <TableCell align="right">
-                  <Button
-                    onClick={() => {
-                      onDeleteBtnClick(row.gid);
-                    }}
-                    disabled={!canEdit}
-                  >
-                    Slet
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {measurements
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    {row.timeofmeas}
+                  </TableCell>
+                  <TableCell align="right">{row.disttowatertable_m}</TableCell>
+                  <TableCell align="right">
+                    {correction_map[row.useforcorrection]
+                      ? correction_map[row.useforcorrection]
+                      : "Kontrol"}
+                  </TableCell>
+                  <TableCell align="right">{row.comment}</TableCell>
+                  <TableCell align="right">
+                    <Button onClick={() => handleEdit(row)} disabled={!canEdit}>
+                      Rediger
+                    </Button>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Button
+                      onClick={() => {
+                        onDeleteBtnClick(row.gid);
+                      }}
+                      disabled={!canEdit}
+                    >
+                      Slet
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5]}
+        component="div"
+        count={measurements.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+      />
     </Fragment>
   );
 }

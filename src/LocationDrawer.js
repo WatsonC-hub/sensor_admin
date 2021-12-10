@@ -11,6 +11,7 @@ import Station from "./pages/station/Station";
 import { getStations } from "./api";
 import MinimalSelect from "./pages/Location/MinimalSelect";
 import { useParams, useHistory } from "react-router-dom";
+import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
 
 const drawerWidth = 240;
 
@@ -140,12 +141,14 @@ export default function LocationDrawer() {
 
       <main className={classes.content}>
         <div className={classes.drawerHeader} />
-        <Station
-          open={open}
-          stationId={currStation ? currStation.ts_id : -1}
-          formToShow={formToShow}
-          setFormToShow={setFormToShow}
-        />
+        <StamdataProvider>
+          <Station
+            open={open}
+            stationId={currStation ? currStation.ts_id : -1}
+            formToShow={formToShow}
+            setFormToShow={setFormToShow}
+          />
+        </StamdataProvider>
       </main>
     </div>
   );

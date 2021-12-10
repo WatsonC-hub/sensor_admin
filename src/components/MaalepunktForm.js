@@ -21,23 +21,25 @@ import {
   KeyboardDatePicker,
   DateTimePicker,
 } from "@material-ui/pickers";
+import { InputAdornment } from "@material-ui/core";
 
 export default function MaalepunktForm({
-  stationId,
   formData,
   changeFormData,
   handleSubmit,
   resetFormData,
 }) {
-  const [currDate, setCurrDate] = useState(formData.startdate);
-
-  const handleDateChange = (date) => {
-    if (isValid(date)) {
-      setCurrDate(date);
-    }
+  const handleStartdateChange = (date) => {
     if (isValid(date)) {
       console.log("date is valid again: ", date);
       changeFormData("startdate", date);
+    }
+  };
+
+  const handleEnddateChange = (date) => {
+    if (isValid(date)) {
+      console.log("date is valid again: ", date);
+      changeFormData("enddate", date);
     }
   };
 
@@ -54,7 +56,7 @@ export default function MaalepunktForm({
       <Card style={{ marginBottom: 25 }}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            Indberet målepunkt
+            {formData.gid !== -1 ? "Opdater målepunkt" : "Indberet målepunkt"}
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
@@ -67,14 +69,35 @@ export default function MaalepunktForm({
                 id="Fra"
                 label={
                   <Typography variant="h6" component="h3">
-                    Startdato
+                    Start dato
                   </Typography>
                 }
                 InputLabelProps={{ shrink: true }}
                 value={formData.startdate}
-                onChange={(date) => handleDateChange(date)}
+                onChange={(date) => handleStartdateChange(date)}
                 fullWidth
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              {formData.gid !== -1 && (
+                <DateTimePicker
+                  autoOk
+                  disableToolbar
+                  inputVariant="outlined"
+                  variant="outlined"
+                  format="yyyy-MM-dd HH:mm"
+                  id="Fra"
+                  label={
+                    <Typography variant="h6" component="h3">
+                      Slut dato
+                    </Typography>
+                  }
+                  InputLabelProps={{ shrink: true }}
+                  value={formData.enddate}
+                  onChange={(date) => handleEnddateChange(date)}
+                  fullWidth
+                />
+              )}
             </Grid>
             <Grid item xs={12} sm={8}>
               <TextField
@@ -85,6 +108,11 @@ export default function MaalepunktForm({
                     Pejlepunkt [m]
                   </Typography>
                 }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">m</InputAdornment>
+                  ),
+                }}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={formData.elevation}
@@ -112,7 +140,7 @@ export default function MaalepunktForm({
               <Button
                 autoFocus
                 style={{ backgroundColor: "#ffa137" }}
-                onClick={() => handleSubmit(stationId)}
+                onClick={() => handleSubmit()}
               >
                 Gem
               </Button>

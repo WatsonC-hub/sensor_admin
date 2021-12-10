@@ -26,12 +26,18 @@ import StationForm from "./components/StationForm";
 import { StamdataContext } from "./StamdataContext";
 import { getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 const flex1 = {
   display: "flex",
   alignItems: "baseline",
   justifyContent: "start",
 };
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function LocationChooser({ setLocationDialogOpen }) {
   const flex = {
@@ -107,35 +113,39 @@ function LocationChooser({ setLocationDialogOpen }) {
   const desktopChooser = (
     <>
       <Grid item xs={12} sm={6}>
-        <div style={flex}>
-          <span>Lokalitet</span>
+        <div style={flex1}>
+          <Typography>Lokation</Typography>
+
           <Autocomplete
             options={loc_items}
             getOptionLabel={(option) => option.loc_name}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Vælg lokalitet"
+                size="small"
                 variant="outlined"
+                placeholder="Vælg lokalitet"
+                style={{ marginTop: "-6px" }}
               />
             )}
-            style={{ width: 300 }}
+            style={{ width: 200, marginLeft: "12px" }}
             onChange={handleChange}
           />
-          {/* <Select value={locality} onChange={handleChange}>
-            <MenuItem value={0}>Vælg Lokalitet</MenuItem>
-            {locationItems}
-          </Select> */}
 
           <Button
-            style={{ backgroundColor: "#4472c4" }}
+            size="small"
+            style={{
+              backgroundColor: "#4472c4",
+              textTransform: "none",
+              marginLeft: "12px",
+            }}
             onClick={() => setLocationDialogOpen(true)}
           >
             Tilføj lokation
           </Button>
         </div>
       </Grid>
-      <Grid item xs={12} sm={6}></Grid>
+      {/* <Grid item xs={12} sm={6}></Grid> */}
     </>
   );
 
@@ -192,6 +202,9 @@ export default function OpretStamdata({ setAddStationDisabled }) {
 
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+
   const changeSelectedStationType = (selectedType) => {
     if (selectedType !== selectedStationType) {
       resetUdStyrForm();
@@ -212,6 +225,33 @@ export default function OpretStamdata({ setAddStationDisabled }) {
       slutdato: "",
       uuid: "",
     });
+  };
+
+  const handleSubmit = () => {
+    setAddStationDisabled(false);
+    postStamdata(formData)
+      .then((res) => {
+        console.log(res);
+        setSeverity("success");
+        setOpenAlert(true);
+        setTimeout(() => {}, 1500);
+        history.push("/");
+      })
+      .catch((error) => {
+        console.log(error);
+        setSeverity("error");
+        setOpenAlert(true);
+      });
+
+    // history.push("/");
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenAlert(false);
   };
 
   return (
@@ -261,11 +301,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
             <Button
               autoFocus
               style={{ backgroundColor: "#ffa137" }}
-              onClick={() => {
-                history.push("/");
-                setAddStationDisabled(false);
-                postStamdata(formData);
-              }}
+              onClick={handleSubmit}
             >
               Gem
             </Button>
@@ -284,6 +320,11 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           </Grid>
         </Grid>
       </Container>
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={severity}>
+          Oprettelse af station fejlede
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

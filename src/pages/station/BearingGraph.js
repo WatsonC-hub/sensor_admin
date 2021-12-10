@@ -164,7 +164,7 @@ function PlotGraph({ graphData, controlData }) {
   );
 }
 
-export default function BearingGraph({ stationId }) {
+export default function BearingGraph({ stationId, updated }) {
   const [graphData, setGraphData] = useState([]);
   const [controlData, setControlData] = useState([]);
   const theme = useTheme();
@@ -184,7 +184,7 @@ export default function BearingGraph({ stationId }) {
         setControlData(res.data.features);
       }
     });
-  }, [stationId]);
+  }, [updated, stationId]);
 
   return (
     <div

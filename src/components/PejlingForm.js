@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -21,6 +21,8 @@ import {
   KeyboardDatePicker,
   DateTimePicker,
 } from "@material-ui/pickers";
+import { InputAdornment } from "@material-ui/core";
+import moment from "moment";
 
 export default function PejlingForm({
   stationId,
@@ -28,11 +30,35 @@ export default function PejlingForm({
   changeFormData,
   handleSubmit,
   resetFormData,
+  mpData,
 }) {
   const [currDate, setCurrDate] = useState(formData.timeofmeas);
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
+  const [currentMP, setCurrentMP] = useState(
+    mpData.filter((elem) => {
+      if (
+        moment(currDate).isAfter(elem.startdate) &&
+        moment(currDate).isBefore(elem.enddate)
+      ) {
+        return true;
+      }
+    })[0]
+  );
+
+  useEffect(() => {
+    setCurrentMP(
+      mpData.filter((elem) => {
+        if (
+          moment(formData.timeofmeas).isAfter(elem.startdate) &&
+          moment(formData.timeofmeas).isBefore(elem.enddate)
+        ) {
+          return true;
+        }
+      })[0]
+    );
+  }, [formData.gid]);
 
   const handleDateChange = (date) => {
     if (isValid(date)) {
@@ -42,6 +68,16 @@ export default function PejlingForm({
       console.log("date is valid again: ", date);
       changeFormData("timeofmeas", date);
     }
+    setCurrentMP(
+      mpData.filter((elem) => {
+        if (
+          moment(date).isAfter(elem.startdate) &&
+          moment(date).isBefore(elem.enddate)
+        ) {
+          return true;
+        }
+      })[0]
+    );
   };
 
   const handleCommentChange = (e) => {
@@ -57,7 +93,7 @@ export default function PejlingForm({
       <Card style={{ marginBottom: 25 }}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="h2">
-            Indberet pejling
+            {formData.gid !== -1 ? "Opdater pejling" : "Indberet pejling"}
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
@@ -71,7 +107,7 @@ export default function PejlingForm({
                 value={currDate}
                 label={
                   <Typography variant="h6" component="h3">
-                    Startdato
+                    Start dato
                   </Typography>
                 }
                 InputLabelProps={{ shrink: true }}
@@ -80,19 +116,66 @@ export default function PejlingForm({
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} sm={8}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 type="number"
                 variant="outlined"
                 label={
                   <Typography variant="h6" component="h3">
-                    Pejling (nedstik) [m]
+                    Pejling (nedstik)
                   </Typography>
                 }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">m</InputAdornment>
+                  ),
+                }}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={formData.disttowatertable_m}
                 onChange={handleDistanceChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                type="number"
+                variant="outlined"
+                disabled={true}
+                label={
+                  <Typography variant="h6" component="h3">
+                    Målepunktskote
+                  </Typography>
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">m</InputAdornment>
+                  ),
+                  style: { color: "black" },
+                }}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                value={currentMP.elevation}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                type="text"
+                variant="outlined"
+                disabled={true}
+                label={
+                  <Typography variant="h6" component="h3">
+                    Målepunkt placering
+                  </Typography>
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">m</InputAdornment>
+                  ),
+                  style: { color: "black" },
+                }}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                value={currentMP.mp_description}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
@@ -123,17 +206,17 @@ export default function PejlingForm({
                   <FormControlLabel
                     value="0"
                     control={<Radio />}
-                    label="(0) Anvendes ikke"
+                    label="Kontrol"
                   />
                   <FormControlLabel
                     value="1"
                     control={<Radio />}
-                    label="(1) Anvendes til korrektion fremadrettet"
+                    label="Korrektion fremadrettet"
                   />
                   <FormControlLabel
                     value="2"
                     control={<Radio />}
-                    label="(2) Anvendes til korrektion bagud og fremadrettet"
+                    label="Korrektion bagud og fremadrettet"
                   />
                 </RadioGroup>
               </FormControl>
