@@ -1,8 +1,8 @@
 import React, { useEffect, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import L from "leaflet";
-import LocationContext from "./LocationContext";
-import { getSensorData } from "./api";
+import { getSensorData } from "../../api";
+import LocationContext from "../../context/LocationContext";
 
 const style = {
   width: "100%",
@@ -103,7 +103,7 @@ function Map() {
     }
   }, [sensorData]);
 
-  return <div id='map' style={style}></div>;
+  return <div id="map" style={style}></div>;
 }
 
 export default Map;

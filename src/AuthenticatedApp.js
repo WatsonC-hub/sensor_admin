@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
 import SimpleTabs from "./components/SimpleTabs";
-import LocationDrawer from "./LocationDrawer";
-import LocationContext from "./LocationContext";
+import LocationDrawer from "./pages/station/LocationDrawer";
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -13,6 +12,7 @@ import ScanComponent from "./components/ScanComponent";
 import OpretStamdata from "./pages/Stamdata/OpretStamdata";
 import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import LocationContext from "./context/LocationContext";
 
 /*
 Libraries to explore for this app:

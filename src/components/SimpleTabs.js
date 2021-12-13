@@ -6,9 +6,9 @@ import Tooltip from "@material-ui/core/Tooltip";
 import MapIcon from "@material-ui/icons/Map";
 import TableChart from "@material-ui/icons/TableChart";
 import TabPanel from "./TabPanel";
-import Map from "../Map";
-import DevExTable from "../DevExTable";
-import LocationContext from "../LocationContext";
+import Map from "../pages/overview/Map";
+import StationListDesktop from "../pages/overview/StationListDesktop";
+import LocationContext from "../context/LocationContext";
 import StationList from "../pages/overview/StationList";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Scroll from "./Scroll";
@@ -62,13 +62,13 @@ export default function SimpleTabs() {
   };
 
   const KortIcon = (
-    <Tooltip title='Kort'>
+    <Tooltip title="Kort">
       <MapIcon />
     </Tooltip>
   );
 
   const TableIcon = (
-    <Tooltip title='Tabel'>
+    <Tooltip title="Tabel">
       <TableChart />
     </Tooltip>
   );
@@ -78,8 +78,8 @@ export default function SimpleTabs() {
       <Tabs
         value={locationContext.tabValue}
         onChange={handleChange}
-        variant='fullWidth'
-        aria-label='simple tabs example'
+        variant="fullWidth"
+        aria-label="simple tabs example"
         tabItemContainerStyle={{ position: "fixed", bottom: "0" }}
         ref={containerRef}
       >
@@ -87,7 +87,7 @@ export default function SimpleTabs() {
         <Tab icon={KortIcon} />
       </Tabs>
       <TabPanel value={locationContext.tabValue} index={0}>
-        {matches ? <StationList /> : <DevExTable />}
+        {matches ? <StationList /> : <StationListDesktop />}
       </TabPanel>
       <TabPanel value={locationContext.tabValue} index={1}>
         <Map />

@@ -16,8 +16,9 @@ import {
   TableRowDetail,
 } from "@devexpress/dx-react-grid-material-ui";
 import { RowDetailState } from "@devexpress/dx-react-grid";
-import { getTableData } from "./api";
-import LocationContext from "./LocationContext";
+import { getTableData } from "../../api";
+import { Tooltip } from "@material-ui/core";
+import LocationContext from "../../context/LocationContext";
 
 const LocationTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={LocationFormatter} {...props} />
@@ -30,7 +31,7 @@ const EditButton = ({ locationId }) => {
   const history = useHistory();
   return (
     <IconButton
-      aria-label='Edit'
+      aria-label="Edit"
       onClick={(e) => {
         context.setLocationId(locationId);
         context.setTabValue(0);
@@ -58,25 +59,43 @@ const RowDetail = ({ row }) => (
 
 const getStatusComp = (status) => {
   switch (status) {
-    case "!":
-      return <PriorityHighIcon color='secondary' />;
-    case "OK":
+    case "#00FF00":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     default:
-      return "";
+      return <PriorityHighIcon style={{ color: status }} />;
   }
 };
 
-const StatusCell = ({ value, style, ...restProps }) => (
-  <VirtualTable.Cell {...restProps}>{getStatusComp(value)}</VirtualTable.Cell>
-);
+const StatusCell = ({ color, style, ...restProps }) => {
+  console.log(restProps);
+  return (
+    <VirtualTable.Cell {...restProps}>
+      <Tooltip title={restProps.row.opgave}>
+        {getStatusComp(restProps.row.color)}
+      </Tooltip>
+    </VirtualTable.Cell>
+  );
+};
 
 const Cell = (props) => {
+  const context = useContext(LocationContext);
+  const history = useHistory();
   const { column } = props;
-  if (column.name === "alarm") {
+  if (column.name === "color") {
     return <StatusCell {...props} />;
   }
-  return <VirtualTable.Cell {...props} />;
+  return (
+    <VirtualTable.Cell
+      {...props}
+      style={{ cursor: "pointer" }}
+      onClick={(e) => {
+        context.setLocationId(props.row.station_loc_id);
+        context.setTabValue(0);
+        let [loc, stat] = props.row.station_loc_id.split("_");
+        history.push(`location/${loc}/${stat}`);
+      }}
+    />
+  );
 };
 
 const TitleCell = (props) => {
@@ -88,18 +107,18 @@ const TitleCell = (props) => {
 };
 
 const columns = [
-  { name: "station_loc_id", title: "Redigere", width: 50 },
-  { name: "stationname", title: "Stationsnavn", width: 200 },
-  { name: "parameter", title: "Parameter", width: 200 },
-  { name: "loc_owner", title: "Ejer", width: 200 },
+  { name: "calypso_id", title: "Calypso ID", width: 50 },
+  { name: "ts_name", title: "Stationsnavn", width: 200 },
+  { name: "tstype_name", title: "Parameter", width: 200 },
+  { name: "customer_name", title: "Ejer", width: 200 },
   {
-    name: "alarm",
+    name: "color",
     title: "Alarm",
     width: 200,
   },
 ];
 
-export default () => {
+export default function StationListDesktop() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -114,7 +133,7 @@ export default () => {
 
   let rows = data.map((elem, index) => ({
     ...elem,
-    station_loc_id: elem.locid + "_" + elem.stationid,
+    station_loc_id: elem.loc_id + "_" + elem.ts_id,
     id: index,
   }));
 
@@ -122,12 +141,12 @@ export default () => {
     <Paper>
       {loading && <CircularProgress />}
       <Grid rows={rows} columns={columns} style={{ height: 1200 }}>
-        <LocationTypeProvider for={["station_loc_id"]} />
-        <RowDetailState defaultExpandedRowIds={[]} />
+        {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+        {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
         <VirtualTable height={1200} cellComponent={Cell} />
         <TableHeaderRow titleComponent={TitleCell} />
-        <TableRowDetail contentComponent={RowDetail} />
+        {/* <TableRowDetail contentComponent={RowDetail} /> */}
       </Grid>
     </Paper>
   );
-};
+}

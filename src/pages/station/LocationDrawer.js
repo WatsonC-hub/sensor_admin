@@ -6,12 +6,12 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
-import LocationContext from "./LocationContext";
-import Station from "./pages/station/Station";
-import { getStations } from "./api";
-import MinimalSelect from "./pages/Location/MinimalSelect";
+import LocationContext from "../../context/LocationContext";
+import Station from "./Station";
+import { getStations } from "../../api";
+import MinimalSelect from "../Location/MinimalSelect";
 import { useParams, useHistory } from "react-router-dom";
-import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
+import { StamdataProvider } from "../Stamdata/StamdataContext";
 
 const drawerWidth = 240;
 

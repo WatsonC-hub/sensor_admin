@@ -8,7 +8,7 @@ import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import { getTableData } from "../../api";
-import LocationContext from "../../LocationContext";
+import LocationContext from "../../context/LocationContext";
 import { CircularProgress } from "@material-ui/core";
 
 export default function StationList(props) {
@@ -71,7 +71,7 @@ function StatusText(props) {
 function getStatusComp(status) {
   switch (status) {
     case "!":
-      return <PriorityHighIcon color='secondary' />;
+      return <PriorityHighIcon color="secondary" />;
     case "OK":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     default:

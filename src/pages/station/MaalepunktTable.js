@@ -13,7 +13,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteAlert from "./DeleteAlert";
-import LocationContext from "../../LocationContext";
+import LocationContext from "../../context/LocationContext";
 import { Fragment } from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
