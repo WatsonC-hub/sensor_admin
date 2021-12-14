@@ -7,11 +7,12 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
-import { Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import { IconButton, Typography } from "@material-ui/core";
 import DeleteAlert from "./DeleteAlert";
 import LocationContext from "../../context/LocationContext";
 import { Fragment } from "react";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles({
   table: {
@@ -30,7 +31,6 @@ export default function HistoricMeasurements({
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
-  const context = useContext(LocationContext);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -88,19 +88,22 @@ export default function HistoricMeasurements({
                   </TableCell>
                   <TableCell align="right">{row.comment}</TableCell>
                   <TableCell align="right">
-                    <Button onClick={() => handleEdit(row)} disabled={!canEdit}>
-                      Rediger
-                    </Button>
+                    <IconButton
+                      onClick={() => handleEdit(row)}
+                      disabled={!canEdit}
+                    >
+                      <EditIcon />
+                    </IconButton>
                   </TableCell>
                   <TableCell align="right">
-                    <Button
+                    <IconButton
                       onClick={() => {
                         onDeleteBtnClick(row.gid);
                       }}
                       disabled={!canEdit}
                     >
-                      Slet
-                    </Button>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}

@@ -7,12 +7,14 @@ import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
 import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
+import { PhotoCameraRounded } from "@material-ui/icons";
 
 import ScanComponent from "./components/ScanComponent";
 import OpretStamdata from "./pages/Stamdata/OpretStamdata";
 import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
 import LocationContext from "./context/LocationContext";
+import CaptureDialog from "./pages/station/CaptureDialog";
 
 /*
 Libraries to explore for this app:
@@ -28,8 +30,18 @@ function AuthenticatedApp({ setUser }) {
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
   const [addStationDisabled, setAddStationDisabled] = useState(false);
+  const [open, setOpen] = useState(false);
+
   const history = useHistory();
   let location = useLocation();
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleLogout = () => {
     sessionStorage.removeItem("session_id");
@@ -49,7 +61,8 @@ function AuthenticatedApp({ setUser }) {
       }}
     >
       <div className="App">
-        <AppBar position="sticky" style={{ backgroundColor: "rgb(0,120,109)" }}>
+        <CaptureDialog open={open} handleClose={handleClose} />
+        <AppBar position="sticky">
           <Toolbar
             style={{
               flexGrow: 1,
@@ -60,8 +73,8 @@ function AuthenticatedApp({ setUser }) {
             {location.pathname !== "/stamdata" ? (
               <Button
                 disabled={addStationDisabled}
-                color="inherit"
-                style={{ backgroundColor: "#FFA137" }}
+                color="secondary"
+                variant="contained"
                 onClick={() => {
                   history.push("/stamdata");
                   //setAddStationDisabled(true);
@@ -79,7 +92,14 @@ function AuthenticatedApp({ setUser }) {
                 <KeyboardBackspaceIcon />
               </IconButton>
             )}
-            <Button color="inherit" onClick={handleLogout}>
+            <IconButton color="inherit" onClick={handleClickOpen}>
+              <PhotoCameraRounded />
+            </IconButton>
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={handleLogout}
+            >
               Log ud
             </Button>
           </Toolbar>

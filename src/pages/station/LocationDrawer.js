@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import clsx from "clsx";
+import { useTheme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -85,6 +86,7 @@ export default function LocationDrawer() {
   const [selectedLocid, setSelectedLocid] = useState(-1);
   const context = useContext(LocationContext);
 
+  const theme = useTheme();
   const params = useParams();
   const history = useHistory();
 
@@ -119,7 +121,7 @@ export default function LocationDrawer() {
         className={clsx(classes.appBar, {
           [classes.appBarShift]: open,
         })}
-        style={{ backgroundColor: "rgb(0,120,109)" }}
+        style={{ backgroundColor: theme.palette.primary }}
       >
         <Toolbar>
           <IconButton

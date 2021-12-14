@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Grid,
   Typography,
@@ -6,22 +6,14 @@ import {
   Button,
   Card,
   CardContent,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
+  useTheme,
 } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
 import { isValid } from "date-fns";
 import daLocale from "date-fns/locale/da";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-  DateTimePicker,
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
 import { InputAdornment } from "@material-ui/core";
+import SaveIcon from "@material-ui/icons/Save";
 
 export default function MaalepunktForm({
   formData,
@@ -35,6 +27,7 @@ export default function MaalepunktForm({
       changeFormData("startdate", date);
     }
   };
+  const theme = useTheme();
 
   const handleEnddateChange = (date) => {
     if (isValid(date)) {
@@ -62,6 +55,7 @@ export default function MaalepunktForm({
             <Grid item xs={12} sm={6}>
               <DateTimePicker
                 autoOk
+                ampm={false}
                 disableToolbar
                 inputVariant="outlined"
                 variant="outlined"
@@ -82,6 +76,7 @@ export default function MaalepunktForm({
               {formData.gid !== -1 && (
                 <DateTimePicker
                   autoOk
+                  ampm={false}
                   disableToolbar
                   inputVariant="outlined"
                   variant="outlined"
@@ -139,8 +134,11 @@ export default function MaalepunktForm({
             <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
-                style={{ backgroundColor: "#ffa137" }}
+                style={{ backgroundColor: theme.palette.secondary }}
                 onClick={() => handleSubmit()}
+                startIcon={<SaveIcon />}
+                color="secondary"
+                variant="contained"
               >
                 Gem
               </Button>
@@ -148,8 +146,10 @@ export default function MaalepunktForm({
             <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
-                style={{ backgroundColor: "#ffa137" }}
+                style={{ backgroundColor: theme.palette.secondary }}
                 onClick={resetFormData}
+                color="secondary"
+                variant="contained"
               >
                 Annuler
               </Button>

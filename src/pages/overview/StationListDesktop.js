@@ -67,7 +67,6 @@ const getStatusComp = (status) => {
 };
 
 const StatusCell = ({ color, style, ...restProps }) => {
-  console.log(restProps);
   return (
     <VirtualTable.Cell {...restProps}>
       <Tooltip title={restProps.row.opgave}>
@@ -125,7 +124,6 @@ export default function StationListDesktop() {
   useEffect(() => {
     setLoading(true);
     getTableData(sessionStorage.getItem("session_id")).then((res) => {
-      console.log(res);
       setLoading(false);
       setData(res.data.result);
     });

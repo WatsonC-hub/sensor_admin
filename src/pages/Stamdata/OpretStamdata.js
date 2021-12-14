@@ -28,6 +28,7 @@ import { getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import SaveIcon from "@material-ui/icons/Save";
 
 const flex1 = {
   display: "flex",
@@ -60,7 +61,6 @@ function LocationChooser({ setLocationDialogOpen }) {
 
   const populateFormData = (features, locname) => {
     const locData = features.find((f) => f.loc_name === locname);
-    console.log(locname, locData);
     if (locData) {
       setValues("location", {
         loc_id: locData.loc_id,
@@ -94,13 +94,10 @@ function LocationChooser({ setLocationDialogOpen }) {
     <MenuItem value={name}>{name}</MenuItem>
   ));
   const loc_items = _.uniqBy(localities, "loc_id");
-  console.log(loc_items);
   const handleChange = (event) => {
     const value =
       event.target.textContent === "" ? 0 : event.target.textContent;
-    console.log(value);
     setLocality(value);
-    console.log("before populateformdata");
     populateFormData(localities, value);
   };
 
@@ -134,8 +131,9 @@ function LocationChooser({ setLocationDialogOpen }) {
 
           <Button
             size="small"
+            color="secondary"
+            variant="contained"
             style={{
-              backgroundColor: "#ffa137",
               textTransform: "none",
               marginLeft: "12px",
             }}
@@ -169,7 +167,11 @@ function LocationChooser({ setLocationDialogOpen }) {
       </Grid>
       <Grid item xs={4}>
         <Button
-          style={{ backgroundColor: "#ffa137", textTransform: "none" }}
+          color="secondary"
+          variant="contained"
+          style={{
+            textTransform: "none",
+          }}
           onClick={() => setLocationDialogOpen(true)}
         >
           Tilføj lokation
@@ -200,6 +202,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   const [, , formData, , , , , , saveUdstyrFormData] =
     React.useContext(StamdataContext);
 
+  const theme = useTheme();
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -231,14 +234,12 @@ export default function OpretStamdata({ setAddStationDisabled }) {
     setAddStationDisabled(false);
     postStamdata(formData)
       .then((res) => {
-        console.log(res);
         setSeverity("success");
         setOpenAlert(true);
         setTimeout(() => {}, 1500);
         history.push("/");
       })
       .catch((error) => {
-        console.log(error);
         setSeverity("error");
         setOpenAlert(true);
       });
@@ -286,10 +287,11 @@ export default function OpretStamdata({ setAddStationDisabled }) {
             disabled={selectedStationType === -1}
             size="small"
             style={{
-              backgroundColor: "#ffa137",
               textTransform: "none",
               marginLeft: "12px",
             }}
+            color="secondary"
+            variant="contained"
             onClick={() => setUdstyrDialogOpen(true)}
           >
             Tilføj Udstyr
@@ -300,8 +302,10 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
-              style={{ backgroundColor: "#ffa137" }}
+              color="secondary"
+              variant="contained"
               onClick={handleSubmit}
+              startIcon={<SaveIcon />}
             >
               Gem
             </Button>
@@ -309,7 +313,8 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
-              style={{ backgroundColor: "#ffa137" }}
+              color="secondary"
+              variant="contained"
               onClick={() => {
                 history.push("/");
                 setAddStationDisabled(false);

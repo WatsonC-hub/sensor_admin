@@ -80,7 +80,6 @@ export default function SimpleTabs() {
         onChange={handleChange}
         variant="fullWidth"
         aria-label="simple tabs example"
-        tabItemContainerStyle={{ position: "fixed", bottom: "0" }}
         ref={containerRef}
       >
         <Tab icon={TableIcon} />

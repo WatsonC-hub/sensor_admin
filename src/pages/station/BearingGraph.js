@@ -102,7 +102,7 @@ const layout3 = {
 };
 
 function PlotGraph({ graphData, controlData }) {
-  const [stationName, setStationName] = useState("stationnavn");
+  // const [stationName, setStationName] = useState("stationnavn");
   const name = graphData[0] ? graphData[0].properties.stationname : "";
   const xData = graphData.map((d) => d.properties.timeofmeas);
   const yData = graphData.map((d) => d.properties.measurement);
@@ -111,9 +111,9 @@ function PlotGraph({ graphData, controlData }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
-  useEffect(() => {
-    if (graphData[0]) setStationName(graphData[0].properties.stationname);
-  }, [graphData]);
+  // useEffect(() => {
+  //   if (graphData[0]) setStationName(graphData[0].properties.stationname);
+  // }, [graphData]);
 
   return (
     <Plot
@@ -125,10 +125,7 @@ function PlotGraph({ graphData, controlData }) {
           type: "scatter",
           line: { width: 2 },
           mode: "lines",
-          marker: { symbol: "100", size: "3" },
-          marker: {
-            color: "#177FC1",
-          },
+          marker: { symbol: "100", size: "3", color: "#177FC1" },
         },
         {
           x: xControl,

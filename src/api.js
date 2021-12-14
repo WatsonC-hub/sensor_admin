@@ -10,9 +10,9 @@ if (process.env.NODE_ENV === "development") {
   extEndpoint = "http://localhost:8080/extensions/sensor_app/api";
   endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc_clone/?q=`;
 } else {
-  host = "https://watsonc.admin.gc2.io";
-  extEndpoint = "https://watsonc.admin.gc2.io/extensions/sensor_app/api";
-  endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
+  host = "https://watsonc-test.admin.gc2.io";
+  extEndpoint = "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
+  endpoint = `https://watsonc-test.admin.gc2.io/api/v2/sql/watsonc/?q=`;
 }
 
 // const locHost = "http://localhost:8080";
@@ -51,7 +51,7 @@ const getStations = (locid, sessionId) => {
 };
 
 const getLocidFromLabel = (labelId) => {
-  const sql = `${endpoint}SELECT loc_id FROM sensor.qrid_to_stationid where calypso_id =${labelId}`;
+  const sql = `${endpoint}SELECT loc_id, ts_id FROM sensor.qrid_to_ts_id where calypso_id =${labelId}`;
   return axios.get(sql);
 };
 

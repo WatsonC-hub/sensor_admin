@@ -89,19 +89,22 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                   <TableCell align="right">{row.elevation}</TableCell>
                   <TableCell align="right">{row.mp_description}</TableCell>
                   <TableCell align="right">
-                    <Button onClick={() => handleEdit(row)} disabled={!canEdit}>
-                      Rediger
-                    </Button>
+                    <IconButton
+                      onClick={() => handleEdit(row)}
+                      disabled={!canEdit}
+                    >
+                      <EditIcon />
+                    </IconButton>
                   </TableCell>
                   <TableCell align="right">
-                    <Button
+                    <IconButton
                       onClick={() => {
                         onDeleteBtnClick(row.gid);
                       }}
                       disabled={!canEdit}
                     >
-                      Slet
-                    </Button>
+                      <DeleteIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}

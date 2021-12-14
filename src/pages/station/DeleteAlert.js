@@ -10,10 +10,7 @@ export default function DeleteAlert({
   onOkDelete,
   setDialogOpen,
 }) {
-  const [open, setOpen] = React.useState(false);
-
   const handleClose = () => {
-    setOpen(false);
     setDialogOpen(false);
   };
 
@@ -27,19 +24,19 @@ export default function DeleteAlert({
       <Dialog
         open={dialogOpen}
         onClose={handleClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id='alert-dialog-title'>
+        <DialogTitle id="alert-dialog-title">
           {"Vil du slette den række?"}
         </DialogTitle>
 
         <DialogActions>
-          <Button onClick={handleClose} color='primary'>
-            Nej
-          </Button>
-          <Button onClick={handleOk} color='primary' autoFocus>
+          <Button onClick={handleOk} color="primary" autoFocus>
             Ja
+          </Button>
+          <Button autoFocus onClick={handleClose} color="primary">
+            Nej
           </Button>
         </DialogActions>
       </Dialog>

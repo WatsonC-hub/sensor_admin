@@ -12,7 +12,7 @@ import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: "#ffa137",
+    backgroundColor: theme.palette.secondary.main,
   },
   appBar: {
     top: "auto",

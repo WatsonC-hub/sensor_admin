@@ -8,6 +8,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { InputAdornment } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 import { MenuItem } from "@material-ui/core";
+import SaveIcon from "@material-ui/icons/Save";
 
 export default function AddLocationForm({
   locationDialogOpen,
@@ -145,10 +146,15 @@ export default function AddLocationForm({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleSave} color="primary">
+          <Button
+            onClick={handleSave}
+            color="secondary"
+            variant="contained"
+            startIcon={<SaveIcon />}
+          >
             Gem
           </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="secondary" variant="contained">
             Annuller
           </Button>
         </DialogActions>

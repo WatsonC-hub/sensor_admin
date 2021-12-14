@@ -11,6 +11,7 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
+  useTheme,
 } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
 import { isValid } from "date-fns";
@@ -23,6 +24,7 @@ import {
 } from "@material-ui/pickers";
 import { InputAdornment } from "@material-ui/core";
 import moment from "moment";
+import SaveIcon from "@material-ui/icons/Save";
 
 export default function PejlingForm({
   stationId,
@@ -46,6 +48,8 @@ export default function PejlingForm({
       }
     })[0]
   );
+
+  const theme = useTheme();
 
   useEffect(() => {
     setCurrentMP(
@@ -99,6 +103,7 @@ export default function PejlingForm({
             <Grid item xs={12} sm={6}>
               <DateTimePicker
                 autoOk
+                ampm={false}
                 disableToolbar
                 inputVariant="outlined"
                 variant="outlined"
@@ -225,8 +230,10 @@ export default function PejlingForm({
             <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
-                style={{ backgroundColor: "#ffa137" }}
+                color="secondary"
+                variant="contained"
                 onClick={() => handleSubmit(stationId)}
+                startIcon={<SaveIcon />}
               >
                 Gem
               </Button>
@@ -234,7 +241,8 @@ export default function PejlingForm({
             <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
-                style={{ backgroundColor: "#ffa137" }}
+                color="secondary"
+                variant="contained"
                 onClick={resetFormData}
               >
                 Annuler

@@ -4,6 +4,7 @@ import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { loginUser } from "../../api";
+import { useTheme } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -30,6 +31,8 @@ export default function Login({ setUser }) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
+
+  const theme = useTheme();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,7 +86,7 @@ export default function Login({ setUser }) {
           type="submit"
           fullWidth
           variant="contained"
-          style={{ backgroundColor: "rgb(0,120,109)", color: "white" }}
+          color="primary"
           className={classes.submit}
           disabled={userName === "" || password === ""}
         >

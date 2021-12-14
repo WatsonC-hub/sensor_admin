@@ -7,6 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import QrReader from "react-qr-scanner";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -20,19 +21,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction='up' ref={ref} {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function CaptureDialog({ handleClose, open }) {
   const classes = useStyles();
+  const history = useHistory();
 
   const [result, setResult] = useState("no result");
 
   const handleScan = (data) => {
     if (data !== null) {
-      setResult(data["text"]);
-      console.log(data);
-      return;
+      const calypso_id = data["text"].split("/")[3];
+      console.log(calypso_id);
+      handleClose();
+      history.push(`${calypso_id}`);
     }
   };
 
@@ -62,10 +65,10 @@ export default function CaptureDialog({ handleClose, open }) {
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton
-            edge='end'
-            color='inherit'
+            edge="end"
+            color="inherit"
             onClick={handleClose}
-            aria-label='close'
+            aria-label="close"
           >
             <CloseIcon />
           </IconButton>
@@ -78,7 +81,6 @@ export default function CaptureDialog({ handleClose, open }) {
           onError={handleError}
           onScan={handleScan}
         />
-        <p>{result}</p>
       </div>
     </Dialog>
   );

@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useTheme,
 } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -34,6 +35,7 @@ import { StamdataContext } from "../Stamdata/StamdataContext";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import SaveIcon from "@material-ui/icons/Save";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -57,7 +59,7 @@ const UnitEndDateDialog = ({
     setdate(date);
     setUnit({
       ...unit,
-      enddate: date,
+      slutdato: date,
     });
   };
 
@@ -69,6 +71,7 @@ const UnitEndDateDialog = ({
           <DateTimePicker
             autoOk
             disableToolbar
+            ampm={false}
             variant="inline"
             inputProps={{ readOnly: true }}
             format="yyyy-MM-dd HH:mm"
@@ -90,14 +93,16 @@ const UnitEndDateDialog = ({
           <DialogActions item xs={4} sm={2}>
             <Button
               autoFocus
-              style={{ backgroundColor: "#ffa137" }}
+              color="secondary"
+              variant="contained"
+              startIcon={<SaveIcon />}
               onClick={() => {
                 const payload = { ...unit, ts_id: stationId };
                 payload.startdate = formatedTimestamp(
-                  new Date(Date.parse(payload.startdate))
+                  new Date(Date.parse(payload.startdato))
                 );
                 payload.enddate = formatedTimestamp(
-                  new Date(Date.parse(payload.enddate))
+                  new Date(Date.parse(payload.slutdato))
                 );
 
                 takeHomeEquipment(
@@ -112,7 +117,8 @@ const UnitEndDateDialog = ({
             </Button>
             <Button
               autoFocus
-              style={{ backgroundColor: "#ffa137" }}
+              color="secondary"
+              variant="contained"
               onClick={() => {
                 setOpenDialog(false);
               }}
@@ -127,14 +133,22 @@ const UnitEndDateDialog = ({
 };
 
 const UdstyrReplace = ({ stationId }) => {
-  const [unit, setUnit] = useState({ gid: 0 });
+  // const [unit, setUnit] = useState({ gid: 0 });
+  const [latestUnit, setLatestUnit] = useState({ gid: 0 });
+  const [selected, setselected] = useState(-1);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
+
   const handleChange = (event) => {
-    setUnit(data.filter((elem) => elem.gid === event.target.value));
+    // setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
+    setselected(event.target.value);
+    saveUdstyrFormData(
+      data.filter((elem) => elem.gid === event.target.value)[0]
+    );
   };
 
-  const [, , formData, , , , ,] = React.useContext(StamdataContext);
+  const [, , formData, , , , , setUdstyrValue, saveUdstyrFormData] =
+    React.useContext(StamdataContext);
 
   const flex1 = {
     display: "flex",
@@ -149,27 +163,29 @@ const UdstyrReplace = ({ stationId }) => {
       if (res.data.success) {
         console.log(res.data.data);
         setData(res.data.data);
-        setUnit(res.data.data[0]);
+        // setUnit(res.data.data[0]);
+        setLatestUnit(res.data.data[0]);
+        setselected(res.data.data[0].gid);
       }
     });
-  }, [stationId]);
+  }, [stationId, openDialog]);
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={6} sm={6}>
         <div style={flex1}>
           <Typography>Udstyr</Typography>
-          <Select value={unit.gid} onChange={handleChange}>
+          <Select value={selected} onChange={handleChange}>
             {data.map((item) => {
               let endDate =
-                new Date() < new Date(item.enddate)
+                new Date() < new Date(item.slutdato)
                   ? "nu"
-                  : formatedTimestamp(new Date(item.enddate));
+                  : formatedTimestamp(new Date(item.slutdato));
 
               return (
                 <MenuItem key={item.gid} value={item.gid}>
                   {`${formatedTimestamp(
-                    new Date(item.startdate)
+                    new Date(item.startdato)
                   )} - ${endDate}`}
                 </MenuItem>
               );
@@ -178,9 +194,10 @@ const UdstyrReplace = ({ stationId }) => {
         </div>
       </Grid>
       <Grid item xs={6} sm={6}>
-        {unit.enddate > "2098-01-01" ? (
+        {latestUnit.slutdato > "2098-01-01" ? (
           <Button
-            style={{ backgroundColor: "#4472c4" }}
+            color="secondary"
+            variant="contained"
             onClick={() => {
               setOpenDialog(true);
             }}
@@ -189,7 +206,8 @@ const UdstyrReplace = ({ stationId }) => {
           </Button>
         ) : (
           <Button
-            style={{ backgroundColor: "#4472c4" }}
+            color="secondary"
+            variant="contained"
             onClick={() => {
               setOpenAddUdstyr(true);
             }}
@@ -201,8 +219,8 @@ const UdstyrReplace = ({ stationId }) => {
       <UnitEndDateDialog
         openDialog={openDialog}
         setOpenDialog={setOpenDialog}
-        unit={unit}
-        setUnit={setUnit}
+        unit={latestUnit}
+        setUnit={setLatestUnit}
         stationId={stationId}
       />
       <AddUdstyrForm
@@ -224,7 +242,7 @@ export default function EditStamdata({ setFormToShow, stationId }) {
   5. show that data is loading (login, dropdown .... ) 
   */
   const [, , formData, , , , ,] = React.useContext(StamdataContext);
-
+  const theme = useTheme();
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
 
@@ -271,7 +289,9 @@ export default function EditStamdata({ setFormToShow, stationId }) {
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
-              style={{ backgroundColor: "#ffa137" }}
+              color="secondary"
+              variant="contained"
+              startIcon={<SaveIcon />}
               onClick={handleSubmit}
             >
               Gem
@@ -280,7 +300,8 @@ export default function EditStamdata({ setFormToShow, stationId }) {
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
-              style={{ backgroundColor: "#ffa137" }}
+              color="secondary"
+              variant="contained"
               onClick={() => {
                 setFormToShow(null);
               }}

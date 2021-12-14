@@ -14,8 +14,9 @@ import {
   KeyboardDatePicker,
   DateTimePicker,
 } from "@material-ui/pickers";
-import { MenuItem } from "@material-ui/core";
+import { MenuItem, useTheme } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
+import SaveIcon from "@material-ui/icons/Save";
 
 export default function AddUdstyrForm({
   udstyrDialogOpen,
@@ -28,6 +29,8 @@ export default function AddUdstyrForm({
     uuid: "",
     fra: new Date(),
   });
+
+  const theme = useTheme();
 
   const [, , , , , , , , saveUdstyrFormData] =
     React.useContext(StamdataContext);
@@ -151,6 +154,7 @@ export default function AddUdstyrForm({
             <DateTimePicker
               autoOk
               disableToolbar
+              ampm={false}
               variant="inline"
               inputProps={{ readOnly: true }}
               format="yyyy-MM-dd HH:mm"
@@ -173,17 +177,16 @@ export default function AddUdstyrForm({
           <DialogActions>
             <Button
               onClick={handleSave}
-              style={{ backgroundColor: "#ffa137" }}
+              color="secondary"
+              variant="contained"
+              startIcon={<SaveIcon />}
               disabled={
                 udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === -1
               }
             >
               Gem
             </Button>
-            <Button
-              onClick={handleClose}
-              style={{ backgroundColor: "#ffa137" }}
-            >
+            <Button onClick={handleClose} color="secondary" variant="contained">
               Annuller
             </Button>
           </DialogActions>
