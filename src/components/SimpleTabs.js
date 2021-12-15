@@ -12,6 +12,7 @@ import LocationContext from "../context/LocationContext";
 import StationList from "../pages/overview/StationList";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Scroll from "./Scroll";
+import { getTableData } from "../api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,6 +57,13 @@ export default function SimpleTabs() {
     rootMargin: "0px",
     threshold: 1.0,
   });
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    getTableData(sessionStorage.getItem("session_id")).then((res) => {
+      setData(res.data.result);
+    });
+  }, []);
 
   const handleChange = (_, newValue) => {
     locationContext.setTabValue(newValue);
@@ -86,7 +94,7 @@ export default function SimpleTabs() {
         <Tab icon={KortIcon} />
       </Tabs>
       <TabPanel value={locationContext.tabValue} index={0}>
-        {matches ? <StationList /> : <StationListDesktop />}
+        {matches ? <StationList data={data} /> : <StationListDesktop />}
       </TabPanel>
       <TabPanel value={locationContext.tabValue} index={1}>
         <Map />

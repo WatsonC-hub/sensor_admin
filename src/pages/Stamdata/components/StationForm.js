@@ -91,8 +91,9 @@ export default function StationForm({
         ) : (
           <TextField
             InputProps={{
-              readOnly: true,
+              style: { color: "black" },
             }}
+            disabled={true}
             variant="outlined"
             type="text"
             label="Station type"

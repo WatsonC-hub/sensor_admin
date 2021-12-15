@@ -104,6 +104,11 @@ export default function LocationDrawer() {
     getStations(locId, sessionStorage.getItem("session_id")).then((res) => {
       if (!statId) {
         statId = -1;
+        if (res.data.res.length === 1) {
+          setCurrStation(res.data.res[0]);
+          statId = res.data.res[0].ts_id;
+          history.replace(`/location/${locId}/${statId}`);
+        }
         setSelectedItem(parseInt(statId));
       } else {
         setCurrStation(currentStation(statId, res.data.res));

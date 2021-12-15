@@ -184,14 +184,16 @@ export default function Station({
         data.enddate = data.enddate.replace(" ", "T").substr(0, 19);
         setMpData(data); // Fill form data on Edit
         setFormToShow("ADDMAALEPUNKT"); // update to use state machine
-        setUpdated(new Date());
+        // setUpdated(new Date());
       };
     } else {
       return (data) => {
+        console.log(data);
+        console.log(watlevmp);
         data.timeofmeas = data.timeofmeas.replace(" ", "T").substr(0, 19);
         setPejlingData(data); // Fill form data on Edit
         setFormToShow("ADDPEJLING"); // update to use state machine
-        setUpdated(new Date());
+        // setUpdated(new Date());
       };
     }
   };
@@ -271,7 +273,6 @@ export default function Station({
         />
       )}
 
-      <Toolbar />
       <ActionArea
         open={open}
         stationId={stationId}

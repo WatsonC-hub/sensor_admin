@@ -16,11 +16,8 @@ import {
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import daLocale from "date-fns/locale/da";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDateTimePicker,
-  DateTimePicker,
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import OwnDatePicker from "../../components/OwnDatePicker";
 
 import LocalityForm from "../Stamdata/components/LocalityForm";
 import StationForm from "../Stamdata/components/StationForm";
@@ -68,27 +65,10 @@ const UnitEndDateDialog = ({
       <Dialog open={openDialog}>
         <DialogTitle>Angiv slutdato</DialogTitle>
         <DialogContent>
-          <DateTimePicker
-            autoOk
-            disableToolbar
-            ampm={false}
-            variant="inline"
-            inputProps={{ readOnly: true }}
-            format="yyyy-MM-dd HH:mm"
-            margin="normal"
-            id="Fra"
-            label={
-              <Typography variant="h6" component="h3">
-                Fra
-              </Typography>
-            }
-            InputLabelProps={{ shrink: true }}
+          <OwnDatePicker
+            label="Fra"
             value={date}
             onChange={(date) => handleDateChange(date)}
-            KeyboardButtonProps={{
-              "aria-label": "change date",
-            }}
-            fullWidth
           />
           <DialogActions item xs={4} sm={2}>
             <Button
@@ -284,7 +264,7 @@ export default function EditStamdata({ setFormToShow, stationId }) {
         <StationForm />
 
         <UdstyrReplace stationId={stationId} />
-        <UdstyrForm />
+        <UdstyrForm mode={"edit"} />
         <Grid container spacing={3}>
           <Grid item xs={4} sm={2}>
             <Button

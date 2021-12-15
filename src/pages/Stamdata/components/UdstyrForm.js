@@ -3,14 +3,10 @@ import { Grid, TextField } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import daLocale from "date-fns/locale/da";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-  KeyboardDateTimePicker,
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { StamdataContext } from "../StamdataContext";
 import moment from "moment";
+import OwnDatePicker from "../../../components/OwnDatePicker";
 
 export default function UdstyrForm(props) {
   const editMode = props.mode === "edit";
@@ -122,21 +118,29 @@ export default function UdstyrForm(props) {
               margin="dense"
             />
           ) : (
-            <KeyboardDateTimePicker
-              disableToolbar
-              inputProps={{ readOnly: true }}
-              inputVariant="outlined"
-              format="yyyy-MM-dd HH:mm"
-              margin="normal"
-              id="date-picker-inline"
+            <OwnDatePicker
               label="Startdato"
-              InputLabelProps={{ shrink: true }}
               value={formData.udstyr.startdato}
-              onChange={(date) => setUdstyrValue("startdato", date)}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              fullWidth
+              onChange={(date) =>
+                setUdstyrValue(
+                  "startdato",
+                  moment(date).format("YYYY-MM-DD HH:mm")
+                )
+              }
+            />
+          )}
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          {editMode && (
+            <OwnDatePicker
+              label="Slutdato"
+              value={formData.udstyr.slutdato}
+              onChange={(date) =>
+                setUdstyrValue(
+                  "slutdato",
+                  moment(date).format("YYYY-MM-DD HH:mm")
+                )
+              }
             />
           )}
         </Grid>

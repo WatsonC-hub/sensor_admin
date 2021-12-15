@@ -12,11 +12,11 @@ import { getAvailableUnits } from "../../api";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
-  DateTimePicker,
 } from "@material-ui/pickers";
 import { MenuItem, useTheme } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 import SaveIcon from "@material-ui/icons/Save";
+import OwnDatePicker from "../../components/OwnDatePicker";
 
 export default function AddUdstyrForm({
   udstyrDialogOpen,
@@ -151,27 +151,10 @@ export default function AddUdstyrForm({
                 </MenuItem>
               ))}
             </TextField>
-            <DateTimePicker
-              autoOk
-              disableToolbar
-              ampm={false}
-              variant="inline"
-              inputProps={{ readOnly: true }}
-              format="yyyy-MM-dd HH:mm"
-              margin="normal"
-              id="Fra"
-              label={
-                <Typography variant="h6" component="h3">
-                  Fra
-                </Typography>
-              }
-              InputLabelProps={{ shrink: true }}
+            <OwnDatePicker
+              label={"Fra"}
               value={udstyrFormData.fra}
               onChange={(date) => handleDateChange(date)}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-              fullWidth
             />
           </DialogContent>
           <DialogActions>

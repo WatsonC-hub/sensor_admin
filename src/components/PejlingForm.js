@@ -25,6 +25,7 @@ import {
 import { InputAdornment } from "@material-ui/core";
 import moment from "moment";
 import SaveIcon from "@material-ui/icons/Save";
+import OwnDatePicker from "./OwnDatePicker";
 
 export default function PejlingForm({
   stationId,
@@ -38,31 +39,25 @@ export default function PejlingForm({
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
-  const [currentMP, setCurrentMP] = useState(
-    mpData.filter((elem) => {
-      if (
-        moment(currDate).isAfter(elem.startdate) &&
-        moment(currDate).isBefore(elem.enddate)
-      ) {
-        return true;
-      }
-    })[0]
-  );
-
-  const theme = useTheme();
+  const [currentMP, setCurrentMP] = useState({
+    elevation: 0,
+    mp_description: "",
+  });
 
   useEffect(() => {
-    setCurrentMP(
-      mpData.filter((elem) => {
-        if (
-          moment(formData.timeofmeas).isAfter(elem.startdate) &&
-          moment(formData.timeofmeas).isBefore(elem.enddate)
-        ) {
-          return true;
-        }
-      })[0]
-    );
-  }, [formData.gid]);
+    if (mpData.length > 0) {
+      setCurrentMP(
+        mpData.filter((elem) => {
+          if (
+            moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
+            moment(formData.timeofmeas).isBefore(elem.enddate)
+          ) {
+            return true;
+          }
+        })[0]
+      );
+    }
+  }, [formData.gid, mpData]);
 
   const handleDateChange = (date) => {
     if (isValid(date)) {
@@ -72,6 +67,8 @@ export default function PejlingForm({
       console.log("date is valid again: ", date);
       changeFormData("timeofmeas", date);
     }
+    console.log("test");
+
     setCurrentMP(
       mpData.filter((elem) => {
         if (
@@ -101,24 +98,10 @@ export default function PejlingForm({
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <DateTimePicker
-                autoOk
-                ampm={false}
-                disableToolbar
-                inputVariant="outlined"
-                variant="outlined"
-                format="yyyy-MM-dd HH:mm"
-                id="Fra"
-                value={currDate}
-                label={
-                  <Typography variant="h6" component="h3">
-                    Start dato
-                  </Typography>
-                }
-                InputLabelProps={{ shrink: true }}
+              <OwnDatePicker
+                label="Start dato"
                 value={formData.timeofmeas}
                 onChange={(date) => handleDateChange(date)}
-                fullWidth
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -173,9 +156,6 @@ export default function PejlingForm({
                   </Typography>
                 }
                 InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="start">m</InputAdornment>
-                  ),
                   style: { color: "black" },
                 }}
                 InputLabelProps={{ shrink: true }}

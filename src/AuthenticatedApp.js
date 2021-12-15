@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
+import { useTheme } from "@material-ui/core/styles";
 import SimpleTabs from "./components/SimpleTabs";
 import LocationDrawer from "./pages/station/LocationDrawer";
 import AppBar from "@material-ui/core/AppBar";
@@ -8,6 +9,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
 import { PhotoCameraRounded } from "@material-ui/icons";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import ScanComponent from "./components/ScanComponent";
 import OpretStamdata from "./pages/Stamdata/OpretStamdata";
@@ -31,8 +33,9 @@ function AuthenticatedApp({ setUser }) {
   const [tabValue, setTabValue] = useState(0);
   const [addStationDisabled, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useState(false);
-
+  const theme = useTheme();
   const history = useHistory();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
   let location = useLocation();
 
   const handleClickOpen = () => {
@@ -92,9 +95,13 @@ function AuthenticatedApp({ setUser }) {
                 <KeyboardBackspaceIcon />
               </IconButton>
             )}
-            <IconButton color="inherit" onClick={handleClickOpen}>
-              <PhotoCameraRounded />
-            </IconButton>
+
+            {matches && (
+              <IconButton color="inherit" onClick={handleClickOpen}>
+                <PhotoCameraRounded />
+              </IconButton>
+            )}
+
             <Button
               color="secondary"
               variant="contained"

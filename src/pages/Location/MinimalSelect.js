@@ -39,6 +39,9 @@ const MinimalSelect = ({
 
   React.useEffect(() => {
     setStationId(selectedStation);
+    if (selectedStation !== -1) {
+      setIsOpen(false);
+    }
   }, [selectedStation]);
 
   // useEffect(() => {

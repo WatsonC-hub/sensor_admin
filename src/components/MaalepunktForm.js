@@ -14,6 +14,7 @@ import daLocale from "date-fns/locale/da";
 import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
 import { InputAdornment } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
+import OwnDatePicker from "./OwnDatePicker";
 
 export default function MaalepunktForm({
   formData,
@@ -53,44 +54,18 @@ export default function MaalepunktForm({
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <DateTimePicker
-                autoOk
-                ampm={false}
-                disableToolbar
-                inputVariant="outlined"
-                variant="outlined"
-                format="yyyy-MM-dd HH:mm"
-                id="Fra"
-                label={
-                  <Typography variant="h6" component="h3">
-                    Start dato
-                  </Typography>
-                }
-                InputLabelProps={{ shrink: true }}
+              <OwnDatePicker
+                label={"Start dato"}
                 value={formData.startdate}
                 onChange={(date) => handleStartdateChange(date)}
-                fullWidth
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               {formData.gid !== -1 && (
-                <DateTimePicker
-                  autoOk
-                  ampm={false}
-                  disableToolbar
-                  inputVariant="outlined"
-                  variant="outlined"
-                  format="yyyy-MM-dd HH:mm"
-                  id="Fra"
-                  label={
-                    <Typography variant="h6" component="h3">
-                      Slut dato
-                    </Typography>
-                  }
-                  InputLabelProps={{ shrink: true }}
+                <OwnDatePicker
+                  label={"Slut dato"}
                   value={formData.enddate}
                   onChange={(date) => handleEnddateChange(date)}
-                  fullWidth
                 />
               )}
             </Grid>

@@ -35,7 +35,7 @@ export default function MobileMeasurements({
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant='h5' component='h2'>
+      <Typography gutterBottom variant="h5" component="h2">
         Tidligere pejlinger
       </Typography>
       <Fragment>
@@ -44,16 +44,11 @@ export default function MobileMeasurements({
             <ListItem key={index} dense>
               <ListItemText
                 primary={row.timeofmeas}
-                secondary={
-                  "pejling:" +
-                  row.disttowatertable_m +
-                  "\u00a0\u00a0\u00a0\u00a0anv: " +
-                  row.useforcorrection
-                }
+                secondary={"Pejling: " + row.disttowatertable_m + " m"}
               />
               <ListItemSecondaryAction>
                 <IconButton
-                  edge='end'
+                  edge="end"
                   onClick={() => {
                     handleEdit(row);
                     setTimeout(() => {
@@ -65,7 +60,7 @@ export default function MobileMeasurements({
                   <EditIcon />
                 </IconButton>
                 <IconButton
-                  edge='end'
+                  edge="end"
                   onClick={() => onDeleteBtnClick(row.gid)}
                   disabled={!canEdit}
                 >
