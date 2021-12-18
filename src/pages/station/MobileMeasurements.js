@@ -9,6 +9,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteAlert from "./DeleteAlert";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { Fragment } from "react";
+import moment from "moment";
 
 export default function MobileMeasurements({
   measurements,
@@ -43,7 +44,7 @@ export default function MobileMeasurements({
           {measurements.map((row, index) => (
             <ListItem key={index} dense>
               <ListItemText
-                primary={row.timeofmeas}
+                primary={moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
                 secondary={"Pejling: " + row.disttowatertable_m + " m"}
               />
               <ListItemSecondaryAction>

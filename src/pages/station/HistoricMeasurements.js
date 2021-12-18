@@ -13,6 +13,7 @@ import LocationContext from "../../context/LocationContext";
 import { Fragment } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
+import moment from "moment";
 
 const useStyles = makeStyles({
   table: {
@@ -78,7 +79,7 @@ export default function HistoricMeasurements({
               .map((row, index) => (
                 <TableRow key={index}>
                   <TableCell component="th" scope="row">
-                    {row.timeofmeas}
+                    {moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
                   </TableCell>
                   <TableCell align="right">{row.disttowatertable_m}</TableCell>
                   <TableCell align="right">

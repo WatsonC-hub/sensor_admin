@@ -24,6 +24,7 @@ export default function LocalityForm() {
           onChange={(event) => setLocationValue("loc_name", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
+          placeholder="f.eks. Brabrand_1"
           margin="dense"
         />
       </Grid>
@@ -40,6 +41,7 @@ export default function LocalityForm() {
           onChange={(event) => setLocationValue("mainloc", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
+          placeholder="f.eks. Aarhus Kommune"
           margin="dense"
         />
       </Grid>
@@ -135,6 +137,7 @@ export default function LocalityForm() {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
+          placeholder="f.eks. ligger tæt ved broen"
         />
       </Grid>
     </Grid>

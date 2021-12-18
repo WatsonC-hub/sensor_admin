@@ -22,6 +22,7 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import moment from "moment";
 
 const useStyles = makeStyles({
   table: {
@@ -83,9 +84,11 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
               .map((row, index) => (
                 <TableRow key={index}>
                   <TableCell component="th" scope="row">
-                    {row.startdate}
+                    {moment(row.startdate).format("YYYY-MM-DD HH:mm")}
                   </TableCell>
-                  <TableCell>{row.enddate}</TableCell>
+                  <TableCell>
+                    {moment(row.enddate).format("YYYY-MM-DD HH:mm")}
+                  </TableCell>
                   <TableCell align="right">{row.elevation}</TableCell>
                   <TableCell align="right">{row.mp_description}</TableCell>
                   <TableCell align="right">
@@ -189,7 +192,7 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
 
 export default function MaalepunktTable(props) {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down("xs"));
 
   return matches ? <MobileMP {...props} /> : <DesktopMP {...props} />;
 }

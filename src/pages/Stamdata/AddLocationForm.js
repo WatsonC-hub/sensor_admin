@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -65,7 +65,7 @@ export default function AddLocationForm({
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Tilføj lokation</DialogTitle>
+        <DialogTitle id="form-dialog-title">Tilføj ny lokation</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -76,6 +76,9 @@ export default function AddLocationForm({
             onChange={handleChange}
             type="text"
             fullWidth
+            placeholder="f.eks. Brabrand_1"
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             autoFocus
@@ -86,6 +89,9 @@ export default function AddLocationForm({
             onChange={handleChange}
             type="text"
             fullWidth
+            placeholder="f.eks. Aarhus Kommune"
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             autoFocus
@@ -96,6 +102,8 @@ export default function AddLocationForm({
             onChange={handleChange}
             type="number"
             fullWidth
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             autoFocus
@@ -106,6 +114,8 @@ export default function AddLocationForm({
             onChange={handleChange}
             type="number"
             fullWidth
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             autoFocus
@@ -119,6 +129,8 @@ export default function AddLocationForm({
             onChange={handleChange}
             type="number"
             fullWidth
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             autoFocus
@@ -129,8 +141,10 @@ export default function AddLocationForm({
             onChange={handleSelector}
             select
             fullWidth
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            placeholder="Vælg type"
           >
-            <MenuItem value={-1}> Vælg type </MenuItem>
             <MenuItem value="dGPS">dGPS</MenuItem>
             <MenuItem value="DTM">DTM</MenuItem>
           </TextField>
@@ -143,16 +157,14 @@ export default function AddLocationForm({
             onChange={handleChange}
             type="text"
             fullWidth
+            variant="outlined"
+            InputLabelProps={{ shrink: true }}
+            placeholder="f.eks. ligger tæt ved broen"
           />
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={handleSave}
-            color="secondary"
-            variant="contained"
-            startIcon={<SaveIcon />}
-          >
-            Gem
+          <Button onClick={handleSave} color="secondary" variant="contained">
+            Tilføj
           </Button>
           <Button onClick={handleClose} color="secondary" variant="contained">
             Annuller

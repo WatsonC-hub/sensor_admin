@@ -89,8 +89,7 @@ const UnitEndDateDialog = ({
                   unit.gid,
                   payload,
                   sessionStorage.getItem("session_id")
-                );
-                setOpenDialog(false);
+                ).then((res) => setOpenDialog(false));
               }}
             >
               Gem
@@ -139,6 +138,7 @@ const UdstyrReplace = ({ stationId }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    console.log("RUN");
     getUnitHistory(stationId).then((res) => {
       if (res.data.success) {
         console.log(res.data.data);
@@ -152,7 +152,7 @@ const UdstyrReplace = ({ stationId }) => {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={6} sm={6}>
+      <Grid item xs={12} sm={6}>
         <div style={flex1}>
           <Typography>Udstyr</Typography>
           <Select value={selected} onChange={handleChange}>
@@ -173,7 +173,7 @@ const UdstyrReplace = ({ stationId }) => {
           </Select>
         </div>
       </Grid>
-      <Grid item xs={6} sm={6}>
+      <Grid item xs={12} sm={6}>
         {latestUnit.slutdato > "2098-01-01" ? (
           <Button
             color="secondary"
@@ -233,7 +233,6 @@ export default function EditStamdata({ setFormToShow, stationId }) {
         setSeverity("success");
         setOpenAlert(true);
         setTimeout(() => {}, 1500);
-        setFormToShow(null);
       })
       .catch((error) => {
         console.log(error);
@@ -294,8 +293,8 @@ export default function EditStamdata({ setFormToShow, stationId }) {
       <Snackbar open={openAlert} autoHideDuration={4000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={severity}>
           {severity === "success"
-            ? "Oprettelse af station lykkedes"
-            : "Oprettelse af station fejlede"}
+            ? "Opdatering af station lykkedes"
+            : "Opdatering af station fejlede"}
         </Alert>
       </Snackbar>
     </div>

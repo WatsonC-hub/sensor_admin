@@ -47,7 +47,7 @@ export default function CaptureDialog({ handleClose, open }) {
   };
 
   const previewStyle = {
-    height: 300,
+    height: 600,
     width: 300,
     display: "flex",
     justifyContent: "center",

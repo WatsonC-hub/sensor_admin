@@ -22,7 +22,6 @@ export default function StationList({ data }) {
     history.push(`location/${elem.loc_id}/${elem.ts_id}`);
   };
 
-  console.log(data);
   if (!data) return <CircularProgress />;
 
   return (
@@ -59,7 +58,7 @@ function StatusText(props) {
     >
       <ListItemText
         primary={getStatusComp(props.row.color)}
-        secondary={props.row.opgave}
+        // secondary={props.row.opgave}
       />
       {/* <Typography>{getStatusComp(props.row.color)}</Typography> */}
     </span>

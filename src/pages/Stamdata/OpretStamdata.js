@@ -139,7 +139,7 @@ function LocationChooser({ setLocationDialogOpen }) {
             }}
             onClick={() => setLocationDialogOpen(true)}
           >
-            Tilføj lokation
+            Tilføj ny lokation
           </Button>
         </div>
       </Grid>
@@ -217,7 +217,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
 
   const resetUdStyrForm = () => {
     saveUdstyrFormData({
-      terminal: "",
+      terminal_type: "",
       terminal_id: "",
       sensor_id: "",
       sensorinfo: "",
@@ -236,8 +236,9 @@ export default function OpretStamdata({ setAddStationDisabled }) {
       .then((res) => {
         setSeverity("success");
         setOpenAlert(true);
-        setTimeout(() => {}, 1500);
-        history.push("/");
+        setTimeout(() => {
+          history.push("/");
+        }, 1500);
       })
       .catch((error) => {
         setSeverity("error");
@@ -294,7 +295,9 @@ export default function OpretStamdata({ setAddStationDisabled }) {
             variant="contained"
             onClick={() => setUdstyrDialogOpen(true)}
           >
-            Tilføj Udstyr
+            {formData.udstyr.calypso_id === ""
+              ? "Tilføj Udstyr"
+              : "Ændre udstyr"}
           </Button>
         </div>
         <UdstyrForm mode="add" />

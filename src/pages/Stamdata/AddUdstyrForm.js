@@ -162,12 +162,11 @@ export default function AddUdstyrForm({
               onClick={handleSave}
               color="secondary"
               variant="contained"
-              startIcon={<SaveIcon />}
               disabled={
                 udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === -1
               }
             >
-              Gem
+              Tilføj
             </Button>
             <Button onClick={handleClose} color="secondary" variant="contained">
               Annuller

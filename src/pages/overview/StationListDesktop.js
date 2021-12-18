@@ -17,8 +17,9 @@ import {
 } from "@devexpress/dx-react-grid-material-ui";
 import { RowDetailState } from "@devexpress/dx-react-grid";
 import { getTableData } from "../../api";
-import { Tooltip } from "@material-ui/core";
+import { TextField, Tooltip } from "@material-ui/core";
 import LocationContext from "../../context/LocationContext";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 const LocationTypeProvider = (props) => (
   <DataTypeProvider formatterComponent={LocationFormatter} {...props} />
@@ -106,20 +107,31 @@ const TitleCell = (props) => {
 };
 
 const columns = [
-  { name: "calypso_id", title: "Calypso ID", width: 50 },
-  { name: "ts_name", title: "Stationsnavn", width: 200 },
-  { name: "tstype_name", title: "Parameter", width: 200 },
-  { name: "customer_name", title: "Ejer", width: 200 },
+  { name: "calypso_id", title: "Calypso ID" },
+  { name: "ts_name", title: "Stationsnavn" },
+  { name: "tstype_name", title: "Parameter" },
+  // { name: "customer_name", title: "Ejer", width: 200 },
   {
     name: "color",
     title: "Alarm",
-    width: 200,
+  },
+];
+
+const column_extension = [
+  { columnName: "calypso_id", width: "auto" },
+  { columnName: "ts_name", width: "auto" },
+  { columnName: "tstype_name", width: "auto" },
+  {
+    columnName: "color",
+    width: "auto",
   },
 ];
 
 export default function StationListDesktop() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [typeAhead, settypeAhead] = useState("");
+  const { height, width } = useWindowDimensions();
 
   useEffect(() => {
     setLoading(true);
@@ -129,22 +141,42 @@ export default function StationListDesktop() {
     });
   }, []);
 
-  let rows = data.map((elem, index) => ({
-    ...elem,
-    station_loc_id: elem.loc_id + "_" + elem.ts_id,
-    id: index,
-  }));
+  let rows = data
+    .map((elem, index) => ({
+      ...elem,
+      station_loc_id: elem.loc_id + "_" + elem.ts_id,
+      id: index,
+    }))
+    .filter((elem) => {
+      return elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase());
+    });
 
   return (
-    <Paper>
-      {loading && <CircularProgress />}
-      <Grid rows={rows} columns={columns} style={{ height: 1200 }}>
-        {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
-        {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
-        <VirtualTable height={1200} cellComponent={Cell} />
-        <TableHeaderRow titleComponent={TitleCell} />
-        {/* <TableRowDetail contentComponent={RowDetail} /> */}
-      </Grid>
-    </Paper>
+    <div>
+      <TextField
+        variant="outlined"
+        label={"Filtrer stationer"}
+        InputLabelProps={{ shrink: true }}
+        placeholder="Søg"
+        value={typeAhead}
+        onChange={(event) => settypeAhead(event.target.value)}
+      />
+
+      <Paper>
+        <Grid rows={rows} columns={columns}>
+          {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+          {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
+          <VirtualTable
+            height={height - 200}
+            cellComponent={Cell}
+            messages={{ noData: "Ingen data" }}
+            // columnExtensions={column_extension}
+          />
+          {loading && <CircularProgress />}
+          <TableHeaderRow titleComponent={TitleCell} />
+          {/* <TableRowDetail contentComponent={RowDetail} /> */}
+        </Grid>
+      </Paper>
+    </div>
   );
 }

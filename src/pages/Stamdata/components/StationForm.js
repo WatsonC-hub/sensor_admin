@@ -77,6 +77,7 @@ export default function StationForm({
           }}
           fullWidth
           margin="dense"
+          placeholder="f.eks. Brabrand_1_vandstand"
           onChange={(e) => setStationValue("ts_name", e.target.value)}
         />
       </Grid>
@@ -136,6 +137,7 @@ export default function StationForm({
               shrink: true,
             }}
             fullWidth
+            placeholder="f.eks. top af rør"
             margin="dense"
             onChange={(e) => setStationValue("mp_description", e.target.value)}
           />
