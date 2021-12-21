@@ -20,6 +20,7 @@ const selectorOptions = {
     },
     {
       step: "all",
+      label: "Alt",
     },
   ],
 };
@@ -38,7 +39,7 @@ const layout1 = {
   //xaxis: {domain: [0, 0.9]},
   yaxis: {
     title: {
-      text: "Niveau, kote",
+      text: "",
       font: { size: 12 },
     },
     showline: true,
@@ -80,6 +81,10 @@ const layout3 = {
   yaxis: {
     showline: true,
     y: 1,
+    title: {
+      text: "",
+      font: { size: 12 },
+    },
   },
 
   showlegend: true,
@@ -103,11 +108,13 @@ const layout3 = {
 
 function PlotGraph({ graphData, controlData }) {
   // const [stationName, setStationName] = useState("stationnavn");
-  const name = graphData[0] ? graphData[0].properties.stationname : "";
-  const xData = graphData.map((d) => d.properties.timeofmeas);
-  const yData = graphData.map((d) => d.properties.measurement);
-  const xControl = controlData.map((d) => d.properties.timeofmeas);
-  const yControl = controlData.map((d) => d.properties.waterlevel);
+  const name = graphData[0] ? graphData[0].properties.ts_name : "";
+  const xData = graphData[0] ? graphData[0].properties.data.x : [];
+  const yData = graphData[0] ? graphData[0].properties.data.y : [];
+  const xControl = controlData.map((d) => d.timeofmeas);
+  const yControl = controlData.map((d) => d.waterlevel);
+  const stationtype = graphData[0] ? graphData[0].properties.parameter : "";
+  const unit = graphData[0] ? graphData[0].properties.unit : "";
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -141,7 +148,23 @@ function PlotGraph({ graphData, controlData }) {
           },
         },
       ]}
-      layout={matches ? layout3 : layout1}
+      layout={
+        matches
+          ? {
+              ...layout3,
+              yaxis: {
+                ...layout3.yaxis,
+                title: stationtype + ", " + unit,
+              },
+            }
+          : {
+              ...layout1,
+              yaxis: {
+                ...layout1.yaxis,
+                title: stationtype + ", " + unit,
+              },
+            }
+      }
       config={{
         responsive: true,
         modeBarButtonsToRemove: [
@@ -161,27 +184,20 @@ function PlotGraph({ graphData, controlData }) {
   );
 }
 
-export default function BearingGraph({ stationId, updated }) {
+export default function BearingGraph({ stationId, updated, measurements }) {
   const [graphData, setGraphData] = useState([]);
-  const [controlData, setControlData] = useState([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
-    getGraphData(stationId).then((res) => {
-      if (res.data.success) {
-        setGraphData(res.data.features);
-      }
-    });
+    if (stationId !== -1 && stationId !== null) {
+      getGraphData(stationId).then((res) => {
+        if (res.data.success) {
+          setGraphData(res.data.features);
+        }
+      });
+    }
   }, [stationId]);
-
-  useEffect(() => {
-    getControlData(stationId).then((res) => {
-      if (res.data.success) {
-        setControlData(res.data.features);
-      }
-    });
-  }, [updated, stationId]);
 
   return (
     <div
@@ -194,7 +210,7 @@ export default function BearingGraph({ stationId, updated }) {
         border: "2px solid gray",
       }}
     >
-      <PlotGraph graphData={graphData} controlData={controlData} />
+      <PlotGraph graphData={graphData} controlData={measurements} />
     </div>
   );
 }

@@ -127,19 +127,16 @@ const column_extension = [
   },
 ];
 
-export default function StationListDesktop() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+export default function StationListDesktop({ data }) {
+  const [loading, setLoading] = useState(true);
   const [typeAhead, settypeAhead] = useState("");
   const { height, width } = useWindowDimensions();
 
   useEffect(() => {
-    setLoading(true);
-    getTableData(sessionStorage.getItem("session_id")).then((res) => {
+    if (data.length > 0) {
       setLoading(false);
-      setData(res.data.result);
-    });
-  }, []);
+    }
+  }, [data]);
 
   let rows = data
     .map((elem, index) => ({
@@ -160,6 +157,7 @@ export default function StationListDesktop() {
         placeholder="Søg"
         value={typeAhead}
         onChange={(event) => settypeAhead(event.target.value)}
+        style={{ marginBottom: 12 }}
       />
 
       <Paper>

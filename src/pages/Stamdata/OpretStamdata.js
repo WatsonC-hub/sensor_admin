@@ -5,10 +5,6 @@ import {
   Grid,
   Typography,
   Button,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
   TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
@@ -41,23 +37,12 @@ function Alert(props) {
 }
 
 function LocationChooser({ setLocationDialogOpen }) {
-  const flex = {
-    display: "flex",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-  };
-
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
-  const [location] = React.useState(0);
   const [localities, setLocalities] = React.useState([]);
-  const [locality, setLocality, formData, , setValues, , , ,] =
+  const [locality, setLocality, , , setValues, , , ,] =
     React.useContext(StamdataContext);
   console.log("context locality: " + locality);
-  const locationNames = (features) => {
-    const names = features.map((l) => l.loc_name);
-    return [...new Set(names)];
-  };
 
   const populateFormData = (features, locname) => {
     const locData = features.find((f) => f.loc_name === locname);
@@ -90,9 +75,6 @@ function LocationChooser({ setLocationDialogOpen }) {
     }
   };
 
-  const locationItems = locationNames(localities).map((name) => (
-    <MenuItem value={name}>{name}</MenuItem>
-  ));
   const loc_items = _.uniqBy(localities, "loc_id");
   const handleChange = (event) => {
     const value =
@@ -100,8 +82,6 @@ function LocationChooser({ setLocationDialogOpen }) {
     setLocality(value);
     populateFormData(localities, value);
   };
-
-  const handleClear = (event) => {};
 
   useEffect(() => {
     getStamData().then((res) => setLocalities(res.data.data));
@@ -202,7 +182,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   const [, , formData, , , , , , saveUdstyrFormData] =
     React.useContext(StamdataContext);
 
-  const theme = useTheme();
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
   const [openAlert, setOpenAlert] = useState(false);

@@ -58,7 +58,7 @@ export default function SimpleTabs() {
     rootMargin: "0px",
     threshold: 1.0,
   });
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     getTableData(sessionStorage.getItem("session_id")).then((res) => {
@@ -95,7 +95,11 @@ export default function SimpleTabs() {
         <Tab icon={KortIcon} />
       </Tabs>
       <TabPanel value={locationContext.tabValue} index={0}>
-        {matches ? <StationList data={data} /> : <StationListDesktop />}
+        {matches ? (
+          <StationList data={data} />
+        ) : (
+          <StationListDesktop data={data} />
+        )}
       </TabPanel>
       <TabPanel value={locationContext.tabValue} index={1}>
         <Map />

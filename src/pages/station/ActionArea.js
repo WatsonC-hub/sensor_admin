@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import {
-  AddCircle,
-  EditRounded,
-  PhotoCameraRounded,
-  Straighten,
-} from "@material-ui/icons";
+import { AddCircle, EditRounded, Straighten } from "@material-ui/icons";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 
@@ -63,14 +58,13 @@ export default function ActionArea({ formToShow, setFormToShow, canEdit }) {
 }
 
 function BottomNav({ setFormToShow, canEdit }) {
-  const [value, _] = useState(-1);
   const classes = useStyles();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <BottomNavigation
       className={classes.root}
-      value={value}
+      value={-1}
       onChange={(event, newValue) => {
         if (newValue === 0) {
           setFormToShow("ADDPEJLING");

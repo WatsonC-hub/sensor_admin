@@ -68,6 +68,7 @@ export default function Station({
   const [updated, setUpdated] = useState(new Date());
   const [measurements, setMeasurements] = useState([]);
   const [watlevmp, setWatlevmp] = useState([]);
+  const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
 
   useEffect(() => {
@@ -86,18 +87,36 @@ export default function Station({
   }, [stationId]);
 
   useEffect(() => {
-    getMeasurements(stationId, sessionStorage.getItem("session_id")).then(
-      (res) => {
-        setMeasurements(res.data.result);
-      }
-    );
+    if (stationId !== -1 && stationId !== null) {
+      getMeasurements(stationId, sessionStorage.getItem("session_id")).then(
+        (res) => {
+          setMeasurements(res.data.result);
+        }
+      );
+    }
   }, [updated, stationId]);
 
   useEffect(() => {
-    getMP(stationId, sessionStorage.getItem("session_id")).then((res) => {
-      setWatlevmp(res.data.result);
-    });
+    if (stationId !== -1 && stationId !== null) {
+      getMP(stationId, sessionStorage.getItem("session_id")).then((res) => {
+        setWatlevmp(res.data.result);
+      });
+    }
   }, [updated, stationId]);
+
+  useEffect(() => {
+    if (measurements.length > 0 && watlevmp.length > 0) {
+      setcontrol(
+        measurements.map((e) => {
+          const elev = watlevmp.filter((e2) => {
+            return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
+          })[0].elevation;
+
+          return { ...e, waterlevel: elev - e.disttowatertable_m };
+        })
+      );
+    }
+  }, [watlevmp, measurements]);
 
   const changePejlingData = (field, value) => {
     setPejlingData({
@@ -226,10 +245,12 @@ export default function Station({
     // <>
     <div>
       {(formToShow === null || formToShow === "ADDPEJLING") && (
-        <BearingGraph stationId={stationId} updated={updated} />
+        <BearingGraph
+          stationId={stationId}
+          updated={updated}
+          measurements={control}
+        />
       )}
-      <Grid item xs={12}></Grid>
-      <Grid item xs={12}></Grid>
       {formToShow === "ADDPEJLING" && (
         <PejlingForm
           stationId={stationId}
@@ -272,7 +293,6 @@ export default function Station({
           canEdit={canEdit}
         />
       )}
-
       <ActionArea
         open={open}
         stationId={stationId}

@@ -3,7 +3,6 @@ import {
   Container,
   Grid,
   Typography,
-  TextField,
   Button,
   Select,
   MenuItem,
@@ -22,12 +21,7 @@ import OwnDatePicker from "../../components/OwnDatePicker";
 import LocalityForm from "../Stamdata/components/LocalityForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
-import {
-  getStamdataByStation,
-  getUnitHistory,
-  takeHomeEquipment,
-  updateStamdata,
-} from "../../api";
+import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
 import { StamdataContext } from "../Stamdata/StamdataContext";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -126,7 +120,7 @@ const UdstyrReplace = ({ stationId }) => {
     );
   };
 
-  const [, , formData, , , , , setUdstyrValue, saveUdstyrFormData] =
+  const [, , formData, , , , , , saveUdstyrFormData] =
     React.useContext(StamdataContext);
 
   const flex1 = {
@@ -222,7 +216,6 @@ export default function EditStamdata({ setFormToShow, stationId }) {
   5. show that data is loading (login, dropdown .... ) 
   */
   const [, , formData, , , , ,] = React.useContext(StamdataContext);
-  const theme = useTheme();
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
 

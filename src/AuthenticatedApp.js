@@ -48,6 +48,7 @@ function AuthenticatedApp({ setUser }) {
 
   const handleLogout = () => {
     sessionStorage.removeItem("session_id");
+    sessionStorage.removeItem("user");
     setSessionId(null);
     setUser(null);
   };
@@ -113,7 +114,7 @@ function AuthenticatedApp({ setUser }) {
         </AppBar>
         <Switch>
           <Route path="/" exact>
-            <SimpleTabs setUser={setUser} />
+            <SimpleTabs />
           </Route>
           <Route path="/location/:locid/:statid">
             <LocationDrawer />

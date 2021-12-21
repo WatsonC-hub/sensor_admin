@@ -7,7 +7,6 @@ import Typography from "@material-ui/core/Typography";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
-import { getTableData } from "../../api";
 import LocationContext from "../../context/LocationContext";
 import { CircularProgress } from "@material-ui/core";
 

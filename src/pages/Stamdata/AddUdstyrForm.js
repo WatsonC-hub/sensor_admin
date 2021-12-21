@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -9,13 +8,9 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DateFnsUtils from "@date-io/date-fns";
 import daLocale from "date-fns/locale/da";
 import { getAvailableUnits } from "../../api";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { MenuItem, useTheme } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
-import SaveIcon from "@material-ui/icons/Save";
 import OwnDatePicker from "../../components/OwnDatePicker";
 
 export default function AddUdstyrForm({
@@ -94,11 +89,11 @@ export default function AddUdstyrForm({
   };
 
   useEffect(() => {
-    getAvailableUnits().then((res) => {
+    getAvailableUnits(sessionStorage.getItem("session_id")).then((res) => {
       if (typeof res === "undefined") {
         setAvailableUnits([]);
       } else {
-        setAvailableUnits(res);
+        setAvailableUnits(res.data.result);
       }
     });
   }, []);

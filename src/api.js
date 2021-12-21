@@ -46,7 +46,7 @@ const getTableData = (sessionId) => {
 // const getSingleElem = () => getData("getSingleElem");
 
 const getStations = (locid, sessionId) => {
-  const url = `${extEndpoint}/station/${locid}/${sessionId}`;
+  const url = `${extEndpoint}/station/${locid}?session_id=${sessionId}`;
   const data = axios.get(url);
   return data;
 };
@@ -62,7 +62,7 @@ const getControlData = (stationId) => {
 };
 
 const getGraphData = (stationId) => {
-  const sql = `${endpoint}SELECT * FROM sensor.sensordata_view WHERE station=${stationId} ORDER BY timeofmeas DESC`;
+  const sql = `${endpoint}SELECT * FROM calypso_stationer.sensordata_station_json WHERE ts_id=${stationId}`;
   return axios.get(sql);
 };
 
@@ -123,8 +123,8 @@ const getStationTypes = () =>
     `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
   );
 
-const getAvailableUnits = () =>
-  axios.get(`${extEndpoint}/stamdata/units`).then((res) => res.data.data);
+const getAvailableUnits = (sessionId) =>
+  axios.get(`${extEndpoint}/stamdata/units?session_id=${sessionId}`);
 
 const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
 
