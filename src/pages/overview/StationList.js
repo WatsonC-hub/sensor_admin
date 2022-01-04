@@ -68,6 +68,8 @@ const getStatusComp = (status) => {
   switch (status) {
     case "#00FF00":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
+    case null:
+      return <CheckCircleIcon style={{ color: "grey" }} />;
     default:
       return <PriorityHighIcon style={{ color: status }} />;
   }

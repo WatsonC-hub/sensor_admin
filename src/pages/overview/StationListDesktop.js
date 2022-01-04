@@ -62,6 +62,8 @@ const getStatusComp = (status) => {
   switch (status) {
     case "#00FF00":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
+    case null:
+      return <CheckCircleIcon style={{ color: "grey" }} />;
     default:
       return <PriorityHighIcon style={{ color: status }} />;
   }
@@ -113,7 +115,7 @@ const columns = [
   // { name: "customer_name", title: "Ejer", width: 200 },
   {
     name: "color",
-    title: "Alarm",
+    title: "Status",
   },
 ];
 
@@ -139,15 +141,28 @@ export default function StationListDesktop({ data }) {
   }, [data]);
 
   let rows = data
-    .map((elem, index) => ({
-      ...elem,
-      station_loc_id: elem.loc_id + "_" + elem.ts_id,
-      id: index,
-    }))
+    .map((elem, index) => {
+      var text = elem.opgave;
+      switch (elem.color) {
+        case "#00FF00":
+          text = "Ok";
+          break;
+        case null:
+          text = "Inaktiv";
+          break;
+      }
+      return {
+        ...elem,
+        station_loc_id: elem.loc_id + "_" + elem.ts_id,
+        id: index,
+        opgave: text,
+      };
+    })
     .filter((elem) => {
       return elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase());
     });
 
+  console.log(data);
   return (
     <div>
       <TextField
