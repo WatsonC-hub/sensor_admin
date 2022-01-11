@@ -88,35 +88,28 @@ export default function Station({
 
   useEffect(() => {
     if (stationId !== -1 && stationId !== null) {
-      getMeasurements(stationId, sessionStorage.getItem("session_id")).then(
-        (res) => {
-          setMeasurements(res.data.result);
-        }
+      const mp = getMP(stationId, sessionStorage.getItem("session_id"));
+      const meas = getMeasurements(
+        stationId,
+        sessionStorage.getItem("session_id")
       );
-    }
-  }, [updated, stationId]);
+      Promise.all([mp, meas]).then((responses) => {
+        const measures = responses[1].data.result;
+        const mps = responses[0].data.result;
+        setMeasurements(measures);
+        setWatlevmp(mps);
+        setcontrol(
+          measures.map((e) => {
+            const elev = mps.filter((e2) => {
+              return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
+            })[0].elevation;
 
-  useEffect(() => {
-    if (stationId !== -1 && stationId !== null) {
-      getMP(stationId, sessionStorage.getItem("session_id")).then((res) => {
-        setWatlevmp(res.data.result);
+            return { ...e, waterlevel: elev - e.disttowatertable_m };
+          })
+        );
       });
     }
   }, [updated, stationId]);
-
-  useEffect(() => {
-    if (measurements.length > 0 && watlevmp.length > 0) {
-      setcontrol(
-        measurements.map((e) => {
-          const elev = watlevmp.filter((e2) => {
-            return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
-          })[0].elevation;
-
-          return { ...e, waterlevel: elev - e.disttowatertable_m };
-        })
-      );
-    }
-  }, [watlevmp, measurements]);
 
   const changePejlingData = (field, value) => {
     setPejlingData({
@@ -156,9 +149,6 @@ export default function Station({
     setFormToShow("ADDMAALEPUNKT");
   };
 
-  // const showGraph =
-  //   stationId !== -1 && (formToShow === null || formToShow === "ADDPEJLING");
-  // const showMeasurements = formToShow === null || formToShow === "ADDPEJLING";
   console.log(stationId);
 
   const handlePejlingSubmit = (stationId) => {

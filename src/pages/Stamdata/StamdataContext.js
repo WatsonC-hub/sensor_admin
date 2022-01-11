@@ -51,7 +51,7 @@ const StamdataProvider = (props) => {
   const [locality, setLocality] = React.useState(0);
 
   const setLocationValue = (key, value) => {
-    console.log("setlocationvalue: ", key, "=>", value);
+    // console.log("setlocationvalue: ", key, "=>", value);
     setFormData((formData) => ({
       ...formData,
       location: {

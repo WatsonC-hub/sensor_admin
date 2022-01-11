@@ -21,7 +21,9 @@ export default function LocalityForm() {
           type="text"
           label="Navn"
           value={formData.location.loc_name}
-          onChange={(event) => setLocationValue("loc_name", event.target.value)}
+          onChange={(event) => {
+            setLocationValue("loc_name", event.target.value);
+          }}
           InputLabelProps={{ shrink: true }}
           fullWidth
           placeholder="f.eks. Brabrand_1"

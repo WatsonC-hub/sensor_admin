@@ -51,7 +51,6 @@ export default function SimpleTabs() {
   const classes = useStyles();
   const locationContext = useContext(LocationContext);
   const theme = useTheme();
-  console.log(theme.breakpoints);
   const matches = useMediaQuery(theme.breakpoints.down("xs"));
   const [containerRef, isTabVisible] = useElementVisible({
     root: null,

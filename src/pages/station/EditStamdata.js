@@ -46,12 +46,13 @@ const UnitEndDateDialog = ({
   stationId,
 }) => {
   const [date, setdate] = useState(new Date());
+
   const handleDateChange = (date) => {
     setdate(date);
-    setUnit({
-      ...unit,
-      slutdato: date,
-    });
+    // setUnit({
+    //   ...unit,
+    //   slutdato: date,
+    // });
   };
 
   return (
@@ -71,7 +72,7 @@ const UnitEndDateDialog = ({
               variant="contained"
               startIcon={<SaveIcon />}
               onClick={() => {
-                const payload = { ...unit, ts_id: stationId };
+                const payload = { ...unit, ts_id: stationId, slutdato: date };
                 payload.startdate = formatedTimestamp(
                   new Date(Date.parse(payload.startdato))
                 );
@@ -105,10 +106,13 @@ const UnitEndDateDialog = ({
   );
 };
 
-const UdstyrReplace = ({ stationId }) => {
+const UdstyrReplace = ({ stationId, selected, setselected }) => {
   // const [unit, setUnit] = useState({ gid: 0 });
-  const [latestUnit, setLatestUnit] = useState({ gid: 0 });
-  const [selected, setselected] = useState(-1);
+  const [latestUnit, setLatestUnit] = useState({
+    gid: 0,
+    slutdato: "2099-01-01",
+  });
+  // const [selected, setselected] = useState(-1);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
 
@@ -133,15 +137,17 @@ const UdstyrReplace = ({ stationId }) => {
 
   useEffect(() => {
     console.log("RUN");
-    getUnitHistory(stationId).then((res) => {
-      if (res.data.success) {
-        console.log(res.data.data);
-        setData(res.data.data);
-        // setUnit(res.data.data[0]);
-        setLatestUnit(res.data.data[0]);
-        setselected(res.data.data[0].gid);
-      }
-    });
+    console.log(stationId);
+    if (stationId !== -1) {
+      getUnitHistory(stationId).then((res) => {
+        if (res.data.success) {
+          console.log(res.data.data);
+          setData(res.data.data);
+          setLatestUnit(res.data.data[0]);
+          setselected(res.data.data[0].gid);
+        }
+      });
+    }
   }, [stationId, openDialog]);
 
   return (
@@ -168,7 +174,7 @@ const UdstyrReplace = ({ stationId }) => {
         </div>
       </Grid>
       <Grid item xs={12} sm={6}>
-        {latestUnit.slutdato > "2098-01-01" ? (
+        {new Date(latestUnit.slutdato) > new Date() ? (
           <Button
             color="secondary"
             variant="contained"
@@ -218,9 +224,13 @@ export default function EditStamdata({ setFormToShow, stationId }) {
   const [, , formData, , , , ,] = React.useContext(StamdataContext);
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
+  const [selectedUnit, setSelectedUnit] = useState(-1);
 
   const handleSubmit = () => {
-    updateStamdata(formData, sessionStorage.getItem("session_id"))
+    updateStamdata(
+      { ...formData, udstyr: { ...formData.udstyr, gid: selectedUnit } },
+      sessionStorage.getItem("session_id")
+    )
       .then((res) => {
         console.log(res);
         setSeverity("success");
@@ -255,7 +265,11 @@ export default function EditStamdata({ setFormToShow, stationId }) {
         <Typography>Station</Typography>
         <StationForm />
 
-        <UdstyrReplace stationId={stationId} />
+        <UdstyrReplace
+          stationId={stationId}
+          selected={selectedUnit}
+          setselected={setSelectedUnit}
+        />
         <UdstyrForm mode={"edit"} />
         <Grid container spacing={3}>
           <Grid item xs={4} sm={2}>

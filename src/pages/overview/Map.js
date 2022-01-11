@@ -209,9 +209,16 @@ function Map() {
     if (data) {
       data.forEach((element) => {
         const point = [element.lat, element.long];
+        console.log();
         const marker = L.marker(point, {
           icon: element.status ? stationIcon : inactiveIcon,
-        }).bindPopup(element.mouseover + "<a>Se graf</a>");
+        }).bindPopup(
+          element.mouseover.split(
+            '<b style="color:#10ae8c;">-----------</b>'
+          )[0] +
+            "</p>" +
+            "<a>Se graf</a>"
+        );
         marker.on("click", onClickHandler(element));
         marker.addTo(layerRef.current);
       });
