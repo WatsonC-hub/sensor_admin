@@ -1,50 +1,84 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Container,
   Grid,
   Typography,
   TextField,
   Button,
   Card,
   CardContent,
-  CardActions,
   Radio,
   RadioGroup,
   FormControlLabel,
   FormControl,
   FormLabel,
+  useTheme,
 } from "@material-ui/core";
 import DateFnsUtils from "@date-io/date-fns";
-import { isValid, format } from "date-fns";
+import { isValid } from "date-fns";
 import daLocale from "date-fns/locale/da";
 import {
   MuiPickersUtilsProvider,
   KeyboardTimePicker,
   KeyboardDatePicker,
+  DateTimePicker,
 } from "@material-ui/pickers";
+import { InputAdornment } from "@material-ui/core";
+import moment from "moment";
+import SaveIcon from "@material-ui/icons/Save";
+import OwnDatePicker from "./OwnDatePicker";
 
 export default function PejlingForm({
   stationId,
-  setShowForm,
   formData,
   changeFormData,
   handleSubmit,
   resetFormData,
+  mpData,
 }) {
   const [currDate, setCurrDate] = useState(formData.timeofmeas);
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
+  const [currentMP, setCurrentMP] = useState({
+    elevation: 0,
+    mp_description: "",
+  });
+
+  useEffect(() => {
+    if (mpData.length > 0) {
+      setCurrentMP(
+        mpData.filter((elem) => {
+          if (
+            moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
+            moment(formData.timeofmeas).isBefore(elem.enddate)
+          ) {
+            return true;
+          }
+        })[0]
+      );
+    }
+  }, [formData.gid, mpData]);
 
   const handleDateChange = (date) => {
     if (isValid(date)) {
       setCurrDate(date);
     }
-    //only change submit data when date is valid
     if (isValid(date)) {
       console.log("date is valid again: ", date);
       changeFormData("timeofmeas", date);
     }
+    console.log("test");
+
+    setCurrentMP(
+      mpData.filter((elem) => {
+        if (
+          moment(date).isAfter(elem.startdate) &&
+          moment(date).isBefore(elem.enddate)
+        ) {
+          return true;
+        }
+      })[0]
+    );
   };
 
   const handleCommentChange = (e) => {
@@ -59,82 +93,85 @@ export default function PejlingForm({
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
       <Card style={{ marginBottom: 25 }}>
         <CardContent>
-          <Typography gutterBottom variant='h5' component='h2'>
-            Indberet pejling
+          <Typography gutterBottom variant="h5" component="h2">
+            {formData.gid !== -1 ? "Opdater pejling" : "Indberet pejling"}
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <KeyboardDatePicker
-                disableToolbar
-                variant='inline'
-                inputProps={{ readOnly: true }}
-                inputVariant='outlined'
-                format='yyyy-MM-dd'
-                margin='normal'
-                id='date-picker-inline'
-                label={
-                  <Typography variant='h6' component='h3'>
-                    Dato
-                  </Typography>
-                }
-                InputLabelProps={{ shrink: true }}
-                value={new Date(currDate)}
+              <OwnDatePicker
+                label="Start dato"
+                value={formData.timeofmeas}
                 onChange={(date) => handleDateChange(date)}
-                KeyboardButtonProps={{
-                  "aria-label": "change date",
-                }}
-                fullWidth
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <KeyboardTimePicker
-                placeholder={currDate}
-                inputVariant='outlined'
-                inputProps={{ readOnly: true }}
-                margin='normal'
-                id='overnat_start_tid'
-                label={
-                  <Typography variant='h6' component='h3'>
-                    Tidspunkt
-                  </Typography>
-                }
-                InputLabelProps={{ shrink: true }}
-                value={new Date(currDate)}
-                onChange={(date) => handleDateChange(date)}
-                KeyboardButtonProps={{
-                  "aria-label": "change time",
-                }}
-                fullWidth
-                ampm={false}
-              />
-            </Grid>
-            <Grid item xs={12} sm={8}>
               <TextField
-                type='number'
-                variant='outlined'
+                type="number"
+                variant="outlined"
                 label={
-                  <Typography variant='h6' component='h3'>
-                    pejling
+                  <Typography variant="h6" component="h3">
+                    Pejling (nedstik)
                   </Typography>
                 }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">m</InputAdornment>
+                  ),
+                }}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={formData.disttowatertable_m}
                 onChange={handleDistanceChange}
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <Typography>Afstand fra pejlpunktskote til vandspejl</Typography>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                type="number"
+                variant="outlined"
+                disabled={true}
+                label={
+                  <Typography variant="h6" component="h3">
+                    Målepunktskote
+                  </Typography>
+                }
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="start">m</InputAdornment>
+                  ),
+                  style: { color: "black" },
+                }}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                value={currentMP.elevation}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                type="text"
+                variant="outlined"
+                disabled={true}
+                label={
+                  <Typography variant="h6" component="h3">
+                    Målepunkt placering
+                  </Typography>
+                }
+                InputProps={{
+                  style: { color: "black" },
+                }}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+                value={currentMP.mp_description}
+              />
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
                 label={
-                  <Typography variant='h6' component='h3'>
+                  <Typography variant="h6" component="h3">
                     Kommentar
                   </Typography>
                 }
                 value={formData.comment}
-                variant='outlined'
+                variant="outlined"
                 multiline
                 rows={4}
                 InputLabelProps={{ shrink: true }}
@@ -143,8 +180,8 @@ export default function PejlingForm({
               />
             </Grid>
             <Grid item xs={12} sm={12}>
-              <FormControl component='fieldset'>
-                <FormLabel component='h6'>
+              <FormControl component="fieldset">
+                <FormLabel component="h6">
                   Hvordan skal pejlingen anvendes?
                 </FormLabel>
                 <RadioGroup
@@ -152,19 +189,19 @@ export default function PejlingForm({
                   onChange={handleUsageChange}
                 >
                   <FormControlLabel
-                    value='0'
+                    value="0"
                     control={<Radio />}
-                    label='(0) Anvendes ikke'
+                    label="Kontrol"
                   />
                   <FormControlLabel
-                    value='1'
+                    value="1"
                     control={<Radio />}
-                    label='(1) Anvendes til korrektion fremadrettet'
+                    label="Korrektion fremadrettet"
                   />
                   <FormControlLabel
-                    value='2'
+                    value="2"
                     control={<Radio />}
-                    label='(2) Anvendes til korrektion bagud og fremadrettet'
+                    label="Korrektion bagud og fremadrettet"
                   />
                 </RadioGroup>
               </FormControl>
@@ -173,8 +210,10 @@ export default function PejlingForm({
             <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
-                style={{ backgroundColor: "#ffa137" }}
+                color="secondary"
+                variant="contained"
                 onClick={() => handleSubmit(stationId)}
+                startIcon={<SaveIcon />}
               >
                 Gem
               </Button>
@@ -182,7 +221,8 @@ export default function PejlingForm({
             <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
-                style={{ backgroundColor: "#ffa137" }}
+                color="secondary"
+                variant="contained"
                 onClick={resetFormData}
               >
                 Annuler

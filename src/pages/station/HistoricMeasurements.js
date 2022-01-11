@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -6,11 +6,14 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import { Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import TablePagination from "@material-ui/core/TablePagination";
+import { IconButton, Typography } from "@material-ui/core";
 import DeleteAlert from "./DeleteAlert";
-import LocationContext from "../../LocationContext";
+import LocationContext from "../../context/LocationContext";
 import { Fragment } from "react";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
+import moment from "moment";
 
 const useStyles = makeStyles({
   table: {
@@ -27,7 +30,12 @@ export default function HistoricMeasurements({
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
-  const context = useContext(LocationContext);
+  const [page, setPage] = React.useState(0);
+  const rowsPerPage = 5;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
@@ -38,6 +46,12 @@ export default function HistoricMeasurements({
     handleDelete(id);
   };
 
+  const correction_map = {
+    0: "Kontrol",
+    1: "Korrektion fremadrettet",
+    2: "Korrektion frem og tilbage",
+  };
+
   return (
     <Fragment>
       <DeleteAlert
@@ -46,48 +60,65 @@ export default function HistoricMeasurements({
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant='h5' component='h2'>
+      <Typography gutterBottom variant="h5" component="h2">
         Kontrolmålinger
       </Typography>
       <TableContainer>
-        <Table className={classes.table} aria-label='simple table'>
+        <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Dato</TableCell>
-              <TableCell align='right'>Pejling</TableCell>
-              <TableCell align='right'>Anvendelse</TableCell>
-              <TableCell align='right'>Kommentar</TableCell>
+              <TableCell align="right">Pejling (nedstik) [m]</TableCell>
+              <TableCell align="right">Anvendelse</TableCell>
+              <TableCell align="right">Kommentar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {measurements.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell component='th' scope='row'>
-                  {row.timeofmeas}
-                </TableCell>
-                <TableCell align='right'>{row.disttowatertable_m}</TableCell>
-                <TableCell align='right'>{row.useforcorrection}</TableCell>
-                <TableCell align='right'>{row.comment}</TableCell>
-                <TableCell align='right'>
-                  <Button onClick={() => handleEdit(row)} disabled={!canEdit}>
-                    Edit
-                  </Button>
-                </TableCell>
-                <TableCell align='right'>
-                  <Button
-                    onClick={() => {
-                      onDeleteBtnClick(row.gid);
-                    }}
-                    disabled={!canEdit}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {measurements
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row">
+                    {moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
+                  </TableCell>
+                  <TableCell align="right">{row.disttowatertable_m}</TableCell>
+                  <TableCell align="right">
+                    {correction_map[row.useforcorrection]
+                      ? correction_map[row.useforcorrection]
+                      : "Kontrol"}
+                  </TableCell>
+                  <TableCell align="right">{row.comment}</TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() => handleEdit(row)}
+                      disabled={!canEdit}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() => {
+                        onDeleteBtnClick(row.gid);
+                      }}
+                      disabled={!canEdit}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[5]}
+        component="div"
+        count={measurements.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+      />
     </Fragment>
   );
 }

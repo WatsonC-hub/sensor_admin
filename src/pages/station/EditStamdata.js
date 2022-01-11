@@ -1,313 +1,309 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Grid,
   Typography,
-  TextField,
   Button,
-  Card,
-  CardContent,
-  CardActions,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
+  Select,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  useTheme,
 } from "@material-ui/core";
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
 import daLocale from "date-fns/locale/da";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
-import { makeStyles } from "@material-ui/core/styles";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import OwnDatePicker from "../../components/OwnDatePicker";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    flexBasis: "33.33%",
-    flexShrink: 0,
-  },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-}));
+import LocalityForm from "../Stamdata/components/LocalityForm";
+import StationForm from "../Stamdata/components/StationForm";
+import UdstyrForm from "../Stamdata/components/UdstyrForm";
+import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
+import { StamdataContext } from "../Stamdata/StamdataContext";
+import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import SaveIcon from "@material-ui/icons/Save";
 
-function Locality(props) {
-  return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Navn'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='X-koordinat (UTM)'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Y-koordinat (UTM)'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Terrænkote'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-    </Grid>
-  );
+function formatedTimestamp(d) {
+  const date = d.toISOString().split("T")[0];
+  const time = d.toTimeString().split(" ")[0];
+  return `${date} ${time}`;
 }
 
-function StationForm(props) {
-  return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Navn'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Type'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label=' Målepunktskote'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Evt. loggerdybde'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-    </Grid>
-  );
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function UdstyrForm(props) {
-  return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Terminal'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Terminal ID'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='CALYPSO ID'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Sensor'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant='outlined'
-          type='text'
-          label='Sensor ID'
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          margin='dense'
-        />
-      </Grid>
-    </Grid>
-  );
-}
+const UnitEndDateDialog = ({
+  openDialog,
+  setOpenDialog,
+  unit,
+  setUnit,
+  stationId,
+}) => {
+  const [date, setdate] = useState(new Date());
 
-function EditStamdata() {
-  const classes = useStyles();
-  const [expanded, setExpanded] = React.useState("panel1");
-
-  const handleChange = (panel) => (event, isExpanded) => {
-    setExpanded(isExpanded ? panel : false);
+  const handleDateChange = (date) => {
+    setdate(date);
+    // setUnit({
+    //   ...unit,
+    //   slutdato: date,
+    // });
   };
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
-      <Typography variant='h6' component='h3'>
-        Stamdata
-      </Typography>
-      <div className={classes.root}>
-        <Accordion
-          expanded={expanded === "panel1"}
-          onChange={handleChange("panel1")}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls='panel1bh-content'
-            id='panel1bh-header'
-          >
-            <Typography className={classes.heading}>Lokalitet</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Locality />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion
-          expanded={expanded === "panel2"}
-          onChange={handleChange("panel2")}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls='panel2bh-content'
-            id='panel2bh-header'
-          >
-            <Typography className={classes.heading}>Station</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <StationForm />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion
-          expanded={expanded === "panel3"}
-          onChange={handleChange("panel3")}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls='panel3bh-content'
-            id='panel3bh-header'
-          >
-            <Typography className={classes.heading}>Udstyr</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <UdstyrForm />
-          </AccordionDetails>
-        </Accordion>
-        <Accordion
-          expanded={expanded === "panel4"}
-          onChange={handleChange("panel4")}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls='panel4bh-content'
-            id='panel4bh-header'
-          >
-            <Typography className={classes.heading}>Period</Typography>
-          </AccordionSummary>
-          <AccordionDetails></AccordionDetails>
-        </Accordion>
-      </div>
+      <Dialog open={openDialog}>
+        <DialogTitle>Angiv slutdato</DialogTitle>
+        <DialogContent>
+          <OwnDatePicker
+            label="Fra"
+            value={date}
+            onChange={(date) => handleDateChange(date)}
+          />
+          <DialogActions item xs={4} sm={2}>
+            <Button
+              autoFocus
+              color="secondary"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              onClick={() => {
+                const payload = { ...unit, ts_id: stationId, slutdato: date };
+                payload.startdate = formatedTimestamp(
+                  new Date(Date.parse(payload.startdato))
+                );
+                payload.enddate = formatedTimestamp(
+                  new Date(Date.parse(payload.slutdato))
+                );
+
+                takeHomeEquipment(
+                  unit.gid,
+                  payload,
+                  sessionStorage.getItem("session_id")
+                ).then((res) => setOpenDialog(false));
+              }}
+            >
+              Gem
+            </Button>
+            <Button
+              autoFocus
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                setOpenDialog(false);
+              }}
+            >
+              Annuller
+            </Button>
+          </DialogActions>
+        </DialogContent>
+      </Dialog>
     </MuiPickersUtilsProvider>
   );
-}
+};
 
-export default function RestStamdata(props) {
+const UdstyrReplace = ({ stationId, selected, setselected }) => {
+  // const [unit, setUnit] = useState({ gid: 0 });
+  const [latestUnit, setLatestUnit] = useState({
+    gid: 0,
+    slutdato: "2099-01-01",
+  });
+  // const [selected, setselected] = useState(-1);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
+
+  const handleChange = (event) => {
+    // setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
+    setselected(event.target.value);
+    saveUdstyrFormData(
+      data.filter((elem) => elem.gid === event.target.value)[0]
+    );
+  };
+
+  const [, , formData, , , , , , saveUdstyrFormData] =
+    React.useContext(StamdataContext);
+
+  const flex1 = {
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+  };
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    console.log("RUN");
+    console.log(stationId);
+    if (stationId !== -1) {
+      getUnitHistory(stationId).then((res) => {
+        if (res.data.success) {
+          console.log(res.data.data);
+          setData(res.data.data);
+          setLatestUnit(res.data.data[0]);
+          setselected(res.data.data[0].gid);
+        }
+      });
+    }
+  }, [stationId, openDialog]);
+
+  return (
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={6}>
+        <div style={flex1}>
+          <Typography>Udstyr</Typography>
+          <Select value={selected} onChange={handleChange}>
+            {data.map((item) => {
+              let endDate =
+                new Date() < new Date(item.slutdato)
+                  ? "nu"
+                  : formatedTimestamp(new Date(item.slutdato));
+
+              return (
+                <MenuItem key={item.gid} value={item.gid}>
+                  {`${formatedTimestamp(
+                    new Date(item.startdato)
+                  )} - ${endDate}`}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </div>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        {new Date(latestUnit.slutdato) > new Date() ? (
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              setOpenDialog(true);
+            }}
+          >
+            Hjemtag udstyr
+          </Button>
+        ) : (
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              setOpenAddUdstyr(true);
+            }}
+          >
+            Tilføj udstyr
+          </Button>
+        )}
+      </Grid>
+      <UnitEndDateDialog
+        openDialog={openDialog}
+        setOpenDialog={setOpenDialog}
+        unit={latestUnit}
+        setUnit={setLatestUnit}
+        stationId={stationId}
+      />
+      <AddUdstyrForm
+        udstyrDialogOpen={openAddUdstyr}
+        setUdstyrDialogOpen={setOpenAddUdstyr}
+        tstype_id={formData.station.tstype_id}
+      />
+    </Grid>
+  );
+};
+
+export default function EditStamdata({ setFormToShow, stationId }) {
+  /*
+  TODO:
+  1. save data
+  2. Error handling if no data
+  3. hjemmetage udstyr component
+  4. Skift batteri
+  5. show that data is loading (login, dropdown .... ) 
+  */
+  const [, , formData, , , , ,] = React.useContext(StamdataContext);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [selectedUnit, setSelectedUnit] = useState(-1);
+
+  const handleSubmit = () => {
+    updateStamdata(
+      { ...formData, udstyr: { ...formData.udstyr, gid: selectedUnit } },
+      sessionStorage.getItem("session_id")
+    )
+      .then((res) => {
+        console.log(res);
+        setSeverity("success");
+        setOpenAlert(true);
+        setTimeout(() => {}, 1500);
+      })
+      .catch((error) => {
+        console.log(error);
+        setSeverity("error");
+        setOpenAlert(true);
+      });
+
+    // history.push("/");
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenAlert(false);
+  };
+
   return (
     <div>
-      <Typography variant='h6' component='h3'>
-        Stamdata
-      </Typography>
-      <Typography>Lokalitet</Typography>
-      <Locality />
-      <Typography>Station</Typography>
-      <StationForm />
-      <Typography>Udstyr</Typography>
-      <UdstyrForm />
-      <Typography>Period</Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={4} sm={2}>
-          <Button
-            autoFocus
-            style={{ backgroundColor: "#ffa137" }}
-            onClick={() => {
-              props.setFormToShow(null);
-            }}
-          >
-            Gem
-          </Button>
+      <Container fixed>
+        <Typography variant="h6" component="h3">
+          Stamdata
+        </Typography>
+        <Typography>Lokalitet</Typography>
+        <LocalityForm />
+        <Typography>Station</Typography>
+        <StationForm />
+
+        <UdstyrReplace
+          stationId={stationId}
+          selected={selectedUnit}
+          setselected={setSelectedUnit}
+        />
+        <UdstyrForm mode={"edit"} />
+        <Grid container spacing={3}>
+          <Grid item xs={4} sm={2}>
+            <Button
+              autoFocus
+              color="secondary"
+              variant="contained"
+              startIcon={<SaveIcon />}
+              onClick={handleSubmit}
+            >
+              Gem
+            </Button>
+          </Grid>
+          <Grid item xs={4} sm={2}>
+            <Button
+              autoFocus
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                setFormToShow(null);
+              }}
+            >
+              Annuller
+            </Button>
+          </Grid>
         </Grid>
-        <Grid item xs={4} sm={2}>
-          <Button
-            autoFocus
-            style={{ backgroundColor: "#ffa137" }}
-            onClick={() => {
-              props.setFormToShow(null);
-            }}
-          >
-            Annullere
-          </Button>
-        </Grid>
-      </Grid>
+      </Container>
+      <Snackbar open={openAlert} autoHideDuration={4000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={severity}>
+          {severity === "success"
+            ? "Opdatering af station lykkedes"
+            : "Opdatering af station fejlede"}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

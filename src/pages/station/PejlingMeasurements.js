@@ -6,7 +6,7 @@ import { useTheme } from "@material-ui/core/styles";
 
 export default function PejlingMeasurements(props) {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down("xs"));
 
   return matches ? (
     <MobileMeasurements {...props} />

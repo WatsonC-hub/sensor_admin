@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import Dialog from "@material-ui/core/Dialog";
-import Button from "@material-ui/core/Button";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { makeStyles } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import QrReader from "react-qr-scanner";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -22,27 +21,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction='up' ref={ref} {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function CaptureDialog({ handleClose, open }) {
   const classes = useStyles();
-  //   const [open, setOpen] = React.useState(false);
+  const history = useHistory();
 
-  //   const handleClickOpen = () => {
-  //     setOpen(true);
-  //   };
-
-  //   const handleClose = () => {
-  //     setOpen(false);
-  //   };
   const [result, setResult] = useState("no result");
 
   const handleScan = (data) => {
     if (data !== null) {
-      setResult(data["text"]);
-      console.log(data);
-      return;
+      const calypso_id = data["text"].split("/")[3];
+      console.log(calypso_id);
+      handleClose();
+      history.push(`${calypso_id}`);
     }
   };
 
@@ -50,12 +43,11 @@ export default function CaptureDialog({ handleClose, open }) {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    // marginTop: "-50px",
     flexDirection: "column",
   };
 
   const previewStyle = {
-    height: 300,
+    height: 600,
     width: 300,
     display: "flex",
     justifyContent: "center",
@@ -73,19 +65,13 @@ export default function CaptureDialog({ handleClose, open }) {
       <AppBar className={classes.appBar}>
         <Toolbar>
           <IconButton
-            edge='end'
-            color='inherit'
+            edge="end"
+            color="inherit"
             onClick={handleClose}
-            aria-label='close'
+            aria-label="close"
           >
             <CloseIcon />
           </IconButton>
-          {/* <Typography variant='h6' className={classes.title}>
-            Sound
-          </Typography> */}
-          {/* <Button autoFocus color='inherit' onClick={handleClose}>
-            save
-          </Button> */}
         </Toolbar>
       </AppBar>
       <div style={camStyle}>
@@ -95,7 +81,6 @@ export default function CaptureDialog({ handleClose, open }) {
           onError={handleError}
           onScan={handleScan}
         />
-        <p>{result}</p>
       </div>
     </Dialog>
   );

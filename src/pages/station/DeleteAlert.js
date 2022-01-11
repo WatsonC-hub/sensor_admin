@@ -2,8 +2,6 @@ import React from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 export default function DeleteAlert({
@@ -12,15 +10,7 @@ export default function DeleteAlert({
   onOkDelete,
   setDialogOpen,
 }) {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-    setDialogOpen(true);
-  };
-
   const handleClose = () => {
-    setOpen(false);
     setDialogOpen(false);
   };
 
@@ -34,19 +24,19 @@ export default function DeleteAlert({
       <Dialog
         open={dialogOpen}
         onClose={handleClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id='alert-dialog-title'>
+        <DialogTitle id="alert-dialog-title">
           {"Vil du slette den række?"}
         </DialogTitle>
 
         <DialogActions>
-          <Button onClick={handleClose} color='primary'>
-            Nej
-          </Button>
-          <Button onClick={handleOk} color='primary' autoFocus>
+          <Button onClick={handleOk} color="primary" autoFocus>
             Ja
+          </Button>
+          <Button autoFocus onClick={handleClose} color="primary">
+            Nej
           </Button>
         </DialogActions>
       </Dialog>
