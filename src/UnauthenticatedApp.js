@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { Switch, Route, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
 
 export default function UnAuntenticatedApp({ setUser }) {
+  const [registerDisabled, setRegisterDisabled] = useState(false);
+  const history = useHistory();
+  let location = useLocation();
+
   return (
-    <Router>
+    <div className="App">
       <AppBar position="sticky">
         <Toolbar
           style={{
@@ -18,13 +22,29 @@ export default function UnAuntenticatedApp({ setUser }) {
             justifyContent: "space-between",
           }}
         >
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={(event) => (window.location.href = "/")}
-          >
-            Log ind
-          </Button>
+          {location.pathname !== "/register" ? (
+            <Button
+              disabled={registerDisabled}
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                history.push("/register");
+                //setAddStationDisabled(true);
+              }}
+            >
+              Opret konto
+            </Button>
+          ) : (
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={
+                (e) => history.push("/") //context.setLocationId(-1)
+              }
+            >
+              Log ind
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
       <Switch>
@@ -32,9 +52,9 @@ export default function UnAuntenticatedApp({ setUser }) {
           <Login setUser={setUser} />
         </Route>
         <Route path="/register">
-          <Register />
+          <Register setRegisterDisabled={setRegisterDisabled} />
         </Route>
       </Switch>
-    </Router>
+    </div>
   );
 }

@@ -4,16 +4,19 @@ import { queries, testQueries } from "./config";
 let host;
 let extEndpoint;
 let endpoint;
+let userEndpoint;
 
 if (process.env.NODE_ENV === "development") {
   host = "http://localhost:8080";
   extEndpoint = "http://localhost:8080/extensions/sensor_app/api";
   endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc_clone/?q=`;
+  userEndpoint = "https://backend.calypso.watsonc.dk/rest/";
   // endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
 } else {
   host = "https://watsonc-test.admin.gc2.io";
   extEndpoint = "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
   endpoint = `https://watsonc-test.admin.gc2.io/api/v2/sql/watsonc/?q=`;
+  userEndpoint = "https://backend.calypso.watsonc.dk/rest/";
 }
 
 // const locHost = "http://localhost:8080";
@@ -137,6 +140,10 @@ const getStamdataByStation = (stationId) =>
 const getUnitHistory = (stationId) =>
   axios.get(`${extEndpoint}/stamdata/unithistory/${stationId}`);
 
+const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
+
+//const registerAcc = () => {};
+
 const loginUser = (user, password) => {
   let sessionUrl = `${host}/api/v2/session/start`;
   const loginData = {
@@ -172,6 +179,7 @@ export {
   postStamdata,
   getStamdataByStation,
   getUnitHistory,
+  getCvr,
   loginUser,
   getMP,
   deleteMP,

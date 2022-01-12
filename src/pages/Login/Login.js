@@ -105,7 +105,6 @@ export default function Login({ setUser }) {
           >
             Log på
           </Button>
-          <Link to="/register">Opret en konto her</Link>
         </form>
       </Container>
     </div>

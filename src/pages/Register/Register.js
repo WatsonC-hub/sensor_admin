@@ -1,9 +1,19 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import { getCvr } from "../../api";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -27,54 +37,87 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Register() {
   const classes = useStyles();
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailErr, setEmailErr] = useState(false);
+  const [cvr, setCvr] = useState("");
+  const [checked, setChecked] = useState(false);
+  const [open, setOpen] = useState(false);
 
-  // States for checking the errors
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(false);
+  const validEmail = new RegExp(
+    "^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$"
+  );
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (userName === "" || password === "") {
-      setError(true);
-    } else {
-      setSubmitted(true);
-      setError(false);
+  const validateEmail = () => {
+    if (!validEmail.test(email)) {
+      setEmailErr(true);
+    } else if (validEmail.test(email)) {
+      setEmailErr(false);
     }
   };
 
-  // Showing success message
-  const successMessage = () => {
-    return (
-      <div
-        className="success"
-        style={{
-          display: submitted ? "" : "none",
-          textAlign: "center",
-          alignSelf: "center",
-        }}
-      >
-        <h1>Bruger {userName} er nu registreret.</h1>
-      </div>
-    );
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const cvr = getCvr(cvr).then((res) => console.log(res));
+    if (
+      checked === true
+      // firstName === "" ||
+      // lastName === "" ||
+      // email === "" ||
+      // cvr === "" //||
+      // // checked == true
+    ) {
+      //console.log(res);
+
+      setSeverity("success");
+      setOpenAlert(true);
+      setTimeout(() => {}, 1500);
+    } else {
+      // console.log(error);
+      setSeverity("error");
+      setOpenAlert(true);
+    }
+
+    // registerAcc(formData)
+    //   .then((res) => {
+    //     setSeverity("success");
+    //     setOpenAlert(true);
+    //     setTimeout(() => {
+    //       history.push("/");
+    //     }, 1500);
+    //   })
+    //   .catch((error) => {
+    //     setSeverity("error");
+    //     setOpenAlert(true);
+    //   });
   };
 
-  const errorMessage = () => {
-    return (
-      <div
-        className="error"
-        style={{
-          display: error ? "" : "none",
-          color: "red",
-          textAlign: "center",
-          alignSelf: "center",
-        }}
-      >
-        <h1>Please enter all the fields</h1>
-      </div>
-    );
+  const handleChange = (event) => {
+    if (!checked)
+      setChecked({ ...checked, [event.target.name]: event.target.checked });
+    else if (checked) setChecked(checked == false);
   };
+
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+  };
+  // const handleClose = (event, reason) => {
+  //   if (reason === "clickaway") {
+  //     return;
+  //   }
+  //   setOpenAlert(false);
+  // };
 
   return (
     <div className="form">
@@ -94,43 +137,125 @@ export default function Register() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            autoComplete="email"
+            id="firstName"
+            label="Fornavn"
+            name="firstName"
+            autoComplete="firstName"
             autoFocus
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => setFirstName(e.target.value)}
           />
           <TextField
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)}
+            id="lastName"
+            label="Efternavn"
+            name="lastName"
+            autoComplete="lastName"
+            autoFocus
+            onChange={(e) => setLastName(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            onChange={(e) => setEmail(e.target.value)}
+            error={emailErr}
+            helperText={emailErr ? "Din email er ugyldig" : ""}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="cvr"
+            label="CVR"
+            name="cvr"
+            autoComplete="cvr"
+            autoFocus
+            onChange={(e) => setCvr(e.target.value)}
           />
 
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked.checked}
+                onChange={handleChange}
+                name="checkedTerms"
+                color="primary"
+              />
+            }
+            label={
+              <label>
+                Jeg accepterer Calypsos{" "}
+                <a href="https://watsonc.dk/privatlivspolitik/">vilkår</a>
+              </label>
+            }
+          />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            disabled={userName === "" || password === ""}
+            onClick={validateEmail}
+            disabled={
+              firstName === "" ||
+              lastName === "" ||
+              email === "" ||
+              cvr === "" ||
+              checked === false
+            }
           >
             Opret konto
           </Button>
         </form>
-        <Link to="/">Tilbage til login</Link>
       </Container>
-      <div className="messages">
-        {errorMessage()}
-        {successMessage()}
-      </div>
+      <Snackbar open={openAlert} autoHideDuration={4000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={severity}>
+          {severity === "success"
+            ? "Følg instrukserne i din email for at fuldføre oprettelsen"
+            : "Oprettelsen fejlede"}
+        </Alert>
+      </Snackbar>
+
+      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+        Open alert dialog
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Bekræft virksomhed"}
+        </DialogTitle>
+        <DialogContent>
+          <p>
+            Virksomheden er allerede oprettet. Der vil blive sendt en anmodning
+            til nedenstående virksomhed, om at du kan oprettes i denne.
+            Hvorefter du vil modtage en bekræftigelsesmail.
+          </p>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleClose}
+            variant="outlined"
+            color="primary"
+            autoFocus
+          >
+            Bekræft
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
