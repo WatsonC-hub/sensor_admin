@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { loginUser } from "../../api";
-import { useTheme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -27,41 +25,66 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login({ setUser }) {
+export default function Register() {
   const classes = useStyles();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState(false);
 
-  const theme = useTheme();
+  // States for checking the errors
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    loginUser(userName, password)
-      .then((res) => {
-        if (res.data.success) {
-          sessionStorage.setItem("user", res.data.data.screen_name);
-          sessionStorage.setItem("session_id", res.data.data.session_id);
-          console.log("user : ", res.data.data);
-          setUser(res.data.data);
-          setLoginError(false);
-        }
-      })
-      .catch((r) => {
-        setLoginError(true);
-        console.log("login error => ", r);
-      });
+    if (userName === "" || password === "") {
+      setError(true);
+    } else {
+      setSubmitted(true);
+      setError(false);
+    }
+  };
+
+  // Showing success message
+  const successMessage = () => {
+    return (
+      <div
+        className="success"
+        style={{
+          display: submitted ? "" : "none",
+          textAlign: "center",
+          alignSelf: "center",
+        }}
+      >
+        <h1>Bruger {userName} er nu registreret.</h1>
+      </div>
+    );
+  };
+
+  const errorMessage = () => {
+    return (
+      <div
+        className="error"
+        style={{
+          display: error ? "" : "none",
+          color: "red",
+          textAlign: "center",
+          alignSelf: "center",
+        }}
+      >
+        <h1>Please enter all the fields</h1>
+      </div>
+    );
   };
 
   return (
-    <div>
+    <div className="form">
       <div
         style={{
           textAlign: "center",
           alignSelf: "center",
         }}
       >
-        <h1>Login</h1>
+        <h1>Opret konto</h1>
       </div>
 
       <Container fixed maxWidth="sm">
@@ -77,7 +100,6 @@ export default function Login({ setUser }) {
             autoComplete="email"
             autoFocus
             onChange={(e) => setUserName(e.target.value)}
-            error={loginError}
           />
           <TextField
             variant="outlined"
@@ -90,11 +112,8 @@ export default function Login({ setUser }) {
             id="password"
             autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
-            error={loginError}
-            helperText={
-              loginError ? "brugernavn eller password er forkert." : ""
-            }
           />
+
           <Button
             type="submit"
             fullWidth
@@ -103,11 +122,15 @@ export default function Login({ setUser }) {
             className={classes.submit}
             disabled={userName === "" || password === ""}
           >
-            Log på
+            Opret konto
           </Button>
-          <Link to="/register">Opret en konto her</Link>
         </form>
+        <Link to="/">Tilbage til login</Link>
       </Container>
+      <div className="messages">
+        {errorMessage()}
+        {successMessage()}
+      </div>
     </div>
   );
 }
