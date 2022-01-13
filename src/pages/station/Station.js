@@ -104,7 +104,12 @@ export default function Station({
               return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
             })[0].elevation;
 
-            return { ...e, waterlevel: elev - e.disttowatertable_m };
+            return {
+              ...e,
+              waterlevel: e.disttowatertable_m
+                ? elev - e.disttowatertable_m
+                : null,
+            };
           })
         );
       });

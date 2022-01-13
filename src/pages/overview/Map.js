@@ -48,12 +48,10 @@ function Map() {
     const kftoken = "d12107f70a3ee93153f313c7c502169a";
 
     const toposkaermkortwmts = L.tileLayer.wms(
-      "https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?&username=WXIJZOCTKQ&password=Dsht5!as",
+      "https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?&username=WXIJZOCTKQ&password=E7WfqcwH_",
       {
         layers: "dtk_skaermkort_daempet",
         transparent: "FALSE",
-        // username: "WXIJZOCTKQ",
-        // password: "Dsht5!as",
         format: "image/png",
         attribution: myAttributionText,
       }

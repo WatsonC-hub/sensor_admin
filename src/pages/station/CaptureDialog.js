@@ -80,6 +80,7 @@ export default function CaptureDialog({ handleClose, open }) {
           style={previewStyle}
           onError={handleError}
           onScan={handleScan}
+          facingMode="environment"
         />
       </div>
     </Dialog>

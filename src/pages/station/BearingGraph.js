@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Plot from "react-plotly.js";
-import { getGraphData, getControlData } from "../../api";
+import { getGraphData } from "../../api";
 
 const selectorOptions = {
   buttons: [
