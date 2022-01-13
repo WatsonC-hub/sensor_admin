@@ -49,10 +49,6 @@ const UnitEndDateDialog = ({
 
   const handleDateChange = (date) => {
     setdate(date);
-    // setUnit({
-    //   ...unit,
-    //   slutdato: date,
-    // });
   };
 
   return (
@@ -106,7 +102,7 @@ const UnitEndDateDialog = ({
   );
 };
 
-const UdstyrReplace = ({ stationId, selected, setselected }) => {
+const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
   // const [unit, setUnit] = useState({ gid: 0 });
   const [latestUnit, setLatestUnit] = useState({
     gid: 0,
@@ -148,7 +144,7 @@ const UdstyrReplace = ({ stationId, selected, setselected }) => {
         }
       });
     }
-  }, [stationId, openDialog]);
+  }, [stationId, openDialog, trigger]);
 
   return (
     <Grid container spacing={2}>
@@ -207,6 +203,7 @@ const UdstyrReplace = ({ stationId, selected, setselected }) => {
         udstyrDialogOpen={openAddUdstyr}
         setUdstyrDialogOpen={setOpenAddUdstyr}
         tstype_id={formData.station.tstype_id}
+        setSelectedUnit={setselected}
       />
     </Grid>
   );
@@ -225,8 +222,10 @@ export default function EditStamdata({ setFormToShow, stationId }) {
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [selectedUnit, setSelectedUnit] = useState(-1);
+  const [triggerHistory, setTriggerHistory] = useState(false);
 
   const handleSubmit = () => {
+    console.log(selectedUnit);
     updateStamdata(
       { ...formData, udstyr: { ...formData.udstyr, gid: selectedUnit } },
       sessionStorage.getItem("session_id")
@@ -236,6 +235,7 @@ export default function EditStamdata({ setFormToShow, stationId }) {
         setSeverity("success");
         setOpenAlert(true);
         setTimeout(() => {}, 1500);
+        setTriggerHistory(!triggerHistory);
       })
       .catch((error) => {
         console.log(error);
@@ -269,6 +269,7 @@ export default function EditStamdata({ setFormToShow, stationId }) {
           stationId={stationId}
           selected={selectedUnit}
           setselected={setSelectedUnit}
+          trigger={triggerHistory}
         />
         <UdstyrForm mode={"edit"} />
         <Grid container spacing={3}>

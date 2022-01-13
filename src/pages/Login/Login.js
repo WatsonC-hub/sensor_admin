@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
@@ -53,46 +54,59 @@ export default function Login({ setUser }) {
   };
 
   return (
-    <Container fixed maxWidth="sm">
-      <form className={classes.form} onSubmit={handleSubmit} noValidate>
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          id="email"
-          label="Email"
-          name="email"
-          autoComplete="email"
-          autoFocus
-          onChange={(e) => setUserName(e.target.value)}
-          error={loginError}
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
-          required
-          fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-          onChange={(e) => setPassword(e.target.value)}
-          error={loginError}
-          helperText={loginError ? "brugernavn eller password er forkert." : ""}
-        />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          color="primary"
-          className={classes.submit}
-          disabled={userName === "" || password === ""}
-        >
-          Log på
-        </Button>
-      </form>
-    </Container>
+    <div>
+      <div
+        style={{
+          textAlign: "center",
+          alignSelf: "center",
+        }}
+      >
+        <h1>Login</h1>
+      </div>
+
+      <Container fixed maxWidth="sm">
+        <form className={classes.form} onSubmit={handleSubmit} noValidate>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            autoComplete="email"
+            autoFocus
+            onChange={(e) => setUserName(e.target.value)}
+            error={loginError}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
+            error={loginError}
+            helperText={
+              loginError ? "brugernavn eller password er forkert." : ""
+            }
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+            disabled={userName === "" || password === ""}
+          >
+            Log på
+          </Button>
+        </form>
+      </Container>
+    </div>
   );
 }
