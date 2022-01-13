@@ -149,7 +149,7 @@ export default function Station({
     setFormToShow("ADDMAALEPUNKT");
   };
 
-  console.log(stationId);
+  // console.log(stationId);
 
   const handlePejlingSubmit = (stationId) => {
     setFormToShow(null);

@@ -52,7 +52,7 @@ const layout1 = {
     orientation: "h",
   },
   margin: {
-    l: 50,
+    // l: 70,
     r: 0,
     b: 30,
     t: 10,
@@ -94,7 +94,7 @@ const layout3 = {
     orientation: "h",
   },
   margin: {
-    l: 30,
+    // l: 30,
     r: 30,
     b: 30,
     t: 10,
@@ -109,8 +109,9 @@ const layout3 = {
 function PlotGraph({ graphData, controlData }) {
   // const [stationName, setStationName] = useState("stationnavn");
   const name = graphData[0] ? graphData[0].properties.ts_name : "";
-  const xData = graphData[0] ? graphData[0].properties.data.x : [];
-  const yData = graphData[0] ? graphData[0].properties.data.y : [];
+  const xData = graphData[0] ? JSON.parse(graphData[0].properties.data).x : [];
+  const yData = graphData[0] ? JSON.parse(graphData[0].properties.data).y : [];
+  const trace = graphData[0] ? JSON.parse(graphData[0].properties.trace) : {};
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
   const stationtype = graphData[0] ? graphData[0].properties.parameter : "";
