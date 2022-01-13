@@ -52,8 +52,6 @@ function Map() {
       {
         layers: "dtk_skaermkort_daempet",
         transparent: "FALSE",
-        // username: "WXIJZOCTKQ",
-        // password: "Dsht5!as",
         format: "image/png",
         attribution: myAttributionText,
       }
