@@ -17,6 +17,7 @@ export default function AddUdstyrForm({
   udstyrDialogOpen,
   setUdstyrDialogOpen,
   tstype_id,
+  setSelectedUnit,
 }) {
   const [udstyrFormData, setUdstyrFormData] = useState({
     calypso_id: -1,
@@ -65,7 +66,7 @@ export default function AddUdstyrForm({
 
   const handleSave = () => {
     setUdstyrDialogOpen(false);
-
+    setSelectedUnit(-1);
     let unit = availableUnits.find((x) => x.unit_uuid === udstyrFormData.uuid);
 
     if (!unit) return;
@@ -79,7 +80,7 @@ export default function AddUdstyrForm({
       calypso_id: unit.calypso_id,
       batteriskift: unit.batteriskift,
       startdato: udstyrFormData.fra,
-      slutdato: unit.slutdato,
+      slutdato: "2099-01-01 12:00:00",
       uuid: unit.unit_uuid,
     });
   };
