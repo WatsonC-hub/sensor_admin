@@ -26,6 +26,8 @@ import { InputAdornment } from "@material-ui/core";
 import moment from "moment";
 import SaveIcon from "@material-ui/icons/Save";
 import OwnDatePicker from "./OwnDatePicker";
+import { Checkbox } from "@material-ui/core";
+import { Tooltip } from "@material-ui/core";
 
 export default function PejlingForm({
   stationId,
@@ -43,6 +45,8 @@ export default function PejlingForm({
     elevation: 0,
     mp_description: "",
   });
+
+  const [notPossible, setNotPossible] = useState(false);
 
   useEffect(() => {
     if (mpData.length > 0) {
@@ -89,6 +93,11 @@ export default function PejlingForm({
     changeFormData("disttowatertable_m", e.target.value);
   };
 
+  const handleNotPossibleChange = (e) => {
+    setNotPossible(!notPossible);
+    changeFormData("disttowatertable_m", null);
+  };
+
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
       <Card style={{ marginBottom: 25 }}>
@@ -104,7 +113,7 @@ export default function PejlingForm({
                 onChange={(date) => handleDateChange(date)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={6} sm={3}>
               <TextField
                 type="number"
                 variant="outlined"
@@ -122,7 +131,16 @@ export default function PejlingForm({
                 fullWidth
                 value={formData.disttowatertable_m}
                 onChange={handleDistanceChange}
+                disabled={notPossible}
               />
+            </Grid>
+            <Grid item xs={6} sm={3}>
+              <Tooltip title="f.eks. tør eller tilfrossen">
+                <FormControlLabel
+                  control={<Checkbox onChange={handleNotPossibleChange} />}
+                  label="Pejling ikke mulig"
+                />
+              </Tooltip>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
