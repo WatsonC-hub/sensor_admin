@@ -58,12 +58,15 @@ const RowDetail = ({ row }) => (
   </List>
 );
 
-const getStatusComp = (status) => {
+const getStatusComp = (status, active) => {
+  if (!active) {
+    return <CheckCircleIcon style={{ color: "grey" }} />;
+  }
   switch (status) {
     case "#00FF00":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     case null:
-      return <CheckCircleIcon style={{ color: "grey" }} />;
+      return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     default:
       return <PriorityHighIcon style={{ color: status }} />;
   }
@@ -73,7 +76,7 @@ const StatusCell = ({ color, style, ...restProps }) => {
   return (
     <VirtualTable.Cell {...restProps}>
       <Tooltip title={restProps.row.opgave}>
-        {getStatusComp(restProps.row.color)}
+        {getStatusComp(restProps.row.color, restProps.row.active)}
       </Tooltip>
     </VirtualTable.Cell>
   );

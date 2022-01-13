@@ -66,7 +66,9 @@ export default function AddUdstyrForm({
 
   const handleSave = () => {
     setUdstyrDialogOpen(false);
-    setSelectedUnit(-1);
+    if (setSelectedUnit) {
+      setSelectedUnit(-1);
+    }
     let unit = availableUnits.find((x) => x.unit_uuid === udstyrFormData.uuid);
 
     if (!unit) return;
