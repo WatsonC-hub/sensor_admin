@@ -12,6 +12,7 @@ import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { MenuItem, useTheme } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 import OwnDatePicker from "../../components/OwnDatePicker";
+import { Typography } from "@material-ui/core";
 
 export default function AddUdstyrForm({
   udstyrDialogOpen,
@@ -115,6 +116,11 @@ export default function AddUdstyrForm({
         >
           <DialogTitle id="form-dialog-title">Tilføj Udstyr</DialogTitle>
           <DialogContent>
+            {uniqueCalypsoIds().length === 0 && (
+              <Typography variant="subtitle2" component="h3" color="error">
+                * ingen enheder der passer til stationstypen er tilgængelig
+              </Typography>
+            )}
             <TextField
               autoFocus
               select

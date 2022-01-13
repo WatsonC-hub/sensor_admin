@@ -36,7 +36,7 @@ export default function StationList({ data }) {
             >
               <ListItemText
                 primary={elem.ts_name}
-                secondary={"Calypso ID: " + elem.calypso_id}
+                secondary={elem.active ? "Calypso ID: " + elem.calypso_id : " "}
               />
               <StatusText row={elem} />
             </ListItem>
@@ -56,7 +56,7 @@ function StatusText(props) {
       }}
     >
       <ListItemText
-        primary={getStatusComp(props.row.color)}
+        primary={getStatusComp(props.row.color, props.row.active)}
         // secondary={props.row.opgave}
       />
       {/* <Typography>{getStatusComp(props.row.color)}</Typography> */}
@@ -64,12 +64,15 @@ function StatusText(props) {
   );
 }
 
-const getStatusComp = (status) => {
+const getStatusComp = (status, active) => {
+  if (!active) {
+    return <CheckCircleIcon style={{ color: "grey" }} />;
+  }
   switch (status) {
     case "#00FF00":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     case null:
-      return <CheckCircleIcon style={{ color: "grey" }} />;
+      return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     default:
       return <PriorityHighIcon style={{ color: status }} />;
   }

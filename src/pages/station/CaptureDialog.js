@@ -8,6 +8,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import QrReader from "react-qr-scanner";
 import { useHistory } from "react-router-dom";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -28,7 +29,7 @@ export default function CaptureDialog({ handleClose, open }) {
   const classes = useStyles();
   const history = useHistory();
 
-  const [result, setResult] = useState("no result");
+  const [showText, setShowText] = useState(true);
 
   const handleScan = (data) => {
     if (data !== null) {
@@ -75,11 +76,23 @@ export default function CaptureDialog({ handleClose, open }) {
         </Toolbar>
       </AppBar>
       <div style={camStyle}>
+        {showText && (
+          <Typography
+            variant="subtitle2"
+            component="h3"
+            align="center"
+            display="block"
+          >
+            Der skal gives rettigheder til at bruge kameraet. Tjek om du har
+            fået en forespørgsel eller ændre indstillinger i din browser.
+          </Typography>
+        )}
         <QrReader
           delay={100}
           style={previewStyle}
           onError={handleError}
           onScan={handleScan}
+          onLoad={(e) => setShowText(false)}
           facingMode="environment"
         />
       </div>
