@@ -21,29 +21,29 @@ import { TextField, Tooltip } from "@material-ui/core";
 import LocationContext from "../../context/LocationContext";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 
-const LocationTypeProvider = (props) => (
-  <DataTypeProvider formatterComponent={LocationFormatter} {...props} />
-);
+// const LocationTypeProvider = (props) => (
+//   <DataTypeProvider formatterComponent={LocationFormatter} {...props} />
+// );
 
-const LocationFormatter = ({ value }) => <EditButton locationId={value} />;
+// const LocationFormatter = ({ value }) => <EditButton locationId={value} />;
 
-const EditButton = ({ locationId }) => {
-  const context = useContext(LocationContext);
-  const history = useHistory();
-  return (
-    <IconButton
-      aria-label="Edit"
-      onClick={(e) => {
-        context.setLocationId(locationId);
-        context.setTabValue(0);
-        let [loc, stat] = locationId.split("_");
-        history.push(`location/${loc}/${stat}`);
-      }}
-    >
-      <EditIcon />
-    </IconButton>
-  );
-};
+// const EditButton = ({ locationId }) => {
+//   const context = useContext(LocationContext);
+//   const history = useHistory();
+//   return (
+//     <IconButton
+//       aria-label="Edit"
+//       onClick={(e) => {
+//         context.setLocationId(locationId);
+//         context.setTabValue(0);
+//         let [loc, stat] = locationId.split("_");
+//         history.push(`location/${loc}/${stat}`);
+//       }}
+//     >
+//       <EditIcon />
+//     </IconButton>
+//   );
+// };
 
 const RowDetail = ({ row }) => (
   <List>
@@ -159,13 +159,19 @@ export default function StationListDesktop({ data }) {
         station_loc_id: elem.loc_id + "_" + elem.ts_id,
         id: index,
         opgave: text,
+        calypso_id: elem.active ? elem.calypso_id : " ",
       };
     })
     .filter((elem) => {
-      return elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase());
+      return (
+        elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
+        elem.calypso_id
+          .toString()
+          .toLowerCase()
+          .includes(typeAhead.toLowerCase())
+      );
     });
 
-  console.log(data);
   return (
     <div>
       <TextField
