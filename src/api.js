@@ -13,9 +13,9 @@ if (process.env.NODE_ENV === "development") {
   userEndpoint = "https://backend.calypso.watsonc.dk/rest/";
   // endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
 } else {
-  host = "https://watsonc-test.admin.gc2.io";
-  extEndpoint = "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
-  endpoint = `https://watsonc-test.admin.gc2.io/api/v2/sql/watsonc/?q=`;
+  host = "https://watsonc.admin.gc2.io";
+  extEndpoint = "https://watsonc.admin.gc2.io/extensions/sensor_app/api";
+  endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
   userEndpoint = "https://backend.calypso.watsonc.dk/rest/";
 }
 
