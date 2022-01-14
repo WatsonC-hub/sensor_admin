@@ -54,7 +54,7 @@ const layout1 = {
   margin: {
     // l: 70,
     r: 0,
-    b: 30,
+    // b: 30,
     t: 10,
     pad: 4,
   },
@@ -96,7 +96,7 @@ const layout3 = {
   margin: {
     // l: 30,
     r: 30,
-    b: 30,
+    // b: 30,
     t: 10,
     pad: 4,
   },
