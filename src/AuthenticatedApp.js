@@ -65,7 +65,7 @@ function AuthenticatedApp({ setUser }) {
       }}
     >
       <div className="App">
-        <CaptureDialog open={open} handleClose={handleClose} />
+        {open && <CaptureDialog open={open} handleClose={handleClose} />}
         <AppBar position="sticky">
           <Toolbar
             style={{
