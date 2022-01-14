@@ -25,6 +25,7 @@ const StamdataProvider = (props) => {
       y: "",
       terrainqual: "",
       description: "",
+      loctype_id: -1,
     },
     station: {
       ts_id: "",

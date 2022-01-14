@@ -9,6 +9,7 @@ import { InputAdornment } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 import { MenuItem } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
+import LocationTypeSelect from "./components/LocationTypeSelect";
 
 export default function AddLocationForm({
   locationDialogOpen,
@@ -25,6 +26,8 @@ export default function AddLocationForm({
     subsubloc: "",
     description: "",
   });
+
+  // TODO: Gør location type til at være et state så man kan se det ændres.
 
   const [, , , , , setLocationValue, , , , saveLocationFormData] =
     React.useContext(StamdataContext);
@@ -160,6 +163,11 @@ export default function AddLocationForm({
             variant="outlined"
             InputLabelProps={{ shrink: true }}
             placeholder="f.eks. ligger tæt ved broen"
+          />
+          <LocationTypeSelect
+            selectedLocationType={-1}
+            onChange={handleChange}
+            id="loctype_id"
           />
         </DialogContent>
         <DialogActions>

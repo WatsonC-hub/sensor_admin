@@ -1,9 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, MenuItem, TextField } from "@material-ui/core";
 import { StamdataContext } from "../StamdataContext";
 import { InputAdornment } from "@material-ui/core";
+import { getLocationTypes } from "../../../api";
+import LocationTypeSelect from "./LocationTypeSelect";
 
-export default function LocalityForm() {
+// const LocationTypeSelect = ({
+//   selectedLocationType,
+//   locationTypes,
+//   onChange,
+// }) => {
+//   const handleSelection = (event) => {
+//     console.log(event.target.value);
+//     console.log(event.target);
+//     onChange(event);
+//   };
+//   console.log(locationTypes);
+//   let menuItems = locationTypes
+//     .filter((i) => i.properties.loctype_id !== 0)
+//     .map((item) => (
+//       <MenuItem
+//         value={item.properties.loctype_id}
+//         key={item.properties.loctype_id}
+//       >
+//         {item.properties.loctypename}
+//       </MenuItem>
+//     ));
+
+//   return (
+//     <TextField
+//       autoFocus
+//       variant="outlined"
+//       select
+//       margin="dense"
+//       value={selectedLocationType}
+//       onChange={handleSelection}
+//       label="Lokation type"
+//       fullWidth
+//     >
+//       <MenuItem value={-1}>Vælg type</MenuItem>
+//       {menuItems}
+//     </TextField>
+//   );
+// };
+
+export default function LocalityForm({ mode }) {
   const [, , formData, , , setLocationValue, , ,] =
     React.useContext(StamdataContext);
 
@@ -79,7 +120,7 @@ export default function LocalityForm() {
           margin="dense"
         />
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={6} sm={3}>
         <TextField
           InputProps={{
             readOnly: formData.location.loc_name === "",
@@ -99,7 +140,7 @@ export default function LocalityForm() {
         />
       </Grid>
 
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={6} sm={3}>
         <TextField
           InputProps={{
             readOnly: formData.location.loc_name === "",
@@ -121,6 +162,12 @@ export default function LocalityForm() {
           <MenuItem value="dGPS">dGPS</MenuItem>
           <MenuItem value="DTM">DTM</MenuItem>
         </TextField>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <LocationTypeSelect
+          selectedLocationType={formData.location.loctype_id}
+          onChange={(e) => setLocationValue("loctype_id", e.target.value)}
+        />
       </Grid>
 
       <Grid item xs={12} sm={6}>
