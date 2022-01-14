@@ -6,6 +6,7 @@ import "./App.css";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import { Button } from "@material-ui/core";
+import { ReactComponent as LogoSvg } from "./calypso.svg";
 
 export default function UnAuntenticatedApp({ setUser }) {
   const [registerDisabled, setRegisterDisabled] = useState(false);
@@ -22,6 +23,13 @@ export default function UnAuntenticatedApp({ setUser }) {
             justifyContent: "space-between",
           }}
         >
+          {/* <div className="container">
+            <img src={mainLogo} />
+          </div> */}
+          <LogoSvg />
+
+          <h2>Sensor Applikation</h2>
+
           {location.pathname !== "/register" ? (
             <Button
               disabled={registerDisabled}

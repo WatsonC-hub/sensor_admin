@@ -61,10 +61,20 @@ export default function Login({ setUser }) {
           alignSelf: "center",
         }}
       >
-        <h1>Login</h1>
+        <h1>Log ind</h1>
       </div>
 
       <Container fixed maxWidth="sm">
+        <p
+          style={{
+            textAlign: "center",
+            alignSelf: "center",
+          }}
+        >
+          Med denne applikation kan du indberette pejlinger osv.. Med denne
+          applikation kan du indberette pejlinger osv.. Med denne applikation
+          kan du indberette pejlinger osv..
+        </p>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
           <TextField
             variant="outlined"

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
@@ -13,7 +12,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -46,6 +45,7 @@ export default function Register() {
   const [cvr, setCvr] = useState("");
   const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(false);
+  const [cvrData, setCvrData] = useState({});
 
   const validEmail = new RegExp(
     "^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$"
@@ -60,45 +60,40 @@ export default function Register() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const cvr = getCvr(cvr).then((res) => console.log(res));
-    if (
-      checked === true
-      // firstName === "" ||
-      // lastName === "" ||
-      // email === "" ||
-      // cvr === "" //||
-      // // checked == true
-    ) {
-      //console.log(res);
+    e.preventDefault(); //To avoid refreshing page on button click
+    //const cvr = getCvr(cvr).then((res) => console.log(res));
 
-      setSeverity("success");
-      setOpenAlert(true);
-      setTimeout(() => {}, 1500);
+    // const cvrData = getCvr(cvr);
+    // console.log(cvrData);
+
+    validateEmail();
+    console.log("hejsa");
+    if (emailErr === false) {
+      console.log("hej");
+      getCvr(cvr)
+        .then((res) => {
+          setCvrData(res.data.orgs[0]);
+          console.log(res.data.orgs[0]);
+          setSeverity("success");
+          setOpenAlert(true);
+          setTimeout(() => {
+            handleClickOpen();
+          }, 500);
+        })
+        .catch((error) => {
+          setSeverity("error");
+          setOpenAlert(true);
+        });
     } else {
-      // console.log(error);
       setSeverity("error");
       setOpenAlert(true);
     }
-
-    // registerAcc(formData)
-    //   .then((res) => {
-    //     setSeverity("success");
-    //     setOpenAlert(true);
-    //     setTimeout(() => {
-    //       history.push("/");
-    //     }, 1500);
-    //   })
-    //   .catch((error) => {
-    //     setSeverity("error");
-    //     setOpenAlert(true);
-    //   });
   };
 
   const handleChange = (event) => {
     if (!checked)
       setChecked({ ...checked, [event.target.name]: event.target.checked });
-    else if (checked) setChecked(checked == false);
+    else if (checked) setChecked(false);
   };
 
   function Alert(props) {
@@ -109,15 +104,16 @@ export default function Register() {
     setOpen(true);
   };
 
-  const handleClose = (value) => {
+  const handleCloseSnack = (reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
+
+  const handleClose = () => {
     setOpen(false);
   };
-  // const handleClose = (event, reason) => {
-  //   if (reason === "clickaway") {
-  //     return;
-  //   }
-  //   setOpenAlert(false);
-  // };
 
   return (
     <div className="form">
@@ -205,7 +201,7 @@ export default function Register() {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={validateEmail}
+            onClick={handleSubmit}
             disabled={
               firstName === "" ||
               lastName === "" ||
@@ -218,17 +214,18 @@ export default function Register() {
           </Button>
         </form>
       </Container>
-      <Snackbar open={openAlert} autoHideDuration={4000} onClose={handleClose}>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={handleCloseSnack}
+      >
         <Alert onClose={handleClose} severity={severity}>
           {severity === "success"
-            ? "Følg instrukserne i din email for at fuldføre oprettelsen"
+            ? "Oprettelsen lykkedes"
             : "Oprettelsen fejlede"}
         </Alert>
       </Snackbar>
 
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Open alert dialog
-      </Button>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -236,14 +233,25 @@ export default function Register() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Bekræft virksomhed"}
+          <Typography variant="h5">Bekræft virksomhed</Typography>
         </DialogTitle>
         <DialogContent>
-          <p>
-            Virksomheden er allerede oprettet. Der vil blive sendt en anmodning
-            til nedenstående virksomhed, om at du kan oprettes i denne.
-            Hvorefter du vil modtage en bekræftigelsesmail.
-          </p>
+          <div>
+            <Typography>
+              Virksomheden er allerede oprettet. Der vil blive sendt en
+              anmodning til nedenstående virksomhed, om at du kan oprettes i
+              denne. Hvorefter du vil modtage en bekræftigelsesmail.
+            </Typography>
+            <Typography>
+              {cvrData.name}
+              <br></br>
+              {cvrData.address}
+              <br></br>
+              {cvrData.zip + " " + cvrData.city}
+              <br></br>
+              {cvr}
+            </Typography>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button
