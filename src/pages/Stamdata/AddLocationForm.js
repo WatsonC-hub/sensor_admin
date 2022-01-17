@@ -25,6 +25,7 @@ export default function AddLocationForm({
     subloc: "",
     subsubloc: "",
     description: "",
+    loctype_id: -1,
   });
 
   // TODO: Gør location type til at være et state så man kan se det ændres.
@@ -38,12 +39,20 @@ export default function AddLocationForm({
       ...locationData,
       [event.target.id]: event.target.value,
     });
+    console.log(locationData);
   };
 
   const handleSelector = (event) => {
     setLocationData({
       ...locationData,
       terrainqual: event.target.value,
+    });
+  };
+
+  const handleLoctype = (event) => {
+    setLocationData({
+      ...locationData,
+      loctype_id: event.target.value,
     });
   };
 
@@ -165,9 +174,8 @@ export default function AddLocationForm({
             placeholder="f.eks. ligger tæt ved broen"
           />
           <LocationTypeSelect
-            selectedLocationType={-1}
-            onChange={handleChange}
-            id="loctype_id"
+            selectedLocationType={locationData.loctype_id}
+            onChange={handleLoctype}
           />
         </DialogContent>
         <DialogActions>

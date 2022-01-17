@@ -13,8 +13,6 @@ export default function LocationTypeSelect({ selectedLocationType, onChange }) {
     );
   }, []);
   const handleSelection = (event) => {
-    console.log(event.target.value);
-    console.log(event.target);
     onChange(event);
   };
   console.log(locationTypes);

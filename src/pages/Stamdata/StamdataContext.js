@@ -132,6 +132,7 @@ const StamdataProvider = (props) => {
       terrainqual: locationData.terrainqual,
       terrainlevel: locationData.terrainlevel,
       description: locationData.description,
+      loctype_id: locationData.loctype_id,
     });
   };
 
