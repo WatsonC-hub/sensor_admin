@@ -6,6 +6,12 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { loginUser } from "../../api";
 import { useTheme } from "@material-ui/core";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import { Typography } from "@material-ui/core";
+import { resetPassword } from "../../api";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -32,6 +38,8 @@ export default function Login({ setUser }) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [passReset, setPassReset] = useState("");
 
   const theme = useTheme();
 
@@ -51,6 +59,19 @@ export default function Login({ setUser }) {
         setLoginError(true);
         console.log("login error => ", r);
       });
+  };
+
+  const handlePassReset = () => {
+    console.log(passReset);
+    resetPassword(passReset);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -116,7 +137,49 @@ export default function Login({ setUser }) {
             Log på
           </Button>
         </form>
+        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+          Glemt kodeord?
+        </Button>
       </Container>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <Typography variant="h5">Nulstil kodeord</Typography>
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            <Typography>
+              Nulstil dit kodeord ved at indtaste din E-mail adresse
+            </Typography>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="passReset"
+              label="E-mail addresse"
+              type="email"
+              onChange={(e) => setPassReset(e.target.value)}
+              fullWidth
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Annuller
+          </Button>
+          <Button
+            onClick={handlePassReset}
+            variant="outlined"
+            color="primary"
+            autoFocus
+          >
+            Bekræft
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

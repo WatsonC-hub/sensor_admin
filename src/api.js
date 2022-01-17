@@ -142,7 +142,11 @@ const getUnitHistory = (stationId) =>
 
 const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 
-//const registerAcc = () => {};
+const createUser = (payload) =>
+  axios.post(`${userEndpoint}/calypso/user`, payload);
+
+const resetPassword = (email) =>
+  axios.post(`${userEndpoint}core/user/forgotpassword`, email);
 
 const loginUser = (user, password) => {
   let sessionUrl = `${host}/api/v2/session/start`;
@@ -180,7 +184,9 @@ export {
   getStamdataByStation,
   getUnitHistory,
   getCvr,
+  createUser,
   loginUser,
+  resetPassword,
   getMP,
   deleteMP,
   takeHomeEquipment,
