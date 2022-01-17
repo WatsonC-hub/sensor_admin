@@ -167,16 +167,13 @@ function Map() {
       },
     });
 
-    map.addControl(new ourCustomControl());
+    // map.addControl(new ourCustomControl());
 
-    // L.control
-    //   .locate({
-    //     icon: "/location-2955.png",
-    //     strings: {
-    //       title: "Find mig",
-    //     },
-    //   })
-    //   .addTo(map);
+    L.control.locate({
+          strings: {
+            title: "Find mig",
+          },
+        }).addTo(map);
     return map;
   };
 
