@@ -19,6 +19,12 @@ const selectorOptions = {
       label: "1 år",
     },
     {
+      step: "month",
+      stepmode: "backward",
+      count: 1,
+      label: "1 måned",
+    },
+    {
       step: "all",
       label: "Alt",
     },
@@ -169,7 +175,6 @@ function PlotGraph({ graphData, controlData }) {
       config={{
         responsive: true,
         modeBarButtonsToRemove: [
-          "pan2d",
           "select2d",
           "lasso2d",
           "autoScale2d",
