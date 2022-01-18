@@ -40,6 +40,8 @@ export default function Login({ setUser }) {
   const [loginError, setLoginError] = useState(false);
   const [open, setOpen] = useState(false);
   const [passReset, setPassReset] = useState("");
+  const [passResetErr, setPassResetErr] = useState(false);
+  const [emailSentMess, setEmailSentMess] = useState(false);
 
   const theme = useTheme();
 
@@ -61,9 +63,20 @@ export default function Login({ setUser }) {
       });
   };
 
-  const handlePassReset = () => {
+  const handlePassReset = (e) => {
     console.log(passReset);
-    resetPassword(passReset);
+    resetPassword({ email: passReset })
+      .then((res) => {
+        setPassResetErr(false);
+        handleEmailSent();
+      })
+      .catch((r) => {
+        setPassResetErr(true);
+      });
+  };
+
+  const handleEmailSent = () => {
+    setEmailSentMess(true);
   };
 
   const handleClickOpen = () => {
@@ -73,6 +86,9 @@ export default function Login({ setUser }) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  if (emailSentMess) {
+  }
 
   return (
     <div>
@@ -153,31 +169,53 @@ export default function Login({ setUser }) {
         <DialogContent>
           <div>
             <Typography>
-              Nulstil dit kodeord ved at indtaste din E-mail adresse
+              {emailSentMess === true ? (
+                "En E-mail er er blevet sendt med instruktioner for hvordan du nulstiller dit kodeord!"
+              ) : (
+                <div>
+                  <Typography>
+                    Nulstil dit kodeord ved at indtaste din E-mail adresse
+                  </Typography>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id="passReset"
+                    label="E-mail addresse"
+                    type="email"
+                    onChange={(e) => setPassReset(e.target.value)}
+                    fullWidth
+                    error={passResetErr}
+                    //helperText={loginError ? "E-mail eksisterer ikke i systemet" : ""}
+                  />
+                </div>
+              )}
             </Typography>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="passReset"
-              label="E-mail addresse"
-              type="email"
-              onChange={(e) => setPassReset(e.target.value)}
-              fullWidth
-            />
           </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             Annuller
           </Button>
-          <Button
-            onClick={handlePassReset}
-            variant="outlined"
-            color="primary"
-            autoFocus
-          >
-            Bekræft
-          </Button>
+          {!emailSentMess && (
+            <Button
+              onClick={handlePassReset}
+              variant="outlined"
+              color="primary"
+              autoFocus
+            >
+              Bekræft
+            </Button>
+          )}
+          {emailSentMess && (
+            <Button
+              onClick={handleClose}
+              variant="outlined"
+              color="primary"
+              autoFocus
+            >
+              Gå til log ind
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </div>

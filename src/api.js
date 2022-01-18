@@ -145,8 +145,8 @@ const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 const createUser = (payload) =>
   axios.post(`${userEndpoint}/calypso/user`, payload);
 
-const resetPassword = (email) =>
-  axios.post(`${userEndpoint}core/user/forgotpassword`, email);
+const resetPassword = (passReset) =>
+  axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
 
 const loginUser = (user, password) => {
   let sessionUrl = `${host}/api/v2/session/start`;
