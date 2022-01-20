@@ -169,11 +169,13 @@ function Map() {
 
     // map.addControl(new ourCustomControl());
 
-    L.control.locate({
-          strings: {
-            title: "Find mig",
-          },
-        }).addTo(map);
+    L.control
+      .locate({
+        strings: {
+          title: "Find mig",
+        },
+      })
+      .addTo(map);
     return map;
   };
 
@@ -205,8 +207,14 @@ function Map() {
       data.forEach((element) => {
         const point = [element.lat, element.long];
         console.log();
-        const marker = L.marker(point, {
-          icon: element.status ? stationIcon : inactiveIcon,
+        const marker = L.circleMarker(point, {
+          // icon: element.status ? stationIcon : inactiveIcon,
+          radius: 8,
+          weight: 1,
+          fillOpacity: 0.8,
+          opacity: 0.8,
+          color: "#000000",
+          fillColor: element.status ? "#3388ff" : "#C0C0C0",
         }).bindPopup(
           element.mouseover.split(
             '<b style="color:#10ae8c;">-----------</b>'
@@ -220,11 +228,7 @@ function Map() {
     }
   }, [sensorData]);
 
-  return (
-    <div id="map" style={style}>
-      <Button>Test</Button>
-    </div>
-  );
+  return <div id="map" style={style}></div>;
 }
 
 export default Map;
