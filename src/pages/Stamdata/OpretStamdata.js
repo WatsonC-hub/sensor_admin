@@ -58,6 +58,7 @@ function LocationChooser({ setLocationDialogOpen }) {
         terrainqual: locData.terrainqual,
         terrainlevel: locData.terrainlevel,
         description: "",
+        loctype_id: locData.loctype_id,
       });
     } else {
       setValues("location", {
@@ -71,6 +72,7 @@ function LocationChooser({ setLocationDialogOpen }) {
         terrainqual: "",
         terrainlevel: "",
         description: "",
+        loctype_id: -1,
       });
     }
   };
@@ -163,13 +165,10 @@ function LocationChooser({ setLocationDialogOpen }) {
   return matches ? mobileChooser : desktopChooser;
 }
 
-function Locality({ locationDialogOpen, setLocationDialogOpen }) {
+function Locality({ setLocationDialogOpen }) {
   return (
     <Grid container>
-      <LocationChooser
-        locationDialogOpen={locationDialogOpen}
-        setLocationDialogOpen={setLocationDialogOpen}
-      />
+      <LocationChooser setLocationDialogOpen={setLocationDialogOpen} />
       <LocalityForm />
     </Grid>
   );
@@ -251,10 +250,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           Stamdata
         </Typography>
 
-        <Locality
-          locationDialogOpen={locationDialogOpen}
-          setLocationDialogOpen={setLocationDialogOpen}
-        />
+        <Locality setLocationDialogOpen={setLocationDialogOpen} />
         <Typography>Station</Typography>
         <StationForm
           mode="add"

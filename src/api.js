@@ -126,6 +126,9 @@ const getStationTypes = () =>
     `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
   );
 
+const getLocationTypes = () =>
+  axios.get(`${endpoint}SELECT loctype_id, loctypename FROM sensor.loctype2`);
+
 const getAvailableUnits = (sessionId) =>
   axios.get(`${extEndpoint}/stamdata/units?session_id=${sessionId}`);
 
@@ -196,5 +199,6 @@ export {
   deleteMP,
   takeHomeEquipment,
   updateStamdata,
+  getLocationTypes,
   getDTMQuota,
 };

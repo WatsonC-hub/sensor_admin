@@ -9,6 +9,7 @@ import { Grid, InputAdornment } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 import { MenuItem } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
+import LocationTypeSelect from "./components/LocationTypeSelect";
 import { getDTMQuota } from "../../api";
 
 export default function AddLocationForm({
@@ -25,7 +26,10 @@ export default function AddLocationForm({
     subloc: "",
     subsubloc: "",
     description: "",
+    loctype_id: -1,
   });
+
+  // TODO: Gør location type til at være et state så man kan se det ændres.
 
   const [, , , , , setLocationValue, , , , saveLocationFormData] =
     React.useContext(StamdataContext);
@@ -37,12 +41,20 @@ export default function AddLocationForm({
       ...locationData,
       [event.target.id]: event.target.value,
     });
+    console.log(locationData);
   };
 
   const handleSelector = (event) => {
     setLocationData({
       ...locationData,
       terrainqual: event.target.value,
+    });
+  };
+
+  const handleLoctype = (event) => {
+    setLocationData({
+      ...locationData,
+      loctype_id: event.target.value,
     });
   };
 
@@ -190,6 +202,12 @@ export default function AddLocationForm({
             >
               Hent fra DTM
             </Button>
+          </Grid>
+          <Grid item xs={12} sm={12}>
+          <LocationTypeSelect
+            selectedLocationType={locationData.loctype_id}
+            onChange={handleLoctype}
+          />
           </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
