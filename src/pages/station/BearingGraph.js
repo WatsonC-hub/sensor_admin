@@ -19,6 +19,12 @@ const selectorOptions = {
       label: "1 år",
     },
     {
+      step: "month",
+      stepmode: "backward",
+      count: 1,
+      label: "1 måned",
+    },
+    {
       step: "all",
       label: "Alt",
     },
@@ -54,7 +60,7 @@ const layout1 = {
   margin: {
     // l: 70,
     r: 0,
-    b: 30,
+    // b: 30,
     t: 10,
     pad: 4,
   },
@@ -96,7 +102,7 @@ const layout3 = {
   margin: {
     // l: 30,
     r: 30,
-    b: 30,
+    // b: 30,
     t: 10,
     pad: 4,
   },
@@ -169,7 +175,6 @@ function PlotGraph({ graphData, controlData }) {
       config={{
         responsive: true,
         modeBarButtonsToRemove: [
-          "pan2d",
           "select2d",
           "lasso2d",
           "autoScale2d",
