@@ -163,6 +163,11 @@ const takeHomeEquipment = (gid, data, sessionId) => {
   return axios.put(url, data);
 };
 
+const getDTMQuota = (x, y) => {
+  const url = `https://services.datafordeler.dk/DHMTerraen/DHMKoter/1.0.0/GEOREST/HentKoter?geop=POINT(${x} ${y})&username=WXIJZOCTKQ&password=E7WfqcwH_`;
+  return axios.get(url);
+};
+
 export {
   getSensorData,
   getTableData,
@@ -191,4 +196,5 @@ export {
   deleteMP,
   takeHomeEquipment,
   updateStamdata,
+  getDTMQuota,
 };
