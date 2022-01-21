@@ -218,7 +218,9 @@ export default function Register() {
             label={
               <label>
                 Jeg accepterer Calypsos{" "}
-                <a href="https://watsonc.dk/privatlivspolitik/">vilkår</a>
+                <a href="https://watsonc.dk/privatlivspolitik/" target="_blank">
+                  vilkår
+                </a>
               </label>
             }
           />

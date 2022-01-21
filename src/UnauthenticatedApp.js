@@ -28,7 +28,7 @@ export default function UnAuntenticatedApp({ setUser }) {
           </div> */}
           <LogoSvg />
 
-          <h2>Sensor Applikation</h2>
+          <h2>Sensor</h2>
 
           {location.pathname !== "/register" ? (
             <Button

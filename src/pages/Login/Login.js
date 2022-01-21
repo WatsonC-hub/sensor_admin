@@ -108,9 +108,8 @@ export default function Login({ setUser }) {
             alignSelf: "center",
           }}
         >
-          Med denne applikation kan du indberette pejlinger osv.. Med denne
-          applikation kan du indberette pejlinger osv.. Med denne applikation
-          kan du indberette pejlinger osv..
+          Med denne applikation kan du indberette pejlinger, se grafer og flytte
+          rundt på dit udstyr.
         </p>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
           <TextField
