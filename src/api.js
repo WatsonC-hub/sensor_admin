@@ -142,7 +142,11 @@ const getUnitHistory = (stationId) =>
 
 const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 
-//const registerAcc = () => {};
+const createUser = (payload) =>
+  axios.post(`${userEndpoint}/calypso/user`, payload);
+
+const resetPassword = (passReset) =>
+  axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
 
 const loginUser = (user, password) => {
   let sessionUrl = `${host}/api/v2/session/start`;
@@ -157,6 +161,11 @@ const loginUser = (user, password) => {
 const takeHomeEquipment = (gid, data, sessionId) => {
   const url = `${extEndpoint}/stamdata/unithistory/${gid}?session_id=${sessionId}`;
   return axios.put(url, data);
+};
+
+const getDTMQuota = (x, y) => {
+  const url = `https://services.datafordeler.dk/DHMTerraen/DHMKoter/1.0.0/GEOREST/HentKoter?geop=POINT(${x} ${y})&username=WXIJZOCTKQ&password=E7WfqcwH_`;
+  return axios.get(url);
 };
 
 export {
@@ -180,9 +189,12 @@ export {
   getStamdataByStation,
   getUnitHistory,
   getCvr,
+  createUser,
   loginUser,
+  resetPassword,
   getMP,
   deleteMP,
   takeHomeEquipment,
   updateStamdata,
+  getDTMQuota,
 };

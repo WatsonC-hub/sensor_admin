@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Container from "@material-ui/core/Container";
@@ -9,11 +8,12 @@ import MuiAlert from "@material-ui/lab/Alert";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { getCvr } from "../../api";
+import { createUser } from "../../api";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,8 +44,10 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [emailErr, setEmailErr] = useState(false);
   const [cvr, setCvr] = useState("");
-  const [checked, setChecked] = useState(false);
+  const [checkedTerms, setCheckedTerms] = useState(false);
+  const [checkedNews, setCheckedNews] = useState(false);
   const [open, setOpen] = useState(false);
+  const [cvrData, setCvrData] = useState({});
 
   const validEmail = new RegExp(
     "^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$"
@@ -60,64 +62,88 @@ export default function Register() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const cvr = getCvr(cvr).then((res) => console.log(res));
-    if (
-      checked === true
-      // firstName === "" ||
-      // lastName === "" ||
-      // email === "" ||
-      // cvr === "" //||
-      // // checked == true
-    ) {
-      //console.log(res);
+    e.preventDefault(); //To avoid refreshing page on button click
+    validateEmail();
 
-      setSeverity("success");
-      setOpenAlert(true);
-      setTimeout(() => {}, 1500);
+    if (emailErr === false) {
+      getCvr(cvr)
+        .then((res) => {
+          setCvrData(res.data.orgs[0]);
+          //console.log(res.data.orgs[0]);
+          setSeverity("success");
+          setOpenAlert(true);
+          setTimeout(() => {
+            handleClickOpen();
+          }, 500);
+        })
+        .catch((error) => {
+          setSeverity("error");
+          setOpenAlert(true);
+        });
     } else {
-      // console.log(error);
       setSeverity("error");
       setOpenAlert(true);
     }
-
-    // registerAcc(formData)
-    //   .then((res) => {
-    //     setSeverity("success");
-    //     setOpenAlert(true);
-    //     setTimeout(() => {
-    //       history.push("/");
-    //     }, 1500);
-    //   })
-    //   .catch((error) => {
-    //     setSeverity("error");
-    //     setOpenAlert(true);
-    //   });
   };
 
-  const handleChange = (event) => {
-    if (!checked)
-      setChecked({ ...checked, [event.target.name]: event.target.checked });
-    else if (checked) setChecked(checked == false);
+  const handleConfirm = (e) => {
+    //konstruer payload objekt
+    const payload = {
+      aux: {
+        calypso: {
+          mail: checkedNews,
+          acceptterms: true,
+          license: "free",
+        },
+      },
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      id: -1,
+      org: cvrData,
+      userName: email,
+    };
+    // console.log(cvrData);
+    console.log(payload);
+    //createUser(payload);
+  };
+
+  const handleChangeTerms = (event) => {
+    if (!checkedTerms)
+      setCheckedTerms({
+        ...checkedTerms,
+        [event.target.name]: event.target.checked,
+      });
+    else if (checkedTerms) setCheckedTerms(false);
+  };
+
+  const handleChangeNews = (event) => {
+    if (!checkedNews)
+      setCheckedNews({
+        ...checkedNews,
+        [event.target.name]: event.target.checked,
+      });
+    else if (checkedNews) setCheckedNews(false);
   };
 
   function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
   }
 
+  const handleCloseSnack = (reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
 
-  const handleClose = (value) => {
+  const handleClose = () => {
     setOpen(false);
   };
-  // const handleClose = (event, reason) => {
-  //   if (reason === "clickaway") {
-  //     return;
-  //   }
-  //   setOpenAlert(false);
-  // };
 
   return (
     <div className="form">
@@ -153,7 +179,6 @@ export default function Register() {
             label="Efternavn"
             name="lastName"
             autoComplete="lastName"
-            autoFocus
             onChange={(e) => setLastName(e.target.value)}
           />
           <TextField
@@ -165,7 +190,6 @@ export default function Register() {
             label="Email"
             name="email"
             autoComplete="email"
-            autoFocus
             onChange={(e) => setEmail(e.target.value)}
             error={emailErr}
             helperText={emailErr ? "Din email er ugyldig" : ""}
@@ -179,15 +203,14 @@ export default function Register() {
             label="CVR"
             name="cvr"
             autoComplete="cvr"
-            autoFocus
             onChange={(e) => setCvr(e.target.value)}
           />
 
           <FormControlLabel
             control={
               <Checkbox
-                checked={checked.checked}
-                onChange={handleChange}
+                checked={checkedTerms.checked}
+                onChange={handleChangeTerms}
                 name="checkedTerms"
                 color="primary"
               />
@@ -195,40 +218,58 @@ export default function Register() {
             label={
               <label>
                 Jeg accepterer Calypsos{" "}
-                <a href="https://watsonc.dk/privatlivspolitik/">vilkår</a>
+                <a href="https://watsonc.dk/privatlivspolitik/" target="_blank">
+                  vilkår
+                </a>
               </label>
             }
           />
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checkedNews.checked}
+                onChange={handleChangeNews}
+                name="checkedNews"
+                color="primary"
+              />
+            }
+            label={
+              <label>Jeg vil gerne modtage mails om nyheder i Calypso</label>
+            }
+          />
+
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={validateEmail}
+            onClick={handleSubmit}
             disabled={
               firstName === "" ||
               lastName === "" ||
               email === "" ||
               cvr === "" ||
-              checked === false
+              checkedTerms === false
             }
           >
             Opret konto
           </Button>
         </form>
       </Container>
-      <Snackbar open={openAlert} autoHideDuration={4000} onClose={handleClose}>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={handleCloseSnack}
+      >
         <Alert onClose={handleClose} severity={severity}>
           {severity === "success"
-            ? "Følg instrukserne i din email for at fuldføre oprettelsen"
+            ? "Oprettelsen lykkedes"
             : "Oprettelsen fejlede"}
         </Alert>
       </Snackbar>
 
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Open alert dialog
-      </Button>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -236,18 +277,32 @@ export default function Register() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Bekræft virksomhed"}
+          <Typography variant="h5">Bekræft virksomhed</Typography>
         </DialogTitle>
         <DialogContent>
-          <p>
-            Virksomheden er allerede oprettet. Der vil blive sendt en anmodning
-            til nedenstående virksomhed, om at du kan oprettes i denne.
-            Hvorefter du vil modtage en bekræftigelsesmail.
-          </p>
+          <div>
+            <Typography>
+              {cvrData.id === null
+                ? "Denne organisation er ikke oprettet. Du vil blive ejeren af den nedenstående organisation og skal fremad rettet godkende andre brugere der tilknytter sig denne organisation. Følg instruktionerne i din email for at fuldføre oprettelsen."
+                : "Virksomheden er allerede oprettet. Der vil blive sendt en anmodning til nedenstående virksomhed, om at du kan oprettes i denne. Hvorefter du vil modtage en bekræftigelsesmail."}
+            </Typography>
+            <Typography>
+              {cvrData.name}
+              <br></br>
+              {cvrData.address}
+              <br></br>
+              {cvrData.zip + " " + cvrData.city}
+              <br></br>
+              {cvr}
+            </Typography>
+          </div>
         </DialogContent>
         <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Annuller
+          </Button>
           <Button
-            onClick={handleClose}
+            onClick={handleConfirm}
             variant="outlined"
             color="primary"
             autoFocus
