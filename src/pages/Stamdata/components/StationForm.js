@@ -30,7 +30,6 @@ const StationTypeSelect = ({
 
   return (
     <TextField
-      autoFocus
       variant="outlined"
       select
       margin="dense"
