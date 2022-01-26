@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { AddCircle, EditRounded, Straighten } from "@material-ui/icons";
+import {
+  AddCircle,
+  EditRounded,
+  Straighten,
+  PlaylistAddCheck,
+} from "@material-ui/icons";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
 
@@ -72,8 +77,12 @@ function BottomNav({ setFormToShow, canEdit }) {
             window.scrollTo({ top: matches ? 300 : 500, behavior: "smooth" });
           }, 200);
         }
-        if (newValue === 2) {
+        if (newValue === 3) {
           setFormToShow("RET_STAMDATA");
+        }
+
+        if (newValue === 2) {
+          setFormToShow("ADDTILSYN");
         }
 
         if (newValue === 1) {
@@ -91,6 +100,11 @@ function BottomNav({ setFormToShow, canEdit }) {
         disabled={!canEdit}
         label="Indberet målepunkt"
         icon={<Straighten className={classes.icon} />}
+      />
+      <BottomNavigationAction
+        disabled={!canEdit}
+        label="Indberet tilsyn"
+        icon={<PlaylistAddCheck />}
       />
       <BottomNavigationAction
         disabled={!canEdit}

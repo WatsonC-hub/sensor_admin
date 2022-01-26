@@ -21,6 +21,8 @@ import MaalepunktForm from "../../components/MaalepunktForm";
 import CaptureBearing from "./CaptureBearing";
 import { StamdataContext } from "../Stamdata/StamdataContext";
 import MaalepunktTable from "./MaalepunktTable";
+import TilsynForm from "../../components/TilsynForm";
+import TilsynTable from "../../components/TilsynTable";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -263,13 +265,10 @@ export default function Station({
       )}
       {formToShow === "ADDMAALEPUNKT" && (
         <MaalepunktForm
-          stationId={stationId}
-          setShowForm={setShowForm}
           formData={mpData}
           changeFormData={changeMpData}
           handleSubmit={handleMpSubmit}
           resetFormData={resetMpData}
-          canEdit={canEdit}
         ></MaalepunktForm>
       )}
       {formToShow === "ADDMAALEPUNKT" && (
@@ -287,6 +286,22 @@ export default function Station({
           handleDelete={handleDelete("pejling")}
           canEdit={canEdit}
         />
+      )}
+      {formToShow === "ADDTILSYN" && (
+        <TilsynForm
+          formData={mpData}
+          changeFormData={changeMpData}
+          handleSubmit={handleMpSubmit}
+          resetFormData={resetMpData}
+        ></TilsynForm>
+      )}
+      {formToShow === "ADDTILSYN" && (
+        <TilsynTable
+          watlevmp={watlevmp}
+          handleEdit={handleEdit("watlevmp")}
+          handleDelete={handleDelete("watlevmp")}
+          canEdit={canEdit}
+        ></TilsynTable>
       )}
       <ActionArea
         open={open}
