@@ -96,7 +96,6 @@ export default function AddLocationForm({
         <Grid container spacing={0}>
           <Grid item xs={12} sm={12}>
             <TextField
-              autoFocus
               margin="dense"
               id="loc_name"
               label="Navn"
@@ -111,7 +110,6 @@ export default function AddLocationForm({
           </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
-              autoFocus
               margin="dense"
               id="mainloc"
               label="Hoved lokation"
@@ -126,7 +124,6 @@ export default function AddLocationForm({
           </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
-              autoFocus
               margin="dense"
               id="x"
               label="X-koordinat(UTM)"
@@ -140,7 +137,6 @@ export default function AddLocationForm({
           </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
-              autoFocus
               margin="dense"
               id="y"
               label="Y-koordinat (UTM)"
@@ -154,7 +150,6 @@ export default function AddLocationForm({
           </Grid>
           <Grid item xs={12} sm={3}>
             <TextField
-              autoFocus
               margin="dense"
               id="terrainlevel"
               label="Terrænkote"
@@ -173,7 +168,6 @@ export default function AddLocationForm({
           </Grid>
           <Grid item xs={7} sm={4}>
             <TextField
-              autoFocus
               margin="dense"
               id="terrainqual"
               label="Type af terrænkote"
@@ -204,14 +198,13 @@ export default function AddLocationForm({
             </Button>
           </Grid>
           <Grid item xs={12} sm={12}>
-          <LocationTypeSelect
-            selectedLocationType={locationData.loctype_id}
-            onChange={handleLoctype}
-          />
+            <LocationTypeSelect
+              selectedLocationType={locationData.loctype_id}
+              onChange={handleLoctype}
+            />
           </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
-              autoFocus
               margin="dense"
               id="description"
               label="Kommentar"
