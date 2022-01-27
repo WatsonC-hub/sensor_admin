@@ -39,6 +39,8 @@ export default function PejlingForm({
 }) {
   const [currDate, setCurrDate] = useState(formData.timeofmeas);
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
@@ -258,7 +260,7 @@ export default function PejlingForm({
                 variant="contained"
                 onClick={resetFormData}
               >
-                Annuler
+                Annuller
               </Button>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>

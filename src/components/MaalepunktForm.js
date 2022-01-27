@@ -126,7 +126,7 @@ export default function MaalepunktForm({
                 color="secondary"
                 variant="contained"
               >
-                Annuler
+                Annuller
               </Button>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>

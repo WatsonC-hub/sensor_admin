@@ -71,7 +71,6 @@ export default function Register() {
           setCvrData(res.data.orgs[0]);
           //console.log(res.data.orgs[0]);
           setSeverity("success");
-          setOpenAlert(true);
           setTimeout(() => {
             handleClickOpen();
           }, 500);
@@ -105,6 +104,7 @@ export default function Register() {
     };
     // console.log(cvrData);
     console.log(payload);
+    setOpenAlert(true);
     //createUser(payload);
   };
 
@@ -258,18 +258,6 @@ export default function Register() {
           </Button>
         </form>
       </Container>
-      <Snackbar
-        open={openAlert}
-        autoHideDuration={4000}
-        onClose={handleCloseSnack}
-      >
-        <Alert onClose={handleClose} severity={severity}>
-          {severity === "success"
-            ? "Oprettelsen lykkedes"
-            : "Oprettelsen fejlede"}
-        </Alert>
-      </Snackbar>
-
       <Dialog
         open={open}
         onClose={handleClose}
@@ -311,6 +299,17 @@ export default function Register() {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={handleCloseSnack}
+      >
+        <Alert onClose={handleClose} severity={severity}>
+          {severity === "success"
+            ? "Følg instruktionerne i din e-mail for at fuldføre oprettelsen"
+            : "Oprettelsen fejlede"}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
