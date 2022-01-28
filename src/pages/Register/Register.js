@@ -103,9 +103,15 @@ export default function Register() {
       userName: email,
     };
     // console.log(cvrData);
-    console.log(payload);
-    setOpenAlert(true);
-    //createUser(payload);
+    //console.log(payload);
+    createUser(payload)
+      .then((res) => {
+        setOpenAlert(true);
+      })
+      .catch((error) => {
+        setSeverity("error");
+        setOpenAlert(true);
+      });
   };
 
   const handleChangeTerms = (event) => {
@@ -304,7 +310,7 @@ export default function Register() {
         autoHideDuration={4000}
         onClose={handleCloseSnack}
       >
-        <Alert onClose={handleClose} severity={severity}>
+        <Alert onClose={handleCloseSnack} severity={severity}>
           {severity === "success"
             ? "Følg instruktionerne i din e-mail for at fuldføre oprettelsen"
             : "Oprettelsen fejlede"}

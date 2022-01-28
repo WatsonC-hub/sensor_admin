@@ -158,6 +158,11 @@ export default function Station({
     setFormToShow("ADDMAALEPUNKT");
   };
 
+  const handleMpCancel = () => {
+    resetMpData();
+    setFormToShow(null);
+  };
+
   // console.log(stationId);
 
   const handlePejlingSubmit = (stationId) => {
@@ -302,6 +307,7 @@ export default function Station({
           changeFormData={changeMpData}
           handleSubmit={handleMpSubmit}
           resetFormData={resetMpData}
+          handleCancel={handleMpCancel}
           canEdit={canEdit}
         ></MaalepunktForm>
       )}
