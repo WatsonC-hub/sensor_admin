@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Grid,
   Typography,
@@ -15,6 +15,8 @@ import { MuiPickersUtilsProvider, DateTimePicker } from "@material-ui/pickers";
 import { InputAdornment } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import OwnDatePicker from "./OwnDatePicker";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 export default function TilsynForm({
   formData,
@@ -30,19 +32,28 @@ export default function TilsynForm({
   };
   const theme = useTheme();
 
-  const handleEnddateChange = (date) => {
-    if (isValid(date)) {
-      console.log("date is valid again: ", date);
-      changeFormData("enddate", date);
+  const handleCommentChange = (e) => {
+    changeFormData("kommentar", e.target.value);
+  };
+
+  const handleDateChange = (date) => {
+    changeFormData("dato", date);
+  };
+
+  const handleChangeBattery = (event) => {
+    if (!formData.batteriskift) {
+      changeFormData("batteriskift", event.target.checked);
+    } else if (formData.batteriskift) {
+      changeFormData("batteriskift", false);
     }
   };
 
-  const handleCommentChange = (e) => {
-    changeFormData("mp_description", e.target.value);
-  };
-
-  const handleElevationChange = (e) => {
-    changeFormData("elevation", e.target.value);
+  const handleChangeService = (event) => {
+    if (!formData.service) {
+      changeFormData("tilsyn", event.target.checked);
+    } else if (formData.service) {
+      changeFormData("tilsyn", false);
+    }
   };
 
   return (
@@ -55,38 +66,33 @@ export default function TilsynForm({
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <OwnDatePicker
-                label={"Start dato"}
-                value={formData.startdate}
-                onChange={(date) => handleStartdateChange(date)}
+                label={"Dato"}
+                value={formData.dato}
+                onChange={(date) => handleDateChange(date)}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              {formData.gid !== -1 && (
-                <OwnDatePicker
-                  label={"Slut dato"}
-                  value={formData.enddate}
-                  onChange={(date) => handleEnddateChange(date)}
-                />
-              )}
-            </Grid>
             <Grid item xs={12} sm={8}>
-              <TextField
-                type="number"
-                variant="outlined"
-                label={
-                  <Typography variant="h6" component="h3">
-                    Pejlepunkt [m]
-                  </Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.batteriskift}
+                    onChange={handleChangeBattery}
+                    name="checkedBattery"
+                    color="primary"
+                  />
                 }
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="start">m</InputAdornment>
-                  ),
-                }}
-                InputLabelProps={{ shrink: true }}
-                fullWidth
-                value={formData.elevation}
-                onChange={handleElevationChange}
+                label={<label>Batteriskift</label>}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.tilsyn}
+                    onChange={handleChangeService}
+                    name="checkedService"
+                    color="primary"
+                  />
+                }
+                label={<label>Tilsyn</label>}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
@@ -96,7 +102,7 @@ export default function TilsynForm({
                     Kommentar
                   </Typography>
                 }
-                value={formData.mp_description}
+                value={formData.kommentar}
                 variant="outlined"
                 multiline
                 rows={4}
@@ -126,7 +132,7 @@ export default function TilsynForm({
                 color="secondary"
                 variant="contained"
               >
-                Annuler
+                Annuller
               </Button>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>

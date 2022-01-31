@@ -13,6 +13,10 @@ import {
   getMP,
   deleteMP,
   getStamdataByStation,
+  getService,
+  updateService,
+  insertService,
+  deleteService,
 } from "../../api";
 import { Toolbar } from "@material-ui/core";
 import EditStamdata from "./EditStamdata";
@@ -48,7 +52,7 @@ export default function Station({
   const [
     ,
     ,
-    ,
+    formData,
     ,
     ,
     ,
@@ -67,9 +71,20 @@ export default function Station({
     mp_description: "",
   });
 
+  const [serviceData, setServiceData] = useState({
+    gid: -1,
+    dato: formatedTimestamp(new Date()),
+    batteriskift: false,
+    tilsyn: false,
+    kommentar: "",
+  });
+
+  //const [first, setfirst] = useState(second);
+
   const [updated, setUpdated] = useState(new Date());
   const [measurements, setMeasurements] = useState([]);
   const [watlevmp, setWatlevmp] = useState([]);
+  const [services, setServices] = useState([]);
   const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
 
@@ -95,11 +110,16 @@ export default function Station({
         stationId,
         sessionStorage.getItem("session_id")
       );
-      Promise.all([mp, meas]).then((responses) => {
+      const serv = getService(stationId);
+      console.log(formData);
+      Promise.all([mp, meas, serv]).then((responses) => {
         const measures = responses[1].data.result;
         const mps = responses[0].data.result;
+        const services = responses[2].data.result;
         setMeasurements(measures);
         setWatlevmp(mps);
+        setServices(services);
+
         setcontrol(
           measures.map((e) => {
             const elev = mps.filter((e2) => {
@@ -156,6 +176,24 @@ export default function Station({
     setFormToShow("ADDMAALEPUNKT");
   };
 
+  const changeServiceData = (field, value) => {
+    setServiceData({
+      ...serviceData,
+      [field]: value,
+    });
+    console.log(serviceData);
+  };
+
+  const resetServiceData = () => {
+    setServiceData({
+      gid: -1,
+      dato: formatedTimestamp(new Date()),
+      batteriskift: false,
+      tilsyn: false,
+      kommentar: "",
+    });
+  };
+
   // console.log(stationId);
 
   const handlePejlingSubmit = (stationId) => {
@@ -193,6 +231,23 @@ export default function Station({
     );
   };
 
+  const handleServiceSubmit = () => {
+    // setFormToShow("ADDTILSYN");
+    const method = serviceData.gid !== -1 ? updateService : insertService;
+    const userId = sessionStorage.getItem("user");
+    const payload = { ...serviceData, userid: userId };
+    var _date = Date.parse(payload.dato);
+    console.log("time before parse: ", payload.dato);
+    console.log("time after parse: ", _date);
+    payload.dato = formatedTimestamp(new Date(_date));
+    method(sessionStorage.getItem("session_id"), stationId, payload).then(
+      (res) => {
+        resetServiceData();
+        setUpdated(new Date());
+      }
+    );
+  };
+
   const handleEdit = (type) => {
     if (type === "watlevmp") {
       return (data) => {
@@ -201,6 +256,13 @@ export default function Station({
         setMpData(data); // Fill form data on Edit
         setFormToShow("ADDMAALEPUNKT"); // update to use state machine
         // setUpdated(new Date());
+      };
+    } else if (type === "service") {
+      return (data) => {
+        data.dato = data.dato.replace(" ", "T").substr(0, 19);
+        setServiceData(data);
+        console.log("hej" + data);
+        setFormToShow("ADDTILSYN");
       };
     } else {
       return (data) => {
@@ -223,6 +285,17 @@ export default function Station({
             setUpdated(new Date());
           }
         );
+      };
+    } else if (type === "service") {
+      return (gid) => {
+        deleteService(
+          sessionStorage.getItem("session_id"),
+          stationId,
+          gid
+        ).then((res) => {
+          resetServiceData();
+          setUpdated(new Date());
+        });
       };
     } else {
       return (gid) => {
@@ -289,17 +362,17 @@ export default function Station({
       )}
       {formToShow === "ADDTILSYN" && (
         <TilsynForm
-          formData={mpData}
-          changeFormData={changeMpData}
-          handleSubmit={handleMpSubmit}
-          resetFormData={resetMpData}
+          formData={serviceData}
+          changeFormData={changeServiceData}
+          handleSubmit={handleServiceSubmit}
+          resetFormData={resetServiceData}
         ></TilsynForm>
       )}
       {formToShow === "ADDTILSYN" && (
         <TilsynTable
-          watlevmp={watlevmp}
-          handleEdit={handleEdit("watlevmp")}
-          handleDelete={handleDelete("watlevmp")}
+          services={services}
+          handleEdit={handleEdit("service")}
+          handleDelete={handleDelete("service")}
           canEdit={canEdit}
         ></TilsynTable>
       )}

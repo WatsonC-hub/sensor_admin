@@ -21,6 +21,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import moment from "moment";
 
@@ -30,20 +32,34 @@ const useStyles = makeStyles({
   },
 });
 
-function DesktopTilsyn({ watlevmp, handleEdit, handleDelete, canEdit }) {
+function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [mpId, setMpId] = useState(-1);
+  const [serviceId, setServiceId] = useState(-1);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
   const context = useContext(LocationContext);
+
+  // function createData(date, batteryChange, service, comment) {
+  //   return { date, batteryChange, service, comment };
+  // }
+
+  // const rows = [
+  //   createData("2022-01-31 11:04", true, false, "Pælen var væltet"),
+  //   createData(
+  //     "2021-02-24 9:43",
+  //     false,
+  //     true,
+  //     "Ko havde gennemtygget udstyr Ko havde gennemtygget udstyr Ko havde gennemtygget udstyr"
+  //   ),
+  // ];
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
   const onDeleteBtnClick = (id) => {
-    setMpId(id);
+    setServiceId(id);
     setDialogOpen(true);
   };
 
@@ -51,16 +67,10 @@ function DesktopTilsyn({ watlevmp, handleEdit, handleDelete, canEdit }) {
     handleDelete(id);
   };
 
-  const correction_map = {
-    0: "Kontrol",
-    1: "Korrektion fremadrettet",
-    2: "Korrektion frem og tilbage",
-  };
-
   return (
     <Fragment>
       <DeleteAlert
-        measurementId={mpId}
+        serviceId={serviceId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
@@ -72,26 +82,36 @@ function DesktopTilsyn({ watlevmp, handleEdit, handleDelete, canEdit }) {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell>Start dato</TableCell>
-              <TableCell>Slut dato</TableCell>
-              <TableCell align="right">Pejlepunkt [m]</TableCell>
-              <TableCell align="right">Beskrivelse</TableCell>
+              <TableCell>Dato</TableCell>
+              <TableCell>Batteriskift</TableCell>
+              <TableCell>Tilsyn</TableCell>
+              <TableCell align="center">Kommentar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {watlevmp
+            {services
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <TableRow key={index}>
                   <TableCell component="th" scope="row">
-                    {moment(row.startdate).format("YYYY-MM-DD HH:mm")}
+                    {moment(row.dato).format("YYYY-MM-DD HH:mm")}
                   </TableCell>
+                  <TableCell align="center">
+                    {row.batteriskift === true ? (
+                      <CheckBoxIcon color="action"></CheckBoxIcon>
+                    ) : (
+                      <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
+                    )}
+                  </TableCell>
+                  <TableCell align="center">
+                    {row.tilsyn === true ? (
+                      <CheckBoxIcon color="action"></CheckBoxIcon>
+                    ) : (
+                      <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
+                    )}
+                  </TableCell>
+                  <TableCell align="center">{row.kommentar}</TableCell>
                   <TableCell>
-                    {moment(row.enddate).format("YYYY-MM-DD HH:mm")}
-                  </TableCell>
-                  <TableCell align="right">{row.elevation}</TableCell>
-                  <TableCell align="right">{row.mp_description}</TableCell>
-                  <TableCell align="right">
                     <IconButton
                       onClick={() => handleEdit(row)}
                       disabled={!canEdit}
@@ -117,7 +137,7 @@ function DesktopTilsyn({ watlevmp, handleEdit, handleDelete, canEdit }) {
       <TablePagination
         rowsPerPageOptions={[5]}
         component="div"
-        count={watlevmp.length}
+        count={services.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

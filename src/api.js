@@ -121,6 +121,31 @@ const getMP = (stationId, sessionId) => {
   return axios.get(url);
 };
 
+const getService = (stationId) => {
+  const url = `${extEndpoint}/station/service/${stationId}`;
+  return axios.get(url);
+};
+
+const updateService = (sessionId, stationId, formData) => {
+  const gid = formData["gid"];
+  formData["dato"] = formData["dato"].split("+")[0];
+  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${sessionId}`;
+  return axios.put(url, formData);
+};
+
+const insertService = (sessionId, stationId, formData) => {
+  formData["dato"] = formData["dato"].split("+")[0];
+  // formData["terminal_id"] = terminalId;
+  const url = `${extEndpoint}/station/service/${stationId}?session_id=${sessionId}`;
+  return axios.post(url, formData);
+};
+
+const deleteService = (sessionId, stationId, gid) => {
+  if (!gid) return;
+  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${sessionId}`;
+  return axios.delete(url);
+};
+
 const getStationTypes = () =>
   axios.get(
     `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
@@ -201,4 +226,8 @@ export {
   updateStamdata,
   getLocationTypes,
   getDTMQuota,
+  getService,
+  updateService,
+  insertService,
+  deleteService,
 };
