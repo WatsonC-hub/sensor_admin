@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Plot from "react-plotly.js";
+import moment from "moment";
 import { getGraphData } from "../../api";
 
 const selectorOptions = {
@@ -30,6 +31,54 @@ const selectorOptions = {
     },
   ],
 };
+
+var icon = {
+  width: 1000,
+  path: "m833 5l-17 108v41l-130-65 130-66c0 0 0 38 0 39 0-1 36-14 39-25 4-15-6-22-16-30-15-12-39-16-56-20-90-22-187-23-279-23-261 0-341 34-353 59 3 60 228 110 228 110-140-8-351-35-351-116 0-120 293-142 474-142 155 0 477 22 477 142 0 50-74 79-163 96z m-374 94c-58-5-99-21-99-40 0-24 65-43 144-43 79 0 143 19 143 43 0 19-42 34-98 40v216h87l-132 135-133-135h88v-216z m167 515h-136v1c16 16 31 34 46 52l84 109v54h-230v-71h124v-1c-16-17-28-32-44-51l-89-114v-51h245v72z",
+  ascent: 850,
+  descent: -150,
+};
+
+function exportToCsv(filename, rows) {
+  var processRow = function (row) {
+    var finalVal = "";
+    for (var j = 0; j < row.length; j++) {
+      var innerValue = row[j] === null ? "" : row[j].toString();
+      if (row[j] instanceof Date) {
+        innerValue = row[j].toLocaleString();
+      }
+      var result = innerValue.replace(/"/g, '""');
+      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
+      if (j > 0) finalVal += ";";
+      finalVal += result;
+    }
+    return finalVal + "\n";
+  };
+
+  var csvFile = "";
+  for (var i = 0; i < rows.length; i++) {
+    csvFile += processRow(rows[i]);
+  }
+
+  var blob = new Blob([csvFile], { type: "text/csv;charset=utf-8;" });
+  if (navigator.msSaveBlob) {
+    // IE 10+
+    navigator.msSaveBlob(blob, filename);
+  } else {
+    var link = document.createElement("a");
+    if (link.download !== undefined) {
+      // feature detection
+      // Browsers that support HTML5 download attribute
+      var url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+}
 
 const layout1 = {
   xaxis: {
@@ -129,6 +178,20 @@ function PlotGraph({ graphData, controlData }) {
   //   if (graphData[0]) setStationName(graphData[0].properties.stationname);
   // }, [graphData]);
 
+  var downloadButton = {
+    name: "color toggler",
+    icon: icon,
+    click: function (gd) {
+      console.log(gd.data);
+      var rows = gd.data[0].x.map((elem, idx) => [
+        moment(elem).format("YYYY-MM-DD HH:mm"),
+        gd.data[0].y[idx].toString().replace(".", ","),
+      ]);
+
+      exportToCsv("data.csv", rows);
+    },
+  };
+
   return (
     <Plot
       data={[
@@ -174,15 +237,36 @@ function PlotGraph({ graphData, controlData }) {
       }
       config={{
         responsive: true,
-        modeBarButtonsToRemove: [
-          "select2d",
-          "lasso2d",
-          "autoScale2d",
-          "hoverCompareCartesian",
-          "hoverClosestCartesian",
-          "toggleSpikelines",
+        modeBarButtons: [
+          [downloadButton],
+          ["zoom2d", "pan2d", "zoomIn2d", "zoomOut2d", "resetScale2d"],
+          // ["zoom2d", "pan2d", "zoomIn2d", "zoomOut2d", "reset"],
         ],
+        // modeBarButtonsToRemove: [
+        //   "select2d",
+        //   "lasso2d",
+        //   "autoScale2d",
+        //   "hoverCompareCartesian",
+        //   "hoverClosestCartesian",
+        //   "toggleSpikelines",
+        // ],
+        // modeBarButtonsToAdd: [
+        //   {
+        //     name: "color toggler",
+        //     icon: icon,
+        //     click: function (gd) {
+        //       console.log(gd.data);
+        //       var rows = gd.data[0].x.map((elem, idx) => [
+        //         moment(elem).format("YYYY-MM-DD HH:mm"),
+        //         gd.data[0].y[idx].toString().replace(".", ","),
+        //       ]);
+
+        //       exportToCsv("data.csv", rows);
+        //     },
+        //   },
+        // ],
         displaylogo: false,
+        displayModeBar: true,
       }}
       useResizeHandler={true}
       style={{ width: "100%", height: "100%" }}
