@@ -56,7 +56,7 @@ export default function UnAuntenticatedApp({ setUser }) {
         </Toolbar>
       </AppBar>
       <Switch>
-        <Route path={["/", "/:labelid"]} exact>
+        <Route exact path="/">
           <Login setUser={setUser} />
         </Route>
         <Route path="/register">

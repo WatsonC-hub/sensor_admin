@@ -14,6 +14,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import { Typography } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -47,11 +48,18 @@ export default function Register() {
   const [checkedTerms, setCheckedTerms] = useState(false);
   const [checkedNews, setCheckedNews] = useState(false);
   const [open, setOpen] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
   const [cvrData, setCvrData] = useState({});
 
   const validEmail = new RegExp(
     "^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$"
   );
+
+  const history = useHistory();
+  const routeChange = () => {
+    let path = `/`;
+    history.push(path);
+  };
 
   const validateEmail = () => {
     if (!validEmail.test(email)) {
@@ -68,8 +76,10 @@ export default function Register() {
     if (emailErr === false) {
       getCvr(cvr)
         .then((res) => {
-          setCvrData(res.data.orgs[0]);
-          //console.log(res.data.orgs[0]);
+          setCvrData({
+            ...res.data.orgs[0],
+            id: res.data.orgs[0].id !== null ? res.data.orgs[0].id : -1,
+          });
           setSeverity("success");
           setTimeout(() => {
             handleClickOpen();
@@ -103,10 +113,13 @@ export default function Register() {
       userName: email,
     };
     // console.log(cvrData);
-    //console.log(payload);
+    console.log(payload);
+    setOpenAlert(true);
     createUser(payload)
       .then((res) => {
         setOpenAlert(true);
+        setOpen(false);
+        setOpenConfirm(true);
       })
       .catch((error) => {
         setSeverity("error");
@@ -276,7 +289,7 @@ export default function Register() {
         <DialogContent>
           <div>
             <Typography>
-              {cvrData.id === null
+              {cvrData.id === -1
                 ? "Denne organisation er ikke oprettet. Du vil blive ejeren af den nedenstående organisation og skal fremad rettet godkende andre brugere der tilknytter sig denne organisation. Følg instruktionerne i din email for at fuldføre oprettelsen."
                 : "Virksomheden er allerede oprettet. Der vil blive sendt en anmodning til nedenstående virksomhed, om at du kan oprettes i denne. Hvorefter du vil modtage en bekræftigelsesmail."}
             </Typography>
@@ -305,6 +318,34 @@ export default function Register() {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={openConfirm}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <Typography variant="h5">Afventer fuldførelse</Typography>
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            <Typography>
+              For at fuldføre oprettelsen, følg instruktionerne i din email.
+              Tjek eventuelt spam, hvis du ikke kan finde mailen.
+            </Typography>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={routeChange}
+            variant="outlined"
+            color="primary"
+            autoFocus
+          >
+            Til log ind
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Snackbar
         open={openAlert}
         autoHideDuration={4000}
@@ -312,7 +353,7 @@ export default function Register() {
       >
         <Alert onClose={handleCloseSnack} severity={severity}>
           {severity === "success"
-            ? "Følg instruktionerne i din e-mail for at fuldføre oprettelsen"
+            ? "Oprettelsen lykkedes"
             : "Oprettelsen fejlede"}
         </Alert>
       </Snackbar>

@@ -146,7 +146,7 @@ const getUnitHistory = (stationId) =>
 const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 
 const createUser = (payload) =>
-  axios.post(`${userEndpoint}/calypso/user`, payload);
+  axios.post(`${userEndpoint}calypso/user`, payload);
 
 const resetPassword = (passReset) =>
   axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
