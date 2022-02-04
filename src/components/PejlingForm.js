@@ -243,7 +243,7 @@ export default function PejlingForm({
                 variant="contained"
                 onClick={resetFormData}
               >
-                Annuler
+                Annuller
               </Button>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>

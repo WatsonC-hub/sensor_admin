@@ -40,20 +40,12 @@ export default function TilsynForm({
     changeFormData("dato", date);
   };
 
-  const handleChangeBattery = (event) => {
-    if (!formData.batteriskift) {
-      changeFormData("batteriskift", event.target.checked);
-    } else if (formData.batteriskift) {
-      changeFormData("batteriskift", false);
-    }
+  const handleChangeBattery = (e) => {
+    changeFormData("batteriskift", e.target.checked);
   };
 
-  const handleChangeService = (event) => {
-    if (!formData.service) {
-      changeFormData("tilsyn", event.target.checked);
-    } else if (formData.service) {
-      changeFormData("tilsyn", false);
-    }
+  const handleChangeService = (e) => {
+    changeFormData("tilsyn", e.target.checked);
   };
 
   return (

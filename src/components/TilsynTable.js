@@ -70,7 +70,7 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
   return (
     <Fragment>
       <DeleteAlert
-        serviceId={serviceId}
+        measurementId={serviceId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}

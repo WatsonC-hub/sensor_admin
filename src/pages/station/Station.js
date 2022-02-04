@@ -233,9 +233,15 @@ export default function Station({
 
   const handleServiceSubmit = () => {
     // setFormToShow("ADDTILSYN");
+    console.log("Hejsa");
     const method = serviceData.gid !== -1 ? updateService : insertService;
     const userId = sessionStorage.getItem("user");
-    const payload = { ...serviceData, userid: userId };
+    const payload = {
+      ...serviceData,
+      batteriskift: serviceData.batteriskift.toString(),
+      tilsyn: serviceData.tilsyn.toString(),
+      userid: userId,
+    };
     var _date = Date.parse(payload.dato);
     console.log("time before parse: ", payload.dato);
     console.log("time after parse: ", _date);
