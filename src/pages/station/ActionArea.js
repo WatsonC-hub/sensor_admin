@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
     height: "auto",
     margin: "5px",
+    boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
   },
   appBar: {
     top: "auto",
@@ -44,6 +45,12 @@ const useStyles = makeStyles((theme) => ({
   },
   icon: {
     transform: "rotate(90deg)",
+  },
+  border: {
+    //border: "2px solid black",
+    borderRadius: 3,
+    margin: "7px",
+    boxShadow: "0 3px 5px 0px rgba(115,115,115,255)",
   },
 }));
 
@@ -83,16 +90,19 @@ function BottomNav({ setFormToShow, canEdit }) {
       showLabels
     >
       <BottomNavigationAction
+        className={classes.border}
         disabled={!canEdit}
         label="Indberet pejling"
         icon={<AddCircle />}
       />
       <BottomNavigationAction
+        className={classes.border}
         disabled={!canEdit}
         label="Indberet målepunkt"
         icon={<Straighten className={classes.icon} />}
       />
       <BottomNavigationAction
+        className={classes.border}
         disabled={!canEdit}
         label="Ret stamdata"
         icon={<EditRounded />}
