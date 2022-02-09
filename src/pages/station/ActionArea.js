@@ -6,6 +6,7 @@ import {
   EditRounded,
   Straighten,
   PlaylistAddCheck,
+  PhotoCameraRounded,
 } from "@material-ui/icons";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
@@ -88,6 +89,10 @@ function BottomNav({ setFormToShow, canEdit }) {
         if (newValue === 1) {
           setFormToShow("ADDMAALEPUNKT");
         }
+
+        if (newValue === 4) {
+          setFormToShow("CAMERA");
+        }
       }}
       showLabels
     >
@@ -111,11 +116,11 @@ function BottomNav({ setFormToShow, canEdit }) {
         label="Ret stamdata"
         icon={<EditRounded />}
       />
-      {/* <BottomNavigationAction
+      <BottomNavigationAction
         disabled={!canEdit}
-        label='Tag billede'
+        label="Tag billede"
         icon={<PhotoCameraRounded />}
-      /> */}
+      />
     </BottomNavigation>
   );
 }

@@ -26,6 +26,7 @@
     "plotly.js": "^1.58.4",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
+    "react-html5-camera-photo": "^1.5.5",
     "react-plotly.js": "^2.5.1",
     "react-qr-scanner": "^1.0.0-alpha.7",
     "react-query": "^3.24.4",

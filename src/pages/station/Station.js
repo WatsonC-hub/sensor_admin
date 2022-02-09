@@ -17,6 +17,7 @@ import {
   updateService,
   insertService,
   deleteService,
+  postImage,
 } from "../../api";
 import { Toolbar } from "@material-ui/core";
 import EditStamdata from "./EditStamdata";
@@ -27,6 +28,8 @@ import { StamdataContext } from "../Stamdata/StamdataContext";
 import MaalepunktTable from "./MaalepunktTable";
 import TilsynForm from "../../components/TilsynForm";
 import TilsynTable from "../../components/TilsynTable";
+import Camera, { FACING_MODES, IMAGE_TYPES } from "react-html5-camera-photo";
+import "react-html5-camera-photo/build/css/index.css";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -317,6 +320,16 @@ export default function Station({
     }
   };
 
+  function handleCameraError(error) {
+    console.log("handleCameraError", error);
+  }
+
+  function handleTakePhoto(dataUri) {
+    // Do stuff with the photo...
+    postImage(235, dataUri).then((resp) => console.log(resp));
+    console.log(dataUri);
+  }
+
   return (
     // <>
     <div>
@@ -381,6 +394,26 @@ export default function Station({
           handleDelete={handleDelete("service")}
           canEdit={canEdit}
         ></TilsynTable>
+      )}
+      {formToShow === "CAMERA" && (
+        <Camera
+          onTakePhoto={(dataUri) => {
+            handleTakePhoto(dataUri);
+          }}
+          onCameraError={(error) => {
+            handleCameraError(error);
+          }}
+          idealFacingMode={FACING_MODES.ENVIRONMENT}
+          idealResolution={{ width: 640, height: 480 }}
+          imageType={IMAGE_TYPES.PNG}
+          imageCompression={0.97}
+          isMaxResolution={true}
+          isImageMirror={false}
+          isSilentMode={false}
+          isDisplayStartCameraError={true}
+          isFullscreen={false}
+          sizeFactor={1}
+        />
       )}
       <ActionArea
         open={open}

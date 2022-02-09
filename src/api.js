@@ -41,6 +41,30 @@ const getStamData = () => {
   return axios.get(url);
 };
 
+const dataURLtoFile = (dataurl, filename) => {
+  const arr = dataurl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n) {
+    u8arr[n - 1] = bstr.charCodeAt(n - 1);
+    n -= 1; // to make eslint happy
+  }
+  return new File([u8arr], filename, { type: mime });
+};
+
+const postImage = (loc_id, uri) => {
+  const url = `${extEndpoint}/image/${loc_id}`;
+  const file = dataURLtoFile(uri);
+  const data = new FormData();
+  data.append("img", file, "tmp");
+  const config = {
+    headers: { "Content-Type": "multipart/form-data" },
+  };
+  return axios.post(url, data, config);
+};
+
 const getTableData = (sessionId) => {
   const url = `${extEndpoint}/tabledata?session_id=${sessionId}`;
   return axios.get(url);
@@ -230,4 +254,5 @@ export {
   updateService,
   insertService,
   deleteService,
+  postImage,
 };
