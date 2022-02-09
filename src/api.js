@@ -54,11 +54,11 @@ const dataURLtoFile = (dataurl, filename) => {
   return new File([u8arr], filename, { type: mime });
 };
 
-const postImage = (loc_id, uri) => {
-  const url = `${extEndpoint}/image/${loc_id}`;
+const postImage = (loc_id, uri, sessionId) => {
+  const url = `${extEndpoint}/image/${loc_id}?session_id=${sessionId}`;
   const file = dataURLtoFile(uri);
   const data = new FormData();
-  data.append("img", file, "tmp");
+  data.append("files", file, "tmp");
   const config = {
     headers: { "Content-Type": "multipart/form-data" },
   };

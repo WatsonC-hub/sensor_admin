@@ -25,11 +25,13 @@ import PejlingMeasurements from "./PejlingMeasurements";
 import MaalepunktForm from "../../components/MaalepunktForm";
 import CaptureBearing from "./CaptureBearing";
 import { StamdataContext } from "../Stamdata/StamdataContext";
+
 import MaalepunktTable from "./MaalepunktTable";
 import TilsynForm from "../../components/TilsynForm";
 import TilsynTable from "../../components/TilsynTable";
 import Camera, { FACING_MODES, IMAGE_TYPES } from "react-html5-camera-photo";
 import "react-html5-camera-photo/build/css/index.css";
+import { useLocation } from "react-router-dom";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -51,6 +53,8 @@ export default function Station({
     useforcorrection: 0,
     comment: "",
   });
+
+  let location = useLocation();
 
   const [
     ,
@@ -326,7 +330,10 @@ export default function Station({
 
   function handleTakePhoto(dataUri) {
     // Do stuff with the photo...
-    postImage(235, dataUri).then((resp) => console.log(resp));
+    let sessionId = sessionStorage.getItem("session_id");
+    postImage(location.pathname.split("/")[2], dataUri, sessionId).then(
+      (resp) => console.log(resp)
+    );
     console.log(dataUri);
   }
 

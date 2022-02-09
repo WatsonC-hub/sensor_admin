@@ -35,7 +35,7 @@ function Map() {
     );
     if (_popup && _popup.length > 0) {
       L.DomEvent.on(_popup[0], "click", () => {
-        context.setLocationId(element.locid + "_");
+        context.setLocationId(element.locid);
         history.push("location/" + element.locid);
         context.setTabValue(1);
       });
