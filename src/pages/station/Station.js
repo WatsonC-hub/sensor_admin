@@ -27,6 +27,8 @@ import { StamdataContext } from "../Stamdata/StamdataContext";
 import MaalepunktTable from "./MaalepunktTable";
 import TilsynForm from "../../components/TilsynForm";
 import TilsynTable from "../../components/TilsynTable";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -87,6 +89,8 @@ export default function Station({
   const [services, setServices] = useState([]);
   const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
 
   useEffect(() => {
     console.log(stationId);
@@ -194,8 +198,6 @@ export default function Station({
     });
   };
 
-  // console.log(stationId);
-
   const handlePejlingSubmit = (stationId) => {
     setFormToShow(null);
     const method =
@@ -206,12 +208,19 @@ export default function Station({
     console.log("time before parse: ", payload.timeofmeas);
     console.log("time after parse: ", _date);
     payload.timeofmeas = formatedTimestamp(new Date(_date));
-    method(sessionStorage.getItem("session_id"), stationId, payload).then(
-      (res) => {
+    method(sessionStorage.getItem("session_id"), stationId, payload)
+      .then((res) => {
         resetPejlingData();
         setUpdated(new Date());
-      }
-    );
+        setSeverity("success");
+        setTimeout(() => {
+          handleClickOpen();
+        }, 500);
+      })
+      .catch((error) => {
+        setSeverity("error");
+        setOpenAlert(true);
+      });
   };
 
   const handleMpSubmit = () => {
@@ -257,8 +266,8 @@ export default function Station({
   const handleEdit = (type) => {
     if (type === "watlevmp") {
       return (data) => {
-        data.startdate = data.startdate.replace(" ", "T").substr(0, 19);
-        data.enddate = data.enddate.replace(" ", "T").substr(0, 19);
+        // data.startdate = formatedTimestamp(new Date(data.startdate));
+        // data.enddate = formatedTimestamp(new Date(data.enddate));
         setMpData(data); // Fill form data on Edit
         setFormToShow("ADDMAALEPUNKT"); // update to use state machine
         // setUpdated(new Date());
@@ -315,6 +324,21 @@ export default function Station({
         });
       };
     }
+  };
+
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  const handleCloseSnack = (reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpenAlert(true);
   };
 
   return (

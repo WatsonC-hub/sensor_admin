@@ -47,6 +47,14 @@ export default function PejlingForm({
   });
 
   const [notPossible, setNotPossible] = useState(false);
+  const [disableSubmit, setDisableSubmit] = useState(false);
+
+  const handleClickSubmit = () => {
+    setDisableSubmit(true);
+    setTimeout(() => {
+      setDisableSubmit(false);
+    }, 2500);
+  };
 
   useEffect(() => {
     if (mpData.length > 0) {
@@ -230,7 +238,11 @@ export default function PejlingForm({
                 autoFocus
                 color="secondary"
                 variant="contained"
-                onClick={() => handleSubmit(stationId)}
+                onClick={() => {
+                  handleClickSubmit();
+                  handleSubmit();
+                }}
+                disabled={disableSubmit}
                 startIcon={<SaveIcon />}
               >
                 Gem

@@ -24,6 +24,15 @@ export default function TilsynForm({
   handleSubmit,
   resetFormData,
 }) {
+  const [disableSubmit, setDisableSubmit] = useState(false);
+
+  const handleClickSubmit = () => {
+    setDisableSubmit(true);
+    setTimeout(() => {
+      setDisableSubmit(false);
+    }, 2500);
+  };
+
   const handleStartdateChange = (date) => {
     if (isValid(date)) {
       console.log("date is valid again: ", date);
@@ -108,7 +117,11 @@ export default function TilsynForm({
               <Button
                 autoFocus
                 style={{ backgroundColor: theme.palette.secondary }}
-                onClick={() => handleSubmit()}
+                onClick={() => {
+                  handleClickSubmit();
+                  handleSubmit();
+                }}
+                disabled={disableSubmit}
                 startIcon={<SaveIcon />}
                 color="secondary"
                 variant="contained"

@@ -93,6 +93,7 @@ const insertMp = (sessionId, stationId, formData) => {
 
 const updateMp = (sessionId, stationId, formData) => {
   const gid = formData["gid"];
+  console.log(formData);
   formData["startdate"] = formData["startdate"].split("+")[0];
   formData["enddate"] = formData["enddate"].split("+")[0];
   const url = `${extEndpoint}/station/watlevmp/${stationId}/${gid}?session_id=${sessionId}`;

@@ -30,6 +30,9 @@ const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
+  tableMobile: {
+    minWidth: 300,
+  },
 });
 
 function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
@@ -39,20 +42,6 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
   const context = useContext(LocationContext);
-
-  // function createData(date, batteryChange, service, comment) {
-  //   return { date, batteryChange, service, comment };
-  // }
-
-  // const rows = [
-  //   createData("2022-01-31 11:04", true, false, "Pælen var væltet"),
-  //   createData(
-  //     "2021-02-24 9:43",
-  //     false,
-  //     true,
-  //     "Ko havde gennemtygget udstyr Ko havde gennemtygget udstyr Ko havde gennemtygget udstyr"
-  //   ),
-  // ];
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -146,12 +135,21 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
   );
 }
 
-function MobileTilsyn({ watlevmp, handleEdit, handleDelete, canEdit }) {
+function MobileTilsyn({ services, handleEdit, handleDelete, canEdit }) {
+  const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [mpId, setMpId] = useState(-1);
+  const [serviceId, setServiceId] = useState(-1);
+  const [page, setPage] = React.useState(0);
+  const rowsPerPage = 5;
+  const context = useContext(LocationContext);
+
   const onDeleteBtnClick = (id) => {
-    setMpId(id);
+    setServiceId(id);
     setDialogOpen(true);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
   };
 
   const deleteRow = (id) => {
@@ -161,25 +159,102 @@ function MobileTilsyn({ watlevmp, handleEdit, handleDelete, canEdit }) {
   return (
     <Fragment>
       <DeleteAlert
-        measurementId={mpId}
+        measurementId={serviceId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
       <Typography gutterBottom variant="h5" component="h2">
-        Tidligere pejlinger
+        Tilsyn
       </Typography>
       <Fragment>
-        <List>
-          {watlevmp.map((row, index) => (
+        <TableContainer>
+          <Table className={classes.mobile} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Dato</TableCell>
+                <TableCell>Batteri</TableCell>
+                <TableCell>Tilsyn</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {services
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell component="th" scope="row">
+                      {moment(row.dato).format("YYYY-MM-DD HH:mm")}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.batteriskift === true ? (
+                        <CheckBoxIcon color="action"></CheckBoxIcon>
+                      ) : (
+                        <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
+                      )}
+                    </TableCell>
+                    <TableCell align="center">
+                      {row.tilsyn === true ? (
+                        <CheckBoxIcon color="action"></CheckBoxIcon>
+                      ) : (
+                        <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        onClick={() => handleEdit(row)}
+                        disabled={!canEdit}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        onClick={() => {
+                          onDeleteBtnClick(row.gid);
+                        }}
+                        disabled={!canEdit}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5]}
+          component="div"
+          count={services.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+        />
+        {/* <List>
+          {services.map((row, index) => (
             <ListItem key={index} dense>
               <ListItemText
+                primary={moment(row.dato).format("YYYY-MM-DD HH:mm")}
+              />
+              <ListItemText
                 primary={
-                  row.startdate.split(" ")[0] +
-                  " - " +
-                  row.enddate.split(" ")[0]
+                  row.batteriskift === true ? (
+                    <CheckBoxIcon color="action"></CheckBoxIcon>
+                  ) : (
+                    <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
+                  )
                 }
-                secondary={"Målepunkt: " + row.elevation + " m"}
+                secondary="B"
+              />
+              <ListItemText
+                primary={
+                  row.tilsyn === true ? (
+                    <CheckBoxIcon color="action"></CheckBoxIcon>
+                  ) : (
+                    <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
+                  )
+                }
+                secondary="T"
               />
               <ListItemSecondaryAction>
                 <IconButton
@@ -204,7 +279,7 @@ function MobileTilsyn({ watlevmp, handleEdit, handleDelete, canEdit }) {
               </ListItemSecondaryAction>
             </ListItem>
           ))}
-        </List>
+        </List> */}
       </Fragment>
     </Fragment>
   );
