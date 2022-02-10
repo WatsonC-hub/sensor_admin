@@ -54,15 +54,36 @@ const dataURLtoFile = (dataurl, filename) => {
   return new File([u8arr], filename, { type: mime });
 };
 
-const postImage = (loc_id, uri, sessionId) => {
+const postImage = (payload, uri, sessionId) => {
+  const loc_id = payload.loc_id;
   const url = `${extEndpoint}/image/${loc_id}?session_id=${sessionId}`;
   const file = dataURLtoFile(uri);
   const data = new FormData();
   data.append("files", file, "tmp");
+  data.append("loc_id", payload.loc_id);
+  data.append("comment", payload.comment);
+  data.append("public", payload.public);
+  data.append("date", payload.date);
   const config = {
     headers: { "Content-Type": "multipart/form-data" },
   };
   return axios.post(url, data, config);
+};
+
+const deleteImage = (loc_id, gid, sessionId) => {
+  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionId}`;
+  return axios.delete(url);
+};
+
+const updateImage = (gid, payload, sessionId) => {
+  const loc_id = payload.loc_id;
+  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionId}`;
+  return axios.put(url, payload);
+};
+
+const getImage = (loc_id) => {
+  const url = `${extEndpoint}/image/${loc_id}`;
+  return axios.get(url);
 };
 
 const getTableData = (sessionId) => {
@@ -255,4 +276,7 @@ export {
   insertService,
   deleteService,
   postImage,
+  getImage,
+  deleteImage,
+  updateImage,
 };

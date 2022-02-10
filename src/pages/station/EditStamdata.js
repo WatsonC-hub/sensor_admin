@@ -13,9 +13,6 @@ import {
   useTheme,
 } from "@material-ui/core";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import daLocale from "date-fns/locale/da";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import OwnDatePicker from "../../components/OwnDatePicker";
 
 import LocalityForm from "../Stamdata/components/LocalityForm";
@@ -52,53 +49,51 @@ const UnitEndDateDialog = ({
   };
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
-      <Dialog open={openDialog}>
-        <DialogTitle>Angiv slutdato</DialogTitle>
-        <DialogContent>
-          <OwnDatePicker
-            label="Fra"
-            value={date}
-            onChange={(date) => handleDateChange(date)}
-          />
-          <DialogActions item xs={4} sm={2}>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={() => {
-                const payload = { ...unit, ts_id: stationId, slutdato: date };
-                payload.startdate = formatedTimestamp(
-                  new Date(Date.parse(payload.startdato))
-                );
-                payload.enddate = formatedTimestamp(
-                  new Date(Date.parse(payload.slutdato))
-                );
+    <Dialog open={openDialog}>
+      <DialogTitle>Angiv slutdato</DialogTitle>
+      <DialogContent>
+        <OwnDatePicker
+          label="Fra"
+          value={date}
+          onChange={(date) => handleDateChange(date)}
+        />
+        <DialogActions item xs={4} sm={2}>
+          <Button
+            autoFocus
+            color="secondary"
+            variant="contained"
+            startIcon={<SaveIcon />}
+            onClick={() => {
+              const payload = { ...unit, ts_id: stationId, slutdato: date };
+              payload.startdate = formatedTimestamp(
+                new Date(Date.parse(payload.startdato))
+              );
+              payload.enddate = formatedTimestamp(
+                new Date(Date.parse(payload.slutdato))
+              );
 
-                takeHomeEquipment(
-                  unit.gid,
-                  payload,
-                  sessionStorage.getItem("session_id")
-                ).then((res) => setOpenDialog(false));
-              }}
-            >
-              Gem
-            </Button>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              onClick={() => {
-                setOpenDialog(false);
-              }}
-            >
-              Annuller
-            </Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
-    </MuiPickersUtilsProvider>
+              takeHomeEquipment(
+                unit.gid,
+                payload,
+                sessionStorage.getItem("session_id")
+              ).then((res) => setOpenDialog(false));
+            }}
+          >
+            Gem
+          </Button>
+          <Button
+            autoFocus
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              setOpenDialog(false);
+            }}
+          >
+            Annuller
+          </Button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
   );
 };
 

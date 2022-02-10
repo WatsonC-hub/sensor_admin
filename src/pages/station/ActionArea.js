@@ -118,7 +118,7 @@ function BottomNav({ setFormToShow, canEdit }) {
       />
       <BottomNavigationAction
         disabled={!canEdit}
-        label="Tag billede"
+        label="Billeder"
         icon={<PhotoCameraRounded />}
       />
     </BottomNavigation>

@@ -5,10 +5,9 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import DateFnsUtils from "@date-io/date-fns";
-import daLocale from "date-fns/locale/da";
+
 import { getAvailableUnits } from "../../api";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+
 import { MenuItem, useTheme } from "@material-ui/core";
 import { StamdataContext } from "./StamdataContext";
 import OwnDatePicker from "../../components/OwnDatePicker";
@@ -108,80 +107,78 @@ export default function AddUdstyrForm({
 
   return (
     <div>
-      <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
-        <Dialog
-          open={udstyrDialogOpen}
-          onClose={handleClose}
-          aria-labelledby="form-dialog-title"
-        >
-          <DialogTitle id="form-dialog-title">Tilføj Udstyr</DialogTitle>
-          <DialogContent>
-            {uniqueCalypsoIds().length === 0 && (
-              <Typography variant="subtitle2" component="h3" color="error">
-                * ingen enheder der passer til stationstypen er tilgængelig
-              </Typography>
-            )}
-            <TextField
-              autoFocus
-              select
-              margin="dense"
-              value={udstyrFormData.calypso_id}
-              onChange={handleCalypsoId}
-              id="calypso_id"
-              label="Calypso ID"
-              fullWidth
-            >
-              <MenuItem key={-1} value={-1}>
-                Vælg calypso ID
+      <Dialog
+        open={udstyrDialogOpen}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle id="form-dialog-title">Tilføj Udstyr</DialogTitle>
+        <DialogContent>
+          {uniqueCalypsoIds().length === 0 && (
+            <Typography variant="subtitle2" component="h3" color="error">
+              * ingen enheder der passer til stationstypen er tilgængelig
+            </Typography>
+          )}
+          <TextField
+            autoFocus
+            select
+            margin="dense"
+            value={udstyrFormData.calypso_id}
+            onChange={handleCalypsoId}
+            id="calypso_id"
+            label="Calypso ID"
+            fullWidth
+          >
+            <MenuItem key={-1} value={-1}>
+              Vælg calypso ID
+            </MenuItem>
+            {uniqueCalypsoIds().map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
               </MenuItem>
-              {uniqueCalypsoIds().map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              autoFocus
-              select
-              margin="dense"
-              value={udstyrFormData.uuid}
-              onChange={handleSensorUUID}
-              id="sensor_id"
-              label="Sensor / Sensor ID"
-              fullWidth
-            >
-              <MenuItem key={-1} value={-1}>
-                Vælg Sensor ID
+            ))}
+          </TextField>
+          <TextField
+            autoFocus
+            select
+            margin="dense"
+            value={udstyrFormData.uuid}
+            onChange={handleSensorUUID}
+            id="sensor_id"
+            label="Sensor / Sensor ID"
+            fullWidth
+          >
+            <MenuItem key={-1} value={-1}>
+              Vælg Sensor ID
+            </MenuItem>
+            {sensorsForCalyspoId(udstyrFormData.calypso_id).map((option) => (
+              <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
+                {option.channel} - {option.sensortypename}
               </MenuItem>
-              {sensorsForCalyspoId(udstyrFormData.calypso_id).map((option) => (
-                <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
-                  {option.channel} - {option.sensortypename}
-                </MenuItem>
-              ))}
-            </TextField>
-            <OwnDatePicker
-              label={"Fra"}
-              value={udstyrFormData.fra}
-              onChange={(date) => handleDateChange(date)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={handleSave}
-              color="secondary"
-              variant="contained"
-              disabled={
-                udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === -1
-              }
-            >
-              Tilføj
-            </Button>
-            <Button onClick={handleClose} color="secondary" variant="contained">
-              Annuller
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </MuiPickersUtilsProvider>
+            ))}
+          </TextField>
+          <OwnDatePicker
+            label={"Fra"}
+            value={udstyrFormData.fra}
+            onChange={(date) => handleDateChange(date)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={handleSave}
+            color="secondary"
+            variant="contained"
+            disabled={
+              udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === -1
+            }
+          >
+            Tilføj
+          </Button>
+          <Button onClick={handleClose} color="secondary" variant="contained">
+            Annuller
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
