@@ -210,78 +210,6 @@ export default function PejlingForm({
                   control={<Radio />}
                   label="Kontrol"
                 />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              type="number"
-              variant="outlined"
-              disabled={true}
-              label={
-                <Typography variant="h6" component="h3">
-                  Målepunktskote
-                </Typography>
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">m</InputAdornment>
-                ),
-                style: { color: "black" },
-              }}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              value={currentMP.elevation}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              type="text"
-              variant="outlined"
-              disabled={true}
-              label={
-                <Typography variant="h6" component="h3">
-                  Målepunkt placering
-                </Typography>
-              }
-              InputProps={{
-                style: { color: "black" },
-              }}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              value={currentMP.mp_description}
-            />
-          </Grid>
-          <Grid item xs={12} sm={12}>
-            <TextField
-              label={
-                <Typography variant="h6" component="h3">
-                  Kommentar
-                </Typography>
-              }
-              value={formData.comment}
-              variant="outlined"
-              multiline
-              rows={4}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              onChange={handleCommentChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={12}>
-            <FormControl component="fieldset">
-              <FormLabel component="h6">
-                Hvordan skal pejlingen anvendes?
-              </FormLabel>
-              <RadioGroup
-                value={formData.useforcorrection + ""}
-                onChange={handleUsageChange}
-              >
-                <FormControlLabel
-                  value="0"
-                  control={<Radio />}
-                  label="Kontrol"
-                />
                 <FormControlLabel
                   value="1"
                   control={<Radio />}
@@ -321,7 +249,9 @@ export default function PejlingForm({
               Annuller
             </Button>
           </Grid>
+          <Grid item xs={2} sm={4}></Grid>
         </Grid>
+        <Grid item xs={2} sm={4}></Grid>
       </CardContent>
     </Card>
   );

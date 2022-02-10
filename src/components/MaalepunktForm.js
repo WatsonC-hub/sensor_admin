@@ -74,6 +74,26 @@ export default function MaalepunktForm({
               />
             )}
           </Grid>
+          <Grid item xs={12} sm={8}>
+            <TextField
+              type="number"
+              variant="outlined"
+              label={
+                <Typography variant="h6" component="h3">
+                  Pejlepunkt [m]
+                </Typography>
+              }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">m</InputAdornment>
+                ),
+              }}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              value={formData.elevation}
+              onChange={handleElevationChange}
+            />
+          </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
               label={
@@ -90,6 +110,7 @@ export default function MaalepunktForm({
               onChange={handleCommentChange}
             />
           </Grid>
+          <Grid item xs={2} sm={4}></Grid>
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
@@ -117,7 +138,9 @@ export default function MaalepunktForm({
               Annuler
             </Button>
           </Grid>
+          <Grid item xs={2} sm={4}></Grid>
         </Grid>
+        <Grid item xs={2} sm={4}></Grid>
       </CardContent>
     </Card>
   );
