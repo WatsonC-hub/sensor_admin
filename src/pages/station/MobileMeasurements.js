@@ -37,7 +37,7 @@ export default function MobileMeasurements({
         onOkDelete={deleteRow}
       />
       <Typography gutterBottom variant="h5" component="h2">
-        Tidligere pejlinger
+        Kontrolmålinger
       </Typography>
       <Fragment>
         <List>

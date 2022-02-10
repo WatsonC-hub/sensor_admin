@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Grid,
   Typography,
@@ -19,6 +19,15 @@ export default function MaalepunktForm({
   handleSubmit,
   resetFormData,
 }) {
+  const [disableSubmit, setDisableSubmit] = useState(false);
+
+  const handleClickSubmit = () => {
+    setDisableSubmit(true);
+    setTimeout(() => {
+      setDisableSubmit(false);
+    }, 2500);
+  };
+
   const handleStartdateChange = (date) => {
     if (isValid(date)) {
       console.log("date is valid again: ", date);
@@ -65,26 +74,6 @@ export default function MaalepunktForm({
               />
             )}
           </Grid>
-          <Grid item xs={12} sm={8}>
-            <TextField
-              type="number"
-              variant="outlined"
-              label={
-                <Typography variant="h6" component="h3">
-                  Pejlepunkt [m]
-                </Typography>
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">m</InputAdornment>
-                ),
-              }}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              value={formData.elevation}
-              onChange={handleElevationChange}
-            />
-          </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
               label={
@@ -101,12 +90,15 @@ export default function MaalepunktForm({
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
               style={{ backgroundColor: theme.palette.secondary }}
-              onClick={() => handleSubmit()}
+              onClick={() => {
+                handleClickSubmit();
+                handleSubmit();
+              }}
+              disabled={disableSubmit}
               startIcon={<SaveIcon />}
               color="secondary"
               variant="contained"
@@ -125,7 +117,6 @@ export default function MaalepunktForm({
               Annuler
             </Button>
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
         </Grid>
       </CardContent>
     </Card>

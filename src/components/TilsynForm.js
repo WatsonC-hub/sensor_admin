@@ -20,6 +20,15 @@ export default function TilsynForm({
   handleSubmit,
   resetFormData,
 }) {
+  const [disableSubmit, setDisableSubmit] = useState(false);
+
+  const handleClickSubmit = () => {
+    setDisableSubmit(true);
+    setTimeout(() => {
+      setDisableSubmit(false);
+    }, 2500);
+  };
+
   const handleStartdateChange = (date) => {
     if (isValid(date)) {
       console.log("date is valid again: ", date);
@@ -103,7 +112,11 @@ export default function TilsynForm({
             <Button
               autoFocus
               style={{ backgroundColor: theme.palette.secondary }}
-              onClick={() => handleSubmit()}
+              onClick={() => {
+                handleClickSubmit();
+                handleSubmit();
+              }}
+              disabled={disableSubmit}
               startIcon={<SaveIcon />}
               color="secondary"
               variant="contained"
@@ -123,6 +136,69 @@ export default function TilsynForm({
             </Button>
           </Grid>
           <Grid item xs={2} sm={4}></Grid>
+        </Grid>
+        <Grid item xs={12} sm={8}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.batteriskift}
+                onChange={handleChangeBattery}
+                name="checkedBattery"
+                color="primary"
+              />
+            }
+            label={<label>Batteriskift</label>}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={formData.tilsyn}
+                onChange={handleChangeService}
+                name="checkedService"
+                color="primary"
+              />
+            }
+            label={<label>Tilsyn</label>}
+          />
+        </Grid>
+        <Grid item xs={12} sm={12}>
+          <TextField
+            label={
+              <Typography variant="h6" component="h3">
+                Kommentar
+              </Typography>
+            }
+            value={formData.kommentar}
+            variant="outlined"
+            multiline
+            rows={4}
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            onChange={handleCommentChange}
+          />
+        </Grid>
+        <Grid item xs={4} sm={2}>
+          <Button
+            autoFocus
+            style={{ backgroundColor: theme.palette.secondary }}
+            onClick={() => handleSubmit()}
+            startIcon={<SaveIcon />}
+            color="secondary"
+            variant="contained"
+          >
+            Gem
+          </Button>
+        </Grid>
+        <Grid item xs={4} sm={2}>
+          <Button
+            autoFocus
+            style={{ backgroundColor: theme.palette.secondary }}
+            onClick={resetFormData}
+            color="secondary"
+            variant="contained"
+          >
+            Annuller
+          </Button>
         </Grid>
       </CardContent>
     </Card>

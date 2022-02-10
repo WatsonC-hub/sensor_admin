@@ -51,12 +51,6 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
     handleDelete(id);
   };
 
-  const correction_map = {
-    0: "Kontrol",
-    1: "Korrektion fremadrettet",
-    2: "Korrektion frem og tilbage",
-  };
-
   return (
     <Fragment>
       <DeleteAlert
@@ -93,7 +87,10 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                   <TableCell align="right">{row.mp_description}</TableCell>
                   <TableCell align="right">
                     <IconButton
-                      onClick={() => handleEdit(row)}
+                      onClick={() => {
+                        console.log(row);
+                        handleEdit(row);
+                      }}
                       disabled={!canEdit}
                     >
                       <EditIcon />
@@ -147,7 +144,7 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         onOkDelete={deleteRow}
       />
       <Typography gutterBottom variant="h5" component="h2">
-        Tidligere pejlinger
+        Målepunkter
       </Typography>
       <Fragment>
         <List>
@@ -165,6 +162,7 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                 <IconButton
                   edge="end"
                   onClick={() => {
+                    console.log(row);
                     handleEdit(row);
                     setTimeout(() => {
                       window.scrollTo({ top: 300, behavior: "smooth" });
