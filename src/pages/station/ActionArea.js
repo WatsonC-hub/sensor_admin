@@ -163,7 +163,7 @@ function MobileBottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Ret stamdata"
+        label="Ændre udstyr"
         icon={<EditRounded />}
         onClick={() => {
           setFormToShow("RET_STAMDATA");
