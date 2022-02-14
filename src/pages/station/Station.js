@@ -277,7 +277,9 @@ export default function Station({
   return (
     // <>
     <div>
-      {(formToShow === null || formToShow === "ADDPEJLING") && (
+      {(formToShow === null ||
+        formToShow === "ADDPEJLING" ||
+        formToShow === "ADDMAALEPUNKT") && (
         <BearingGraph
           stationId={stationId}
           updated={updated}

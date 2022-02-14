@@ -104,7 +104,7 @@ function BottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Ret stamdata"
+        label="Ændre udstyr"
         icon={<EditRounded />}
       />
       {/* <BottomNavigationAction
