@@ -73,7 +73,7 @@ function StationImages(props) {
 
   const handleDelete = (image) => {
     let sessionId = sessionStorage.getItem("session_id");
-    deleteImage(image.loc_id, image.gid, sessionId).then((res) => {
+    return deleteImage(image.loc_id, image.gid, sessionId).then((res) => {
       triggerPhoto();
     });
   };
@@ -108,7 +108,7 @@ function StationImages(props) {
         handleCloseSave={handleCloseSave}
       />
       <Grid container spacing={3}>
-        <Grid item xs={6} sm={1}>
+        <Grid item xs={6} sm={2}>
           <Button
             autoFocus
             color="secondary"
@@ -119,7 +119,7 @@ function StationImages(props) {
             {openCamera ? "Luk kamera" : "Tag billede"}
           </Button>
         </Grid>
-        <Grid item xs={6} sm={1}>
+        <Grid item xs={6} sm={2}>
           <label htmlFor="btn-upload">
             <input
               id="btn-upload"

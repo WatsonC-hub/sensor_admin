@@ -26,9 +26,18 @@ function ImageCard({ image, handleDelete, handleEdit }) {
   const imageUrl = baseUrl + image.imageurl + ".png";
   const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [disableDelete, setDisableDelete] = useState(false);
+  const [disableEdit, setDisableEdit] = useState(false);
 
-  const deleteRow = (id) => {
-    handleDelete(image);
+  const deleteImage = (id) => {
+    setDisableDelete(true);
+    setDisableEdit(true);
+    handleDelete(image).then((res) => {
+      setTimeout(() => {
+        setDisableDelete(false);
+        setDisableEdit(false);
+      }, 2000);
+    });
   };
 
   return (
@@ -37,7 +46,7 @@ function ImageCard({ image, handleDelete, handleEdit }) {
         title="Vil du slette billedet?"
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={deleteRow}
+        onOkDelete={deleteImage}
       />
       <CardActionArea>
         <CardMedia className={classes.media} image={imageUrl} />
@@ -57,13 +66,19 @@ function ImageCard({ image, handleDelete, handleEdit }) {
       </CardActionArea>
       <CardActions>
         <Button
+          disabled={disableDelete}
           onClick={() => setDialogOpen(true)}
           size="small"
           color="primary"
         >
           Slet
         </Button>
-        <Button onClick={() => handleEdit(image)} size="small" color="primary">
+        <Button
+          disabled={disableEdit}
+          onClick={() => handleEdit(image)}
+          size="small"
+          color="primary"
+        >
           Rediger
         </Button>
       </CardActions>
