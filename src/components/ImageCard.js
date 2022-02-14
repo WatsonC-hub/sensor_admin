@@ -13,11 +13,14 @@ import moment from "moment";
 
 const useStyles = makeStyles({
   root: {
-    // minWidth: 300,
+    minWidth: 300,
+    margin: "auto",
   },
   media: {
-    minHeight: 300,
-    // minWidth: 300,
+    // minHeight: 400,
+    height: 640,
+    width: "100%",
+    objectFit: "cover",
   },
 });
 
@@ -49,22 +52,20 @@ function ImageCard({ image, handleDelete, handleEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteImage}
       />
-      <CardActionArea>
-        <CardMedia className={classes.media} image={imageUrl} />
-        <CardContent>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            align="right"
-            component="p"
-          >
-            {moment(image.date).format("YYYY-MM-DD HH:mm")}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {image.comment}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
+      <CardMedia className={classes.media} image={imageUrl} />
+      <CardContent>
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          align="right"
+          component="p"
+        >
+          {moment(image.date).format("YYYY-MM-DD HH:mm")}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          {image.comment}
+        </Typography>
+      </CardContent>
       <CardActions>
         <Button
           disabled={disableDelete}

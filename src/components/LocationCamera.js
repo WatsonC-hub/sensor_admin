@@ -42,14 +42,14 @@ function LocationCamera({ open, handleClose, setDataURI }) {
             handleCameraError(error);
           }}
           idealFacingMode={FACING_MODES.ENVIRONMENT}
-          // idealResolution={{ width: 640, height: 480 }}
+          idealResolution={{ width: 640, height: 480 }}
           imageType={IMAGE_TYPES.PNG}
           imageCompression={0.97}
-          isMaxResolution={true}
+          // isMaxResolution={true}
           isImageMirror={false}
           isSilentMode={false}
           isDisplayStartCameraError={true}
-          isFullscreen={true}
+          // isFullscreen={true}
           sizeFactor={1}
         />
       </Dialog>

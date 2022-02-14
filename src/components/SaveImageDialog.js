@@ -41,6 +41,9 @@ function SaveImageDialog({
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const classes = useStyles();
   const [disableAdd, setDisableAdd] = useState(false);
+  const baseUrl =
+    "https://calypsoimages.s3.eu-north-1.amazonaws.com/location_images/";
+  const imageUrl = baseUrl + activeImage.imageurl + ".png";
 
   function saveImage() {
     let sessionId = sessionStorage.getItem("session_id");
@@ -81,7 +84,10 @@ function SaveImageDialog({
       <DialogContent>
         <Grid container spacing={3} style={{ width: "100%" }}>
           <Grid item xs={12} sm={12} style={{ width: "100%" }}>
-            <img src={dataUri} className={classes.media} />
+            <img
+              src={activeImage.gid === -1 ? dataUri : imageUrl}
+              className={classes.media}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
