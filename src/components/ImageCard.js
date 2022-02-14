@@ -8,6 +8,7 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import DeleteAlert from "../pages/station/DeleteAlert";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import moment from "moment";
 
 const useStyles = makeStyles({
@@ -71,7 +72,7 @@ function ImageCard({ image, handleDelete, handleEdit }) {
           size="small"
           color="primary"
         >
-          Slet
+          {disableDelete ? <CircularProgress /> : "Slet"}
         </Button>
         <Button
           disabled={disableEdit}

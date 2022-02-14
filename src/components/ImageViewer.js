@@ -10,6 +10,7 @@ function ImageViewer({ images, handleDelete, handleEdit }) {
         return (
           <Grid item xs={10} sm={6} md={6} lg={4}>
             <ImageCard
+              key={images.gid}
               image={elem}
               handleDelete={handleDelete}
               handleEdit={handleEdit}
