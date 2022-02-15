@@ -204,6 +204,12 @@ export default function Station({
     });
   };
 
+  const handleMpCancel = () => {
+    resetMpData();
+    setFormToShow(null);
+  };
+
+
   const handlePejlingSubmit = (stationId) => {
     setFormToShow(null);
     const method =
@@ -238,12 +244,19 @@ export default function Station({
     console.log("time before parse: ", payload.startdate);
     console.log("time after parse: ", _date);
     payload.startdate = formatedTimestamp(new Date(_date));
-    method(sessionStorage.getItem("session_id"), stationId, payload).then(
-      (res) => {
+    method(sessionStorage.getItem("session_id"), stationId, payload)
+      .then((res) => {
         resetMpData();
         setUpdated(new Date());
-      }
-    );
+        setSeverity("success");
+        setTimeout(() => {
+          handleClickOpen();
+        }, 500);
+      })
+      .catch((error) => {
+        setSeverity("error");
+        setOpenAlert(true);
+      });
   };
 
   const handleServiceSubmit = () => {
@@ -350,7 +363,9 @@ export default function Station({
   return (
     // <>
     <div>
-      {(formToShow === null || formToShow === "ADDPEJLING") && (
+      {(formToShow === null ||
+        formToShow === "ADDPEJLING" ||
+        formToShow === "ADDMAALEPUNKT") && (
         <BearingGraph
           stationId={stationId}
           updated={updated}
@@ -378,6 +393,8 @@ export default function Station({
           changeFormData={changeMpData}
           handleSubmit={handleMpSubmit}
           resetFormData={resetMpData}
+          handleCancel={handleMpCancel}
+          canEdit={canEdit}
         ></MaalepunktForm>
       )}
       {formToShow === "ADDMAALEPUNKT" && (
@@ -422,6 +439,17 @@ export default function Station({
         setFormToShow={setFormToShow}
         canEdit={canEdit}
       />
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={handleCloseSnack}
+      >
+        <Alert onClose={handleCloseSnack} severity={severity}>
+          {severity === "success"
+            ? "Indberetningen lykkedes"
+            : "Indberetningen fejlede"}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

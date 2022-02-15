@@ -30,6 +30,9 @@ export default function PejlingForm({
   mpData,
 }) {
   const [currDate, setCurrDate] = useState(formData.timeofmeas);
+  const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
@@ -50,16 +53,21 @@ export default function PejlingForm({
 
   useEffect(() => {
     if (mpData.length > 0) {
-      setCurrentMP(
-        mpData.filter((elem) => {
-          if (
-            moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
-            moment(formData.timeofmeas).isBefore(elem.enddate)
-          ) {
-            return true;
-          }
-        })[0]
-      );
+      var mp = mpData.filter((elem) => {
+        if (
+          moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
+          moment(formData.timeofmeas).isBefore(elem.enddate)
+        ) {
+          return true;
+        }
+      });
+
+      if (mp.length > 0) {
+        setPejlingOutOfRange(false);
+        setCurrentMP(mp[0]);
+      } else {
+        setPejlingOutOfRange(true);
+      }
     }
   }, [formData.gid, mpData]);
 
@@ -71,18 +79,22 @@ export default function PejlingForm({
       console.log("date is valid again: ", date);
       changeFormData("timeofmeas", date);
     }
-    console.log("test");
 
-    setCurrentMP(
-      mpData.filter((elem) => {
-        if (
-          moment(date).isAfter(elem.startdate) &&
-          moment(date).isBefore(elem.enddate)
-        ) {
-          return true;
-        }
-      })[0]
-    );
+    var mp = mpData.filter((elem) => {
+      if (
+        moment(date).isSameOrAfter(elem.startdate) &&
+        moment(date).isBefore(elem.enddate)
+      ) {
+        return true;
+      }
+    });
+
+    if (mp.length > 0) {
+      setPejlingOutOfRange(false);
+      setCurrentMP(mp[0]);
+    } else {
+      setPejlingOutOfRange(true);
+    }
   };
 
   const handleCommentChange = (e) => {

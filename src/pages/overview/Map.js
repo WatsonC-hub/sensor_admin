@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 
 const style = {
   width: "100%",
-  height: "1000px",
+  height: "80vh",
 };
 
 let stationIcon = L.icon({
@@ -60,7 +60,7 @@ function Map() {
     const satelitemapbox = L.tileLayer(
       "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw",
       {
-        maxZoom: 18,
+        maxZoom: 20,
         attribution:
           'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
           '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -74,7 +74,7 @@ function Map() {
     const outdormapbox = L.tileLayer(
       "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw",
       {
-        maxZoom: 18,
+        maxZoom: 20,
         attribution:
           'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
           '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -97,7 +97,7 @@ function Map() {
 
     var map = L.map("map", {
       center: [55.876823, 8.961644],
-      zoom: 8,
+      zoom: 7,
       layers: [outdormapbox],
       tap: false,
     });
@@ -126,48 +126,48 @@ function Map() {
     //     map.flyTo(e.latlng, 17);
     //   });
 
-    var ourCustomControl = L.Control.extend({
-      options: {
-        position: "topleft",
-        //control position - allowed: 'topleft', 'topright', 'bottomleft', 'bottomright'
-      },
+    // var ourCustomControl = L.Control.extend({
+    //   options: {
+    //     position: "topleft",
+    //     //control position - allowed: 'topleft', 'topright', 'bottomleft', 'bottomright'
+    //   },
 
-      onAdd: function (map) {
-        this._div = L.DomUtil.create(
-          "img",
-          "leaflet-bar leaflet-control leaflet-control-custom"
-        );
-        this._div.type = "button";
-        this._div.src = "/location-2955.png";
-        this._div.style.backgroundColor = "white";
-        this._div.style.width = "30px";
-        this._div.style.height = "30px";
-        L.DomEvent.on(this._div, "click", this._click);
-        return this._div;
-      },
+    //   onAdd: function (map) {
+    //     this._div = L.DomUtil.create(
+    //       "img",
+    //       "leaflet-bar leaflet-control leaflet-control-custom"
+    //     );
+    //     this._div.type = "button";
+    //     this._div.src = "/location-2955.png";
+    //     this._div.style.backgroundColor = "white";
+    //     this._div.style.width = "30px";
+    //     this._div.style.height = "30px";
+    //     L.DomEvent.on(this._div, "click", this._click);
+    //     return this._div;
+    //   },
 
-      _click: function (e) {
-        map
-          .locate({ setView: true, watch: true })
-          .on("locationfound", function (e) {
-            var marker = L.marker([e.latitude, e.longitude]).bindPopup(
-              "Your are here :)"
-            );
-            var circle = L.circle([e.latitude, e.longitude], e.accuracy / 2, {
-              weight: 1,
-              color: "lightblue",
-              fillColor: "#cacaca",
-              fillOpacity: 0.5,
-            });
-            map.addLayer(marker);
-            map.addLayer(circle);
-            map.flyTo(e.latlng, 17);
-            console.log("hej");
-          });
-      },
-    });
+    //   _click: function (e) {
+    //     map
+    //       .locate({ setView: true, watch: true })
+    //       .on("locationfound", function (e) {
+    //         var marker = L.marker([e.latitude, e.longitude]).bindPopup(
+    //           "Your are here :)"
+    //         );
+    //         var circle = L.circle([e.latitude, e.longitude], e.accuracy / 2, {
+    //           weight: 1,
+    //           color: "lightblue",
+    //           fillColor: "#cacaca",
+    //           fillOpacity: 0.5,
+    //         });
+    //         map.addLayer(marker);
+    //         map.addLayer(circle);
+    //         map.flyTo(e.latlng, 17);
+    //         console.log("hej");
+    //       });
+    //   },
+    // });
 
-    // map.addControl(new ourCustomControl());
+    // // map.addControl(new ourCustomControl());
 
     L.control
       .locate({
@@ -203,7 +203,7 @@ function Map() {
   useEffect(() => {
     layerRef.current.clearLayers();
     const data = sensorData;
-    if (data) {
+    if (data.length > 0) {
       data.forEach((element) => {
         const point = [element.lat, element.long];
         console.log();
@@ -225,7 +225,10 @@ function Map() {
         marker.on("click", onClickHandler(element));
         marker.addTo(layerRef.current);
       });
+      mapRef.current.fitBounds(layerRef.current.getBounds());
     }
+
+    //
   }, [sensorData]);
 
   return <div id="map" style={style}></div>;

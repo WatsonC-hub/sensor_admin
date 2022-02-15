@@ -21,8 +21,8 @@ export default function AddUdstyrForm({
 }) {
   const [udstyrFormData, setUdstyrFormData] = useState({
     calypso_id: -1,
-    sensor_id: -1,
-    uuid: "",
+    sensor_id: "",
+    uuid: " ",
     fra: new Date(),
   });
 
@@ -33,13 +33,14 @@ export default function AddUdstyrForm({
 
   const [availableUnits, setAvailableUnits] = useState([]);
 
-  const uniqueCalypsoIds = () => [
-    ...new Set(
-      availableUnits
-        .filter((unit) => unit.sensortypeid === tstype_id)
-        .map((x) => x.calypso_id)
-    ),
-  ];
+  const uniqueCalypsoIds = () =>
+    [
+      ...new Set(
+        availableUnits
+          .filter((unit) => unit.sensortypeid === tstype_id)
+          .map((x) => x.calypso_id)
+      ),
+    ].sort();
 
   const sensorsForCalyspoId = (id) =>
     availableUnits.filter(
@@ -50,6 +51,7 @@ export default function AddUdstyrForm({
     setUdstyrFormData({
       ...udstyrFormData,
       calypso_id: event.target.value,
+      uuid: " ",
     });
   };
 

@@ -18,6 +18,7 @@ export default function MaalepunktForm({
   changeFormData,
   handleSubmit,
   resetFormData,
+  handleCancel,
 }) {
   const [disableSubmit, setDisableSubmit] = useState(false);
 

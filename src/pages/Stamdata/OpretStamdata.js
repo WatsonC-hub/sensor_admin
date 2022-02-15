@@ -276,7 +276,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
         <Grid container spacing={3}>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               color="secondary"
               variant="contained"
               onClick={handleSubmit}
@@ -287,7 +286,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           </Grid>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               color="secondary"
               variant="contained"
               onClick={() => {
