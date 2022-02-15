@@ -38,6 +38,9 @@ export default function PejlingForm({
   mpData,
 }) {
   const [currDate, setCurrDate] = useState(formData.timeofmeas);
+  const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
@@ -50,16 +53,21 @@ export default function PejlingForm({
 
   useEffect(() => {
     if (mpData.length > 0) {
-      setCurrentMP(
-        mpData.filter((elem) => {
-          if (
-            moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
-            moment(formData.timeofmeas).isBefore(elem.enddate)
-          ) {
-            return true;
-          }
-        })[0]
-      );
+      var mp = mpData.filter((elem) => {
+        if (
+          moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
+          moment(formData.timeofmeas).isBefore(elem.enddate)
+        ) {
+          return true;
+        }
+      });
+
+      if (mp.length > 0) {
+        setPejlingOutOfRange(false);
+        setCurrentMP(mp[0]);
+      } else {
+        setPejlingOutOfRange(true);
+      }
     }
   }, [formData.gid, mpData]);
 
@@ -71,18 +79,22 @@ export default function PejlingForm({
       console.log("date is valid again: ", date);
       changeFormData("timeofmeas", date);
     }
-    console.log("test");
 
-    setCurrentMP(
-      mpData.filter((elem) => {
-        if (
-          moment(date).isAfter(elem.startdate) &&
-          moment(date).isBefore(elem.enddate)
-        ) {
-          return true;
-        }
-      })[0]
-    );
+    var mp = mpData.filter((elem) => {
+      if (
+        moment(date).isSameOrAfter(elem.startdate) &&
+        moment(date).isBefore(elem.enddate)
+      ) {
+        return true;
+      }
+    });
+
+    if (mp.length > 0) {
+      setPejlingOutOfRange(false);
+      setCurrentMP(mp[0]);
+    } else {
+      setPejlingOutOfRange(true);
+    }
   };
 
   const handleCommentChange = (e) => {
@@ -111,9 +123,13 @@ export default function PejlingForm({
                 label="Start dato"
                 value={formData.timeofmeas}
                 onChange={(date) => handleDateChange(date)}
+                error={pejlingOutOfRange}
+                helperText={
+                  pejlingOutOfRange ? "Dato ligger uden for et målepunkt" : ""
+                }
               />
             </Grid>
-            <Grid item xs={6} sm={3}>
+            <Grid item xs={8} sm={3}>
               <TextField
                 type="number"
                 variant="outlined"
@@ -134,7 +150,7 @@ export default function PejlingForm({
                 disabled={notPossible}
               />
             </Grid>
-            <Grid item xs={6} sm={3}>
+            <Grid item xs={4} sm={3}>
               <Tooltip title="f.eks. tør eller tilfrossen">
                 <FormControlLabel
                   control={<Checkbox onChange={handleNotPossibleChange} />}
@@ -160,7 +176,7 @@ export default function PejlingForm({
                 }}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
-                value={currentMP.elevation}
+                value={pejlingOutOfRange ? "" : currentMP.elevation}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -178,7 +194,7 @@ export default function PejlingForm({
                 }}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
-                value={currentMP.mp_description}
+                value={pejlingOutOfRange ? "" : currentMP.mp_description}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
@@ -232,6 +248,7 @@ export default function PejlingForm({
                 variant="contained"
                 onClick={() => handleSubmit(stationId)}
                 startIcon={<SaveIcon />}
+                disabled={pejlingOutOfRange}
               >
                 Gem
               </Button>
@@ -243,7 +260,7 @@ export default function PejlingForm({
                 variant="contained"
                 onClick={resetFormData}
               >
-                Annuler
+                Annuller
               </Button>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>

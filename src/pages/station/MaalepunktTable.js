@@ -147,7 +147,7 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         onOkDelete={deleteRow}
       />
       <Typography gutterBottom variant="h5" component="h2">
-        Tidligere pejlinger
+        Målepunkter
       </Typography>
       <Fragment>
         <List>

@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 export default function DeleteAlert({
   measurementId,
@@ -10,6 +12,9 @@ export default function DeleteAlert({
   onOkDelete,
   setDialogOpen,
 }) {
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
+
   const handleClose = () => {
     setDialogOpen(false);
   };
@@ -17,6 +22,25 @@ export default function DeleteAlert({
   const handleOk = () => {
     onOkDelete(measurementId);
     setDialogOpen(false);
+    setSeverity("success");
+    setTimeout(() => {
+      handleClickOpen();
+    }, 500);
+  };
+
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  const handleCloseSnack = (reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpenAlert(true);
   };
 
   return (
@@ -40,6 +64,17 @@ export default function DeleteAlert({
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={handleCloseSnack}
+      >
+        <Alert onClose={handleCloseSnack} severity={severity}>
+          {severity === "success"
+            ? "Sletningen lykkedes"
+            : "Sletningen fejlede"}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

@@ -21,6 +21,7 @@ export default function MaalepunktForm({
   changeFormData,
   handleSubmit,
   resetFormData,
+  handleCancel,
 }) {
   const handleStartdateChange = (date) => {
     if (isValid(date)) {
@@ -122,11 +123,11 @@ export default function MaalepunktForm({
               <Button
                 autoFocus
                 style={{ backgroundColor: theme.palette.secondary }}
-                onClick={resetFormData}
+                onClick={handleCancel}
                 color="secondary"
                 variant="contained"
               >
-                Annuler
+                Annuller
               </Button>
             </Grid>
             <Grid item xs={2} sm={4}></Grid>

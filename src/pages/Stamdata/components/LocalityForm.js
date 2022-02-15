@@ -167,6 +167,7 @@ export default function LocalityForm({ mode }) {
         <LocationTypeSelect
           selectedLocationType={formData.location.loctype_id}
           onChange={(e) => setLocationValue("loctype_id", e.target.value)}
+          disabled={formData.location.loc_name === "" ? true : false}
         />
       </Grid>
 

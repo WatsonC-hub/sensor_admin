@@ -22,8 +22,8 @@ export default function AddUdstyrForm({
 }) {
   const [udstyrFormData, setUdstyrFormData] = useState({
     calypso_id: -1,
-    sensor_id: -1,
-    uuid: "",
+    sensor_id: "",
+    uuid: " ",
     fra: new Date(),
   });
 
@@ -34,13 +34,14 @@ export default function AddUdstyrForm({
 
   const [availableUnits, setAvailableUnits] = useState([]);
 
-  const uniqueCalypsoIds = () => [
-    ...new Set(
-      availableUnits
-        .filter((unit) => unit.sensortypeid === tstype_id)
-        .map((x) => x.calypso_id)
-    ),
-  ];
+  const uniqueCalypsoIds = () =>
+    [
+      ...new Set(
+        availableUnits
+          .filter((unit) => unit.sensortypeid === tstype_id)
+          .map((x) => x.calypso_id)
+      ),
+    ].sort();
 
   const sensorsForCalyspoId = (id) =>
     availableUnits.filter(
@@ -51,6 +52,7 @@ export default function AddUdstyrForm({
     setUdstyrFormData({
       ...udstyrFormData,
       calypso_id: event.target.value,
+      uuid: " ",
     });
   };
 
@@ -122,8 +124,8 @@ export default function AddUdstyrForm({
               </Typography>
             )}
             <TextField
-              autoFocus
               select
+              required
               margin="dense"
               value={udstyrFormData.calypso_id}
               onChange={handleCalypsoId}
@@ -131,7 +133,7 @@ export default function AddUdstyrForm({
               label="Calypso ID"
               fullWidth
             >
-              <MenuItem key={-1} value={-1}>
+              <MenuItem selected disabled key={-1} value={-1}>
                 Vælg calypso ID
               </MenuItem>
               {uniqueCalypsoIds().map((option) => (
@@ -141,8 +143,8 @@ export default function AddUdstyrForm({
               ))}
             </TextField>
             <TextField
-              autoFocus
               select
+              required
               margin="dense"
               value={udstyrFormData.uuid}
               onChange={handleSensorUUID}
@@ -150,7 +152,7 @@ export default function AddUdstyrForm({
               label="Sensor / Sensor ID"
               fullWidth
             >
-              <MenuItem key={-1} value={-1}>
+              <MenuItem selected disabled key={" "} value={" "}>
                 Vælg Sensor ID
               </MenuItem>
               {sensorsForCalyspoId(udstyrFormData.calypso_id).map((option) => (
@@ -171,7 +173,7 @@ export default function AddUdstyrForm({
               color="secondary"
               variant="contained"
               disabled={
-                udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === -1
+                udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === " "
               }
             >
               Tilføj
