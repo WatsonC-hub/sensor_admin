@@ -171,7 +171,7 @@ export default function AddUdstyrForm({
             color="secondary"
             variant="contained"
             disabled={
-              udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === -1
+              udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === " "
             }
           >
             Tilføj

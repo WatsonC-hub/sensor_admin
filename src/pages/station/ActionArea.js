@@ -89,7 +89,7 @@ function DesktopBottomNav({ setFormToShow, canEdit }) {
         className={classes.border}
         disabled={!canEdit}
         label="Indberet tilsyn"
-        icon={<Straighten className={classes.icon} />}
+        icon={<PlaylistAddCheck />}
         onClick={() => {
           setFormToShow("ADDTILSYN");
         }}
@@ -97,10 +97,10 @@ function DesktopBottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Ændre udstyr"
-        icon={<EditRounded />}
+        label="Billeder"
+        icon={<PhotoCameraRoundedIcon />}
         onClick={() => {
-          setFormToShow("RET_STAMDATA");
+          setFormToShow("CAMERA");
         }}
       />
       <BottomNavigationAction
@@ -112,13 +112,14 @@ function DesktopBottomNav({ setFormToShow, canEdit }) {
         }}
         icon={<Straighten className={classes.icon} />}
       />
+
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Tag billede"
-        icon={<PhotoCameraRoundedIcon />}
+        label="Ændre udstyr"
+        icon={<EditRounded />}
         onClick={() => {
-          setFormToShow("CAMERA");
+          setFormToShow("RET_STAMDATA");
         }}
       />
     </BottomNavigation>
@@ -164,10 +165,11 @@ function MobileBottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Ændre udstyr"
-        icon={<EditRounded />}
+        label="Billeder"
+        showLabel={true}
+        icon={<PhotoCameraRoundedIcon />}
         onClick={() => {
-          setFormToShow("RET_STAMDATA");
+          setFormToShow("CAMERA");
           handleClose();
         }}
       />
@@ -211,11 +213,11 @@ function MobileBottomNav({ setFormToShow, canEdit }) {
             <BottomNavigationAction
               className={classes.border}
               disabled={!canEdit}
-              label="Tag billede"
+              label="Ændre udstyr"
               showLabel={true}
-              icon={<PhotoCameraRoundedIcon />}
+              icon={<EditRounded />}
               onClick={() => {
-                setFormToShow("CAMERA");
+                setFormToShow("RET_STAMDATA");
                 handleClose();
               }}
             />

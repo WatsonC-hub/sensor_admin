@@ -132,7 +132,7 @@ export default function MaalepunktForm({
             <Button
               autoFocus
               style={{ backgroundColor: theme.palette.secondary }}
-              onClick={resetFormData}
+              onClick={handleCancel}
               color="secondary"
               variant="contained"
             >

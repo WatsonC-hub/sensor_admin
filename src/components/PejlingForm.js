@@ -122,9 +122,13 @@ export default function PejlingForm({
               label="Start dato"
               value={formData.timeofmeas}
               onChange={(date) => handleDateChange(date)}
+              error={pejlingOutOfRange}
+              helperText={
+                pejlingOutOfRange ? "Dato ligger uden for et målepunkt" : ""
+              }
             />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={8} sm={3}>
             <TextField
               type="number"
               variant="outlined"
@@ -145,7 +149,7 @@ export default function PejlingForm({
               disabled={notPossible}
             />
           </Grid>
-          <Grid item xs={6} sm={3}>
+          <Grid item xs={4} sm={3}>
             <Tooltip title="f.eks. tør eller tilfrossen">
               <FormControlLabel
                 control={<Checkbox onChange={handleNotPossibleChange} />}
@@ -171,7 +175,7 @@ export default function PejlingForm({
               }}
               InputLabelProps={{ shrink: true }}
               fullWidth
-              value={currentMP.elevation}
+              value={pejlingOutOfRange ? "" : currentMP.elevation}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -189,7 +193,7 @@ export default function PejlingForm({
               }}
               InputLabelProps={{ shrink: true }}
               fullWidth
-              value={currentMP.mp_description}
+              value={pejlingOutOfRange ? "" : currentMP.elevation}
             />
           </Grid>
           <Grid item xs={12} sm={12}>
@@ -245,7 +249,7 @@ export default function PejlingForm({
                 handleClickSubmit();
                 handleSubmit();
               }}
-              disabled={disableSubmit}
+              disabled={pejlingOutOfRange || disableSubmit}
               startIcon={<SaveIcon />}
             >
               Gem

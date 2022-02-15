@@ -209,8 +209,7 @@ export default function Station({
     setFormToShow(null);
   };
 
-
-  const handlePejlingSubmit = (stationId) => {
+  const handlePejlingSubmit = () => {
     setFormToShow(null);
     const method =
       pejlingData.gid !== -1 ? updateMeasurement : insertMeasurement;
@@ -418,7 +417,7 @@ export default function Station({
           formData={serviceData}
           changeFormData={changeServiceData}
           handleSubmit={handleServiceSubmit}
-          resetFormData={resetServiceData}
+          resetFormData={() => setFormToShow(null)}
         ></TilsynForm>
       )}
       {formToShow === "ADDTILSYN" && (
