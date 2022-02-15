@@ -41,6 +41,51 @@ const getStamData = () => {
   return axios.get(url);
 };
 
+const dataURLtoFile = (dataurl, filename) => {
+  const arr = dataurl.split(",");
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n) {
+    u8arr[n - 1] = bstr.charCodeAt(n - 1);
+    n -= 1; // to make eslint happy
+  }
+  return new File([u8arr], filename, { type: mime });
+};
+
+const postImage = (payload, uri, sessionId) => {
+  const loc_id = payload.loc_id;
+  const url = `${extEndpoint}/image/${loc_id}?session_id=${sessionId}`;
+  const file = dataURLtoFile(uri);
+  const data = new FormData();
+  data.append("files", file, "tmp");
+  data.append("loc_id", payload.loc_id);
+  data.append("comment", payload.comment);
+  data.append("public", payload.public);
+  data.append("date", payload.date);
+  const config = {
+    headers: { "Content-Type": "multipart/form-data" },
+  };
+  return axios.post(url, data, config);
+};
+
+const deleteImage = (loc_id, gid, sessionId) => {
+  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionId}`;
+  return axios.delete(url);
+};
+
+const updateImage = (gid, payload, sessionId) => {
+  const loc_id = payload.loc_id;
+  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionId}`;
+  return axios.put(url, payload);
+};
+
+const getImage = (loc_id) => {
+  const url = `${extEndpoint}/image/${loc_id}`;
+  return axios.get(url);
+};
+
 const getTableData = (sessionId) => {
   const url = `${extEndpoint}/tabledata?session_id=${sessionId}`;
   return axios.get(url);
@@ -93,6 +138,7 @@ const insertMp = (sessionId, stationId, formData) => {
 
 const updateMp = (sessionId, stationId, formData) => {
   const gid = formData["gid"];
+  console.log(formData);
   formData["startdate"] = formData["startdate"].split("+")[0];
   formData["enddate"] = formData["enddate"].split("+")[0];
   const url = `${extEndpoint}/station/watlevmp/${stationId}/${gid}?session_id=${sessionId}`;
@@ -119,6 +165,31 @@ const getMeasurements = (stationId, sessionId) => {
 const getMP = (stationId, sessionId) => {
   const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${sessionId}`;
   return axios.get(url);
+};
+
+const getService = (stationId) => {
+  const url = `${extEndpoint}/station/service/${stationId}`;
+  return axios.get(url);
+};
+
+const updateService = (sessionId, stationId, formData) => {
+  const gid = formData["gid"];
+  formData["dato"] = formData["dato"].split("+")[0];
+  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${sessionId}`;
+  return axios.put(url, formData);
+};
+
+const insertService = (sessionId, stationId, formData) => {
+  formData["dato"] = formData["dato"].split("+")[0];
+  // formData["terminal_id"] = terminalId;
+  const url = `${extEndpoint}/station/service/${stationId}?session_id=${sessionId}`;
+  return axios.post(url, formData);
+};
+
+const deleteService = (sessionId, stationId, gid) => {
+  if (!gid) return;
+  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${sessionId}`;
+  return axios.delete(url);
 };
 
 const getStationTypes = () =>
@@ -201,4 +272,12 @@ export {
   updateStamdata,
   getLocationTypes,
   getDTMQuota,
+  getService,
+  updateService,
+  insertService,
+  deleteService,
+  postImage,
+  getImage,
+  deleteImage,
+  updateImage,
 };

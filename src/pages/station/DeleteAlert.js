@@ -11,6 +11,7 @@ export default function DeleteAlert({
   dialogOpen,
   onOkDelete,
   setDialogOpen,
+  title,
 }) {
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
@@ -52,7 +53,7 @@ export default function DeleteAlert({
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Vil du slette den række?"}
+          {title ? title : "Vil du slette den række?"}
         </DialogTitle>
 
         <DialogActions>

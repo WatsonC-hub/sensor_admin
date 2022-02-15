@@ -6,6 +6,7 @@ import {
   EditRounded,
   Straighten,
   PlaylistAddCheck,
+  PhotoCameraRounded,
 } from "@material-ui/icons";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
@@ -96,7 +97,7 @@ function DesktopBottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Ret stamdata"
+        label="Ændre udstyr"
         icon={<EditRounded />}
         onClick={() => {
           setFormToShow("RET_STAMDATA");
