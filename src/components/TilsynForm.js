@@ -29,12 +29,6 @@ export default function TilsynForm({
     }, 2500);
   };
 
-  const handleStartdateChange = (date) => {
-    if (isValid(date)) {
-      console.log("date is valid again: ", date);
-      changeFormData("startdate", date);
-    }
-  };
   const theme = useTheme();
 
   const handleCommentChange = (e) => {
