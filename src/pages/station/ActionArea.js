@@ -1,15 +1,30 @@
 import React, { useState } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { AddCircle, EditRounded, Straighten } from "@material-ui/icons";
+import {
+  AddCircle,
+  EditRounded,
+  Straighten,
+  PlaylistAddCheck,
+  PhotoCameraRounded,
+} from "@material-ui/icons";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
+import IconButton from "@material-ui/core/IconButton";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuIcon from "@material-ui/icons/MoreVert";
+import PhotoCameraRoundedIcon from "@material-ui/icons/PhotoCameraRounded";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.secondary.main,
     height: "auto",
     margin: "5px",
+    boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
+    position: "sticky",
+    bottom: "0",
+    zIndex: 1,
   },
   appBar: {
     top: "auto",
@@ -45,63 +60,188 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     transform: "rotate(90deg)",
   },
+  border: {
+    //border: "2px solid black",
+    borderRadius: 3,
+    margin: "7px",
+    boxShadow: "0 3px 5px 0px rgba(115,115,115,255)",
+    backgroundColor: theme.palette.secondary.main,
+  },
 }));
 
-export default function ActionArea({ formToShow, setFormToShow, canEdit }) {
+const ITEM_HEIGHT = 48;
+
+function DesktopBottomNav({ setFormToShow, canEdit }) {
+  const classes = useStyles();
+
   return (
-    <BottomNav
+    <BottomNavigation className={classes.root} value={-1} showLabels>
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Indberet pejling"
+        icon={<AddCircle />}
+        onClick={() => {
+          setFormToShow("ADDPEJLING");
+        }}
+      />
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Indberet tilsyn"
+        icon={<PlaylistAddCheck />}
+        onClick={() => {
+          setFormToShow("ADDTILSYN");
+        }}
+      />
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Billeder"
+        icon={<PhotoCameraRoundedIcon />}
+        onClick={() => {
+          setFormToShow("CAMERA");
+        }}
+      />
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Indberet målepunkt"
+        onClick={() => {
+          setFormToShow("ADDMAALEPUNKT");
+        }}
+        icon={<Straighten className={classes.icon} />}
+      />
+
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Ændre udstyr"
+        icon={<EditRounded />}
+        onClick={() => {
+          setFormToShow("RET_STAMDATA");
+        }}
+      />
+    </BottomNavigation>
+  );
+}
+
+function MobileBottomNav({ setFormToShow, canEdit }) {
+  const classes = useStyles();
+  const theme = useTheme();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <BottomNavigation className={classes.root} value={-1} showLabels>
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Indberet pejling"
+        icon={<AddCircle />}
+        onClick={() => {
+          setFormToShow("ADDPEJLING");
+          handleClose();
+        }}
+      />
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Indberet tilsyn"
+        icon={<PlaylistAddCheck />}
+        onClick={() => {
+          setFormToShow("ADDTILSYN");
+          handleClose();
+        }}
+      />
+      <BottomNavigationAction
+        className={classes.border}
+        disabled={!canEdit}
+        label="Billeder"
+        showLabel={true}
+        icon={<PhotoCameraRoundedIcon />}
+        onClick={() => {
+          setFormToShow("CAMERA");
+          handleClose();
+        }}
+      />
+      <IconButton
+        aria-label="more"
+        aria-controls="long-menu"
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
+        <MenuIcon />
+      </IconButton>
+      <Menu
+        id="long-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: ITEM_HEIGHT * 4.5,
+            width: "auto",
+            backgroundColor: theme.palette.secondary.main,
+          },
+        }}
+      >
+        <div>
+          <MenuItem>
+            <BottomNavigationAction
+              className={classes.border}
+              disabled={!canEdit}
+              label="Indberet målepunkt"
+              showLabel={true}
+              onClick={() => {
+                setFormToShow("ADDMAALEPUNKT");
+                handleClose();
+              }}
+              icon={<Straighten className={classes.icon} />}
+            />
+          </MenuItem>
+          <MenuItem>
+            <BottomNavigationAction
+              className={classes.border}
+              disabled={!canEdit}
+              label="Ændre udstyr"
+              showLabel={true}
+              icon={<EditRounded />}
+              onClick={() => {
+                setFormToShow("RET_STAMDATA");
+                handleClose();
+              }}
+            />
+          </MenuItem>
+        </div>
+      </Menu>
+    </BottomNavigation>
+  );
+}
+
+export default function ActionArea({ formToShow, setFormToShow, canEdit }) {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  return matches ? (
+    <MobileBottomNav
       formToShow={formToShow}
       setFormToShow={setFormToShow}
       canEdit={canEdit}
     />
-  );
-}
-
-function BottomNav({ setFormToShow, canEdit }) {
-  const classes = useStyles();
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
-  return (
-    <BottomNavigation
-      className={classes.root}
-      value={-1}
-      onChange={(event, newValue) => {
-        if (newValue === 0) {
-          setFormToShow("ADDPEJLING");
-          setTimeout(() => {
-            window.scrollTo({ top: matches ? 300 : 500, behavior: "smooth" });
-          }, 200);
-        }
-        if (newValue === 2) {
-          setFormToShow("RET_STAMDATA");
-        }
-
-        if (newValue === 1) {
-          setFormToShow("ADDMAALEPUNKT");
-        }
-      }}
-      showLabels
-    >
-      <BottomNavigationAction
-        disabled={!canEdit}
-        label="Indberet pejling"
-        icon={<AddCircle />}
-      />
-      <BottomNavigationAction
-        disabled={!canEdit}
-        label="Indberet målepunkt"
-        icon={<Straighten className={classes.icon} />}
-      />
-      <BottomNavigationAction
-        disabled={!canEdit}
-        label="Ret stamdata"
-        icon={<EditRounded />}
-      />
-      {/* <BottomNavigationAction
-        disabled={!canEdit}
-        label='Tag billede'
-        icon={<PhotoCameraRounded />}
-      /> */}
-    </BottomNavigation>
+  ) : (
+    <DesktopBottomNav
+      formToShow={formToShow}
+      setFormToShow={setFormToShow}
+      canEdit={canEdit}
+    />
   );
 }

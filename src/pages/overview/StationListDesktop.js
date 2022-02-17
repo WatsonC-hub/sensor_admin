@@ -21,30 +21,6 @@ import { TextField, Tooltip } from "@material-ui/core";
 import LocationContext from "../../context/LocationContext";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 
-// const LocationTypeProvider = (props) => (
-//   <DataTypeProvider formatterComponent={LocationFormatter} {...props} />
-// );
-
-// const LocationFormatter = ({ value }) => <EditButton locationId={value} />;
-
-// const EditButton = ({ locationId }) => {
-//   const context = useContext(LocationContext);
-//   const history = useHistory();
-//   return (
-//     <IconButton
-//       aria-label="Edit"
-//       onClick={(e) => {
-//         context.setLocationId(locationId);
-//         context.setTabValue(0);
-//         let [loc, stat] = locationId.split("_");
-//         history.push(`location/${loc}/${stat}`);
-//       }}
-//     >
-//       <EditIcon />
-//     </IconButton>
-//   );
-// };
-
 const RowDetail = ({ row }) => (
   <List>
     <ListItem>
@@ -94,9 +70,10 @@ const Cell = (props) => {
       {...props}
       style={{ cursor: "pointer" }}
       onClick={(e) => {
-        context.setLocationId(props.row.station_loc_id);
-        context.setTabValue(0);
         let [loc, stat] = props.row.station_loc_id.split("_");
+        context.setLocationId(loc);
+        context.setTabValue(0);
+
         history.push(`location/${loc}/${stat}`);
       }}
     />

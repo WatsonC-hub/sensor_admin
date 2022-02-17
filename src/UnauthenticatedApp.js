@@ -30,13 +30,13 @@ export default function UnAuntenticatedApp({ setUser }) {
 
           <h2>Sensor</h2>
 
-          {location.pathname !== "/register" ? (
+          {location.pathname !== "/pages/register" ? (
             <Button
               disabled={registerDisabled}
               color="secondary"
               variant="contained"
               onClick={() => {
-                history.push("/register");
+                history.push("/pages/register");
                 //setAddStationDisabled(true);
               }}
             >
@@ -56,10 +56,10 @@ export default function UnAuntenticatedApp({ setUser }) {
         </Toolbar>
       </AppBar>
       <Switch>
-        <Route exact path="/">
+        <Route exact path={["/", "/:labelid"]}>
           <Login setUser={setUser} />
         </Route>
-        <Route path="/register">
+        <Route path="/pages/register">
           <Register setRegisterDisabled={setRegisterDisabled} />
         </Route>
       </Switch>

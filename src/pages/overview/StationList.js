@@ -18,7 +18,7 @@ export default function StationList({ data }) {
 
   const handleClick = (elem) => {
     console.log("elem loc: ", elem);
-    context.setLocationId(elem.loc_id + "_" + elem.ts_id);
+    context.setLocationId(elem.loc_id);
     context.setTabValue(0);
     history.push(`location/${elem.loc_id}/${elem.ts_id}`);
   };

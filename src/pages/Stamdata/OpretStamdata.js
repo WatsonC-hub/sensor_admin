@@ -10,9 +10,6 @@ import {
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import "date-fns";
 import _ from "lodash";
-//import DateFnsUtils from "@date-io/date-fns";
-//import daLocale from "date-fns/locale/da";
-//import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import AddUdstyrForm from "./AddUdstyrForm";
@@ -279,7 +276,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
         <Grid container spacing={3}>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               color="secondary"
               variant="contained"
               onClick={handleSubmit}
@@ -290,7 +286,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           </Grid>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               color="secondary"
               variant="contained"
               onClick={() => {

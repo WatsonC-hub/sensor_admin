@@ -13,9 +13,6 @@ import {
   useTheme,
 } from "@material-ui/core";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
-import daLocale from "date-fns/locale/da";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import OwnDatePicker from "../../components/OwnDatePicker";
 
 import LocalityForm from "../Stamdata/components/LocalityForm";
@@ -27,6 +24,7 @@ import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import SaveIcon from "@material-ui/icons/Save";
+import moment from "moment";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -52,53 +50,51 @@ const UnitEndDateDialog = ({
   };
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
-      <Dialog open={openDialog}>
-        <DialogTitle>Angiv slutdato</DialogTitle>
-        <DialogContent>
-          <OwnDatePicker
-            label="Fra"
-            value={date}
-            onChange={(date) => handleDateChange(date)}
-          />
-          <DialogActions item xs={4} sm={2}>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              startIcon={<SaveIcon />}
-              onClick={() => {
-                const payload = { ...unit, ts_id: stationId, slutdato: date };
-                payload.startdate = formatedTimestamp(
-                  new Date(Date.parse(payload.startdato))
-                );
-                payload.enddate = formatedTimestamp(
-                  new Date(Date.parse(payload.slutdato))
-                );
+    <Dialog open={openDialog}>
+      <DialogTitle>Angiv slutdato</DialogTitle>
+      <DialogContent>
+        <OwnDatePicker
+          label="Fra"
+          value={date}
+          onChange={(date) => handleDateChange(date)}
+        />
+        <DialogActions item xs={4} sm={2}>
+          <Button
+            autoFocus
+            color="secondary"
+            variant="contained"
+            startIcon={<SaveIcon />}
+            onClick={() => {
+              const payload = { ...unit, ts_id: stationId, slutdato: date };
+              payload.startdate = formatedTimestamp(
+                new Date(Date.parse(payload.startdato))
+              );
+              payload.enddate = formatedTimestamp(
+                new Date(Date.parse(payload.slutdato))
+              );
 
-                takeHomeEquipment(
-                  unit.gid,
-                  payload,
-                  sessionStorage.getItem("session_id")
-                ).then((res) => setOpenDialog(false));
-              }}
-            >
-              Gem
-            </Button>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              onClick={() => {
-                setOpenDialog(false);
-              }}
-            >
-              Annuller
-            </Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
-    </MuiPickersUtilsProvider>
+              takeHomeEquipment(
+                unit.gid,
+                payload,
+                sessionStorage.getItem("session_id")
+              ).then((res) => setOpenDialog(false));
+            }}
+          >
+            Gem
+          </Button>
+          <Button
+            autoFocus
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              setOpenDialog(false);
+            }}
+          >
+            Annuller
+          </Button>
+        </DialogActions>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -156,12 +152,12 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
               let endDate =
                 new Date() < new Date(item.slutdato)
                   ? "nu"
-                  : formatedTimestamp(new Date(item.slutdato));
+                  : moment(new Date(item.slutdato)).format("YYYY-MM-DD HH:mm");
 
               return (
                 <MenuItem key={item.gid} value={item.gid}>
-                  {`${formatedTimestamp(
-                    new Date(item.startdato)
+                  {`${moment(new Date(item.startdato)).format(
+                    "YYYY-MM-DD HH:mm"
                   )} - ${endDate}`}
                 </MenuItem>
               );

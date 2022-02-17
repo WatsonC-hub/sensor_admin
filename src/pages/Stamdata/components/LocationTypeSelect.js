@@ -4,7 +4,11 @@ import { StamdataContext } from "../StamdataContext";
 import { InputAdornment } from "@material-ui/core";
 import { getLocationTypes } from "../../../api";
 
-export default function LocationTypeSelect({ selectedLocationType, onChange }) {
+export default function LocationTypeSelect({
+  selectedLocationType,
+  onChange,
+  disabled,
+}) {
   const [locationTypes, setLocationTypes] = useState([]);
 
   useEffect(() => {
@@ -29,7 +33,10 @@ export default function LocationTypeSelect({ selectedLocationType, onChange }) {
 
   return (
     <TextField
-      autoFocus
+      InputProps={{
+        readOnly: disabled,
+      }}
+      disabled={disabled}
       variant="outlined"
       select
       margin="dense"

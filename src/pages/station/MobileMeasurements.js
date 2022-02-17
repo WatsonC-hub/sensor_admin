@@ -37,7 +37,7 @@ export default function MobileMeasurements({
         onOkDelete={deleteRow}
       />
       <Typography gutterBottom variant="h5" component="h2">
-        Tidligere pejlinger
+        Kontrolmålinger
       </Typography>
       <Fragment>
         <List>
@@ -45,7 +45,11 @@ export default function MobileMeasurements({
             <ListItem key={index} dense>
               <ListItemText
                 primary={moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
-                secondary={"Pejling: " + row.disttowatertable_m + " m"}
+                secondary={
+                  row.disttowatertable_m === null
+                    ? "Pejling ikke mulig"
+                    : "Pejling: " + row.disttowatertable_m + " m"
+                }
               />
               <ListItemSecondaryAction>
                 <IconButton

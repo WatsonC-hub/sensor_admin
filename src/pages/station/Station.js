@@ -13,6 +13,11 @@ import {
   getMP,
   deleteMP,
   getStamdataByStation,
+  getService,
+  updateService,
+  insertService,
+  deleteService,
+  postImage,
 } from "../../api";
 import { Toolbar } from "@material-ui/core";
 import EditStamdata from "./EditStamdata";
@@ -20,7 +25,14 @@ import PejlingMeasurements from "./PejlingMeasurements";
 import MaalepunktForm from "../../components/MaalepunktForm";
 import CaptureBearing from "./CaptureBearing";
 import { StamdataContext } from "../Stamdata/StamdataContext";
+
 import MaalepunktTable from "./MaalepunktTable";
+import TilsynForm from "../../components/TilsynForm";
+import TilsynTable from "../../components/TilsynTable";
+import StationImages from "./StationImages";
+import { useLocation } from "react-router-dom";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -43,10 +55,12 @@ export default function Station({
     comment: "",
   });
 
+  let location = useLocation();
+
   const [
     ,
     ,
-    ,
+    formData,
     ,
     ,
     ,
@@ -65,11 +79,24 @@ export default function Station({
     mp_description: "",
   });
 
+  const [serviceData, setServiceData] = useState({
+    gid: -1,
+    dato: formatedTimestamp(new Date()),
+    batteriskift: false,
+    tilsyn: false,
+    kommentar: "",
+  });
+
+  //const [first, setfirst] = useState(second);
+
   const [updated, setUpdated] = useState(new Date());
   const [measurements, setMeasurements] = useState([]);
   const [watlevmp, setWatlevmp] = useState([]);
+  const [services, setServices] = useState([]);
   const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [severity, setSeverity] = useState("success");
 
   useEffect(() => {
     console.log(stationId);
@@ -93,11 +120,16 @@ export default function Station({
         stationId,
         sessionStorage.getItem("session_id")
       );
-      Promise.all([mp, meas]).then((responses) => {
+      const serv = getService(stationId);
+      console.log(formData);
+      Promise.all([mp, meas, serv]).then((responses) => {
         const measures = responses[1].data.result;
         const mps = responses[0].data.result;
+        const services = responses[2].data.result;
         setMeasurements(measures);
         setWatlevmp(mps);
+        setServices(services);
+
         setcontrol(
           measures.map((e) => {
             const elev = mps.filter((e2) => {
@@ -154,9 +186,30 @@ export default function Station({
     setFormToShow("ADDMAALEPUNKT");
   };
 
-  // console.log(stationId);
+  const changeServiceData = (field, value) => {
+    setServiceData({
+      ...serviceData,
+      [field]: value,
+    });
+    console.log(serviceData);
+  };
 
-  const handlePejlingSubmit = (stationId) => {
+  const resetServiceData = () => {
+    setServiceData({
+      gid: -1,
+      dato: formatedTimestamp(new Date()),
+      batteriskift: false,
+      tilsyn: false,
+      kommentar: "",
+    });
+  };
+
+  const handleMpCancel = () => {
+    resetMpData();
+    setFormToShow(null);
+  };
+
+  const handlePejlingSubmit = () => {
     setFormToShow(null);
     const method =
       pejlingData.gid !== -1 ? updateMeasurement : insertMeasurement;
@@ -166,12 +219,19 @@ export default function Station({
     console.log("time before parse: ", payload.timeofmeas);
     console.log("time after parse: ", _date);
     payload.timeofmeas = formatedTimestamp(new Date(_date));
-    method(sessionStorage.getItem("session_id"), stationId, payload).then(
-      (res) => {
+    method(sessionStorage.getItem("session_id"), stationId, payload)
+      .then((res) => {
         resetPejlingData();
         setUpdated(new Date());
-      }
-    );
+        setSeverity("success");
+        setTimeout(() => {
+          handleClickOpen();
+        }, 500);
+      })
+      .catch((error) => {
+        setSeverity("error");
+        setOpenAlert(true);
+      });
   };
 
   const handleMpSubmit = () => {
@@ -183,9 +243,40 @@ export default function Station({
     console.log("time before parse: ", payload.startdate);
     console.log("time after parse: ", _date);
     payload.startdate = formatedTimestamp(new Date(_date));
+    payload.enddate = formatedTimestamp(new Date(Date.parse(payload.enddate)));
+    method(sessionStorage.getItem("session_id"), stationId, payload)
+      .then((res) => {
+        resetMpData();
+        setUpdated(new Date());
+        setSeverity("success");
+        setTimeout(() => {
+          handleClickOpen();
+        }, 500);
+      })
+      .catch((error) => {
+        setSeverity("error");
+        setOpenAlert(true);
+      });
+  };
+
+  const handleServiceSubmit = () => {
+    // setFormToShow("ADDTILSYN");
+    console.log("Hejsa");
+    const method = serviceData.gid !== -1 ? updateService : insertService;
+    const userId = sessionStorage.getItem("user");
+    const payload = {
+      ...serviceData,
+      batteriskift: serviceData.batteriskift.toString(),
+      tilsyn: serviceData.tilsyn.toString(),
+      userid: userId,
+    };
+    var _date = Date.parse(payload.dato);
+    console.log("time before parse: ", payload.dato);
+    console.log("time after parse: ", _date);
+    payload.dato = formatedTimestamp(new Date(_date));
     method(sessionStorage.getItem("session_id"), stationId, payload).then(
       (res) => {
-        resetMpData();
+        resetServiceData();
         setUpdated(new Date());
       }
     );
@@ -194,11 +285,18 @@ export default function Station({
   const handleEdit = (type) => {
     if (type === "watlevmp") {
       return (data) => {
-        data.startdate = data.startdate.replace(" ", "T").substr(0, 19);
-        data.enddate = data.enddate.replace(" ", "T").substr(0, 19);
+        // data.startdate = formatedTimestamp(new Date(data.startdate));
+        // data.enddate = formatedTimestamp(new Date(data.enddate));
         setMpData(data); // Fill form data on Edit
         setFormToShow("ADDMAALEPUNKT"); // update to use state machine
         // setUpdated(new Date());
+      };
+    } else if (type === "service") {
+      return (data) => {
+        data.dato = data.dato.replace(" ", "T").substr(0, 19);
+        setServiceData(data);
+        console.log("hej" + data);
+        setFormToShow("ADDTILSYN");
       };
     } else {
       return (data) => {
@@ -222,6 +320,17 @@ export default function Station({
           }
         );
       };
+    } else if (type === "service") {
+      return (gid) => {
+        deleteService(
+          sessionStorage.getItem("session_id"),
+          stationId,
+          gid
+        ).then((res) => {
+          resetServiceData();
+          setUpdated(new Date());
+        });
+      };
     } else {
       return (gid) => {
         deleteMeasurement(
@@ -236,10 +345,27 @@ export default function Station({
     }
   };
 
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
+  const handleCloseSnack = (reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpenAlert(true);
+  };
+
   return (
     // <>
     <div>
-      {(formToShow === null || formToShow === "ADDPEJLING") && (
+      {(formToShow === null ||
+        formToShow === "ADDPEJLING" ||
+        formToShow === "ADDMAALEPUNKT") && (
         <BearingGraph
           stationId={stationId}
           updated={updated}
@@ -263,12 +389,11 @@ export default function Station({
       )}
       {formToShow === "ADDMAALEPUNKT" && (
         <MaalepunktForm
-          stationId={stationId}
-          setShowForm={setShowForm}
           formData={mpData}
           changeFormData={changeMpData}
           handleSubmit={handleMpSubmit}
           resetFormData={resetMpData}
+          handleCancel={handleMpCancel}
           canEdit={canEdit}
         ></MaalepunktForm>
       )}
@@ -288,6 +413,25 @@ export default function Station({
           canEdit={canEdit}
         />
       )}
+      {formToShow === "ADDTILSYN" && (
+        <TilsynForm
+          formData={serviceData}
+          changeFormData={changeServiceData}
+          handleSubmit={handleServiceSubmit}
+          resetFormData={() => setFormToShow(null)}
+        ></TilsynForm>
+      )}
+      {formToShow === "ADDTILSYN" && (
+        <TilsynTable
+          services={services}
+          handleEdit={handleEdit("service")}
+          handleDelete={handleDelete("service")}
+          canEdit={canEdit}
+        ></TilsynTable>
+      )}
+      {formToShow === "CAMERA" && (
+        <StationImages locationId={location.pathname.split("/")[2]} />
+      )}
       <ActionArea
         open={open}
         stationId={stationId}
@@ -295,6 +439,17 @@ export default function Station({
         setFormToShow={setFormToShow}
         canEdit={canEdit}
       />
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={handleCloseSnack}
+      >
+        <Alert onClose={handleCloseSnack} severity={severity}>
+          {severity === "success"
+            ? "Indberetningen lykkedes"
+            : "Indberetningen fejlede"}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
