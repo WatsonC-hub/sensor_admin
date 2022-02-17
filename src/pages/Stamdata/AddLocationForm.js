@@ -18,9 +18,9 @@ export default function AddLocationForm({
 }) {
   const [locationData, setLocationData] = useState({
     loc_name: "",
-    x: "",
-    y: "",
-    terrainlevel: "",
+    x: 0,
+    y: 0,
+    terrainlevel: 0,
     terrainqual: "",
     mainloc: "",
     subloc: "",
