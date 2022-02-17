@@ -193,7 +193,7 @@ export default function PejlingForm({
               }}
               InputLabelProps={{ shrink: true }}
               fullWidth
-              value={pejlingOutOfRange ? "" : currentMP.elevation}
+              value={pejlingOutOfRange ? "" : currentMP.mp_description}
             />
           </Grid>
           <Grid item xs={12} sm={12}>
