@@ -30,7 +30,7 @@ export default function UnAuntenticatedApp({ setUser }) {
 
           <h2>Sensor</h2>
 
-          {location.pathname !== "/register" ? (
+          {location.pathname !== "/pages/register" ? (
             <Button
               disabled={registerDisabled}
               color="secondary"

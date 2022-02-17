@@ -45,7 +45,11 @@ export default function MobileMeasurements({
             <ListItem key={index} dense>
               <ListItemText
                 primary={moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
-                secondary={"Pejling: " + row.disttowatertable_m + " m"}
+                secondary={
+                  row.disttowatertable_m === null
+                    ? "Pejling ikke mulig"
+                    : "Pejling: " + row.disttowatertable_m + " m"
+                }
               />
               <ListItemSecondaryAction>
                 <IconButton

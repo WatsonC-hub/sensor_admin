@@ -24,6 +24,7 @@ import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import SaveIcon from "@material-ui/icons/Save";
+import moment from "moment";
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split("T")[0];
@@ -151,12 +152,12 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
               let endDate =
                 new Date() < new Date(item.slutdato)
                   ? "nu"
-                  : formatedTimestamp(new Date(item.slutdato));
+                  : moment(new Date(item.slutdato)).format("YYYY-MM-DD HH:mm");
 
               return (
                 <MenuItem key={item.gid} value={item.gid}>
-                  {`${formatedTimestamp(
-                    new Date(item.startdato)
+                  {`${moment(new Date(item.startdato)).format(
+                    "YYYY-MM-DD HH:mm"
                   )} - ${endDate}`}
                 </MenuItem>
               );

@@ -243,6 +243,7 @@ export default function Station({
     console.log("time before parse: ", payload.startdate);
     console.log("time after parse: ", _date);
     payload.startdate = formatedTimestamp(new Date(_date));
+    payload.enddate = formatedTimestamp(new Date(Date.parse(payload.enddate)));
     method(sessionStorage.getItem("session_id"), stationId, payload)
       .then((res) => {
         resetMpData();
