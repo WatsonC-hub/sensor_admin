@@ -29,10 +29,7 @@ export default function PejlingForm({
   resetFormData,
   mpData,
 }) {
-  const [currDate, setCurrDate] = useState(formData.timeofmeas);
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [severity, setSeverity] = useState("success");
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
   };
@@ -72,9 +69,6 @@ export default function PejlingForm({
   }, [formData.gid, mpData]);
 
   const handleDateChange = (date) => {
-    if (isValid(date)) {
-      setCurrDate(date);
-    }
     if (isValid(date)) {
       console.log("date is valid again: ", date);
       changeFormData("timeofmeas", date);
@@ -120,7 +114,7 @@ export default function PejlingForm({
           <Grid item xs={12} sm={6}>
             <OwnDatePicker
               label="Start dato"
-              value={formData.timeofmeas}
+              value={new Date(formData.timeofmeas)}
               onChange={(date) => handleDateChange(date)}
               error={pejlingOutOfRange}
               helperText={
