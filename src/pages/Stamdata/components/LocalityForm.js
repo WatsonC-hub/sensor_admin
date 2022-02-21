@@ -120,7 +120,7 @@ export default function LocalityForm({ mode }) {
           margin="dense"
         />
       </Grid>
-      <Grid item xs={6} sm={3}>
+      <Grid item xs={6} sm={6} md={3}>
         <TextField
           InputProps={{
             readOnly: formData.location.loc_name === "",
@@ -140,7 +140,7 @@ export default function LocalityForm({ mode }) {
         />
       </Grid>
 
-      <Grid item xs={6} sm={3}>
+      <Grid item xs={6} sm={6} md={3}>
         <TextField
           InputProps={{
             readOnly: formData.location.loc_name === "",
