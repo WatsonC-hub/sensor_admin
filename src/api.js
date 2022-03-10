@@ -8,6 +8,7 @@ let userEndpoint;
 
 if (process.env.NODE_ENV === "development") {
   // 10.10.158.118
+  // 192.168.1.167
   host = "http://localhost:8080";
   extEndpoint = "http://localhost:8080/extensions/sensor_app/api";
   // endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc_clone/?q=`;
