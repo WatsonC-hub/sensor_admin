@@ -23,11 +23,10 @@ let inactiveIcon = L.icon({
   iconSize: [15, 15],
 });
 
-function Map() {
+function Map({ sensorData }) {
   const context = useContext(LocationContext);
   const history = useHistory();
   const mapRef = React.useRef(null);
-  const [sensorData, setSensorData] = useState([]);
 
   const onClickHandler = (element) => () => {
     let _popup = document.getElementsByClassName(
@@ -109,65 +108,6 @@ function Map() {
     };
 
     L.control.layers(baseMaps).addTo(map);
-    // map
-    //   .locate({ setView: true, watch: true })
-    //   .on("locationfound", function (e) {
-    //     var marker = L.marker([e.latitude, e.longitude]).bindPopup(
-    //       "Your are here :)"
-    //     );
-    //     var circle = L.circle([e.latitude, e.longitude], e.accuracy / 2, {
-    //       weight: 1,
-    //       color: "lightblue",
-    //       fillColor: "#cacaca",
-    //       fillOpacity: 0.5,
-    //     });
-    //     map.addLayer(marker);
-    //     map.addLayer(circle);
-    //     map.flyTo(e.latlng, 17);
-    //   });
-
-    // var ourCustomControl = L.Control.extend({
-    //   options: {
-    //     position: "topleft",
-    //     //control position - allowed: 'topleft', 'topright', 'bottomleft', 'bottomright'
-    //   },
-
-    //   onAdd: function (map) {
-    //     this._div = L.DomUtil.create(
-    //       "img",
-    //       "leaflet-bar leaflet-control leaflet-control-custom"
-    //     );
-    //     this._div.type = "button";
-    //     this._div.src = "/location-2955.png";
-    //     this._div.style.backgroundColor = "white";
-    //     this._div.style.width = "30px";
-    //     this._div.style.height = "30px";
-    //     L.DomEvent.on(this._div, "click", this._click);
-    //     return this._div;
-    //   },
-
-    //   _click: function (e) {
-    //     map
-    //       .locate({ setView: true, watch: true })
-    //       .on("locationfound", function (e) {
-    //         var marker = L.marker([e.latitude, e.longitude]).bindPopup(
-    //           "Your are here :)"
-    //         );
-    //         var circle = L.circle([e.latitude, e.longitude], e.accuracy / 2, {
-    //           weight: 1,
-    //           color: "lightblue",
-    //           fillColor: "#cacaca",
-    //           fillOpacity: 0.5,
-    //         });
-    //         map.addLayer(marker);
-    //         map.addLayer(circle);
-    //         map.flyTo(e.latlng, 17);
-    //         console.log("hej");
-    //       });
-    //   },
-    // });
-
-    // // map.addControl(new ourCustomControl());
 
     L.control
       .locate({
@@ -180,25 +120,19 @@ function Map() {
   };
 
   useEffect(() => {
-    let sessionId = sessionStorage.getItem("session_id");
-
-    getSensorData(sessionId).then((res) => setSensorData(res.data.data));
-  }, []);
-
-  useEffect(() => {
     mapRef.current = renderMap();
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
       }
     };
-  }, []);
+  }, [sensorData]);
 
   const layerRef = React.useRef(null);
 
   useEffect(() => {
     layerRef.current = L.featureGroup().addTo(mapRef.current);
-  }, []);
+  }, [sensorData]);
 
   useEffect(() => {
     layerRef.current.clearLayers();
@@ -227,7 +161,7 @@ function Map() {
       });
       mapRef.current.fitBounds(layerRef.current.getBounds());
     }
-
+    console.log(sensorData);
     //
   }, [sensorData]);
 
