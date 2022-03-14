@@ -150,13 +150,13 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
           <Select value={selected} onChange={handleChange}>
             {data.map((item) => {
               let endDate =
-                new Date() < new Date(item.slutdato)
+                moment(new Date()) < moment(item.slutdato)
                   ? "nu"
-                  : moment(new Date(item.slutdato)).format("YYYY-MM-DD HH:mm");
+                  : moment(item.slutdato).format("YYYY-MM-DD HH:mm");
 
               return (
                 <MenuItem key={item.gid} value={item.gid}>
-                  {`${moment(new Date(item.startdato)).format(
+                  {`${moment(item.startdato).format(
                     "YYYY-MM-DD HH:mm"
                   )} - ${endDate}`}
                 </MenuItem>
@@ -166,7 +166,7 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
         </div>
       </Grid>
       <Grid item xs={12} sm={6}>
-        {new Date(latestUnit.slutdato) > new Date() ? (
+        {moment(latestUnit.slutdato) > moment(new Date()) ? (
           <Button
             color="secondary"
             variant="contained"

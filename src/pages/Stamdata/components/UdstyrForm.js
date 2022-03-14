@@ -116,7 +116,7 @@ export default function UdstyrForm(props) {
         ) : (
           <OwnDatePicker
             label="Startdato"
-            value={formData.udstyr.startdato}
+            value={moment(formData.udstyr.startdato)}
             onChange={(date) =>
               setUdstyrValue(
                 "startdato",
@@ -130,7 +130,7 @@ export default function UdstyrForm(props) {
         {editMode && (
           <OwnDatePicker
             label="Slutdato"
-            value={formData.udstyr.slutdato}
+            value={moment(formData.udstyr.slutdato)}
             onChange={(date) =>
               setUdstyrValue(
                 "slutdato",

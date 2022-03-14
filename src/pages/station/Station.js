@@ -49,7 +49,7 @@ export default function Station({
 }) {
   const [pejlingData, setPejlingData] = useState({
     gid: -1,
-    timeofmeas: formatedTimestamp(new Date()),
+    timeofmeas: new Date(),
     disttowatertable_m: 0,
     useforcorrection: 0,
     comment: "",
@@ -73,15 +73,15 @@ export default function Station({
 
   const [mpData, setMpData] = useState({
     gid: -1,
-    startdate: formatedTimestamp(new Date()),
-    enddate: formatedTimestamp(new Date("2099-01-01")),
+    startdate: new Date(),
+    enddate: new Date("2099-01-01"),
     elevation: 0,
     mp_description: "",
   });
 
   const [serviceData, setServiceData] = useState({
     gid: -1,
-    dato: formatedTimestamp(new Date()),
+    dato: new Date(),
     batteriskift: false,
     tilsyn: false,
     kommentar: "",

@@ -12,7 +12,7 @@ import LocationContext from "../context/LocationContext";
 import StationList from "../pages/overview/StationList";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Scroll from "./Scroll";
-import { getTableData } from "../api";
+import { getTableData, getSensorData } from "../api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,11 +58,18 @@ export default function SimpleTabs() {
     threshold: 1.0,
   });
   const [data, setData] = useState([]);
+  const [mapData, setMapData] = useState([]);
 
   useEffect(() => {
     getTableData(sessionStorage.getItem("session_id")).then((res) => {
       setData(res.data.result);
     });
+  }, []);
+
+  useEffect(() => {
+    let sessionId = sessionStorage.getItem("session_id");
+
+    getSensorData(sessionId).then((res) => setMapData(res.data.data));
   }, []);
 
   const handleChange = (_, newValue) => {
@@ -101,7 +108,7 @@ export default function SimpleTabs() {
         )}
       </TabPanel>
       <TabPanel value={locationContext.tabValue} index={1}>
-        <Map />
+        <Map sensorData={mapData} />
       </TabPanel>
       {matches && !isTabVisible && (
         <Scroll scrollBelow={100} className={classes.fab} />

@@ -107,7 +107,7 @@ export default function StationForm({
         )}
       </Grid>
       {mode === "add" && (
-        <Grid item xs={12} sm={2}>
+        <Grid item xs={12} sm={6} md={2}>
           <TextField
             variant="outlined"
             type="number"
@@ -126,7 +126,7 @@ export default function StationForm({
         </Grid>
       )}
       {mode === "add" && (
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={6} md={4}>
           <TextField
             variant="outlined"
             type="text"

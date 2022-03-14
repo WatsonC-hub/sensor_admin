@@ -22,6 +22,7 @@ import UdstyrForm from "./components/UdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import SaveIcon from "@material-ui/icons/Save";
+import moment from "moment";
 
 const flex1 = {
   display: "flex",
@@ -207,7 +208,14 @@ export default function OpretStamdata({ setAddStationDisabled }) {
 
   const handleSubmit = () => {
     setAddStationDisabled(false);
-    postStamdata(formData)
+    let form = {
+      ...formData,
+      station: {
+        ...formData.station,
+        mpstartdate: moment(formData.udstyr.startdato).format("YYYY-MM-DD"),
+      },
+    };
+    postStamdata(form)
       .then((res) => {
         setSeverity("success");
         setOpenAlert(true);

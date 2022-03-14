@@ -108,7 +108,7 @@ function StationImages(props) {
         handleCloseSave={handleCloseSave}
       />
       <Grid container spacing={3}>
-        <Grid item xs={6} sm={2}>
+        {/* <Grid item xs={6} sm={2}>
           <Button
             autoFocus
             color="secondary"
@@ -118,7 +118,7 @@ function StationImages(props) {
           >
             {openCamera ? "Luk kamera" : "Tag billede"}
           </Button>
-        </Grid>
+        </Grid> */}
         <Grid item xs={6} sm={2}>
           <label htmlFor="btn-upload">
             <input
@@ -130,8 +130,13 @@ function StationImages(props) {
               type="file"
               onChange={(event) => handleFileRead(event)}
             />
-            <Button color="secondary" variant="contained" component="span">
-              Upload fil
+            <Button
+              color="secondary"
+              variant="contained"
+              component="span"
+              startIcon={<PhotoCameraRounded />}
+            >
+              Tag billede / Upload fil
             </Button>
           </label>
         </Grid>

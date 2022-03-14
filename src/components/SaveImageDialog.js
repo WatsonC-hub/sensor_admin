@@ -121,7 +121,7 @@ function SaveImageDialog({
             />
             <OwnDatePicker
               label={"Dato"}
-              value={activeImage.date}
+              value={moment(activeImage.date)}
               onChange={(date) =>
                 changeData("date", moment(date).format("YYYY-MM-DD HH:mm"))
               }
