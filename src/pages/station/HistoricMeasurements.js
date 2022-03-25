@@ -14,6 +14,7 @@ import { Fragment } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import moment from "moment";
+import { StamdataContext } from "../Stamdata/StamdataContext";
 
 const useStyles = makeStyles({
   table: {
@@ -32,6 +33,7 @@ export default function HistoricMeasurements({
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
+  const [, , stamdata, , , , , , , , ,] = React.useContext(StamdataContext);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -68,7 +70,11 @@ export default function HistoricMeasurements({
           <TableHead>
             <TableRow>
               <TableCell>Dato</TableCell>
-              <TableCell align="right">Pejling (nedstik) [m]</TableCell>
+              <TableCell align="right">
+                {stamdata.station.tstype_id === 1
+                  ? "Pejling (nedstik) [m]"
+                  : `Måling [${stamdata.station.unit}]`}
+              </TableCell>
               <TableCell align="right">Anvendelse</TableCell>
               <TableCell align="right">Kommentar</TableCell>
             </TableRow>
@@ -81,7 +87,7 @@ export default function HistoricMeasurements({
                   <TableCell component="th" scope="row">
                     {moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
                   </TableCell>
-                  <TableCell align="right">{row.disttowatertable_m}</TableCell>
+                  <TableCell align="right">{row.measurement}</TableCell>
                   <TableCell align="right">
                     {correction_map[row.useforcorrection]
                       ? correction_map[row.useforcorrection]

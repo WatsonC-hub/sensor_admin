@@ -50,7 +50,7 @@ export default function Station({
   const [pejlingData, setPejlingData] = useState({
     gid: -1,
     timeofmeas: new Date(),
-    disttowatertable_m: 0,
+    measurement: 0,
     useforcorrection: 0,
     comment: "",
   });
@@ -97,6 +97,8 @@ export default function Station({
   const [canEdit] = useState(true);
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
+  const [isWaterlevel, setIsWaterlevel] = useState(false);
+  const [isCalculated, setIsCalculated] = useState(false);
 
   useEffect(() => {
     console.log(stationId);
@@ -104,6 +106,8 @@ export default function Station({
       getStamdataByStation(stationId).then((res) => {
         //let st = res.data.data.find((s) => s.ts_id === props.stationId);
         console.log(res);
+        setIsWaterlevel(res.data.data.tstype_id === 1);
+        setIsCalculated(res.data.data.calculated);
         if (res.data.success) {
           saveLocationFormData(res.data.data);
           saveUdstyrFormData(res.data.data);
@@ -130,20 +134,28 @@ export default function Station({
         setWatlevmp(mps);
         setServices(services);
 
-        setcontrol(
-          measures.map((e) => {
-            const elev = mps.filter((e2) => {
-              return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
-            })[0].elevation;
+        if (mps.length > 0) {
+          setcontrol(
+            measures.map((e) => {
+              const elev = mps.filter((e2) => {
+                return (
+                  e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate
+                );
+              })[0].elevation;
 
-            return {
-              ...e,
-              waterlevel: e.disttowatertable_m
-                ? elev - e.disttowatertable_m
-                : null,
-            };
-          })
-        );
+              return {
+                ...e,
+                waterlevel: e.measurement ? elev - e.measurement : null,
+              };
+            })
+          );
+        } else {
+          setcontrol(
+            measures.map((elem) => {
+              return { ...elem, waterlevel: elem.measurement };
+            })
+          );
+        }
       });
     }
   }, [updated, stationId]);
@@ -159,7 +171,7 @@ export default function Station({
     setPejlingData({
       gid: -1,
       timeofmeas: formatedTimestamp(new Date()),
-      disttowatertable_m: 0,
+      measurement: 0,
       useforcorrection: 0,
       comment: "",
     });
@@ -214,7 +226,11 @@ export default function Station({
     const method =
       pejlingData.gid !== -1 ? updateMeasurement : insertMeasurement;
     const userId = sessionStorage.getItem("user");
-    const payload = { ...pejlingData, userid: userId };
+    const payload = {
+      ...pejlingData,
+      userid: userId,
+      isWaterlevel: isWaterlevel,
+    };
     var _date = Date.parse(payload.timeofmeas);
     console.log("time before parse: ", payload.timeofmeas);
     console.log("time after parse: ", _date);
@@ -261,7 +277,6 @@ export default function Station({
 
   const handleServiceSubmit = () => {
     // setFormToShow("ADDTILSYN");
-    console.log("Hejsa");
     const method = serviceData.gid !== -1 ? updateService : insertService;
     const userId = sessionStorage.getItem("user");
     const payload = {
@@ -382,12 +397,13 @@ export default function Station({
           resetFormData={resetPejlingData}
           canEdit={canEdit}
           mpData={watlevmp}
+          isWaterlevel={isWaterlevel}
         />
       )}
-      {formToShow === "RET_STAMDATA" && (
+      {formToShow === "RET_STAMDATA" && !isCalculated && (
         <EditStamdata setFormToShow={setFormToShow} stationId={stationId} />
       )}
-      {formToShow === "ADDMAALEPUNKT" && (
+      {formToShow === "ADDMAALEPUNKT" && isWaterlevel && (
         <MaalepunktForm
           formData={mpData}
           changeFormData={changeMpData}
@@ -397,7 +413,7 @@ export default function Station({
           canEdit={canEdit}
         ></MaalepunktForm>
       )}
-      {formToShow === "ADDMAALEPUNKT" && (
+      {formToShow === "ADDMAALEPUNKT" && isWaterlevel && (
         <MaalepunktTable
           watlevmp={watlevmp}
           handleEdit={handleEdit("watlevmp")}
@@ -413,7 +429,7 @@ export default function Station({
           canEdit={canEdit}
         />
       )}
-      {formToShow === "ADDTILSYN" && (
+      {formToShow === "ADDTILSYN" && !isCalculated && (
         <TilsynForm
           formData={serviceData}
           changeFormData={changeServiceData}
@@ -438,6 +454,8 @@ export default function Station({
         formToShow={formToShow}
         setFormToShow={setFormToShow}
         canEdit={canEdit}
+        isWaterlevel={isWaterlevel}
+        isCalculated={isCalculated}
       />
       <Snackbar
         open={openAlert}

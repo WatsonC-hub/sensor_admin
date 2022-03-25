@@ -20,6 +20,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import OwnDatePicker from "./OwnDatePicker";
 import { Checkbox } from "@material-ui/core";
 import { Tooltip } from "@material-ui/core";
+import { StamdataContext } from "../pages/Stamdata/StamdataContext";
 
 export default function PejlingForm({
   stationId,
@@ -28,6 +29,7 @@ export default function PejlingForm({
   handleSubmit,
   resetFormData,
   mpData,
+  isWaterlevel,
 }) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const handleUsageChange = (e) => {
@@ -40,6 +42,8 @@ export default function PejlingForm({
 
   const [notPossible, setNotPossible] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(false);
+
+  const [, , stamdata, , , , , , , , ,] = React.useContext(StamdataContext);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -74,20 +78,22 @@ export default function PejlingForm({
       changeFormData("timeofmeas", date);
     }
 
-    var mp = mpData.filter((elem) => {
-      if (
-        moment(date).isSameOrAfter(elem.startdate) &&
-        moment(date).isBefore(elem.enddate)
-      ) {
-        return true;
-      }
-    });
+    if (isWaterlevel) {
+      var mp = mpData.filter((elem) => {
+        if (
+          moment(date).isSameOrAfter(elem.startdate) &&
+          moment(date).isBefore(elem.enddate)
+        ) {
+          return true;
+        }
+      });
 
-    if (mp.length > 0) {
-      setPejlingOutOfRange(false);
-      setCurrentMP(mp[0]);
-    } else {
-      setPejlingOutOfRange(true);
+      if (mp.length > 0) {
+        setPejlingOutOfRange(false);
+        setCurrentMP(mp[0]);
+      } else {
+        setPejlingOutOfRange(true);
+      }
     }
   };
 
@@ -96,19 +102,19 @@ export default function PejlingForm({
   };
 
   const handleDistanceChange = (e) => {
-    changeFormData("disttowatertable_m", e.target.value);
+    changeFormData("measurement", e.target.value);
   };
 
   const handleNotPossibleChange = (e) => {
     setNotPossible(!notPossible);
-    changeFormData("disttowatertable_m", null);
+    changeFormData("measurement", null);
   };
 
   return (
     <Card style={{ marginBottom: 25 }}>
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
-          {formData.gid !== -1 ? "Opdater pejling" : "Indberet pejling"}
+          {formData.gid !== -1 ? "Opdater kontrol" : "Indberet kontrol"}
         </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
@@ -128,17 +134,19 @@ export default function PejlingForm({
               variant="outlined"
               label={
                 <Typography variant="h6" component="h3">
-                  Pejling (nedstik)
+                  {isWaterlevel ? "Pejling (nedstik)" : "Måling"}
                 </Typography>
               }
               InputProps={{
                 endAdornment: (
-                  <InputAdornment position="start">m</InputAdornment>
+                  <InputAdornment position="start">
+                    {isWaterlevel ? "m" : stamdata.station.unit}
+                  </InputAdornment>
                 ),
               }}
               InputLabelProps={{ shrink: true }}
               fullWidth
-              value={formData.disttowatertable_m}
+              value={formData.measurement}
               onChange={handleDistanceChange}
               disabled={notPossible}
             />
@@ -147,49 +155,53 @@ export default function PejlingForm({
             <Tooltip title="f.eks. tør eller tilfrossen">
               <FormControlLabel
                 control={<Checkbox onChange={handleNotPossibleChange} />}
-                label="Pejling ikke mulig"
+                label="Måling ikke mulig"
               />
             </Tooltip>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              type="number"
-              variant="outlined"
-              disabled={true}
-              label={
-                <Typography variant="h6" component="h3">
-                  Målepunktskote
-                </Typography>
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">m</InputAdornment>
-                ),
-                style: { color: "black" },
-              }}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              value={pejlingOutOfRange ? "" : currentMP.elevation}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              type="text"
-              variant="outlined"
-              disabled={true}
-              label={
-                <Typography variant="h6" component="h3">
-                  Målepunkt placering
-                </Typography>
-              }
-              InputProps={{
-                style: { color: "black" },
-              }}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              value={pejlingOutOfRange ? "" : currentMP.mp_description}
-            />
-          </Grid>
+          {isWaterlevel && (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  type="number"
+                  variant="outlined"
+                  disabled={true}
+                  label={
+                    <Typography variant="h6" component="h3">
+                      Målepunktskote
+                    </Typography>
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start">m</InputAdornment>
+                    ),
+                    style: { color: "black" },
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  value={pejlingOutOfRange ? "" : currentMP.elevation}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  disabled={true}
+                  label={
+                    <Typography variant="h6" component="h3">
+                      Målepunkt placering
+                    </Typography>
+                  }
+                  InputProps={{
+                    style: { color: "black" },
+                  }}
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  value={pejlingOutOfRange ? "" : currentMP.mp_description}
+                />
+              </Grid>
+            </>
+          )}
           <Grid item xs={12} sm={12}>
             <TextField
               label={
@@ -206,33 +218,35 @@ export default function PejlingForm({
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={12} sm={12}>
-            <FormControl component="fieldset">
-              <FormLabel component="h6">
-                Hvordan skal pejlingen anvendes?
-              </FormLabel>
-              <RadioGroup
-                value={formData.useforcorrection + ""}
-                onChange={handleUsageChange}
-              >
-                <FormControlLabel
-                  value="0"
-                  control={<Radio />}
-                  label="Kontrol"
-                />
-                <FormControlLabel
-                  value="1"
-                  control={<Radio />}
-                  label="Korrektion fremadrettet"
-                />
-                <FormControlLabel
-                  value="2"
-                  control={<Radio />}
-                  label="Korrektion bagud og fremadrettet"
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
+          {isWaterlevel && (
+            <Grid item xs={12} sm={12}>
+              <FormControl component="fieldset">
+                <FormLabel component="h6">
+                  Hvordan skal pejlingen anvendes?
+                </FormLabel>
+                <RadioGroup
+                  value={formData.useforcorrection + ""}
+                  onChange={handleUsageChange}
+                >
+                  <FormControlLabel
+                    value="0"
+                    control={<Radio />}
+                    label="Kontrol"
+                  />
+                  <FormControlLabel
+                    value="1"
+                    control={<Radio />}
+                    label="Korrektion fremadrettet"
+                  />
+                  <FormControlLabel
+                    value="2"
+                    control={<Radio />}
+                    label="Korrektion bagud og fremadrettet"
+                  />
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+          )}
           <Grid item xs={2} sm={4}></Grid>
           <Grid item xs={4} sm={2}>
             <Button
