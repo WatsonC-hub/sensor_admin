@@ -10,6 +10,7 @@ import DeleteAlert from "./DeleteAlert";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { Fragment } from "react";
 import moment from "moment";
+import { StamdataContext } from "../Stamdata/StamdataContext";
 
 export default function MobileMeasurements({
   measurements,
@@ -19,6 +20,7 @@ export default function MobileMeasurements({
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
+  const [, , stamdata, , , , , , , , ,] = React.useContext(StamdataContext);
   const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
     setDialogOpen(true);
@@ -46,9 +48,14 @@ export default function MobileMeasurements({
               <ListItemText
                 primary={moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
                 secondary={
-                  row.disttowatertable_m === null
-                    ? "Pejling ikke mulig"
-                    : "Pejling: " + row.disttowatertable_m + " m"
+                  row.measurement === null
+                    ? "Måling ikke mulig"
+                    : "Måling: " +
+                      row.measurement +
+                      " " +
+                      (stamdata.station.tstype_id === 1
+                        ? "m"
+                        : stamdata.station.unit)
                 }
               />
               <ListItemSecondaryAction>

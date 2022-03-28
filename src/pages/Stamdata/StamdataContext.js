@@ -36,6 +36,7 @@ const StamdataProvider = (props) => {
       maalepunktskote: 0,
       mp_description: "",
       sensor_depth_m: 0,
+      unit: "",
     },
     udstyr: {
       terminal_type: "",
@@ -104,6 +105,7 @@ const StamdataProvider = (props) => {
       maalepunktskote: station.maalepunktskote,
       mp_description: station.mp_description,
       sensor_depth_m: station.sensor_depth_m,
+      unit: station.unit,
     });
   };
 

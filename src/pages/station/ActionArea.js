@@ -71,7 +71,12 @@ const useStyles = makeStyles((theme) => ({
 
 const ITEM_HEIGHT = 48;
 
-function DesktopBottomNav({ setFormToShow, canEdit }) {
+function DesktopBottomNav({
+  setFormToShow,
+  canEdit,
+  isCalculated,
+  isWaterlevel,
+}) {
   const classes = useStyles();
 
   return (
@@ -79,21 +84,23 @@ function DesktopBottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Indberet pejling"
+        label="Indberet kontrol"
         icon={<AddCircle />}
         onClick={() => {
           setFormToShow("ADDPEJLING");
         }}
       />
-      <BottomNavigationAction
-        className={classes.border}
-        disabled={!canEdit}
-        label="Indberet tilsyn"
-        icon={<PlaylistAddCheck />}
-        onClick={() => {
-          setFormToShow("ADDTILSYN");
-        }}
-      />
+      {!isCalculated && (
+        <BottomNavigationAction
+          className={classes.border}
+          disabled={!canEdit}
+          label="Indberet tilsyn"
+          icon={<PlaylistAddCheck />}
+          onClick={() => {
+            setFormToShow("ADDTILSYN");
+          }}
+        />
+      )}
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
@@ -103,30 +110,39 @@ function DesktopBottomNav({ setFormToShow, canEdit }) {
           setFormToShow("CAMERA");
         }}
       />
-      <BottomNavigationAction
-        className={classes.border}
-        disabled={!canEdit}
-        label="Indberet målepunkt"
-        onClick={() => {
-          setFormToShow("ADDMAALEPUNKT");
-        }}
-        icon={<Straighten className={classes.icon} />}
-      />
+      {isWaterlevel && (
+        <BottomNavigationAction
+          className={classes.border}
+          disabled={!canEdit}
+          label="Indberet målepunkt"
+          onClick={() => {
+            setFormToShow("ADDMAALEPUNKT");
+          }}
+          icon={<Straighten className={classes.icon} />}
+        />
+      )}
 
-      <BottomNavigationAction
-        className={classes.border}
-        disabled={!canEdit}
-        label="Ændre udstyr"
-        icon={<EditRounded />}
-        onClick={() => {
-          setFormToShow("RET_STAMDATA");
-        }}
-      />
+      {!isCalculated && (
+        <BottomNavigationAction
+          className={classes.border}
+          disabled={!canEdit}
+          label="Ændre udstyr"
+          icon={<EditRounded />}
+          onClick={() => {
+            setFormToShow("RET_STAMDATA");
+          }}
+        />
+      )}
     </BottomNavigation>
   );
 }
 
-function MobileBottomNav({ setFormToShow, canEdit }) {
+function MobileBottomNav({
+  setFormToShow,
+  canEdit,
+  isCalculated,
+  isWaterlevel,
+}) {
   const classes = useStyles();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -145,23 +161,26 @@ function MobileBottomNav({ setFormToShow, canEdit }) {
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
-        label="Indberet pejling"
+        label="Indberet kontrol"
         icon={<AddCircle />}
         onClick={() => {
           setFormToShow("ADDPEJLING");
           handleClose();
         }}
       />
-      <BottomNavigationAction
-        className={classes.border}
-        disabled={!canEdit}
-        label="Indberet tilsyn"
-        icon={<PlaylistAddCheck />}
-        onClick={() => {
-          setFormToShow("ADDTILSYN");
-          handleClose();
-        }}
-      />
+      {!isCalculated && (
+        <BottomNavigationAction
+          className={classes.border}
+          disabled={!canEdit}
+          label="Indberet tilsyn"
+          icon={<PlaylistAddCheck />}
+          onClick={() => {
+            setFormToShow("ADDTILSYN");
+            handleClose();
+          }}
+        />
+      )}
+
       <BottomNavigationAction
         className={classes.border}
         disabled={!canEdit}
@@ -173,62 +192,77 @@ function MobileBottomNav({ setFormToShow, canEdit }) {
           handleClose();
         }}
       />
-      <IconButton
-        aria-label="more"
-        aria-controls="long-menu"
-        aria-haspopup="true"
-        onClick={handleClick}
-      >
-        <MenuIcon />
-      </IconButton>
-      <Menu
-        id="long-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          style: {
-            maxHeight: ITEM_HEIGHT * 4.5,
-            width: "auto",
-            backgroundColor: theme.palette.secondary.main,
-          },
-        }}
-      >
-        <div>
-          <MenuItem>
-            <BottomNavigationAction
-              className={classes.border}
-              disabled={!canEdit}
-              label="Indberet målepunkt"
-              showLabel={true}
-              onClick={() => {
-                setFormToShow("ADDMAALEPUNKT");
-                handleClose();
-              }}
-              icon={<Straighten className={classes.icon} />}
-            />
-          </MenuItem>
-          <MenuItem>
-            <BottomNavigationAction
-              className={classes.border}
-              disabled={!canEdit}
-              label="Ændre udstyr"
-              showLabel={true}
-              icon={<EditRounded />}
-              onClick={() => {
-                setFormToShow("RET_STAMDATA");
-                handleClose();
-              }}
-            />
-          </MenuItem>
-        </div>
-      </Menu>
+
+      {(isWaterlevel || !isCalculated) && (
+        <>
+          <IconButton
+            aria-label="more"
+            aria-controls="long-menu"
+            aria-haspopup="true"
+            onClick={handleClick}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Menu
+            id="long-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={open}
+            onClose={handleClose}
+            PaperProps={{
+              style: {
+                maxHeight: ITEM_HEIGHT * 4.5,
+                width: "auto",
+                backgroundColor: theme.palette.secondary.main,
+              },
+            }}
+          >
+            <>
+              {isWaterlevel && (
+                <MenuItem>
+                  <BottomNavigationAction
+                    className={classes.border}
+                    disabled={!canEdit}
+                    label="Indberet målepunkt"
+                    showLabel={true}
+                    onClick={() => {
+                      setFormToShow("ADDMAALEPUNKT");
+                      handleClose();
+                    }}
+                    icon={<Straighten className={classes.icon} />}
+                  />
+                </MenuItem>
+              )}
+              {!isCalculated && (
+                <MenuItem>
+                  <BottomNavigationAction
+                    className={classes.border}
+                    disabled={!canEdit}
+                    label="Ændre udstyr"
+                    showLabel={true}
+                    icon={<EditRounded />}
+                    onClick={() => {
+                      setFormToShow("RET_STAMDATA");
+                      handleClose();
+                    }}
+                  />
+                </MenuItem>
+              )}
+            </>
+          </Menu>
+        </>
+      )}
     </BottomNavigation>
   );
 }
 
-export default function ActionArea({ formToShow, setFormToShow, canEdit }) {
+export default function ActionArea({
+  formToShow,
+  setFormToShow,
+  canEdit,
+  isWaterlevel,
+  isCalculated,
+}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   return matches ? (
@@ -236,12 +270,16 @@ export default function ActionArea({ formToShow, setFormToShow, canEdit }) {
       formToShow={formToShow}
       setFormToShow={setFormToShow}
       canEdit={canEdit}
+      isWaterlevel={isWaterlevel}
+      isCalculated={isCalculated}
     />
   ) : (
     <DesktopBottomNav
       formToShow={formToShow}
       setFormToShow={setFormToShow}
       canEdit={canEdit}
+      isWaterlevel={isWaterlevel}
+      isCalculated={isCalculated}
     />
   );
 }
