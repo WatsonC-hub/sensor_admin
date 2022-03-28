@@ -40,7 +40,7 @@ const UnitEndDateDialog = ({
   openDialog,
   setOpenDialog,
   unit,
-  setUnit,
+  setUdstyrValue,
   stationId,
 }) => {
   const [date, setdate] = useState(new Date());
@@ -71,6 +71,11 @@ const UnitEndDateDialog = ({
               );
               payload.enddate = formatedTimestamp(
                 new Date(Date.parse(payload.slutdato))
+              );
+
+              setUdstyrValue(
+                "slutdato",
+                moment(date).format("YYYY-MM-DD HH:mm")
               );
 
               takeHomeEquipment(
@@ -116,7 +121,7 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
     );
   };
 
-  const [, , formData, , , , , , saveUdstyrFormData] =
+  const [, , formData, , , , , setUdstyrValue, saveUdstyrFormData] =
     React.useContext(StamdataContext);
 
   const flex1 = {
@@ -192,7 +197,7 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
         openDialog={openDialog}
         setOpenDialog={setOpenDialog}
         unit={latestUnit}
-        setUnit={setLatestUnit}
+        setUdstyrValue={setUdstyrValue}
         stationId={stationId}
       />
       <AddUdstyrForm
