@@ -8,9 +8,8 @@ function ImageViewer({ images, handleDelete, handleEdit }) {
     <Grid container spacing={3}>
       {images.map((elem) => {
         return (
-          <Grid item xs={10} sm={6} md={6} lg={4}>
+          <Grid item xs={10} sm={6} md={6} lg={4} key={images.gid}>
             <ImageCard
-              key={images.gid}
               image={elem}
               handleDelete={handleDelete}
               handleEdit={handleEdit}
