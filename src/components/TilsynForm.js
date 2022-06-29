@@ -120,7 +120,6 @@ export default function TilsynForm({
           </Grid>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               style={{ backgroundColor: theme.palette.secondary }}
               onClick={resetFormData}
               color="secondary"

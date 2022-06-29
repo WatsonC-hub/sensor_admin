@@ -25,7 +25,7 @@ import PejlingMeasurements from "./PejlingMeasurements";
 import MaalepunktForm from "../../components/MaalepunktForm";
 import CaptureBearing from "./CaptureBearing";
 import { StamdataContext } from "../Stamdata/StamdataContext";
-
+import moment from "moment";
 import MaalepunktTable from "./MaalepunktTable";
 import TilsynForm from "../../components/TilsynForm";
 import TilsynTable from "../../components/TilsynTable";
@@ -33,7 +33,6 @@ import StationImages from "./StationImages";
 import { useLocation } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-import moment from "moment";
 
 export default function Station({
   stationId,
@@ -88,12 +87,28 @@ export default function Station({
   const [measurements, setMeasurements] = useState([]);
   const [watlevmp, setWatlevmp] = useState([]);
   const [services, setServices] = useState([]);
+  const [dynamic, setDynamic] = useState([]);
   const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [isWaterlevel, setIsWaterlevel] = useState(false);
   const [isCalculated, setIsCalculated] = useState(false);
+
+  useEffect(() => {
+    if (watlevmp.length > 0) {
+      const elev = watlevmp.filter((e2) => {
+        return (
+          moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
+          moment(pejlingData.timeofmeas) < moment(e2.enddate)
+        );
+      })[0].elevation;
+
+      let dynamicDate = pejlingData.timeofmeas;
+      let dynamicMeas = elev - pejlingData.measurement;
+      setDynamic([dynamicDate, dynamicMeas]);
+    }
+  }, [pejlingData, watlevmp]);
 
   useEffect(() => {
     console.log(stationId);
@@ -375,13 +390,18 @@ export default function Station({
   return (
     // <>
     <div>
-      {(formToShow === null ||
-        formToShow === "ADDPEJLING" ||
-        formToShow === "ADDMAALEPUNKT") && (
+      {formToShow !== "ADDPEJLING" ? (
         <BearingGraph
           stationId={stationId}
           updated={updated}
           measurements={control}
+        />
+      ) : (
+        <BearingGraph
+          stationId={stationId}
+          updated={updated}
+          measurements={control}
+          dynamicMeasurement={dynamic}
         />
       )}
       {formToShow === "ADDPEJLING" && (

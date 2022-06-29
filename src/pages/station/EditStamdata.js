@@ -79,7 +79,6 @@ const UnitEndDateDialog = ({
             Gem
           </Button>
           <Button
-            autoFocus
             color="secondary"
             variant="contained"
             onClick={() => {
@@ -278,7 +277,6 @@ export default function EditStamdata({ setFormToShow, stationId }) {
           </Grid>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               color="secondary"
               variant="contained"
               onClick={() => {

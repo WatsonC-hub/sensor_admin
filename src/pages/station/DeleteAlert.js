@@ -57,7 +57,7 @@ export default function DeleteAlert({
         </DialogTitle>
 
         <DialogActions>
-          <Button onClick={handleOk} color="primary" autoFocus>
+          <Button onClick={handleOk} color="primary">
             Ja
           </Button>
           <Button autoFocus onClick={handleClose} color="primary">

@@ -141,7 +141,6 @@ export default function AddUdstyrForm({
             ))}
           </TextField>
           <TextField
-            autoFocus
             select
             margin="dense"
             value={udstyrFormData.uuid}

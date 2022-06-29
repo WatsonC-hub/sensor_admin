@@ -170,8 +170,10 @@ const layout3 = {
   },
 };
 
-function PlotGraph({ graphData, controlData }) {
-  const name = graphData[0] ? graphData[0].properties.ts_name : "";
+function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
+  const name = graphData[0]
+    ? JSON.parse(graphData[0].properties.data).name
+    : "";
   const xData = graphData[0] ? JSON.parse(graphData[0].properties.data).x : [];
   const yData = graphData[0] ? JSON.parse(graphData[0].properties.data).y : [];
   const trace = graphData[0] ? JSON.parse(graphData[0].properties.trace) : {};
@@ -181,6 +183,17 @@ function PlotGraph({ graphData, controlData }) {
   const unit = graphData[0] ? graphData[0].properties.unit : "";
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
+  const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
+
+  useEffect(() => {
+    console.log(dynamicMeasurement);
+    if (dynamicMeasurement !== undefined) {
+      setXDynamicMeasurement([dynamicMeasurement[0]]);
+      setYDynamicMeasurement([dynamicMeasurement[1]]);
+    }
+  }, [dynamicMeasurement]);
 
   // useEffect(() => {
   //   if (graphData[0]) setStationName(graphData[0].properties.stationname);
@@ -251,6 +264,15 @@ function PlotGraph({ graphData, controlData }) {
             line: { color: "rgb(0,0,0)", width: 1 },
           },
         },
+        {
+          x: xDynamicMeasurement,
+          y: yDynamicMeasurement,
+          name: "",
+          type: "scatter",
+          mode: "markers",
+          showlegend: false,
+          marker: { symbol: "50", size: "8", color: "rgb(0,120,109)" },
+        },
       ]}
       layout={
         matches
@@ -274,31 +296,8 @@ function PlotGraph({ graphData, controlData }) {
         modeBarButtons: [
           [downloadButton, makeLinkButton],
           ["zoom2d", "pan2d", "zoomIn2d", "zoomOut2d", "resetScale2d"],
-          // ["zoom2d", "pan2d", "zoomIn2d", "zoomOut2d", "reset"],
         ],
-        // modeBarButtonsToRemove: [
-        //   "select2d",
-        //   "lasso2d",
-        //   "autoScale2d",
-        //   "hoverCompareCartesian",
-        //   "hoverClosestCartesian",
-        //   "toggleSpikelines",
-        // ],
-        // modeBarButtonsToAdd: [
-        //   {
-        //     name: "color toggler",
-        //     icon: icon,
-        //     click: function (gd) {
-        //       console.log(gd.data);
-        //       var rows = gd.data[0].x.map((elem, idx) => [
-        //         moment(elem).format("YYYY-MM-DD HH:mm"),
-        //         gd.data[0].y[idx].toString().replace(".", ","),
-        //       ]);
 
-        //       exportToCsv("data.csv", rows);
-        //     },
-        //   },
-        // ],
         displaylogo: false,
         displayModeBar: true,
       }}
@@ -308,7 +307,12 @@ function PlotGraph({ graphData, controlData }) {
   );
 }
 
-export default function BearingGraph({ stationId, updated, measurements }) {
+export default function BearingGraph({
+  stationId,
+  updated,
+  measurements,
+  dynamicMeasurement,
+}) {
   const [graphData, setGraphData] = useState([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
@@ -334,7 +338,11 @@ export default function BearingGraph({ stationId, updated, measurements }) {
         border: "2px solid gray",
       }}
     >
-      <PlotGraph graphData={graphData} controlData={measurements} />
+      <PlotGraph
+        graphData={graphData}
+        controlData={measurements}
+        dynamicMeasurement={dynamicMeasurement}
+      />
     </div>
   );
 }
