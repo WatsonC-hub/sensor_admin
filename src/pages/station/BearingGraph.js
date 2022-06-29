@@ -171,7 +171,9 @@ const layout3 = {
 };
 
 function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
-  const name = graphData[0] ? graphData[0].properties.ts_name : "";
+  const name = graphData[0]
+    ? JSON.parse(graphData[0].properties.data).name
+    : "";
   const xData = graphData[0] ? JSON.parse(graphData[0].properties.data).x : [];
   const yData = graphData[0] ? JSON.parse(graphData[0].properties.data).y : [];
   const trace = graphData[0] ? JSON.parse(graphData[0].properties.trace) : {};
@@ -294,31 +296,8 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
         modeBarButtons: [
           [downloadButton, makeLinkButton],
           ["zoom2d", "pan2d", "zoomIn2d", "zoomOut2d", "resetScale2d"],
-          // ["zoom2d", "pan2d", "zoomIn2d", "zoomOut2d", "reset"],
         ],
-        // modeBarButtonsToRemove: [
-        //   "select2d",
-        //   "lasso2d",
-        //   "autoScale2d",
-        //   "hoverCompareCartesian",
-        //   "hoverClosestCartesian",
-        //   "toggleSpikelines",
-        // ],
-        // modeBarButtonsToAdd: [
-        //   {
-        //     name: "color toggler",
-        //     icon: icon,
-        //     click: function (gd) {
-        //       console.log(gd.data);
-        //       var rows = gd.data[0].x.map((elem, idx) => [
-        //         moment(elem).format("YYYY-MM-DD HH:mm"),
-        //         gd.data[0].y[idx].toString().replace(".", ","),
-        //       ]);
 
-        //       exportToCsv("data.csv", rows);
-        //     },
-        //   },
-        // ],
         displaylogo: false,
         displayModeBar: true,
       }}

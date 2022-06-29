@@ -33,7 +33,6 @@ import StationImages from "./StationImages";
 import { useLocation } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-import moment from "moment";
 
 export default function Station({
   stationId,
