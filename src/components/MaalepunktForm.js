@@ -130,7 +130,6 @@ export default function MaalepunktForm({
           </Grid>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               style={{ backgroundColor: theme.palette.secondary }}
               onClick={handleCancel}
               color="secondary"

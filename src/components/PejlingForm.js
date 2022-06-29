@@ -265,7 +265,6 @@ export default function PejlingForm({
           </Grid>
           <Grid item xs={4} sm={2}>
             <Button
-              autoFocus
               color="secondary"
               variant="contained"
               onClick={resetFormData}
