@@ -33,12 +33,7 @@ import StationImages from "./StationImages";
 import { useLocation } from "react-router-dom";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
-
-function formatedTimestamp(d) {
-  const date = d.toISOString().split("T")[0];
-  const time = d.toTimeString().split(" ")[0];
-  return `${date} ${time}`;
-}
+import moment from "moment";
 
 export default function Station({
   stationId,
@@ -170,7 +165,7 @@ export default function Station({
   const resetPejlingData = () => {
     setPejlingData({
       gid: -1,
-      timeofmeas: formatedTimestamp(new Date()),
+      timeofmeas: moment().format("YYYY-MM-DD HH:mm:ss"),
       measurement: 0,
       useforcorrection: 0,
       comment: "",
@@ -189,8 +184,8 @@ export default function Station({
   const resetMpData = () => {
     setMpData({
       gid: -1,
-      startdate: formatedTimestamp(new Date()),
-      enddate: formatedTimestamp(new Date("2099-01-01")),
+      startdate: moment().format("YYYY-MM-DD HH:mm:ss"),
+      enddate: moment("2099-01-01").format("YYYY-MM-DD HH:mm:ss"),
       elevation: 0,
       mp_description: "",
     });
@@ -209,7 +204,7 @@ export default function Station({
   const resetServiceData = () => {
     setServiceData({
       gid: -1,
-      dato: formatedTimestamp(new Date()),
+      dato: moment().format("YYYY-MM-DD HH:mm:ss"),
       batteriskift: false,
       tilsyn: false,
       kommentar: "",
@@ -234,7 +229,9 @@ export default function Station({
     var _date = Date.parse(payload.timeofmeas);
     console.log("time before parse: ", payload.timeofmeas);
     console.log("time after parse: ", _date);
-    payload.timeofmeas = formatedTimestamp(new Date(_date));
+    payload.timeofmeas = moment(payload.timeofmeas).format(
+      "YYYY-MM-DD HH:mm:ss"
+    );
     method(sessionStorage.getItem("session_id"), stationId, payload)
       .then((res) => {
         resetPejlingData();
@@ -258,8 +255,8 @@ export default function Station({
     var _date = Date.parse(payload.startdate);
     console.log("time before parse: ", payload.startdate);
     console.log("time after parse: ", _date);
-    payload.startdate = formatedTimestamp(new Date(_date));
-    payload.enddate = formatedTimestamp(new Date(Date.parse(payload.enddate)));
+    payload.startdate = moment(payload.startdate).format("YYYY-MM-DD HH:mm:ss");
+    payload.enddate = moment(payload.enddate).format("YYYY-MM-DD HH:mm:ss");
     method(sessionStorage.getItem("session_id"), stationId, payload)
       .then((res) => {
         resetMpData();
@@ -288,7 +285,7 @@ export default function Station({
     var _date = Date.parse(payload.dato);
     console.log("time before parse: ", payload.dato);
     console.log("time after parse: ", _date);
-    payload.dato = formatedTimestamp(new Date(_date));
+    payload.dato = moment(payload.dato).format("YYYY-MM-DD HH:mm:ss");
     method(sessionStorage.getItem("session_id"), stationId, payload).then(
       (res) => {
         resetServiceData();
