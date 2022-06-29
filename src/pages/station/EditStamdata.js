@@ -26,12 +26,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import SaveIcon from "@material-ui/icons/Save";
 import moment from "moment";
 
-function formatedTimestamp(d) {
-  const date = d.toISOString().split("T")[0];
-  const time = d.toTimeString().split(" ")[0];
-  return `${date} ${time}`;
-}
-
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -66,11 +60,8 @@ const UnitEndDateDialog = ({
             startIcon={<SaveIcon />}
             onClick={() => {
               const payload = { ...unit, ts_id: stationId, slutdato: date };
-              payload.startdate = formatedTimestamp(
-                new Date(Date.parse(payload.startdato))
-              );
-              payload.enddate = formatedTimestamp(
-                new Date(Date.parse(payload.slutdato))
+              payload.startdate = moment(payload.startdato).format(
+                "YYYY-MM-DD HH:mm"
               );
 
               setUdstyrValue(
