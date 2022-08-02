@@ -94,6 +94,7 @@ export default function Station({
   const [severity, setSeverity] = useState("success");
   const [isWaterlevel, setIsWaterlevel] = useState(false);
   const [isCalculated, setIsCalculated] = useState(false);
+  const [isFlow, setIsFlow] = useState(false);
 
   useEffect(() => {
     if (watlevmp.length > 0) {
@@ -117,6 +118,7 @@ export default function Station({
         //let st = res.data.data.find((s) => s.ts_id === props.stationId);
         console.log(res);
         setIsWaterlevel(res.data.data.tstype_id === 1);
+        setIsFlow(res.data.data.tstype_id === 2);
         setIsCalculated(res.data.data.calculated);
         if (res.data.success) {
           saveLocationFormData(res.data.data);
@@ -415,6 +417,7 @@ export default function Station({
           canEdit={canEdit}
           mpData={watlevmp}
           isWaterlevel={isWaterlevel}
+          isFlow={isFlow}
         />
       )}
       {formToShow === "RET_STAMDATA" && !isCalculated && (

@@ -30,6 +30,7 @@ export default function PejlingForm({
   resetFormData,
   mpData,
   isWaterlevel,
+  isFlow,
 }) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const handleUsageChange = (e) => {
@@ -218,7 +219,7 @@ export default function PejlingForm({
               onChange={handleCommentChange}
             />
           </Grid>
-          {isWaterlevel && (
+          {(isWaterlevel || isFlow) && (
             <Grid item xs={12} sm={12}>
               <FormControl component="fieldset">
                 <FormLabel component="h6">
