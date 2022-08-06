@@ -193,6 +193,10 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
       setXDynamicMeasurement([dynamicMeasurement[0]]);
       setYDynamicMeasurement([dynamicMeasurement[1]]);
     }
+    else {
+      setXDynamicMeasurement([]);
+      setYDynamicMeasurement([]);
+    }
   }, [dynamicMeasurement]);
 
   // useEffect(() => {
