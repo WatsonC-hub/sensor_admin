@@ -5,6 +5,8 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@material-ui/core";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const theme = createTheme({
   palette: {
@@ -21,11 +23,16 @@ const theme = createTheme({
   },
 });
 
+const queryClient = new QueryClient();
+
 ReactDOM.render(
   <BrowserRouter>
     <React.StrictMode>
       <ThemeProvider theme={theme}>
-        <App />
+        <QueryClientProvider client={queryClient}>
+          <App />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
       </ThemeProvider>
     </React.StrictMode>
   </BrowserRouter>,

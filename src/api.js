@@ -6,7 +6,7 @@ let extEndpoint;
 let endpoint;
 let userEndpoint;
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "developments") {
   // 10.10.158.118
   // 192.168.1.167
   host = "http://localhost:8080";
@@ -32,11 +32,11 @@ if (process.env.NODE_ENV === "development") {
 
 // const getData = (key) => axios.get(`${testEndpoint}${queries[key]}`);
 
-const getSensorData = (sessionId) => {
+async function getSensorData(sessionId) {
   const url = `${extEndpoint}/sensordata?session_id=${sessionId}`;
-  const data = axios.get(url);
-  return data;
-};
+  const { data } = await axios.get(url);
+  return data.data;
+}
 
 const getStamData = () => {
   const url = `${extEndpoint}/stamdata`;
@@ -88,10 +88,11 @@ const getImage = (loc_id) => {
   return axios.get(url);
 };
 
-const getTableData = (sessionId) => {
+async function getTableData(sessionId) {
   const url = `${extEndpoint}/tabledata?session_id=${sessionId}`;
-  return axios.get(url);
-};
+  const { data } = await axios.get(url);
+  return data.result;
+}
 
 // const getSingleElem = () => getData("getSingleElem");
 

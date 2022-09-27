@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import L from "leaflet";
 import "leaflet.locatecontrol";
-import { getSensorData } from "../../api";
 import LocationContext from "../../context/LocationContext";
 import Button from "@material-ui/core/Button";
 
@@ -23,7 +22,7 @@ let inactiveIcon = L.icon({
   iconSize: [15, 15],
 });
 
-function Map({ sensorData }) {
+function Map({ sensorData, loading }) {
   const context = useContext(LocationContext);
   const history = useHistory();
   const mapRef = React.useRef(null);
@@ -137,7 +136,7 @@ function Map({ sensorData }) {
   useEffect(() => {
     layerRef.current.clearLayers();
     const data = sensorData;
-    if (data.length > 0) {
+    if (!loading) {
       data.forEach((element) => {
         const point = [element.lat, element.long];
         console.log();

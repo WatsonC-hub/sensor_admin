@@ -13,6 +13,7 @@ import StationList from "../pages/overview/StationList";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Scroll from "./Scroll";
 import { getTableData, getSensorData } from "../api";
+import { useQuery } from "@tanstack/react-query";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,20 +58,22 @@ export default function SimpleTabs() {
     rootMargin: "0px",
     threshold: 1.0,
   });
-  const [data, setData] = useState([]);
-  const [mapData, setMapData] = useState([]);
 
-  useEffect(() => {
-    getTableData(sessionStorage.getItem("session_id")).then((res) => {
-      setData(res.data.result);
-    });
-  }, []);
+  const { data, isLoading } = useQuery(
+    ["station_list"],
+    () => getTableData(sessionStorage.getItem("session_id")),
+    {
+      refetchInterval: 120000,
+    }
+  );
 
-  useEffect(() => {
-    let sessionId = sessionStorage.getItem("session_id");
-
-    getSensorData(sessionId).then((res) => setMapData(res.data.data));
-  }, []);
+  const { data: mapData, isLoading: mapLoading } = useQuery(
+    ["map_data"],
+    () => getSensorData(sessionStorage.getItem("session_id")),
+    {
+      refetchInterval: 120000,
+    }
+  );
 
   const handleChange = (_, newValue) => {
     locationContext.setTabValue(newValue);
@@ -104,11 +107,11 @@ export default function SimpleTabs() {
         {matches ? (
           <StationList data={data} />
         ) : (
-          <StationListDesktop data={data} />
+          <StationListDesktop data={data} loading={isLoading} />
         )}
       </TabPanel>
       <TabPanel value={locationContext.tabValue} index={1}>
-        <Map sensorData={mapData} />
+        <Map sensorData={mapData} loading={mapLoading} />
       </TabPanel>
       {matches && !isTabVisible && (
         <Scroll scrollBelow={100} className={classes.fab} />

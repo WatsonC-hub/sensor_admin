@@ -109,45 +109,40 @@ const column_extension = [
   },
 ];
 
-export default function StationListDesktop({ data }) {
-  const [loading, setLoading] = useState(true);
+export default function StationListDesktop({ data, loading }) {
   const [typeAhead, settypeAhead] = useState("");
   const { height, width } = useWindowDimensions();
-
-  useEffect(() => {
-    if (data.length > 0) {
-      setLoading(false);
-    }
-  }, [data]);
-
-  let rows = data
-    .map((elem, index) => {
-      var text = elem.opgave;
-      switch (elem.color) {
-        case "#00FF00":
-          text = "Ok";
-          break;
-        case null:
-          text = "Inaktiv";
-          break;
-      }
-      return {
-        ...elem,
-        station_loc_id: elem.loc_id + "_" + elem.ts_id,
-        id: index,
-        opgave: text,
-        calypso_id: elem.active ? elem.calypso_id : " ",
-      };
-    })
-    .filter((elem) => {
-      return (
-        elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
-        elem.calypso_id
-          .toString()
-          .toLowerCase()
-          .includes(typeAhead.toLowerCase())
-      );
-    });
+  var rows = [];
+  if (!loading) {
+    rows = data
+      .map((elem, index) => {
+        var text = elem.opgave;
+        switch (elem.color) {
+          case "#00FF00":
+            text = "Ok";
+            break;
+          case null:
+            text = "Inaktiv";
+            break;
+        }
+        return {
+          ...elem,
+          station_loc_id: elem.loc_id + "_" + elem.ts_id,
+          id: index,
+          opgave: text,
+          calypso_id: elem.active ? elem.calypso_id : " ",
+        };
+      })
+      .filter((elem) => {
+        return (
+          elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
+          elem.calypso_id
+            .toString()
+            .toLowerCase()
+            .includes(typeAhead.toLowerCase())
+        );
+      });
+  }
 
   return (
     <div>
