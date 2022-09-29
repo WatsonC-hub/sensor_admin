@@ -38,10 +38,40 @@ async function getSensorData(sessionId) {
   return data.data;
 }
 
-const getStamData = () => {
+async function getDTMQuota(x, y) {
+  const url = `https://services.datafordeler.dk/DHMTerraen/DHMKoter/1.0.0/GEOREST/HentKoter?geop=POINT(${x} ${y})&username=WXIJZOCTKQ&password=E7WfqcwH_`;
+  const { data } = await axios.get(url);
+  return data;
+}
+
+async function getStationTypes() {
+  const { data } = await axios.get(
+    `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
+  );
+  return data.features;
+}
+
+async function getStamData() {
   const url = `${extEndpoint}/stamdata`;
-  return axios.get(url);
-};
+  const { data } = await axios.get(url);
+  return data.data;
+}
+
+async function getAvailableUnits() {
+  const { data } = await axios.get(
+    `${extEndpoint}/stamdata/units?session_id=${sessionStorage.getItem(
+      "session_id"
+    )}`
+  );
+  return data.result;
+}
+
+async function getLocationTypes() {
+  const { data } = await axios.get(
+    `${endpoint}SELECT loctype_id, loctypename FROM sensor.loctype2`
+  );
+  return data.features;
+}
 
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(",");
@@ -195,17 +225,6 @@ const deleteService = (sessionId, stationId, gid) => {
   return axios.delete(url);
 };
 
-const getStationTypes = () =>
-  axios.get(
-    `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
-  );
-
-const getLocationTypes = () =>
-  axios.get(`${endpoint}SELECT loctype_id, loctypename FROM sensor.loctype2`);
-
-const getAvailableUnits = (sessionId) =>
-  axios.get(`${extEndpoint}/stamdata/units?session_id=${sessionId}`);
-
 const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
 
 const updateStamdata = (data, sessionId) =>
@@ -238,11 +257,6 @@ const loginUser = (user, password) => {
 const takeHomeEquipment = (gid, data, sessionId) => {
   const url = `${extEndpoint}/stamdata/unithistory/${gid}?session_id=${sessionId}`;
   return axios.put(url, data);
-};
-
-const getDTMQuota = (x, y) => {
-  const url = `https://services.datafordeler.dk/DHMTerraen/DHMKoter/1.0.0/GEOREST/HentKoter?geop=POINT(${x} ${y})&username=WXIJZOCTKQ&password=E7WfqcwH_`;
-  return axios.get(url);
 };
 
 export {

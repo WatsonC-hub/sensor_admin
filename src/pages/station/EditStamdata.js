@@ -15,7 +15,7 @@ import {
 import "date-fns";
 import OwnDatePicker from "../../components/OwnDatePicker";
 
-import LocalityForm from "../Stamdata/components/LocalityForm";
+import LocationForm from "../Stamdata/components/LocationForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
 import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
@@ -252,7 +252,7 @@ export default function EditStamdata({ setFormToShow, stationId }) {
           Stamdata
         </Typography>
         <Typography>Lokalitet</Typography>
-        <LocalityForm />
+        <LocationForm />
         <Typography>Station</Typography>
         <StationForm />
 

@@ -1,22 +1,27 @@
 import React, { useEffect } from "react";
-import { Grid, TextField, MenuItem } from "@material-ui/core";
+import { Grid, TextField, MenuItem, CircularProgress } from "@material-ui/core";
 import { StamdataContext } from "../../../state/StamdataContext";
 import { getStationTypes } from "../../../api";
 import { InputAdornment } from "@material-ui/core";
+import stamdataStore from "../../../state/store";
+import { useQuery } from "@tanstack/react-query";
 
 const StationTypeSelect = ({
   selectedStationType,
   setSelectedStationType,
   stationTypes,
   onChange,
+  isLoading,
 }) => {
   const handleSelection = (event) => {
-    console.log(event.target.value);
     setSelectedStationType(event.target.value);
-    console.log(event.target);
     onChange(event);
   };
-  console.log(stationTypes);
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
   let menuItems = stationTypes
     .filter((i) => i.properties.tstype_id !== 0)
     .map((item) => (
@@ -49,19 +54,34 @@ export default function StationForm({
   selectedStationType,
   setSelectedStationType,
 }) {
-  const [stationTypes, setStationTypes] = React.useState([]);
-  useEffect(() => {
-    if (stationTypes.length > 0) {
-      console.log("station more than zero");
-    } else {
-      console.log("station are 0");
-    }
-    if (mode === "edit") return;
-    getStationTypes().then((res) => res && setStationTypes(res.data.features));
-  }, []);
+  const [timeseries, setTimeseriesValue] = stamdataStore((store) => [
+    store.timeseries,
+    store.setTimeseriesValue,
+  ]);
+  // const [timeseties_types, setStationTypes] = React.useState([]);
+
+  const { data: timeseries_types, isLoading } = useQuery(
+    ["timeseries_types"],
+    getStationTypes
+  );
+  // useEffect(() => {
+  //   if (timeseties_types.length > 0) {
+  //     console.log("station more than zero");
+  //   } else {
+  //     console.log("station are 0");
+  //   }
+  //   if (mode === "edit") return;
+  //   getStationTypes().then((res) => res && setStationTypes(res.data.features));
+  // }, []);
 
   const [, , formData, , , , setStationValue] =
     React.useContext(StamdataContext);
+
+  console.log(
+    timeseries_types?.filter(
+      (elem) => elem.properties.tstype_id == timeseries.tstype_id
+    )[0]?.properties?.tstype_name
+  );
 
   return (
     <Grid container spacing={2}>
@@ -70,14 +90,14 @@ export default function StationForm({
           variant="outlined"
           type="text"
           label="Navn"
-          value={formData.station.ts_name}
+          value={timeseries.ts_name}
           InputLabelProps={{
             shrink: true,
           }}
           fullWidth
           margin="dense"
           placeholder="f.eks. Brabrand_1_vandstand"
-          onChange={(e) => setStationValue("ts_name", e.target.value)}
+          onChange={(e) => setTimeseriesValue("ts_name", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -85,8 +105,9 @@ export default function StationForm({
           <StationTypeSelect
             selectedStationType={selectedStationType}
             setSelectedStationType={setSelectedStationType}
-            stationTypes={stationTypes}
-            onChange={(e) => setStationValue("tstype_id", e.target.value)}
+            stationTypes={timeseries_types}
+            isLoading={isLoading}
+            onChange={(e) => setTimeseriesValue("tstype_id", e.target.value)}
           />
         ) : (
           <TextField
@@ -97,7 +118,11 @@ export default function StationForm({
             variant="outlined"
             type="text"
             label="Station type"
-            value={formData.station.tstype_name}
+            value={
+              timeseries_types?.filter(
+                (elem) => elem.properties.tstype_id == timeseries.tstype_id
+              )[0]?.properties?.tstype_name
+            }
             InputLabelProps={{
               shrink: true,
             }}
@@ -112,7 +137,7 @@ export default function StationForm({
             variant="outlined"
             type="number"
             label="Målepunktskote"
-            value={formData.station.maalepunktskote}
+            value={timeseries.maalepunktskote}
             InputProps={{
               endAdornment: <InputAdornment position="start">m</InputAdornment>,
             }}
@@ -121,7 +146,9 @@ export default function StationForm({
             }}
             fullWidth
             margin="dense"
-            onChange={(e) => setStationValue("maalepunktskote", e.target.value)}
+            onChange={(e) =>
+              setTimeseriesValue("maalepunktskote", e.target.value)
+            }
           />
         </Grid>
       )}
@@ -131,14 +158,16 @@ export default function StationForm({
             variant="outlined"
             type="text"
             label="Målepunkt placering"
-            value={formData.station.mp_description}
+            value={timeseries.mp_description}
             InputLabelProps={{
               shrink: true,
             }}
             fullWidth
             placeholder="f.eks. top af rør"
             margin="dense"
-            onChange={(e) => setStationValue("mp_description", e.target.value)}
+            onChange={(e) =>
+              setTimeseriesValue("mp_description", e.target.value)
+            }
           />
         </Grid>
       )}
@@ -147,7 +176,7 @@ export default function StationForm({
           variant="outlined"
           type="number"
           label="Evt. loggerdybde under målepunkt"
-          value={formData.station.sensor_depth_m}
+          value={timeseries.sensor_depth_m}
           InputLabelProps={{
             shrink: true,
           }}
@@ -156,7 +185,7 @@ export default function StationForm({
           }}
           fullWidth
           margin="dense"
-          onChange={(e) => setStationValue("sensor_depth_m", e.target.value)}
+          onChange={(e) => setTimeseriesValue("sensor_depth_m", e.target.value)}
         />
       </Grid>
     </Grid>

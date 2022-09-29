@@ -14,15 +14,17 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import { useTheme } from "@material-ui/core/styles";
 import AddUdstyrForm from "./AddUdstyrForm";
 import AddLocationForm from "./AddLocationForm";
-import LocalityForm from "./components/LocalityForm";
+import LocationForm from "./components/LocationForm";
 import StationForm from "./components/StationForm";
-import { StamdataContext } from "./StamdataContext";
+import { StamdataContext } from "../../state/StamdataContext";
 import { getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import SaveIcon from "@material-ui/icons/Save";
 import moment from "moment";
+import stamdataStore from "../../state/store";
+import { useQuery } from "@tanstack/react-query";
 
 const flex1 = {
   display: "flex",
@@ -35,57 +37,25 @@ function Alert(props) {
 }
 
 function LocationChooser({ setLocationDialogOpen }) {
+  const [setLocation, resetLocation] = stamdataStore((store) => [
+    store.setLocation,
+    store.resetLocation,
+  ]);
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
-  const [localities, setLocalities] = React.useState([]);
-  const [locality, setLocality, , , setValues, , , ,] =
-    React.useContext(StamdataContext);
-  console.log("context locality: " + locality);
 
-  const populateFormData = (features, locname) => {
-    const locData = features.find((f) => f.loc_name === locname);
+  const populateFormData = (locData) => {
     if (locData) {
-      setValues("location", {
-        loc_id: locData.loc_id,
-        loc_name: locData.loc_name,
-        mainloc: locData.mainloc,
-        subloc: locData.subloc,
-        subsubloc: locData.subsubloc,
-        x: locData.x,
-        y: locData.y,
-        terrainqual: locData.terrainqual,
-        terrainlevel: locData.terrainlevel,
-        description: "",
-        loctype_id: locData.loctype_id,
-      });
+      setLocation(locData);
     } else {
-      setValues("location", {
-        loc_id: "",
-        loc_name: "",
-        mainloc: "",
-        subloc: "",
-        subsubloc: "",
-        x: "",
-        y: "",
-        terrainqual: "",
-        terrainlevel: "",
-        description: "",
-        loctype_id: -1,
-      });
+      resetLocation();
     }
   };
 
-  const loc_items = _.uniqBy(localities, "loc_id");
-  const handleChange = (event) => {
-    const value =
-      event.target.textContent === "" ? 0 : event.target.textContent;
-    setLocality(value);
-    populateFormData(localities, value);
-  };
-
-  useEffect(() => {
-    getStamData().then((res) => setLocalities(res.data.data));
-  }, []);
+  const { data: locations } = useQuery(["locations"], getStamData, {
+    select: (data) => _.uniqBy(data, "loc_id"),
+  });
 
   const desktopChooser = (
     <>
@@ -94,7 +64,7 @@ function LocationChooser({ setLocationDialogOpen }) {
           <Typography>Lokation</Typography>
 
           <Autocomplete
-            options={loc_items}
+            options={locations}
             getOptionLabel={(option) => option.loc_name}
             renderInput={(params) => (
               <TextField
@@ -106,7 +76,7 @@ function LocationChooser({ setLocationDialogOpen }) {
               />
             )}
             style={{ width: 200, marginLeft: "12px" }}
-            onChange={handleChange}
+            onChange={(event, value) => populateFormData(value)}
           />
 
           <Button
@@ -129,33 +99,35 @@ function LocationChooser({ setLocationDialogOpen }) {
 
   const mobileChooser = (
     <>
-      <Grid item xs={8}>
-        {/* <InputLabel id="localityId">Lokalitet</InputLabel> */}
-        <Autocomplete
-          options={loc_items}
-          getOptionLabel={(option) => option.loc_name}
-          renderInput={(params) => (
-            <TextField {...params} label="Vælg lokalitet" variant="outlined" />
-          )}
-          disableClearable
-          onChange={handleChange}
-        />
-        {/* <Select value={location} onChange={handleChange}>
-            <MenuItem value={0}>Vælg Lokalitet</MenuItem>
-            {locationItems}
-          </Select> */}
-      </Grid>
-      <Grid item xs={4}>
-        <Button
-          color="secondary"
-          variant="contained"
-          style={{
-            textTransform: "none",
-          }}
-          onClick={() => setLocationDialogOpen(true)}
-        >
-          Tilføj lokation
-        </Button>
+      <Grid item xs={12}>
+        <div style={flex1}>
+          <Autocomplete
+            options={locations}
+            getOptionLabel={(option) => option.loc_name}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                size="small"
+                variant="outlined"
+                placeholder="Vælg lokalitet"
+                style={{ marginTop: "-6px" }}
+              />
+            )}
+            disableClearable
+            style={{ width: 200 }}
+            onChange={(event, value) => populateFormData(value)}
+          />
+          <Button
+            color="secondary"
+            variant="contained"
+            style={{
+              textTransform: "none",
+            }}
+            onClick={() => setLocationDialogOpen(true)}
+          >
+            Tilføj lokation
+          </Button>
+        </div>
       </Grid>
     </>
   );
@@ -163,11 +135,11 @@ function LocationChooser({ setLocationDialogOpen }) {
   return matches ? mobileChooser : desktopChooser;
 }
 
-function Locality({ setLocationDialogOpen }) {
+function Location({ setLocationDialogOpen }) {
   return (
     <Grid container>
       <LocationChooser setLocationDialogOpen={setLocationDialogOpen} />
-      <LocalityForm />
+      <LocationForm />
     </Grid>
   );
 }
@@ -255,7 +227,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           Stamdata
         </Typography>
 
-        <Locality setLocationDialogOpen={setLocationDialogOpen} />
+        <Location setLocationDialogOpen={setLocationDialogOpen} />
         <Typography>Station</Typography>
         <StationForm
           mode="add"

@@ -4,11 +4,14 @@ import "date-fns";
 import { StamdataContext } from "../../../state/StamdataContext";
 import moment from "moment";
 import OwnDatePicker from "../../../components/OwnDatePicker";
+import stamdataStore from "../../../state/store";
 
 export default function UdstyrForm(props) {
   const editMode = props.mode === "edit";
   const [, , formData, , , , , setUdstyrValue] =
     React.useContext(StamdataContext);
+
+  const unit = stamdataStore((store) => store.unit);
 
   return (
     <Grid container spacing={2}>
@@ -21,7 +24,7 @@ export default function UdstyrForm(props) {
           variant="outlined"
           type="text"
           id="terminal"
-          value={formData.udstyr.terminal_type}
+          value={unit.terminal_type}
           label="Terminal"
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -38,7 +41,7 @@ export default function UdstyrForm(props) {
           variant="outlined"
           type="text"
           label="Terminal ID"
-          value={formData.udstyr.terminal_id}
+          value={unit.terminal_id}
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
@@ -55,7 +58,7 @@ export default function UdstyrForm(props) {
           variant="outlined"
           type="text"
           label="CALYPSO ID"
-          value={formData.udstyr.calypso_id}
+          value={unit.calypso_id}
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
@@ -71,7 +74,7 @@ export default function UdstyrForm(props) {
           variant="outlined"
           type="text"
           label="Sensor"
-          value={formData.udstyr.sensorinfo}
+          value={unit.sensorinfo}
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
@@ -87,7 +90,7 @@ export default function UdstyrForm(props) {
           variant="outlined"
           type="text"
           label="Sensor ID"
-          value={formData.udstyr.sensor_id}
+          value={unit.sensor_id}
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
@@ -105,8 +108,8 @@ export default function UdstyrForm(props) {
             type="text"
             label="Startdato"
             value={
-              formData.udstyr.startdato
-                ? moment(formData.udstyr.startdato).format("YYYY-MM-DD HH:mm")
+              unit.startdato
+                ? moment(unit.startdato).format("YYYY-MM-DD HH:mm")
                 : ""
             }
             InputLabelProps={{ shrink: true }}
@@ -116,7 +119,7 @@ export default function UdstyrForm(props) {
         ) : (
           <OwnDatePicker
             label="Startdato"
-            value={moment(formData.udstyr.startdato)}
+            value={moment(unit.startdato)}
             onChange={(date) =>
               setUdstyrValue(
                 "startdato",
@@ -130,7 +133,7 @@ export default function UdstyrForm(props) {
         {editMode && (
           <OwnDatePicker
             label="Slutdato"
-            value={moment(formData.udstyr.slutdato)}
+            value={moment(unit.slutdato)}
             onChange={(date) =>
               setUdstyrValue(
                 "slutdato",

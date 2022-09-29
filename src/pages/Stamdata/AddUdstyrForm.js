@@ -8,78 +8,90 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 
 import { getAvailableUnits } from "../../api";
 
-import { MenuItem, useTheme } from "@material-ui/core";
+import { CircularProgress, MenuItem, useTheme } from "@material-ui/core";
 import { StamdataContext } from "../../state/StamdataContext";
 import OwnDatePicker from "../../components/OwnDatePicker";
 import { Typography } from "@material-ui/core";
+import stamdataStore, { initialState } from "../../state/store";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AddUdstyrForm({
   udstyrDialogOpen,
   setUdstyrDialogOpen,
   tstype_id,
-  setSelectedUnit,
 }) {
-  const [udstyrFormData, setUdstyrFormData] = useState({
+  const setUnit = stamdataStore((store) => store.setUnit);
+
+  const { data: availableUnits, isLoading } = useQuery(
+    ["available_units"],
+    getAvailableUnits
+  );
+
+  const [unitData, setUnitData] = useState({
     calypso_id: -1,
     sensor_id: "",
-    uuid: " ",
+    uuid: "",
     fra: new Date(),
   });
 
-  const theme = useTheme();
-
-  const [, , , , , , , , saveUdstyrFormData] =
-    React.useContext(StamdataContext);
-
-  const [availableUnits, setAvailableUnits] = useState([]);
-
-  const uniqueCalypsoIds = () =>
-    [
-      ...new Set(
-        availableUnits
-          .filter((unit) => unit.sensortypeid === tstype_id)
-          .map((x) => x.calypso_id)
-      ),
-    ].sort();
+  const uniqueCalypsoIds = [
+    ...new Set(
+      availableUnits
+        ?.filter((unit) => unit.sensortypeid === tstype_id)
+        ?.map((x) => (x.calypso_id == 0 ? x.terminal_id : x.calypso_id))
+    ),
+  ].sort((a, b) => {
+    if (typeof a == "number" && typeof b == "number") {
+      return a - b;
+    } else if (typeof a == "string" && typeof b == "string") {
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
+    } else if (typeof a == "string") {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
 
   const sensorsForCalyspoId = (id) =>
-    availableUnits.filter(
+    availableUnits?.filter(
       (unit) => unit.calypso_id === id && unit.sensortypeid === tstype_id
     );
 
   const handleCalypsoId = (event) => {
-    setUdstyrFormData({
-      ...udstyrFormData,
+    setUnitData({
+      ...unitData,
       calypso_id: event.target.value,
-      uuid: " ",
+      uuid: "",
     });
   };
 
   const handleSensorUUID = (event) => {
-    setUdstyrFormData({
-      ...udstyrFormData,
+    setUnitData({
+      ...unitData,
       uuid: event.target.value,
     });
   };
 
   const handleDateChange = (date) => {
     console.log(date);
-    setUdstyrFormData({
-      ...udstyrFormData,
+    setUnitData({
+      ...unitData,
       fra: date,
     });
   };
 
   const handleSave = () => {
     setUdstyrDialogOpen(false);
-    if (setSelectedUnit) {
-      setSelectedUnit(-1);
-    }
-    let unit = availableUnits.find((x) => x.unit_uuid === udstyrFormData.uuid);
+    let unit = availableUnits.find((x) => x.unit_uuid === unitData.uuid);
 
     if (!unit) return;
 
-    saveUdstyrFormData({
+    setUnit({
       terminal_type: unit.type,
       terminal_id: unit.terminal_id,
       sensor_id: unit.sensor_id,
@@ -87,7 +99,7 @@ export default function AddUdstyrForm({
       parameter: unit.sensorinfo,
       calypso_id: unit.calypso_id,
       batteriskift: unit.batteriskift,
-      startdato: udstyrFormData.fra,
+      startdato: unitData.fra,
       slutdato: "2099-01-01 12:00:00",
       uuid: unit.unit_uuid,
     });
@@ -97,16 +109,6 @@ export default function AddUdstyrForm({
     setUdstyrDialogOpen(false);
   };
 
-  useEffect(() => {
-    getAvailableUnits(sessionStorage.getItem("session_id")).then((res) => {
-      if (typeof res === "undefined") {
-        setAvailableUnits([]);
-      } else {
-        setAvailableUnits(res.data.result);
-      }
-    });
-  }, []);
-
   return (
     <div>
       <Dialog
@@ -114,71 +116,79 @@ export default function AddUdstyrForm({
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
       >
-        <DialogTitle id="form-dialog-title">Tilføj Udstyr</DialogTitle>
-        <DialogContent>
-          {uniqueCalypsoIds().length === 0 && (
-            <Typography variant="subtitle2" component="h3" color="error">
-              * ingen enheder der passer til stationstypen er tilgængelig
-            </Typography>
-          )}
-          <TextField
-            autoFocus
-            select
-            margin="dense"
-            value={udstyrFormData.calypso_id}
-            onChange={handleCalypsoId}
-            id="calypso_id"
-            label="Calypso ID"
-            fullWidth
-          >
-            <MenuItem key={-1} value={-1}>
-              Vælg calypso ID
-            </MenuItem>
-            {uniqueCalypsoIds().map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            select
-            margin="dense"
-            value={udstyrFormData.uuid}
-            onChange={handleSensorUUID}
-            id="sensor_id"
-            label="Sensor / Sensor ID"
-            fullWidth
-          >
-            <MenuItem key={-1} value={-1}>
-              Vælg Sensor ID
-            </MenuItem>
-            {sensorsForCalyspoId(udstyrFormData.calypso_id).map((option) => (
-              <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
-                {option.channel} - {option.sensortypename}
-              </MenuItem>
-            ))}
-          </TextField>
-          <OwnDatePicker
-            label={"Fra"}
-            value={udstyrFormData.fra}
-            onChange={(date) => handleDateChange(date)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleSave}
-            color="secondary"
-            variant="contained"
-            disabled={
-              udstyrFormData.calypso_id === -1 || udstyrFormData.uuid === " "
-            }
-          >
-            Tilføj
-          </Button>
-          <Button onClick={handleClose} color="secondary" variant="contained">
-            Annuller
-          </Button>
-        </DialogActions>
+        {isLoading ? (
+          <CircularProgress />
+        ) : (
+          <>
+            <DialogTitle id="form-dialog-title">Tilføj Udstyr</DialogTitle>
+            <DialogContent>
+              {uniqueCalypsoIds.length === 0 && (
+                <Typography variant="subtitle2" component="h3" color="error">
+                  * ingen enheder der passer til stationstypen er tilgængelig
+                </Typography>
+              )}
+              <TextField
+                autoFocus
+                select
+                margin="dense"
+                value={unitData.calypso_id}
+                onChange={handleCalypsoId}
+                id="calypso_id"
+                label="Calypso ID"
+                fullWidth
+              >
+                <MenuItem key={-1} value={-1}>
+                  Vælg calypso ID
+                </MenuItem>
+                {uniqueCalypsoIds.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                select
+                margin="dense"
+                value={unitData.uuid}
+                onChange={handleSensorUUID}
+                id="sensor_id"
+                label="Sensor / Sensor ID"
+                fullWidth
+              >
+                <MenuItem key={-1} value={""}>
+                  Vælg Sensor ID
+                </MenuItem>
+                {sensorsForCalyspoId(unitData.calypso_id).map((option) => (
+                  <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
+                    {option.channel} - {option.sensortypename}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <OwnDatePicker
+                label={"Fra"}
+                value={unitData.fra}
+                onChange={(date) => handleDateChange(date)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleSave}
+                color="secondary"
+                variant="contained"
+                disabled={unitData.calypso_id === -1 || unitData.uuid === ""}
+              >
+                Tilføj
+              </Button>
+              <Button
+                onClick={handleClose}
+                color="secondary"
+                variant="contained"
+              >
+                Annuller
+              </Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
     </div>
   );

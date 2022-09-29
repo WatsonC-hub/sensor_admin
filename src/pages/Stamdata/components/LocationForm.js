@@ -4,64 +4,31 @@ import { StamdataContext } from "../../../state/StamdataContext";
 import { InputAdornment } from "@material-ui/core";
 import { getLocationTypes } from "../../../api";
 import LocationTypeSelect from "./LocationTypeSelect";
+import stamdataStore from "../../../state/store";
 
-// const LocationTypeSelect = ({
-//   selectedLocationType,
-//   locationTypes,
-//   onChange,
-// }) => {
-//   const handleSelection = (event) => {
-//     console.log(event.target.value);
-//     console.log(event.target);
-//     onChange(event);
-//   };
-//   console.log(locationTypes);
-//   let menuItems = locationTypes
-//     .filter((i) => i.properties.loctype_id !== 0)
-//     .map((item) => (
-//       <MenuItem
-//         value={item.properties.loctype_id}
-//         key={item.properties.loctype_id}
-//       >
-//         {item.properties.loctypename}
-//       </MenuItem>
-//     ));
+export default function LocationForm({ mode }) {
+  // const [, , formData, , , setLocationValue, , ,] =
+  //   React.useContext(StamdataContext);
 
-//   return (
-//     <TextField
-//       autoFocus
-//       variant="outlined"
-//       select
-//       margin="dense"
-//       value={selectedLocationType}
-//       onChange={handleSelection}
-//       label="Lokation type"
-//       fullWidth
-//     >
-//       <MenuItem value={-1}>Vælg type</MenuItem>
-//       {menuItems}
-//     </TextField>
-//   );
-// };
+  const [location, setLocationValue] = stamdataStore((store) => [
+    store.location,
+    store.setLocationValue,
+  ]);
 
-export default function LocalityForm({ mode }) {
-  const [, , formData, , , setLocationValue, , ,] =
-    React.useContext(StamdataContext);
-
-  console.log("got formdata => ", formData);
+  // console.log("got formdata => ", formData);
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.loc_name === "",
+            readOnly: location.loc_name === "",
           }}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
           variant="outlined"
           type="text"
           label="Navn"
-          value={formData.location.loc_name}
+          value={location.loc_name}
           onChange={(event) => {
             setLocationValue("loc_name", event.target.value);
           }}
@@ -74,13 +41,13 @@ export default function LocalityForm({ mode }) {
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.loc_name === "",
+            readOnly: location.loc_name === "",
           }}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
           variant="outlined"
           type="text"
           label="Hoved lokation"
-          value={formData.location.mainloc}
+          value={location.mainloc}
           onChange={(event) => setLocationValue("mainloc", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -91,13 +58,13 @@ export default function LocalityForm({ mode }) {
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.loc_name === "",
+            readOnly: location.loc_name === "",
           }}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
           variant="outlined"
           type="number"
           label="X-koordinat (UTM)"
-          value={formData.location.x}
+          value={location.x}
           onChange={(event) => setLocationValue("x", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -107,13 +74,13 @@ export default function LocalityForm({ mode }) {
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.loc_name === "",
+            readOnly: location.loc_name === "",
           }}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
           variant="outlined"
           type="number"
           label="Y-koordinat (UTM)"
-          value={formData.location.y}
+          value={location.y}
           onChange={(event) => setLocationValue("y", event.target.value)}
           InputLabelProps={{ shrink: true }}
           fullWidth
@@ -123,14 +90,14 @@ export default function LocalityForm({ mode }) {
       <Grid item xs={6} sm={6} md={3}>
         <TextField
           InputProps={{
-            readOnly: formData.location.loc_name === "",
+            readOnly: location.loc_name === "",
             endAdornment: <InputAdornment position="start">m</InputAdornment>,
           }}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
           variant="outlined"
           type="number"
           label="Terrænkote"
-          value={formData.location.terrainlevel}
+          value={location.terrainlevel}
           onChange={(event) =>
             setLocationValue("terrainlevel", event.target.value)
           }
@@ -143,15 +110,15 @@ export default function LocalityForm({ mode }) {
       <Grid item xs={6} sm={6} md={3}>
         <TextField
           InputProps={{
-            readOnly: formData.location.loc_name === "",
+            readOnly: location.loc_name === "",
           }}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
           autoFocus
           variant="outlined"
           select
           margin="dense"
           label="Type af terrænkote"
-          value={formData.location.terrainqual}
+          value={location.terrainqual}
           onChange={(event) =>
             setLocationValue("terrainqual", event.target.value)
           }
@@ -165,22 +132,22 @@ export default function LocalityForm({ mode }) {
       </Grid>
       <Grid item xs={12} sm={6}>
         <LocationTypeSelect
-          selectedLocationType={formData.location.loctype_id}
+          selectedLocationType={location.loctype_id}
           onChange={(e) => setLocationValue("loctype_id", e.target.value)}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
         />
       </Grid>
 
       <Grid item xs={12} sm={6}>
         <TextField
           InputProps={{
-            readOnly: formData.location.loc_name === "",
+            readOnly: location.loc_name === "",
           }}
-          disabled={formData.location.loc_name === "" ? true : false}
+          disabled={location.loc_name === "" ? true : false}
           variant="outlined"
           type="text"
           label="Kommentar"
-          value={formData.location.description}
+          value={location.description}
           onChange={(event) =>
             setLocationValue("description", event.target.value)
           }

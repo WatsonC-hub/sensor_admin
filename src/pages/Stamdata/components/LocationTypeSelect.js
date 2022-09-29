@@ -3,33 +3,30 @@ import { Grid, MenuItem, TextField } from "@material-ui/core";
 import { StamdataContext } from "../../../state/StamdataContext";
 import { InputAdornment } from "@material-ui/core";
 import { getLocationTypes } from "../../../api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function LocationTypeSelect({
   selectedLocationType,
   onChange,
   disabled,
 }) {
-  const [locationTypes, setLocationTypes] = useState([]);
+  const { data, isLoading } = useQuery(["location_types"], getLocationTypes, {
+    select: (data) =>
+      data
+        .filter((i) => i.properties.loctype_id !== 0)
+        .map((item) => (
+          <MenuItem
+            value={item.properties.loctype_id}
+            key={item.properties.loctype_id}
+          >
+            {item.properties.loctypename}
+          </MenuItem>
+        )),
+  });
 
-  useEffect(() => {
-    getLocationTypes().then(
-      (res) => res && setLocationTypes(res.data.features)
-    );
-  }, []);
   const handleSelection = (event) => {
     onChange(event);
   };
-  console.log(locationTypes);
-  let menuItems = locationTypes
-    .filter((i) => i.properties.loctype_id !== 0)
-    .map((item) => (
-      <MenuItem
-        value={item.properties.loctype_id}
-        key={item.properties.loctype_id}
-      >
-        {item.properties.loctypename}
-      </MenuItem>
-    ));
 
   return (
     <TextField
@@ -46,7 +43,7 @@ export default function LocationTypeSelect({
       fullWidth
     >
       <MenuItem value={-1}>Vælg type</MenuItem>
-      {menuItems}
+      {data}
     </TextField>
   );
 }

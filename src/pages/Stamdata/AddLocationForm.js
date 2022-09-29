@@ -5,43 +5,28 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { Grid, InputAdornment } from "@material-ui/core";
-import { StamdataContext } from "./StamdataContext";
+import { CircularProgress, Grid, InputAdornment } from "@material-ui/core";
+import { StamdataContext } from "../../state/StamdataContext";
 import { MenuItem } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import LocationTypeSelect from "./components/LocationTypeSelect";
 import { getDTMQuota } from "../../api";
+import stamdataStore, { initialState } from "../../state/store";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AddLocationForm({
   locationDialogOpen,
   setLocationDialogOpen,
 }) {
-  const [locationData, setLocationData] = useState({
-    loc_name: "",
-    x: 0,
-    y: 0,
-    terrainlevel: 0,
-    terrainqual: "",
-    mainloc: "",
-    subloc: "",
-    subsubloc: "",
-    description: "",
-    loctype_id: -1,
-  });
+  const setLocation = stamdataStore((store) => store.setLocation);
 
-  // TODO: Gør location type til at være et state så man kan se det ændres.
-
-  const [, , , , , setLocationValue, , , , saveLocationFormData] =
-    React.useContext(StamdataContext);
+  const [locationData, setLocationData] = useState(initialState.location);
 
   const handleChange = (event) => {
-    //console.log(event.target);
-    console.log(locationData);
     setLocationData({
       ...locationData,
       [event.target.id]: event.target.value,
     });
-    console.log(locationData);
   };
 
   const handleSelector = (event) => {
@@ -59,22 +44,27 @@ export default function AddLocationForm({
   };
 
   const handleSave = () => {
-    // TODO: validate data.
-    saveLocationFormData(locationData);
+    setLocation(locationData);
     setLocationDialogOpen(false);
-    // We'are adding new location, so locid is empty.
-    // locid used to determine whether we're updating or inserting
-    // new location.
-    setLocationValue("locid", "");
   };
 
   const handleClose = () => {
     setLocationDialogOpen(false);
   };
 
-  const handleDTM = () => {
-    getDTMQuota(locationData.x, locationData.y).then((res) => {
-      var data = res.data.HentKoterRespons.data;
+  const {
+    data: DTMData,
+    isFetching,
+    refetch: refetchDTM,
+  } = useQuery(["dtm"], () => getDTMQuota(locationData.x, locationData.y), {
+    refetchOnWindowFocus: false,
+    enabled: false,
+  });
+
+  useEffect(() => {
+    console.log(DTMData);
+    if (DTMData) {
+      var data = DTMData.HentKoterRespons.data;
       if (data[0].kote !== null) {
         setLocationData({
           ...locationData,
@@ -82,8 +72,8 @@ export default function AddLocationForm({
           terrainqual: "DTM",
         });
       }
-    });
-  };
+    }
+  }, [DTMData]);
 
   return (
     <Dialog
@@ -155,7 +145,9 @@ export default function AddLocationForm({
               label="Terrænkote"
               value={locationData.terrainlevel}
               InputProps={{
-                endAdornment: (
+                endAdornment: isFetching ? (
+                  <CircularProgress />
+                ) : (
                   <InputAdornment position="start">m</InputAdornment>
                 ),
               }}
@@ -183,9 +175,17 @@ export default function AddLocationForm({
               <MenuItem value="DTM">DTM</MenuItem>
             </TextField>
           </Grid>
-          <Grid item xs={5} sm={3} style={{ alignSelf: "center" }}>
+          <Grid
+            item
+            xs={5}
+            sm={3}
+            style={{
+              alignSelf: "center",
+              display: "flex",
+            }}
+          >
             <Button
-              onClick={handleDTM}
+              onClick={refetchDTM}
               color="secondary"
               variant="contained"
               size="small"
@@ -193,6 +193,7 @@ export default function AddLocationForm({
                 textTransform: "none",
                 marginLeft: "12px",
               }}
+              disabled={isFetching}
             >
               Hent fra DTM
             </Button>

@@ -13,9 +13,9 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import ScanComponent from "./components/ScanComponent";
 import OpretStamdata from "./pages/Stamdata/OpretStamdata";
-import { StamdataProvider } from "./pages/Stamdata/StamdataContext";
+import { StamdataProvider } from "./state/StamdataContext";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
-import LocationContext from "./context/LocationContext";
+import LocationContext from "./state/LocationContext";
 import CaptureDialog from "./pages/station/CaptureDialog";
 
 /*
