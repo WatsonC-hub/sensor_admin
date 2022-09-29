@@ -47,7 +47,19 @@ function LocationChooser({ setLocationDialogOpen }) {
 
   const populateFormData = (locData) => {
     if (locData) {
-      setLocation(locData);
+      setLocation({
+        loc_id: locData.loc_id,
+        loc_name: locData.loc_name,
+        mainloc: locData.mainloc,
+        subloc: locData.subloc,
+        subsubloc: locData.subsubloc,
+        x: locData.x,
+        y: locData.y,
+        terrainqual: locData.terrainqual,
+        terrainlevel: locData.terrainlevel,
+        description: locData.description,
+        loctype_id: locData.loctype_id,
+      });
     } else {
       resetLocation();
     }
@@ -148,8 +160,11 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   const history = useHistory();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
-  const [, , formData, , , , , , saveUdstyrFormData] =
-    React.useContext(StamdataContext);
+
+  // const [, , formData, , , , , , saveUdstyrFormData] =
+  //   React.useContext(StamdataContext);
+
+  const store = stamdataStore();
 
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
@@ -164,27 +179,21 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   };
 
   const resetUdStyrForm = () => {
-    saveUdstyrFormData({
-      terminal_type: "",
-      terminal_id: "",
-      sensor_id: "",
-      sensorinfo: "",
-      parameter: "",
-      calypso_id: "",
-      batteriskift: "",
-      startdato: "",
-      slutdato: "",
-      uuid: "",
-    });
+    store.resetUnit();
   };
 
   const handleSubmit = () => {
     setAddStationDisabled(false);
     let form = {
-      ...formData,
+      location: {
+        ...store.location,
+      },
       station: {
-        ...formData.station,
-        mpstartdate: moment(formData.udstyr.startdato).format("YYYY-MM-DD"),
+        ...store.timeseries,
+        mpstartdate: moment(store.unit.startdato).format("YYYY-MM-DD"),
+      },
+      udstyr: {
+        ...store.unit,
       },
     };
     postStamdata(form)
@@ -247,9 +256,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
             variant="contained"
             onClick={() => setUdstyrDialogOpen(true)}
           >
-            {formData.udstyr.calypso_id === ""
-              ? "Tilføj Udstyr"
-              : "Ændre udstyr"}
+            {store.unit.calypso_id === "" ? "Tilføj Udstyr" : "Ændre udstyr"}
           </Button>
         </div>
         <UdstyrForm mode="add" />

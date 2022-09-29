@@ -41,6 +41,7 @@ export const initialState = {
 let stamdataStore = (set) => ({
   ...initialState,
   resetLocation: () => set({ location: initialState.location }),
+  resetUnit: () => set({ unit: initialState.unit }),
   setLocation: (locationData) =>
     set({ location: locationData }, false, "setLocation"),
   setTimeseries: (timeseriesdata) =>
