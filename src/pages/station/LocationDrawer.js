@@ -7,7 +7,7 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
-import LocationContext from "../../context/LocationContext";
+import LocationContext from "../../state/LocationContext";
 import Station from "./Station";
 import { getStations } from "../../api";
 import MinimalSelect from "../Location/MinimalSelect";

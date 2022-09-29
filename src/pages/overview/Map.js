@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import L from "leaflet";
 import "leaflet.locatecontrol";
-import LocationContext from "../../context/LocationContext";
+import LocationContext from "../../state/LocationContext";
 import Button from "@material-ui/core/Button";
 
 const style = {

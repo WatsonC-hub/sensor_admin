@@ -9,7 +9,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TablePagination from "@material-ui/core/TablePagination";
 import { IconButton, Typography } from "@material-ui/core";
 import DeleteAlert from "./DeleteAlert";
-import LocationContext from "../../context/LocationContext";
+import LocationContext from "../../state/LocationContext";
 import { Fragment } from "react";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";

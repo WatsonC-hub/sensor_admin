@@ -8,7 +8,7 @@ import TableChart from "@material-ui/icons/TableChart";
 import TabPanel from "./TabPanel";
 import Map from "../pages/overview/Map";
 import StationListDesktop from "../pages/overview/StationListDesktop";
-import LocationContext from "../context/LocationContext";
+import LocationContext from "../state/LocationContext";
 import StationList from "../pages/overview/StationList";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Scroll from "./Scroll";

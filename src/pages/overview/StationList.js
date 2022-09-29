@@ -8,7 +8,7 @@ import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { TextField } from "@material-ui/core";
 
-import LocationContext from "../../context/LocationContext";
+import LocationContext from "../../state/LocationContext";
 import { CircularProgress } from "@material-ui/core";
 
 export default function StationList({ data }) {

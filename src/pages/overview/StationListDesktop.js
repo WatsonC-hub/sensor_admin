@@ -18,7 +18,7 @@ import {
 import { RowDetailState } from "@devexpress/dx-react-grid";
 import { getTableData } from "../../api";
 import { TextField, Tooltip } from "@material-ui/core";
-import LocationContext from "../../context/LocationContext";
+import LocationContext from "../../state/LocationContext";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 const RowDetail = ({ row }) => (
