@@ -24,7 +24,7 @@ import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
 import MaalepunktForm from "../../components/MaalepunktForm";
 import CaptureBearing from "./CaptureBearing";
-import { StamdataContext } from "../Stamdata/StamdataContext";
+import { StamdataContext } from "../../state/StamdataContext";
 import moment from "moment";
 import MaalepunktTable from "./MaalepunktTable";
 import TilsynForm from "../../components/TilsynForm";

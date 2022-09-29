@@ -10,7 +10,7 @@ import DeleteAlert from "./DeleteAlert";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { Fragment } from "react";
 import moment from "moment";
-import { StamdataContext } from "../Stamdata/StamdataContext";
+import { StamdataContext } from "../../state/StamdataContext";
 
 export default function MobileMeasurements({
   measurements,

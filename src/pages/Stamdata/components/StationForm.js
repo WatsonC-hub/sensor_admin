@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Grid, TextField, MenuItem } from "@material-ui/core";
-import { StamdataContext } from "../StamdataContext";
+import { StamdataContext } from "../../../state/StamdataContext";
 import { getStationTypes } from "../../../api";
 import { InputAdornment } from "@material-ui/core";
 

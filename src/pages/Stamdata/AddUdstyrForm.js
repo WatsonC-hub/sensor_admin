@@ -9,7 +9,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import { getAvailableUnits } from "../../api";
 
 import { MenuItem, useTheme } from "@material-ui/core";
-import { StamdataContext } from "./StamdataContext";
+import { StamdataContext } from "../../state/StamdataContext";
 import OwnDatePicker from "../../components/OwnDatePicker";
 import { Typography } from "@material-ui/core";
 

@@ -12,7 +12,7 @@ import Station from "./Station";
 import { getStations } from "../../api";
 import MinimalSelect from "../Location/MinimalSelect";
 import { useParams, useHistory } from "react-router-dom";
-import { StamdataProvider } from "../Stamdata/StamdataContext";
+import { StamdataProvider } from "../../state/StamdataContext";
 
 const drawerWidth = 240;
 

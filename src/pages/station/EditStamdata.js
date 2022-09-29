@@ -19,7 +19,7 @@ import LocalityForm from "../Stamdata/components/LocalityForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
 import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
-import { StamdataContext } from "../Stamdata/StamdataContext";
+import { StamdataContext } from "../../state/StamdataContext";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";

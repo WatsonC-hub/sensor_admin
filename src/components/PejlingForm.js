@@ -20,7 +20,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import OwnDatePicker from "./OwnDatePicker";
 import { Checkbox } from "@material-ui/core";
 import { Tooltip } from "@material-ui/core";
-import { StamdataContext } from "../pages/Stamdata/StamdataContext";
+import { StamdataContext } from "../state/StamdataContext";
 
 export default function PejlingForm({
   stationId,
