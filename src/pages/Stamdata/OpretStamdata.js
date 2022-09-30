@@ -25,6 +25,7 @@ import SaveIcon from "@material-ui/icons/Save";
 import moment from "moment";
 import stamdataStore from "../../state/store";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 const flex1 = {
   display: "flex",
@@ -161,9 +162,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
 
-  // const [, , formData, , , , , , saveUdstyrFormData] =
-  //   React.useContext(StamdataContext);
-
   const store = stamdataStore();
 
   const [selectedStationType, setSelectedStationType] = useState(-1);
@@ -173,13 +171,9 @@ export default function OpretStamdata({ setAddStationDisabled }) {
 
   const changeSelectedStationType = (selectedType) => {
     if (selectedType !== selectedStationType) {
-      resetUdStyrForm();
+      store.resetUnit();
     }
     setSelectedStationType(selectedType);
-  };
-
-  const resetUdStyrForm = () => {
-    store.resetUnit();
   };
 
   const handleSubmit = () => {
@@ -196,20 +190,12 @@ export default function OpretStamdata({ setAddStationDisabled }) {
         ...store.unit,
       },
     };
-    postStamdata(form)
-      .then((res) => {
-        setSeverity("success");
-        setOpenAlert(true);
-        setTimeout(() => {
-          history.push("/");
-        }, 1500);
-      })
-      .catch((error) => {
-        setSeverity("error");
-        setOpenAlert(true);
-      });
 
-    // history.push("/");
+    toast.promise(() => postStamdata(form).then(() => history.push("/")), {
+      pending: "Opretter station",
+      success: "Stationen er oprettet",
+      error: "Der skete en fejl",
+    });
   };
 
   const handleClose = (event, reason) => {
@@ -285,13 +271,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
           </Grid>
         </Grid>
       </Container>
-      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={severity}>
-          {severity === "success"
-            ? "Oprettelse af station lykkedes"
-            : "Oprettelse af station fejlede"}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

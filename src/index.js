@@ -7,6 +7,8 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@material-ui/core";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const theme = createTheme({
   palette: {
@@ -32,6 +34,7 @@ ReactDOM.render(
         <QueryClientProvider client={queryClient}>
           <App />
           <ReactQueryDevtools initialIsOpen={false} />
+          <ToastContainer />
         </QueryClientProvider>
       </ThemeProvider>
     </React.StrictMode>
