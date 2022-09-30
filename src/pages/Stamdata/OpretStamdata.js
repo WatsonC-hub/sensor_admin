@@ -23,7 +23,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import SaveIcon from "@material-ui/icons/Save";
 import moment from "moment";
-import stamdataStore from "../../state/store";
+import { stamdataStore } from "../../state/store";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -196,14 +196,6 @@ export default function OpretStamdata({ setAddStationDisabled }) {
       success: "Stationen er oprettet",
       error: "Der skete en fejl",
     });
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenAlert(false);
   };
 
   return (

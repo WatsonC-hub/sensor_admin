@@ -4,7 +4,7 @@ import { StamdataContext } from "../../../state/StamdataContext";
 import { InputAdornment } from "@material-ui/core";
 import { getLocationTypes } from "../../../api";
 import LocationTypeSelect from "./LocationTypeSelect";
-import stamdataStore from "../../../state/store";
+import { stamdataStore } from "../../../state/store";
 
 export default function LocationForm({ mode }) {
   // const [, , formData, , , setLocationValue, , ,] =

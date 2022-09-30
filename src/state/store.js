@@ -1,7 +1,7 @@
 import create from "zustand";
 import { devtools } from "zustand/middleware";
 
-export const initialState = {
+const initialState = {
   location: {
     loc_id: "",
     loc_name: "",
@@ -82,6 +82,6 @@ let stamdataStore = (set) => ({
     ),
 });
 
-stamdataStore = devtools(stamdataStore);
+stamdataStore = create(devtools(stamdataStore));
 
-export default create(stamdataStore);
+export { initialState, stamdataStore };

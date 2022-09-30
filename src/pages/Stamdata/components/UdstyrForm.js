@@ -4,7 +4,7 @@ import "date-fns";
 import { StamdataContext } from "../../../state/StamdataContext";
 import moment from "moment";
 import OwnDatePicker from "../../../components/OwnDatePicker";
-import stamdataStore from "../../../state/store";
+import { stamdataStore } from "../../../state/store";
 
 export default function UdstyrForm(props) {
   const editMode = props.mode === "edit";

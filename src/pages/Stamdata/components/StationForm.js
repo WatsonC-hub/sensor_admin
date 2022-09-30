@@ -3,7 +3,7 @@ import { Grid, TextField, MenuItem, CircularProgress } from "@material-ui/core";
 import { StamdataContext } from "../../../state/StamdataContext";
 import { getStationTypes } from "../../../api";
 import { InputAdornment } from "@material-ui/core";
-import stamdataStore from "../../../state/store";
+import { stamdataStore } from "../../../state/store";
 import { useQuery } from "@tanstack/react-query";
 
 const StationTypeSelect = ({

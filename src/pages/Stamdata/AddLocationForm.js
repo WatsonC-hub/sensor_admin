@@ -11,7 +11,7 @@ import { MenuItem } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import LocationTypeSelect from "./components/LocationTypeSelect";
 import { getDTMQuota } from "../../api";
-import stamdataStore, { initialState } from "../../state/store";
+import { stamdataStore, initialState } from "../../state/store";
 import { useQuery } from "@tanstack/react-query";
 
 export default function AddLocationForm({

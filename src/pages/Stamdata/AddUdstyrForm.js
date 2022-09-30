@@ -12,7 +12,7 @@ import { CircularProgress, MenuItem, useTheme } from "@material-ui/core";
 import { StamdataContext } from "../../state/StamdataContext";
 import OwnDatePicker from "../../components/OwnDatePicker";
 import { Typography } from "@material-ui/core";
-import stamdataStore, { initialState } from "../../state/store";
+import { stamdataStore, initialState } from "../../state/store";
 import { useQuery } from "@tanstack/react-query";
 
 export default function AddUdstyrForm({
