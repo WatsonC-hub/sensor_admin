@@ -16,7 +16,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import { Typography } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,8 +40,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Register() {
   const classes = useStyles();
-  const [openAlert, setOpenAlert] = useState(false);
-  const [severity, setSeverity] = useState("success");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,8 +47,8 @@ export default function Register() {
   const [cvr, setCvr] = useState("");
   const [checkedTerms, setCheckedTerms] = useState(false);
   const [checkedNews, setCheckedNews] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [openAwaitDialog, setOpenAwaitDialog] = useState(false);
 
   const validateEmail = (email) => {
     const re = /\S+@\S+\.\S+/;
@@ -77,19 +75,20 @@ export default function Register() {
       };
     },
   });
-  console.log(cvrData);
+
+  const createUserMutation = useMutation(createUser, {
+    onSuccess: (data) => {
+      toast.success("Bruger oprettet");
+      setOpenAwaitDialog(true);
+    },
+    onError: (error) => {
+      toast.error("Bruger kunne ikke oprettes");
+    },
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault(); //To avoid refreshing page on button click
-    setEmailErr(!validateEmail(email));
-
-    if (emailErr === false && isSuccess) {
-      setOpen(true);
-    } else {
-      toast("Email er ugyldig", {
-        type: "error",
-      });
-    }
+    setOpenConfirmDialog(true);
   };
 
   const handleConfirm = (e) => {
@@ -109,19 +108,10 @@ export default function Register() {
       org: cvrData,
       userName: email,
     };
-    // console.log(cvrData);
+
     console.log(payload);
-    setOpenAlert(true);
-    createUser(payload)
-      .then((res) => {
-        setOpenAlert(true);
-        setOpen(false);
-        setOpenConfirm(true);
-      })
-      .catch((error) => {
-        setSeverity("error");
-        setOpenAlert(true);
-      });
+
+    createUserMutation.mutate(payload);
   };
 
   const handleChangeTerms = (event) => {
@@ -143,7 +133,7 @@ export default function Register() {
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setOpenConfirmDialog(false);
   };
 
   return (
@@ -257,7 +247,7 @@ export default function Register() {
             disabled={
               firstName === "" ||
               lastName === "" ||
-              email === "" ||
+              emailErr ||
               cvr.length !== 8 ||
               checkedTerms === false ||
               (isSuccess === false && isFetched === true)
@@ -270,7 +260,7 @@ export default function Register() {
 
       {isSuccess && (
         <Dialog
-          open={open}
+          open={openConfirmDialog}
           onClose={handleClose}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
@@ -313,7 +303,7 @@ export default function Register() {
       )}
 
       <Dialog
-        open={openConfirm}
+        open={openAwaitDialog}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
