@@ -4,6 +4,10 @@ import L from "leaflet";
 import "leaflet.locatecontrol";
 import LocationContext from "../../state/LocationContext";
 import Button from "@material-ui/core/Button";
+import { atom, useAtom } from "jotai";
+
+const zoomAtom = atom(null);
+const panAtom = atom(null);
 
 const style = {
   width: "100%",
@@ -26,6 +30,9 @@ function Map({ sensorData, loading }) {
   const context = useContext(LocationContext);
   const history = useHistory();
   const mapRef = React.useRef(null);
+  const layerRef = React.useRef(null);
+  const [zoom, setZoom] = useAtom(zoomAtom);
+  const [pan, setPan] = useAtom(panAtom);
 
   const onClickHandler = (element) => () => {
     let _popup = document.getElementsByClassName(
@@ -82,16 +89,6 @@ function Map({ sensorData, loading }) {
         zoomOffset: -1,
       }
     );
-    // const kommuneWms = L.tileLayer.wms(
-    //   "https://services.kortforsyningen.dk/service?request=GetCapabilities&servicename=dagi" +
-    //     "&service=WMS&version=1.1.1",
-    //   {
-    //     layers: "kommune",
-    //     format: "image/png",
-    //     token: kftoken,
-    //     transparent: "TRUE",
-    //   }
-    // );
 
     var map = L.map("map", {
       center: [55.876823, 8.961644],
@@ -115,25 +112,18 @@ function Map({ sensorData, loading }) {
         },
       })
       .addTo(map);
+
+    map.on("moveend", function () {
+      setZoom(map.getZoom());
+      setPan(map.getCenter());
+    });
+
     return map;
   };
 
   useEffect(() => {
     mapRef.current = renderMap();
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
-  }, [sensorData]);
-
-  const layerRef = React.useRef(null);
-
-  useEffect(() => {
     layerRef.current = L.featureGroup().addTo(mapRef.current);
-  }, [sensorData]);
-
-  useEffect(() => {
     layerRef.current.clearLayers();
     const data = sensorData;
     if (!loading) {
@@ -158,10 +148,17 @@ function Map({ sensorData, loading }) {
         marker.on("click", onClickHandler(element));
         marker.addTo(layerRef.current);
       });
-      mapRef.current.fitBounds(layerRef.current.getBounds());
+      if (zoom !== null) {
+        mapRef.current.setView(pan, zoom);
+      } else {
+        mapRef.current.fitBounds(layerRef.current.getBounds());
+      }
     }
-    console.log(sensorData);
-    //
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+      }
+    };
   }, [sensorData]);
 
   return <div id="map" style={style}></div>;
