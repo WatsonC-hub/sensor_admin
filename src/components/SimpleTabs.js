@@ -14,6 +14,9 @@ import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Scroll from "./Scroll";
 import { getTableData, getSensorData } from "../api";
 import { useQuery } from "@tanstack/react-query";
+import { atom, useAtom } from "jotai";
+
+const tabAtom = atom(0);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,9 +53,9 @@ const useElementVisible = (options) => {
 
 export default function SimpleTabs() {
   const classes = useStyles();
-  const locationContext = useContext(LocationContext);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("xs"));
+  const [tabValue, setTabValue] = useAtom(tabAtom);
   const [containerRef, isTabVisible] = useElementVisible({
     root: null,
     rootMargin: "0px",
@@ -76,7 +79,7 @@ export default function SimpleTabs() {
   );
 
   const handleChange = (_, newValue) => {
-    locationContext.setTabValue(newValue);
+    setTabValue(newValue);
   };
 
   const KortIcon = (
@@ -94,7 +97,7 @@ export default function SimpleTabs() {
   return (
     <div>
       <Tabs
-        value={locationContext.tabValue}
+        value={tabValue}
         onChange={handleChange}
         variant="fullWidth"
         aria-label="simple tabs example"
@@ -103,14 +106,14 @@ export default function SimpleTabs() {
         <Tab icon={TableIcon} />
         <Tab icon={KortIcon} />
       </Tabs>
-      <TabPanel value={locationContext.tabValue} index={0}>
+      <TabPanel value={tabValue} index={0}>
         {matches ? (
           <StationList data={data} />
         ) : (
           <StationListDesktop data={data} loading={isLoading} />
         )}
       </TabPanel>
-      <TabPanel value={locationContext.tabValue} index={1}>
+      <TabPanel value={tabValue} index={1}>
         <Map sensorData={mapData} loading={mapLoading} />
       </TabPanel>
       {matches && !isTabVisible && (

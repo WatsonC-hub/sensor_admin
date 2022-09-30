@@ -13,7 +13,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import DeleteAlert from "./DeleteAlert";
-import LocationContext from "../../state/LocationContext";
+
 import { Fragment } from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -36,7 +36,6 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
   const [mpId, setMpId] = useState(-1);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
-  const context = useContext(LocationContext);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
