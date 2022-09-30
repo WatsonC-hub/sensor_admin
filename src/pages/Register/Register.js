@@ -15,6 +15,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import { Typography } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -49,11 +51,11 @@ export default function Register() {
   const [checkedNews, setCheckedNews] = useState(false);
   const [open, setOpen] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
-  const [cvrData, setCvrData] = useState({});
 
-  const validEmail = new RegExp(
-    "^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$"
-  );
+  const validateEmail = (email) => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
 
   const history = useHistory();
   const routeChange = () => {
@@ -61,37 +63,32 @@ export default function Register() {
     history.push(path);
   };
 
-  const validateEmail = () => {
-    if (!validEmail.test(email)) {
-      setEmailErr(true);
-    } else if (validEmail.test(email)) {
-      setEmailErr(false);
-    }
-  };
+  const {
+    data: cvrData,
+    isSuccess,
+    isFetched,
+  } = useQuery(["cvr", cvr], () => getCvr(cvr), {
+    enabled: cvr.length === 8,
+    refetchOnWindowFocus: false,
+    select: (data) => {
+      return {
+        ...data.data.orgs[0],
+        id: data.data.orgs[0].id !== null ? data.data.orgs[0].id : -1,
+      };
+    },
+  });
+  console.log(cvrData);
 
   const handleSubmit = (e) => {
     e.preventDefault(); //To avoid refreshing page on button click
-    validateEmail();
+    setEmailErr(!validateEmail(email));
 
-    if (emailErr === false) {
-      getCvr(cvr)
-        .then((res) => {
-          setCvrData({
-            ...res.data.orgs[0],
-            id: res.data.orgs[0].id !== null ? res.data.orgs[0].id : -1,
-          });
-          setSeverity("success");
-          setTimeout(() => {
-            handleClickOpen();
-          }, 500);
-        })
-        .catch((error) => {
-          setSeverity("error");
-          setOpenAlert(true);
-        });
+    if (emailErr === false && isSuccess) {
+      setOpen(true);
     } else {
-      setSeverity("error");
-      setOpenAlert(true);
+      toast("Email er ugyldig", {
+        type: "error",
+      });
     }
   };
 
@@ -145,21 +142,6 @@ export default function Register() {
     else if (checkedNews) setCheckedNews(false);
   };
 
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
-
-  const handleCloseSnack = (reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenAlert(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -210,6 +192,7 @@ export default function Register() {
             name="email"
             autoComplete="email"
             onChange={(e) => setEmail(e.target.value)}
+            onBlur={(e) => setEmailErr(!validateEmail(email))}
             error={emailErr}
             helperText={emailErr ? "Din email er ugyldig" : ""}
           />
@@ -222,7 +205,13 @@ export default function Register() {
             label="CVR"
             name="cvr"
             autoComplete="cvr"
-            onChange={(e) => setCvr(e.target.value)}
+            error={isSuccess === false && isFetched === true}
+            helperText={
+              isSuccess === false && isFetched === true
+                ? "CVR blev ikke fundet"
+                : ""
+            }
+            onChange={(e) => setCvr(e.target.value.trim())}
           />
 
           <FormControlLabel
@@ -269,55 +258,60 @@ export default function Register() {
               firstName === "" ||
               lastName === "" ||
               email === "" ||
-              cvr === "" ||
-              checkedTerms === false
+              cvr.length !== 8 ||
+              checkedTerms === false ||
+              (isSuccess === false && isFetched === true)
             }
           >
             Opret konto
           </Button>
         </form>
       </Container>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          <Typography variant="h5">Bekræft virksomhed</Typography>
-        </DialogTitle>
-        <DialogContent>
-          <div>
-            <Typography>
-              {cvrData.id === -1
-                ? "Denne organisation er ikke oprettet. Du vil blive ejeren af den nedenstående organisation og skal fremad rettet godkende andre brugere der tilknytter sig denne organisation. Følg instruktionerne i din email for at fuldføre oprettelsen."
-                : "Virksomheden er allerede oprettet. Der vil blive sendt en anmodning til nedenstående virksomhed, om at du kan oprettes i denne. Hvorefter du vil modtage en bekræftigelsesmail."}
-            </Typography>
-            <Typography>
-              {cvrData.name}
-              <br></br>
-              {cvrData.address}
-              <br></br>
-              {cvrData.zip + " " + cvrData.city}
-              <br></br>
-              {cvr}
-            </Typography>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Annuller
-          </Button>
-          <Button
-            onClick={handleConfirm}
-            variant="outlined"
-            color="primary"
-            autoFocus
-          >
-            Bekræft
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      {isSuccess && (
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            <Typography variant="h5">Bekræft virksomhed</Typography>
+          </DialogTitle>
+          <DialogContent>
+            <div>
+              <Typography>
+                {cvrData.id === -1
+                  ? "Denne organisation er ikke oprettet. Du vil blive ejeren af den nedenstående organisation og skal fremad rettet godkende andre brugere der tilknytter sig denne organisation. Følg instruktionerne i din email for at fuldføre oprettelsen."
+                  : "Virksomheden er allerede oprettet. Der vil blive sendt en anmodning til nedenstående virksomhed, om at du kan oprettes i denne. Hvorefter du vil modtage en bekræftigelsesmail."}
+              </Typography>
+              <Typography>
+                {cvrData.name}
+                <br></br>
+                {cvrData.address}
+                <br></br>
+                {cvrData.zip + " " + cvrData.city}
+                <br></br>
+                {cvr}
+              </Typography>
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Annuller
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              variant="outlined"
+              color="primary"
+              autoFocus
+            >
+              Bekræft
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+
       <Dialog
         open={openConfirm}
         onClose={handleClose}
@@ -346,17 +340,6 @@ export default function Register() {
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={openAlert}
-        autoHideDuration={4000}
-        onClose={handleCloseSnack}
-      >
-        <Alert onClose={handleCloseSnack} severity={severity}>
-          {severity === "success"
-            ? "Oprettelsen lykkedes"
-            : "Oprettelsen fejlede"}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }
