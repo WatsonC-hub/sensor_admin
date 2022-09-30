@@ -24,7 +24,7 @@ import MuiAlert from "@material-ui/lab/Alert";
 import SaveIcon from "@material-ui/icons/Save";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 const flex1 = {
@@ -163,11 +163,17 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
 
   const store = stamdataStore();
+  const queryClient = useQueryClient();
 
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
-  const [openAlert, setOpenAlert] = useState(false);
-  const [severity, setSeverity] = useState("success");
+  const stamdataMutation = useMutation(postStamdata, {
+    onSuccess: (data) => {
+      history.push("/");
+      queryClient.invalidateQueries("station_list");
+      queryClient.invalidateQueries("map_data");
+    },
+  });
 
   const changeSelectedStationType = (selectedType) => {
     if (selectedType !== selectedStationType) {
@@ -191,7 +197,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
       },
     };
 
-    toast.promise(() => postStamdata(form).then(() => history.push("/")), {
+    toast.promise(() => stamdataMutation.mutateAsync(form), {
       pending: "Opretter station",
       success: "Stationen er oprettet",
       error: "Der skete en fejl",
