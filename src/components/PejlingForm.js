@@ -10,6 +10,8 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
+  makeStyles,
+  useMediaQuery,
   FormLabel,
   useTheme,
 } from "@material-ui/core";
@@ -21,6 +23,23 @@ import OwnDatePicker from "./OwnDatePicker";
 import { Checkbox } from "@material-ui/core";
 import { Tooltip } from "@material-ui/core";
 import { StamdataContext } from "../pages/Stamdata/StamdataContext";
+import Box from "@material-ui/core/Box";
+
+const useStyles = makeStyles({
+  root: {
+    width: "60%",
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    marginLeft: "20%",
+  },
+  mobile: {
+    width: "100%",
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+  },
+});
 
 export default function PejlingForm({
   stationId,
@@ -32,6 +51,9 @@ export default function PejlingForm({
   isWaterlevel,
   isFlow,
 }) {
+  const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const handleUsageChange = (e) => {
     changeFormData("useforcorrection", e.target.value);
@@ -112,29 +134,29 @@ export default function PejlingForm({
   };
 
   return (
-    <Card style={{ marginBottom: 25 }}>
+    <Card
+      style={{ marginBottom: 25 }}
+      className={matches ? classes.mobile : classes.root}
+    >
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? "Opdater kontrol" : "Indberet kontrol"}
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <OwnDatePicker
-              label="Start dato"
-              value={new Date(formData.timeofmeas)}
-              onChange={(date) => handleDateChange(date)}
-              error={pejlingOutOfRange}
-              helperText={
-                pejlingOutOfRange ? "Dato ligger uden for et målepunkt" : ""
-              }
-            />
+        <Grid container spacing={3} alignItems="center" justify="center">
+          <Grid item xs={12} sm={12}>
+            <Tooltip title="f.eks. tør eller tilfrossen">
+              <FormControlLabel
+                control={<Checkbox onChange={handleNotPossibleChange} />}
+                label="Måling ikke mulig"
+              />
+            </Tooltip>
           </Grid>
-          <Grid item xs={8} sm={3}>
+          <Grid item xs={12} sm={6}>
             <TextField
               type="number"
               variant="outlined"
               label={
-                <Typography variant="h6" component="h3">
+                <Typography variant="h5" component="h3">
                   {isWaterlevel ? "Pejling (nedstik)" : "Måling"}
                 </Typography>
               }
@@ -152,71 +174,30 @@ export default function PejlingForm({
               disabled={notPossible}
             />
           </Grid>
-          <Grid item xs={4} sm={3}>
-            <Tooltip title="f.eks. tør eller tilfrossen">
-              <FormControlLabel
-                control={<Checkbox onChange={handleNotPossibleChange} />}
-                label="Måling ikke mulig"
-              />
-            </Tooltip>
-          </Grid>
+        </Grid>
+        <Grid container spacing={3} alignItems="center" justify="center">
           {isWaterlevel && (
             <>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  type="number"
-                  variant="outlined"
-                  disabled={true}
-                  label={
-                    <Typography variant="h6" component="h3">
-                      Målepunktskote
-                    </Typography>
-                  }
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="start">m</InputAdornment>
-                    ),
-                    style: { color: "black" },
-                  }}
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  value={pejlingOutOfRange ? "" : currentMP.elevation}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  type="text"
-                  variant="outlined"
-                  disabled={true}
-                  label={
-                    <Typography variant="h6" component="h3">
-                      Målepunkt placering
-                    </Typography>
-                  }
-                  InputProps={{
-                    style: { color: "black" },
-                  }}
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                  value={pejlingOutOfRange ? "" : currentMP.mp_description}
-                />
+              <Grid item xs={12} sm={8}>
+                <Box p={0} border={1} borderRadius={8} borderColor="gray">
+                  <p>Målepunkt placering: {currentMP.mp_description}</p>
+                </Box>
               </Grid>
             </>
           )}
-          <Grid item xs={12} sm={12}>
-            <TextField
+          <Grid item xs={12} sm={6}>
+            <OwnDatePicker
               label={
                 <Typography variant="h6" component="h3">
-                  Kommentar
+                  Tidspunkt for måling
                 </Typography>
               }
-              value={formData.comment}
-              variant="outlined"
-              multiline
-              rows={4}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              onChange={handleCommentChange}
+              value={new Date(formData.timeofmeas)}
+              onChange={(date) => handleDateChange(date)}
+              error={pejlingOutOfRange}
+              helperText={
+                pejlingOutOfRange ? "Dato ligger uden for et målepunkt" : ""
+              }
             />
           </Grid>
           {(isWaterlevel || isFlow) && (
@@ -248,6 +229,34 @@ export default function PejlingForm({
               </FormControl>
             </Grid>
           )}
+          {isWaterlevel && (
+            <>
+              <Grid item xs={12} sm={6}>
+                <Box p={0} border={1} borderRadius={8} borderColor="gray">
+                  <p>
+                    Målepunktskote:{" "}
+                    {pejlingOutOfRange ? "" : currentMP.elevation}
+                  </p>
+                </Box>
+              </Grid>
+            </>
+          )}
+          <Grid item xs={12} sm={10}>
+            <TextField
+              label={
+                <Typography variant="h6" component="h3">
+                  Kommentar
+                </Typography>
+              }
+              value={formData.comment}
+              variant="outlined"
+              multiline
+              rows={4}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              onChange={handleCommentChange}
+            />
+          </Grid>
           <Grid item xs={2} sm={4}></Grid>
           <Grid item xs={4} sm={2}>
             <Button
@@ -273,9 +282,7 @@ export default function PejlingForm({
               Annuller
             </Button>
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
         </Grid>
-        <Grid item xs={2} sm={4}></Grid>
       </CardContent>
     </Card>
   );
