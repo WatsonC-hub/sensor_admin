@@ -22,6 +22,7 @@
     "clsx": "^1.1.1",
     "date-fns": "^2.16.1",
     "gh-pages": "^3.1.0",
+    "http-proxy-middleware": "^2.0.6",
     "jotai": "^1.8.4",
     "leaflet": "^1.7.1",
     "leaflet.locatecontrol": "^0.76.0",
@@ -53,14 +54,18 @@
     ]
   },
   "browserslist": {
-    "production": [],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not ie <= 11",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:80",
   "devDependencies": {
     "eslint": "^8.24.0"
   }
