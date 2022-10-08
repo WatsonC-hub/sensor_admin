@@ -7,12 +7,30 @@ import {
   Card,
   CardContent,
   useTheme,
+  makeStyles,
+  useMediaQuery,
 } from "@material-ui/core";
 import { isValid } from "date-fns";
 import SaveIcon from "@material-ui/icons/Save";
 import OwnDatePicker from "./OwnDatePicker";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+
+const useStyles = makeStyles({
+  root: {
+    width: "60%",
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    marginLeft: "20%",
+  },
+  mobile: {
+    width: "100%",
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+  },
+});
 
 export default function TilsynForm({
   formData,
@@ -21,6 +39,9 @@ export default function TilsynForm({
   resetFormData,
 }) {
   const [disableSubmit, setDisableSubmit] = useState(false);
+  const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -28,8 +49,6 @@ export default function TilsynForm({
       setDisableSubmit(false);
     }, 2500);
   };
-
-  const theme = useTheme();
 
   const handleCommentChange = (e) => {
     changeFormData("kommentar", e.target.value);
@@ -48,20 +67,23 @@ export default function TilsynForm({
   };
 
   return (
-    <Card style={{ marginBottom: 25 }}>
+    <Card
+      style={{ marginBottom: 25 }}
+      className={matches ? classes.mobile : classes.root}
+    >
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? "Opdater tilsyn" : "Indberet tilsyn"}
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
+        <Grid container spacing={3} alignItems="center" justify="center">
+          <Grid item xs={12} sm={7}>
             <OwnDatePicker
               label={"Dato"}
               value={formData.dato}
               onChange={(date) => handleDateChange(date)}
             />
           </Grid>
-          <Grid item xs={12} sm={8}>
+          <Grid item xs={12} sm={7}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -85,7 +107,7 @@ export default function TilsynForm({
               label={<label>Tilsyn</label>}
             />
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12} sm={10}>
             <TextField
               label={
                 <Typography variant="h6" component="h3">

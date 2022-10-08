@@ -11,6 +11,8 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import { Fragment } from "react";
 import moment from "moment";
 import { StamdataContext } from "../Stamdata/StamdataContext";
+import Grid from '@material-ui/core/Grid';
+import TablePagination from "@material-ui/core/TablePagination";
 
 export default function MobileMeasurements({
   measurements,
@@ -20,6 +22,8 @@ export default function MobileMeasurements({
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
+  const [page, setPage] = React.useState(0);
+  const rowsPerPage = 3;
   const [, , stamdata, , , , , , , , ,] = React.useContext(StamdataContext);
   const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
@@ -30,6 +34,10 @@ export default function MobileMeasurements({
     handleDelete(id);
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
   return (
     <Fragment>
       <DeleteAlert
@@ -38,9 +46,23 @@ export default function MobileMeasurements({
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant="h5" component="h2">
-        Kontrolmålinger
-      </Typography>
+      <Grid container>
+        <Grid item xs={5} style={{marginTop: "2.5%"}}>
+          <Typography gutterBottom variant="h6" component="h2">
+            Kontrolmålinger
+          </Typography>
+        </Grid>
+      <Grid item xs={7}>
+      <TablePagination
+          rowsPerPageOptions={[3]}
+          component="div"
+          count={measurements.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+        />
+        </Grid>
+      </Grid>
       <Fragment>
         <List>
           {measurements.map((row, index) => (

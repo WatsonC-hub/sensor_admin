@@ -23,8 +23,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import Grid from '@material-ui/core/Grid';
 import moment from "moment";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
 const useStyles = makeStyles({
   table: {
@@ -64,9 +65,28 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant="h5" component="h2">
-        Tilsyn
-      </Typography>
+      <Grid container style={{marginLeft: "2%"}}>
+        <Grid item xs={8}>
+          <img width="35" height="35" align="left" src={process.env.PUBLIC_URL + "/TilsynIcon.svg"} />
+          <Typography
+            gutterBottom
+            variant="h5"
+            component="h2"
+          >
+            Tilsyn
+          </Typography>
+        </Grid>
+        <Grid item xs={3} style={{marginLeft: "5%"}}>
+          <TablePagination
+          rowsPerPageOptions={[5]}
+          component="div"
+          count={services.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          />
+        </Grid>
+      </Grid>
       <TableContainer>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
@@ -123,14 +143,6 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5]}
-        component="div"
-        count={services.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-      />
     </Fragment>
   );
 }
@@ -164,10 +176,64 @@ function MobileTilsyn({ services, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant="h5" component="h2">
-        Tilsyn
-      </Typography>
+      <Grid container>
+        <Grid item xs={5} style={{marginTop: "2.5%"}}>
+          <img width="30" height="30" align="left" src={process.env.PUBLIC_URL + "/TilsynIcon.svg"} />
+          <Typography gutterBottom variant="h6" component="h2">
+            Tilsyn
+          </Typography>
+        </Grid>
+        <Grid item xs={7}>
+          <TablePagination
+            rowsPerPageOptions={[5]}
+            component="div"
+            count={services.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+          />
+        </Grid>
+      </Grid>
+
       <Fragment>
+        <List>
+          {services.map((row, index) => (
+            <ListItem key={index} dense>
+              {row.batteriskift ? <img width="30" height="30" align="left" style={{marginRight: "5px"}} src={process.env.PUBLIC_URL + "/LowBatteryIcon.png"} />
+                : row.tilsyn ? <img width="30" height="30" align="left" style={{marginRight: "5px"}} src={process.env.PUBLIC_URL + "/EyeIcon.png"} /> : ""}
+              <ListItemText
+                primary={row.batteriskift && row.tilsyn ? <b>Batteri skiftet og tilsyn</b>
+                          : row.batteriskift && row.tilsyn !== true ? <b>Batteri skiftet</b>
+                          : row.batteriskift !== true && row.tilsyn ? <b>Tilsyn</b> : <b>"-"</b>}
+                secondary={moment(row.dato).format("YYYY-MM-DD HH:mm")}
+              />
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  onClick={() => {
+                    handleEdit(row);
+                    setTimeout(() => {
+                      window.scrollTo({ top: 300, behavior: "smooth" });
+                    }, 200);
+                  }}
+                  disabled={!canEdit}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  edge="end"
+                  onClick={() => onDeleteBtnClick(row.gid)}
+                  disabled={!canEdit}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </Fragment>
+
+      {/* <Fragment>
         <TableContainer>
           <Table className={classes.mobile} aria-label="simple table">
             <TableHead>
@@ -222,65 +288,7 @@ function MobileTilsyn({ services, handleEdit, handleDelete, canEdit }) {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5]}
-          component="div"
-          count={services.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-        />
-        {/* <List>
-          {services.map((row, index) => (
-            <ListItem key={index} dense>
-              <ListItemText
-                primary={moment(row.dato).format("YYYY-MM-DD HH:mm")}
-              />
-              <ListItemText
-                primary={
-                  row.batteriskift === true ? (
-                    <CheckBoxIcon color="action"></CheckBoxIcon>
-                  ) : (
-                    <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
-                  )
-                }
-                secondary="B"
-              />
-              <ListItemText
-                primary={
-                  row.tilsyn === true ? (
-                    <CheckBoxIcon color="action"></CheckBoxIcon>
-                  ) : (
-                    <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
-                  )
-                }
-                secondary="T"
-              />
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={() => {
-                    handleEdit(row);
-                    setTimeout(() => {
-                      window.scrollTo({ top: 300, behavior: "smooth" });
-                    }, 200);
-                  }}
-                  disabled={!canEdit}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  onClick={() => onDeleteBtnClick(row.gid)}
-                  disabled={!canEdit}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List> */}
-      </Fragment>
+      </Fragment> */}
     </Fragment>
   );
 }

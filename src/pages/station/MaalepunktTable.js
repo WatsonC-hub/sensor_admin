@@ -23,6 +23,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import moment from "moment";
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles({
   table: {
@@ -59,9 +60,18 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant="h5" component="h2">
-        Målepunkter
-      </Typography>
+      <Grid container style={{marginLeft: "2%"}}>
+        <Grid item xs={8}>
+          <img width="35" height="35" align="left" src={process.env.PUBLIC_URL + "/RulerIcon.svg"} />
+          <Typography
+            gutterBottom
+            variant="h5"
+            component="h2"
+          >
+            Målepunkter
+          </Typography>
+        </Grid>
+      </Grid>
       <TableContainer>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
@@ -125,7 +135,13 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
 
 function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [mpId, setMpId] = useState(-1);
+  const [mpId, setMpId] = useState(-1);const [page, setPage] = React.useState(0);
+  const rowsPerPage = 3;
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
   const onDeleteBtnClick = (id) => {
     setMpId(id);
     setDialogOpen(true);
@@ -143,9 +159,23 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant="h5" component="h2">
-        Målepunkter
-      </Typography>
+      <Grid container>
+        <Grid item xs={5} style={{ marginTop: "2.5%" }}>
+          <Typography gutterBottom variant="h6" component="h2">
+            Målepunkter
+          </Typography>
+        </Grid>
+        <Grid item xs={7}>
+          <TablePagination
+            rowsPerPageOptions={[3]}
+            component="div"
+            count={watlevmp.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+          />
+        </Grid>
+      </Grid>
       <Fragment>
         <List>
           {watlevmp.map((row, index) => (

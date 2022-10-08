@@ -107,18 +107,7 @@ function StationImages(props) {
         photoTrigger={triggerPhoto}
         handleCloseSave={handleCloseSave}
       />
-      <Grid container spacing={3}>
-        {/* <Grid item xs={6} sm={2}>
-          <Button
-            autoFocus
-            color="secondary"
-            variant="contained"
-            onClick={() => setOpenCamera((prev) => !prev)}
-            startIcon={<PhotoCameraRounded />}
-          >
-            {openCamera ? "Luk kamera" : "Tag billede"}
-          </Button>
-        </Grid> */}
+      <Grid container spacing={3} alignItems="center" justify="center">
         <Grid item xs={6} sm={2}>
           <label htmlFor="btn-upload">
             <input

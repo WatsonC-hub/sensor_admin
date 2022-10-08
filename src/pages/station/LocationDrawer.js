@@ -13,6 +13,7 @@ import { getStations } from "../../api";
 import MinimalSelect from "../Location/MinimalSelect";
 import { useParams, useHistory } from "react-router-dom";
 import { StamdataProvider } from "../Stamdata/StamdataContext";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const drawerWidth = 240;
 
@@ -67,6 +68,14 @@ const useStyles = makeStyles((theme) => ({
     }),
     //marginLeft: -drawerWidth,
   },
+  contentMobile: {
+    flexGrow: 1,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    //marginLeft: -drawerWidth,
+  },
   contentShift: {
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
@@ -85,8 +94,8 @@ export default function LocationDrawer() {
   const [selectedItem, setSelectedItem] = useState(-1);
   const [selectedLocid, setSelectedLocid] = useState(-1);
   const context = useContext(LocationContext);
-
   const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("xs"));
   const params = useParams();
   const history = useHistory();
 
@@ -147,7 +156,7 @@ export default function LocationDrawer() {
         </Toolbar>
       </AppBar>
 
-      <main className={classes.content}>
+      <main className={matches ? classes.contentMobile : classes.content}>
         <div className={classes.drawerHeader} />
         <StamdataProvider>
           <Station

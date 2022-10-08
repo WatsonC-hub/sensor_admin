@@ -15,6 +15,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import moment from "moment";
 import { StamdataContext } from "../Stamdata/StamdataContext";
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles({
   table: {
@@ -62,9 +63,18 @@ export default function HistoricMeasurements({
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Typography gutterBottom variant="h5" component="h2">
-        Kontrolmålinger
-      </Typography>
+      <Grid container style={{marginLeft: "2%"}}>
+        <Grid item xs={8}>
+          <img width="35" height="35" align="left" src={process.env.PUBLIC_URL + "/RulerIcon.svg"} />
+          <Typography
+            gutterBottom
+            variant="h5"
+            component="h2"
+          >
+            Kontrolmålinger
+          </Typography>
+        </Grid>
+      </Grid>
       <TableContainer>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>

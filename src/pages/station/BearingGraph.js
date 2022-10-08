@@ -132,7 +132,7 @@ const layout3 = {
   modebar: {
     orientation: "v",
   },
-  autosize: true,
+  //autosize: true,
   xaxis: {
     rangeselector: selectorOptions,
     autorange: true,

@@ -7,9 +7,11 @@ import Typography from "@material-ui/core/Typography";
 import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import { TextField } from "@material-ui/core";
-
+import Divider from '@material-ui/core/Divider';
+import StraightenIcon from '@material-ui/icons/Straighten';
 import LocationContext from "../../context/LocationContext";
 import { CircularProgress } from "@material-ui/core";
+import SpeedIcon from '@material-ui/icons/Speed';
 
 export default function StationList({ data }) {
   const context = useContext(LocationContext);
@@ -49,26 +51,82 @@ export default function StationList({ data }) {
         {data &&
           rows.map((elem, index) => {
             return (
-              <ListItem
-                key={index}
-                button
-                onClick={(e) => handleClick(elem)}
-                dense
-              >
-                <ListItemText
-                  primary={elem.ts_name}
-                  secondary={
-                    elem.active ? "Calypso ID: " + elem.calypso_id : " "
-                  }
-                />
-                <StatusText row={elem} />
-              </ListItem>
+              <div>
+                <ListItem
+                  key={index}
+                  button
+                  onClick={(e) => handleClick(elem)}
+                  dense
+                >
+                  <TypeIcon row={elem}/>
+                  <ListItemText
+                    primary={elem.ts_name}
+                    secondary={
+                      elem.active ? "Calypso ID: " + elem.calypso_id : " "
+                    }
+                  />
+                  <StatusText row={elem} />
+                </ListItem>
+                <Divider component="li" />
+              </div>
             );
           })}
       </List>
     </div>
   );
 }
+
+function TypeIcon(props) {
+  console.log(props.row)
+  return (
+    <span
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }}
+    >
+      <ListItemText
+        primary={getType(props.row.tstype_name)}
+        // secondary={props.row.opgave}
+      />
+    </span>
+  );
+}
+
+const getType = (type) => {
+  switch (type) {
+    case "Vandstand":
+      return <StraightenIcon style = {{color: "grey", transform: 'rotate(90deg)' }}/>
+    case "Temperatur":
+      return <span style={{color: "grey"}} class="material-icons">thermostat</span>
+    case "Nedbør":
+      return <img width="25" height="25" style={{marginRight: "5px"}} src={process.env.PUBLIC_URL + "/rainIcon.png"} />
+    case "Hastighed":
+      return <SpeedIcon style={{color: "grey"}}/>
+    case "Opløst ilt":
+    case "Vandets iltindhold":
+    case "Ilt mætning":
+      return <img width="20" height="20" style={{marginRight: "5px"}} src={process.env.PUBLIC_URL + "/oxygenIcon.png"} />
+    case "Vandføring":
+      return <img width="25" height="25" style={{marginRight: "5px"}} src={process.env.PUBLIC_URL + "/waterFlowIcon.png"} />
+    case "Fugtighed":
+      return <img width="25" height="25" style={{marginRight: "5px"}} src={process.env.PUBLIC_URL + "/soilMoistureIcon.png"} />
+      default:
+      return type;
+  }
+};
+// Vandføring #6D6D6D
+// Nedbør
+// Hastighed
+// Tryk
+// Temperatur
+// Fugtighed
+// Opløst ilt
+// Nitrat
+// Salinitet
+// Konduktivitet
+// Vandets iltindhold
 
 function StatusText(props) {
   return (

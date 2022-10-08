@@ -7,11 +7,29 @@ import {
   Card,
   CardContent,
   useTheme,
+  makeStyles,
+  useMediaQuery,
 } from "@material-ui/core";
 import { isValid } from "date-fns";
 import { InputAdornment } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
 import OwnDatePicker from "./OwnDatePicker";
+
+const useStyles = makeStyles({
+  root: {
+    width: "60%",
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+    marginLeft: "20%",
+  },
+  mobile: {
+    width: "100%",
+    textAlign: "center",
+    justifyContent: "center",
+    alignContent: "center",
+  },
+});
 
 export default function MaalepunktForm({
   formData,
@@ -21,6 +39,9 @@ export default function MaalepunktForm({
   handleCancel,
 }) {
   const [disableSubmit, setDisableSubmit] = useState(false);
+  const classes = useStyles();
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -35,7 +56,6 @@ export default function MaalepunktForm({
       changeFormData("startdate", date);
     }
   };
-  const theme = useTheme();
 
   const handleEnddateChange = (date) => {
     if (isValid(date)) {
@@ -53,34 +73,21 @@ export default function MaalepunktForm({
   };
 
   return (
-    <Card style={{ marginBottom: 25 }}>
+    <Card 
+      style={{ marginBottom: 25 }}
+      className={matches ? classes.mobile : classes.root}
+    >
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? "Opdater målepunkt" : "Indberet målepunkt"}
         </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <OwnDatePicker
-              label={"Start dato"}
-              value={formData.startdate}
-              onChange={(date) => handleStartdateChange(date)}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            {formData.gid !== -1 && (
-              <OwnDatePicker
-                label={"Slut dato"}
-                value={formData.enddate}
-                onChange={(date) => handleEnddateChange(date)}
-              />
-            )}
-          </Grid>
+        <Grid container spacing={3} alignItems="center" justify="center">
           <Grid item xs={12} sm={8}>
             <TextField
               type="number"
               variant="outlined"
               label={
-                <Typography variant="h6" component="h3">
+                <Typography variant="h5" component="h3">
                   Pejlepunkt [m]
                 </Typography>
               }
@@ -95,7 +102,23 @@ export default function MaalepunktForm({
               onChange={handleElevationChange}
             />
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12} sm={6}>
+            <OwnDatePicker
+              label={"Start dato"}
+              value={formData.startdate}
+              onChange={(date) => handleStartdateChange(date)}
+            />
+          </Grid>
+          {formData.gid !== -1 && (
+            <Grid item xs={12} sm={6}>
+                <OwnDatePicker
+                  label={"Slut dato"}
+                  value={formData.enddate}
+                  onChange={(date) => handleEnddateChange(date)}
+                />
+            </Grid>
+          )}
+          <Grid item xs={12} sm={10}>
             <TextField
               label={
                 <Typography variant="h6" component="h3">

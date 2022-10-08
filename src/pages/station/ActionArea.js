@@ -18,7 +18,7 @@ import PhotoCameraRoundedIcon from "@material-ui/icons/PhotoCameraRounded";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.main,
     height: "auto",
     margin: "5px",
     boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
@@ -66,6 +66,13 @@ const useStyles = makeStyles((theme) => ({
     margin: "7px",
     boxShadow: "0 3px 5px 0px rgba(115,115,115,255)",
     backgroundColor: theme.palette.secondary.main,
+  },
+  borderGrey: {
+    //border: "2px solid black",
+    borderRadius: 5,
+    margin: "7px",
+    boxShadow: "3px 3px 3px grey",
+    backgroundColor: "#9E9E9E",
   },
 }));
 
@@ -170,7 +177,7 @@ function MobileBottomNav({
       />
       {!isCalculated && (
         <BottomNavigationAction
-          className={classes.border}
+          className={classes.borderGrey}
           disabled={!canEdit}
           label="Indberet tilsyn"
           icon={<PlaylistAddCheck />}
@@ -182,7 +189,7 @@ function MobileBottomNav({
       )}
 
       <BottomNavigationAction
-        className={classes.border}
+        className={classes.borderGrey}
         disabled={!canEdit}
         label="Billeder"
         showLabel={true}
@@ -213,7 +220,7 @@ function MobileBottomNav({
               style: {
                 maxHeight: ITEM_HEIGHT * 4.5,
                 width: "auto",
-                backgroundColor: theme.palette.secondary.main,
+                backgroundColor: theme.palette.primary.main,
               },
             }}
           >
@@ -221,7 +228,7 @@ function MobileBottomNav({
               {isWaterlevel && (
                 <MenuItem>
                   <BottomNavigationAction
-                    className={classes.border}
+                    className={classes.borderGrey}
                     disabled={!canEdit}
                     label="Indberet målepunkt"
                     showLabel={true}
@@ -236,7 +243,7 @@ function MobileBottomNav({
               {!isCalculated && (
                 <MenuItem>
                   <BottomNavigationAction
-                    className={classes.border}
+                    className={classes.borderGrey}
                     disabled={!canEdit}
                     label="Ændre udstyr"
                     showLabel={true}

@@ -151,7 +151,7 @@ export default function PejlingForm({
               />
             </Tooltip>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={7}>
             <TextField
               type="number"
               variant="outlined"
@@ -178,14 +178,14 @@ export default function PejlingForm({
         <Grid container spacing={3} alignItems="center" justify="center">
           {isWaterlevel && (
             <>
-              <Grid item xs={12} sm={8}>
+              <Grid item xs={12} sm={7}>
                 <Box p={0} border={1} borderRadius={8} borderColor="gray">
                   <p>Målepunkt placering: {currentMP.mp_description}</p>
                 </Box>
               </Grid>
             </>
           )}
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={7}>
             <OwnDatePicker
               label={
                 <Typography variant="h6" component="h3">
@@ -231,7 +231,7 @@ export default function PejlingForm({
           )}
           {isWaterlevel && (
             <>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={7}>
                 <Box p={0} border={1} borderRadius={8} borderColor="gray">
                   <p>
                     Målepunktskote:{" "}
