@@ -98,8 +98,10 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                   <TableCell align="right">
                     <IconButton
                       onClick={() => {
-                        console.log(row);
                         handleEdit(row);
+                        setTimeout(() => {
+                          window.scrollTo({ top: 300, behavior: "smooth" });
+                        }, 200);
                       }}
                       disabled={!canEdit}
                     >

@@ -20,6 +20,18 @@ import { getTableData } from "../../api";
 import { TextField, Tooltip } from "@material-ui/core";
 import LocationContext from "../../context/LocationContext";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
+import SignalCellularConnectedNoInternet0BarRoundedIcon from '@material-ui/icons/SignalCellularConnectedNoInternet0BarRounded';
+import BatteryAlertIcon from '@material-ui/icons/BatteryAlert';
+import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
+import HeightIcon from '@material-ui/icons/Height';
+import PropTypes from 'prop-types';
+import SwipeableViews from 'react-swipeable-views';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 const RowDetail = ({ row }) => (
   <List>
@@ -34,25 +46,36 @@ const RowDetail = ({ row }) => (
   </List>
 );
 
-const getStatusComp = (status, active) => {
+const getStatusComp = (status, active, task) => {
+  //console.log(status);
   if (!active) {
     return <CheckCircleIcon style={{ color: "grey" }} />;
   }
-  switch (status) {
-    case "#00FF00":
+  switch (task) {
+    case "Ok":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     case null:
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
+    case "Sender ikke":
+    case "Sender null":
+      return <SignalCellularConnectedNoInternet0BarRoundedIcon style={{ color: status }} />
+    case "Batterskift":
+      return <BatteryAlertIcon style={{ color: status }} />
+    case "Tilsyn":
+      return <BuildRoundedIcon style={{ color: status }} />
+    case "Pejling":
+      return <HeightIcon style={{ color: status }} />
     default:
       return <PriorityHighIcon style={{ color: status }} />;
   }
 };
 
 const StatusCell = ({ color, style, ...restProps }) => {
+  console.log(restProps.row.opgave)
   return (
     <VirtualTable.Cell {...restProps}>
       <Tooltip title={restProps.row.opgave}>
-        {getStatusComp(restProps.row.color, restProps.row.active)}
+        {getStatusComp(restProps.row.color, restProps.row.active, restProps.row.opgave)}
       </Tooltip>
     </VirtualTable.Cell>
   );
@@ -99,6 +122,15 @@ const columns = [
   },
 ];
 
+const columnsDGU = [
+  { name: "plant_id", title: "Anlæg ID" },
+  { name: "borehole_name", title: "Boringsnavn" },
+  {
+    name: "color",
+    title: "Status",
+  },
+];
+
 const column_extension = [
   { columnName: "calypso_id", width: "auto" },
   { columnName: "ts_name", width: "auto" },
@@ -109,10 +141,61 @@ const column_extension = [
   },
 ];
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: theme.palette.background.paper,
+    width: 500,
+  },
+}));
+
 export default function StationListDesktop({ data }) {
   const [loading, setLoading] = useState(true);
   const [typeAhead, settypeAhead] = useState("");
   const { height, width } = useWindowDimensions();
+  const classes = useStyles();
+  const theme = useTheme();
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const handleChangeIndex = (index) => {
+    setValue(index);
+  };
 
   useEffect(() => {
     if (data.length > 0) {
@@ -151,31 +234,78 @@ export default function StationListDesktop({ data }) {
 
   return (
     <div>
-      <TextField
-        variant="outlined"
-        label={"Filtrer stationer"}
-        InputLabelProps={{ shrink: true }}
-        placeholder="Søg"
-        value={typeAhead}
-        onChange={(event) => settypeAhead(event.target.value)}
-        style={{ marginBottom: 12 }}
-      />
-
-      <Paper>
-        <Grid rows={rows} columns={columns}>
-          {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
-          {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
-          <VirtualTable
-            height={height - 200}
-            cellComponent={Cell}
-            messages={{ noData: "Ingen data" }}
-            // columnExtensions={column_extension}
+      <AppBar position="static" color="default">
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+          aria-label="full width tabs example"
+        >
+          <Tab label="Mine stationer" {...a11yProps(0)} />
+          <Tab label="Mine DGU boringer" {...a11yProps(1)} />
+        </Tabs>
+      </AppBar>
+      <SwipeableViews
+        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+        index={value}
+        onChangeIndex={handleChangeIndex}
+      >
+        <TabPanel value={value} index={0} dir={theme.direction}>
+          <TextField
+            variant="outlined"
+            label={"Filtrer stationer"}
+            InputLabelProps={{ shrink: true }}
+            placeholder="Søg"
+            value={typeAhead}
+            onChange={(event) => settypeAhead(event.target.value)}
+            style={{ marginBottom: 12 }}
           />
-          {loading && <CircularProgress />}
-          <TableHeaderRow titleComponent={TitleCell} />
-          {/* <TableRowDetail contentComponent={RowDetail} /> */}
-        </Grid>
-      </Paper>
+          <Paper>
+            <Grid rows={rows} columns={columns}>
+              {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+              {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
+              <VirtualTable
+                height={height - 200}
+                cellComponent={Cell}
+                messages={{ noData: "Ingen data" }}
+                // columnExtensions={column_extension}
+              />
+              {loading && <CircularProgress />}
+              <TableHeaderRow titleComponent={TitleCell} />
+              {/* <TableRowDetail contentComponent={RowDetail} /> */}
+            </Grid>
+          </Paper>
+        </TabPanel>
+        <TabPanel value={value} index={1} dir={theme.direction}>
+          <TextField
+              variant="outlined"
+              label={"Filtrer boringer"}
+              InputLabelProps={{ shrink: true }}
+              placeholder="Søg"
+              value={typeAhead}
+              onChange={(event) => settypeAhead(event.target.value)}
+              style={{ marginBottom: 12 }}
+            />
+            <Paper>
+            <Grid rows={rows} columns={columnsDGU}>
+              {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+              {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
+              <VirtualTable
+                height={height - 200}
+                cellComponent={Cell}
+                messages={{ noData: "Ingen data" }}
+                // columnExtensions={column_extension}
+              />
+              {loading && <CircularProgress />}
+              <TableHeaderRow titleComponent={TitleCell} />
+              {/* <TableRowDetail contentComponent={RowDetail} /> */}
+            </Grid>
+          </Paper>
+        </TabPanel>
+      </SwipeableViews>
+
     </div>
   );
 }

@@ -106,7 +106,12 @@ export default function HistoricMeasurements({
                   <TableCell align="right">{row.comment}</TableCell>
                   <TableCell align="right">
                     <IconButton
-                      onClick={() => handleEdit(row)}
+                      onClick={() => {
+                        handleEdit(row);
+                        setTimeout(() => {
+                          window.scrollTo({ top: 300, behavior: "smooth" });
+                        }, 200);
+                      }}
                       disabled={!canEdit}
                     >
                       <EditIcon />

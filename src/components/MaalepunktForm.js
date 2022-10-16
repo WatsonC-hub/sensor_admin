@@ -155,10 +155,10 @@ export default function MaalepunktForm({
             <Button
               style={{ backgroundColor: theme.palette.secondary }}
               onClick={handleCancel}
-              color="secondary"
+              color="grey"
               variant="contained"
             >
-              Annuler
+              Annuller
             </Button>
           </Grid>
           <Grid item xs={2} sm={4}></Grid>

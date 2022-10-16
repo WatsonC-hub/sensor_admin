@@ -12,6 +12,10 @@ import StraightenIcon from '@material-ui/icons/Straighten';
 import LocationContext from "../../context/LocationContext";
 import { CircularProgress } from "@material-ui/core";
 import SpeedIcon from '@material-ui/icons/Speed';
+import SignalCellularConnectedNoInternet0BarRoundedIcon from '@material-ui/icons/SignalCellularConnectedNoInternet0BarRounded';
+import BatteryAlertIcon from '@material-ui/icons/BatteryAlert';
+import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
+import HeightIcon from '@material-ui/icons/Height';
 
 export default function StationList({ data }) {
   const context = useContext(LocationContext);
@@ -113,7 +117,7 @@ const getType = (type) => {
     case "Fugtighed":
       return <img width="25" height="25" style={{marginRight: "5px"}} src={process.env.PUBLIC_URL + "/soilMoistureIcon.png"} />
       default:
-      return type;
+      return "";
   }
 };
 // Vandføring #6D6D6D
@@ -138,7 +142,7 @@ function StatusText(props) {
       }}
     >
       <ListItemText
-        primary={getStatusComp(props.row.color, props.row.active)}
+        primary={getStatusComp(props.row.color, props.row.active, props.row.opgave)}
         // secondary={props.row.opgave}
       />
       {/* <Typography>{getStatusComp(props.row.color)}</Typography> */}
@@ -146,15 +150,33 @@ function StatusText(props) {
   );
 }
 
-const getStatusComp = (status, active) => {
+const getStatusComp = (status, active, task) => {
   if (!active) {
     return <CheckCircleIcon style={{ color: "grey" }} />;
   }
-  switch (status) {
-    case "#00FF00":
+  // switch (status) {
+  //   case "#00FF00":
+  //     return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
+  //   case null:
+  //     return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
+  //   default:
+  //     return <PriorityHighIcon style={{ color: status }} />;
+  // }
+
+  switch (task) {
+    case "Ok":
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
     case null:
       return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
+    case "Sender ikke":
+    case "Sender null":
+      return <SignalCellularConnectedNoInternet0BarRoundedIcon style={{ color: status }} />
+    case "Batterskift":
+      return <BatteryAlertIcon style={{ color: status }} />
+    case "Tilsyn":
+      return <BuildRoundedIcon style={{ color: status }} />
+    case "Pejling":
+      return <HeightIcon style={{ color: status }} />
     default:
       return <PriorityHighIcon style={{ color: status }} />;
   }

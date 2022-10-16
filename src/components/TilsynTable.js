@@ -122,7 +122,12 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
                   <TableCell align="center">{row.kommentar}</TableCell>
                   <TableCell>
                     <IconButton
-                      onClick={() => handleEdit(row)}
+                      onClick={() => {
+                        handleEdit(row);
+                        setTimeout(() => {
+                          window.scrollTo({ top: 300, behavior: "smooth" });
+                        }, 200);
+                      }}
                       disabled={!canEdit}
                     >
                       <EditIcon />

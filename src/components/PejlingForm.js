@@ -275,7 +275,7 @@ export default function PejlingForm({
           </Grid>
           <Grid item xs={4} sm={2}>
             <Button
-              color="secondary"
+              color="grey"
               variant="contained"
               onClick={resetFormData}
             >

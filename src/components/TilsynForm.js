@@ -144,7 +144,7 @@ export default function TilsynForm({
             <Button
               style={{ backgroundColor: theme.palette.secondary }}
               onClick={resetFormData}
-              color="secondary"
+              color="grey"
               variant="contained"
             >
               Annuller

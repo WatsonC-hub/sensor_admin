@@ -104,7 +104,7 @@ function AuthenticatedApp({ setUser }) {
             )}
 
             <Button
-              color="secondary"
+              color="grey"
               variant="contained"
               onClick={handleLogout}
             >
