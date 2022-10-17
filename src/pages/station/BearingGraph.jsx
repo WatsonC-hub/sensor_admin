@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Plot from "react-plotly.js";
 import moment from "moment";
 import { getGraphData } from "../../api";
@@ -182,7 +182,7 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
   const stationtype = graphData[0] ? graphData[0].properties.parameter : "";
   const unit = graphData[0] ? graphData[0].properties.unit : "";
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
@@ -319,7 +319,7 @@ export default function BearingGraph({
 }) {
   const [graphData, setGraphData] = useState([]);
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     if (stationId !== -1 && stationId !== null) {

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import EditIcon from "@material-ui/icons/Edit";
-import IconButton from "@material-ui/core/IconButton";
-import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import Paper from "@mui/material/Paper";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CircularProgress from "@mui/material/CircularProgress";
 import { DataTypeProvider } from "@devexpress/dx-react-grid";
 import {
   Grid,
@@ -17,7 +17,7 @@ import {
 } from "@devexpress/dx-react-grid-material-ui";
 import { RowDetailState } from "@devexpress/dx-react-grid";
 import { getTableData } from "../../api";
-import { TextField, Tooltip } from "@material-ui/core";
+import { TextField, Tooltip } from "@mui/material";
 import LocationContext from "../../state/LocationContext";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 

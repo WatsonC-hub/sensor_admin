@@ -1,34 +1,21 @@
 import React, { useState, useContext, useRef, useEffect } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Tooltip from "@material-ui/core/Tooltip";
-import MapIcon from "@material-ui/icons/Map";
-import TableChart from "@material-ui/icons/TableChart";
+import { useTheme } from "@mui/material/styles";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Tooltip from "@mui/material/Tooltip";
+import MapIcon from "@mui/icons-material/Map";
+import TableChart from "@mui/icons-material/TableChart";
 import TabPanel from "./TabPanel";
 import Map from "../pages/overview/Map";
 import StationListDesktop from "../pages/overview/StationListDesktop";
 import LocationContext from "../state/LocationContext";
 import StationList from "../pages/overview/StationList";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Scroll from "./Scroll";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { getTableData, getSensorData } from "../api";
 import { useQuery } from "@tanstack/react-query";
 import { atom, useAtom } from "jotai";
 
 const tabAtom = atom(0);
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-  fab: {
-    position: "absolute",
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-  },
-}));
 
 const useElementVisible = (options) => {
   const containerRef = useRef(null);
@@ -52,9 +39,8 @@ const useElementVisible = (options) => {
 };
 
 export default function SimpleTabs() {
-  const classes = useStyles();
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("xs"));
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = useAtom(tabAtom);
   const [containerRef, isTabVisible] = useElementVisible({
     root: null,
@@ -116,9 +102,9 @@ export default function SimpleTabs() {
       <TabPanel value={tabValue} index={1}>
         <Map sensorData={mapData} loading={mapLoading} />
       </TabPanel>
-      {matches && !isTabVisible && (
-        <Scroll scrollBelow={100} className={classes.fab} />
-      )}
+      {/* {matches && !isTabVisible && (
+        <Scroll scrollBelow={100} sx/>
+      )} */}
     </div>
   );
 }

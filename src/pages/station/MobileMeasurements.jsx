@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteAlert from "./DeleteAlert";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { Fragment } from "react";
 import moment from "moment";
 import { StamdataContext } from "../../state/StamdataContext";
@@ -68,14 +68,14 @@ export default function MobileMeasurements({
                     }, 200);
                   }}
                   disabled={!canEdit}
-                >
+                  size="large">
                   <EditIcon />
                 </IconButton>
                 <IconButton
                   edge="end"
                   onClick={() => onDeleteBtnClick(row.gid)}
                   disabled={!canEdit}
-                >
+                  size="large">
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>

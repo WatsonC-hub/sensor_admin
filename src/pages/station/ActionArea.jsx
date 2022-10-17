@@ -1,73 +1,28 @@
 import React, { useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import {
   AddCircle,
   EditRounded,
   Straighten,
   PlaylistAddCheck,
   PhotoCameraRounded,
-} from "@material-ui/icons";
-import BottomNavigation from "@material-ui/core/BottomNavigation";
-import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import IconButton from "@material-ui/core/IconButton";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import MenuIcon from "@material-ui/icons/MoreVert";
-import PhotoCameraRoundedIcon from "@material-ui/icons/PhotoCameraRounded";
+} from "@mui/icons-material";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MenuIcon from "@mui/icons-material/MoreVert";
+import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.secondary.main,
-    height: "auto",
-    margin: "5px",
-    boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
-    position: "sticky",
-    bottom: "0",
-    zIndex: 1,
-  },
-  appBar: {
-    top: "auto",
-    bottom: 0,
-  },
-  appBar1: {
-    top: "auto",
-    bottom: 0,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    width: `calc(100% - 240px)`,
-    marginLeft: 240,
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  grow: {
-    flexGrow: 1,
-  },
-  fabButton: {
-    position: "absolute",
-    zIndex: 1,
-    top: -30,
-    left: 0,
-    right: 0,
-    margin: "0 auto",
-  },
-  icon: {
-    transform: "rotate(90deg)",
-  },
-  border: {
-    //border: "2px solid black",
-    borderRadius: 3,
-    margin: "7px",
-    boxShadow: "0 3px 5px 0px rgba(115,115,115,255)",
-    backgroundColor: theme.palette.secondary.main,
-  },
-}));
+const bottomNavStyle = {
+  borderRadius: 3,
+  margin: "7px",
+  boxShadow: "0 3px 5px 0px rgba(115,115,115,255)",
+  backgroundColor: "secondary.main",
+  height: 52,
+};
 
 const ITEM_HEIGHT = 48;
 
@@ -77,12 +32,25 @@ function DesktopBottomNav({
   isCalculated,
   isWaterlevel,
 }) {
-  const classes = useStyles();
+  // const classes = useStyles();
 
   return (
-    <BottomNavigation className={classes.root} value={-1} showLabels>
+    <BottomNavigation
+      value={-1}
+      showLabels
+      sx={{
+        backgroundColor: "secondary.main",
+        height: "auto",
+        margin: "5px",
+        boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
+        position: "sticky",
+        bottom: "0",
+        zIndex: 1,
+      }}
+    >
       <BottomNavigationAction
-        className={classes.border}
+        sx={bottomNavStyle}
+        // className={classes.border}
         disabled={!canEdit}
         label="Indberet kontrol"
         icon={<AddCircle />}
@@ -92,7 +60,7 @@ function DesktopBottomNav({
       />
       {!isCalculated && (
         <BottomNavigationAction
-          className={classes.border}
+          sx={bottomNavStyle}
           disabled={!canEdit}
           label="Indberet tilsyn"
           icon={<PlaylistAddCheck />}
@@ -102,7 +70,7 @@ function DesktopBottomNav({
         />
       )}
       <BottomNavigationAction
-        className={classes.border}
+        sx={bottomNavStyle}
         disabled={!canEdit}
         label="Billeder"
         icon={<PhotoCameraRoundedIcon />}
@@ -112,19 +80,19 @@ function DesktopBottomNav({
       />
       {isWaterlevel && (
         <BottomNavigationAction
-          className={classes.border}
+          sx={bottomNavStyle}
           disabled={!canEdit}
           label="Indberet målepunkt"
           onClick={() => {
             setFormToShow("ADDMAALEPUNKT");
           }}
-          icon={<Straighten className={classes.icon} />}
+          icon={<Straighten />}
         />
       )}
 
       {!isCalculated && (
         <BottomNavigationAction
-          className={classes.border}
+          sx={bottomNavStyle}
           disabled={!canEdit}
           label="Ændre udstyr"
           icon={<EditRounded />}
@@ -143,7 +111,6 @@ function MobileBottomNav({
   isCalculated,
   isWaterlevel,
 }) {
-  const classes = useStyles();
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -157,9 +124,9 @@ function MobileBottomNav({
   };
 
   return (
-    <BottomNavigation className={classes.root} value={-1} showLabels>
+    <BottomNavigation value={-1} showLabels>
       <BottomNavigationAction
-        className={classes.border}
+        sx={bottomNavStyle}
         disabled={!canEdit}
         label="Indberet kontrol"
         icon={<AddCircle />}
@@ -170,7 +137,7 @@ function MobileBottomNav({
       />
       {!isCalculated && (
         <BottomNavigationAction
-          className={classes.border}
+          sx={bottomNavStyle}
           disabled={!canEdit}
           label="Indberet tilsyn"
           icon={<PlaylistAddCheck />}
@@ -182,7 +149,7 @@ function MobileBottomNav({
       )}
 
       <BottomNavigationAction
-        className={classes.border}
+        sx={bottomNavStyle}
         disabled={!canEdit}
         label="Billeder"
         showLabel={true}
@@ -200,6 +167,7 @@ function MobileBottomNav({
             aria-controls="long-menu"
             aria-haspopup="true"
             onClick={handleClick}
+            size="large"
           >
             <MenuIcon />
           </IconButton>
@@ -221,22 +189,22 @@ function MobileBottomNav({
               {isWaterlevel && (
                 <MenuItem>
                   <BottomNavigationAction
-                    className={classes.border}
                     disabled={!canEdit}
+                    sx={bottomNavStyle}
                     label="Indberet målepunkt"
                     showLabel={true}
                     onClick={() => {
                       setFormToShow("ADDMAALEPUNKT");
                       handleClose();
                     }}
-                    icon={<Straighten className={classes.icon} />}
+                    icon={<Straighten />}
                   />
                 </MenuItem>
               )}
               {!isCalculated && (
                 <MenuItem>
                   <BottomNavigationAction
-                    className={classes.border}
+                    sx={bottomNavStyle}
                     disabled={!canEdit}
                     label="Ændre udstyr"
                     showLabel={true}
@@ -264,7 +232,7 @@ export default function ActionArea({
   isCalculated,
 }) {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
   return matches ? (
     <MobileBottomNav
       formToShow={formToShow}

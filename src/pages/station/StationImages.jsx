@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import LocationCamera from "../../components/LocationCamera";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 import ImageViewer from "../../components/ImageViewer";
-import { PhotoCameraRounded } from "@material-ui/icons";
-import { Grid } from "@material-ui/core";
+import { PhotoCameraRounded } from "@mui/icons-material";
+import { Grid } from "@mui/material";
 import SaveImageDialog from "../../components/SaveImageDialog";
 import { deleteImage, getImage } from "../../api";
 import moment from "moment";

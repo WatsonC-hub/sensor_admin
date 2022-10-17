@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import BearingGraph from "./BearingGraph";
 import ActionArea from "./ActionArea";
 import PejlingForm from "../../components/PejlingForm";
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 import {
   insertMeasurement,
   updateMeasurement,
@@ -19,7 +19,7 @@ import {
   deleteService,
   postImage,
 } from "../../api";
-import { Toolbar } from "@material-ui/core";
+import { Toolbar } from "@mui/material";
 import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
 import MaalepunktForm from "../../components/MaalepunktForm";
@@ -31,8 +31,8 @@ import TilsynForm from "../../components/TilsynForm";
 import TilsynTable from "../../components/TilsynTable";
 import StationImages from "./StationImages";
 import { useLocation } from "react-router-dom";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from '@mui/material/Alert';
 
 export default function Station({
   stationId,

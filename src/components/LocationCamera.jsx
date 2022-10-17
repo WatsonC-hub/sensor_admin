@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import Camera, { FACING_MODES, IMAGE_TYPES } from "react-html5-camera-photo";
-import Dialog from "@material-ui/core/Dialog";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import Dialog from "@mui/material/Dialog";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 import "react-html5-camera-photo/build/css/index.css";
 
@@ -29,7 +29,7 @@ function LocationCamera({ open, handleClose, setDataURI }) {
               color="inherit"
               onClick={handleClose}
               aria-label="close"
-            >
+              size="large">
               <CloseIcon />
             </IconButton>
           </Toolbar>

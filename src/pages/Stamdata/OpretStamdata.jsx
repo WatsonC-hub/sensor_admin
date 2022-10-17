@@ -6,12 +6,12 @@ import {
   Typography,
   Button,
   TextField,
-} from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+} from "@mui/material";
+import Autocomplete from '@mui/material/Autocomplete';
 import "date-fns";
 import _ from "lodash";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import AddUdstyrForm from "./AddUdstyrForm";
 import AddLocationForm from "./AddLocationForm";
 import LocationForm from "./components/LocationForm";
@@ -19,9 +19,9 @@ import StationForm from "./components/StationForm";
 import { StamdataContext } from "../../state/StamdataContext";
 import { getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-import SaveIcon from "@material-ui/icons/Save";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from '@mui/material/Alert';
+import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -44,7 +44,7 @@ function LocationChooser({ setLocationDialogOpen }) {
   ]);
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const populateFormData = (locData) => {
     if (locData) {

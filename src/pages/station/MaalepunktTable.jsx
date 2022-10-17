@@ -1,37 +1,29 @@
 import React from "react";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import { useState, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TablePagination from "@material-ui/core/TablePagination";
-import { Typography } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TablePagination from "@mui/material/TablePagination";
+import { Typography } from "@mui/material";
+import Button from "@mui/material/Button";
 import DeleteAlert from "./DeleteAlert";
 
 import { Fragment } from "react";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import moment from "moment";
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
-
 function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
-  const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [page, setPage] = React.useState(0);
@@ -62,7 +54,7 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         Målepunkter
       </Typography>
       <TableContainer>
-        <Table className={classes.table} aria-label="simple table">
+        <Table aria-label="simple table" sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <TableCell>Start dato</TableCell>
@@ -91,6 +83,7 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                         handleEdit(row);
                       }}
                       disabled={!canEdit}
+                      size="large"
                     >
                       <EditIcon />
                     </IconButton>
@@ -101,6 +94,7 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                         onDeleteBtnClick(row.gid);
                       }}
                       disabled={!canEdit}
+                      size="large"
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -168,6 +162,7 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                     }, 200);
                   }}
                   disabled={!canEdit}
+                  size="large"
                 >
                   <EditIcon />
                 </IconButton>
@@ -175,6 +170,7 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
                   edge="end"
                   onClick={() => onDeleteBtnClick(row.gid)}
                   disabled={!canEdit}
+                  size="large"
                 >
                   <DeleteIcon />
                 </IconButton>
@@ -189,7 +185,7 @@ function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
 
 export default function MaalepunktTable(props) {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("xs"));
+  const matches = useMediaQuery(theme.breakpoints.down("sm"));
 
   return matches ? <MobileMP {...props} /> : <DesktopMP {...props} />;
 }

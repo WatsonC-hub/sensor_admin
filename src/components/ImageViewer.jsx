@@ -1,7 +1,7 @@
 import React from "react";
 import ImageCard from "./ImageCard";
 
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 
 function ImageViewer({ images, handleDelete, handleEdit }) {
   return (

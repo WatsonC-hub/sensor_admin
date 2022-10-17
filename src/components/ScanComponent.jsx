@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Redirect } from "react-router-dom";
 import { getLocidFromLabel } from "../api";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 
 export default function ScanComponent() {
   const params = useParams();

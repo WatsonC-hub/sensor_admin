@@ -7,12 +7,12 @@ import {
   Card,
   CardContent,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import { isValid } from "date-fns";
-import SaveIcon from "@material-ui/icons/Save";
+import SaveIcon from "@mui/icons-material/Save";
 import OwnDatePicker from "./OwnDatePicker";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 export default function TilsynForm({
   formData,

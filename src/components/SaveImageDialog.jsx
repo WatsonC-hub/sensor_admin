@@ -6,27 +6,17 @@ import {
   Grid,
   Button,
   CircularProgress,
-} from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+} from "@mui/material";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import moment from "moment";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import OwnDatePicker from "./OwnDatePicker";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-import { useTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles({
-  root: {
-    // minWidth: 300,
-  },
-  media: {
-    width: "100%",
-  },
-});
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 function SaveImageDialog({
   activeImage,
@@ -38,8 +28,7 @@ function SaveImageDialog({
   handleCloseSave,
 }) {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
-  const classes = useStyles();
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
   const [disableAdd, setDisableAdd] = useState(false);
   const baseUrl =
     "https://calypsoimages.s3.eu-north-1.amazonaws.com/location_images/";
@@ -86,7 +75,7 @@ function SaveImageDialog({
           <Grid item xs={12} sm={12} style={{ width: "100%" }}>
             <img
               src={activeImage.gid === -1 ? dataUri : imageUrl}
-              className={classes.media}
+              style={{ width: "100%" }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>

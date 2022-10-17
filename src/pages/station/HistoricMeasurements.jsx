@@ -1,25 +1,18 @@
 import React, { useState, useContext } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import TablePagination from "@material-ui/core/TablePagination";
-import { IconButton, Typography } from "@material-ui/core";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TablePagination from "@mui/material/TablePagination";
+import { IconButton, Typography } from "@mui/material";
 import DeleteAlert from "./DeleteAlert";
 import { Fragment } from "react";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import moment from "moment";
 import { StamdataContext } from "../../state/StamdataContext";
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-});
 
 export default function HistoricMeasurements({
   measurements,
@@ -27,7 +20,6 @@ export default function HistoricMeasurements({
   handleDelete,
   canEdit,
 }) {
-  const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
@@ -65,7 +57,7 @@ export default function HistoricMeasurements({
         Kontrolmålinger
       </Typography>
       <TableContainer>
-        <Table className={classes.table} aria-label="simple table">
+        <Table aria-label="simple table" sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <TableCell>Dato</TableCell>
@@ -97,6 +89,7 @@ export default function HistoricMeasurements({
                     <IconButton
                       onClick={() => handleEdit(row)}
                       disabled={!canEdit}
+                      size="large"
                     >
                       <EditIcon />
                     </IconButton>
@@ -107,6 +100,7 @@ export default function HistoricMeasurements({
                         onDeleteBtnClick(row.gid);
                       }}
                       disabled={!canEdit}
+                      size="large"
                     >
                       <DeleteIcon />
                     </IconButton>

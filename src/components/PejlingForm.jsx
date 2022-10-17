@@ -12,14 +12,14 @@ import {
   FormControl,
   FormLabel,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import { isValid } from "date-fns";
-import { InputAdornment } from "@material-ui/core";
+import { InputAdornment } from "@mui/material";
 import moment from "moment";
-import SaveIcon from "@material-ui/icons/Save";
+import SaveIcon from "@mui/icons-material/Save";
 import OwnDatePicker from "./OwnDatePicker";
-import { Checkbox } from "@material-ui/core";
-import { Tooltip } from "@material-ui/core";
+import { Checkbox } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import { StamdataContext } from "../state/StamdataContext";
 
 export default function PejlingForm({

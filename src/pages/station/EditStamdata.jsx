@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogActions,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import "date-fns";
 import OwnDatePicker from "../../components/OwnDatePicker";
 
@@ -21,9 +21,9 @@ import UdstyrForm from "../Stamdata/components/UdstyrForm";
 import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
 import { StamdataContext } from "../../state/StamdataContext";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-import SaveIcon from "@material-ui/icons/Save";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from '@mui/material/Alert';
+import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 
 function Alert(props) {

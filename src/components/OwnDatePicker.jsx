@@ -3,13 +3,19 @@ import {
   KeyboardDateTimePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
+import {
+  MobileDateTimePicker,
+  LocalizationProvider,
+} from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import DateFnsUtils from "@date-io/date-fns";
 import daLocale from "date-fns/locale/da";
+import { TextField } from "@mui/material";
 
 const OwnDatePicker = (props) => {
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={daLocale}>
-      <KeyboardDateTimePicker
+    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={daLocale}>
+      <MobileDateTimePicker
         disabled={props.disabled}
         disableToolbar
         ampm={false}
@@ -29,11 +35,12 @@ const OwnDatePicker = (props) => {
         KeyboardButtonProps={{
           "aria-label": "change date",
         }}
+        renderInput={(params) => <TextField {...params} />}
         fullWidth
         error={props.error}
         helperText={props.helperText}
       />
-    </MuiPickersUtilsProvider>
+    </LocalizationProvider>
   );
 };
 

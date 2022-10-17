@@ -1,34 +1,19 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import DeleteAlert from "../pages/station/DeleteAlert";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import CircularProgress from "@mui/material/CircularProgress";
 import moment from "moment";
-
-const useStyles = makeStyles({
-  root: {
-    minWidth: 300,
-    margin: "auto",
-  },
-  media: {
-    // minHeight: 400,
-    height: 640,
-    width: "100%",
-    objectFit: "cover",
-  },
-});
 
 function ImageCard({ image, handleDelete, handleEdit }) {
   const baseUrl =
     "https://calypsoimages.s3.eu-north-1.amazonaws.com/location_images/";
   const imageUrl = baseUrl + image.imageurl + ".png";
-  const classes = useStyles();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [disableDelete, setDisableDelete] = useState(false);
   const [disableEdit, setDisableEdit] = useState(false);
@@ -45,14 +30,26 @@ function ImageCard({ image, handleDelete, handleEdit }) {
   };
 
   return (
-    <Card className={classes.root}>
+    <Card
+      sx={{
+        minWidth: 300,
+        margin: "auto",
+      }}
+    >
       <DeleteAlert
         title="Vil du slette billedet?"
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteImage}
       />
-      <CardMedia className={classes.media} image={imageUrl} />
+      <CardMedia
+        image={imageUrl}
+        sx={{
+          height: 640,
+          width: "100%",
+          objectFit: "cover",
+        }}
+      />
       <CardContent>
         <Typography
           variant="body2"

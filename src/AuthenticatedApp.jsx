@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
-import { useTheme } from "@material-ui/core/styles";
+import { useTheme } from "@mui/material/styles";
 import SimpleTabs from "./components/SimpleTabs";
 import LocationDrawer from "./pages/station/LocationDrawer";
-import AppBar from "@material-ui/core/AppBar";
-import IconButton from "@material-ui/core/IconButton";
-import Toolbar from "@material-ui/core/Toolbar";
-import { Button } from "@material-ui/core";
-import { PhotoCameraRounded } from "@material-ui/icons";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import AppBar from "@mui/material/AppBar";
+import IconButton from "@mui/material/IconButton";
+import Toolbar from "@mui/material/Toolbar";
+import { Button } from "@mui/material";
+import { PhotoCameraRounded } from "@mui/icons-material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import ScanComponent from "./components/ScanComponent";
 import OpretStamdata from "./pages/Stamdata/OpretStamdata";
 import { StamdataProvider } from "./state/StamdataContext";
-import KeyboardBackspaceIcon from "@material-ui/icons/KeyboardBackspace";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import LocationContext from "./state/LocationContext";
 import CaptureDialog from "./pages/station/CaptureDialog";
 
@@ -35,7 +35,7 @@ function AuthenticatedApp({ setUser }) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const history = useHistory();
-  const matches = useMediaQuery(theme.breakpoints.down("sm"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   let location = useLocation();
 
   const handleClickOpen = () => {
@@ -92,13 +92,13 @@ function AuthenticatedApp({ setUser }) {
                 onClick={
                   (e) => history.push("/") //context.setLocationId(-1)
                 }
-              >
+                size="large">
                 <KeyboardBackspaceIcon />
               </IconButton>
             )}
 
             {matches && (
-              <IconButton color="inherit" onClick={handleClickOpen}>
+              <IconButton color="inherit" onClick={handleClickOpen} size="large">
                 <PhotoCameraRounded />
               </IconButton>
             )}

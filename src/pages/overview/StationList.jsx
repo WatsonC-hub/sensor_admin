@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import Typography from "@material-ui/core/Typography";
-import PriorityHighIcon from "@material-ui/icons/PriorityHigh";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import { TextField } from "@material-ui/core";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { TextField } from "@mui/material";
 
 import LocationContext from "../../state/LocationContext";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@mui/material";
 
 export default function StationList({ data }) {
   const context = useContext(LocationContext);

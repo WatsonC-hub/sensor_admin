@@ -3,9 +3,9 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import { Switch, Route, useHistory, useLocation } from "react-router-dom";
 import "./App.css";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import { Button } from "@material-ui/core";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import { Button } from "@mui/material";
 import { ReactComponent as LogoSvg } from "./calypso.svg";
 
 export default function UnAuntenticatedApp({ setUser }) {

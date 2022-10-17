@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import ExpandLessIcon from "@material-ui/icons/ExpandLess";
-import Fab from "@material-ui/core/Fab";
+import makeStyles from '@mui/styles/makeStyles';
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import Fab from "@mui/material/Fab";
 
 const useStyles = makeStyles((theme) => ({
   toTop: {

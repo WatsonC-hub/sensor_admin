@@ -7,10 +7,10 @@ import {
   Card,
   CardContent,
   useTheme,
-} from "@material-ui/core";
+} from "@mui/material";
 import { isValid } from "date-fns";
-import { InputAdornment } from "@material-ui/core";
-import SaveIcon from "@material-ui/icons/Save";
+import { InputAdornment } from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
 import OwnDatePicker from "./OwnDatePicker";
 
 export default function MaalepunktForm({

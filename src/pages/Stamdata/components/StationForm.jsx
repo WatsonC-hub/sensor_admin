@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { Grid, TextField, MenuItem, CircularProgress } from "@material-ui/core";
+import { Grid, TextField, MenuItem, CircularProgress } from "@mui/material";
 import { StamdataContext } from "../../../state/StamdataContext";
 import { getStationTypes } from "../../../api";
-import { InputAdornment } from "@material-ui/core";
+import { InputAdornment } from "@mui/material";
 import { stamdataStore } from "../../../state/store";
 import { useQuery } from "@tanstack/react-query";
 

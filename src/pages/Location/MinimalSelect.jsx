@@ -1,15 +1,9 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import minimalSelectStyles from "./minimalSelect.styles";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-
-const useMinimalSelectStyles = makeStyles(minimalSelectStyles, {
-  name: "MinimalSelect",
-});
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const MinimalSelect = ({
   locid,
@@ -37,7 +31,7 @@ const MinimalSelect = ({
   const handleClose = () => setIsOpen(false);
   const handleOpen = () => setIsOpen(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setStationId(selectedStation);
     if (selectedStation !== -1) {
       setIsOpen(false);
@@ -48,22 +42,14 @@ const MinimalSelect = ({
   //   currentStation === -1 ? setIsOpen(true) : setIsOpen(false);
   // }, [currentStation]);
 
-  const minimalSelectClasses = useMinimalSelectStyles();
+  // const minimalSelectClasses = useMinimalSelectStyles();
 
   const iconComponent = (props) => {
-    return (
-      <ExpandMoreIcon
-        className={props.className + " " + minimalSelectClasses.icon}
-      />
-    );
+    return <ExpandMoreIcon className={props.className + " "} />;
   };
 
   // moves the menu below the select input
   const menuProps = {
-    classes: {
-      paper: minimalSelectClasses.paper,
-      list: minimalSelectClasses.list,
-    },
     anchorOrigin: {
       vertical: "bottom",
       horizontal: "left",
@@ -76,27 +62,52 @@ const MinimalSelect = ({
   };
 
   return (
-    <FormControl>
-      <Select
-        disableUnderline
-        classes={{ root: minimalSelectClasses.select }}
-        MenuProps={menuProps}
-        IconComponent={iconComponent}
-        value={stationId}
-        onChange={handleChange}
-        open={isOpen}
-        onOpen={handleOpen}
-        onClose={handleClose}
-      >
-        {stationList
-          .filter((t) => t.ts_name !== null)
-          .map((station) => (
-            <MenuItem key={station.ts_id} value={station.ts_id}>
-              {station.ts_name}
-            </MenuItem>
-          ))}
-      </Select>
-    </FormControl>
+    // <FormControl>
+    <Select
+      disableUnderline
+      MenuProps={menuProps}
+      IconComponent={iconComponent}
+      value={stationId}
+      onChange={handleChange}
+      open={isOpen}
+      onOpen={handleOpen}
+      onClose={handleClose}
+      sx={{
+        color: "white",
+        paddingBottom: "2px",
+        "& .MuiSelect-icon": {
+          color: "white",
+        },
+        "& .MuiSelect-selectMenu": {
+          backgroundColor: "blue",
+        },
+
+        backgroundColor: "transparent",
+        boxShadow: "0px 5px 8px -3px rgba(0,0,0,0.14)",
+      }}
+    >
+      {stationList
+        .filter((t) => t.ts_name !== null)
+        .map((station) => (
+          <MenuItem
+            key={station.ts_id}
+            value={station.ts_id}
+            sx={{
+              "&:hover": {
+                backgroundColor: "primary.main",
+                color: "white",
+              },
+              "&.Mui-selected": {
+                backgroundColor: "primary.main",
+                color: "white",
+              },
+            }}
+          >
+            {station.ts_name}
+          </MenuItem>
+        ))}
+    </Select>
+    // </FormControl>
   );
 };
 

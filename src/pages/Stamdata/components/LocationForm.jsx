@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Grid, MenuItem, TextField } from "@material-ui/core";
+import { Grid, MenuItem, TextField } from "@mui/material";
 import { StamdataContext } from "../../../state/StamdataContext";
-import { InputAdornment } from "@material-ui/core";
+import { InputAdornment } from "@mui/material";
 import { getLocationTypes } from "../../../api";
 import LocationTypeSelect from "./LocationTypeSelect";
 import { stamdataStore } from "../../../state/store";
