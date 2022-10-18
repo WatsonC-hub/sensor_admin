@@ -1,39 +1,10 @@
 import React, { useState, useEffect } from "react";
-import makeStyles from '@mui/styles/makeStyles';
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import Fab from "@mui/material/Fab";
 
-const useStyles = makeStyles((theme) => ({
-  toTop: {
-    zIndex: 2,
-    position: "fixed",
-    bottom: "2vh",
-    backgroundColor: "lightseagreen",
-    color: "black",
-    "&:hover, &.Mui-focusVisible": {
-      transition: "0.3s",
-      color: "#397BA6",
-      backgroundColor: "lightseagreen",
-    },
-  },
-  "&:.MuiFab-root:hover, .MuiFab-root:active": {
-    backgroundColor: "lightseagreen",
-  },
-  "&:.MuiTouchRipple-root": {
-    backgroundColor: "lightseagreen",
-  },
-  fab: {
-    position: "fixed",
-    bottom: theme.spacing(1),
-    right: theme.spacing(1),
-    zIndex: 1000,
-    backgroundColor: "lightseagreen",
-  },
-}));
-
 export default function Scroll({ showBelow }) {
   const [show, setShow] = useState(showBelow ? false : true);
-  const classes = useStyles();
+
   const handleScroll = () => {
     if (window.pageYOffset > showBelow) {
       if (!show) setShow(true);
@@ -55,18 +26,19 @@ export default function Scroll({ showBelow }) {
 
   return (
     show && (
-      <Fab size='small' className={classes.fab} onClick={handleClick}>
+      <Fab
+        size="small"
+        onClick={handleClick}
+        sx={{
+          position: "fixed",
+          bottom: 1,
+          right: 1,
+          zIndex: 1000,
+          backgroundColor: "lightseagreen",
+        }}
+      >
         <ExpandLessIcon />
       </Fab>
     )
   );
 }
-//}
-
-//(
-// <div className={classes.toTop}>
-//   {show && (
-
-//   )}
-// </div>
-//);
