@@ -20,7 +20,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import OwnDatePicker from "./OwnDatePicker";
 import { Checkbox } from "@mui/material";
 import { Tooltip } from "@mui/material";
-import { StamdataContext } from "../state/StamdataContext";
+import { stamdataStore } from "../state/store";
 
 export default function PejlingForm({
   stationId,
@@ -44,7 +44,7 @@ export default function PejlingForm({
   const [notPossible, setNotPossible] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
-  const [, , stamdata, , , , , , , , ,] = React.useContext(StamdataContext);
+  const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -141,7 +141,7 @@ export default function PejlingForm({
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="start">
-                    {isWaterlevel ? "m" : stamdata.station.unit}
+                    {isWaterlevel ? "m" : stationUnit}
                   </InputAdornment>
                 ),
               }}

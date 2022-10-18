@@ -47,13 +47,11 @@ const MinimalSelect = ({
       vertical: "top",
       horizontal: "left",
     },
-    getContentAnchorEl: null,
   };
 
   return (
     // <FormControl>
     <Select
-      disableUnderline
       MenuProps={menuProps}
       IconComponent={iconComponent}
       value={stationId}

@@ -12,7 +12,7 @@ import { Fragment } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import moment from "moment";
-import { StamdataContext } from "../../state/StamdataContext";
+import { stamdataStore } from "../../state/store";
 
 export default function HistoricMeasurements({
   measurements,
@@ -24,7 +24,8 @@ export default function HistoricMeasurements({
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
-  const [, , stamdata, , , , , , , , ,] = React.useContext(StamdataContext);
+
+  const [timeseries] = stamdataStore((state) => [state.timeseries]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -62,9 +63,9 @@ export default function HistoricMeasurements({
             <TableRow>
               <TableCell>Dato</TableCell>
               <TableCell align="right">
-                {stamdata.station.tstype_id === 1
+                {timeseries.tstype_id === 1
                   ? "Pejling (nedstik) [m]"
-                  : `Måling [${stamdata.station.unit}]`}
+                  : `Måling [${timeseries.unit}]`}
               </TableCell>
               <TableCell align="right">Anvendelse</TableCell>
               <TableCell align="right">Kommentar</TableCell>

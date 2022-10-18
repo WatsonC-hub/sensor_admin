@@ -152,7 +152,6 @@ function MobileBottomNav({
         sx={bottomNavStyle}
         disabled={!canEdit}
         label="Billeder"
-        showLabel={true}
         icon={<PhotoCameraRoundedIcon />}
         onClick={() => {
           setFormToShow("CAMERA");
@@ -161,7 +160,7 @@ function MobileBottomNav({
       />
 
       {(isWaterlevel || !isCalculated) && (
-        <>
+        <div>
           <IconButton
             aria-label="more"
             aria-controls="long-menu"
@@ -185,40 +184,36 @@ function MobileBottomNav({
               },
             }}
           >
-            <>
-              {isWaterlevel && (
-                <MenuItem>
-                  <BottomNavigationAction
-                    disabled={!canEdit}
-                    sx={bottomNavStyle}
-                    label="Indberet målepunkt"
-                    showLabel={true}
-                    onClick={() => {
-                      setFormToShow("ADDMAALEPUNKT");
-                      handleClose();
-                    }}
-                    icon={<Straighten />}
-                  />
-                </MenuItem>
-              )}
-              {!isCalculated && (
-                <MenuItem>
-                  <BottomNavigationAction
-                    sx={bottomNavStyle}
-                    disabled={!canEdit}
-                    label="Ændre udstyr"
-                    showLabel={true}
-                    icon={<EditRounded />}
-                    onClick={() => {
-                      setFormToShow("RET_STAMDATA");
-                      handleClose();
-                    }}
-                  />
-                </MenuItem>
-              )}
-            </>
+            {isWaterlevel && (
+              <MenuItem>
+                <BottomNavigationAction
+                  disabled={!canEdit}
+                  sx={bottomNavStyle}
+                  label="Indberet målepunkt"
+                  onClick={() => {
+                    setFormToShow("ADDMAALEPUNKT");
+                    handleClose();
+                  }}
+                  icon={<Straighten />}
+                />
+              </MenuItem>
+            )}
+            {!isCalculated && (
+              <MenuItem>
+                <BottomNavigationAction
+                  sx={bottomNavStyle}
+                  disabled={!canEdit}
+                  label="Ændre udstyr"
+                  icon={<EditRounded />}
+                  onClick={() => {
+                    setFormToShow("RET_STAMDATA");
+                    handleClose();
+                  }}
+                />
+              </MenuItem>
+            )}
           </Menu>
-        </>
+        </div>
       )}
     </BottomNavigation>
   );

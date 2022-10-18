@@ -22,9 +22,11 @@ import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
 import { StamdataContext } from "../../state/StamdataContext";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from '@mui/material/Alert';
+import MuiAlert from "@mui/material/Alert";
 import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
+import { stamdataStore } from "../../state/store";
+import { useQuery } from "@tanstack/react-query";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -94,25 +96,19 @@ const UnitEndDateDialog = ({
 };
 
 const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
-  // const [unit, setUnit] = useState({ gid: 0 });
-  const [latestUnit, setLatestUnit] = useState({
-    gid: 0,
-    slutdato: "2099-01-01",
-  });
-  // const [selected, setselected] = useState(-1);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
 
-  const handleChange = (event) => {
-    // setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
-    setselected(event.target.value);
-    saveUdstyrFormData(
-      data.filter((elem) => elem.gid === event.target.value)[0]
-    );
-  };
+  const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
+    store.timeseries.tstype_id,
+    store.setUnitValue,
+    store.setUnit,
+  ]);
 
-  const [, , formData, , , , , setUdstyrValue, saveUdstyrFormData] =
-    React.useContext(StamdataContext);
+  const handleChange = (event) => {
+    setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
+    setselected(event.target.value);
+  };
 
   const flex1 = {
     display: "flex",
@@ -120,22 +116,15 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
     justifyContent: "space-between",
   };
 
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    console.log("RUN");
-    console.log(stationId);
-    if (stationId !== -1) {
-      getUnitHistory(stationId).then((res) => {
-        if (res.data.success) {
-          console.log(res.data.data);
-          setData(res.data.data);
-          setLatestUnit(res.data.data[0]);
-          setselected(res.data.data[0].gid);
-        }
-      });
+  const { data } = useQuery(
+    ["udstyr", stationId],
+    () => getUnitHistory(stationId),
+    {
+      onSuccess: (data) => {
+        setselected(data[0].gid);
+      },
     }
-  }, [stationId, openDialog, trigger]);
+  );
 
   return (
     <Grid container spacing={2}>
@@ -143,7 +132,7 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
         <div style={flex1}>
           <Typography>Udstyr</Typography>
           <Select value={selected} onChange={handleChange}>
-            {data.map((item) => {
+            {data?.map((item) => {
               let endDate =
                 moment(new Date()) < moment(item.slutdato)
                   ? "nu"
@@ -161,7 +150,7 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
         </div>
       </Grid>
       <Grid item xs={12} sm={6}>
-        {moment(latestUnit.slutdato) > moment(new Date()) ? (
+        {moment(data?.[0].slutdato) > moment(new Date()) ? (
           <Button
             color="secondary"
             variant="contained"
@@ -186,39 +175,36 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
       <UnitEndDateDialog
         openDialog={openDialog}
         setOpenDialog={setOpenDialog}
-        unit={latestUnit}
-        setUdstyrValue={setUdstyrValue}
+        unit={data?.[0]}
+        setUdstyrValue={setUnitValue}
         stationId={stationId}
       />
       <AddUdstyrForm
         udstyrDialogOpen={openAddUdstyr}
         setUdstyrDialogOpen={setOpenAddUdstyr}
-        tstype_id={formData.station.tstype_id}
-        setSelectedUnit={setselected}
+        tstype_id={tstype_id}
       />
     </Grid>
   );
 };
 
 export default function EditStamdata({ setFormToShow, stationId }) {
-  /*
-  TODO:
-  1. save data
-  2. Error handling if no data
-  3. hjemmetage udstyr component
-  4. Skift batteri
-  5. show that data is loading (login, dropdown .... ) 
-  */
   const [, , formData, , , , ,] = React.useContext(StamdataContext);
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [selectedUnit, setSelectedUnit] = useState(-1);
   const [triggerHistory, setTriggerHistory] = useState(false);
 
+  const [location, timeseries, unit] = stamdataStore((store) => [
+    store.location,
+    store.timeseries,
+    store.unit,
+  ]);
+
   const handleSubmit = () => {
     console.log(selectedUnit);
     updateStamdata(
-      { ...formData, udstyr: { ...formData.udstyr, gid: selectedUnit } },
+      { location, station: timeseries, udstyr: { ...unit, gid: selectedUnit } },
       sessionStorage.getItem("session_id")
     )
       .then((res) => {

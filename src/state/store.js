@@ -41,12 +41,63 @@ const initialState = {
 let stamdataStore = (set) => ({
   ...initialState,
   resetLocation: () => set({ location: initialState.location }),
+  resetTimeseries: () => set({ timeseries: initialState.timeseries }),
   resetUnit: () => set({ unit: initialState.unit }),
   setLocation: (locationData) =>
-    set({ location: locationData }, false, "setLocation"),
+    set(
+      {
+        location: {
+          loc_id: locationData.loc_id,
+          loc_name: locationData.loc_name,
+          mainloc: locationData.mainloc,
+          subloc: locationData.subloc,
+          subsubloc: locationData.subsubloc,
+          x: locationData.x,
+          y: locationData.y,
+          terrainqual: locationData.terrainqual,
+          terrainlevel: locationData.terrainlevel,
+          description: locationData.description,
+          loctype_id: locationData.loctype_id,
+        },
+      },
+      false,
+      "setLocation"
+    ),
   setTimeseries: (timeseriesdata) =>
-    set({ timeseries: timeseriesdata }, false, "setTimeseries"),
-  setUnit: (unitdata) => set({ unit: unitdata }, false, "setUnit"),
+    set(
+      {
+        timeseries: {
+          ts_id: timeseriesdata.ts_id,
+          ts_name: timeseriesdata.ts_name,
+          tstype_name: timeseriesdata.tstype_name,
+          tstype_id: timeseriesdata.tstype_id,
+          maalepunktskote: timeseriesdata.maalepunktskote,
+          mp_description: timeseriesdata.mp_description,
+          sensor_depth_m: timeseriesdata.sensor_depth_m,
+          unit: timeseriesdata.unit,
+        },
+      },
+      false,
+      "setTimeseries"
+    ),
+  setUnit: (unitData) =>
+    set(
+      {
+        unit: {
+          terminal_type: unitData.terminal_type,
+          terminal_id: unitData.terminal_id,
+          sensor_id: unitData.sensor_id,
+          sensorinfo: unitData.sensorinfo,
+          calypso_id: unitData.calypso_id,
+          batteriskift: unitData.batteriskift,
+          startdato: unitData.startdato,
+          slutdato: unitData.slutdato,
+          uuid: unitData.uuid,
+        },
+      },
+      false,
+      "setUnit"
+    ),
   setUnitValue: (key, value) =>
     set(
       (state) => ({

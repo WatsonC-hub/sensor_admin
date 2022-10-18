@@ -10,7 +10,7 @@ import DeleteAlert from "./DeleteAlert";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { Fragment } from "react";
 import moment from "moment";
-import { StamdataContext } from "../../state/StamdataContext";
+import { stamdataStore } from "../../state/store";
 
 export default function MobileMeasurements({
   measurements,
@@ -20,7 +20,8 @@ export default function MobileMeasurements({
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
-  const [, , stamdata, , , , , , , , ,] = React.useContext(StamdataContext);
+
+  const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
     setDialogOpen(true);
@@ -53,9 +54,7 @@ export default function MobileMeasurements({
                     : "Måling: " +
                       row.measurement +
                       " " +
-                      (stamdata.station.tstype_id === 1
-                        ? "m"
-                        : stamdata.station.unit)
+                      (timeseries.tstype_id === 1 ? "m" : timeseries.unit)
                 }
               />
               <ListItemSecondaryAction>
@@ -68,14 +67,16 @@ export default function MobileMeasurements({
                     }, 200);
                   }}
                   disabled={!canEdit}
-                  size="large">
+                  size="large"
+                >
                   <EditIcon />
                 </IconButton>
                 <IconButton
                   edge="end"
                   onClick={() => onDeleteBtnClick(row.gid)}
                   disabled={!canEdit}
-                  size="large">
+                  size="large"
+                >
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>

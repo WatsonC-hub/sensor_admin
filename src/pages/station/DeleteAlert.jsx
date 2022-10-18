@@ -3,8 +3,9 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
-import MuiAlert from '@mui/material/Alert';
+import MuiAlert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import { toast } from "react-toastify";
 
 export default function DeleteAlert({
   measurementId,
@@ -13,9 +14,6 @@ export default function DeleteAlert({
   setDialogOpen,
   title,
 }) {
-  const [openAlert, setOpenAlert] = useState(false);
-  const [severity, setSeverity] = useState("success");
-
   const handleClose = () => {
     setDialogOpen(false);
   };
@@ -23,25 +21,6 @@ export default function DeleteAlert({
   const handleOk = () => {
     onOkDelete(measurementId);
     setDialogOpen(false);
-    setSeverity("success");
-    setTimeout(() => {
-      handleClickOpen();
-    }, 500);
-  };
-
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
-
-  const handleCloseSnack = (reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenAlert(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpenAlert(true);
   };
 
   return (
@@ -65,17 +44,6 @@ export default function DeleteAlert({
           </Button>
         </DialogActions>
       </Dialog>
-      <Snackbar
-        open={openAlert}
-        autoHideDuration={4000}
-        onClose={handleCloseSnack}
-      >
-        <Alert onClose={handleCloseSnack} severity={severity}>
-          {severity === "success"
-            ? "Sletningen lykkedes"
-            : "Sletningen fejlede"}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

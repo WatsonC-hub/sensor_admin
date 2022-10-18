@@ -9,7 +9,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { getAvailableUnits } from "../../api";
 
 import { CircularProgress, MenuItem, useTheme } from "@mui/material";
-import { StamdataContext } from "../../state/StamdataContext";
 import OwnDatePicker from "../../components/OwnDatePicker";
 import { Typography } from "@mui/material";
 import { stamdataStore, initialState } from "../../state/store";

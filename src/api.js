@@ -57,6 +57,13 @@ async function getStamData() {
   return data.data;
 }
 
+async function getStamdataByStation(stationId) {
+  const { data } = await axios.get(
+    `${extEndpoint}/stamdata/station/${stationId}`
+  );
+  return data.data;
+}
+
 async function getStations(locid) {
   const url = `${extEndpoint}/station/${locid}?session_id=${sessionStorage.getItem(
     "session_id"
@@ -79,6 +86,94 @@ async function getLocationTypes() {
     `${endpoint}SELECT loctype_id, loctypename FROM sensor.loctype2`
   );
   return data.features;
+}
+
+async function getMeasurements(stationId) {
+  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const { data } = await axios.get(url);
+  return data.result;
+}
+
+async function getMP(stationId) {
+  const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const { data } = await axios.get(url);
+  return data.result;
+}
+
+async function getService(stationId) {
+  const url = `${extEndpoint}/station/service/${stationId}`;
+  const { data } = await axios.get(url);
+  return data.result;
+}
+
+async function getUnitHistory(stationId) {
+  const { data } = await axios.get(
+    `${extEndpoint}/stamdata/unithistory/${stationId}`
+  );
+  return data.data;
+}
+
+async function insertMeasurement(formData) {
+  const stationId = formData["stationid"];
+  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.post(url, formData);
+  return resp;
+}
+
+async function updateMeasurement(formData) {
+  const gid = formData["gid"];
+  const stationId = formData["stationid"];
+  const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.put(url, formData);
+  return resp;
+}
+
+async function insertMp(formData) {
+  const stationId = formData["stationid"];
+  const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.post(url, formData);
+  return resp;
+}
+
+async function updateMp(formData) {
+  const gid = formData["gid"];
+  const stationId = formData["stationid"];
+  const url = `${extEndpoint}/station/watlevmp/${stationId}/${gid}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.put(url, formData);
+  return resp;
+}
+
+async function updateService(formData) {
+  const gid = formData["gid"];
+  const stationId = formData["stationid"];
+  formData["dato"] = formData["dato"].split("+")[0];
+  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.put(url, formData);
+  return resp;
+}
+
+async function insertService(formData) {
+  formData["dato"] = formData["dato"].split("+")[0];
+  const stationId = formData["stationid"];
+  const url = `${extEndpoint}/station/service/${stationId}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.post(url, formData);
+  return resp;
 }
 
 const dataURLtoFile = (dataurl, filename) => {
@@ -149,37 +244,6 @@ const getGraphData = (stationId) => {
   return axios.get(sql);
 };
 
-const insertMeasurement = (sessionId, stationId, formData) => {
-  formData["timeofmeas"] = formData["timeofmeas"].split("+")[0];
-  formData["stationid"] = stationId;
-  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${sessionId}`;
-  return axios.post(url, formData);
-};
-
-const updateMeasurement = (sessionId, stationId, formData) => {
-  const gid = formData["gid"];
-  formData["timeofmeas"] = formData["timeofmeas"].split("+")[0];
-  const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${sessionId}`;
-  return axios.put(url, formData);
-};
-
-const insertMp = (sessionId, stationId, formData) => {
-  formData["startdate"] = formData["startdate"].split("+")[0];
-  formData["enddate"] = formData["enddate"].split("+")[0];
-  formData["stationid"] = stationId;
-  const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${sessionId}`;
-  return axios.post(url, formData);
-};
-
-const updateMp = (sessionId, stationId, formData) => {
-  const gid = formData["gid"];
-  console.log(formData);
-  formData["startdate"] = formData["startdate"].split("+")[0];
-  formData["enddate"] = formData["enddate"].split("+")[0];
-  const url = `${extEndpoint}/station/watlevmp/${stationId}/${gid}?session_id=${sessionId}`;
-  return axios.put(url, formData);
-};
-
 const deleteMP = (sessionId, stationId, gid) => {
   if (!gid) return;
   const url = `${extEndpoint}/station/watlevmp/${stationId}/${gid}?session_id=${sessionId}`;
@@ -192,35 +256,6 @@ const deleteMeasurement = (sessionId, stationId, gid) => {
   return axios.delete(url);
 };
 
-const getMeasurements = (stationId, sessionId) => {
-  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${sessionId}`;
-  return axios.get(url);
-};
-
-const getMP = (stationId, sessionId) => {
-  const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${sessionId}`;
-  return axios.get(url);
-};
-
-const getService = (stationId) => {
-  const url = `${extEndpoint}/station/service/${stationId}`;
-  return axios.get(url);
-};
-
-const updateService = (sessionId, stationId, formData) => {
-  const gid = formData["gid"];
-  formData["dato"] = formData["dato"].split("+")[0];
-  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${sessionId}`;
-  return axios.put(url, formData);
-};
-
-const insertService = (sessionId, stationId, formData) => {
-  formData["dato"] = formData["dato"].split("+")[0];
-  // formData["terminal_id"] = terminalId;
-  const url = `${extEndpoint}/station/service/${stationId}?session_id=${sessionId}`;
-  return axios.post(url, formData);
-};
-
 const deleteService = (sessionId, stationId, gid) => {
   if (!gid) return;
   const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${sessionId}`;
@@ -231,12 +266,6 @@ const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
 
 const updateStamdata = (data, sessionId) =>
   axios.put(`${extEndpoint}/stamdata?session_id=${sessionId}`, data);
-
-const getStamdataByStation = (stationId) =>
-  axios.get(`${extEndpoint}/stamdata/station/${stationId}`);
-
-const getUnitHistory = (stationId) =>
-  axios.get(`${extEndpoint}/stamdata/unithistory/${stationId}`);
 
 const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 

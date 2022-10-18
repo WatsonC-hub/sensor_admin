@@ -23,23 +23,17 @@ import { Toolbar } from "@mui/material";
 import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
 import MaalepunktForm from "../../components/MaalepunktForm";
-import CaptureBearing from "./CaptureBearing";
-import { StamdataContext } from "../../state/StamdataContext";
 import moment from "moment";
 import MaalepunktTable from "./MaalepunktTable";
 import TilsynForm from "../../components/TilsynForm";
 import TilsynTable from "../../components/TilsynTable";
 import StationImages from "./StationImages";
 import { useLocation } from "react-router-dom";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { stamdataStore } from "../../state/store";
+import { toast } from "react-toastify";
 
-export default function Station({
-  stationId,
-  setShowForm,
-  formToShow,
-  setFormToShow,
-}) {
+export default function Station({ stationId }) {
   const [pejlingData, setPejlingData] = useState({
     gid: -1,
     timeofmeas: new Date(),
@@ -47,22 +41,6 @@ export default function Station({
     useforcorrection: 0,
     comment: "",
   });
-
-  let location = useLocation();
-
-  const [
-    ,
-    ,
-    formData,
-    ,
-    ,
-    ,
-    ,
-    ,
-    saveUdstyrFormData,
-    saveLocationFormData,
-    saveStationFormData,
-  ] = React.useContext(StamdataContext);
 
   const [mpData, setMpData] = useState({
     gid: -1,
@@ -80,20 +58,71 @@ export default function Station({
     kommentar: "",
   });
 
-  //const [first, setfirst] = useState(second);
+  const [formToShow, setFormToShow] = useState(null);
 
-  const [updated, setUpdated] = useState(new Date());
-  const [measurements, setMeasurements] = useState([]);
-  const [watlevmp, setWatlevmp] = useState([]);
-  const [services, setServices] = useState([]);
+  let location = useLocation();
+
   const [dynamic, setDynamic] = useState([]);
   const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [severity, setSeverity] = useState("success");
   const [isWaterlevel, setIsWaterlevel] = useState(false);
   const [isCalculated, setIsCalculated] = useState(false);
   const [isFlow, setIsFlow] = useState(false);
+
+  const store = stamdataStore();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    return () => {
+      store.resetLocation();
+      store.resetTimeseries();
+      store.resetUnit();
+    };
+  }, []);
+
+  const { data: stamdata } = useQuery(
+    ["stamdata", stationId],
+    () => getStamdataByStation(stationId),
+    {
+      enabled: stationId !== -1 && stationId !== null,
+      onSuccess: (data) => {
+        setIsWaterlevel(data.tstype_id === 1);
+        setIsFlow(data.tstype_id === 2);
+        setIsCalculated(data.calculated);
+        store.setLocation(data);
+        store.setTimeseries(data);
+        store.setUnit(data);
+      },
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  const { data: watlevmp } = useQuery(
+    ["watlevmp", stationId],
+    () => getMP(stationId),
+    {
+      enabled: stationId !== -1 && stationId !== null,
+      placeholderData: [],
+    }
+  );
+
+  const { data: measurements } = useQuery(
+    ["measurements", stationId],
+    () => getMeasurements(stationId),
+    {
+      enabled: stationId !== -1 && stationId !== null,
+      placeholderData: [],
+    }
+  );
+
+  const { data: services } = useQuery(
+    ["service", stationId],
+    () => getService(stationId),
+    {
+      enabled: stationId !== -1 && stationId !== null,
+      placeholderData: [],
+    }
+  );
 
   useEffect(() => {
     if (watlevmp.length > 0) {
@@ -111,65 +140,25 @@ export default function Station({
   }, [pejlingData, watlevmp]);
 
   useEffect(() => {
-    console.log(stationId);
-    if (stationId !== -1 && stationId !== null) {
-      getStamdataByStation(stationId).then((res) => {
-        //let st = res.data.data.find((s) => s.ts_id === props.stationId);
-        console.log(res);
-        setIsWaterlevel(res.data.data.tstype_id === 1);
-        setIsFlow(res.data.data.tstype_id === 2);
-        setIsCalculated(res.data.data.calculated);
-        if (res.data.success) {
-          saveLocationFormData(res.data.data);
-          saveUdstyrFormData(res.data.data);
-          saveStationFormData(res.data.data);
-        }
+    var ctrls = [];
+    if (watlevmp.length > 0) {
+      ctrls = measurements.map((e) => {
+        const elev = watlevmp.filter((e2) => {
+          return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
+        })[0].elevation;
+
+        return {
+          ...e,
+          waterlevel: e.measurement ? elev - e.measurement : null,
+        };
+      });
+    } else {
+      ctrls = measurements.map((elem) => {
+        return { ...elem, waterlevel: elem.measurement };
       });
     }
-  }, [stationId]);
-
-  useEffect(() => {
-    if (stationId !== -1 && stationId !== null) {
-      const mp = getMP(stationId, sessionStorage.getItem("session_id"));
-      const meas = getMeasurements(
-        stationId,
-        sessionStorage.getItem("session_id")
-      );
-      const serv = getService(stationId);
-      console.log(formData);
-      Promise.all([mp, meas, serv]).then((responses) => {
-        const measures = responses[1].data.result;
-        const mps = responses[0].data.result;
-        const services = responses[2].data.result;
-        setMeasurements(measures);
-        setWatlevmp(mps);
-        setServices(services);
-
-        if (mps.length > 0) {
-          setcontrol(
-            measures.map((e) => {
-              const elev = mps.filter((e2) => {
-                return (
-                  e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate
-                );
-              })[0].elevation;
-
-              return {
-                ...e,
-                waterlevel: e.measurement ? elev - e.measurement : null,
-              };
-            })
-          );
-        } else {
-          setcontrol(
-            measures.map((elem) => {
-              return { ...elem, waterlevel: elem.measurement };
-            })
-          );
-        }
-      });
-    }
-  }, [updated, stationId]);
+    setcontrol(ctrls);
+  }, [watlevmp, measurements]);
 
   const changePejlingData = (field, value) => {
     setPejlingData({
@@ -214,7 +203,6 @@ export default function Station({
       ...serviceData,
       [field]: value,
     });
-    console.log(serviceData);
   };
 
   const resetServiceData = () => {
@@ -232,108 +220,115 @@ export default function Station({
     setFormToShow(null);
   };
 
+  const pejlingMutate = useMutation((data) => {
+    if (data.gid === -1) {
+      return insertMeasurement(data);
+    } else {
+      return updateMeasurement(data);
+    }
+  });
+
   const handlePejlingSubmit = () => {
     setFormToShow(null);
-    const method =
-      pejlingData.gid !== -1 ? updateMeasurement : insertMeasurement;
     const userId = sessionStorage.getItem("user");
     const payload = {
       ...pejlingData,
+      stationid: stationId,
       userid: userId,
       isWaterlevel: isWaterlevel,
     };
-    var _date = Date.parse(payload.timeofmeas);
-    console.log("time before parse: ", payload.timeofmeas);
-    console.log("time after parse: ", _date);
     payload.timeofmeas = moment(payload.timeofmeas).format(
       "YYYY-MM-DD HH:mm:ss"
     );
-    method(sessionStorage.getItem("session_id"), stationId, payload)
-      .then((res) => {
+    pejlingMutate.mutate(payload, {
+      onSuccess: (data) => {
         resetPejlingData();
-        setUpdated(new Date());
-        setSeverity("success");
-        setTimeout(() => {
-          handleClickOpen();
-        }, 500);
-      })
-      .catch((error) => {
-        setSeverity("error");
-        setOpenAlert(true);
-      });
+        toast.success("Kontrolmåling gemt");
+        queryClient.invalidateQueries(["measurements", stationId]);
+      },
+      onError: (error) => {
+        toast.error("Der skete en fejl");
+      },
+    });
   };
+
+  const watlevmpMutate = useMutation((data) => {
+    if (data.gid === -1) {
+      return insertMp(data);
+    } else {
+      return updateMp(data);
+    }
+  });
 
   const handleMpSubmit = () => {
     setFormToShow("ADDMAALEPUNKT");
-    const method = mpData.gid !== -1 ? updateMp : insertMp;
     const userId = sessionStorage.getItem("user");
-    const payload = { ...mpData, userid: userId };
-    var _date = Date.parse(payload.startdate);
-    console.log("time before parse: ", payload.startdate);
-    console.log("time after parse: ", _date);
+    const payload = { ...mpData, userid: userId, stationid: stationId };
     payload.startdate = moment(payload.startdate).format("YYYY-MM-DD HH:mm:ss");
     payload.enddate = moment(payload.enddate).format("YYYY-MM-DD HH:mm:ss");
-    method(sessionStorage.getItem("session_id"), stationId, payload)
-      .then((res) => {
+
+    watlevmpMutate.mutate(payload, {
+      onSuccess: (data) => {
         resetMpData();
-        setUpdated(new Date());
-        setSeverity("success");
-        setTimeout(() => {
-          handleClickOpen();
-        }, 500);
-      })
-      .catch((error) => {
-        setSeverity("error");
-        setOpenAlert(true);
-      });
+        toast.success("Målepunkt gemt");
+        queryClient.invalidateQueries(["watlevmp", stationId]);
+      },
+      onError: (error) => {
+        toast.error("Der skete en fejl");
+      },
+    });
   };
+
+  const serviceMutate = useMutation((data) => {
+    if (data.gid === -1) {
+      return insertService(data);
+    } else {
+      return updateService(data);
+    }
+  });
 
   const handleServiceSubmit = () => {
     // setFormToShow("ADDTILSYN");
-    const method = serviceData.gid !== -1 ? updateService : insertService;
     const userId = sessionStorage.getItem("user");
     const payload = {
       ...serviceData,
       batteriskift: serviceData.batteriskift.toString(),
       tilsyn: serviceData.tilsyn.toString(),
       userid: userId,
+      stationid: stationId,
     };
-    var _date = Date.parse(payload.dato);
-    console.log("time before parse: ", payload.dato);
-    console.log("time after parse: ", _date);
+
     payload.dato = moment(payload.dato).format("YYYY-MM-DD HH:mm:ss");
-    method(sessionStorage.getItem("session_id"), stationId, payload).then(
-      (res) => {
+
+    serviceMutate.mutate(payload, {
+      onSuccess: (data) => {
         resetServiceData();
-        setUpdated(new Date());
-      }
-    );
+        toast.success("Tilsyn gemt");
+        queryClient.invalidateQueries(["service", stationId]);
+      },
+      onError: (error) => {
+        toast.error("Der skete en fejl");
+      },
+    });
   };
 
   const handleEdit = (type) => {
     if (type === "watlevmp") {
       return (data) => {
-        // data.startdate = formatedTimestamp(new Date(data.startdate));
-        // data.enddate = formatedTimestamp(new Date(data.enddate));
         setMpData(data); // Fill form data on Edit
-        setFormToShow("ADDMAALEPUNKT"); // update to use state machine
-        // setUpdated(new Date());
+        setFormToShow("ADDMAALEPUNKT");
       };
     } else if (type === "service") {
       return (data) => {
         data.dato = data.dato.replace(" ", "T").substr(0, 19);
         setServiceData(data);
-        console.log("hej" + data);
         setFormToShow("ADDTILSYN");
       };
     } else {
       return (data) => {
-        console.log(data);
-        console.log(watlevmp);
         data.timeofmeas = data.timeofmeas.replace(" ", "T").substr(0, 19);
         setPejlingData(data); // Fill form data on Edit
-        setFormToShow("ADDPEJLING"); // update to use state machine
-        // setUpdated(new Date());
+        setFormToShow("ADDPEJLING");
       };
     }
   };
@@ -343,8 +338,9 @@ export default function Station({
       return (gid) => {
         deleteMP(sessionStorage.getItem("session_id"), stationId, gid).then(
           (res) => {
+            queryClient.invalidateQueries(["watlevmp", stationId]);
             resetMpData();
-            setUpdated(new Date());
+            toast.success("Målepunkt slettet");
           }
         );
       };
@@ -355,8 +351,9 @@ export default function Station({
           stationId,
           gid
         ).then((res) => {
+          queryClient.invalidateQueries(["services", stationId]);
           resetServiceData();
-          setUpdated(new Date());
+          toast.success("Tilsyn slettet");
         });
       };
     } else {
@@ -366,49 +363,26 @@ export default function Station({
           stationId,
           gid
         ).then((res) => {
+          queryClient.invalidateQueries(["measurements", stationId]);
           resetPejlingData();
-          setUpdated(new Date());
+          toast.success("Kontrolmåling slettet");
         });
       };
     }
   };
 
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
-
-  const handleCloseSnack = (reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setOpenAlert(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpenAlert(true);
-  };
-
   return (
     // <>
     <div>
-      {formToShow !== "ADDPEJLING" ? (
-        <BearingGraph
-          stationId={stationId}
-          updated={updated}
-          measurements={control}
-        />
-      ) : (
-        <BearingGraph
-          stationId={stationId}
-          updated={updated}
-          measurements={control}
-          dynamicMeasurement={dynamic}
-        />
-      )}
+      <BearingGraph
+        stationId={stationId}
+        measurements={control}
+        dynamicMeasurement={formToShow === "ADDPEJLING" ? dynamic : undefined}
+      />
+
       {formToShow === "ADDPEJLING" && (
         <PejlingForm
           stationId={stationId}
-          setShowForm={setShowForm}
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}
@@ -419,26 +393,26 @@ export default function Station({
           isFlow={isFlow}
         />
       )}
-      {formToShow === "RET_STAMDATA" && !isCalculated && (
+      {formToShow === "RET_STAMDATA" && (
         <EditStamdata setFormToShow={setFormToShow} stationId={stationId} />
       )}
-      {formToShow === "ADDMAALEPUNKT" && isWaterlevel && (
-        <MaalepunktForm
-          formData={mpData}
-          changeFormData={changeMpData}
-          handleSubmit={handleMpSubmit}
-          resetFormData={resetMpData}
-          handleCancel={handleMpCancel}
-          canEdit={canEdit}
-        ></MaalepunktForm>
-      )}
-      {formToShow === "ADDMAALEPUNKT" && isWaterlevel && (
-        <MaalepunktTable
-          watlevmp={watlevmp}
-          handleEdit={handleEdit("watlevmp")}
-          handleDelete={handleDelete("watlevmp")}
-          canEdit={canEdit}
-        ></MaalepunktTable>
+      {formToShow === "ADDMAALEPUNKT" && (
+        <>
+          <MaalepunktForm
+            formData={mpData}
+            changeFormData={changeMpData}
+            handleSubmit={handleMpSubmit}
+            resetFormData={resetMpData}
+            handleCancel={handleMpCancel}
+            canEdit={canEdit}
+          />
+          <MaalepunktTable
+            watlevmp={watlevmp}
+            handleEdit={handleEdit("watlevmp")}
+            handleDelete={handleDelete("watlevmp")}
+            canEdit={canEdit}
+          />
+        </>
       )}
       {(formToShow === null || formToShow === "ADDPEJLING") && (
         <PejlingMeasurements
@@ -448,21 +422,21 @@ export default function Station({
           canEdit={canEdit}
         />
       )}
-      {formToShow === "ADDTILSYN" && !isCalculated && (
-        <TilsynForm
-          formData={serviceData}
-          changeFormData={changeServiceData}
-          handleSubmit={handleServiceSubmit}
-          resetFormData={() => setFormToShow(null)}
-        ></TilsynForm>
-      )}
       {formToShow === "ADDTILSYN" && (
-        <TilsynTable
-          services={services}
-          handleEdit={handleEdit("service")}
-          handleDelete={handleDelete("service")}
-          canEdit={canEdit}
-        ></TilsynTable>
+        <>
+          <TilsynForm
+            formData={serviceData}
+            changeFormData={changeServiceData}
+            handleSubmit={handleServiceSubmit}
+            resetFormData={() => setFormToShow(null)}
+          />
+          <TilsynTable
+            services={services}
+            handleEdit={handleEdit("service")}
+            handleDelete={handleDelete("service")}
+            canEdit={canEdit}
+          />
+        </>
       )}
       {formToShow === "CAMERA" && (
         <StationImages locationId={location.pathname.split("/")[2]} />
@@ -475,17 +449,6 @@ export default function Station({
         isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
       />
-      <Snackbar
-        open={openAlert}
-        autoHideDuration={4000}
-        onClose={handleCloseSnack}
-      >
-        <Alert onClose={handleCloseSnack} severity={severity}>
-          {severity === "success"
-            ? "Indberetningen lykkedes"
-            : "Indberetningen fejlede"}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  Container,
-  Grid,
-  Typography,
-  Button,
-  TextField,
-} from "@mui/material";
-import Autocomplete from '@mui/material/Autocomplete';
+import { Container, Grid, Typography, Button, TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import "date-fns";
 import _ from "lodash";
 import useMediaQuery from "@mui/material/useMediaQuery";
@@ -20,7 +14,7 @@ import { StamdataContext } from "../../state/StamdataContext";
 import { getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from '@mui/material/Alert';
+import MuiAlert from "@mui/material/Alert";
 import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
@@ -44,7 +38,7 @@ function LocationChooser({ setLocationDialogOpen }) {
   ]);
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
 
   const populateFormData = (locData) => {
     if (locData) {

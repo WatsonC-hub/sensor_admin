@@ -15,14 +15,13 @@ import { StamdataProvider } from "../../state/StamdataContext";
 import { useQuery } from "@tanstack/react-query";
 
 export default function LocationDrawer() {
-  const [formToShow, setFormToShow] = useState(null);
   const [selectedItem, setSelectedItem] = useState(-1);
 
   const theme = useTheme();
   const params = useParams();
   const history = useHistory();
 
-  const { data, isLoading } = useQuery(
+  const { data } = useQuery(
     ["stations", params.locid],
     () => getStations(params.locid),
     {
@@ -38,7 +37,6 @@ export default function LocationDrawer() {
       } else {
         statId = -1;
         if (data.length === 1) {
-          // setCurrStation(data[0]);
           statId = data[0].ts_id;
           history.replace(`/location/${params.locid}/${statId}`);
         }
@@ -79,11 +77,7 @@ export default function LocationDrawer() {
       >
         <div />
         <StamdataProvider>
-          <Station
-            stationId={params.statid ? params.statid : -1}
-            formToShow={formToShow}
-            setFormToShow={setFormToShow}
-          />
+          <Station stationId={params.statid ? params.statid : -1} />
         </StamdataProvider>
       </main>
     </div>

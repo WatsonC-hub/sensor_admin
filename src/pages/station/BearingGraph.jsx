@@ -182,7 +182,7 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
   const stationtype = graphData[0] ? graphData[0].properties.parameter : "";
   const unit = graphData[0] ? graphData[0].properties.unit : "";
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
@@ -192,16 +192,11 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
     if (dynamicMeasurement !== undefined) {
       setXDynamicMeasurement([dynamicMeasurement[0]]);
       setYDynamicMeasurement([dynamicMeasurement[1]]);
-    }
-    else {
+    } else {
       setXDynamicMeasurement([]);
       setYDynamicMeasurement([]);
     }
   }, [dynamicMeasurement]);
-
-  // useEffect(() => {
-  //   if (graphData[0]) setStationName(graphData[0].properties.stationname);
-  // }, [graphData]);
 
   var downloadButton = {
     name: "Download data",
@@ -319,7 +314,7 @@ export default function BearingGraph({
 }) {
   const [graphData, setGraphData] = useState([]);
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     if (stationId !== -1 && stationId !== null) {
