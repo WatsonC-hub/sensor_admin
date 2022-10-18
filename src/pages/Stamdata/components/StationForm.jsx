@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Grid, TextField, MenuItem, CircularProgress } from "@mui/material";
-import { StamdataContext } from "../../../state/StamdataContext";
 import { getStationTypes } from "../../../api";
 import { InputAdornment } from "@mui/material";
 import { stamdataStore } from "../../../state/store";
@@ -63,24 +62,6 @@ export default function StationForm({
   const { data: timeseries_types, isLoading } = useQuery(
     ["timeseries_types"],
     getStationTypes
-  );
-  // useEffect(() => {
-  //   if (timeseties_types.length > 0) {
-  //     console.log("station more than zero");
-  //   } else {
-  //     console.log("station are 0");
-  //   }
-  //   if (mode === "edit") return;
-  //   getStationTypes().then((res) => res && setStationTypes(res.data.features));
-  // }, []);
-
-  const [, , formData, , , , setStationValue] =
-    React.useContext(StamdataContext);
-
-  console.log(
-    timeseries_types?.filter(
-      (elem) => elem.properties.tstype_id == timeseries.tstype_id
-    )[0]?.properties?.tstype_name
   );
 
   return (

@@ -32,8 +32,6 @@ function DesktopBottomNav({
   isCalculated,
   isWaterlevel,
 }) {
-  // const classes = useStyles();
-
   return (
     <BottomNavigation
       value={-1}

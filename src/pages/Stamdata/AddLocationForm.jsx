@@ -6,7 +6,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { CircularProgress, Grid, InputAdornment } from "@mui/material";
-import { StamdataContext } from "../../state/StamdataContext";
 import { MenuItem } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import LocationTypeSelect from "./components/LocationTypeSelect";

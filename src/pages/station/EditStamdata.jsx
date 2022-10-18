@@ -19,7 +19,6 @@ import LocationForm from "../Stamdata/components/LocationForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
 import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
-import { StamdataContext } from "../../state/StamdataContext";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -189,7 +188,6 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
 };
 
 export default function EditStamdata({ setFormToShow, stationId }) {
-  const [, , formData, , , , ,] = React.useContext(StamdataContext);
   const [openAlert, setOpenAlert] = useState(false);
   const [severity, setSeverity] = useState("success");
   const [selectedUnit, setSelectedUnit] = useState(-1);

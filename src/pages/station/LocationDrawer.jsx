@@ -11,7 +11,6 @@ import Station from "./Station";
 import { getStations } from "../../api";
 import MinimalSelect from "../Location/MinimalSelect";
 import { useParams, useHistory } from "react-router-dom";
-import { StamdataProvider } from "../../state/StamdataContext";
 import { useQuery } from "@tanstack/react-query";
 
 export default function LocationDrawer() {
@@ -76,9 +75,8 @@ export default function LocationDrawer() {
         }}
       >
         <div />
-        <StamdataProvider>
-          <Station stationId={params.statid ? params.statid : -1} />
-        </StamdataProvider>
+
+        <Station stationId={params.statid ? params.statid : -1} />
       </main>
     </div>
   );
