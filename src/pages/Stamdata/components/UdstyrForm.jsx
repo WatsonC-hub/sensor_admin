@@ -29,7 +29,6 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUnitValue("terminal_type", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -45,7 +44,6 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUnitValue("terminal_id", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -62,7 +60,6 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUnitValue("calypso_id", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -78,7 +75,6 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUnitValue("sensorinfo", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -94,7 +90,6 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUnitValue("sensor_id", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
