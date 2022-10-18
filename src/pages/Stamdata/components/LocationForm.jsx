@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Grid, MenuItem, TextField } from "@mui/material";
-import { StamdataContext } from "../../../state/StamdataContext";
 import { InputAdornment } from "@mui/material";
 import { getLocationTypes } from "../../../api";
 import LocationTypeSelect from "./LocationTypeSelect";
 import { stamdataStore } from "../../../state/store";
 
 export default function LocationForm({ mode }) {
-  // const [, , formData, , , setLocationValue, , ,] =
-  //   React.useContext(StamdataContext);
-
   const [location, setLocationValue] = stamdataStore((store) => [
     store.location,
     store.setLocationValue,

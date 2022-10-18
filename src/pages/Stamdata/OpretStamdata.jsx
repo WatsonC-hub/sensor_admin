@@ -10,7 +10,6 @@ import AddUdstyrForm from "./AddUdstyrForm";
 import AddLocationForm from "./AddLocationForm";
 import LocationForm from "./components/LocationForm";
 import StationForm from "./components/StationForm";
-import { StamdataContext } from "../../state/StamdataContext";
 import { getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
 import Snackbar from "@mui/material/Snackbar";

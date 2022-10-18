@@ -1,17 +1,17 @@
 import React from "react";
 import { Grid, TextField } from "@mui/material";
 import "date-fns";
-import { StamdataContext } from "../../../state/StamdataContext";
 import moment from "moment";
 import OwnDatePicker from "../../../components/OwnDatePicker";
 import { stamdataStore } from "../../../state/store";
 
 export default function UdstyrForm(props) {
   const editMode = props.mode === "edit";
-  const [, , formData, , , , , setUdstyrValue] =
-    React.useContext(StamdataContext);
 
-  const unit = stamdataStore((store) => store.unit);
+  const [unit, setUnitValue] = stamdataStore((store) => [
+    store.unit,
+    store.setUnitValue,
+  ]);
 
   return (
     <Grid container spacing={2}>
@@ -29,7 +29,7 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUdstyrValue("terminal_type", e.target.value)}
+          onChange={(e) => setUnitValue("terminal_type", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -45,7 +45,7 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUdstyrValue("terminal_id", e.target.value)}
+          onChange={(e) => setUnitValue("terminal_id", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -62,7 +62,7 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUdstyrValue("calypso_id", e.target.value)}
+          onChange={(e) => setUnitValue("calypso_id", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -78,7 +78,7 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUdstyrValue("sensorinfo", e.target.value)}
+          onChange={(e) => setUnitValue("sensorinfo", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -94,7 +94,7 @@ export default function UdstyrForm(props) {
           InputLabelProps={{ shrink: true }}
           fullWidth
           margin="dense"
-          onChange={(e) => setUdstyrValue("sensor_id", e.target.value)}
+          onChange={(e) => setUnitValue("sensor_id", e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -121,10 +121,7 @@ export default function UdstyrForm(props) {
             label="Startdato"
             value={moment(unit.startdato)}
             onChange={(date) =>
-              setUdstyrValue(
-                "startdato",
-                moment(date).format("YYYY-MM-DD HH:mm")
-              )
+              setUnitValue("startdato", moment(date).format("YYYY-MM-DD HH:mm"))
             }
           />
         )}
@@ -135,10 +132,7 @@ export default function UdstyrForm(props) {
             label="Slutdato"
             value={moment(unit.slutdato)}
             onChange={(date) =>
-              setUdstyrValue(
-                "slutdato",
-                moment(date).format("YYYY-MM-DD HH:mm")
-              )
+              setUnitValue("slutdato", moment(date).format("YYYY-MM-DD HH:mm"))
             }
           />
         )}

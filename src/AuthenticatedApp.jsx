@@ -13,7 +13,6 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 import ScanComponent from "./components/ScanComponent";
 import OpretStamdata from "./pages/Stamdata/OpretStamdata";
-import { StamdataProvider } from "./state/StamdataContext";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import LocationContext from "./state/LocationContext";
 import CaptureDialog from "./pages/station/CaptureDialog";
@@ -35,7 +34,7 @@ function AuthenticatedApp({ setUser }) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
   const history = useHistory();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const matches = useMediaQuery(theme.breakpoints.down("md"));
   let location = useLocation();
 
   const handleClickOpen = () => {
@@ -92,13 +91,18 @@ function AuthenticatedApp({ setUser }) {
                 onClick={
                   (e) => history.push("/") //context.setLocationId(-1)
                 }
-                size="large">
+                size="large"
+              >
                 <KeyboardBackspaceIcon />
               </IconButton>
             )}
 
             {matches && (
-              <IconButton color="inherit" onClick={handleClickOpen} size="large">
+              <IconButton
+                color="inherit"
+                onClick={handleClickOpen}
+                size="large"
+              >
                 <PhotoCameraRounded />
               </IconButton>
             )}
@@ -123,9 +127,7 @@ function AuthenticatedApp({ setUser }) {
             <LocationDrawer />
           </Route>
           <Route path="/stamdata">
-            <StamdataProvider>
-              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
-            </StamdataProvider>
+            <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
           </Route>
           <Route path="/:labelid">
             <ScanComponent />
