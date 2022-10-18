@@ -57,6 +57,14 @@ async function getStamData() {
   return data.data;
 }
 
+async function getStations(locid) {
+  const url = `${extEndpoint}/station/${locid}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const { data } = await axios.get(url);
+  return data.res;
+}
+
 async function getAvailableUnits() {
   const { data } = await axios.get(
     `${extEndpoint}/stamdata/units?session_id=${sessionStorage.getItem(
@@ -125,12 +133,6 @@ async function getTableData(sessionId) {
 }
 
 // const getSingleElem = () => getData("getSingleElem");
-
-const getStations = (locid, sessionId) => {
-  const url = `${extEndpoint}/station/${locid}?session_id=${sessionId}`;
-  const data = axios.get(url);
-  return data;
-};
 
 const getLocidFromLabel = (labelId) => {
   const sql = `${endpoint}SELECT loc_id, ts_id FROM sensor.qrid_to_ts_id where calypso_id =${labelId}`;

@@ -17,36 +17,10 @@ import { atom, useAtom } from "jotai";
 
 const tabAtom = atom(0);
 
-const useElementVisible = (options) => {
-  const containerRef = useRef(null);
-  const [isTabVisible, setIsTabVisible] = useState(false);
-
-  const callbackFunction = (entries) => {
-    const [entry] = entries;
-    setIsTabVisible(entry.isIntersecting);
-  };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(callbackFunction, options);
-    if (containerRef.current) observer.observe(containerRef.current);
-
-    return () => {
-      if (containerRef.current) observer.unobserve(containerRef.current);
-    };
-  }, [containerRef, options]);
-
-  return [containerRef, isTabVisible];
-};
-
 export default function SimpleTabs() {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = useAtom(tabAtom);
-  const [containerRef, isTabVisible] = useElementVisible({
-    root: null,
-    rootMargin: "0px",
-    threshold: 1.0,
-  });
 
   const { data, isLoading } = useQuery(
     ["station_list"],
@@ -87,7 +61,6 @@ export default function SimpleTabs() {
         onChange={handleChange}
         variant="fullWidth"
         aria-label="simple tabs example"
-        ref={containerRef}
       >
         <Tab icon={TableIcon} />
         <Tab icon={KortIcon} />

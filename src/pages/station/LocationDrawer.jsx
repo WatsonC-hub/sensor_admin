@@ -12,48 +12,40 @@ import { getStations } from "../../api";
 import MinimalSelect from "../Location/MinimalSelect";
 import { useParams, useHistory } from "react-router-dom";
 import { StamdataProvider } from "../../state/StamdataContext";
+import { useQuery } from "@tanstack/react-query";
 
 export default function LocationDrawer() {
-  // const classes = useStyles();
-  const [open, setOpen] = useState(false);
   const [formToShow, setFormToShow] = useState(null);
-  const [currStation, setCurrStation] = useState(null);
-  const [stationList, setStationList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(-1);
-  const [selectedLocid, setSelectedLocid] = useState(-1);
-  const context = useContext(LocationContext);
 
   const theme = useTheme();
   const params = useParams();
   const history = useHistory();
 
-  const currentStation = (id, stations) => {
-    if (stations.length === 0) return null;
-    return stations.find((s) => s.ts_id + "" === id + "");
-  };
+  const { data, isLoading } = useQuery(
+    ["stations", params.locid],
+    () => getStations(params.locid),
+    {
+      enabled: params.locid !== undefined,
+    }
+  );
 
   useEffect(() => {
-    let locId = params.locid;
-    let statId = params.statid;
-    if (statId) {
-      setSelectedItem(parseInt(statId));
-    }
-    getStations(locId, sessionStorage.getItem("session_id")).then((res) => {
-      if (!statId) {
-        statId = -1;
-        if (res.data.res.length === 1) {
-          setCurrStation(res.data.res[0]);
-          statId = res.data.res[0].ts_id;
-          history.replace(`/location/${locId}/${statId}`);
-        }
+    if (data) {
+      let statId = params.statid;
+      if (statId) {
         setSelectedItem(parseInt(statId));
       } else {
-        setCurrStation(currentStation(statId, res.data.res));
+        statId = -1;
+        if (data.length === 1) {
+          // setCurrStation(data[0]);
+          statId = data[0].ts_id;
+          history.replace(`/location/${params.locid}/${statId}`);
+        }
+        setSelectedItem(parseInt(statId));
       }
-      setStationList(res.data.res);
-    });
-    setSelectedLocid(locId);
-  }, [context.locationId]);
+    }
+  }, [data]);
 
   return (
     <div>
@@ -71,12 +63,10 @@ export default function LocationDrawer() {
             <KeyboardBackspaceIcon />
           </IconButton>
           <MinimalSelect
-            locid={selectedLocid}
-            stationList={stationList}
+            locid={params.locid}
+            stationList={data}
             selectedStation={selectedItem}
             setSelectedItem={setSelectedItem}
-            setCurrStation={setCurrStation}
-            currentStation={currStation}
           />
         </Toolbar>
       </AppBar>
@@ -90,8 +80,7 @@ export default function LocationDrawer() {
         <div />
         <StamdataProvider>
           <Station
-            open={open}
-            stationId={currStation ? currStation.ts_id : -1}
+            stationId={params.statid ? params.statid : -1}
             formToShow={formToShow}
             setFormToShow={setFormToShow}
           />

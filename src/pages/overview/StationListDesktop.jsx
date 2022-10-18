@@ -3,8 +3,6 @@ import { useHistory } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import EditIcon from "@mui/icons-material/Edit";
-import IconButton from "@mui/material/IconButton";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -99,16 +97,6 @@ const columns = [
   },
 ];
 
-const column_extension = [
-  { columnName: "calypso_id", width: "auto" },
-  { columnName: "ts_name", width: "auto" },
-  { columnName: "tstype_name", width: "auto" },
-  {
-    columnName: "color",
-    width: "auto",
-  },
-];
-
 export default function StationListDesktop({ data, loading }) {
   const [typeAhead, settypeAhead] = useState("");
   const { height, width } = useWindowDimensions();
@@ -155,19 +143,18 @@ export default function StationListDesktop({ data, loading }) {
         onChange={(event) => settypeAhead(event.target.value)}
         style={{ marginBottom: 12 }}
       />
-
+      {/* {loading && <CircularProgress />} */}
       <Paper>
         <Grid rows={rows} columns={columns}>
-          {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
           {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
           <VirtualTable
-            height={height - 200}
+            height={height - 250}
             cellComponent={Cell}
             messages={{ noData: "Ingen data" }}
-            // columnExtensions={column_extension}
+            noDataCellComponent={() => <CircularProgress />}
           />
-          {loading && <CircularProgress />}
           <TableHeaderRow titleComponent={TitleCell} />
+
           {/* <TableRowDetail contentComponent={RowDetail} /> */}
         </Grid>
       </Paper>

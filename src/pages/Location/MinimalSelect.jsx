@@ -10,8 +10,6 @@ const MinimalSelect = ({
   stationList,
   selectedStation,
   setSelectedItem,
-  setCurrStation,
-  currentStation,
 }) => {
   const [stationId, setStationId] = useState(selectedStation + "");
   const params = useParams();
@@ -22,9 +20,6 @@ const MinimalSelect = ({
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
     history.replace(`/location/${locid}/${event.target.value}`);
-    setCurrStation(
-      stationList.find((s) => s.ts_id + "" === event.target.value + "")
-    );
     setIsOpen(false);
   };
 
@@ -37,12 +32,6 @@ const MinimalSelect = ({
       setIsOpen(false);
     }
   }, [selectedStation]);
-
-  // useEffect(() => {
-  //   currentStation === -1 ? setIsOpen(true) : setIsOpen(false);
-  // }, [currentStation]);
-
-  // const minimalSelectClasses = useMinimalSelectStyles();
 
   const iconComponent = (props) => {
     return <ExpandMoreIcon className={props.className + " "} />;
@@ -86,26 +75,27 @@ const MinimalSelect = ({
         boxShadow: "0px 5px 8px -3px rgba(0,0,0,0.14)",
       }}
     >
-      {stationList
-        .filter((t) => t.ts_name !== null)
-        .map((station) => (
-          <MenuItem
-            key={station.ts_id}
-            value={station.ts_id}
-            sx={{
-              "&:hover": {
-                backgroundColor: "primary.main",
-                color: "white",
-              },
-              "&.Mui-selected": {
-                backgroundColor: "primary.main",
-                color: "white",
-              },
-            }}
-          >
-            {station.ts_name}
-          </MenuItem>
-        ))}
+      {stationList &&
+        stationList
+          .filter((t) => t.ts_name !== null)
+          .map((station) => (
+            <MenuItem
+              key={station.ts_id}
+              value={station.ts_id}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "primary.main",
+                  color: "white",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "primary.main",
+                  color: "white",
+                },
+              }}
+            >
+              {station.ts_name}
+            </MenuItem>
+          ))}
     </Select>
     // </FormControl>
   );

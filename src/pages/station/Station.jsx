@@ -32,12 +32,11 @@ import TilsynTable from "../../components/TilsynTable";
 import StationImages from "./StationImages";
 import { useLocation } from "react-router-dom";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from '@mui/material/Alert';
+import MuiAlert from "@mui/material/Alert";
 
 export default function Station({
   stationId,
   setShowForm,
-  open,
   formToShow,
   setFormToShow,
 }) {
@@ -469,7 +468,6 @@ export default function Station({
         <StationImages locationId={location.pathname.split("/")[2]} />
       )}
       <ActionArea
-        open={open}
         stationId={stationId}
         formToShow={formToShow}
         setFormToShow={setFormToShow}
