@@ -1,6 +1,22 @@
 import axios from "axios";
 import { queries, testQueries } from "./config";
 
+const apiClient = axios.create({
+  baseURL: "/api",
+  withCredentials: true,
+});
+
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async function (error) {
+    if (error.response.status === 403) {
+      console.log("JWT expired, refreshing...");
+    }
+  }
+);
+
 let host;
 let extEndpoint;
 let endpoint;
@@ -295,6 +311,22 @@ const loginUser = (user, password) => {
   return axios.post(sessionUrl, loginData);
 };
 
+const loginAPI = async (username, password) => {
+  const data = new FormData();
+  data.append("username", username);
+  data.append("password", password);
+
+  return await apiClient.post("/auth/login/secure", data, {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+};
+
+const getUser = async () => {
+  return await apiClient.get("/auth/me/secure");
+};
+
 const takeHomeEquipment = (gid, data, sessionId) => {
   const url = `${extEndpoint}/stamdata/unithistory/${gid}?session_id=${sessionId}`;
   return axios.put(url, data);
@@ -338,4 +370,7 @@ export {
   getImage,
   deleteImage,
   updateImage,
+  loginAPI,
+  getUser,
+  apiClient,
 };

@@ -5,6 +5,7 @@ import moment from "moment";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { stamdataStore } from "../../state/store";
+import { apiClient } from "../../api";
 
 const selectorOptions = {
   buttons: [
@@ -302,7 +303,8 @@ export default function BearingGraph({
   const { data: graphData } = useQuery(
     ["graphData", stationId],
     async () => {
-      return await axios.get(`/api/data/timeseries/${stationId}`);
+      const { data } = await apiClient.get(`/data/timeseries/${stationId}`);
+      return data;
     },
     {
       enabled: stationId !== -1 && stationId !== null,
@@ -325,7 +327,7 @@ export default function BearingGraph({
       }}
     >
       <PlotGraph
-        graphData={graphData?.data}
+        graphData={graphData}
         controlData={measurements}
         dynamicMeasurement={dynamicMeasurement}
       />

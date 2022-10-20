@@ -18,7 +18,12 @@ import OwnDatePicker from "../../components/OwnDatePicker";
 import LocationForm from "../Stamdata/components/LocationForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
-import { getUnitHistory, takeHomeEquipment, updateStamdata } from "../../api";
+import {
+  getUnitHistory,
+  takeHomeEquipment,
+  updateStamdata,
+  apiClient,
+} from "../../api";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -26,6 +31,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -117,7 +123,12 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
 
   const { data } = useQuery(
     ["udstyr", stationId],
-    () => getUnitHistory(stationId),
+    async () => {
+      const { data } = await apiClient.get(
+        `/sensor_field/stamdata/unit_history/${stationId}`
+      );
+      return data;
+    },
     {
       onSuccess: (data) => {
         setselected(data[0].gid);

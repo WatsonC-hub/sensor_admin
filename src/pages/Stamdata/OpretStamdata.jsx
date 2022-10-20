@@ -10,7 +10,7 @@ import AddUdstyrForm from "./AddUdstyrForm";
 import AddLocationForm from "./AddLocationForm";
 import LocationForm from "./components/LocationForm";
 import StationForm from "./components/StationForm";
-import { getStamData, postStamdata } from "../../api";
+import { apiClient, getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
@@ -19,6 +19,7 @@ import moment from "moment";
 import { stamdataStore } from "../../state/store";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const flex1 = {
   display: "flex",
@@ -59,8 +60,11 @@ function LocationChooser({ setLocationDialogOpen }) {
     }
   };
 
-  const { data: locations } = useQuery(["locations"], getStamData, {
-    select: (data) => _.uniqBy(data, "loc_id"),
+  const { data: locations } = useQuery(["locations"], async () => {
+    const { data } = await apiClient.get(
+      "/api/sensor_field/stamdata/locations"
+    );
+    return data;
   });
 
   const desktopChooser = (

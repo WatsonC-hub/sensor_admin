@@ -4,7 +4,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
 import Container from "@mui/material/Container";
-import { loginUser } from "../../api";
+import { loginUser, loginAPI, getUser } from "../../api";
 import { useTheme } from "@mui/material";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -40,6 +40,11 @@ export default function Login({ setUser }) {
         setLoginError(true);
         console.log("login error => ", r);
       });
+
+    loginAPI(userName, password).then((res) => {
+      console.log("loginAPI => ", res);
+      getUser();
+    });
   };
 
   const handlePassReset = (e) => {
