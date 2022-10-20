@@ -14,7 +14,7 @@ import { useParams, useHistory } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 export default function LocationDrawer() {
-  const [selectedItem, setSelectedItem] = useState(-1);
+  const [selectedItem, setSelectedItem] = useState("");
 
   const theme = useTheme();
   const params = useParams();
@@ -32,14 +32,14 @@ export default function LocationDrawer() {
     if (data) {
       let statId = params.statid;
       if (statId) {
-        setSelectedItem(parseInt(statId));
+        setSelectedItem(statId);
       } else {
-        statId = -1;
+        statId = "";
         if (data.length === 1) {
           statId = data[0].ts_id;
           history.replace(`/location/${params.locid}/${statId}`);
         }
-        setSelectedItem(parseInt(statId));
+        setSelectedItem(statId);
       }
     }
   }, [data]);

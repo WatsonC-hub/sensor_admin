@@ -11,7 +11,7 @@ const MinimalSelect = ({
   selectedStation,
   setSelectedItem,
 }) => {
-  const [stationId, setStationId] = useState(selectedStation + "");
+  const [stationId, setStationId] = useState(selectedStation);
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.statid ? false : true);
@@ -28,13 +28,13 @@ const MinimalSelect = ({
 
   useEffect(() => {
     setStationId(selectedStation);
-    if (selectedStation !== -1) {
+    if (selectedStation !== "") {
       setIsOpen(false);
     }
   }, [selectedStation]);
 
   const iconComponent = (props) => {
-    return <ExpandMoreIcon className={props.className + " "} />;
+    return <ExpandMoreIcon />;
   };
 
   // moves the menu below the select input
