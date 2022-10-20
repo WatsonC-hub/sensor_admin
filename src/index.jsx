@@ -8,7 +8,6 @@ import {
   ThemeProvider,
   StyledEngineProvider,
   createTheme,
-  adaptV4Theme,
 } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -16,22 +15,20 @@ import { ToastContainer } from "react-toastify";
 import { createRoot } from "react-dom/client";
 import "react-toastify/dist/ReactToastify.css";
 
-const theme = createTheme(
-  adaptV4Theme({
-    palette: {
-      mode: "light",
-      primary: {
-        main: "rgb(0,120,109)",
-      },
-      secondary: {
-        main: "#FFA137",
-      },
+const theme = createTheme({
+  palette: {
+    type: "light",
+    primary: {
+      main: "rgb(0,120,109)",
     },
-    typography: {
-      fontFamily: "Open Sans",
+    secondary: {
+      main: "#FFA137",
     },
-  })
-);
+  },
+  typography: {
+    fontFamily: "Open Sans",
+  },
+});
 
 const queryClient = new QueryClient();
 const container = document.getElementById("root");

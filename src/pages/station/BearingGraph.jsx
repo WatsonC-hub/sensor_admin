@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Plot from "react-plotly.js";
 import moment from "moment";
-import { getGraphData } from "../../api";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { stamdataStore } from "../../state/store";
 
 const selectorOptions = {
   buttons: [
@@ -171,32 +172,16 @@ const layout3 = {
 };
 
 function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
-  const name = graphData[0]
-    ? JSON.parse(graphData[0].properties.data).name
-    : "";
-  const xData = graphData[0] ? JSON.parse(graphData[0].properties.data).x : [];
-  const yData = graphData[0] ? JSON.parse(graphData[0].properties.data).y : [];
-  const trace = graphData[0] ? JSON.parse(graphData[0].properties.trace) : {};
+  const [name, unit] = stamdataStore((state) => [
+    state.timeseries.ts_name,
+    state.timeseries.unit,
+  ]);
+
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
-  const stationtype = graphData[0] ? graphData[0].properties.parameter : "";
-  const unit = graphData[0] ? graphData[0].properties.unit : "";
+  const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
-
-  const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
-  const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
-
-  useEffect(() => {
-    console.log(dynamicMeasurement);
-    if (dynamicMeasurement !== undefined) {
-      setXDynamicMeasurement([dynamicMeasurement[0]]);
-      setYDynamicMeasurement([dynamicMeasurement[1]]);
-    } else {
-      setXDynamicMeasurement([]);
-      setYDynamicMeasurement([]);
-    }
-  }, [dynamicMeasurement]);
 
   var downloadButton = {
     name: "Download data",
@@ -242,8 +227,8 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
     <Plot
       data={[
         {
-          x: xData,
-          y: yData,
+          x: graphData?.x,
+          y: graphData?.y,
           name: name,
           type: "scatter",
           line: { width: 2 },
@@ -264,8 +249,8 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
           },
         },
         {
-          x: xDynamicMeasurement,
-          y: yDynamicMeasurement,
+          x: [dynamicMeasurement?.[0]],
+          y: [dynamicMeasurement?.[1]],
           name: "",
           type: "scatter",
           mode: "markers",
@@ -308,23 +293,25 @@ function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
 
 export default function BearingGraph({
   stationId,
-  updated,
   measurements,
   dynamicMeasurement,
 }) {
-  const [graphData, setGraphData] = useState([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
 
-  useEffect(() => {
-    if (stationId !== -1 && stationId !== null) {
-      getGraphData(stationId).then((res) => {
-        if (res.data.success) {
-          setGraphData(res.data.features);
-        }
-      });
+  const { data: graphData } = useQuery(
+    ["graphData", stationId],
+    async () => {
+      return await axios.get(`/api/data/timeseries/${stationId}`);
+    },
+    {
+      enabled: stationId !== -1 && stationId !== null,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
     }
-  }, [stationId]);
+  );
 
   return (
     <div
@@ -338,7 +325,7 @@ export default function BearingGraph({
       }}
     >
       <PlotGraph
-        graphData={graphData}
+        graphData={graphData?.data}
         controlData={measurements}
         dynamicMeasurement={dynamicMeasurement}
       />
