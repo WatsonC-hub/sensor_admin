@@ -17,9 +17,7 @@ import {
   updateService,
   insertService,
   deleteService,
-  postImage,
 } from "../../api";
-import { Toolbar } from "@mui/material";
 import EditStamdata from "./EditStamdata";
 import PejlingMeasurements from "./PejlingMeasurements";
 import MaalepunktForm from "../../components/MaalepunktForm";

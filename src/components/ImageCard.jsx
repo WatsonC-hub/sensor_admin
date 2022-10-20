@@ -9,25 +9,21 @@ import Typography from "@mui/material/Typography";
 import DeleteAlert from "../pages/station/DeleteAlert";
 import CircularProgress from "@mui/material/CircularProgress";
 import moment from "moment";
+import { toast } from "react-toastify";
 
-function ImageCard({ image, handleDelete, handleEdit }) {
+function ImageCard({ image, deleteMutation, handleEdit }) {
   const baseUrl =
     "https://calypsoimages.s3.eu-north-1.amazonaws.com/location_images/";
   const imageUrl = baseUrl + image.imageurl + ".png";
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [disableDelete, setDisableDelete] = useState(false);
-  const [disableEdit, setDisableEdit] = useState(false);
 
-  const deleteImage = (id) => {
-    setDisableDelete(true);
-    setDisableEdit(true);
-    handleDelete(image).then((res) => {
-      setTimeout(() => {
-        setDisableDelete(false);
-        setDisableEdit(false);
-      }, 2000);
+  function handleDelete() {
+    toast.promise(() => deleteMutation.mutateAsync(image.gid), {
+      pending: "Sletter billedet",
+      success: "Billedet blev slettet",
+      error: "Der skete en fejl",
     });
-  };
+  }
 
   return (
     <Card
@@ -40,7 +36,7 @@ function ImageCard({ image, handleDelete, handleEdit }) {
         title="Vil du slette billedet?"
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={deleteImage}
+        onOkDelete={handleDelete}
       />
       <CardMedia
         image={imageUrl}
@@ -65,15 +61,15 @@ function ImageCard({ image, handleDelete, handleEdit }) {
       </CardContent>
       <CardActions>
         <Button
-          disabled={disableDelete}
+          disabled={deleteMutation.isLoading}
           onClick={() => setDialogOpen(true)}
           size="small"
           color="primary"
         >
-          {disableDelete ? <CircularProgress /> : "Slet"}
+          {deleteMutation.isLoading ? <CircularProgress /> : "Slet"}
         </Button>
         <Button
-          disabled={disableEdit}
+          disabled={deleteMutation.isLoading}
           onClick={() => handleEdit(image)}
           size="small"
           color="primary"

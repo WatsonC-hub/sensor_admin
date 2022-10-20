@@ -176,6 +176,12 @@ async function insertService(formData) {
   return resp;
 }
 
+async function getImage(loc_id) {
+  const url = `${extEndpoint}/image/${loc_id}`;
+  const { data } = await axios.get(url);
+  return data.data;
+}
+
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(",");
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -189,9 +195,11 @@ const dataURLtoFile = (dataurl, filename) => {
   return new File([u8arr], filename, { type: mime });
 };
 
-const postImage = (payload, uri, sessionId) => {
+const postImage = async (payload, uri) => {
   const loc_id = payload.loc_id;
-  const url = `${extEndpoint}/image/${loc_id}?session_id=${sessionId}`;
+  const url = `${extEndpoint}/image/${loc_id}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
   const file = dataURLtoFile(uri);
   const data = new FormData();
   data.append("files", file, "tmp");
@@ -202,23 +210,25 @@ const postImage = (payload, uri, sessionId) => {
   const config = {
     headers: { "Content-Type": "multipart/form-data" },
   };
-  return axios.post(url, data, config);
+  const resp = await axios.post(url, data, config);
+  return resp;
 };
 
-const deleteImage = (loc_id, gid, sessionId) => {
-  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionId}`;
-  return axios.delete(url);
-};
+async function deleteImage(loc_id, gid) {
+  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.delete(url);
+  return resp;
+}
 
-const updateImage = (gid, payload, sessionId) => {
+const updateImage = async (payload, gid) => {
   const loc_id = payload.loc_id;
-  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionId}`;
-  return axios.put(url, payload);
-};
-
-const getImage = (loc_id) => {
-  const url = `${extEndpoint}/image/${loc_id}`;
-  return axios.get(url);
+  const url = `${extEndpoint}/image/${loc_id}/${gid}?session_id=${sessionStorage.getItem(
+    "session_id"
+  )}`;
+  const resp = await axios.put(url, payload);
+  return resp;
 };
 
 async function getTableData(sessionId) {
@@ -226,6 +236,11 @@ async function getTableData(sessionId) {
   const { data } = await axios.get(url);
   return data.result;
 }
+
+const getGraphData = (stationId) => {
+  const sql = `${endpoint}SELECT * FROM calypso_stationer.sensordata_station_json WHERE ts_id=${stationId}`;
+  return axios.get(sql);
+};
 
 // const getSingleElem = () => getData("getSingleElem");
 
@@ -236,11 +251,6 @@ const getLocidFromLabel = (labelId) => {
 
 const getControlData = (stationId) => {
   const sql = `${endpoint}SELECT * FROM sensor.station_pejlinger WHERE stationid=${stationId} ORDER BY timeofmeas`;
-  return axios.get(sql);
-};
-
-const getGraphData = (stationId) => {
-  const sql = `${endpoint}SELECT * FROM calypso_stationer.sensordata_station_json WHERE ts_id=${stationId}`;
   return axios.get(sql);
 };
 

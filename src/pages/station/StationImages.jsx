@@ -7,10 +7,10 @@ import { Grid } from "@mui/material";
 import SaveImageDialog from "../../components/SaveImageDialog";
 import { deleteImage, getImage } from "../../api";
 import moment from "moment";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 
 function StationImages(props) {
   const [openCamera, setOpenCamera] = useState(false);
-  const [photoTaken, setPhotoTaken] = useState(false);
   const [dataUri, setdataUri] = useState("");
   const [openSave, setOpenSave] = useState(false);
   const [activeImage, setActiveImage] = useState({
@@ -20,25 +20,21 @@ function StationImages(props) {
     public: false,
     date: moment(new Date()).format("YYYY-MM-DD HH:mm"),
   });
-  const [images, setImages] = useState([]);
 
-  useEffect(() => {
-    getImage(props.locationId).then((res) => {
-      setImages(res.data.data);
-    });
-  }, [props.locationId, photoTaken]);
+  const queryClient = useQueryClient();
 
-  const triggerPhoto = () => {
-    setPhotoTaken((prev) => !prev);
-  };
+  const { data: images } = useQuery(["images", props.locationId], () =>
+    getImage(props.locationId)
+  );
 
-  const handleClose = () => {
-    setOpenCamera(false);
-  };
-
-  const handleCloseSave = () => {
-    setOpenSave(false);
-  };
+  const deleteImageMutation = useMutation(
+    (gid) => deleteImage(props.locationid, gid),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["images", props.locationId]);
+      },
+    }
+  );
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -71,13 +67,6 @@ function StationImages(props) {
     setOpenSave(true);
   };
 
-  const handleDelete = (image) => {
-    let sessionId = sessionStorage.getItem("session_id");
-    return deleteImage(image.loc_id, image.gid, sessionId).then((res) => {
-      triggerPhoto();
-    });
-  };
-
   const changeActiveImageData = (field, value) => {
     setActiveImage({
       ...activeImage,
@@ -88,14 +77,13 @@ function StationImages(props) {
   const handleEdit = (image) => {
     setActiveImage(image);
     setOpenSave(true);
-    console.log(activeImage);
   };
 
   return (
     <div>
       <LocationCamera
         open={openCamera}
-        handleClose={handleClose}
+        handleClose={() => setOpenCamera(false)}
         setDataURI={handleSetDataURI}
       />
       <SaveImageDialog
@@ -104,21 +92,9 @@ function StationImages(props) {
         locationId={props.locationId}
         open={openSave}
         dataUri={dataUri}
-        photoTrigger={triggerPhoto}
-        handleCloseSave={handleCloseSave}
+        handleCloseSave={() => setOpenSave(false)}
       />
       <Grid container spacing={3}>
-        {/* <Grid item xs={6} sm={2}>
-          <Button
-            autoFocus
-            color="secondary"
-            variant="contained"
-            onClick={() => setOpenCamera((prev) => !prev)}
-            startIcon={<PhotoCameraRounded />}
-          >
-            {openCamera ? "Luk kamera" : "Tag billede"}
-          </Button>
-        </Grid> */}
         <Grid item xs={6} sm={2}>
           <label htmlFor="btn-upload">
             <input
@@ -142,7 +118,8 @@ function StationImages(props) {
         </Grid>
         <Grid item xs={12} sm={12}>
           <ImageViewer
-            handleDelete={handleDelete}
+            // handleDelete={handleDelete}
+            deleteMutation={deleteImageMutation}
             handleEdit={handleEdit}
             images={images}
           />

@@ -17,6 +17,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import OwnDatePicker from "./OwnDatePicker";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 function SaveImageDialog({
   activeImage,
@@ -24,18 +26,33 @@ function SaveImageDialog({
   locationId,
   open,
   dataUri,
-  photoTrigger,
   handleCloseSave,
 }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
-  const [disableAdd, setDisableAdd] = useState(false);
+  const queryClient = useQueryClient();
+
   const baseUrl =
     "https://calypsoimages.s3.eu-north-1.amazonaws.com/location_images/";
   const imageUrl = baseUrl + activeImage.imageurl + ".png";
 
+  const saveImageMutation = useMutation(
+    (data) => {
+      if (activeImage.gid !== -1) {
+        return updateImage(data, activeImage.gid);
+      } else {
+        return postImage(data, dataUri);
+      }
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["images", locationId]);
+        handleCloseSave();
+      },
+    }
+  );
+
   function saveImage() {
-    let sessionId = sessionStorage.getItem("session_id");
     const payload = {
       loc_id: locationId,
       comment: activeImage.comment,
@@ -43,22 +60,12 @@ function SaveImageDialog({
       date: moment(activeImage.date).format("YYYY-MM-DD HH:mm"),
     };
     console.log(payload);
-    setDisableAdd(true);
-    if (activeImage.gid === -1) {
-      postImage(payload, dataUri, sessionId).then((resp) => {
-        console.log(resp);
-        photoTrigger((prev) => !prev);
-        handleCloseSave();
-        setDisableAdd(false);
-      });
-    } else {
-      updateImage(activeImage.gid, payload, sessionId).then((resp) => {
-        console.log(resp);
-        photoTrigger((prev) => !prev);
-        handleCloseSave();
-        setDisableAdd(false);
-      });
-    }
+
+    toast.promise(() => saveImageMutation.mutateAsync(payload), {
+      pending: "Gemmer billede",
+      success: "Billede gemt",
+      error: "Der skete en fejl",
+    });
   }
 
   return (
@@ -121,11 +128,11 @@ function SaveImageDialog({
       <DialogActions>
         <Button
           onClick={saveImage}
-          disabled={disableAdd}
+          disabled={saveImageMutation.isLoading}
           color="secondary"
           variant="contained"
         >
-          {disableAdd ? <CircularProgress /> : "Tilføj"}
+          {saveImageMutation.isLoading ? <CircularProgress /> : "Tilføj"}
         </Button>
         <Button onClick={handleCloseSave} color="secondary" variant="contained">
           Annuller
