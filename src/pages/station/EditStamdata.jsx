@@ -25,17 +25,17 @@ import {
   apiClient,
 } from "../../api";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
 import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
-import { useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+import { toast } from "react-toastify";
 
 const UnitEndDateDialog = ({
   openDialog,
@@ -46,9 +46,31 @@ const UnitEndDateDialog = ({
 }) => {
   const [date, setdate] = useState(new Date());
 
+  const queryClient = useQueryClient();
+
   const handleDateChange = (date) => {
     setdate(date);
   };
+
+  const takeHomeMutation = useMutation(
+    async () => {
+      const { data } = await apiClient.patch(
+        `/sensor_field/stamdata/unit_history/${stationId}/${unit.gid}`,
+        {
+          enddate: moment(date).format("YYYY-MM-DD HH:mm"),
+        }
+      );
+      return data;
+    },
+    {
+      onSuccess: (data) => {
+        setOpenDialog(false);
+        setUdstyrValue("slutdato", moment(date).format("YYYY-MM-DD HH:mm"));
+        toast.success("Udstyret er hjemtaget");
+        queryClient.invalidateQueries(["udstyr", stationId]);
+      },
+    }
+  );
 
   return (
     <Dialog open={openDialog}>
@@ -65,23 +87,7 @@ const UnitEndDateDialog = ({
             color="secondary"
             variant="contained"
             startIcon={<SaveIcon />}
-            onClick={() => {
-              const payload = { ...unit, ts_id: stationId, slutdato: date };
-              payload.startdate = moment(payload.startdato).format(
-                "YYYY-MM-DD HH:mm"
-              );
-
-              setUdstyrValue(
-                "slutdato",
-                moment(date).format("YYYY-MM-DD HH:mm")
-              );
-
-              takeHomeEquipment(
-                unit.gid,
-                payload,
-                sessionStorage.getItem("session_id")
-              ).then((res) => setOpenDialog(false));
-            }}
+            onClick={takeHomeMutation.mutate}
           >
             Gem
           </Button>
@@ -100,7 +106,7 @@ const UnitEndDateDialog = ({
   );
 };
 
-const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
+const UdstyrReplace = ({ stationId, selected, setselected }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
 
@@ -199,16 +205,15 @@ const UdstyrReplace = ({ stationId, selected, setselected, trigger }) => {
 };
 
 export default function EditStamdata({ setFormToShow, stationId }) {
-  const [openAlert, setOpenAlert] = useState(false);
-  const [severity, setSeverity] = useState("success");
   const [selectedUnit, setSelectedUnit] = useState(-1);
-  const [triggerHistory, setTriggerHistory] = useState(false);
 
   const [location, timeseries, unit] = stamdataStore((store) => [
     store.location,
     store.timeseries,
     store.unit,
   ]);
+
+  const queryClient = useQueryClient();
 
   const handleSubmit = () => {
     console.log(selectedUnit);
@@ -218,26 +223,14 @@ export default function EditStamdata({ setFormToShow, stationId }) {
     )
       .then((res) => {
         console.log(res);
-        setSeverity("success");
-        setOpenAlert(true);
-        setTimeout(() => {}, 1500);
-        setTriggerHistory(!triggerHistory);
+        toast.success("Stamdata er opdateret");
+        queryClient.invalidateQueries(["udstyr", stationId]);
       })
       .catch((error) => {
-        console.log(error);
-        setSeverity("error");
-        setOpenAlert(true);
+        toast.error("Der skete en fejl");
       });
 
     // history.push("/");
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpenAlert(false);
   };
 
   return (
@@ -255,7 +248,6 @@ export default function EditStamdata({ setFormToShow, stationId }) {
           stationId={stationId}
           selected={selectedUnit}
           setselected={setSelectedUnit}
-          trigger={triggerHistory}
         />
         <UdstyrForm mode={"edit"} />
         <Grid container spacing={3}>
@@ -283,13 +275,6 @@ export default function EditStamdata({ setFormToShow, stationId }) {
           </Grid>
         </Grid>
       </Container>
-      <Snackbar open={openAlert} autoHideDuration={4000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={severity}>
-          {severity === "success"
-            ? "Opdatering af station lykkedes"
-            : "Opdatering af station fejlede"}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

@@ -12,8 +12,7 @@ import LocationForm from "./components/LocationForm";
 import StationForm from "./components/StationForm";
 import { apiClient, getStamData, postStamdata } from "../../api";
 import UdstyrForm from "./components/UdstyrForm";
-import Snackbar from "@mui/material/Snackbar";
-import MuiAlert from "@mui/material/Alert";
+
 import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
@@ -26,10 +25,6 @@ const flex1 = {
   alignItems: "baseline",
   justifyContent: "start",
 };
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 function LocationChooser({ setLocationDialogOpen }) {
   const [setLocation, resetLocation] = stamdataStore((store) => [
