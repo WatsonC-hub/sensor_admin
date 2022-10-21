@@ -16,6 +16,7 @@ import OpretStamdata from "./pages/Stamdata/OpretStamdata";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import LocationContext from "./state/LocationContext";
 import CaptureDialog from "./pages/station/CaptureDialog";
+import { authStore } from "./state/store";
 
 /*
 Libraries to explore for this app:
@@ -25,8 +26,7 @@ Libraries to explore for this app:
 - test azure web apps
 */
 
-function AuthenticatedApp({ setUser }) {
-  const [, setSessionId] = useState(null);
+function AuthenticatedApp({}) {
   const [locationId, setLocationId] = useState(-1);
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
@@ -35,7 +35,12 @@ function AuthenticatedApp({ setUser }) {
   const theme = useTheme();
   const history = useHistory();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
-  let location = useLocation();
+  const location = useLocation();
+  const [setAuthenticated, setUser, setSessionId] = authStore((state) => [
+    state.setAuthenticated,
+    state.setUser,
+    state.setSessionId,
+  ]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -46,8 +51,9 @@ function AuthenticatedApp({ setUser }) {
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("session_id");
-    sessionStorage.removeItem("user");
+    // sessionStorage.removeItem("session_id");
+    // sessionStorage.removeItem("user");
+    setAuthenticated(false);
     setSessionId(null);
     setUser(null);
   };

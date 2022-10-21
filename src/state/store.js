@@ -1,5 +1,52 @@
 import create from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist } from "zustand/middleware";
+
+export const authStore = create(
+  persist(
+    devtools((set, get) => ({
+      authenticated: false,
+      user: null,
+      sessionId: null,
+      loginExpired: false,
+      setAuthenticated: (authenticated) =>
+        set(
+          {
+            authenticated: authenticated,
+          },
+          false,
+          "setAuthenticated"
+        ),
+      setUser: (user) =>
+        set(
+          {
+            user: user,
+          },
+          false,
+          "setUser"
+        ),
+      setSessionId: (sessionId) =>
+        set(
+          {
+            sessionId: sessionId,
+          },
+          false,
+          "setSessionId"
+        ),
+      setLoginExpired: (loginexpired) =>
+        set(
+          {
+            loginExpired: loginexpired,
+          },
+          false,
+          "setLoginExpired"
+        ),
+    })),
+    {
+      name: "auth-storage", // name of item in the storage (must be unique)
+      getStorage: () => sessionStorage, // (optional) by default the 'localStorage' is used
+    }
+  )
+);
 
 const initialState = {
   location: {

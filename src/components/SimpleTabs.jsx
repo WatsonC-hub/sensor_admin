@@ -23,17 +23,13 @@ export default function SimpleTabs() {
   const matches = useMediaQuery(theme.breakpoints.down("sm"));
   const [tabValue, setTabValue] = useAtom(tabAtom);
 
-  const { data, isLoading } = useQuery(
-    ["station_list"],
-    () => getTableData(sessionStorage.getItem("session_id")),
-    {
-      refetchInterval: 120000,
-    }
-  );
+  const { data, isLoading } = useQuery(["station_list"], () => getTableData(), {
+    refetchInterval: 120000,
+  });
 
   const { data: mapData, isLoading: mapLoading } = useQuery(
     ["map_data"],
-    () => getSensorData(sessionStorage.getItem("session_id")),
+    () => getSensorData(),
     {
       refetchInterval: 120000,
     }

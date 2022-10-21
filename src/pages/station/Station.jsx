@@ -334,21 +334,15 @@ export default function Station({ stationId }) {
   const handleDelete = (type) => {
     if (type === "watlevmp") {
       return (gid) => {
-        deleteMP(sessionStorage.getItem("session_id"), stationId, gid).then(
-          (res) => {
-            queryClient.invalidateQueries(["watlevmp", stationId]);
-            resetMpData();
-            toast.success("Målepunkt slettet");
-          }
-        );
+        deleteMP(stationId, gid).then((res) => {
+          queryClient.invalidateQueries(["watlevmp", stationId]);
+          resetMpData();
+          toast.success("Målepunkt slettet");
+        });
       };
     } else if (type === "service") {
       return (gid) => {
-        deleteService(
-          sessionStorage.getItem("session_id"),
-          stationId,
-          gid
-        ).then((res) => {
+        deleteService(stationId, gid).then((res) => {
           queryClient.invalidateQueries(["services", stationId]);
           resetServiceData();
           toast.success("Tilsyn slettet");
@@ -356,11 +350,7 @@ export default function Station({ stationId }) {
       };
     } else {
       return (gid) => {
-        deleteMeasurement(
-          sessionStorage.getItem("session_id"),
-          stationId,
-          gid
-        ).then((res) => {
+        deleteMeasurement(stationId, gid).then((res) => {
           queryClient.invalidateQueries(["measurements", stationId]);
           resetPejlingData();
           toast.success("Kontrolmåling slettet");

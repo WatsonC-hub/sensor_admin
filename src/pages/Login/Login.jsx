@@ -12,8 +12,9 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import { Typography } from "@mui/material";
 import { resetPassword } from "../../api";
+import { authStore } from "../../state/store";
 
-export default function Login({ setUser }) {
+export default function Login({}) {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
@@ -22,28 +23,39 @@ export default function Login({ setUser }) {
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
 
-  const theme = useTheme();
+  const [
+    setAuthenticated,
+    setUser,
+    setSessionId,
+    loginExpired,
+    setLoginExpired,
+  ] = authStore((state) => [
+    state.setAuthenticated,
+    state.setUser,
+    state.setSessionId,
+    state.loginExpired,
+    state.setLoginExpired,
+  ]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     loginUser(userName, password)
       .then((res) => {
         if (res.data.success) {
-          sessionStorage.setItem("user", res.data.data.screen_name);
-          sessionStorage.setItem("session_id", res.data.data.session_id);
-          console.log("user : ", res.data.data);
-          setUser(res.data.data);
+          setUser(res.data.data.screen_name);
+          setSessionId(res.data.data.session_id);
           setLoginError(false);
+          setLoginExpired(false);
         }
       })
       .catch((r) => {
         setLoginError(true);
-        console.log("login error => ", r);
       });
 
     loginAPI(userName, password).then((res) => {
-      console.log("loginAPI => ", res);
       getUser();
+      setAuthenticated(true);
+      setLoginExpired(false);
     });
   };
 
@@ -95,6 +107,17 @@ export default function Login({ setUser }) {
           Med denne applikation kan du indberette pejlinger, se grafer og flytte
           rundt på dit udstyr.
         </p>
+        {loginExpired && (
+          <p
+            style={{
+              textAlign: "center",
+              alignSelf: "center",
+              color: "red",
+            }}
+          >
+            Din session er udløbet. Log venligst ind igen.
+          </p>
+        )}
         <form onSubmit={handleSubmit} noValidate>
           <TextField
             variant="outlined"

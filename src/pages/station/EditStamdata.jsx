@@ -18,23 +18,12 @@ import OwnDatePicker from "../../components/OwnDatePicker";
 import LocationForm from "../Stamdata/components/LocationForm";
 import StationForm from "../Stamdata/components/StationForm";
 import UdstyrForm from "../Stamdata/components/UdstyrForm";
-import {
-  getUnitHistory,
-  takeHomeEquipment,
-  updateStamdata,
-  apiClient,
-} from "../../api";
+import { updateStamdata, apiClient } from "../../api";
 import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 const UnitEndDateDialog = ({
@@ -217,10 +206,11 @@ export default function EditStamdata({ setFormToShow, stationId }) {
 
   const handleSubmit = () => {
     console.log(selectedUnit);
-    updateStamdata(
-      { location, station: timeseries, udstyr: { ...unit, gid: selectedUnit } },
-      sessionStorage.getItem("session_id")
-    )
+    updateStamdata({
+      location,
+      station: timeseries,
+      udstyr: { ...unit, gid: selectedUnit },
+    })
       .then((res) => {
         console.log(res);
         toast.success("Stamdata er opdateret");

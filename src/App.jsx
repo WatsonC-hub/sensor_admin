@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import AuthenticatedApp from "./AuthenticatedApp";
 import UnAuntenticatedApp from "./UnauthenticatedApp";
+import { authStore } from "./state/store";
 
 function App() {
-  const sessionId = sessionStorage.getItem("session_id");
-  const [, setUser] = useState(sessionStorage.getItem("user") || null);
+  const [authenticated] = authStore((state) => [state.authenticated]);
 
   useEffect(() => {
     fetch("/api", {
@@ -19,11 +19,12 @@ function App() {
       });
   }, []);
 
-  if (sessionId === null) {
-    return <UnAuntenticatedApp setUser={setUser} />;
+  console.log("authenticated => ", authenticated);
+  if (!authenticated) {
+    return <UnAuntenticatedApp />;
   }
 
-  return <AuthenticatedApp setUser={setUser} />;
+  return <AuthenticatedApp />;
 }
 
 export default App;

@@ -302,8 +302,10 @@ export default function BearingGraph({
 
   const { data: graphData } = useQuery(
     ["graphData", stationId],
-    async () => {
-      const { data } = await apiClient.get(`/data/timeseries/${stationId}`);
+    async ({ signal }) => {
+      const { data } = await apiClient.get(`/data/timeseries/${stationId}`, {
+        signal,
+      });
       return data;
     },
     {

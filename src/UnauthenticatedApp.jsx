@@ -8,7 +8,7 @@ import Toolbar from "@mui/material/Toolbar";
 import { Button } from "@mui/material";
 import { ReactComponent as LogoSvg } from "./calypso.svg";
 
-export default function UnAuntenticatedApp({ setUser }) {
+export default function UnAuntenticatedApp({}) {
   const [registerDisabled, setRegisterDisabled] = useState(false);
   const history = useHistory();
   let location = useLocation();
@@ -23,9 +23,6 @@ export default function UnAuntenticatedApp({ setUser }) {
             justifyContent: "space-between",
           }}
         >
-          {/* <div className="container">
-            <img src={mainLogo} />
-          </div> */}
           <LogoSvg />
 
           <h2>Sensor</h2>
@@ -37,7 +34,6 @@ export default function UnAuntenticatedApp({ setUser }) {
               variant="contained"
               onClick={() => {
                 history.push("/pages/register");
-                //setAddStationDisabled(true);
               }}
             >
               Opret konto
@@ -46,9 +42,7 @@ export default function UnAuntenticatedApp({ setUser }) {
             <Button
               color="secondary"
               variant="contained"
-              onClick={
-                (e) => history.push("/") //context.setLocationId(-1)
-              }
+              onClick={(e) => history.push("/")}
             >
               Log ind
             </Button>
@@ -56,11 +50,11 @@ export default function UnAuntenticatedApp({ setUser }) {
         </Toolbar>
       </AppBar>
       <Switch>
-        <Route exact path={["/", "/:labelid"]}>
-          <Login setUser={setUser} />
-        </Route>
-        <Route path="/pages/register">
+        <Route exact path="/pages/register">
           <Register setRegisterDisabled={setRegisterDisabled} />
+        </Route>
+        <Route path={["/", "/:labelid"]}>
+          <Login />
         </Route>
       </Switch>
     </div>
