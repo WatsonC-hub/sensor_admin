@@ -14,7 +14,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { getTableData, getSensorData } from "../api";
 import { useQuery } from "@tanstack/react-query";
 import { atom, useAtom } from "jotai";
-import Scroll from "./Scroll";
+import ScrollTop from "./ScrollTop";
 
 const tabAtom = atom(0);
 
@@ -72,7 +72,7 @@ export default function SimpleTabs() {
       <TabPanel value={tabValue} index={1}>
         <Map sensorData={mapData} loading={mapLoading} />
       </TabPanel>
-      {matches && <Scroll showBelow={100} />}
+      {matches && <ScrollTop threshold={100} />}
     </div>
   );
 }
