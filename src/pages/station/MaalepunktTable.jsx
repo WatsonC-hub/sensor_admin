@@ -22,7 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import moment from "moment";
-import Grid from '@material-ui/core/Grid';
+import Grid from "@mui/material/Grid";
 
 function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -51,14 +51,15 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Grid container style={{marginLeft: "2%"}}>
+      <Grid container style={{ marginLeft: "2%" }}>
         <Grid item xs={8}>
-          <img width="35" height="35" align="left" src={process.env.PUBLIC_URL + "/RulerIcon.svg"} />
-          <Typography
-            gutterBottom
-            variant="h5"
-            component="h2"
-          >
+          <img
+            width="35"
+            height="35"
+            align="left"
+            src={process.env.PUBLIC_URL + "/RulerIcon.svg"}
+          />
+          <Typography gutterBottom variant="h5" component="h2">
             Målepunkter
           </Typography>
         </Grid>
@@ -130,7 +131,8 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
 
 function MobileMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [mpId, setMpId] = useState(-1);const [page, setPage] = React.useState(0);
+  const [mpId, setMpId] = useState(-1);
+  const [page, setPage] = React.useState(0);
   const rowsPerPage = 3;
 
   const handleChangePage = (event, newPage) => {

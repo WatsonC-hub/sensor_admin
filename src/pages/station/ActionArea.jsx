@@ -206,6 +206,7 @@ function MobileBottomNav({
               <MenuItem>
                 <BottomNavigationAction
                   disabled={!canEdit}
+                  showLabel
                   sx={borderGrey}
                   label="Indberet målepunkt"
                   onClick={() => {
@@ -220,6 +221,7 @@ function MobileBottomNav({
               <MenuItem>
                 <BottomNavigationAction
                   sx={borderGrey}
+                  showLabel
                   disabled={!canEdit}
                   label="Ændre udstyr"
                   icon={<EditRounded />}

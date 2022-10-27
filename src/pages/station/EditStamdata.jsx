@@ -10,12 +10,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  useTheme,
-  makeStyles,
   Box,
   AppBar,
   Tab,
   Tabs,
+  useTheme,
 } from "@mui/material";
 import "date-fns";
 import OwnDatePicker from "../../components/OwnDatePicker";
@@ -28,7 +27,7 @@ import AddUdstyrForm from "../Stamdata/AddUdstyrForm";
 import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import PropTypes from "prop-types";
-import SwipeableViews from "react-swipeable-views";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { stamdataStore } from "../../state/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -65,13 +64,6 @@ function a11yProps(index) {
     "aria-controls": `full-width-tabpanel-${index}`,
   };
 }
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.background.paper,
-    width: 500,
-  },
-}));
 
 const UnitEndDateDialog = ({
   openDialog,
@@ -250,8 +242,10 @@ export default function EditStamdata({ setFormToShow, stationId }) {
   ]);
 
   const queryClient = useQueryClient();
+  const theme = useTheme();
 
   const [value, setValue] = React.useState(0);
+  const [swiper, setSwiper] = useState(null);
 
   const handleSubmit = () => {
     console.log(selectedUnit);
@@ -274,10 +268,7 @@ export default function EditStamdata({ setFormToShow, stationId }) {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-  };
-
-  const handleChangeIndex = (index) => {
-    setValue(index);
+    swiper.slideTo(newValue);
   };
 
   return (
@@ -300,29 +291,33 @@ export default function EditStamdata({ setFormToShow, stationId }) {
             <Tab label="Udstyr" {...a11yProps(2)} />
           </Tabs>
         </AppBar>
-        <SwipeableViews
-          axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-          index={value}
-          onChangeIndex={handleChangeIndex}
+        <Swiper
+          onSwiper={setSwiper}
+          onSlideChange={(swiper) => handleChange(null, swiper.activeIndex)}
         >
-          <TabPanel value={value} index={0} dir={theme.direction}>
-            {/* <Typography>Lokalitet</Typography> */}
-            <LocationForm />
-          </TabPanel>
-          <TabPanel value={value} index={1} dir={theme.direction}>
-            {/* <Typography>Station</Typography> */}
-            <StationForm />
-          </TabPanel>
-          <TabPanel value={value} index={2} dir={theme.direction}>
-            <UdstyrReplace
-              stationId={stationId}
-              selected={selectedUnit}
-              setselected={setSelectedUnit}
-              trigger={triggerHistory}
-            />
-            <UdstyrForm mode={"edit"} />
-          </TabPanel>
-        </SwipeableViews>
+          <SwiperSlide>
+            <TabPanel value={value} index={0} dir={theme.direction}>
+              {/* <Typography>Lokalitet</Typography> */}
+              <LocationForm />
+            </TabPanel>
+          </SwiperSlide>
+          <SwiperSlide>
+            <TabPanel value={value} index={1} dir={theme.direction}>
+              {/* <Typography>Station</Typography> */}
+              <StationForm />
+            </TabPanel>
+          </SwiperSlide>
+          <SwiperSlide>
+            <TabPanel value={value} index={2} dir={theme.direction}>
+              <UdstyrReplace
+                stationId={stationId}
+                selected={selectedUnit}
+                setselected={setSelectedUnit}
+              />
+              <UdstyrForm mode={"edit"} />
+            </TabPanel>
+          </SwiperSlide>
+        </Swiper>
         <Grid container spacing={3} alignItems="center" justify="center">
           <Grid item xs={4} sm={2}>
             <Button

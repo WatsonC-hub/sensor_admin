@@ -11,8 +11,8 @@ import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import { Fragment } from "react";
 import moment from "moment";
 import { stamdataStore } from "../../state/store";
-import Grid from "@material-ui/core/Grid";
-import TablePagination from "@material-ui/core/TablePagination";
+import Grid from "@mui/material/Grid";
+import TablePagination from "@mui/material/TablePagination";
 
 export default function MobileMeasurements({
   measurements,

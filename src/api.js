@@ -109,9 +109,7 @@ async function getStations(locid) {
 
 async function getAvailableUnits() {
   const { data } = await axios.get(
-    `${extEndpoint}/stamdata/units?session_id=${sessionStorage.getItem(
-      "session_id"
-    )}`
+    `${extEndpoint}/stamdata/units?session_id=${authStore.getState().sessionId}`
   );
   return data.result;
 }
@@ -320,9 +318,7 @@ const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
 
 const updateStamdata = (data) =>
   axios.put(
-    `${extEndpoint}/stamdata?session_id=${sessionStorage.getItem(
-      "session_id"
-    )}`,
+    `${extEndpoint}/stamdata?session_id=${authStore.getState().sessionId}`,
     data
   );
 

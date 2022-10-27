@@ -10,10 +10,8 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
-  makeStyles,
-  useMediaQuery,
   FormLabel,
-  useTheme,
+  Box,
 } from "@mui/material";
 import { isValid } from "date-fns";
 import { InputAdornment } from "@mui/material";
@@ -117,8 +115,8 @@ export default function PejlingForm({
     <Card
       style={{ marginBottom: 25 }}
       sx={{
-        width: { xs: "100%", sm: "60%"},
-        marginLeft: {xs: "0%", sm: "20%"},
+        width: { xs: "100%", sm: "60%" },
+        marginLeft: { xs: "0%", sm: "20%" },
         textAlign: "center",
         justifyContent: "center",
         alignContent: "center",
@@ -260,11 +258,7 @@ export default function PejlingForm({
             </Button>
           </Grid>
           <Grid item xs={4} sm={2}>
-            <Button
-              color="grey"
-              variant="contained"
-              onClick={resetFormData}
-            >
+            <Button color="grey" variant="contained" onClick={resetFormData}>
               Annuller
             </Button>
           </Grid>

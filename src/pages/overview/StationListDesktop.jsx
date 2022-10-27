@@ -6,15 +6,12 @@ import ListItem from "@mui/material/ListItem";
 import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CircularProgress from "@mui/material/CircularProgress";
-import { DataTypeProvider } from "@devexpress/dx-react-grid";
 import {
   Grid,
   VirtualTable,
   TableHeaderRow,
   TableRowDetail,
 } from "@devexpress/dx-react-grid-material-ui";
-import { RowDetailState } from "@devexpress/dx-react-grid";
-import { getTableData } from "../../api";
 import { TextField, Tooltip } from "@mui/material";
 import LocationContext from "../../state/LocationContext";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
@@ -23,13 +20,14 @@ import BatteryAlertIcon from "@mui/icons-material/BatteryAlert";
 import BuildRoundedIcon from "@mui/icons-material/BuildRounded";
 import HeightIcon from "@mui/icons-material/Height";
 import PropTypes from "prop-types";
-import SwipeableViews from "react-swipeable-views";
-import { makeStyles, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 const RowDetail = ({ row }) => (
   <List>
@@ -169,26 +167,18 @@ function a11yProps(index) {
   };
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    backgroundColor: theme.palette.background.paper,
-    width: 500,
-  },
-}));
-
 export default function StationListDesktop({ data, loading }) {
   const [typeAhead, settypeAhead] = useState("");
   const { height, width } = useWindowDimensions();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
+  const [swiper, setSwiper] = useState(null);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    swiper.slideTo(newValue);
   };
 
-  const handleChangeIndex = (index) => {
-    setValue(index);
-  };
   var rows = [];
   if (!loading) {
     rows = data
@@ -236,64 +226,67 @@ export default function StationListDesktop({ data, loading }) {
           <Tab label="Mine DGU boringer" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
-      <SwipeableViews
-        axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-        index={value}
-        onChangeIndex={handleChangeIndex}
+      <Swiper
+        onSwiper={setSwiper}
+        onSlideChange={(swiper) => handleChange(null, swiper.activeIndex)}
       >
-        <TabPanel value={value} index={0} dir={theme.direction}>
-          <TextField
-            variant="outlined"
-            label={"Filtrer stationer"}
-            InputLabelProps={{ shrink: true }}
-            placeholder="Søg"
-            value={typeAhead}
-            onChange={(event) => settypeAhead(event.target.value)}
-            style={{ marginBottom: 12 }}
-          />
-          <Paper>
-            <Grid rows={rows} columns={columns}>
-              {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
-              {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
-              <VirtualTable
-                height={height - 200}
-                cellComponent={Cell}
-                messages={{ noData: "Ingen data" }}
-                // columnExtensions={column_extension}
-              />
-              {loading && <CircularProgress />}
-              <TableHeaderRow titleComponent={TitleCell} />
-              {/* <TableRowDetail contentComponent={RowDetail} /> */}
-            </Grid>
-          </Paper>
-        </TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction}>
-          <TextField
-            variant="outlined"
-            label={"Filtrer boringer"}
-            InputLabelProps={{ shrink: true }}
-            placeholder="Søg"
-            value={typeAhead}
-            onChange={(event) => settypeAhead(event.target.value)}
-            style={{ marginBottom: 12 }}
-          />
-          <Paper>
-            <Grid rows={rows} columns={columnsDGU}>
-              {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
-              {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
-              <VirtualTable
-                height={height - 200}
-                cellComponent={Cell}
-                messages={{ noData: "Ingen data" }}
-                // columnExtensions={column_extension}
-              />
-              {loading && <CircularProgress />}
-              <TableHeaderRow titleComponent={TitleCell} />
-              {/* <TableRowDetail contentComponent={RowDetail} /> */}
-            </Grid>
-          </Paper>
-        </TabPanel>
-      </SwipeableViews>
+        <SwiperSlide>
+          <TabPanel value={value} index={0} dir={theme.direction}>
+            <TextField
+              variant="outlined"
+              label={"Filtrer stationer"}
+              InputLabelProps={{ shrink: true }}
+              placeholder="Søg"
+              value={typeAhead}
+              onChange={(event) => settypeAhead(event.target.value)}
+              style={{ marginBottom: 12 }}
+            />
+            <Paper>
+              <Grid rows={rows} columns={columns}>
+                {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+                {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
+                <VirtualTable
+                  height={height - 200}
+                  cellComponent={Cell}
+                  messages={{ noData: "Ingen data" }}
+                  // columnExtensions={column_extension}
+                />
+                {loading && <CircularProgress />}
+                <TableHeaderRow titleComponent={TitleCell} />
+                {/* <TableRowDetail contentComponent={RowDetail} /> */}
+              </Grid>
+            </Paper>
+          </TabPanel>
+        </SwiperSlide>
+        <SwiperSlide>
+          <TabPanel value={value} index={1} dir={theme.direction}>
+            <TextField
+              variant="outlined"
+              label={"Filtrer boringer"}
+              InputLabelProps={{ shrink: true }}
+              placeholder="Søg"
+              value={typeAhead}
+              onChange={(event) => settypeAhead(event.target.value)}
+              style={{ marginBottom: 12 }}
+            />
+            <Paper>
+              <Grid rows={rows} columns={columnsDGU}>
+                {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+                {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
+                <VirtualTable
+                  height={height - 200}
+                  cellComponent={Cell}
+                  messages={{ noData: "Ingen data" }}
+                  // columnExtensions={column_extension}
+                />
+                {loading && <CircularProgress />}
+                <TableHeaderRow titleComponent={TitleCell} />
+                {/* <TableRowDetail contentComponent={RowDetail} /> */}
+              </Grid>
+            </Paper>
+          </TabPanel>
+        </SwiperSlide>
+      </Swiper>
     </div>
   );
 }

@@ -23,7 +23,6 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import moment from "moment";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 
 function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -52,25 +51,26 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Grid container style={{marginLeft: "2%"}}>
+      <Grid container style={{ marginLeft: "2%" }}>
         <Grid item xs={8}>
-          <img width="35" height="35" align="left" src={process.env.PUBLIC_URL + "/TilsynIcon.svg"} />
-          <Typography
-            gutterBottom
-            variant="h5"
-            component="h2"
-          >
+          <img
+            width="35"
+            height="35"
+            align="left"
+            src={process.env.PUBLIC_URL + "/TilsynIcon.svg"}
+          />
+          <Typography gutterBottom variant="h5" component="h2">
             Tilsyn
           </Typography>
         </Grid>
-        <Grid item xs={3} style={{marginLeft: "5%"}}>
+        <Grid item xs={3} style={{ marginLeft: "5%" }}>
           <TablePagination
-          rowsPerPageOptions={[5]}
-          component="div"
-          count={services.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
+            rowsPerPageOptions={[5]}
+            component="div"
+            count={services.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
           />
         </Grid>
       </Grid>
@@ -169,7 +169,7 @@ function MobileTilsyn({ services, handleEdit, handleDelete, canEdit }) {
         onOkDelete={deleteRow}
       />
       <Grid container>
-        <Grid item xs={5} style={{marginTop: "2.5%"}}>
+        <Grid item xs={5} style={{ marginTop: "2.5%" }}>
           <img width="30" height="30" align="left" src="/TilsynIcon.svg" />
           <Typography gutterBottom variant="h6" component="h2">
             Tilsyn
@@ -191,12 +191,37 @@ function MobileTilsyn({ services, handleEdit, handleDelete, canEdit }) {
         <List>
           {services.map((row, index) => (
             <ListItem key={index} dense>
-              {row.batteriskift ? <img width="30" height="30" align="left" style={{marginRight: "5px"}} src="/LowBatteryIcon.png" />
-                : row.tilsyn ? <img width="30" height="30" align="left" style={{marginRight: "5px"}} src="/EyeIcon.png" /> : ""}
+              {row.batteriskift ? (
+                <img
+                  width="30"
+                  height="30"
+                  align="left"
+                  style={{ marginRight: "5px" }}
+                  src="/LowBatteryIcon.png"
+                />
+              ) : row.tilsyn ? (
+                <img
+                  width="30"
+                  height="30"
+                  align="left"
+                  style={{ marginRight: "5px" }}
+                  src="/EyeIcon.png"
+                />
+              ) : (
+                ""
+              )}
               <ListItemText
-                primary={row.batteriskift && row.tilsyn ? <b>Batteri skiftet og tilsyn</b>
-                          : row.batteriskift && row.tilsyn !== true ? <b>Batteri skiftet</b>
-                          : row.batteriskift !== true && row.tilsyn ? <b>Tilsyn</b> : <b>"-"</b>}
+                primary={
+                  row.batteriskift && row.tilsyn ? (
+                    <b>Batteri skiftet og tilsyn</b>
+                  ) : row.batteriskift && row.tilsyn !== true ? (
+                    <b>Batteri skiftet</b>
+                  ) : row.batteriskift !== true && row.tilsyn ? (
+                    <b>Tilsyn</b>
+                  ) : (
+                    <b>"-"</b>
+                  )
+                }
                 secondary={moment(row.dato).format("YYYY-MM-DD HH:mm")}
               />
               <ListItemSecondaryAction>
