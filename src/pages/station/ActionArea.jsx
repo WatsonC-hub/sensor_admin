@@ -30,7 +30,7 @@ const borderGrey = {
   margin: "7px",
   boxShadow: "3px 3px 3px grey",
   backgroundColor: "#9E9E9E",
-},
+};
 
 const ITEM_HEIGHT = 48;
 
@@ -130,16 +130,19 @@ function MobileBottomNav({
   };
 
   return (
-    <BottomNavigation value={-1} showLabels
-    sx={{
-      backgroundColor: "secondary.main",
-      height: "auto",
-      margin: "5px",
-      boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
-      position: "sticky",
-      bottom: "0",
-      zIndex: 1,
-    }}>
+    <BottomNavigation
+      value={-1}
+      showLabels
+      sx={{
+        backgroundColor: "secondary.main",
+        height: "auto",
+        margin: "5px",
+        boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
+        position: "sticky",
+        bottom: "0",
+        zIndex: 1,
+      }}
+    >
       <BottomNavigationAction
         sx={bottomNavStyle}
         disabled={!canEdit}
