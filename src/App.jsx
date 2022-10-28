@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
-import AuthenticatedApp from "./AuthenticatedApp";
+import React, { useEffect, useState, Suspense } from "react";
+const authenticatedAppPromise = import("./AuthenticatedApp");
+const AuthenticatedApp = React.lazy(() => authenticatedAppPromise);
+// import AuthenticatedApp from "./AuthenticatedApp";
 import UnAuntenticatedApp from "./UnauthenticatedApp";
 import { authStore } from "./state/store";
+import LoadingSkeleton from "./LoadingSkeleton";
 
 function App() {
   const [authenticated] = authStore((state) => [state.authenticated]);
@@ -24,7 +27,11 @@ function App() {
     return <UnAuntenticatedApp />;
   }
 
-  return <AuthenticatedApp />;
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <AuthenticatedApp />
+    </Suspense>
+  );
 }
 
 export default App;
