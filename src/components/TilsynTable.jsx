@@ -52,7 +52,7 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Grid container style={{ marginLeft: "2%" }}>
+      <Grid container>
         <Grid item xs={8}>
           <img width="35" height="35" align="left" src="/TilsynIcon.svg" />
           <Typography gutterBottom variant="h5" component="h2">
@@ -165,7 +165,7 @@ function MobileTilsyn({ services, handleEdit, handleDelete, canEdit }) {
         onOkDelete={deleteRow}
       />
       <Grid container>
-        <Grid item xs={5} style={{ marginTop: "2.5%" }}>
+        <Grid item xs={5}>
           <img width="30" height="30" align="left" src="/TilsynIcon.svg" />
           <Typography gutterBottom variant="h6" component="h2">
             Tilsyn

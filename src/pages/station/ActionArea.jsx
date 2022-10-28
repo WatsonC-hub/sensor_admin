@@ -8,7 +8,6 @@ import {
   PlaylistAddCheck,
   PhotoCameraRounded,
 } from "@mui/icons-material";
-import { SpeedDial, SpeedDialAction } from "@mui/material";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import IconButton from "@mui/material/IconButton";
@@ -42,7 +41,8 @@ function DesktopBottomNav({
       value={-1}
       showLabels
       sx={{
-        backgroundColor: "secondary.main",
+        backgroundColor: "primary.main",
+        width: "auto",
         height: "auto",
         margin: "5px",
         boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
@@ -116,7 +116,6 @@ function MobileBottomNav({
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [openSpeedDial, setOpenSpeedDial] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

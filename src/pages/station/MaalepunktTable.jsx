@@ -51,7 +51,7 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Grid container style={{ marginLeft: "2%" }}>
+      <Grid container>
         <Grid item xs={8}>
           <img width="35" height="35" align="left" src="/RulerIcon.svg" />
           <Typography gutterBottom variant="h5" component="h2">

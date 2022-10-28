@@ -318,7 +318,7 @@ export default function EditStamdata({ setFormToShow, stationId }) {
             </TabPanel>
           </SwiperSlide>
         </Swiper>
-        <Grid container spacing={3} alignItems="center" justify="center">
+        <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus

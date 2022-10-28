@@ -225,7 +225,7 @@ export default function PejlingForm({
               </Grid>
             </>
           )}
-          <Grid item xs={12} sm={10}>
+          <Grid item xs={12} sm={12}>
             <TextField
               label={
                 <Typography variant="h6" component="h3">
@@ -241,7 +241,7 @@ export default function PejlingForm({
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
+
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
