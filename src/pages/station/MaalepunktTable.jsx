@@ -53,12 +53,7 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
       />
       <Grid container style={{ marginLeft: "2%" }}>
         <Grid item xs={8}>
-          <img
-            width="35"
-            height="35"
-            align="left"
-            src={process.env.PUBLIC_URL + "/RulerIcon.svg"}
-          />
+          <img width="35" height="35" align="left" src="/RulerIcon.svg" />
           <Typography gutterBottom variant="h5" component="h2">
             Målepunkter
           </Typography>

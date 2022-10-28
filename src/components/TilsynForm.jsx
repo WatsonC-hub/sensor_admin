@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardContent,
-  useTheme,
 } from "@mui/material";
 import { isValid } from "date-fns";
 import SaveIcon from "@mui/icons-material/Save";
@@ -49,8 +48,8 @@ export default function TilsynForm({
     <Card
       style={{ marginBottom: 25 }}
       sx={{
-        width: { xs: "100%", sm: "60%"},
-        marginLeft: {xs: "0%", sm: "20%"},
+        width: { xs: "100%", sm: "60%" },
+        marginLeft: { xs: "0%", sm: "20%" },
         textAlign: "center",
         justifyContent: "center",
         alignContent: "center",
@@ -60,7 +59,7 @@ export default function TilsynForm({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? "Opdater tilsyn" : "Indberet tilsyn"}
         </Typography>
-        <Grid container spacing={3} alignItems="center" justify="center">
+        <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={7}>
             <OwnDatePicker
               label={"Dato"}
@@ -112,7 +111,6 @@ export default function TilsynForm({
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
-              style={{ backgroundColor: theme.palette.secondary }}
               onClick={() => {
                 handleClickSubmit();
                 handleSubmit();
@@ -126,12 +124,7 @@ export default function TilsynForm({
             </Button>
           </Grid>
           <Grid item xs={4} sm={2}>
-            <Button
-              style={{ backgroundColor: theme.palette.secondary }}
-              onClick={resetFormData}
-              color="grey"
-              variant="contained"
-            >
+            <Button onClick={resetFormData} color="grey" variant="contained">
               Annuller
             </Button>
           </Grid>

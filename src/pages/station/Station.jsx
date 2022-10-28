@@ -30,17 +30,19 @@ import { useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { stamdataStore } from "../../state/store";
 import { toast } from "react-toastify";
+import useFormData from "../../hooks/useFormData";
 
 export default function Station({ stationId }) {
-  const [pejlingData, setPejlingData] = useState({
-    gid: -1,
-    timeofmeas: new Date(),
-    measurement: 0,
-    useforcorrection: 0,
-    comment: "",
-  });
+  const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] =
+    useFormData({
+      gid: -1,
+      timeofmeas: new Date(),
+      measurement: 0,
+      useforcorrection: 0,
+      comment: "",
+    });
 
-  const [mpData, setMpData] = useState({
+  const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: new Date(),
     enddate: new Date("2099-01-01"),
@@ -48,13 +50,14 @@ export default function Station({ stationId }) {
     mp_description: "",
   });
 
-  const [serviceData, setServiceData] = useState({
-    gid: -1,
-    dato: new Date(),
-    batteriskift: false,
-    tilsyn: false,
-    kommentar: "",
-  });
+  const [serviceData, setServiceData, changeServiceData, resetServiceData] =
+    useFormData({
+      gid: -1,
+      dato: new Date(),
+      batteriskift: false,
+      tilsyn: false,
+      kommentar: "",
+    });
 
   const [formToShow, setFormToShow] = useState(null);
 
@@ -158,61 +161,6 @@ export default function Station({ stationId }) {
     setcontrol(ctrls);
   }, [watlevmp, measurements]);
 
-  const changePejlingData = (field, value) => {
-    setPejlingData({
-      ...pejlingData,
-      [field]: value,
-    });
-  };
-
-  const resetPejlingData = () => {
-    setPejlingData({
-      gid: -1,
-      timeofmeas: moment().format("YYYY-MM-DD HH:mm:ss"),
-      measurement: 0,
-      useforcorrection: 0,
-      comment: "",
-    });
-
-    setFormToShow(null);
-  };
-
-  const changeMpData = (field, value) => {
-    setMpData({
-      ...mpData,
-      [field]: value,
-    });
-  };
-
-  const resetMpData = () => {
-    setMpData({
-      gid: -1,
-      startdate: moment().format("YYYY-MM-DD HH:mm:ss"),
-      enddate: moment("2099-01-01").format("YYYY-MM-DD HH:mm:ss"),
-      elevation: 0,
-      mp_description: "",
-    });
-
-    setFormToShow("ADDMAALEPUNKT");
-  };
-
-  const changeServiceData = (field, value) => {
-    setServiceData({
-      ...serviceData,
-      [field]: value,
-    });
-  };
-
-  const resetServiceData = () => {
-    setServiceData({
-      gid: -1,
-      dato: moment().format("YYYY-MM-DD HH:mm:ss"),
-      batteriskift: false,
-      tilsyn: false,
-      kommentar: "",
-    });
-  };
-
   const handleMpCancel = () => {
     resetMpData();
     setFormToShow(null);
@@ -241,6 +189,7 @@ export default function Station({ stationId }) {
     pejlingMutate.mutate(payload, {
       onSuccess: (data) => {
         resetPejlingData();
+        setFormToShow(null);
         toast.success("Kontrolmåling gemt");
         queryClient.invalidateQueries(["measurements", stationId]);
       },
@@ -353,6 +302,7 @@ export default function Station({ stationId }) {
         deleteMeasurement(stationId, gid).then((res) => {
           queryClient.invalidateQueries(["measurements", stationId]);
           resetPejlingData();
+          setFormToShow(null);
           toast.success("Kontrolmåling slettet");
         });
       };
@@ -374,7 +324,10 @@ export default function Station({ stationId }) {
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}
-          resetFormData={resetPejlingData}
+          resetFormData={() => {
+            resetPejlingData();
+            setFormToShow(null);
+          }}
           canEdit={canEdit}
           mpData={watlevmp}
           isWaterlevel={isWaterlevel}

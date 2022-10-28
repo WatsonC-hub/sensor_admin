@@ -13,8 +13,6 @@ import { InputAdornment } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import OwnDatePicker from "./OwnDatePicker";
 
-
-
 export default function MaalepunktForm({
   formData,
   changeFormData,
@@ -53,13 +51,12 @@ export default function MaalepunktForm({
     changeFormData("elevation", e.target.value);
   };
 
-
   return (
-    <Card 
+    <Card
       style={{ marginBottom: 25 }}
       sx={{
-        width: { xs: "100%", sm: "60%"},
-        marginLeft: {xs: "0%", sm: "20%"},
+        width: { xs: "100%", sm: "60%" },
+        marginLeft: { xs: "0%", sm: "20%" },
         textAlign: "center",
         justifyContent: "center",
         alignContent: "center",
@@ -69,7 +66,7 @@ export default function MaalepunktForm({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? "Opdater målepunkt" : "Indberet målepunkt"}
         </Typography>
-        <Grid container spacing={3} alignItems="center" justify="center">
+        <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={8}>
             <TextField
               type="number"
@@ -99,11 +96,11 @@ export default function MaalepunktForm({
           </Grid>
           {formData.gid !== -1 && (
             <Grid item xs={12} sm={6}>
-                <OwnDatePicker
-                  label={"Slut dato"}
-                  value={formData.enddate}
-                  onChange={(date) => handleEnddateChange(date)}
-                />
+              <OwnDatePicker
+                label={"Slut dato"}
+                value={formData.enddate}
+                onChange={(date) => handleEnddateChange(date)}
+              />
             </Grid>
           )}
           <Grid item xs={12} sm={10}>
@@ -126,7 +123,6 @@ export default function MaalepunktForm({
           <Grid item xs={4} sm={2}>
             <Button
               autoFocus
-              style={{ backgroundColor: theme.palette.secondary }}
               onClick={() => {
                 handleClickSubmit();
                 handleSubmit();
@@ -140,12 +136,7 @@ export default function MaalepunktForm({
             </Button>
           </Grid>
           <Grid item xs={4} sm={2}>
-            <Button
-              style={{ backgroundColor: theme.palette.secondary }}
-              onClick={handleCancel}
-              color="grey"
-              variant="contained"
-            >
+            <Button onClick={handleCancel} color="grey" variant="contained">
               Annuller
             </Button>
           </Grid>

@@ -8,6 +8,7 @@ import {
   PlaylistAddCheck,
   PhotoCameraRounded,
 } from "@mui/icons-material";
+import { SpeedDial, SpeedDialAction } from "@mui/material";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import IconButton from "@mui/material/IconButton";
@@ -17,18 +18,14 @@ import MenuIcon from "@mui/icons-material/MoreVert";
 import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
 
 const bottomNavStyle = {
-  borderRadius: 3,
-  margin: "7px",
-  boxShadow: "0 3px 5px 0px rgba(115,115,115,255)",
-  backgroundColor: "secondary.main",
-  height: 52,
-};
-
-const borderGrey = {
-  //border: "2px solid black",
   borderRadius: 5,
   margin: "7px",
   boxShadow: "3px 3px 3px grey",
+  backgroundColor: "secondary.main",
+};
+
+const borderGrey = {
+  ...bottomNavStyle,
   backgroundColor: "#9E9E9E",
 };
 
@@ -117,9 +114,9 @@ function MobileBottomNav({
   isCalculated,
   isWaterlevel,
 }) {
-  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [openSpeedDial, setOpenSpeedDial] = useState(false);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -134,7 +131,7 @@ function MobileBottomNav({
       value={-1}
       showLabels
       sx={{
-        backgroundColor: "secondary.main",
+        backgroundColor: "primary.main",
         height: "auto",
         margin: "5px",
         boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
@@ -184,7 +181,7 @@ function MobileBottomNav({
             aria-controls="long-menu"
             aria-haspopup="true"
             onClick={handleClick}
-            size="large"
+            size="medium"
           >
             <MenuIcon />
           </IconButton>
@@ -195,10 +192,8 @@ function MobileBottomNav({
             open={open}
             onClose={handleClose}
             PaperProps={{
-              style: {
-                maxHeight: ITEM_HEIGHT * 4.5,
-                width: "auto",
-                backgroundColor: theme.palette.primary.main,
+              sx: {
+                backgroundColor: "primary.main",
               },
             }}
           >

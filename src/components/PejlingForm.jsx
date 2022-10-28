@@ -126,7 +126,7 @@ export default function PejlingForm({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? "Opdater kontrol" : "Indberet kontrol"}
         </Typography>
-        <Grid container spacing={3} alignItems="center" justify="center">
+        <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={12}>
             <Tooltip title="f.eks. tør eller tilfrossen">
               <FormControlLabel
@@ -159,7 +159,7 @@ export default function PejlingForm({
             />
           </Grid>
         </Grid>
-        <Grid container spacing={3} alignItems="center" justify="center">
+        <Grid container spacing={3} alignItems="center" justifyContent="center">
           {isWaterlevel && (
             <>
               <Grid item xs={12} sm={7}>

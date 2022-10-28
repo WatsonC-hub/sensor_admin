@@ -22,6 +22,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import Grid from "@mui/material/Grid";
 import moment from "moment";
 
 function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
@@ -53,12 +54,7 @@ function DesktopTilsyn({ services, handleEdit, handleDelete, canEdit }) {
       />
       <Grid container style={{ marginLeft: "2%" }}>
         <Grid item xs={8}>
-          <img
-            width="35"
-            height="35"
-            align="left"
-            src={process.env.PUBLIC_URL + "/TilsynIcon.svg"}
-          />
+          <img width="35" height="35" align="left" src="/TilsynIcon.svg" />
           <Typography gutterBottom variant="h5" component="h2">
             Tilsyn
           </Typography>
