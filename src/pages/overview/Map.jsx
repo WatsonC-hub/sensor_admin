@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet.locatecontrol";
 import LocationContext from "../../state/LocationContext";
@@ -28,7 +28,7 @@ let inactiveIcon = L.icon({
 
 function Map({ sensorData, loading }) {
   const context = useContext(LocationContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const mapRef = React.useRef(null);
   const layerRef = React.useRef(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
@@ -41,7 +41,7 @@ function Map({ sensorData, loading }) {
     if (_popup && _popup.length > 0) {
       L.DomEvent.on(_popup[0], "click", () => {
         context.setLocationId(element.locid);
-        history.push("location/" + element.locid);
+        navigate("location/" + element.locid);
         context.setTabValue(1);
       });
     }

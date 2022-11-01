@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -19,14 +19,14 @@ import HeightIcon from "@mui/icons-material/Height";
 
 export default function StationList({ data }) {
   const context = useContext(LocationContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [typeAhead, settypeAhead] = useState("");
 
   const handleClick = (elem) => {
     console.log("elem loc: ", elem);
     context.setLocationId(elem.loc_id);
     context.setTabValue(0);
-    history.push(`location/${elem.loc_id}/${elem.ts_id}`);
+    navigate(`location/${elem.loc_id}/${elem.ts_id}`);
   };
 
   if (!data) return <CircularProgress />;

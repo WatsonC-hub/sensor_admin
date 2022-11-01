@@ -1,35 +1,34 @@
 import React, { useEffect, useState, Suspense } from "react";
-const authenticatedAppPromise = import("./AuthenticatedApp");
-const AuthenticatedApp = React.lazy(() => authenticatedAppPromise);
+const sensorFieldPromise = import("./SensorField");
+const SensorField = React.lazy(() => sensorFieldPromise);
 // import AuthenticatedApp from "./AuthenticatedApp";
 import UnAuntenticatedApp from "./UnauthenticatedApp";
 import { authStore } from "./state/store";
 import LoadingSkeleton from "./LoadingSkeleton";
+import { apiClient } from "./api";
+import AppChooser from "./AppChooser";
 
 function App() {
   const [authenticated] = authStore((state) => [state.authenticated]);
 
   useEffect(() => {
-    fetch("/api", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      });
+    apiClient.get("/auth/me/secure").then((res) => {
+      console.log(res);
+    });
   }, []);
 
   console.log("authenticated => ", authenticated);
+
+  // TODO:
+  // 1. Added token expiration check
+
   if (!authenticated) {
     return <UnAuntenticatedApp />;
   }
 
   return (
     <Suspense fallback={<LoadingSkeleton />}>
-      <AuthenticatedApp />
+      <AppChooser />
     </Suspense>
   );
 }

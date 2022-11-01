@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Container, Grid, Typography, Button, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import "date-fns";
@@ -56,9 +56,7 @@ function LocationChooser({ setLocationDialogOpen }) {
   };
 
   const { data: locations } = useQuery(["locations"], async () => {
-    const { data } = await apiClient.get(
-      "/api/sensor_field/stamdata/locations"
-    );
+    const { data } = await apiClient.get("/sensor_field/stamdata/locations");
     return data;
   });
 
@@ -150,7 +148,7 @@ function Location({ setLocationDialogOpen }) {
 }
 
 export default function OpretStamdata({ setAddStationDisabled }) {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
 
@@ -161,7 +159,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
 
   const stamdataMutation = useMutation(postStamdata, {
     onSuccess: (data) => {
-      history.push("/");
+      navigate("/");
       queryClient.invalidateQueries("station_list");
       queryClient.invalidateQueries("map_data");
     },
@@ -252,7 +250,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
               color="grey"
               variant="contained"
               onClick={() => {
-                history.push("/");
+                navigate("/");
                 setAddStationDisabled(false);
               }}
             >

@@ -10,7 +10,7 @@ import LocationContext from "../../state/LocationContext";
 import Station from "./Station";
 import { getStations } from "../../api";
 import MinimalSelect from "../Location/MinimalSelect";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 export default function LocationDrawer() {
@@ -18,7 +18,7 @@ export default function LocationDrawer() {
 
   const theme = useTheme();
   const params = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { data } = useQuery(
     ["stations", params.locid],
@@ -37,7 +37,7 @@ export default function LocationDrawer() {
         statId = "";
         if (data.length === 1) {
           statId = data[0].ts_id;
-          history.replace(`/location/${params.locid}/${statId}`);
+          navigate(`/location/${params.locid}/${statId}`, { replace: true });
         }
         setSelectedItem(statId);
       }
@@ -54,7 +54,7 @@ export default function LocationDrawer() {
         <Toolbar>
           <IconButton
             color="inherit"
-            onClick={(e) => history.push("/")}
+            onClick={(e) => navigate("/")}
             size="large"
           >
             <KeyboardBackspaceIcon />

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
-import { Switch, Route, useHistory, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -10,7 +10,7 @@ import { ReactComponent as LogoSvg } from "./calypso.svg";
 
 export default function UnAuntenticatedApp({}) {
   const [registerDisabled, setRegisterDisabled] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   let location = useLocation();
 
   return (
@@ -33,7 +33,7 @@ export default function UnAuntenticatedApp({}) {
               color="secondary"
               variant="contained"
               onClick={() => {
-                history.push("/pages/register");
+                navigate("/pages/register");
               }}
             >
               Opret konto
@@ -42,21 +42,21 @@ export default function UnAuntenticatedApp({}) {
             <Button
               color="secondary"
               variant="contained"
-              onClick={(e) => history.push("/")}
+              onClick={(e) => navigate("/")}
             >
               Log ind
             </Button>
           )}
         </Toolbar>
       </AppBar>
-      <Switch>
-        <Route exact path="/pages/register">
-          <Register setRegisterDisabled={setRegisterDisabled} />
-        </Route>
-        <Route path={["/", "/:labelid"]}>
-          <Login />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route
+          path="/pages/register"
+          element={<Register setRegisterDisabled={setRegisterDisabled} />}
+        />
+        <Route path="/" element={<Login />} />
+        <Route path="/:labelid" element={<Login />} />
+      </Routes>
     </div>
   );
 }

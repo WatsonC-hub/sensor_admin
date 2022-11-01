@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -15,11 +15,13 @@ const MinimalSelect = ({
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.statid ? false : true);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
-    history.replace(`/location/${locid}/${event.target.value}`);
+    navigate(`/location/${locid}/${event.target.value}`, {
+      replace: true,
+    });
     setIsOpen(false);
   };
 

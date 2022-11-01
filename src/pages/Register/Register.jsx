@@ -12,7 +12,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import { Typography } from "@mui/material";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
@@ -32,10 +32,9 @@ export default function Register() {
     return re.test(email);
   };
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const routeChange = () => {
-    let path = `/`;
-    history.push(path);
+    navigate(`/`);
   };
 
   const {

@@ -6,7 +6,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
 import QrReader from "react-qr-scanner";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Typography } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function CaptureDialog({ handleClose, open }) {
   // const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [showText, setShowText] = useState(true);
 
@@ -24,7 +24,7 @@ export default function CaptureDialog({ handleClose, open }) {
       const calypso_id = data["text"].split("/")[3];
       console.log(calypso_id);
       handleClose();
-      history.push(`${calypso_id}`);
+      navigate(`${calypso_id}`);
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Route, Switch, useHistory, useLocation } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import { useTheme } from "@mui/material/styles";
 import SimpleTabs from "./components/SimpleTabs";
@@ -18,22 +18,14 @@ import LocationContext from "./state/LocationContext";
 import CaptureDialog from "./pages/station/CaptureDialog";
 import { authStore } from "./state/store";
 
-/*
-Libraries to explore for this app:
-- react-query => for http requests instead of fetch, 
-- hapi/joy => schema validation (joy.dev)
-- react/route or reach-router
-- test azure web apps
-*/
-
-function AuthenticatedApp({}) {
+function SensorField({}) {
   const [locationId, setLocationId] = useState(-1);
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
   const [addStationDisabled, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useState(false);
   const theme = useTheme();
-  const history = useHistory();
+  const navigate = useNavigate();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
   const [setAuthenticated, setUser, setSessionId] = authStore((state) => [
@@ -85,7 +77,7 @@ function AuthenticatedApp({}) {
                 color="secondary"
                 variant="contained"
                 onClick={() => {
-                  history.push("/stamdata");
+                  navigate("stamdata");
                   //setAddStationDisabled(true);
                 }}
               >
@@ -95,7 +87,7 @@ function AuthenticatedApp({}) {
               <IconButton
                 color="inherit"
                 onClick={
-                  (e) => history.push("/") //context.setLocationId(-1)
+                  (e) => navigate("/") //context.setLocationId(-1)
                 }
                 size="large"
               >
@@ -113,35 +105,26 @@ function AuthenticatedApp({}) {
               </IconButton>
             )}
 
-            <Button
-              color="grey"
-              variant="contained"
-              onClick={handleLogout}
-            >
+            <Button color="grey" variant="contained" onClick={handleLogout}>
               Log ud
             </Button>
           </Toolbar>
         </AppBar>
-        <Switch>
-          <Route path="/" exact>
-            <SimpleTabs />
-          </Route>
-          <Route path="/location/:locid/:statid">
-            <LocationDrawer />
-          </Route>
-          <Route path="/location/:locid">
-            <LocationDrawer />
-          </Route>
-          <Route path="/stamdata">
-            <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
-          </Route>
-          <Route path="/:labelid">
-            <ScanComponent />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route path="/" element={<SimpleTabs />} />
+          <Route path="/location/:locid/:statid" element={<LocationDrawer />} />
+          <Route path="/location/:locid" element={<LocationDrawer />} />
+          <Route
+            path="stamdata"
+            element={
+              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
+            }
+          />
+          <Route path="/:labelid" element={<ScanComponent />} />
+        </Routes>
       </div>
     </LocationContext.Provider>
   );
 }
 
-export default AuthenticatedApp;
+export default SensorField;

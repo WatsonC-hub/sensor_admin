@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -86,7 +86,7 @@ const StatusCell = ({ color, style, ...restProps }) => {
 
 const Cell = (props) => {
   const context = useContext(LocationContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { column } = props;
   if (column.name === "color") {
     return <StatusCell {...props} />;
@@ -100,7 +100,7 @@ const Cell = (props) => {
         context.setLocationId(loc);
         context.setTabValue(0);
 
-        history.push(`location/${loc}/${stat}`);
+        navigate(`location/${loc}/${stat}`);
       }}
     />
   );

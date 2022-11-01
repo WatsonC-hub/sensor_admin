@@ -262,8 +262,6 @@ export default function EditStamdata({ setFormToShow, stationId }) {
       .catch((error) => {
         toast.error("Der skete en fejl");
       });
-
-    // history.push("/");
   };
 
   const handleChange = (event, newValue) => {
