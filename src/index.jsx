@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const theme = createTheme({
   palette: {
-    type: "light",
+    // type: "light",
     primary: {
       main: "rgb(0,120,109)",
     },

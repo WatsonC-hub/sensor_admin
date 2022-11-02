@@ -26,7 +26,7 @@ import MaalepunktTable from "./MaalepunktTable";
 import TilsynForm from "../../components/TilsynForm";
 import TilsynTable from "../../components/TilsynTable";
 import StationImages from "./StationImages";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { stamdataStore } from "../../state/store";
 import { toast } from "react-toastify";
@@ -59,9 +59,23 @@ export default function Station({ stationId }) {
       kommentar: "",
     });
 
-  const [formToShow, setFormToShow] = useState(null);
+  // const [formToShow, setFormToShow] = useState(null);
 
   let location = useLocation();
+  let navigate = useNavigate();
+  let params = useParams();
+
+  const formToShow = location.hash ? location.hash.replace("#", "") : null;
+
+  const setFormToShow = (form) => {
+    if (form) {
+      navigate("#" + form, { replace: location.hash !== "" });
+    } else {
+      navigate(`/field/location/${params.locid}/${params.statid}`, {
+        replace: true,
+      });
+    }
+  };
 
   const [dynamic, setDynamic] = useState([]);
   const [control, setcontrol] = useState([]);

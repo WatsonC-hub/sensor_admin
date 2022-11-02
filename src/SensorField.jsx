@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
-import "./App.css";
 import { useTheme } from "@mui/material/styles";
 import SimpleTabs from "./components/SimpleTabs";
 import LocationDrawer from "./pages/station/LocationDrawer";
@@ -17,13 +16,15 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import LocationContext from "./state/LocationContext";
 import CaptureDialog from "./pages/station/CaptureDialog";
 import { authStore } from "./state/store";
+import { useAtom } from "jotai";
+import { captureDialogAtom } from "./state/atoms";
 
 function SensorField({}) {
   const [locationId, setLocationId] = useState(-1);
   const [stationId, setStationId] = useState(-1);
   const [tabValue, setTabValue] = useState(0);
   const [addStationDisabled, setAddStationDisabled] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useAtom(captureDialogAtom);
   const theme = useTheme();
   const navigate = useNavigate();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
@@ -33,10 +34,6 @@ function SensorField({}) {
     state.setUser,
     state.setSessionId,
   ]);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
 
   const handleClose = () => {
     setOpen(false);
@@ -63,57 +60,10 @@ function SensorField({}) {
     >
       <div className="App">
         {open && <CaptureDialog open={open} handleClose={handleClose} />}
-        <AppBar position="sticky">
-          <Toolbar
-            style={{
-              flexGrow: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            {location.pathname !== "/stamdata" ? (
-              <Button
-                disabled={addStationDisabled}
-                color="secondary"
-                variant="contained"
-                onClick={() => {
-                  navigate("stamdata");
-                  //setAddStationDisabled(true);
-                }}
-              >
-                Opret station
-              </Button>
-            ) : (
-              <IconButton
-                color="inherit"
-                onClick={
-                  (e) => navigate("/") //context.setLocationId(-1)
-                }
-                size="large"
-              >
-                <KeyboardBackspaceIcon />
-              </IconButton>
-            )}
-
-            {matches && (
-              <IconButton
-                color="inherit"
-                onClick={handleClickOpen}
-                size="large"
-              >
-                <PhotoCameraRounded />
-              </IconButton>
-            )}
-
-            <Button color="grey" variant="contained" onClick={handleLogout}>
-              Log ud
-            </Button>
-          </Toolbar>
-        </AppBar>
         <Routes>
           <Route path="/" element={<SimpleTabs />} />
-          <Route path="/location/:locid/:statid" element={<LocationDrawer />} />
-          <Route path="/location/:locid" element={<LocationDrawer />} />
+          <Route path="location/:locid/:statid" element={<LocationDrawer />} />
+          <Route path="location/:locid" element={<LocationDrawer />} />
           <Route
             path="stamdata"
             element={

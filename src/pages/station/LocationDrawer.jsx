@@ -6,11 +6,10 @@ import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import LocationContext from "../../state/LocationContext";
 import Station from "./Station";
 import { getStations } from "../../api";
 import MinimalSelect from "../Location/MinimalSelect";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 export default function LocationDrawer() {
@@ -18,6 +17,7 @@ export default function LocationDrawer() {
 
   const theme = useTheme();
   const params = useParams();
+  let location = useLocation();
   const navigate = useNavigate();
 
   const { data } = useQuery(
@@ -37,7 +37,9 @@ export default function LocationDrawer() {
         statId = "";
         if (data.length === 1) {
           statId = data[0].ts_id;
-          navigate(`/location/${params.locid}/${statId}`, { replace: true });
+          navigate(`/field/location/${params.locid}/${statId}`, {
+            replace: true,
+          });
         }
         setSelectedItem(statId);
       }
@@ -48,13 +50,22 @@ export default function LocationDrawer() {
     <div>
       <CssBaseline />
       <AppBar
-        position="fixed"
+        position="sticky"
         style={{ backgroundColor: theme.palette.primary }}
       >
         <Toolbar>
           <IconButton
             color="inherit"
-            onClick={(e) => navigate("/")}
+            onClick={(e) => {
+              console.log(location.hash);
+              if (location.hash == "") {
+                navigate(-1);
+              } else {
+                navigate(`/field/location/${params.locid}/${params.statid}`, {
+                  replace: true,
+                });
+              }
+            }}
             size="large"
           >
             <KeyboardBackspaceIcon />
@@ -75,7 +86,6 @@ export default function LocationDrawer() {
         }}
       >
         <div />
-
         <Station stationId={params.statid ? params.statid : -1} />
       </main>
     </div>

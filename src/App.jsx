@@ -1,12 +1,12 @@
 import React, { useEffect, useState, Suspense } from "react";
-const sensorFieldPromise = import("./SensorField");
-const SensorField = React.lazy(() => sensorFieldPromise);
+
 // import AuthenticatedApp from "./AuthenticatedApp";
 import UnAuntenticatedApp from "./UnauthenticatedApp";
 import { authStore } from "./state/store";
 import LoadingSkeleton from "./LoadingSkeleton";
 import { apiClient } from "./api";
-import AppChooser from "./AppChooser";
+import Redirecter from "./Redirecter";
+import NavBar from "./NavBar";
 
 function App() {
   const [authenticated] = authStore((state) => [state.authenticated]);
@@ -18,17 +18,24 @@ function App() {
   }, []);
 
   console.log("authenticated => ", authenticated);
+  const sensorFieldPromise = import("./SensorField");
+  const SensorField = React.lazy(() => sensorFieldPromise);
 
   // TODO:
   // 1. Added token expiration check
 
   if (!authenticated) {
-    return <UnAuntenticatedApp />;
+    return (
+      <>
+        <NavBar />
+        <UnAuntenticatedApp />
+      </>
+    );
   }
 
   return (
     <Suspense fallback={<LoadingSkeleton />}>
-      <AppChooser />
+      <Redirecter SensorField={SensorField} />
     </Suspense>
   );
 }

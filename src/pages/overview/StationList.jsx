@@ -81,7 +81,6 @@ export default function StationList({ data }) {
 }
 
 function TypeIcon(props) {
-  console.log(props.row);
   return (
     <span
       style={{

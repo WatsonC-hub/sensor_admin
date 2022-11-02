@@ -19,7 +19,7 @@ const MinimalSelect = ({
 
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
-    navigate(`/location/${locid}/${event.target.value}`, {
+    navigate(`/field/location/${locid}/${event.target.value}`, {
       replace: true,
     });
     setIsOpen(false);

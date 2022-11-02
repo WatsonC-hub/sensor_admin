@@ -15,6 +15,8 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/MoreVert";
 import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
+import { useLocation, useNavigate } from "react-router-dom";
+import { replace } from "lodash";
 
 const bottomNavStyle = {
   borderRadius: 5,
@@ -36,6 +38,7 @@ function DesktopBottomNav({
   isCalculated,
   isWaterlevel,
 }) {
+  let navigate = useNavigate();
   return (
     <BottomNavigation
       value={-1}
@@ -116,6 +119,7 @@ function MobileBottomNav({
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  let navigate = useNavigate();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
