@@ -15,10 +15,13 @@ import SignalCellularConnectedNoInternet0BarRoundedIcon from "@mui/icons-materia
 import BatteryAlertIcon from "@mui/icons-material/BatteryAlert";
 import BuildRoundedIcon from "@mui/icons-material/BuildRounded";
 import HeightIcon from "@mui/icons-material/Height";
+import { FixedSizeList } from "react-window";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 export default function StationList({ data }) {
   const navigate = useNavigate();
   const [typeAhead, settypeAhead] = useState("");
+  const { height, width } = useWindowDimensions();
 
   const handleClick = (elem) => {
     console.log("elem loc: ", elem);
@@ -34,6 +37,29 @@ export default function StationList({ data }) {
     );
   });
 
+  const Row = ({ index, style }) => (
+    <>
+      <ListItem
+        onClick={(e) => handleClick(rows[index])}
+        dense
+        style={style}
+        key={index}
+        component="div"
+        disablePadding
+      >
+        <TypeIcon row={rows[index]} />
+        <ListItemText
+          primary={rows[index].ts_name}
+          secondary={
+            rows[index].active ? "Calypso ID: " + rows[index].calypso_id : " "
+          }
+        />
+        <StatusText row={rows[index]} />
+      </ListItem>
+      {/* <Divider component="li" /> */}
+    </>
+  );
+
   return (
     <div>
       <TextField
@@ -47,31 +73,14 @@ export default function StationList({ data }) {
         size="small"
         align="center"
       />
-      <List>
-        {data &&
-          rows.map((elem, index) => {
-            return (
-              <div>
-                <ListItem
-                  key={index}
-                  button
-                  onClick={(e) => handleClick(elem)}
-                  dense
-                >
-                  <TypeIcon row={elem} />
-                  <ListItemText
-                    primary={elem.ts_name}
-                    secondary={
-                      elem.active ? "Calypso ID: " + elem.calypso_id : " "
-                    }
-                  />
-                  <StatusText row={elem} />
-                </ListItem>
-                <Divider component="li" />
-              </div>
-            );
-          })}
-      </List>
+      <FixedSizeList
+        itemSize={46}
+        itemCount={rows.length}
+        overscanCount={5}
+        height={height - 56 - 48 - 40 - 80}
+      >
+        {Row}
+      </FixedSizeList>
     </div>
   );
 }
