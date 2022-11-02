@@ -8,7 +8,6 @@ import TableChart from "@mui/icons-material/TableChart";
 import TabPanel from "./TabPanel";
 import Map from "../pages/overview/Map";
 import StationListDesktop from "../pages/overview/StationListDesktop";
-import LocationContext from "../state/LocationContext";
 import StationList from "../pages/overview/StationList";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { getTableData, getSensorData } from "../api";

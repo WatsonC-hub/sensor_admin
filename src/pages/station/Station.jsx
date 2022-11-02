@@ -222,7 +222,7 @@ export default function Station({ stationId }) {
   });
 
   const handleMpSubmit = () => {
-    setFormToShow("ADDMAALEPUNKT");
+    // setFormToShow("ADDMAALEPUNKT");
     const userId = sessionStorage.getItem("user");
     const payload = { ...mpData, userid: userId, stationid: stationId };
     payload.startdate = moment(payload.startdate).format("YYYY-MM-DD HH:mm:ss");

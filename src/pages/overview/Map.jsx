@@ -1,9 +1,7 @@
-import React, { useEffect, useContext, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet.locatecontrol";
-import LocationContext from "../../state/LocationContext";
-import Button from "@mui/material/Button";
 import { atom, useAtom } from "jotai";
 
 const zoomAtom = atom(null);
@@ -27,7 +25,6 @@ let inactiveIcon = L.icon({
 });
 
 function Map({ sensorData, loading }) {
-  const context = useContext(LocationContext);
   const navigate = useNavigate();
   const mapRef = React.useRef(null);
   const layerRef = React.useRef(null);
@@ -40,9 +37,7 @@ function Map({ sensorData, loading }) {
     );
     if (_popup && _popup.length > 0) {
       L.DomEvent.on(_popup[0], "click", () => {
-        context.setLocationId(element.locid);
         navigate("location/" + element.locid);
-        context.setTabValue(1);
       });
     }
   };

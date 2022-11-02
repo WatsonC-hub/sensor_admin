@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -9,7 +9,6 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { TextField } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import StraightenIcon from "@mui/icons-material/Straighten";
-import LocationContext from "../../state/LocationContext";
 import { CircularProgress } from "@mui/material";
 import SpeedIcon from "@mui/icons-material/Speed";
 import SignalCellularConnectedNoInternet0BarRoundedIcon from "@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded";
@@ -18,14 +17,11 @@ import BuildRoundedIcon from "@mui/icons-material/BuildRounded";
 import HeightIcon from "@mui/icons-material/Height";
 
 export default function StationList({ data }) {
-  const context = useContext(LocationContext);
   const navigate = useNavigate();
   const [typeAhead, settypeAhead] = useState("");
 
   const handleClick = (elem) => {
     console.log("elem loc: ", elem);
-    context.setLocationId(elem.loc_id);
-    context.setTabValue(0);
     navigate(`location/${elem.loc_id}/${elem.ts_id}`);
   };
 

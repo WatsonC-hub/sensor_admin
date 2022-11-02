@@ -13,7 +13,6 @@ import {
   TableRowDetail,
 } from "@devexpress/dx-react-grid-material-ui";
 import { TextField, Tooltip } from "@mui/material";
-import LocationContext from "../../state/LocationContext";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import SignalCellularConnectedNoInternet0BarRoundedIcon from "@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded";
 import BatteryAlertIcon from "@mui/icons-material/BatteryAlert";
@@ -85,7 +84,6 @@ const StatusCell = ({ color, style, ...restProps }) => {
 };
 
 const Cell = (props) => {
-  const context = useContext(LocationContext);
   const navigate = useNavigate();
   const { column } = props;
   if (column.name === "color") {
@@ -97,8 +95,6 @@ const Cell = (props) => {
       style={{ cursor: "pointer" }}
       onClick={(e) => {
         let [loc, stat] = props.row.station_loc_id.split("_");
-        context.setLocationId(loc);
-        context.setTabValue(0);
 
         navigate(`location/${loc}/${stat}`);
       }}
