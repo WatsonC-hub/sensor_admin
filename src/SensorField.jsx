@@ -13,22 +13,9 @@ import { captureDialogAtom } from "./state/atoms";
 function SensorField({}) {
   const [addStationDisabled, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
-  const [setAuthenticated, setUser, setSessionId] = authStore((state) => [
-    state.setAuthenticated,
-    state.setUser,
-    state.setSessionId,
-  ]);
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleLogout = () => {
-    // sessionStorage.removeItem("session_id");
-    // sessionStorage.removeItem("user");
-    setAuthenticated(false);
-    setSessionId(null);
-    setUser(null);
   };
 
   return (
