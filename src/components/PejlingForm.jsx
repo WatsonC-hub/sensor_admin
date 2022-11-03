@@ -56,6 +56,10 @@ export default function PejlingForm({
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (mpData.length > 0) {
       var mp = mpData.filter((elem) => {
         if (
