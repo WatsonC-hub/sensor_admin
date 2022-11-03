@@ -31,7 +31,7 @@ const OwnDatePicker = (props) => {
         KeyboardButtonProps={{
           "aria-label": "change date",
         }}
-        renderInput={(params) => <TextField {...params} />}
+        renderInput={(params) => <TextField sx={props.sx} {...params} />}
         fullWidth
         error={props.error}
         helperText={props.helperText}

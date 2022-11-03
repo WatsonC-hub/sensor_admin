@@ -327,6 +327,10 @@ export default function BearingGraph({
         marginTop: "-10px",
         paddingTop: "5px",
         border: "2px solid gray",
+        // position: "-webkit-sticky",
+        // position: "sticky",
+        // top: 20,
+        // zIndex: 100,
       }}
     >
       <PlotGraph

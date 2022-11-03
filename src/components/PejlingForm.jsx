@@ -22,6 +22,8 @@ import { Checkbox } from "@mui/material";
 import { Tooltip } from "@mui/material";
 import { stamdataStore } from "../state/store";
 
+// TODO
+// - Find ud af om textfield skal have grøn outline
 export default function PejlingForm({
   stationId,
   formData,
@@ -130,13 +132,24 @@ export default function PejlingForm({
           <Grid item xs={12} sm={12}>
             <Tooltip title="f.eks. tør eller tilfrossen">
               <FormControlLabel
-                control={<Checkbox onChange={handleNotPossibleChange} />}
+                control={
+                  <Checkbox
+                    sx={{ color: "primary.main" }}
+                    onChange={handleNotPossibleChange}
+                  />
+                }
                 label="Måling ikke mulig"
               />
             </Tooltip>
           </Grid>
           <Grid item xs={12} sm={7}>
             <TextField
+              sx={{
+                "& .MuiInputLabel-root": { color: "primary.main" }, //styles the label
+                "& .MuiOutlinedInput-root": {
+                  "& > fieldset": { borderColor: "primary.main" },
+                },
+              }}
               type="number"
               variant="outlined"
               label={
@@ -158,19 +171,39 @@ export default function PejlingForm({
               disabled={notPossible}
             />
           </Grid>
-        </Grid>
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
           {isWaterlevel && (
             <>
               <Grid item xs={12} sm={7}>
-                <Box p={0} border={1} borderRadius={8} borderColor="gray">
-                  <p>Målepunkt placering: {currentMP.mp_description}</p>
-                </Box>
+                <Tooltip
+                  title={<Typography>WHWAT</Typography>}
+                  enterTouchDelay={100}
+                >
+                  <Box
+                    // height={40}
+                    p={0}
+                    border={1}
+                    borderRadius={8}
+                    borderColor="gray"
+                  >
+                    <Typography>
+                      Målepunkt: {currentMP.mp_description}
+                    </Typography>
+                    <Typography>
+                      Kote: {pejlingOutOfRange ? "" : currentMP.elevation} m
+                    </Typography>
+                  </Box>
+                </Tooltip>
               </Grid>
             </>
           )}
           <Grid item xs={12} sm={7}>
             <OwnDatePicker
+              sx={{
+                "& .MuiInputLabel-root": { color: "primary.main" }, //styles the label
+                "& .MuiOutlinedInput-root": {
+                  "& > fieldset": { borderColor: "primary.main" },
+                },
+              }}
               label={
                 <Typography variant="h6" component="h3">
                   Tidspunkt for måling
@@ -187,9 +220,7 @@ export default function PejlingForm({
           {(isWaterlevel || isFlow) && (
             <Grid item xs={12} sm={12}>
               <FormControl component="fieldset">
-                <FormLabel component="h6">
-                  Hvordan skal pejlingen anvendes?
-                </FormLabel>
+                <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
                 <RadioGroup
                   value={formData.useforcorrection + ""}
                   onChange={handleUsageChange}
@@ -213,7 +244,7 @@ export default function PejlingForm({
               </FormControl>
             </Grid>
           )}
-          {isWaterlevel && (
+          {/* {isWaterlevel && (
             <>
               <Grid item xs={12} sm={7}>
                 <Box p={0} border={1} borderRadius={8} borderColor="gray">
@@ -224,9 +255,15 @@ export default function PejlingForm({
                 </Box>
               </Grid>
             </>
-          )}
+          )} */}
           <Grid item xs={12} sm={12}>
             <TextField
+              sx={{
+                "& .MuiInputLabel-root": { color: "primary.main" }, //styles the label
+                "& .MuiOutlinedInput-root": {
+                  "& > fieldset": { borderColor: "primary.main" },
+                },
+              }}
               label={
                 <Typography variant="h6" component="h3">
                   Kommentar
