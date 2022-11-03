@@ -28,6 +28,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import moment from "moment";
 import PropTypes from "prop-types";
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import { stamdataStore } from "../../../state/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -144,17 +145,6 @@ const UdstyrReplace = ({ stationId, selected, setselected }) => {
     store.setUnit,
   ]);
 
-  const handleChange = (event) => {
-    setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
-    setselected(event.target.value);
-  };
-
-  const flex1 = {
-    display: "flex",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-  };
-
   const { data } = useQuery(
     ["udstyr", stationId],
     async () => {
@@ -169,6 +159,17 @@ const UdstyrReplace = ({ stationId, selected, setselected }) => {
       },
     }
   );
+
+  const handleChange = (event) => {
+    setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
+    setselected(event.target.value);
+  };
+
+  const flex1 = {
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+  };
 
   return (
     <Grid container spacing={2}>
@@ -242,8 +243,6 @@ export default function EditStamdata({ setFormToShow, stationId }) {
   ]);
 
   const queryClient = useQueryClient();
-  const theme = useTheme();
-
   const [value, setValue] = React.useState(0);
   const [swiper, setSwiper] = useState(null);
 
@@ -266,8 +265,16 @@ export default function EditStamdata({ setFormToShow, stationId }) {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    swiper.slideTo(newValue);
+    if (swiper && event) {
+      swiper.slideTo(newValue);
+    }
   };
+
+  useEffect(() => {
+    if (swiper) {
+      swiper.slideTo(0, 0, false);
+    }
+  }, [swiper]);
 
   return (
     <div>
@@ -284,38 +291,43 @@ export default function EditStamdata({ setFormToShow, stationId }) {
             variant="fullWidth"
             aria-label="full width tabs example"
           >
-            <Tab label="Lokalitet" {...a11yProps(0)} />
-            <Tab label="Station" {...a11yProps(1)} />
-            <Tab label="Udstyr" {...a11yProps(2)} />
+            <Tab label="Udstyr" {...a11yProps(0)} />
+            <Tab label="Lokalitet" {...a11yProps(1)} />
+            <Tab label="Station" {...a11yProps(2)} />
           </Tabs>
         </AppBar>
+
         <Swiper
+          initialSlide={1}
           onSwiper={setSwiper}
           onSlideChange={(swiper) => handleChange(null, swiper.activeIndex)}
         >
           <SwiperSlide>
-            <TabPanel value={value} index={0} dir={theme.direction}>
-              {/* <Typography>Lokalitet</Typography> */}
-              <LocationForm />
-            </TabPanel>
-          </SwiperSlide>
-          <SwiperSlide>
-            <TabPanel value={value} index={1} dir={theme.direction}>
-              {/* <Typography>Station</Typography> */}
-              <StationForm />
-            </TabPanel>
-          </SwiperSlide>
-          <SwiperSlide>
-            <TabPanel value={value} index={2} dir={theme.direction}>
+            {/* <TabPanel value={value} index={0} dir={theme.direction}> */}
+            <Box>
               <UdstyrReplace
                 stationId={stationId}
                 selected={selectedUnit}
                 setselected={setSelectedUnit}
               />
               <UdstyrForm mode={"edit"} />
-            </TabPanel>
+            </Box>
+            {/* </TabPanel> */}
+          </SwiperSlide>
+          <SwiperSlide>
+            {/* <TabPanel value={value} index={1} dir={theme.direction}> */}
+            {/* <Typography>Lokalitet</Typography> */}
+            <LocationForm />
+            {/* </TabPanel> */}
+          </SwiperSlide>
+          <SwiperSlide>
+            {/* <TabPanel value={value} index={2} dir={theme.direction}> */}
+            {/* <Typography>Station</Typography> */}
+            <StationForm />
+            {/* </TabPanel> */}
           </SwiperSlide>
         </Swiper>
+
         <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={4} sm={2}>
             <Button
