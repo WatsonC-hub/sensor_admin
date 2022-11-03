@@ -94,11 +94,11 @@ export default function Login({}) {
           alignSelf: "center",
         }}
       >
-        <h1>Log ind</h1>
+        <Typography variant="h3">Log ind</Typography>
       </div>
 
       <Container fixed maxWidth="sm">
-        <p
+        <Typography
           style={{
             textAlign: "center",
             alignSelf: "center",
@@ -106,9 +106,9 @@ export default function Login({}) {
         >
           Med denne applikation kan du indberette pejlinger, se grafer og flytte
           rundt på dit udstyr.
-        </p>
+        </Typography>
         {loginExpired && (
-          <p
+          <Typography
             style={{
               textAlign: "center",
               alignSelf: "center",
@@ -116,7 +116,7 @@ export default function Login({}) {
             }}
           >
             Din session er udløbet. Log venligst ind igen.
-          </p>
+          </Typography>
         )}
         <form onSubmit={handleSubmit} noValidate>
           <TextField
