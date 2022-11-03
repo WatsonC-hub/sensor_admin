@@ -23,6 +23,8 @@ const bottomNavStyle = {
   margin: "7px",
   boxShadow: "3px 3px 3px grey",
   backgroundColor: "secondary.main",
+  width: "100px",
+  height: "58px",
 };
 
 const borderGrey = {
@@ -88,7 +90,7 @@ function DesktopBottomNav({
         <BottomNavigationAction
           sx={bottomNavStyle}
           disabled={!canEdit}
-          label="Indberet målepunkt"
+          label="Målepunkter"
           onClick={() => {
             setFormToShow("ADDMAALEPUNKT");
           }}
@@ -206,7 +208,7 @@ function MobileBottomNav({
                   disabled={!canEdit}
                   showLabel
                   sx={borderGrey}
-                  label="Indberet målepunkt"
+                  label="Målepunkter"
                   onClick={() => {
                     setFormToShow("ADDMAALEPUNKT");
                     handleClose();
