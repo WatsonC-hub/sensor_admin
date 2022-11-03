@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { postImage, updateImage } from "../api";
+import { postImage, updateImage } from "src/pages/field/fieldAPI";
 import {
   TextField,
   Typography,

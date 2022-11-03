@@ -11,7 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import TablePagination from "@mui/material/TablePagination";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import DeleteAlert from "../pages/station/DeleteAlert";
+import DeleteAlert from "../pages/field/Station/DeleteAlert";
 import { Fragment } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";

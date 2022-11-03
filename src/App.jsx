@@ -5,7 +5,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import UnAuntenticatedApp from "./UnauthenticatedApp";
 import { authStore } from "./state/store";
 import LoadingSkeleton from "./LoadingSkeleton";
-import { apiClient } from "./api";
+import { apiClient } from "./apiClient";
 import Redirecter from "./Redirecter";
 import NavBar from "./NavBar";
 
@@ -19,7 +19,7 @@ function App() {
   }, []);
 
   console.log("authenticated => ", authenticated);
-  const sensorFieldPromise = import("./SensorField");
+  const sensorFieldPromise = import("./pages/field/SensorField");
   const SensorField = React.lazy(() => sensorFieldPromise);
 
   // TODO:
