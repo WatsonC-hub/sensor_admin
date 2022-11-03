@@ -94,7 +94,7 @@ function StationImages(props) {
         dataUri={dataUri}
         handleCloseSave={() => setOpenSave(false)}
       />
-      <Grid container spacing={3} alignItems="center" justify="center">
+      <Grid container spacing={3} alignItems="center">
         <Grid item xs={6} sm={2}>
           <label htmlFor="btn-upload">
             <input

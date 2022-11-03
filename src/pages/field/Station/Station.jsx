@@ -392,9 +392,7 @@ export default function Station({ stationId }) {
           />
         </>
       )}
-      {formToShow === "CAMERA" && (
-        <StationImages locationId={location.pathname.split("/")[2]} />
-      )}
+      {formToShow === "CAMERA" && <StationImages locationId={params.locid} />}
       <ActionArea
         stationId={stationId}
         formToShow={formToShow}
