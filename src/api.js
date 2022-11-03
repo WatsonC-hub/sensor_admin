@@ -6,17 +6,6 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
-// apiClient.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   async function (error) {
-//     if (error.response.status === 403) {
-//       console.log("JWT expired, refreshing...");
-//     }
-//   }
-// );
-
 apiClient.interceptors.response.use(
   function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
@@ -53,17 +42,6 @@ if (process.env.NODE_ENV === "developments") {
   endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
   userEndpoint = "https://backend.calypso.watsonc.dk/rest/";
 }
-
-// const locHost = "http://localhost:8080";
-// const remoteHost = "https://watsonc.admin.gc2.io";
-// const endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
-// const testEndpoint = `https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=`;
-// const apiKey = "&key=2a528b3bc396ca7f544b7b6a4bc52bb7";
-// const localEndpoint = "http://localhost:8080/extensions/sensor_app/api";
-// const remoteEndpoint =
-//   "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
-
-// const getData = (key) => axios.get(`${testEndpoint}${queries[key]}`);
 
 async function getSensorData() {
   const url = `${extEndpoint}/sensordata?session_id=${

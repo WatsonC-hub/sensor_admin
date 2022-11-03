@@ -57,7 +57,6 @@ export default function LocationDrawer() {
           <IconButton
             color="inherit"
             onClick={(e) => {
-              console.log(location.hash);
               if (location.hash == "") {
                 navigate(-1);
               } else {

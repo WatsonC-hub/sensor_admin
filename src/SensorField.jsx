@@ -9,6 +9,7 @@ import CaptureDialog from "./pages/station/CaptureDialog";
 import { authStore } from "./state/store";
 import { useAtom } from "jotai";
 import { captureDialogAtom } from "./state/atoms";
+// import BoreholeDraw from "./pages/Boreholeno/BoreholeDraw";
 
 function SensorField({}) {
   const [addStationDisabled, setAddStationDisabled] = useState(false);
@@ -32,6 +33,11 @@ function SensorField({}) {
           }
         />
         <Route path="/:labelid" element={<ScanComponent />} />
+        {/* <Route
+          path="borehole/:boreholeno/:intakeno"
+          element={<BoreholeDraw />}
+        />
+        <Route path="borehole/:boreholeno" element={<BoreholeDraw />} /> */}
       </Routes>
     </div>
   );
