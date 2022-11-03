@@ -81,10 +81,9 @@ export default function LocationRouter() {
       <main
         style={{
           flexGrow: 1,
-          padding: theme.spacing(3),
+          padding: theme.spacing(0.5),
         }}
       >
-        <div />
         <Station stationId={params.statid ? params.statid : -1} />
       </main>
     </div>

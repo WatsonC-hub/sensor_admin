@@ -153,17 +153,17 @@ const layout3 = {
     },
   },
 
-  showlegend: true,
+  showlegend: false,
   legend: {
     x: 0,
     y: -0.15,
     orientation: "h",
   },
   margin: {
-    // l: 30,
+    l: 50,
     r: 30,
-    // b: 30,
-    t: 10,
+    b: 40,
+    t: 0,
     pad: 4,
   },
   font: {
@@ -173,14 +173,15 @@ const layout3 = {
 };
 
 function PlotGraph({ graphData, controlData, dynamicMeasurement }) {
-  const [name, unit] = stamdataStore((state) => [
+  const [name, unit, stationtype] = stamdataStore((state) => [
     state.timeseries.ts_name,
     state.timeseries.unit,
+    state.timeseries.tstype_name,
   ]);
 
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
-  const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
+  // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down("md"));
 
