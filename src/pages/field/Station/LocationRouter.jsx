@@ -58,7 +58,7 @@ export default function LocationRouter() {
             color="inherit"
             onClick={(e) => {
               if (location.hash == "") {
-                navigate(-1);
+                navigate("/field");
               } else {
                 navigate(`/field/location/${params.locid}/${params.statid}`, {
                   replace: true,
