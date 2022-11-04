@@ -61,7 +61,6 @@ export default function AddLocationForm({
   });
 
   useEffect(() => {
-    console.log(DTMData);
     if (DTMData) {
       var data = DTMData.HentKoterRespons.data;
       if (data[0].kote !== null) {

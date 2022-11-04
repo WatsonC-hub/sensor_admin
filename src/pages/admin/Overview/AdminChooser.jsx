@@ -5,6 +5,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import RouterIcon from "@mui/icons-material/Router";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import ChoiseCard from "../../../components/ChoiseCard";
 const AdminChooser = () => {
   return (
@@ -23,6 +24,14 @@ const AdminChooser = () => {
           title="Omkonfigurer enheder"
           text="Omkonfigurer enheder"
           icon={RouterIcon}
+        />
+      </Grid>
+      <Grid item xs={10} sm={5}>
+        <ChoiseCard
+          navigateTo="kvalitetssikring"
+          title="Kvalitetssikring"
+          text="Kvalitetssikre tidsserier"
+          icon={AutoGraphIcon}
         />
       </Grid>
       <Grid item xs={10} sm={5}>
