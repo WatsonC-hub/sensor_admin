@@ -1,34 +1,15 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
-import {
-  ThemeProvider,
-  StyledEngineProvider,
-  createTheme,
-} from "@mui/material";
+import { ThemeProvider, StyledEngineProvider } from "@mui/material";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { createRoot } from "react-dom/client";
 import "react-toastify/dist/ReactToastify.css";
-
-const theme = createTheme({
-  palette: {
-    // type: "light",
-    primary: {
-      main: "rgb(0,120,109)",
-    },
-    secondary: {
-      main: "#FFA137",
-    },
-  },
-  typography: {
-    fontFamily: "Open Sans",
-  },
-});
+import theme from "./theme";
 
 const queryClient = new QueryClient();
 const container = document.getElementById("root");

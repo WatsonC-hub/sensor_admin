@@ -32,6 +32,7 @@ import "swiper/css";
 import { stamdataStore } from "../../../state/store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import useBreakpoints from "src/hooks/useBreakpoints";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -242,6 +243,8 @@ export default function EditStamdata({ setFormToShow, stationId }) {
     store.unit,
   ]);
 
+  const { isTouch } = useBreakpoints();
+
   const queryClient = useQueryClient();
   const [value, setValue] = React.useState(0);
   const [swiper, setSwiper] = useState(null);
@@ -266,15 +269,23 @@ export default function EditStamdata({ setFormToShow, stationId }) {
   const handleChange = (event, newValue) => {
     setValue(newValue);
     if (swiper && event) {
+      swiper.allowSlidePrev = true;
+      swiper.allowSlideNext = true;
       swiper.slideTo(newValue);
     }
   };
 
   useEffect(() => {
     if (swiper) {
-      swiper.slideTo(0, 0, false);
+      // swiper.slideTo(0, 0, false);
+      swiper.activeIndex = 0;
     }
   }, [swiper]);
+
+  if (swiper) {
+    swiper.allowSlidePrev = isTouch;
+    swiper.allowSlideNext = isTouch;
+  }
 
   return (
     <div>
@@ -299,7 +310,13 @@ export default function EditStamdata({ setFormToShow, stationId }) {
 
         <Swiper
           initialSlide={1}
-          onSwiper={setSwiper}
+          onSwiper={(swiper) => {
+            setSwiper((prev) => {
+              setValue(0);
+              swiper.slideTo(0, 0, false);
+              return swiper;
+            });
+          }}
           onSlideChange={(swiper) => handleChange(null, swiper.activeIndex)}
         >
           <SwiperSlide>

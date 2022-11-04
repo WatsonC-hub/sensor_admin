@@ -25,8 +25,6 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 
 const RowDetail = ({ row }) => (
   <List>
@@ -164,11 +162,9 @@ export default function StationListDesktop({ data, loading }) {
   const { height, width } = useWindowDimensions();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
-  const [swiper, setSwiper] = useState(null);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    swiper.slideTo(newValue);
   };
 
   var rows = [];
@@ -218,67 +214,59 @@ export default function StationListDesktop({ data, loading }) {
           <Tab label="Mine DGU boringer" {...a11yProps(1)} />
         </Tabs>
       </AppBar>
-      <Swiper
-        onSwiper={setSwiper}
-        onSlideChange={(swiper) => handleChange(null, swiper.activeIndex)}
-      >
-        <SwiperSlide>
-          <TabPanel value={value} index={0} dir={theme.direction}>
-            <TextField
-              variant="outlined"
-              label={"Filtrer stationer"}
-              InputLabelProps={{ shrink: true }}
-              placeholder="Søg"
-              value={typeAhead}
-              onChange={(event) => settypeAhead(event.target.value)}
-              style={{ marginBottom: 12 }}
+
+      <TabPanel value={value} index={0} dir={theme.direction}>
+        <TextField
+          variant="outlined"
+          label={"Filtrer stationer"}
+          InputLabelProps={{ shrink: true }}
+          placeholder="Søg"
+          value={typeAhead}
+          onChange={(event) => settypeAhead(event.target.value)}
+          style={{ marginBottom: 12 }}
+        />
+        <Paper>
+          <Grid rows={rows} columns={columns}>
+            {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+            {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
+            <VirtualTable
+              height={height - 330}
+              cellComponent={Cell}
+              messages={{ noData: "Ingen data" }}
+              // columnExtensions={column_extension}
             />
-            <Paper>
-              <Grid rows={rows} columns={columns}>
-                {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
-                {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
-                <VirtualTable
-                  height={height - 200}
-                  cellComponent={Cell}
-                  messages={{ noData: "Ingen data" }}
-                  // columnExtensions={column_extension}
-                />
-                {loading && <CircularProgress />}
-                <TableHeaderRow titleComponent={TitleCell} />
-                {/* <TableRowDetail contentComponent={RowDetail} /> */}
-              </Grid>
-            </Paper>
-          </TabPanel>
-        </SwiperSlide>
-        <SwiperSlide>
-          <TabPanel value={value} index={1} dir={theme.direction}>
-            <TextField
-              variant="outlined"
-              label={"Filtrer boringer"}
-              InputLabelProps={{ shrink: true }}
-              placeholder="Søg"
-              value={typeAhead}
-              onChange={(event) => settypeAhead(event.target.value)}
-              style={{ marginBottom: 12 }}
+            {loading && <CircularProgress />}
+            <TableHeaderRow titleComponent={TitleCell} />
+            {/* <TableRowDetail contentComponent={RowDetail} /> */}
+          </Grid>
+        </Paper>
+      </TabPanel>
+      <TabPanel value={value} index={1} dir={theme.direction}>
+        <TextField
+          variant="outlined"
+          label={"Filtrer boringer"}
+          InputLabelProps={{ shrink: true }}
+          placeholder="Søg"
+          value={typeAhead}
+          onChange={(event) => settypeAhead(event.target.value)}
+          style={{ marginBottom: 12 }}
+        />
+        <Paper>
+          <Grid rows={rows} columns={columnsDGU}>
+            {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
+            {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
+            <VirtualTable
+              height={height - 330}
+              cellComponent={Cell}
+              messages={{ noData: "Ingen data" }}
+              // columnExtensions={column_extension}
             />
-            <Paper>
-              <Grid rows={rows} columns={columnsDGU}>
-                {/* <LocationTypeProvider for={["station_loc_id"]} /> */}
-                {/* <RowDetailState defaultExpandedRowIds={[]} /> */}
-                <VirtualTable
-                  height={height - 200}
-                  cellComponent={Cell}
-                  messages={{ noData: "Ingen data" }}
-                  // columnExtensions={column_extension}
-                />
-                {loading && <CircularProgress />}
-                <TableHeaderRow titleComponent={TitleCell} />
-                {/* <TableRowDetail contentComponent={RowDetail} /> */}
-              </Grid>
-            </Paper>
-          </TabPanel>
-        </SwiperSlide>
-      </Swiper>
+            {loading && <CircularProgress />}
+            <TableHeaderRow titleComponent={TitleCell} />
+            {/* <TableRowDetail contentComponent={RowDetail} /> */}
+          </Grid>
+        </Paper>
+      </TabPanel>
     </div>
   );
 }

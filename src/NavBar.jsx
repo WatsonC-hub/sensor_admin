@@ -62,6 +62,23 @@ const AppBarLayout = ({ children }) => {
   );
 };
 
+const NavBarNotifications = () => {
+  const navigate = useNavigate();
+  return (
+    <Badge
+      badgeContent={17}
+      color="error"
+      onClick={() => {
+        if (!window.location.pathname.includes("/notifikationer")) {
+          navigate("/admin/notifikationer");
+        }
+      }}
+    >
+      <NotificationsIcon />
+    </Badge>
+  );
+};
+
 const NavBarMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   let navigate = useNavigate();
@@ -220,7 +237,12 @@ const NavBar = ({ children }) => {
         )}
 
         {matches ? (
-          <NavBarMenu />
+          <>
+            <Box>
+              <NavBarNotifications />
+              <NavBarMenu />
+            </Box>
+          </>
         ) : (
           <Box
             sx={{
@@ -230,6 +252,9 @@ const NavBar = ({ children }) => {
               maxWidth: 300,
             }}
           >
+            <Box sx={{ p: 2 }}>
+              <NavBarNotifications />
+            </Box>
             <Button
               color="grey"
               variant="contained"
@@ -252,10 +277,15 @@ const NavBar = ({ children }) => {
       <AppBarLayout>
         {matches ? <SmallLogo /> : <LogoSvg />}
 
-        <Typography variant="h5">Admin</Typography>
+        <Typography variant="h4">Admin</Typography>
 
         {matches ? (
-          <NavBarMenu />
+          <>
+            <Box>
+              <NavBarNotifications />
+              <NavBarMenu />
+            </Box>
+          </>
         ) : (
           <Box
             sx={{
@@ -266,9 +296,7 @@ const NavBar = ({ children }) => {
             }}
           >
             <Box sx={{ p: 2 }}>
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
+              <NavBarNotifications />
             </Box>
             <Button
               color="grey"

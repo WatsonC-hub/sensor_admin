@@ -67,7 +67,7 @@ function LocationChooser({ setLocationDialogOpen }) {
           <Typography>Lokation</Typography>
 
           <Autocomplete
-            options={locations}
+            options={locations ? locations : []}
             getOptionLabel={(option) => option.loc_name}
             renderInput={(params) => (
               <TextField
