@@ -7,7 +7,7 @@ export default function UnAuntenticatedApp({}) {
   return (
     <Routes>
       <Route path="/register" element={<Register />} />
-      <Route path="/" element={<Login />} />
+      <Route path="*" element={<Login />} />
       <Route path="/:labelid" element={<Login />} />
     </Routes>
   );
