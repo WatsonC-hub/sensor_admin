@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import ActionArea from "./ActionArea";
-import BearingGraph from "./BearingGraph";
-import PejlingForm from "../../components/PejlingForm";
-import PejlingMeasurements from "./PejlingMeasurements";
-import MaalepunktForm from "../../components/MaalepunktForm";
-import { useLocation } from "react-router-dom";
-import MaalepunktTable from "./MaalepunktTable";
+import React, {useEffect, useState} from 'react';
+import ActionArea from './ActionArea';
+import BearingGraph from './BearingGraph';
+import PejlingForm from '../../components/PejlingForm';
+import PejlingMeasurements from './PejlingMeasurements';
+import MaalepunktForm from '../../components/MaalepunktForm';
+import {useLocation} from 'react-router-dom';
+import MaalepunktTable from './MaalepunktTable';
 import {
   insertMeasurement,
   updateMeasurement,
@@ -15,26 +15,19 @@ import {
   getBoreholeMP,
   deleteMP,
   getOurWaterlevel,
-} from "../boreholeAPI";
-import moment from "moment";
-import BoreholeImages from "./BoreholeImages";
-import MuiAlert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
+} from '../boreholeAPI';
+import moment from 'moment';
+import BoreholeImages from './BoreholeImages';
+import MuiAlert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 function formatedTimestamp(d) {
-  const date = d.toISOString().split("T")[0];
-  const time = d.toTimeString().split(" ")[0];
+  const date = d.toISOString().split('T')[0];
+  const time = d.toTimeString().split(' ')[0];
   return `${date} ${time}`;
 }
 
-const Boreholeno = ({
-  boreholeno,
-  intakeno,
-  setShowForm,
-  open,
-  formToShow,
-  setFormToShow,
-}) => {
+const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFormToShow}) => {
   let location = useLocation();
 
   //console.log(boreholeno);
@@ -44,15 +37,15 @@ const Boreholeno = ({
     pumpstop: formatedTimestamp(new Date()),
     disttowatertable_m: 0,
     service: 0,
-    comment: "",
+    comment: '',
   });
 
   const [mpData, setMpData] = useState({
     gid: -1,
     startdate: formatedTimestamp(new Date()),
-    enddate: formatedTimestamp(new Date("2099-01-01")),
+    enddate: formatedTimestamp(new Date('2099-01-01')),
     elevation: 0,
-    mp_description: "",
+    mp_description: '',
   });
   const [updated, setUpdated] = useState(new Date());
   const [measurements, setMeasurements] = useState([]);
@@ -60,14 +53,14 @@ const Boreholeno = ({
   const [control, setcontrol] = useState([]);
   const [dynamic, setDynamic] = useState([]);
   const [canEdit] = useState(true);
-  const [severity, setSeverity] = useState("success");
-  const [severityDel, setSeverityDel] = useState("success");
+  const [severity, setSeverity] = useState('success');
+  const [severityDel, setSeverityDel] = useState('success');
   const [openAlert, setOpenAlert] = useState(false);
   const [openDelAlert, setOpenDelAlert] = useState(false);
 
   useEffect(() => {
     if (watlevmp.length > 0) {
-      const elev = watlevmp.filter((e2) => {
+      const elev = watlevmp.filter(e2 => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
           moment(pejlingData.timeofmeas) < moment(e2.enddate)
@@ -81,16 +74,11 @@ const Boreholeno = ({
   }, [pejlingData, watlevmp]);
 
   useEffect(() => {
-    if (
-      boreholeno !== -1 &&
-      boreholeno !== null &&
-      intakeno !== -1 &&
-      intakeno !== null
-    ) {
-      let sessionId = sessionStorage.getItem("session_id");
+    if (boreholeno !== -1 && boreholeno !== null && intakeno !== -1 && intakeno !== null) {
+      let sessionId = sessionStorage.getItem('session_id');
       const mp = getBoreholeMP(boreholeno, intakeno, sessionId);
       const meas = getOurWaterlevel(boreholeno, intakeno, sessionId);
-      Promise.all([mp, meas]).then((responses) => {
+      Promise.all([mp, meas]).then(responses => {
         const measures = responses[1].data.result;
         const mps = responses[0].data.result;
         setMeasurements(measures);
@@ -98,8 +86,8 @@ const Boreholeno = ({
 
         if (mps.length > 0) {
           setcontrol(
-            measures.map((e) => {
-              const elev = mps.filter((e2) => {
+            measures.map(e => {
+              const elev = mps.filter(e2 => {
                 return (
                   moment(e.timeofmeas) >= moment(e2.startdate) &&
                   moment(e.timeofmeas) < moment(e2.enddate)
@@ -108,16 +96,14 @@ const Boreholeno = ({
 
               return {
                 ...e,
-                waterlevel: e.disttowatertable_m
-                  ? elev - e.disttowatertable_m
-                  : null,
+                waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
               };
             })
           );
         } else {
           setcontrol(
-            measures.map((elem) => {
-              return { ...elem, waterlevel: elem.disttowatertable_m };
+            measures.map(elem => {
+              return {...elem, waterlevel: elem.disttowatertable_m};
             })
           );
         }
@@ -138,7 +124,7 @@ const Boreholeno = ({
       timeofmeas: formatedTimestamp(new Date()),
       pumpstop: formatedTimestamp(new Date()),
       disttowatertable_m: 0,
-      comment: "",
+      comment: '',
       service: false,
     });
     setFormToShow(null);
@@ -155,12 +141,12 @@ const Boreholeno = ({
     setMpData({
       gid: -1,
       startdate: formatedTimestamp(new Date()),
-      enddate: formatedTimestamp(new Date("2099-01-01")),
+      enddate: formatedTimestamp(new Date('2099-01-01')),
       elevation: 0,
-      mp_description: "",
+      mp_description: '',
     });
 
-    setFormToShow("ADDMAALEPUNKT");
+    setFormToShow('ADDMAALEPUNKT');
   };
 
   const handleMpCancel = () => {
@@ -170,122 +156,111 @@ const Boreholeno = ({
 
   const handlePejlingSubmit = () => {
     setFormToShow(null);
-    const method =
-      pejlingData.gid !== -1 ? updateMeasurement : insertMeasurement;
-    const userId = sessionStorage.getItem("user");
-    const payload = { ...pejlingData, userid: userId };
+    const method = pejlingData.gid !== -1 ? updateMeasurement : insertMeasurement;
+    const userId = sessionStorage.getItem('user');
+    const payload = {...pejlingData, userid: userId};
     console.log(payload);
     var _date = Date.parse(payload.timeofmeas);
     var _datePumpStop = Date.parse(payload.pumpstop);
-    console.log("time before parse: ", payload.timeofmeas);
-    console.log("time after parse: ", _date);
+    console.log('time before parse: ', payload.timeofmeas);
+    console.log('time after parse: ', _date);
     payload.timeofmeas = formatedTimestamp(new Date(_date));
     payload.pumpstop = formatedTimestamp(new Date(_datePumpStop));
     if (payload.service) payload.pumpstop = null;
-    method(sessionStorage.getItem("session_id"), boreholeno, intakeno, payload)
-      .then((res) => {
+    method(sessionStorage.getItem('session_id'), boreholeno, intakeno, payload)
+      .then(res => {
         resetPejlingData();
         setUpdated(new Date());
-        setSeverity("success");
+        setSeverity('success');
         setTimeout(() => {
           handleClickOpen();
         }, 500);
       })
-      .catch((error) => {
-        setSeverity("error");
+      .catch(error => {
+        setSeverity('error');
         setOpenAlert(true);
       });
   };
 
   const handleMpSubmit = () => {
-    setFormToShow("ADDMAALEPUNKT");
+    setFormToShow('ADDMAALEPUNKT');
     const method = mpData.gid !== -1 ? updateMp : insertMp;
-    const userId = sessionStorage.getItem("user");
-    const payload = { ...mpData, userid: userId };
+    const userId = sessionStorage.getItem('user');
+    const payload = {...mpData, userid: userId};
     var _date = Date.parse(payload.startdate);
-    console.log("time before parse: ", payload.startdate);
-    console.log("time after parse: ", _date);
+    console.log('time before parse: ', payload.startdate);
+    console.log('time after parse: ', _date);
     payload.startdate = formatedTimestamp(new Date(_date));
     payload.enddate = formatedTimestamp(new Date(Date.parse(payload.enddate)));
-    method(sessionStorage.getItem("session_id"), boreholeno, intakeno, payload)
-      .then((res) => {
+    method(sessionStorage.getItem('session_id'), boreholeno, intakeno, payload)
+      .then(res => {
         resetMpData();
         setUpdated(new Date());
-        setSeverity("success");
+        setSeverity('success');
         setTimeout(() => {
           handleClickOpen();
         }, 500);
       })
-      .catch((error) => {
-        setSeverity("error");
+      .catch(error => {
+        setSeverity('error');
         setOpenAlert(true);
       });
   };
 
-  const handleEdit = (type) => {
-    if (type === "watlevmp") {
-      return (data) => {
-        data.startdate = data.startdate.replace(" ", "T").substr(0, 19);
-        data.enddate = data.enddate.replace(" ", "T").substr(0, 19);
+  const handleEdit = type => {
+    if (type === 'watlevmp') {
+      return data => {
+        data.startdate = data.startdate.replace(' ', 'T').substr(0, 19);
+        data.enddate = data.enddate.replace(' ', 'T').substr(0, 19);
         setMpData(data); // Fill form data on Edit
-        setFormToShow("ADDMAALEPUNKT"); // update to use state machine
+        setFormToShow('ADDMAALEPUNKT'); // update to use state machine
         // setUpdated(new Date());
       };
     } else {
-      return (data) => {
+      return data => {
         console.log(data);
-        data.timeofmeas = data.timeofmeas.replace(" ", "T").substr(0, 19);
+        data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
         setPejlingData(data); // Fill form data on Edit
-        setFormToShow("ADDPEJLING"); // update to use state machine
+        setFormToShow('ADDPEJLING'); // update to use state machine
         // setUpdated(new Date());
       };
     }
   };
 
-  const handleDelete = (type) => {
-    if (type === "watlevmp") {
-      return (gid) => {
-        deleteMP(
-          sessionStorage.getItem("session_id"),
-          boreholeno,
-          intakeno,
-          gid
-        )
-          .then((res) => {
+  const handleDelete = type => {
+    if (type === 'watlevmp') {
+      return gid => {
+        deleteMP(sessionStorage.getItem('session_id'), boreholeno, intakeno, gid)
+          .then(res => {
             resetMpData();
             setUpdated(new Date());
-            setSeverityDel("success");
+            setSeverityDel('success');
             setOpenDelAlert(true);
           })
-          .catch((error) => {
-            setSeverityDel("error");
+          .catch(error => {
+            setSeverityDel('error');
             setOpenDelAlert(true);
           });
       };
     } else {
-      return (gid) => {
-        deleteMeasurement(
-          sessionStorage.getItem("session_id"),
-          boreholeno,
-          intakeno,
-          gid
-        )
-          .then((res) => {
+      return gid => {
+        deleteMeasurement(sessionStorage.getItem('session_id'), boreholeno, intakeno, gid)
+          .then(res => {
             resetPejlingData();
             setUpdated(new Date());
-            setSeverityDel("success");
+            setSeverityDel('success');
             setOpenDelAlert(true);
           })
-          .catch((error) => {
-            setSeverityDel("error");
+          .catch(error => {
+            setSeverityDel('error');
             setOpenDelAlert(true);
           });
       };
     }
   };
 
-  const handleCloseSnack = (reason) => {
-    if (reason === "clickaway") {
+  const handleCloseSnack = reason => {
+    if (reason === 'clickaway') {
       return;
     }
     setOpenAlert(false);
@@ -301,16 +276,16 @@ const Boreholeno = ({
 
   return (
     <div>
-      {formToShow !== "CAMERA" && (
+      {formToShow !== 'CAMERA' && (
         <BearingGraph
           boreholeno={boreholeno}
           intakeno={intakeno}
           updated={updated}
           measurements={control}
-          dynamicMeasurement={formToShow !== "ADDPEJLING" ? undefined : dynamic}
+          dynamicMeasurement={formToShow !== 'ADDPEJLING' ? undefined : dynamic}
         />
       )}
-      {formToShow === "ADDPEJLING" && (
+      {formToShow === 'ADDPEJLING' && (
         <PejlingForm
           // boreholeno={boreholeno}
           // intakeno={intakeno}
@@ -325,7 +300,7 @@ const Boreholeno = ({
           isFlow={false}
         />
       )}
-      {formToShow === "ADDMAALEPUNKT" && (
+      {formToShow === 'ADDMAALEPUNKT' && (
         <div>
           <MaalepunktForm
             boreholeno={boreholeno}
@@ -339,23 +314,21 @@ const Boreholeno = ({
           ></MaalepunktForm>
           <MaalepunktTable
             watlevmp={watlevmp}
-            handleEdit={handleEdit("watlevmp")}
-            handleDelete={handleDelete("watlevmp")}
+            handleEdit={handleEdit('watlevmp')}
+            handleDelete={handleDelete('watlevmp')}
             canEdit={canEdit}
           ></MaalepunktTable>
         </div>
       )}
-      {(formToShow === null || formToShow === "ADDPEJLING") && (
+      {(formToShow === null || formToShow === 'ADDPEJLING') && (
         <PejlingMeasurements
           measurements={measurements}
-          handleEdit={handleEdit("pejling")}
-          handleDelete={handleDelete("pejling")}
+          handleEdit={handleEdit('pejling')}
+          handleDelete={handleDelete('pejling')}
           canEdit={canEdit}
         />
       )}
-      {formToShow === "CAMERA" && (
-        <BoreholeImages boreholeno={location.pathname.split("/")[2]} />
-      )}
+      {formToShow === 'CAMERA' && <BoreholeImages boreholeno={location.pathname.split('/')[2]} />}
       <ActionArea
         open={open}
         boreholeno={boreholeno}
@@ -363,22 +336,14 @@ const Boreholeno = ({
         setFormToShow={setFormToShow}
         canEdit={canEdit}
       />
-      <Snackbar
-        open={openAlert || openDelAlert}
-        autoHideDuration={4000}
-        onClose={handleCloseSnack}
-      >
+      <Snackbar open={openAlert || openDelAlert} autoHideDuration={4000} onClose={handleCloseSnack}>
         {openAlert === true ? (
           <Alert onClose={handleCloseSnack} severity={severity}>
-            {severity === "success"
-              ? "Indberetningen lykkedes"
-              : "Indberetningen fejlede"}
+            {severity === 'success' ? 'Indberetningen lykkedes' : 'Indberetningen fejlede'}
           </Alert>
         ) : (
           <Alert onClose={handleCloseSnack} severity={severityDel}>
-            {severityDel === "success"
-              ? "Sletningen lykkedes"
-              : "Sletningen fejlede"}
+            {severityDel === 'success' ? 'Sletningen lykkedes' : 'Sletningen fejlede'}
           </Alert>
         )}
       </Snackbar>

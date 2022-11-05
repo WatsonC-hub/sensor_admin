@@ -1,44 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import Plot from "react-plotly.js";
-import { getJupiterWaterlevel } from "../boreholeAPI";
+import React, {useEffect, useState} from 'react';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Plot from 'react-plotly.js';
+import {getJupiterWaterlevel} from '../boreholeAPI';
 
 const selectorOptions = {
   buttons: [
     {
-      step: "day",
-      stepmode: "backward",
+      step: 'day',
+      stepmode: 'backward',
       count: 7,
-      label: "1 uge",
+      label: '1 uge',
     },
     {
-      step: "month",
-      stepmode: "backward",
+      step: 'month',
+      stepmode: 'backward',
       count: 1,
-      label: "1 måned",
+      label: '1 måned',
     },
     {
-      step: "year",
-      stepmode: "backward",
+      step: 'year',
+      stepmode: 'backward',
       count: 1,
-      label: "1 år",
+      label: '1 år',
     },
     {
-      step: "all",
-      label: "Alt",
+      step: 'all',
+      label: 'Alt',
     },
   ],
 };
 
 const layout3 = {
   modebar: {
-    orientation: "v",
+    orientation: 'v',
   },
   xaxis: {
     rangeselector: selectorOptions,
     autorange: true,
-    type: "date",
+    type: 'date',
     showline: true,
   },
 
@@ -46,8 +46,8 @@ const layout3 = {
     showline: true,
     y: 1,
     title: {
-      text: "",
-      font: { size: 12 },
+      text: '',
+      font: {size: 12},
     },
   },
 
@@ -55,7 +55,7 @@ const layout3 = {
   legend: {
     x: 0,
     y: -0.15,
-    orientation: "h",
+    orientation: 'h',
   },
   margin: {
     // l: 30,
@@ -66,15 +66,15 @@ const layout3 = {
   },
   font: {
     size: 12,
-    color: "rgb(0, 0, 0)",
+    color: 'rgb(0, 0, 0)',
   },
 };
 
-function PlotGraph({ jupiterData, ourData, dynamicMeasurement }) {
+function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const xJupiterData = jupiterData[0] ? JSON.parse(jupiterData[0].data).x : [];
   const yJupiterData = jupiterData[0] ? JSON.parse(jupiterData[0].data).y : [];
-  const xOurData = ourData.map((d) => d.timeofmeas);
-  const yOurData = ourData.map((d) => d.waterlevel);
+  const xOurData = ourData.map(d => d.timeofmeas);
+  const yOurData = ourData.map(d => d.waterlevel);
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
@@ -91,7 +91,7 @@ function PlotGraph({ jupiterData, ourData, dynamicMeasurement }) {
   }, [dynamicMeasurement]);
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("md"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <Plot
@@ -99,28 +99,28 @@ function PlotGraph({ jupiterData, ourData, dynamicMeasurement }) {
         {
           x: xJupiterData,
           y: yJupiterData,
-          name: "Jupiter data",
-          type: "scatter",
-          line: { width: 2 },
-          mode: "lines+markers",
-          marker: { symbol: "100", size: "8", color: "#177FC1" },
+          name: 'Jupiter data',
+          type: 'scatter',
+          line: {width: 2},
+          mode: 'lines+markers',
+          marker: {symbol: '100', size: '8', color: '#177FC1'},
         },
         {
           x: xOurData,
           y: yOurData,
-          name: "Calypso data",
-          type: "scatter",
-          mode: "markers",
-          marker: { symbol: "50", size: "8", color: "rgb(0,120,109)" },
+          name: 'Calypso data',
+          type: 'scatter',
+          mode: 'markers',
+          marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
         },
         {
           x: xDynamicMeasurement,
           y: yDynamicMeasurement,
-          name: "",
-          type: "scatter",
-          mode: "markers",
+          name: '',
+          type: 'scatter',
+          mode: 'markers',
           showlegend: false,
-          marker: { symbol: "50", size: "8", color: "rgb(0,120,109)" },
+          marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
         },
       ]}
       layout={
@@ -136,24 +136,24 @@ function PlotGraph({ jupiterData, ourData, dynamicMeasurement }) {
               ...layout3,
               yaxis: {
                 ...layout3.yaxis,
-                title: "Vandstand",
+                title: 'Vandstand',
               },
             }
       }
       config={{
         responsive: true,
         modeBarButtonsToRemove: [
-          "select2d",
-          "lasso2d",
-          "autoScale2d",
-          "hoverCompareCartesian",
-          "hoverClosestCartesian",
-          "toggleSpikelines",
+          'select2d',
+          'lasso2d',
+          'autoScale2d',
+          'hoverCompareCartesian',
+          'hoverClosestCartesian',
+          'toggleSpikelines',
         ],
         displaylogo: false,
       }}
       useResizeHandler={true}
-      style={{ width: "99%", height: "100%" }}
+      style={{width: '99%', height: '100%'}}
     />
   );
 }
@@ -167,18 +167,13 @@ export default function BearingGraph({
 }) {
   const [jupiterData, setJupiterData] = useState([]);
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("md"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
-    if (
-      boreholeno !== -1 &&
-      boreholeno !== null &&
-      intakeno !== null &&
-      intakeno !== -1
-    ) {
-      getJupiterWaterlevel(boreholeno, intakeno).then((res) => {
+    if (boreholeno !== -1 && boreholeno !== null && intakeno !== null && intakeno !== -1) {
+      getJupiterWaterlevel(boreholeno, intakeno).then(res => {
         if (res.data.success) {
-          setJupiterData(res.data.features.map((elem) => elem.properties));
+          setJupiterData(res.data.features.map(elem => elem.properties));
         }
       });
     }
@@ -187,14 +182,14 @@ export default function BearingGraph({
   return (
     <div
       style={{
-        width: "auto",
-        height: matches ? "300px" : "500px",
-        marginBottom: "10px",
-        paddingTop: "5px",
-        marginLeft: matches ? "-50px" : "50px",
-        marginRight: matches ? "" : "50px",
-        marginTop: matches ? "" : "10px",
-        border: matches ? "" : "2px solid gray",
+        width: 'auto',
+        height: matches ? '300px' : '500px',
+        marginBottom: '10px',
+        paddingTop: '5px',
+        marginLeft: matches ? '-50px' : '50px',
+        marginRight: matches ? '' : '50px',
+        marginTop: matches ? '' : '10px',
+        border: matches ? '' : '2px solid gray',
       }}
     >
       <PlotGraph

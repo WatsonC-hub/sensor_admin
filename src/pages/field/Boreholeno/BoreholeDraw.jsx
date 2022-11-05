@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
-import clsx from "clsx";
-import { useTheme } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { getBorehole } from "../boreholeAPI";
-import MinimalSelect from "../field/Station/MinimalSelect";
-import { useParams, useNavigate } from "react-router-dom";
-import Boreholeno from "./Boreholeno";
+import React, {useContext, useEffect, useState} from 'react';
+import clsx from 'clsx';
+import {useTheme} from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import {getBorehole} from '../boreholeAPI';
+import MinimalSelect from '../field/Station/MinimalSelect';
+import {useParams, useNavigate} from 'react-router-dom';
+import Boreholeno from './Boreholeno';
 
 export default function BoreholeDraw() {
   const open = false;
@@ -25,7 +25,7 @@ export default function BoreholeDraw() {
 
   const currentStation = (id, stations) => {
     if (stations.length === 0) return null;
-    return stations.find((s) => s.ts_id + "" === id + "");
+    return stations.find(s => s.ts_id + '' === id + '');
   };
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function BoreholeDraw() {
     if (intakeno) {
       setSelectedItem(parseInt(intakeno));
     }
-    getBorehole(boreholeno).then((res) => {
+    getBorehole(boreholeno).then(res => {
       if (!intakeno) {
         intakeno = -1;
         if (res.data.features.length === 1) {
@@ -49,11 +49,11 @@ export default function BoreholeDraw() {
         setCurrIntake(
           currentStation(
             intakeno,
-            res.data.features.map((elem) => elem.properties)
+            res.data.features.map(elem => elem.properties)
           )
         );
       }
-      setBoreholenoList(res.data.features.map((elem) => elem.properties));
+      setBoreholenoList(res.data.features.map(elem => elem.properties));
     });
     setSelectedBoreholeno(boreholeno);
     // setOpen(true);
@@ -62,15 +62,12 @@ export default function BoreholeDraw() {
   return (
     <div>
       <CssBaseline />
-      <AppBar
-        position="sticky"
-        style={{ backgroundColor: theme.palette.primary }}
-      >
+      <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
         <Toolbar>
           <IconButton
             color="inherit"
-            onClick={(e) => {
-              if (location.hash == "") {
+            onClick={e => {
+              if (location.hash == '') {
                 navigate(-1);
               } else {
                 navigate(`/field/borehole/${boreholeno}/${intakeno}`, {

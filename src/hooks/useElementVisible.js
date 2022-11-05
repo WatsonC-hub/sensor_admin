@@ -1,10 +1,10 @@
-import { useRef, useEffect, useState } from "react";
+import {useRef, useEffect, useState} from 'react';
 
 export default function useElementVisible(options) {
   const containerRef = useRef(null);
   const [isTabVisible, setIsTabVisible] = useState(false);
 
-  const callbackFunction = (entries) => {
+  const callbackFunction = entries => {
     const [entry] = entries;
     setIsTabVisible(entry.isIntersecting);
   };

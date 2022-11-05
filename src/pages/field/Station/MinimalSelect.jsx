@@ -1,23 +1,18 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import {useState, useEffect} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const MinimalSelect = ({
-  locid,
-  stationList,
-  selectedStation,
-  setSelectedItem,
-}) => {
+const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) => {
   const [stationId, setStationId] = useState(selectedStation);
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.statid ? false : true);
   const navigate = useNavigate();
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     setSelectedItem(event.target.value);
     navigate(`/field/location/${locid}/${event.target.value}`, {
       replace: true,
@@ -30,24 +25,24 @@ const MinimalSelect = ({
 
   useEffect(() => {
     setStationId(selectedStation);
-    if (selectedStation !== "") {
+    if (selectedStation !== '') {
       setIsOpen(false);
     }
   }, [selectedStation]);
 
-  const iconComponent = (props) => {
+  const iconComponent = props => {
     return <ExpandMoreIcon />;
   };
 
   // moves the menu below the select input
   const menuProps = {
     anchorOrigin: {
-      vertical: "bottom",
-      horizontal: "left",
+      vertical: 'bottom',
+      horizontal: 'left',
     },
     transformOrigin: {
-      vertical: "top",
-      horizontal: "left",
+      vertical: 'top',
+      horizontal: 'left',
     },
   };
 
@@ -62,34 +57,34 @@ const MinimalSelect = ({
       onOpen={handleOpen}
       onClose={handleClose}
       sx={{
-        color: "white",
-        paddingBottom: "2px",
-        "& .MuiSelect-icon": {
-          color: "white",
+        color: 'white',
+        paddingBottom: '2px',
+        '& .MuiSelect-icon': {
+          color: 'white',
         },
-        "& .MuiSelect-selectMenu": {
-          backgroundColor: "blue",
+        '& .MuiSelect-selectMenu': {
+          backgroundColor: 'blue',
         },
 
-        backgroundColor: "transparent",
-        boxShadow: "0px 5px 8px -3px rgba(0,0,0,0.14)",
+        backgroundColor: 'transparent',
+        boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.14)',
       }}
     >
       {stationList &&
         stationList
-          .filter((t) => t.ts_name !== null)
-          .map((station) => (
+          .filter(t => t.ts_name !== null)
+          .map(station => (
             <MenuItem
               key={station.ts_id}
               value={station.ts_id}
               sx={{
-                "&:hover": {
-                  backgroundColor: "primary.main",
-                  color: "white",
+                '&:hover': {
+                  backgroundColor: 'primary.main',
+                  color: 'white',
                 },
-                "&.Mui-selected": {
-                  backgroundColor: "primary.main",
-                  color: "white",
+                '&.Mui-selected': {
+                  backgroundColor: 'primary.main',
+                  color: 'white',
                 },
               }}
             >

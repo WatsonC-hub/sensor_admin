@@ -1,20 +1,20 @@
-import React from "react";
-import { Card, CardContent, CardHeader, Grid, Typography } from "@mui/material";
-import BuildCircleIcon from "@mui/icons-material/BuildCircle";
-import SettingsIcon from "@mui/icons-material/Settings";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import RouterIcon from "@mui/icons-material/Router";
-import AutoGraphIcon from "@mui/icons-material/AutoGraph";
-import ChoiseCard from "../../../components/ChoiseCard";
+import React from 'react';
+import {Card, CardContent, CardHeader, Grid, Typography} from '@mui/material';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import RouterIcon from '@mui/icons-material/Router';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import ChoiseCard from '../../../components/ChoiseCard';
 const AdminChooser = () => {
   return (
     <Grid
       container
       spacing={8}
       sx={{
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         marginTop: 10,
       }}
     >

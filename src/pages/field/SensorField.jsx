@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Route, Routes } from "react-router-dom";
-import SimpleTabs from "./Overview/SimpleTabs";
-import LocationRouter from "./Station/LocationRouter";
+import React, {useState} from 'react';
+import {Route, Routes} from 'react-router-dom';
+import SimpleTabs from './Overview/SimpleTabs';
+import LocationRouter from './Station/LocationRouter';
 
-import ScanComponent from "../../components/ScanComponent";
-import OpretStamdata from "./Stamdata/OpretStamdata";
-import CaptureDialog from "./Station/CaptureDialog";
-import { authStore } from "../../state/store";
-import { useAtom } from "jotai";
-import { captureDialogAtom } from "../../state/atoms";
+import ScanComponent from '../../components/ScanComponent';
+import OpretStamdata from './Stamdata/OpretStamdata';
+import CaptureDialog from './Station/CaptureDialog';
+import {authStore} from '../../state/store';
+import {useAtom} from 'jotai';
+import {captureDialogAtom} from '../../state/atoms';
 // import BoreholeDraw from "./pages/Boreholeno/BoreholeDraw";
 
 function SensorField({}) {
@@ -28,9 +28,7 @@ function SensorField({}) {
         <Route path="location/:locid" element={<LocationRouter />} />
         <Route
           path="stamdata"
-          element={
-            <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
-          }
+          element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
         />
         <Route path="/:labelid" element={<ScanComponent />} />
         {/* <Route

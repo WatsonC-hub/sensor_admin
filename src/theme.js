@@ -1,16 +1,16 @@
-import { createTheme } from "@mui/material";
+import {createTheme} from '@mui/material';
 const theme = createTheme({
   palette: {
     // type: "light",
     primary: {
-      main: "rgb(0,120,109)",
+      main: 'rgb(0,120,109)',
     },
     secondary: {
-      main: "#FFA137",
+      main: '#FFA137',
     },
   },
   typography: {
-    fontFamily: "Open Sans",
+    fontFamily: 'Open Sans',
   },
   breakpoints: {
     values: {

@@ -1,13 +1,13 @@
-import React from "react";
-import Box from "@mui/material/Box";
+import React from 'react';
+import Box from '@mui/material/Box';
 
 export default function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-  const ref = React.useRef({ hasBeenMounted: false });
+  const {children, value, index, ...other} = props;
+  const ref = React.useRef({hasBeenMounted: false});
   ref.current.hasBeenMounted = ref.current.hasBeenMounted || value === index;
   return (
     <div
-      style={{ display: value === index ? null : "none" }}
+      style={{display: value === index ? null : 'none'}}
       role="tabpanel"
       // hidden={value !== index}
       id={`simple-tabpanel-${index}`}

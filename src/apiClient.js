@@ -1,8 +1,8 @@
-import axios from "axios";
-import { authStore } from "src/state/store";
+import axios from 'axios';
+import {authStore} from 'src/state/store';
 
 const apiClient = axios.create({
-  baseURL: "/api",
+  baseURL: '/api',
   withCredentials: true,
 });
 
@@ -14,8 +14,8 @@ apiClient.interceptors.response.use(
   },
   function (error) {
     if (error.response.status === 401) {
-      console.log("JWT expired, refreshing...");
-      authStore.setState({ authenticated: false, loginexpired: true });
+      console.log('JWT expired, refreshing...');
+      authStore.setState({authenticated: false, loginexpired: true});
     }
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
@@ -23,4 +23,4 @@ apiClient.interceptors.response.use(
   }
 );
 
-export { apiClient };
+export {apiClient};

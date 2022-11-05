@@ -1,41 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Container, Grid, Typography, Button, TextField } from "@mui/material";
-import Autocomplete from "@mui/material/Autocomplete";
-import "date-fns";
-import _ from "lodash";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
-import AddUdstyrForm from "./AddUdstyrForm";
-import AddLocationForm from "./AddLocationForm";
-import LocationForm from "./components/LocationForm";
-import StationForm from "./components/StationForm";
-import { apiClient, getStamData, postStamdata } from "../fieldAPI";
-import UdstyrForm from "./components/UdstyrForm";
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Container, Grid, Typography, Button, TextField} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import 'date-fns';
+import _ from 'lodash';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {useTheme} from '@mui/material/styles';
+import AddUdstyrForm from './AddUdstyrForm';
+import AddLocationForm from './AddLocationForm';
+import LocationForm from './components/LocationForm';
+import StationForm from './components/StationForm';
+import {apiClient, getStamData, postStamdata} from '../fieldAPI';
+import UdstyrForm from './components/UdstyrForm';
 
-import SaveIcon from "@mui/icons-material/Save";
-import moment from "moment";
-import { stamdataStore } from "../../../state/store";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import axios from "axios";
+import SaveIcon from '@mui/icons-material/Save';
+import moment from 'moment';
+import {stamdataStore} from '../../../state/store';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {toast} from 'react-toastify';
+import axios from 'axios';
 
 const flex1 = {
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "start",
+  display: 'flex',
+  alignItems: 'baseline',
+  justifyContent: 'start',
 };
 
-function LocationChooser({ setLocationDialogOpen }) {
-  const [setLocation, resetLocation] = stamdataStore((store) => [
+function LocationChooser({setLocationDialogOpen}) {
+  const [setLocation, resetLocation] = stamdataStore(store => [
     store.setLocation,
     store.resetLocation,
   ]);
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("md"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const populateFormData = (locData) => {
+  const populateFormData = locData => {
     if (locData) {
       setLocation({
         loc_id: locData.loc_id,
@@ -55,8 +55,8 @@ function LocationChooser({ setLocationDialogOpen }) {
     }
   };
 
-  const { data: locations } = useQuery(["locations"], async () => {
-    const { data } = await apiClient.get("/sensor_field/stamdata/locations");
+  const {data: locations} = useQuery(['locations'], async () => {
+    const {data} = await apiClient.get('/sensor_field/stamdata/locations');
     return data;
   });
 
@@ -68,17 +68,17 @@ function LocationChooser({ setLocationDialogOpen }) {
 
           <Autocomplete
             options={locations ? locations : []}
-            getOptionLabel={(option) => option.loc_name}
-            renderInput={(params) => (
+            getOptionLabel={option => option.loc_name}
+            renderInput={params => (
               <TextField
                 {...params}
                 size="small"
                 variant="outlined"
                 placeholder="Vælg lokalitet"
-                style={{ marginTop: "-6px" }}
+                style={{marginTop: '-6px'}}
               />
             )}
-            style={{ width: 200, marginLeft: "12px" }}
+            style={{width: 200, marginLeft: '12px'}}
             onChange={(event, value) => populateFormData(value)}
           />
 
@@ -87,8 +87,8 @@ function LocationChooser({ setLocationDialogOpen }) {
             color="secondary"
             variant="contained"
             style={{
-              textTransform: "none",
-              marginLeft: "12px",
+              textTransform: 'none',
+              marginLeft: '12px',
             }}
             onClick={() => setLocationDialogOpen(true)}
           >
@@ -106,25 +106,25 @@ function LocationChooser({ setLocationDialogOpen }) {
         <div style={flex1}>
           <Autocomplete
             options={locations}
-            getOptionLabel={(option) => option.loc_name}
-            renderInput={(params) => (
+            getOptionLabel={option => option.loc_name}
+            renderInput={params => (
               <TextField
                 {...params}
                 size="small"
                 variant="outlined"
                 placeholder="Vælg lokalitet"
-                style={{ marginTop: "-6px" }}
+                style={{marginTop: '-6px'}}
               />
             )}
             disableClearable
-            style={{ width: 200 }}
+            style={{width: 200}}
             onChange={(event, value) => populateFormData(value)}
           />
           <Button
             color="secondary"
             variant="contained"
             style={{
-              textTransform: "none",
+              textTransform: 'none',
             }}
             onClick={() => setLocationDialogOpen(true)}
           >
@@ -138,7 +138,7 @@ function LocationChooser({ setLocationDialogOpen }) {
   return matches ? mobileChooser : desktopChooser;
 }
 
-function Location({ setLocationDialogOpen }) {
+function Location({setLocationDialogOpen}) {
   return (
     <Grid container>
       <LocationChooser setLocationDialogOpen={setLocationDialogOpen} />
@@ -147,7 +147,7 @@ function Location({ setLocationDialogOpen }) {
   );
 }
 
-export default function OpretStamdata({ setAddStationDisabled }) {
+export default function OpretStamdata({setAddStationDisabled}) {
   const navigate = useNavigate();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
@@ -158,14 +158,14 @@ export default function OpretStamdata({ setAddStationDisabled }) {
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
   const stamdataMutation = useMutation(postStamdata, {
-    onSuccess: (data) => {
-      navigate("/");
-      queryClient.invalidateQueries("station_list");
-      queryClient.invalidateQueries("map_data");
+    onSuccess: data => {
+      navigate('/');
+      queryClient.invalidateQueries('station_list');
+      queryClient.invalidateQueries('map_data');
     },
   });
 
-  const changeSelectedStationType = (selectedType) => {
+  const changeSelectedStationType = selectedType => {
     if (selectedType !== selectedStationType) {
       store.resetUnit();
     }
@@ -180,7 +180,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
       },
       station: {
         ...store.timeseries,
-        mpstartdate: moment(store.unit.startdato).format("YYYY-MM-DD"),
+        mpstartdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
       },
       udstyr: {
         ...store.unit,
@@ -188,9 +188,9 @@ export default function OpretStamdata({ setAddStationDisabled }) {
     };
 
     toast.promise(() => stamdataMutation.mutateAsync(form), {
-      pending: "Opretter station",
-      success: "Stationen er oprettet",
-      error: "Der skete en fejl",
+      pending: 'Opretter station',
+      success: 'Stationen er oprettet',
+      error: 'Der skete en fejl',
     });
   };
 
@@ -223,14 +223,14 @@ export default function OpretStamdata({ setAddStationDisabled }) {
             disabled={selectedStationType === -1}
             size="small"
             style={{
-              textTransform: "none",
-              marginLeft: "12px",
+              textTransform: 'none',
+              marginLeft: '12px',
             }}
             color="secondary"
             variant="contained"
             onClick={() => setUdstyrDialogOpen(true)}
           >
-            {store.unit.calypso_id === "" ? "Tilføj Udstyr" : "Ændre udstyr"}
+            {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
           </Button>
         </div>
         <UdstyrForm mode="add" />
@@ -250,7 +250,7 @@ export default function OpretStamdata({ setAddStationDisabled }) {
               color="grey"
               variant="contained"
               onClick={() => {
-                navigate("/");
+                navigate('/');
                 setAddStationDisabled(false);
               }}
             >

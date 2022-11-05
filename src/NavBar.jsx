@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import {useNavigate} from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -12,24 +12,24 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
-} from "@mui/material";
-import { ReactComponent as LogoSvg } from "./calypso.svg";
-import { ReactComponent as SmallLogo } from "./logo.svg";
-import { authStore } from "./state/store";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import PhotoCameraRounded from "@mui/icons-material/PhotoCameraRounded";
-import BuildCircleIcon from "@mui/icons-material/BuildCircle";
-import SettingsIcon from "@mui/icons-material/Settings";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useAtom } from "jotai";
-import { captureDialogAtom } from "./state/atoms";
-import useWhatPage from "./hooks/useWhatPage";
+} from '@mui/material';
+import {ReactComponent as LogoSvg} from './calypso.svg';
+import {ReactComponent as SmallLogo} from './logo.svg';
+import {authStore} from './state/store';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import LogoutIcon from '@mui/icons-material/Logout';
+import {useAtom} from 'jotai';
+import {captureDialogAtom} from './state/atoms';
+import useWhatPage from './hooks/useWhatPage';
 
-const LogOut = ({ element: Element }) => {
-  const [setAuthenticated, setUser, setSessionId] = authStore((state) => [
+const LogOut = ({element: Element}) => {
+  const [setAuthenticated, setUser, setSessionId] = authStore(state => [
     state.setAuthenticated,
     state.setUser,
     state.setSessionId,
@@ -40,20 +40,20 @@ const LogOut = ({ element: Element }) => {
     setAuthenticated(false);
     setSessionId(null);
     setUser(null);
-    navigate("/");
+    navigate('/');
   };
 
   return <Box onClick={handleLogout}>{Element}</Box>;
 };
 
-const AppBarLayout = ({ children }) => {
+const AppBarLayout = ({children}) => {
   return (
     <AppBar position="sticky">
       <Toolbar
         style={{
           flexGrow: 1,
-          flexDirection: "row",
-          justifyContent: "space-between",
+          flexDirection: 'row',
+          justifyContent: 'space-between',
         }}
       >
         {children}
@@ -69,8 +69,8 @@ const NavBarNotifications = () => {
       badgeContent={17}
       color="error"
       onClick={() => {
-        if (!window.location.pathname.includes("/notifikationer")) {
-          navigate("/admin/notifikationer");
+        if (!window.location.pathname.includes('/notifikationer')) {
+          navigate('/admin/notifikationer');
         }
       }}
     >
@@ -84,7 +84,7 @@ const NavBarMenu = () => {
   let navigate = useNavigate();
   const page = useWhatPage();
 
-  const handleClick = (event) => {
+  const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -111,29 +111,29 @@ const NavBarMenu = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {page == "admin" ? (
+        {page == 'admin' ? (
           <MenuItem
             onClick={() => {
               handleClose();
-              navigate("/field");
+              navigate('/field');
             }}
           >
             <ListItemIcon>
               <BuildCircleIcon fontSize="medium" />
             </ListItemIcon>
-            {"Field"}
+            {'Field'}
           </MenuItem>
         ) : (
           <MenuItem
             onClick={() => {
               handleClose();
-              navigate("/admin");
+              navigate('/admin');
             }}
           >
             <ListItemIcon>
               <SettingsIcon fontSize="medium" />
             </ListItemIcon>
-            {"Admin"}
+            {'Admin'}
           </MenuItem>
         )}
 
@@ -144,7 +144,7 @@ const NavBarMenu = () => {
                 <ListItemIcon>
                   <LogoutIcon fontSize="medium" />
                 </ListItemIcon>
-                {"Logout"}
+                {'Logout'}
               </>
             }
           />
@@ -154,12 +154,12 @@ const NavBarMenu = () => {
   );
 };
 
-const NavBar = ({ children }) => {
-  const [authenticated] = authStore((state) => [state.authenticated]);
+const NavBar = ({children}) => {
+  const [authenticated] = authStore(state => [state.authenticated]);
   const [open, setOpen] = useAtom(captureDialogAtom);
   const navigate = useNavigate();
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("md"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const LogOutButton = (
     <Button color="grey" variant="contained" startIcon={<LogoutIcon />}>
@@ -171,41 +171,37 @@ const NavBar = ({ children }) => {
       <AppBarLayout>
         {matches ? <SmallLogo /> : <LogoSvg />}
         <Typography variant="h4">Sensor</Typography>
-        {location.pathname !== "/register" ? (
+        {location.pathname !== '/register' ? (
           <Button
             color="secondary"
             variant="contained"
             onClick={() => {
-              navigate("/register");
+              navigate('/register');
             }}
           >
             Opret konto
           </Button>
         ) : (
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={(e) => navigate("/")}
-          >
+          <Button color="secondary" variant="contained" onClick={e => navigate('/')}>
             Log ind
           </Button>
         )}
       </AppBarLayout>
     );
   }
-  if (location.pathname.includes("/location")) {
+  if (location.pathname.includes('/location')) {
     return null;
   }
 
-  if (location.pathname.includes("/field")) {
+  if (location.pathname.includes('/field')) {
     return (
       <AppBarLayout>
-        {!location.pathname.includes("/stamdata") ? (
+        {!location.pathname.includes('/stamdata') ? (
           <Button
             color="secondary"
             variant="contained"
             onClick={() => {
-              navigate("stamdata");
+              navigate('stamdata');
               //setAddStationDisabled(true);
             }}
             size="small"
@@ -216,7 +212,7 @@ const NavBar = ({ children }) => {
           <IconButton
             color="inherit"
             onClick={
-              (e) => navigate("") //context.setLocationId(-1)
+              e => navigate('') //context.setLocationId(-1)
             }
             size="large"
           >
@@ -227,11 +223,7 @@ const NavBar = ({ children }) => {
         {!matches && <Typography variant="h4">Field</Typography>}
 
         {matches && (
-          <IconButton
-            color="inherit"
-            onClick={() => setOpen(true)}
-            size="large"
-          >
+          <IconButton color="inherit" onClick={() => setOpen(true)} size="large">
             <PhotoCameraRounded />
           </IconButton>
         )}
@@ -246,20 +238,20 @@ const NavBar = ({ children }) => {
         ) : (
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               maxWidth: 300,
             }}
           >
-            <Box sx={{ p: 2 }}>
+            <Box sx={{p: 2}}>
               <NavBarNotifications />
             </Box>
             <Button
               color="grey"
               variant="contained"
               onClick={() => {
-                navigate("/admin");
+                navigate('/admin');
               }}
               startIcon={<SettingsIcon />}
             >
@@ -272,7 +264,7 @@ const NavBar = ({ children }) => {
     );
   }
 
-  if (location.pathname.includes("/admin")) {
+  if (location.pathname.includes('/admin')) {
     return (
       <AppBarLayout>
         {matches ? <SmallLogo /> : <LogoSvg />}
@@ -289,20 +281,20 @@ const NavBar = ({ children }) => {
         ) : (
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               maxWidth: 300,
             }}
           >
-            <Box sx={{ p: 2 }}>
+            <Box sx={{p: 2}}>
               <NavBarNotifications />
             </Box>
             <Button
               color="grey"
               variant="contained"
               onClick={() => {
-                navigate("/field");
+                navigate('/field');
               }}
               startIcon={<BuildCircleIcon />}
             >

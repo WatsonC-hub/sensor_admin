@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
-import { getLocidFromLabel, apiClient } from "src/pages/field/fieldAPI";
-import { CircularProgress } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import React, {useEffect, useState} from 'react';
+import {useParams, Navigate} from 'react-router-dom';
+import {getLocidFromLabel, apiClient} from 'src/pages/field/fieldAPI';
+import {CircularProgress} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 
 export default function ScanComponent() {
   const params = useParams();
 
-  const { data, isLoading } = useQuery(
-    ["labelid", params.labelid],
-    async () => {
-      const { data } = await apiClient.get(
-        `/sensor_field/stamdata/calypso_id/${params.labelid}`
-      );
-      return data;
-    }
-  );
+  const {data, isLoading} = useQuery(['labelid', params.labelid], async () => {
+    const {data} = await apiClient.get(`/sensor_field/stamdata/calypso_id/${params.labelid}`);
+    return data;
+  });
 
   if (isLoading) {
     return <CircularProgress />;

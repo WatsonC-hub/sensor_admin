@@ -1,9 +1,9 @@
-import React from "react";
-import { Card, CardContent, CardHeader, Grid, Typography } from "@mui/material";
-import BuildCircleIcon from "@mui/icons-material/BuildCircle";
-import SettingsIcon from "@mui/icons-material/Settings";
-import { useNavigate } from "react-router-dom";
-import ChoiseCard from "./components/ChoiseCard";
+import React from 'react';
+import {Card, CardContent, CardHeader, Grid, Typography} from '@mui/material';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
+import {useNavigate} from 'react-router-dom';
+import ChoiseCard from './components/ChoiseCard';
 const Chooser = () => {
   let navigate = useNavigate();
 
@@ -12,8 +12,8 @@ const Chooser = () => {
       container
       spacing={8}
       sx={{
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         marginTop: 10,
       }}
     >

@@ -1,5 +1,5 @@
-import create from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import create from 'zustand';
+import {devtools, persist} from 'zustand/middleware';
 
 export const authStore = create(
   persist(
@@ -8,41 +8,41 @@ export const authStore = create(
       user: null,
       sessionId: null,
       loginExpired: false,
-      setAuthenticated: (authenticated) =>
+      setAuthenticated: authenticated =>
         set(
           {
             authenticated: authenticated,
           },
           false,
-          "setAuthenticated"
+          'setAuthenticated'
         ),
-      setUser: (user) =>
+      setUser: user =>
         set(
           {
             user: user,
           },
           false,
-          "setUser"
+          'setUser'
         ),
-      setSessionId: (sessionId) =>
+      setSessionId: sessionId =>
         set(
           {
             sessionId: sessionId,
           },
           false,
-          "setSessionId"
+          'setSessionId'
         ),
-      setLoginExpired: (loginexpired) =>
+      setLoginExpired: loginexpired =>
         set(
           {
             loginExpired: loginexpired,
           },
           false,
-          "setLoginExpired"
+          'setLoginExpired'
         ),
     })),
     {
-      name: "auth-storage", // name of item in the storage (must be unique)
+      name: 'auth-storage', // name of item in the storage (must be unique)
       getStorage: () => sessionStorage, // (optional) by default the 'localStorage' is used
     }
   )
@@ -50,47 +50,47 @@ export const authStore = create(
 
 const initialState = {
   location: {
-    loc_id: "",
-    loc_name: "",
-    mainloc: "",
-    subloc: "",
-    subsubloc: "",
+    loc_id: '',
+    loc_name: '',
+    mainloc: '',
+    subloc: '',
+    subsubloc: '',
     x: 0,
     y: 0,
-    terrainqual: "",
+    terrainqual: '',
     terrainlevel: 0,
-    description: "",
+    description: '',
     loctype_id: -1,
   },
   timeseries: {
-    ts_id: "",
-    ts_name: "",
+    ts_id: '',
+    ts_name: '',
     tstype_id: 1,
-    parameter: "",
+    parameter: '',
     maalepunktskote: 0,
-    mp_description: "",
+    mp_description: '',
     sensor_depth_m: 0,
-    unit: "",
+    unit: '',
   },
   unit: {
-    terminal_type: "",
-    terminal_id: "",
-    sensor_id: "",
-    sensorinfo: "",
-    calypso_id: "",
-    batteriskift: "",
-    startdato: "",
-    slutdato: "",
-    uuid: "",
+    terminal_type: '',
+    terminal_id: '',
+    sensor_id: '',
+    sensorinfo: '',
+    calypso_id: '',
+    batteriskift: '',
+    startdato: '',
+    slutdato: '',
+    uuid: '',
   },
 };
 
-let stamdataStore = (set) => ({
+let stamdataStore = set => ({
   ...initialState,
-  resetLocation: () => set({ location: initialState.location }),
-  resetTimeseries: () => set({ timeseries: initialState.timeseries }),
-  resetUnit: () => set({ unit: initialState.unit }),
-  setLocation: (locationData) =>
+  resetLocation: () => set({location: initialState.location}),
+  resetTimeseries: () => set({timeseries: initialState.timeseries}),
+  resetUnit: () => set({unit: initialState.unit}),
+  setLocation: locationData =>
     set(
       {
         location: {
@@ -108,9 +108,9 @@ let stamdataStore = (set) => ({
         },
       },
       false,
-      "setLocation"
+      'setLocation'
     ),
-  setTimeseries: (timeseriesdata) =>
+  setTimeseries: timeseriesdata =>
     set(
       {
         timeseries: {
@@ -125,9 +125,9 @@ let stamdataStore = (set) => ({
         },
       },
       false,
-      "setTimeseries"
+      'setTimeseries'
     ),
-  setUnit: (unitData) =>
+  setUnit: unitData =>
     set(
       {
         unit: {
@@ -143,43 +143,43 @@ let stamdataStore = (set) => ({
         },
       },
       false,
-      "setUnit"
+      'setUnit'
     ),
   setUnitValue: (key, value) =>
     set(
-      (state) => ({
+      state => ({
         unit: {
           ...state.unit,
           [key]: value,
         },
       }),
       false,
-      "setUnitValue"
+      'setUnitValue'
     ),
   setLocationValue: (key, value) =>
     set(
-      (state) => ({
+      state => ({
         location: {
           ...state.location,
           [key]: value,
         },
       }),
       false,
-      "setLocationValue"
+      'setLocationValue'
     ),
   setTimeseriesValue: (key, value) =>
     set(
-      (state) => ({
+      state => ({
         timeseries: {
           ...state.timeseries,
           [key]: value,
         },
       }),
       false,
-      "setTimeseriesValue"
+      'setTimeseriesValue'
     ),
 });
 
 stamdataStore = create(devtools(stamdataStore));
 
-export { initialState, stamdataStore };
+export {initialState, stamdataStore};

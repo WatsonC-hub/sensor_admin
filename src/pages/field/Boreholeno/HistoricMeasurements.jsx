@@ -1,27 +1,22 @@
-import React, { useState } from "react";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TablePagination from "@mui/material/TablePagination";
-import { IconButton, Typography } from "@mui/material";
-import DeleteAlert from "./DeleteAlert";
-import { Fragment } from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import moment from "moment";
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import Grid from "@mui/material/Grid";
+import React, {useState} from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TablePagination from '@mui/material/TablePagination';
+import {IconButton, Typography} from '@mui/material';
+import DeleteAlert from './DeleteAlert';
+import {Fragment} from 'react';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import moment from 'moment';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import Grid from '@mui/material/Grid';
 
-export default function HistoricMeasurements({
-  measurements,
-  handleEdit,
-  handleDelete,
-  canEdit,
-}) {
+export default function HistoricMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
@@ -31,12 +26,12 @@ export default function HistoricMeasurements({
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = (id) => {
+  const onDeleteBtnClick = id => {
     setMeasurementId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = (id) => {
+  const deleteRow = id => {
     handleDelete(id);
   };
 
@@ -49,19 +44,19 @@ export default function HistoricMeasurements({
           setDialogOpen={setDialogOpen}
           onOkDelete={deleteRow}
         />
-        <Grid container style={{ marginLeft: "2%" }}>
+        <Grid container style={{marginLeft: '2%'}}>
           <Grid item xs={8}>
             <img
               width="35"
               height="35"
               align="left"
-              src={process.env.PUBLIC_URL + "/RulerIcon.svg"}
+              src={process.env.PUBLIC_URL + '/RulerIcon.svg'}
             />
             <Typography gutterBottom variant="h5" component="h2">
               Kontrolmålinger
             </Typography>
           </Grid>
-          <Grid item xs={3} style={{ marginLeft: "5%" }}>
+          <Grid item xs={3} style={{marginLeft: '5%'}}>
             <TablePagination
               rowsPerPageOptions={[5]}
               component="div"
@@ -74,7 +69,7 @@ export default function HistoricMeasurements({
           </Grid>
         </Grid>
         <TableContainer>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <Table sx={{minWidth: 650}} aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell align="center">Dato</TableCell>
@@ -92,18 +87,16 @@ export default function HistoricMeasurements({
                 .map((row, index) => (
                   <TableRow key={index}>
                     <TableCell align="center">
-                      {moment(row.timeofmeas).format("YYYY-MM-DD HH:mm")}
+                      {moment(row.timeofmeas).format('YYYY-MM-DD HH:mm')}
                     </TableCell>
                     <TableCell align="center">
                       {row.pumpstop !== null
-                        ? moment(row.pumpstop).format("YYYY-MM-DD HH:mm")
-                        : "-"}
+                        ? moment(row.pumpstop).format('YYYY-MM-DD HH:mm')
+                        : '-'}
                     </TableCell>
+                    <TableCell align="center">{row.disttowatertable_m}</TableCell>
                     <TableCell align="center">
-                      {row.disttowatertable_m}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.organisationid !== null ? row.organisationname : "-"}
+                      {row.organisationid !== null ? row.organisationname : '-'}
                     </TableCell>
                     <TableCell align="center">
                       {row.uploaded_status === true ? (
@@ -121,8 +114,7 @@ export default function HistoricMeasurements({
                     </TableCell>
                     <TableCell align="center">{row.comment}</TableCell>
                     <TableCell align="right">
-                      {row.organisationid ==
-                        sessionStorage.getItem("orgid") && (
+                      {row.organisationid == sessionStorage.getItem('orgid') && (
                         <IconButton
                           onClick={() => handleEdit(row)}
                           disabled={!canEdit}
@@ -133,8 +125,7 @@ export default function HistoricMeasurements({
                       )}
                     </TableCell>
                     <TableCell align="left">
-                      {row.organisationid ==
-                        sessionStorage.getItem("orgid") && (
+                      {row.organisationid == sessionStorage.getItem('orgid') && (
                         <IconButton
                           onClick={() => {
                             onDeleteBtnClick(row.gid);

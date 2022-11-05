@@ -1,56 +1,46 @@
-import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import {
-  AddCircle,
-  EditRounded,
-  Straighten,
-  PlaylistAddCheck,
-} from "@mui/icons-material";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import MenuIcon from "@mui/icons-material/MoreVert";
-import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
-import { useNavigate } from "react-router-dom";
+import React, {useState} from 'react';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {AddCircle, EditRounded, Straighten, PlaylistAddCheck} from '@mui/icons-material';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import MenuIcon from '@mui/icons-material/MoreVert';
+import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
+import {useNavigate} from 'react-router-dom';
 
 const bottomNavStyle = {
   borderRadius: 5,
-  margin: "7px",
-  boxShadow: "3px 3px 3px grey",
-  backgroundColor: "secondary.main",
-  width: "100px",
-  height: "58px",
+  margin: '7px',
+  boxShadow: '3px 3px 3px grey',
+  backgroundColor: 'secondary.main',
+  width: '100px',
+  height: '58px',
 };
 
 const borderGrey = {
   ...bottomNavStyle,
-  backgroundColor: "#9E9E9E",
+  backgroundColor: '#9E9E9E',
 };
 
 const ITEM_HEIGHT = 48;
 
-function DesktopBottomNav({
-  setFormToShow,
-  canEdit,
-  isCalculated,
-  isWaterlevel,
-}) {
+function DesktopBottomNav({setFormToShow, canEdit, isCalculated, isWaterlevel}) {
   let navigate = useNavigate();
   return (
     <BottomNavigation
       value={-1}
       showLabels
       sx={{
-        backgroundColor: "primary.main",
-        width: "auto",
-        height: "auto",
-        margin: "5px",
-        boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
-        position: "sticky",
-        bottom: "0",
+        backgroundColor: 'primary.main',
+        width: 'auto',
+        height: 'auto',
+        margin: '5px',
+        boxShadow: '0 3px 5px 2px rgba(115,115,115,255)',
+        position: 'sticky',
+        bottom: '0',
         zIndex: 1,
       }}
     >
@@ -61,7 +51,7 @@ function DesktopBottomNav({
         label="Indberet kontrol"
         icon={<AddCircle />}
         onClick={() => {
-          setFormToShow("ADDPEJLING");
+          setFormToShow('ADDPEJLING');
         }}
       />
       {!isCalculated && (
@@ -71,7 +61,7 @@ function DesktopBottomNav({
           label="Indberet tilsyn"
           icon={<PlaylistAddCheck />}
           onClick={() => {
-            setFormToShow("ADDTILSYN");
+            setFormToShow('ADDTILSYN');
           }}
         />
       )}
@@ -81,7 +71,7 @@ function DesktopBottomNav({
         label="Billeder"
         icon={<PhotoCameraRoundedIcon />}
         onClick={() => {
-          setFormToShow("CAMERA");
+          setFormToShow('CAMERA');
         }}
       />
       {isWaterlevel && (
@@ -90,7 +80,7 @@ function DesktopBottomNav({
           disabled={!canEdit}
           label="Målepunkter"
           onClick={() => {
-            setFormToShow("ADDMAALEPUNKT");
+            setFormToShow('ADDMAALEPUNKT');
           }}
           icon={<Straighten />}
         />
@@ -103,7 +93,7 @@ function DesktopBottomNav({
           label="Ændre udstyr"
           icon={<EditRounded />}
           onClick={() => {
-            setFormToShow("RET_STAMDATA");
+            setFormToShow('RET_STAMDATA');
           }}
         />
       )}
@@ -111,17 +101,12 @@ function DesktopBottomNav({
   );
 }
 
-function MobileBottomNav({
-  setFormToShow,
-  canEdit,
-  isCalculated,
-  isWaterlevel,
-}) {
+function MobileBottomNav({setFormToShow, canEdit, isCalculated, isWaterlevel}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   let navigate = useNavigate();
 
-  const handleClick = (event) => {
+  const handleClick = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -134,12 +119,12 @@ function MobileBottomNav({
       value={-1}
       showLabels
       sx={{
-        backgroundColor: "primary.main",
-        height: "auto",
-        margin: "5px",
-        boxShadow: "0 3px 5px 2px rgba(115,115,115,255)",
-        position: "sticky",
-        bottom: "0",
+        backgroundColor: 'primary.main',
+        height: 'auto',
+        margin: '5px',
+        boxShadow: '0 3px 5px 2px rgba(115,115,115,255)',
+        position: 'sticky',
+        bottom: '0',
         zIndex: 1,
       }}
     >
@@ -149,7 +134,7 @@ function MobileBottomNav({
         label="Indberet kontrol"
         icon={<AddCircle />}
         onClick={() => {
-          setFormToShow("ADDPEJLING");
+          setFormToShow('ADDPEJLING');
           handleClose();
         }}
       />
@@ -160,7 +145,7 @@ function MobileBottomNav({
           label="Indberet tilsyn"
           icon={<PlaylistAddCheck />}
           onClick={() => {
-            setFormToShow("ADDTILSYN");
+            setFormToShow('ADDTILSYN');
             handleClose();
           }}
         />
@@ -172,7 +157,7 @@ function MobileBottomNav({
         label="Billeder"
         icon={<PhotoCameraRoundedIcon />}
         onClick={() => {
-          setFormToShow("CAMERA");
+          setFormToShow('CAMERA');
           handleClose();
         }}
       />
@@ -196,7 +181,7 @@ function MobileBottomNav({
             onClose={handleClose}
             PaperProps={{
               sx: {
-                backgroundColor: "primary.main",
+                backgroundColor: 'primary.main',
               },
             }}
           >
@@ -208,7 +193,7 @@ function MobileBottomNav({
                   sx={borderGrey}
                   label="Målepunkter"
                   onClick={() => {
-                    setFormToShow("ADDMAALEPUNKT");
+                    setFormToShow('ADDMAALEPUNKT');
                     handleClose();
                   }}
                   icon={<Straighten />}
@@ -224,7 +209,7 @@ function MobileBottomNav({
                   label="Ændre udstyr"
                   icon={<EditRounded />}
                   onClick={() => {
-                    setFormToShow("RET_STAMDATA");
+                    setFormToShow('RET_STAMDATA');
                     handleClose();
                   }}
                 />
@@ -245,7 +230,7 @@ export default function ActionArea({
   isCalculated,
 }) {
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down("md"));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   return matches ? (
     <MobileBottomNav
       formToShow={formToShow}
