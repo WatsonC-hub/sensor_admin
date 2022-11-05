@@ -6,7 +6,6 @@ import {
   EditRounded,
   Straighten,
   PlaylistAddCheck,
-  PhotoCameraRounded,
 } from "@mui/icons-material";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
@@ -15,8 +14,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/MoreVert";
 import PhotoCameraRoundedIcon from "@mui/icons-material/PhotoCameraRounded";
-import { useLocation, useNavigate } from "react-router-dom";
-import { replace } from "lodash";
+import { useNavigate } from "react-router-dom";
 
 const bottomNavStyle = {
   borderRadius: 5,
@@ -68,7 +66,7 @@ function DesktopBottomNav({
       />
       {!isCalculated && (
         <BottomNavigationAction
-          sx={bottomNavStyle}
+          sx={borderGrey}
           disabled={!canEdit}
           label="Indberet tilsyn"
           icon={<PlaylistAddCheck />}
@@ -78,7 +76,7 @@ function DesktopBottomNav({
         />
       )}
       <BottomNavigationAction
-        sx={bottomNavStyle}
+        sx={borderGrey}
         disabled={!canEdit}
         label="Billeder"
         icon={<PhotoCameraRoundedIcon />}
@@ -88,7 +86,7 @@ function DesktopBottomNav({
       />
       {isWaterlevel && (
         <BottomNavigationAction
-          sx={bottomNavStyle}
+          sx={borderGrey}
           disabled={!canEdit}
           label="Målepunkter"
           onClick={() => {
@@ -100,7 +98,7 @@ function DesktopBottomNav({
 
       {!isCalculated && (
         <BottomNavigationAction
-          sx={bottomNavStyle}
+          sx={borderGrey}
           disabled={!canEdit}
           label="Ændre udstyr"
           icon={<EditRounded />}

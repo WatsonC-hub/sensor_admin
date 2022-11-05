@@ -10,35 +10,52 @@ import Redirecter from "./Redirecter";
 import NavBar from "./NavBar";
 
 function App() {
-  const [authenticated] = authStore((state) => [state.authenticated]);
+	const [authenticated] = authStore((state) => [state.authenticated]);
 
-  useEffect(() => {
-    apiClient.get("/auth/me/secure").then((res) => {
-      console.log(res);
-    });
-  }, []);
+	useEffect(() => {
+		apiClient.get("/auth/me/secure").then((res) => {
+			console.log(res);
+		});
+	}, []);
 
-  console.log("authenticated => ", authenticated);
-  const sensorFieldPromise = import("./pages/field/SensorField");
-  const SensorField = React.lazy(() => sensorFieldPromise);
+	console.log("authenticated => ", authenticated);
+	const sensorFieldPromise = import("./pages/field/SensorField");
+	const SensorField = React.lazy(() => sensorFieldPromise);
 
-  // TODO:
-  // 1. Added token expiration check
+	// REGISTER ERROR OVERLAY - Ved ikke helt hvor dette passer ind henne
+	const showErrorOverlay = (err) => {
+		// must be within function call because that's when the element is defined for sure.
+		const ErrorOverlay = customElements.get("vite-error-overlay");
+		// don't open outside vite environment
+		if (!ErrorOverlay) {
+			return;
+		}
+		console.log(err);
+		const overlay = new ErrorOverlay(err);
+		document.body.appendChild(overlay);
+	};
+	window.addEventListener("error", showErrorOverlay);
+	window.addEventListener("unhandledrejection", ({ reason }) =>
+		showErrorOverlay(reason)
+	);
 
-  if (!authenticated) {
-    return (
-      <>
-        <NavBar />
-        <UnAuntenticatedApp />
-      </>
-    );
-  }
+	// TODO:
+	// 1. Added token expiration check
 
-  return (
-    <Suspense fallback={<LoadingSkeleton />}>
-      <Redirecter SensorField={SensorField} />
-    </Suspense>
-  );
+	if (!authenticated) {
+		return (
+			<>
+				<NavBar />
+				<UnAuntenticatedApp />
+			</>
+		);
+	}
+
+	return (
+		<Suspense fallback={<LoadingSkeleton />}>
+			<Redirecter SensorField={SensorField} />
+		</Suspense>
+	);
 }
 
 export default App;

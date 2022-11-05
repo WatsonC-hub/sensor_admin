@@ -14,6 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import moment from "moment";
 import { stamdataStore } from "../../../state/store";
 import Grid from "@mui/material/Grid";
+import StraightenIcon from '@mui/icons-material/Straighten';
 
 export default function HistoricMeasurements({
   measurements,
@@ -56,8 +57,8 @@ export default function HistoricMeasurements({
         onOkDelete={deleteRow}
       />
       <Grid container>
+        <StraightenIcon style={{marginTop: "0.3%", transform: "rotate(90deg)"}}/>
         <Grid item xs={8}>
-          <img width="35" height="35" align="left" src="/RulerIcon.svg" />
           <Typography gutterBottom variant="h5" component="h2">
             Kontrolmålinger
           </Typography>

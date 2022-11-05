@@ -47,7 +47,6 @@ export default function MobileMeasurements({
       />
       <Grid container>
         <Grid item xs={5} style={{ marginTop: "2.5%" }}>
-          {/* <img width="30" height="30" align="left" src={process.env.PUBLIC_URL + "/RulerIcon.svg"} /> */}
           <Typography gutterBottom variant="h6" component="h2">
             Kontrolmålinger
           </Typography>

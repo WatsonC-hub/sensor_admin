@@ -23,6 +23,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import moment from "moment";
 import Grid from "@mui/material/Grid";
+import StraightenIcon from '@mui/icons-material/Straighten';
 
 function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -52,8 +53,8 @@ function DesktopMP({ watlevmp, handleEdit, handleDelete, canEdit }) {
         onOkDelete={deleteRow}
       />
       <Grid container>
+        <StraightenIcon style={{marginTop: "0.3%", transform: "rotate(90deg)"}}/>
         <Grid item xs={8}>
-          <img width="35" height="35" align="left" src="/RulerIcon.svg" />
           <Typography gutterBottom variant="h5" component="h2">
             Målepunkter
           </Typography>
