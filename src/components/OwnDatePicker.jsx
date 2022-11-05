@@ -1,14 +1,10 @@
-import React from "react";
-import {
-  MobileDateTimePicker,
-  LocalizationProvider,
-} from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import DateFnsUtils from "@date-io/date-fns";
-import daLocale from "date-fns/locale/da";
-import { TextField } from "@mui/material";
+import React from 'react';
+import {MobileDateTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
+import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
+import daLocale from 'date-fns/locale/da';
+import {TextField, Typography} from '@mui/material';
 
-const OwnDatePicker = (props) => {
+const OwnDatePicker = props => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={daLocale}>
       <MobileDateTimePicker
@@ -25,16 +21,21 @@ const OwnDatePicker = (props) => {
         todayLabel="I dag"
         invalidDateMessage="Ugyldig dato"
         invalidLabel="Ukendt"
-        InputLabelProps={{ shrink: true }}
+        InputLabelProps={{shrink: true}}
         value={props.value}
         onChange={props.onChange}
         KeyboardButtonProps={{
-          "aria-label": "change date",
+          'aria-label': 'change date',
         }}
-        renderInput={(params) => <TextField sx={props.sx} {...params} />}
+        renderInput={params => (
+          <TextField
+            sx={props.error ? {} : props.sx}
+            {...params}
+            error={props.error}
+            helperText={props.helperText}
+          />
+        )}
         fullWidth
-        error={props.error}
-        helperText={props.helperText}
       />
     </LocalizationProvider>
   );
