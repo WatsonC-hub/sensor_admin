@@ -23,7 +23,7 @@ export default function Login({}) {
   const [emailSentMess, setEmailSentMess] = useState(false);
 
   const [setAuthenticated, setUser, setSessionId, loginExpired, setLoginExpired] = authStore(
-    state => [
+    (state) => [
       state.setAuthenticated,
       state.setUser,
       state.setSessionId,
@@ -32,10 +32,10 @@ export default function Login({}) {
     ]
   );
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     loginUser(userName, password)
-      .then(res => {
+      .then((res) => {
         if (res.data.success) {
           setUser(res.data.data.screen_name);
           setSessionId(res.data.data.session_id);
@@ -43,25 +43,25 @@ export default function Login({}) {
           setLoginExpired(false);
         }
       })
-      .catch(r => {
+      .catch((r) => {
         setLoginError(true);
       });
 
-    loginAPI(userName, password).then(res => {
+    loginAPI(userName, password).then((res) => {
       getUser();
       setAuthenticated(true);
       setLoginExpired(false);
     });
   };
 
-  const handlePassReset = e => {
+  const handlePassReset = (e) => {
     console.log(passReset);
     resetPassword({email: passReset})
-      .then(res => {
+      .then((res) => {
         setPassResetErr(false);
         handleEmailSent();
       })
-      .catch(r => {
+      .catch((r) => {
         setPassResetErr(true);
       });
   };
@@ -89,7 +89,7 @@ export default function Login({}) {
           alignSelf: 'center',
         }}
       >
-        <Typography variant="h3">Log ind</Typography>
+        <Typography variant="h4">Log ind</Typography>
       </div>
 
       <Container fixed maxWidth="sm">
@@ -124,7 +124,7 @@ export default function Login({}) {
             name="email"
             autoComplete="email"
             autoFocus
-            onChange={e => setUserName(e.target.value)}
+            onChange={(e) => setUserName(e.target.value)}
             error={loginError}
           />
           <TextField
@@ -137,7 +137,7 @@ export default function Login({}) {
             type="password"
             id="password"
             autoComplete="current-password"
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
             error={loginError}
             helperText={loginError ? 'brugernavn eller password er forkert.' : ''}
           />
@@ -147,11 +147,17 @@ export default function Login({}) {
             variant="contained"
             color="primary"
             disabled={userName === '' || password === ''}
+            style={{marginTop: '1%'}}
           >
             Log på
           </Button>
         </form>
-        <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleClickOpen}
+          style={{marginTop: '1.5%'}}
+        >
           Glemt kodeord?
         </Button>
       </Container>
@@ -178,7 +184,7 @@ export default function Login({}) {
                     id="passReset"
                     label="E-mail addresse"
                     type="email"
-                    onChange={e => setPassReset(e.target.value)}
+                    onChange={(e) => setPassReset(e.target.value)}
                     fullWidth
                     error={passResetErr}
                     //helperText={loginError ? "E-mail eksisterer ikke i systemet" : ""}

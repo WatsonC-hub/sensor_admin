@@ -29,7 +29,7 @@ import {captureDialogAtom} from './state/atoms';
 import useWhatPage from './hooks/useWhatPage';
 
 const LogOut = ({element: Element}) => {
-  const [setAuthenticated, setUser, setSessionId] = authStore(state => [
+  const [setAuthenticated, setUser, setSessionId] = authStore((state) => [
     state.setAuthenticated,
     state.setUser,
     state.setSessionId,
@@ -84,7 +84,7 @@ const NavBarMenu = () => {
   let navigate = useNavigate();
   const page = useWhatPage();
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -155,7 +155,7 @@ const NavBarMenu = () => {
 };
 
 const NavBar = ({children}) => {
-  const [authenticated] = authStore(state => [state.authenticated]);
+  const [authenticated] = authStore((state) => [state.authenticated]);
   const [open, setOpen] = useAtom(captureDialogAtom);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -182,7 +182,7 @@ const NavBar = ({children}) => {
             Opret konto
           </Button>
         ) : (
-          <Button color="secondary" variant="contained" onClick={e => navigate('/')}>
+          <Button color="secondary" variant="contained" onClick={(e) => navigate('/')}>
             Log ind
           </Button>
         )}
@@ -212,7 +212,7 @@ const NavBar = ({children}) => {
           <IconButton
             color="inherit"
             onClick={
-              e => navigate('') //context.setLocationId(-1)
+              (e) => navigate('') //context.setLocationId(-1)
             }
             size="large"
           >

@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import 'date-fns';
 import OwnDatePicker from '../../../components/OwnDatePicker';
-
+import {useTheme} from '@mui/material/styles';
 import LocationForm from '../Stamdata/components/LocationForm';
 import StationForm from '../Stamdata/components/StationForm';
 import UdstyrForm from '../Stamdata/components/UdstyrForm';
@@ -34,6 +34,7 @@ import {stamdataStore} from '../../../state/store';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;
@@ -73,7 +74,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
 
   const queryClient = useQueryClient();
 
-  const handleDateChange = date => {
+  const handleDateChange = (date) => {
     setdate(date);
   };
 
@@ -88,7 +89,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
       return data;
     },
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         setOpenDialog(false);
         setUdstyrValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'));
         toast.success('Udstyret er hjemtaget');
@@ -101,7 +102,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
     <Dialog open={openDialog}>
       <DialogTitle>Angiv slutdato</DialogTitle>
       <DialogContent>
-        <OwnDatePicker label="Fra" value={date} onChange={date => handleDateChange(date)} />
+        <OwnDatePicker label="Fra" value={date} onChange={(date) => handleDateChange(date)} />
         <DialogActions item xs={4} sm={2}>
           <Button
             autoFocus
@@ -130,8 +131,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
 const UdstyrReplace = ({stationId, selected, setselected}) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-
-  const [tstype_id, setUnitValue, setUnit] = stamdataStore(store => [
+  const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
     store.timeseries.tstype_id,
     store.setUnitValue,
     store.setUnit,
@@ -144,14 +144,14 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
       return data;
     },
     {
-      onSuccess: data => {
+      onSuccess: (data) => {
         setselected(data[0].gid);
       },
     }
   );
 
-  const handleChange = event => {
-    setUnit(data.filter(elem => elem.gid === event.target.value)[0]);
+  const handleChange = (event) => {
+    setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
     setselected(event.target.value);
   };
 
@@ -165,7 +165,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
     <Grid container spacing={2} alignItems="center" alignContent="center">
       <Grid item xs={12} sm={6}>
         <Select value={selected} onChange={handleChange}>
-          {data?.map(item => {
+          {data?.map((item) => {
             let endDate =
               moment(new Date()) < moment(item.slutdato)
                 ? 'nu'
@@ -221,14 +221,15 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
 export default function EditStamdata({setFormToShow, stationId}) {
   const [selectedUnit, setSelectedUnit] = useState(-1);
 
-  const [location, timeseries, unit] = stamdataStore(store => [
+  const [location, timeseries, unit] = stamdataStore((store) => [
     store.location,
     store.timeseries,
     store.unit,
   ]);
 
   const {isTouch} = useBreakpoints();
-
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
   const [value, setValue] = React.useState(0);
   const [swiper, setSwiper] = useState(null);
@@ -240,12 +241,12 @@ export default function EditStamdata({setFormToShow, stationId}) {
       station: timeseries,
       udstyr: {...unit, gid: selectedUnit},
     })
-      .then(res => {
+      .then((res) => {
         console.log(res);
         toast.success('Stamdata er opdateret');
         queryClient.invalidateQueries(['udstyr', stationId]);
       })
-      .catch(error => {
+      .catch((error) => {
         toast.error('Der skete en fejl');
       });
   };
@@ -284,10 +285,10 @@ export default function EditStamdata({setFormToShow, stationId}) {
     >
       <CardContent>
         <Container fixed>
-          <Typography variant="h6" component="h3" style={{marginBottom: '5px'}}>
+          <Typography variant="h5" component="h3" style={{marginBottom: matches ? '3%' : '1%'}}>
             Stamdata
           </Typography>
-          <AppBar position="static" color="default" style={{marginBottom: '5px'}}>
+          <AppBar position="static" color="default" style={{marginBottom: '1%'}}>
             <Tabs
               value={value}
               onChange={handleChange}
@@ -304,17 +305,17 @@ export default function EditStamdata({setFormToShow, stationId}) {
 
           <Swiper
             initialSlide={2}
-            onSwiper={swiper => {
-              setSwiper(prev => {
+            onSwiper={(swiper) => {
+              setSwiper((prev) => {
                 setValue(0);
                 swiper.slideTo(0, 0, false);
                 return swiper;
               });
             }}
-            onSlideChange={swiper => handleChange(null, swiper.activeIndex)}
+            onSlideChange={(swiper) => handleChange(null, swiper.activeIndex)}
           >
             <SwiperSlide>
-              <Box>
+              <Box style={{marginTop: matches ? '2%' : ''}}>
                 <UdstyrReplace
                   stationId={stationId}
                   selected={selectedUnit}
@@ -331,7 +332,12 @@ export default function EditStamdata({setFormToShow, stationId}) {
             </SwiperSlide>
           </Swiper>
 
-          <Grid container alignItems="center" justifyContent="center">
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            style={{marginTop: matches ? '4%' : ''}}
+          >
             <Grid xs={4} sm={2}>
               <Button
                 autoFocus
