@@ -10,13 +10,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import {Typography} from '@mui/material';
-import Button from '@mui/material/Button';
+import {Box} from '@mui/material';
 import DeleteAlert from './DeleteAlert';
-
 import {Fragment} from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -35,12 +33,12 @@ function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
@@ -133,12 +131,12 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
@@ -171,34 +169,50 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
         <List>
           {watlevmp.map((row, index) => (
             <ListItem key={index} dense>
-              <ListItemText
-                primary={row.startdate.split(' ')[0] + ' - ' + row.enddate.split(' ')[0]}
-                secondary={'Målepunkt: ' + row.elevation + ' m'}
-              />
-              <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={() => {
-                    console.log(row);
-                    handleEdit(row);
-                    setTimeout(() => {
-                      window.scrollTo({top: 300, behavior: 'smooth'});
-                    }, 200);
-                  }}
-                  disabled={!canEdit}
-                  size="large"
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  edge="end"
-                  onClick={() => onDeleteBtnClick(row.gid)}
-                  disabled={!canEdit}
-                  size="large"
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
+              <Box
+                borderColor="rgb(237, 237, 237)"
+                borderRadius={8}
+                bgcolor="rgb(237, 237, 237)"
+                width="100%"
+                paddingLeft={1.5}
+              >
+                <Typography variant="h6" display="inline">
+                  <bold>{row.elevation + ' m '}</bold>
+                </Typography>
+                <Typography variant="h7" display="inline" color="#868686">
+                  {row.startdate.split(' ')[0] + ' - ' + row.enddate.split(' ')[0]}
+                </Typography>
+
+                {/* <ListItemText
+                primary={'Målepunkt: ' + row.elevation + ' m'}
+                secondary={row.startdate.split(' ')[0] + ' - ' + row.enddate.split(' ')[0]}
+              /> */}
+                <ListItemSecondaryAction>
+                  <IconButton
+                    edge="end"
+                    onClick={() => {
+                      console.log(row);
+                      handleEdit(row);
+                      setTimeout(() => {
+                        window.scrollTo({top: 300, behavior: 'smooth'});
+                      }, 200);
+                    }}
+                    disabled={!canEdit}
+                    size="large"
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    edge="end"
+                    onClick={() => onDeleteBtnClick(row.gid)}
+                    disabled={!canEdit}
+                    size="large"
+                    style={{marginRight: '2px'}}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </Box>
             </ListItem>
           ))}
         </List>
