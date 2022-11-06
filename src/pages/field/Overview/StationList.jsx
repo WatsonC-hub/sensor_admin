@@ -23,14 +23,14 @@ export default function StationList({data}) {
   const [typeAhead, settypeAhead] = useState('');
   const {height, width} = useWindowDimensions();
 
-  const handleClick = elem => {
+  const handleClick = (elem) => {
     console.log('elem loc: ', elem);
     navigate(`location/${elem.loc_id}/${elem.ts_id}`);
   };
 
   if (!data) return <CircularProgress />;
 
-  let rows = data.filter(elem => {
+  let rows = data.filter((elem) => {
     return (
       elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
       elem.calypso_id.toString().toLowerCase().includes(typeAhead.toLowerCase())
@@ -40,7 +40,7 @@ export default function StationList({data}) {
   const Row = ({index, style}) => (
     <>
       <ListItem
-        onClick={e => handleClick(rows[index])}
+        onClick={(e) => handleClick(rows[index])}
         dense
         style={style}
         key={index}
@@ -54,19 +54,19 @@ export default function StationList({data}) {
         />
         <StatusText row={rows[index]} />
       </ListItem>
-      {/* <Divider component="li" /> */}
     </>
   );
 
   return (
     <div>
       <TextField
+        fullWidth
         variant="outlined"
         label={'Filtrer stationer'}
         InputLabelProps={{shrink: true}}
         placeholder="Søg"
         value={typeAhead}
-        onChange={event => settypeAhead(event.target.value)}
+        onChange={(event) => settypeAhead(event.target.value)}
         style={{marginBottom: 12}}
         size="small"
         align="center"
@@ -100,7 +100,7 @@ function TypeIcon(props) {
   );
 }
 
-const getType = type => {
+const getType = (type) => {
   switch (type) {
     case 'Vandstand':
       return <StraightenIcon style={{color: 'grey', transform: 'rotate(90deg)'}} />;
