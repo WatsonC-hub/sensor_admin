@@ -35,12 +35,12 @@ function DesktopTilsyn({services, handleEdit, handleDelete, canEdit}) {
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setServiceId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
@@ -160,7 +160,7 @@ function MobileTilsyn({services, handleEdit, handleDelete, canEdit}) {
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setServiceId(id);
     setDialogOpen(true);
   };
@@ -169,7 +169,7 @@ function MobileTilsyn({services, handleEdit, handleDelete, canEdit}) {
     setPage(newPage);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
@@ -262,65 +262,6 @@ function MobileTilsyn({services, handleEdit, handleDelete, canEdit}) {
           ))}
         </List>
       </Fragment>
-
-      {/* <Fragment>
-        <TableContainer>
-          <Table aria-label="simple table" sx={{ minWidth: 300 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Dato</TableCell>
-                <TableCell>Batteri</TableCell>
-                <TableCell>Tilsyn</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {services
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell component="th" scope="row">
-                      {moment(row.dato).format("YYYY-MM-DD HH:mm")}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.batteriskift === true ? (
-                        <CheckBoxIcon color="action"></CheckBoxIcon>
-                      ) : (
-                        <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      {row.tilsyn === true ? (
-                        <CheckBoxIcon color="action"></CheckBoxIcon>
-                      ) : (
-                        <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <IconButton
-                        onClick={() => handleEdit(row)}
-                        disabled={!canEdit}
-                        size="large"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        onClick={() => {
-                          onDeleteBtnClick(row.gid);
-                        }}
-                        disabled={!canEdit}
-                        size="large"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Fragment> */}
     </Fragment>
   );
 }

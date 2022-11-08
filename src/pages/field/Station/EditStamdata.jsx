@@ -234,6 +234,10 @@ export default function EditStamdata({setFormToShow, stationId}) {
   const [value, setValue] = React.useState(0);
   const [swiper, setSwiper] = useState(null);
 
+  useEffect(() => {
+    window.scrollTo({top: 300, behavior: 'smooth'});
+  }, []);
+
   const handleSubmit = () => {
     console.log(selectedUnit);
     updateStamdata({

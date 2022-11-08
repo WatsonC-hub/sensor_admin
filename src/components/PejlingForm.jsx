@@ -44,7 +44,7 @@ export default function PejlingForm({
   const [notPossible, setNotPossible] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(false);
 
-  const [stationUnit] = stamdataStore(state => [state.timeseries.unit]);
+  const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -53,17 +53,17 @@ export default function PejlingForm({
     }, 2500);
   };
 
-  const handleUsageChange = e => {
+  const handleUsageChange = (e) => {
     changeFormData('useforcorrection', e.target.value);
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo({top: 300, behavior: 'smooth'});
   }, []);
 
   useEffect(() => {
     if (mpData.length > 0) {
-      var mp = mpData.filter(elem => {
+      var mp = mpData.filter((elem) => {
         if (
           moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
           moment(formData.timeofmeas).isBefore(elem.enddate)
@@ -81,14 +81,14 @@ export default function PejlingForm({
     }
   }, [formData.gid, mpData]);
 
-  const handleDateChange = date => {
+  const handleDateChange = (date) => {
     if (isValid(date)) {
       console.log('date is valid again: ', date);
       changeFormData('timeofmeas', date);
     }
 
     if (isWaterlevel) {
-      var mp = mpData.filter(elem => {
+      var mp = mpData.filter((elem) => {
         if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
           return true;
         }
@@ -103,15 +103,15 @@ export default function PejlingForm({
     }
   };
 
-  const handleCommentChange = e => {
+  const handleCommentChange = (e) => {
     changeFormData('comment', e.target.value);
   };
 
-  const handleDistanceChange = e => {
+  const handleDistanceChange = (e) => {
     changeFormData('measurement', e.target.value);
   };
 
-  const handleNotPossibleChange = e => {
+  const handleNotPossibleChange = (e) => {
     setNotPossible(!notPossible);
     changeFormData('measurement', null);
   };
@@ -206,7 +206,7 @@ export default function PejlingForm({
                 </Typography>
               }
               value={new Date(formData.timeofmeas)}
-              onChange={date => handleDateChange(date)}
+              onChange={(date) => handleDateChange(date)}
               error={pejlingOutOfRange}
               helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
             />

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Grid, Typography, TextField, Button, Card, CardContent} from '@mui/material';
 import {isValid} from 'date-fns';
 import SaveIcon from '@mui/icons-material/Save';
@@ -9,6 +9,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 export default function TilsynForm({formData, changeFormData, handleSubmit, resetFormData}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo({top: 300, behavior: 'smooth'});
+  }, []);
+
   const handleClickSubmit = () => {
     setDisableSubmit(true);
     setTimeout(() => {
@@ -16,19 +20,19 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, rese
     }, 2500);
   };
 
-  const handleCommentChange = e => {
+  const handleCommentChange = (e) => {
     changeFormData('kommentar', e.target.value);
   };
 
-  const handleDateChange = date => {
+  const handleDateChange = (date) => {
     changeFormData('dato', date);
   };
 
-  const handleChangeBattery = e => {
+  const handleChangeBattery = (e) => {
     changeFormData('batteriskift', e.target.checked);
   };
 
-  const handleChangeService = e => {
+  const handleChangeService = (e) => {
     changeFormData('tilsyn', e.target.checked);
   };
 
@@ -52,7 +56,7 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, rese
             <OwnDatePicker
               label={'Dato'}
               value={formData.dato}
-              onChange={date => handleDateChange(date)}
+              onChange={(date) => handleDateChange(date)}
             />
           </Grid>
           <Grid item xs={12} sm={7}>

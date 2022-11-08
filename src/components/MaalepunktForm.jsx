@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Grid, Typography, TextField, Button, Card, CardContent, useTheme} from '@mui/material';
 import {isValid} from 'date-fns';
 import {InputAdornment} from '@mui/material';
@@ -14,6 +14,10 @@ export default function MaalepunktForm({
 }) {
   const [disableSubmit, setDisableSubmit] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo({top: 300, behavior: 'smooth'});
+  }, []);
+
   const handleClickSubmit = () => {
     setDisableSubmit(true);
     setTimeout(() => {
@@ -21,25 +25,25 @@ export default function MaalepunktForm({
     }, 2500);
   };
 
-  const handleStartdateChange = date => {
+  const handleStartdateChange = (date) => {
     if (isValid(date)) {
       console.log('date is valid again: ', date);
       changeFormData('startdate', date);
     }
   };
 
-  const handleEnddateChange = date => {
+  const handleEnddateChange = (date) => {
     if (isValid(date)) {
       console.log('date is valid again: ', date);
       changeFormData('enddate', date);
     }
   };
 
-  const handleCommentChange = e => {
+  const handleCommentChange = (e) => {
     changeFormData('mp_description', e.target.value);
   };
 
-  const handleElevationChange = e => {
+  const handleElevationChange = (e) => {
     changeFormData('elevation', e.target.value);
   };
 
@@ -81,7 +85,7 @@ export default function MaalepunktForm({
             <OwnDatePicker
               label={'Start dato'}
               value={formData.startdate}
-              onChange={date => handleStartdateChange(date)}
+              onChange={(date) => handleStartdateChange(date)}
             />
           </Grid>
           {formData.gid !== -1 && (
@@ -89,7 +93,7 @@ export default function MaalepunktForm({
               <OwnDatePicker
                 label={'Slut dato'}
                 value={formData.enddate}
-                onChange={date => handleEnddateChange(date)}
+                onChange={(date) => handleEnddateChange(date)}
               />
             </Grid>
           )}
