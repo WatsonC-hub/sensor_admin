@@ -2,14 +2,13 @@ import React, {useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import SimpleTabs from './Overview/SimpleTabs';
 import LocationRouter from './Station/LocationRouter';
-
 import ScanComponent from '../../components/ScanComponent';
 import OpretStamdata from './Stamdata/OpretStamdata';
 import CaptureDialog from './Station/CaptureDialog';
 import {authStore} from '../../state/store';
 import {useAtom} from 'jotai';
 import {captureDialogAtom} from '../../state/atoms';
-// import BoreholeDraw from "./pages/Boreholeno/BoreholeDraw";
+import BoreholeDraw from './Boreholeno/BoreholeDraw';
 
 function SensorField({}) {
   const [addStationDisabled, setAddStationDisabled] = useState(false);
@@ -31,11 +30,8 @@ function SensorField({}) {
           element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
         />
         <Route path="/:labelid" element={<ScanComponent />} />
-        {/* <Route
-          path="borehole/:boreholeno/:intakeno"
-          element={<BoreholeDraw />}
-        />
-        <Route path="borehole/:boreholeno" element={<BoreholeDraw />} /> */}
+        <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeDraw />} />
+        <Route path="borehole/:boreholeno" element={<BoreholeDraw />} />
       </Routes>
     </div>
   );

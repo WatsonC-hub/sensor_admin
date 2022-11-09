@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import ActionArea from './ActionArea';
 import BearingGraph from './BearingGraph';
-import PejlingForm from '../../components/PejlingForm';
+import PejlingFormBorehole from './PejlingFormBorehole';
 import PejlingMeasurements from './PejlingMeasurements';
-import MaalepunktForm from '../../components/MaalepunktForm';
+import MaalepunktForm from '../../../components/MaalepunktForm';
 import {useLocation} from 'react-router-dom';
 import MaalepunktTable from './MaalepunktTable';
 import {
@@ -60,7 +60,7 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
 
   useEffect(() => {
     if (watlevmp.length > 0) {
-      const elev = watlevmp.filter(e2 => {
+      const elev = watlevmp.filter((e2) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
           moment(pejlingData.timeofmeas) < moment(e2.enddate)
@@ -75,10 +75,10 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
 
   useEffect(() => {
     if (boreholeno !== -1 && boreholeno !== null && intakeno !== -1 && intakeno !== null) {
-      let sessionId = sessionStorage.getItem('session_id');
-      const mp = getBoreholeMP(boreholeno, intakeno, sessionId);
-      const meas = getOurWaterlevel(boreholeno, intakeno, sessionId);
-      Promise.all([mp, meas]).then(responses => {
+      //let sessionId = sessionStorage.getItem('session_id');
+      const mp = getBoreholeMP(boreholeno, intakeno);
+      const meas = getOurWaterlevel(boreholeno, intakeno);
+      Promise.all([mp, meas]).then((responses) => {
         const measures = responses[1].data.result;
         const mps = responses[0].data.result;
         setMeasurements(measures);
@@ -86,8 +86,8 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
 
         if (mps.length > 0) {
           setcontrol(
-            measures.map(e => {
-              const elev = mps.filter(e2 => {
+            measures.map((e) => {
+              const elev = mps.filter((e2) => {
                 return (
                   moment(e.timeofmeas) >= moment(e2.startdate) &&
                   moment(e.timeofmeas) < moment(e2.enddate)
@@ -102,7 +102,7 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
           );
         } else {
           setcontrol(
-            measures.map(elem => {
+            measures.map((elem) => {
               return {...elem, waterlevel: elem.disttowatertable_m};
             })
           );
@@ -167,8 +167,8 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
     payload.timeofmeas = formatedTimestamp(new Date(_date));
     payload.pumpstop = formatedTimestamp(new Date(_datePumpStop));
     if (payload.service) payload.pumpstop = null;
-    method(sessionStorage.getItem('session_id'), boreholeno, intakeno, payload)
-      .then(res => {
+    method(boreholeno, intakeno, payload)
+      .then((res) => {
         resetPejlingData();
         setUpdated(new Date());
         setSeverity('success');
@@ -176,7 +176,7 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
           handleClickOpen();
         }, 500);
       })
-      .catch(error => {
+      .catch((error) => {
         setSeverity('error');
         setOpenAlert(true);
       });
@@ -192,8 +192,8 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
     console.log('time after parse: ', _date);
     payload.startdate = formatedTimestamp(new Date(_date));
     payload.enddate = formatedTimestamp(new Date(Date.parse(payload.enddate)));
-    method(sessionStorage.getItem('session_id'), boreholeno, intakeno, payload)
-      .then(res => {
+    method(boreholeno, intakeno, payload)
+      .then((res) => {
         resetMpData();
         setUpdated(new Date());
         setSeverity('success');
@@ -201,15 +201,15 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
           handleClickOpen();
         }, 500);
       })
-      .catch(error => {
+      .catch((error) => {
         setSeverity('error');
         setOpenAlert(true);
       });
   };
 
-  const handleEdit = type => {
+  const handleEdit = (type) => {
     if (type === 'watlevmp') {
-      return data => {
+      return (data) => {
         data.startdate = data.startdate.replace(' ', 'T').substr(0, 19);
         data.enddate = data.enddate.replace(' ', 'T').substr(0, 19);
         setMpData(data); // Fill form data on Edit
@@ -217,7 +217,7 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
         // setUpdated(new Date());
       };
     } else {
-      return data => {
+      return (data) => {
         console.log(data);
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
         setPejlingData(data); // Fill form data on Edit
@@ -227,31 +227,31 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
     }
   };
 
-  const handleDelete = type => {
+  const handleDelete = (type) => {
     if (type === 'watlevmp') {
-      return gid => {
-        deleteMP(sessionStorage.getItem('session_id'), boreholeno, intakeno, gid)
-          .then(res => {
+      return (gid) => {
+        deleteMP(boreholeno, intakeno, gid)
+          .then((res) => {
             resetMpData();
             setUpdated(new Date());
             setSeverityDel('success');
             setOpenDelAlert(true);
           })
-          .catch(error => {
+          .catch((error) => {
             setSeverityDel('error');
             setOpenDelAlert(true);
           });
       };
     } else {
-      return gid => {
-        deleteMeasurement(sessionStorage.getItem('session_id'), boreholeno, intakeno, gid)
-          .then(res => {
+      return (gid) => {
+        deleteMeasurement(boreholeno, intakeno, gid)
+          .then((res) => {
             resetPejlingData();
             setUpdated(new Date());
             setSeverityDel('success');
             setOpenDelAlert(true);
           })
-          .catch(error => {
+          .catch((error) => {
             setSeverityDel('error');
             setOpenDelAlert(true);
           });
@@ -259,7 +259,7 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
     }
   };
 
-  const handleCloseSnack = reason => {
+  const handleCloseSnack = (reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -286,10 +286,10 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
         />
       )}
       {formToShow === 'ADDPEJLING' && (
-        <PejlingForm
-          // boreholeno={boreholeno}
-          // intakeno={intakeno}
-          // setShowForm={setShowForm}
+        <PejlingFormBorehole
+          boreholeno={boreholeno}
+          intakeno={intakeno}
+          setShowForm={setShowForm}
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}

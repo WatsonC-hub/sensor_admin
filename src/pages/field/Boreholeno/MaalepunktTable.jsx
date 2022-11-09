@@ -22,6 +22,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import moment from 'moment';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import StraightenIcon from '@mui/icons-material/Straighten';
 
 function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -33,12 +34,12 @@ function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
@@ -51,14 +52,8 @@ function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
         onOkDelete={deleteRow}
       />
       <Grid container style={{marginLeft: '2%'}}>
+        <StraightenIcon style={{marginTop: '0.6%', transform: 'rotate(90deg)'}} />
         <Grid item xs={8}>
-          <img
-            style={{marginRight: '5px'}}
-            width="35"
-            height="35"
-            align="left"
-            src={process.env.PUBLIC_URL + '/RulerMPIcon.svg'}
-          />
           <Typography gutterBottom variant="h5" component="h2">
             Målepunkter
           </Typography>
@@ -140,12 +135,12 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
