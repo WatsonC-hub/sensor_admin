@@ -49,9 +49,9 @@ export default function LocationRouter() {
         <Toolbar>
           <IconButton
             color="inherit"
-            onClick={e => {
+            onClick={(e) => {
               if (location.hash == '') {
-                navigate('/field');
+                navigate(-1);
               } else {
                 navigate(`/field/location/${params.locid}/${params.statid}`, {
                   replace: true,
