@@ -15,6 +15,7 @@ import moment from 'moment';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Grid from '@mui/material/Grid';
+import StraightenIcon from '@mui/icons-material/Straighten';
 
 export default function HistoricMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -26,12 +27,12 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
@@ -45,13 +46,8 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
           onOkDelete={deleteRow}
         />
         <Grid container style={{marginLeft: '2%'}}>
+          <StraightenIcon style={{marginTop: '0.6%', transform: 'rotate(90deg)'}} />
           <Grid item xs={8}>
-            <img
-              width="35"
-              height="35"
-              align="left"
-              src={process.env.PUBLIC_URL + '/RulerIcon.svg'}
-            />
             <Typography gutterBottom variant="h5" component="h2">
               Kontrolmålinger
             </Typography>
