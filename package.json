@@ -23,6 +23,7 @@
     "http-proxy-middleware": "^2.0.6",
     "jotai": "^1.8.5",
     "leaflet": "^1.7.1",
+    "leaflet-lasso": "^2.2.12",
     "leaflet.locatecontrol": "^0.76.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",

@@ -15,14 +15,14 @@ import {
 import {TextField, Tooltip} from '@mui/material';
 import useWindowDimensions from 'src/hooks/useWindowDimensions';
 
-const Cell = props => {
+const Cell = (props) => {
   const navigate = useNavigate();
 
   return (
     <VirtualTable.Cell
       {...props}
       style={{cursor: 'pointer'}}
-      onClick={e => {
+      onClick={(e) => {
         if (props.row.navigateTo) {
           navigate(props.row.navigateTo);
         }
@@ -31,19 +31,19 @@ const Cell = props => {
   );
 };
 
-const TitleCell = props => {
+const TitleCell = (props) => {
   return <TableHeaderRow.Title {...props} />;
 };
 
-export default function StationListDesktop({data, columns, loading}) {
+export default function TableComponent({data, columns, loading}) {
   const [typeAhead, settypeAhead] = useState('');
   const {height, width} = useWindowDimensions();
 
   var rows = [];
   // filter data based on typeAhead and columns
   if (data) {
-    rows = data.filter(row => {
-      return columns.some(column => {
+    rows = data.filter((row) => {
+      return columns.some((column) => {
         return row[column.name].toString().toLowerCase().indexOf(typeAhead.toLowerCase()) > -1;
       });
     });
@@ -57,7 +57,7 @@ export default function StationListDesktop({data, columns, loading}) {
         InputLabelProps={{shrink: true}}
         placeholder="Søg"
         value={typeAhead}
-        onChange={event => settypeAhead(event.target.value)}
+        onChange={(event) => settypeAhead(event.target.value)}
         style={{marginBottom: 12}}
       />
       <Paper>
