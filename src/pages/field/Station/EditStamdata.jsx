@@ -164,7 +164,12 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
   return (
     <Grid container spacing={2} alignItems="center" alignContent="center">
       <Grid item xs={12} sm={6}>
-        <Select value={selected} onChange={handleChange}>
+        <Select
+          id="udstyr_select"
+          value={selected}
+          onChange={handleChange}
+          className="swiper-no-swiping"
+        >
           {data?.map((item) => {
             let endDate =
               moment(new Date()) < moment(item.slutdato)
@@ -172,7 +177,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
                 : moment(item.slutdato).format('YYYY-MM-DD HH:mm');
 
             return (
-              <MenuItem key={item.gid} value={item.gid}>
+              <MenuItem id={item.gid} key={item.gid} value={item.gid}>
                 {`${moment(item.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
               </MenuItem>
             );
@@ -219,7 +224,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
 };
 
 export default function EditStamdata({setFormToShow, stationId}) {
-  const [selectedUnit, setSelectedUnit] = useState(-1);
+  const [selectedUnit, setSelectedUnit] = useState('');
 
   const [location, timeseries, unit] = stamdataStore((store) => [
     store.location,
@@ -306,7 +311,6 @@ export default function EditStamdata({setFormToShow, stationId}) {
               <Tab label="Station" {...a11yProps(2)} />
             </Tabs>
           </AppBar>
-
           <Swiper
             initialSlide={2}
             onSwiper={(swiper) => {
