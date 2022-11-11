@@ -33,7 +33,7 @@ export default function LocationRouter() {
         statId = '';
         if (data.length === 1) {
           statId = data[0].ts_id;
-          navigate(`/field/location/${params.locid}/${statId}`, {
+          navigate(`../location/${params.locid}/${statId}`, {
             replace: true,
           });
         }
@@ -53,7 +53,7 @@ export default function LocationRouter() {
               if (location.hash == '') {
                 navigate(-1);
               } else {
-                navigate(`/field/location/${params.locid}/${params.statid}`, {
+                navigate(`../location/${params.locid}/${params.statid}`, {
                   replace: true,
                 });
               }

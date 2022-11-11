@@ -40,7 +40,7 @@ export default function BoreholeDraw() {
         if (res.data.features.length === 1) {
           setCurrIntake(res.data.features[0].properties.intakeno);
           intakeno = res.data.features[0].properties.intakeno;
-          navigate(`/field/borehole/${boreholeno}/${intakeno}`, {
+          navigate(`../borehole/${boreholeno}/${intakeno}`, {
             replace: true,
           });
         }
@@ -70,7 +70,7 @@ export default function BoreholeDraw() {
               if (location.hash == '') {
                 navigate(-1);
               } else {
-                navigate(`/field/borehole/${boreholeno}/${intakeno}`, {
+                navigate(`../borehole/${boreholeno}/${intakeno}`, {
                   replace: true,
                 });
               }

@@ -12,9 +12,9 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
   const [isOpen, setIsOpen] = useState(params.statid ? false : true);
   const navigate = useNavigate();
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     setSelectedItem(event.target.value);
-    navigate(`/field/location/${locid}/${event.target.value}`, {
+    navigate(`../location/${locid}/${event.target.value}`, {
       replace: true,
     });
     setIsOpen(false);
@@ -30,7 +30,7 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
     }
   }, [selectedStation]);
 
-  const iconComponent = props => {
+  const iconComponent = (props) => {
     return <ExpandMoreIcon />;
   };
 
@@ -72,8 +72,8 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
     >
       {stationList &&
         stationList
-          .filter(t => t.ts_name !== null)
-          .map(station => (
+          .filter((t) => t.ts_name !== null)
+          .map((station) => (
             <MenuItem
               key={station.ts_id}
               value={station.ts_id}
