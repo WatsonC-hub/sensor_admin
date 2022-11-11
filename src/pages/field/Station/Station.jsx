@@ -64,13 +64,11 @@ export default function Station({stationId}) {
 
   const formToShow = location.hash ? location.hash.replace('#', '') : null;
 
-  const setFormToShow = form => {
+  const setFormToShow = (form) => {
     if (form) {
       navigate('#' + form, {replace: location.hash !== ''});
     } else {
-      navigate(`/field/location/${params.locid}/${params.statid}`, {
-        replace: true,
-      });
+      navigate(-1);
     }
   };
 
@@ -97,7 +95,7 @@ export default function Station({stationId}) {
     () => getStamdataByStation(stationId),
     {
       enabled: stationId !== -1 && stationId !== null,
-      onSuccess: data => {
+      onSuccess: (data) => {
         setIsWaterlevel(data.tstype_id === 1);
         setIsFlow(data.tstype_id === 2);
         setIsCalculated(data.calculated);
@@ -130,7 +128,7 @@ export default function Station({stationId}) {
 
   useEffect(() => {
     if (watlevmp.length > 0) {
-      const elev = watlevmp.filter(e2 => {
+      const elev = watlevmp.filter((e2) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
           moment(pejlingData.timeofmeas) < moment(e2.enddate)
@@ -150,8 +148,8 @@ export default function Station({stationId}) {
   useEffect(() => {
     var ctrls = [];
     if (watlevmp.length > 0) {
-      ctrls = measurements.map(e => {
-        const elev = watlevmp.filter(e2 => {
+      ctrls = measurements.map((e) => {
+        const elev = watlevmp.filter((e2) => {
           return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
         })[0].elevation;
 
@@ -161,7 +159,7 @@ export default function Station({stationId}) {
         };
       });
     } else {
-      ctrls = measurements.map(elem => {
+      ctrls = measurements.map((elem) => {
         return {...elem, waterlevel: elem.measurement};
       });
     }
@@ -173,7 +171,7 @@ export default function Station({stationId}) {
     setFormToShow(null);
   };
 
-  const pejlingMutate = useMutation(data => {
+  const pejlingMutate = useMutation((data) => {
     if (data.gid === -1) {
       return insertMeasurement(data);
     } else {
@@ -192,19 +190,19 @@ export default function Station({stationId}) {
     };
     payload.timeofmeas = moment(payload.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
     pejlingMutate.mutate(payload, {
-      onSuccess: data => {
+      onSuccess: (data) => {
         resetPejlingData();
         setFormToShow(null);
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries(['measurements', stationId]);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error('Der skete en fejl');
       },
     });
   };
 
-  const watlevmpMutate = useMutation(data => {
+  const watlevmpMutate = useMutation((data) => {
     if (data.gid === -1) {
       return insertMp(data);
     } else {
@@ -220,18 +218,18 @@ export default function Station({stationId}) {
     payload.enddate = moment(payload.enddate).format('YYYY-MM-DD HH:mm:ss');
 
     watlevmpMutate.mutate(payload, {
-      onSuccess: data => {
+      onSuccess: (data) => {
         resetMpData();
         toast.success('Målepunkt gemt');
         queryClient.invalidateQueries(['watlevmp', stationId]);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error('Der skete en fejl');
       },
     });
   };
 
-  const serviceMutate = useMutation(data => {
+  const serviceMutate = useMutation((data) => {
     if (data.gid === -1) {
       return insertService(data);
     } else {
@@ -253,31 +251,31 @@ export default function Station({stationId}) {
     payload.dato = moment(payload.dato).format('YYYY-MM-DD HH:mm:ss');
 
     serviceMutate.mutate(payload, {
-      onSuccess: data => {
+      onSuccess: (data) => {
         resetServiceData();
         toast.success('Tilsyn gemt');
         queryClient.invalidateQueries(['service', stationId]);
       },
-      onError: error => {
+      onError: (error) => {
         toast.error('Der skete en fejl');
       },
     });
   };
 
-  const handleEdit = type => {
+  const handleEdit = (type) => {
     if (type === 'watlevmp') {
-      return data => {
+      return (data) => {
         setMpData(data); // Fill form data on Edit
         setFormToShow('ADDMAALEPUNKT');
       };
     } else if (type === 'service') {
-      return data => {
+      return (data) => {
         data.dato = data.dato.replace(' ', 'T').substr(0, 19);
         setServiceData(data);
         setFormToShow('ADDTILSYN');
       };
     } else {
-      return data => {
+      return (data) => {
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING');
@@ -285,26 +283,26 @@ export default function Station({stationId}) {
     }
   };
 
-  const handleDelete = type => {
+  const handleDelete = (type) => {
     if (type === 'watlevmp') {
-      return gid => {
-        deleteMP(stationId, gid).then(res => {
+      return (gid) => {
+        deleteMP(stationId, gid).then((res) => {
           queryClient.invalidateQueries(['watlevmp', stationId]);
           resetMpData();
           toast.success('Målepunkt slettet');
         });
       };
     } else if (type === 'service') {
-      return gid => {
-        deleteService(stationId, gid).then(res => {
+      return (gid) => {
+        deleteService(stationId, gid).then((res) => {
           queryClient.invalidateQueries(['services', stationId]);
           resetServiceData();
           toast.success('Tilsyn slettet');
         });
       };
     } else {
-      return gid => {
-        deleteMeasurement(stationId, gid).then(res => {
+      return (gid) => {
+        deleteMeasurement(stationId, gid).then((res) => {
           queryClient.invalidateQueries(['measurements', stationId]);
           resetPejlingData();
           setFormToShow(null);
