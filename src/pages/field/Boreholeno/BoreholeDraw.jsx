@@ -7,8 +7,8 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {getBorehole} from '../boreholeAPI';
-import MinimalSelect from '../Station/MinimalSelect';
-import {useParams, useNavigate} from 'react-router-dom';
+import MinimalSelectBorehole from './MinimalSelectBorehole';
+import {useParams, useNavigate, useLocation} from 'react-router-dom';
 import Boreholeno from './Boreholeno';
 
 export default function BoreholeDraw() {
@@ -22,6 +22,7 @@ export default function BoreholeDraw() {
   const theme = useTheme();
   const params = useParams();
   const navigate = useNavigate();
+  let location = useLocation();
 
   const currentStation = (id, stations) => {
     if (stations.length === 0) return null;
@@ -67,19 +68,13 @@ export default function BoreholeDraw() {
           <IconButton
             color="inherit"
             onClick={(e) => {
-              if (location.hash == '') {
-                navigate(-1);
-              } else {
-                navigate(`../borehole/${boreholeno}/${intakeno}`, {
-                  replace: true,
-                });
-              }
+              navigate(-1);
             }}
             size="large"
           >
             <KeyboardBackspaceIcon />
           </IconButton>
-          <MinimalSelect
+          <MinimalSelectBorehole
             boreholeno={boreholeno}
             boreholenoList={boreholenoList}
             selectedIntake={selectedItem}
@@ -97,13 +92,7 @@ export default function BoreholeDraw() {
         }}
       >
         <div />
-        <Boreholeno
-          open={open}
-          boreholeno={params.boreholeno}
-          intakeno={params.intakeno}
-          formToShow={formToShow}
-          setFormToShow={setFormToShow}
-        />
+        <Boreholeno boreholeno={params.boreholeno} intakeno={params.intakeno} />
       </main>
     </div>
   );

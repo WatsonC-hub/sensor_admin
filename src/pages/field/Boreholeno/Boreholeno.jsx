@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import ActionArea from './ActionArea';
+import ActionAreaBorehole from './ActionAreaBorehole';
 import BearingGraph from './BearingGraph';
 import PejlingFormBorehole from './PejlingFormBorehole';
 import PejlingMeasurements from './PejlingMeasurements';
 import MaalepunktForm from '../../../components/MaalepunktForm';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import MaalepunktTable from './MaalepunktTable';
 import {
   insertMeasurement,
@@ -27,8 +27,10 @@ function formatedTimestamp(d) {
   return `${date} ${time}`;
 }
 
-const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFormToShow}) => {
+const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
+  let navigate = useNavigate();
+  let params = useParams();
 
   //console.log(boreholeno);
   const [pejlingData, setPejlingData] = useState({
@@ -39,6 +41,16 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
     service: 0,
     comment: '',
   });
+
+  const formToShow = location.hash ? location.hash.replace('#', '') : null;
+
+  const setFormToShow = (form) => {
+    if (form) {
+      navigate('#' + form, {replace: location.hash !== ''});
+    } else {
+      navigate(-1);
+    }
+  };
 
   const [mpData, setMpData] = useState({
     gid: -1,
@@ -289,11 +301,13 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
         <PejlingFormBorehole
           boreholeno={boreholeno}
           intakeno={intakeno}
-          setShowForm={setShowForm}
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}
-          resetFormData={resetPejlingData}
+          resetFormData={() => {
+            resetPejlingData();
+            setFormToShow(null);
+          }}
           canEdit={canEdit}
           mpData={watlevmp}
           isWaterlevel={true}
@@ -304,7 +318,6 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
         <div>
           <MaalepunktForm
             boreholeno={boreholeno}
-            setShowForm={setShowForm}
             formData={mpData}
             changeFormData={changeMpData}
             handleSubmit={handleMpSubmit}
@@ -329,7 +342,7 @@ const Boreholeno = ({boreholeno, intakeno, setShowForm, open, formToShow, setFor
         />
       )}
       {formToShow === 'CAMERA' && <BoreholeImages boreholeno={location.pathname.split('/')[2]} />}
-      <ActionArea
+      <ActionAreaBorehole
         open={open}
         boreholeno={boreholeno}
         formToShow={formToShow}
