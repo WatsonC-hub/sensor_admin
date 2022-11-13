@@ -189,7 +189,7 @@ const NavBar = ({children}) => {
       </AppBarLayout>
     );
   }
-  if (location.pathname.includes('/location')) {
+  if (location.pathname.includes('/location') || location.pathname.includes('/borehole')) {
     return null;
   }
 
