@@ -77,9 +77,10 @@ const updateImage = (payload, gid) => {
   return axios.put(url, payload);
 };
 
-const getImage = boreholeno => {
+async function getImage(boreholeno) {
   const url = `${extEndpoint}/borehole/image/${boreholeno}`;
-  return axios.get(url);
+  const {data} = await axios.get(url);
+  return data.result;
 };
 
 const postElasticSearch = search => {

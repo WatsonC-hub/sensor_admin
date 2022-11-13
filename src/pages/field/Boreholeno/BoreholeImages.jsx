@@ -4,12 +4,10 @@ import {Button} from '@mui/material';
 import ImageViewer from '../../../components/ImageViewer';
 import {PhotoCameraRounded} from '@mui/icons-material';
 import {Grid} from '@mui/material';
-import SaveImageDialog from '../../../components/SaveImageDialog';
-import {deleteImage, getImage} from 'src/pages/field/fieldAPI';
+import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
+import {deleteImage, getImage} from 'src/pages/field/boreholeAPI';
 import moment from 'moment';
-import DeleteAlert from './DeleteAlert';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
 
 function BoreholeImages(props) {
   const [openCamera, setOpenCamera] = useState(false);
@@ -23,29 +21,15 @@ function BoreholeImages(props) {
     public: false,
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
-  const [images, setImages] = useState([]);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [measurementId, setMeasurementId] = useState(-1);
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    getImage(props.boreholeno).then((res) => {
-      setImages(res.data.data);
-    });
-  }, [props.boreholeno, photoTaken]);
-
-  const triggerPhoto = () => {
-    setPhotoTaken((prev) => !prev);
-  };
-
-  const handleClose = () => {
-    setOpenCamera(false);
-  };
-
-  const handleCloseSave = () => {
-    setOpenSave(false);
-  };
+  const {data: images} = useQuery(['images', props.boreholeno], () => getImage(props.boreholeno));
+  console.log(images);
+  const deleteImageMutation = useMutation((gid) => deleteImage(props.boreholeno, gid), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['images', props.boreholeno]);
+    },
+  });
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -78,18 +62,6 @@ function BoreholeImages(props) {
     setOpenSave(true);
   };
 
-  const handleDelete = (image, id) => {
-    let sessionId = sessionStorage.getItem('session_id');
-    setMeasurementId(id);
-    setDialogOpen(true);
-    setTimeout(() => {
-      setDialogOpen(false);
-    }, 500);
-    return deleteImage(image.boreholeno, image.gid, sessionId).then((res) => {
-      triggerPhoto();
-    });
-  };
-
   const changeActiveImageData = (field, value) => {
     setActiveImage({
       ...activeImage,
@@ -100,31 +72,22 @@ function BoreholeImages(props) {
   const handleEdit = (image) => {
     setActiveImage(image);
     setOpenSave(true);
-    console.log(activeImage);
-    console.log(images);
-  };
-
-  const deleteRow = (id) => {
-    handleDelete(id);
   };
 
   return (
     <div>
-      <DeleteAlert
-        measurementId={measurementId}
-        dialogOpen={dialogOpen}
-        setDialogOpen={setDialogOpen}
-        onOkDelete={deleteRow}
+      <LocationCamera
+        open={openCamera}
+        handleClose={() => setOpenCamera(false)}
+        setDataURI={handleSetDataURI}
       />
-      <LocationCamera open={openCamera} handleClose={handleClose} setDataURI={handleSetDataURI} />
-      <SaveImageDialog
+      <SaveImageDialogBorehole
         activeImage={activeImage}
         changeData={changeActiveImageData}
         boreholeno={props.boreholeno}
         open={openSave}
         dataUri={dataUri}
-        photoTrigger={triggerPhoto}
-        handleCloseSave={handleCloseSave}
+        handleCloseSave={() => setOpenSave(false)}
       />
       <Grid container spacing={3} justifyContent={'center'}>
         <Grid item>
@@ -150,7 +113,11 @@ function BoreholeImages(props) {
           </label>
         </Grid>
         <Grid item xs={12} sm={12}>
-          <ImageViewer handleDelete={handleDelete} handleEdit={handleEdit} images={images} />
+          <ImageViewer
+            deleteMutation={deleteImageMutation}
+            handleEdit={handleEdit}
+            images={images}
+          />
         </Grid>
       </Grid>
     </div>

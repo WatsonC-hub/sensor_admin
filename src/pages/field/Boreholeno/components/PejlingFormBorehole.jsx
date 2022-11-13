@@ -17,7 +17,7 @@ import {
 import {isValid} from 'date-fns';
 import moment from 'moment';
 import SaveIcon from '@mui/icons-material/Save';
-import OwnDatePicker from '../../../components/OwnDatePicker';
+import OwnDatePicker from '../../../../components/OwnDatePicker';
 
 export default function PejlingFormBorehole({
   boreholeno,

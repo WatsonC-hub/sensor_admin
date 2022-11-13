@@ -25,32 +25,32 @@ function StationImages(props) {
 
   const {data: images} = useQuery(['images', props.locationId], () => getImage(props.locationId));
 
-  const deleteImageMutation = useMutation(gid => deleteImage(props.locationid, gid), {
+  const deleteImageMutation = useMutation((gid) => deleteImage(props.locationid, gid), {
     onSuccess: () => {
       queryClient.invalidateQueries(['images', props.locationId]);
     },
   });
 
-  const convertBase64 = file => {
+  const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
       fileReader.onload = () => {
         resolve(fileReader.result);
       };
-      fileReader.onerror = error => {
+      fileReader.onerror = (error) => {
         reject(error);
       };
     });
   };
 
-  const handleFileRead = async event => {
+  const handleFileRead = async (event) => {
     const file = event.target.files[0];
     const base64 = await convertBase64(file);
     handleSetDataURI(base64);
   };
 
-  const handleSetDataURI = datauri => {
+  const handleSetDataURI = (datauri) => {
     setdataUri(datauri);
     setActiveImage({
       gid: -1,
@@ -69,7 +69,7 @@ function StationImages(props) {
     });
   };
 
-  const handleEdit = image => {
+  const handleEdit = (image) => {
     setActiveImage(image);
     setOpenSave(true);
   };
@@ -99,7 +99,7 @@ function StationImages(props) {
                 display: 'none',
               }}
               type="file"
-              onChange={event => handleFileRead(event)}
+              onChange={(event) => handleFileRead(event)}
             />
             <Button
               color="secondary"

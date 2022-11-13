@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import ActionAreaBorehole from './ActionAreaBorehole';
 import BearingGraph from './BearingGraph';
-import PejlingFormBorehole from './PejlingFormBorehole';
+import PejlingFormBorehole from './components/PejlingFormBorehole';
 import PejlingMeasurements from './PejlingMeasurements';
 import MaalepunktForm from '../../../components/MaalepunktForm';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
@@ -80,7 +80,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       placeholderData: [],
     }
   );
-  console.log(measurements);
 
   const {data: watlevmp} = useQuery(
     ['watlevmp', boreholeno],
@@ -291,7 +290,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           canEdit={canEdit}
         />
       )}
-      {formToShow === 'CAMERA' && <BoreholeImages boreholeno={location.pathname.split('/')[2]} />}
+      {formToShow === 'CAMERA' && <BoreholeImages boreholeno={params.boreholeno} />}
       <ActionAreaBorehole
         open={open}
         boreholeno={boreholeno}
