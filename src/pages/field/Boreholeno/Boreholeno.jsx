@@ -62,15 +62,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   });
 
   const [updated, setUpdated] = useState(new Date());
-  //const [measurements, setMeasurements] = useState([]);
-  //const [watlevmp, setWatlevmp] = useState([]);
   const [control, setcontrol] = useState([]);
   const [dynamic, setDynamic] = useState([]);
   const [canEdit] = useState(true);
-  const [severity, setSeverity] = useState('success');
-  const [severityDel, setSeverityDel] = useState('success');
-  const [openAlert, setOpenAlert] = useState(false);
-  const [openDelAlert, setOpenDelAlert] = useState(false);
 
   const {data: measurements} = useQuery(
     ['measurements', boreholeno],

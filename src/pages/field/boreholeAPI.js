@@ -73,14 +73,14 @@ const deleteImage = (boreholeno, gid) => {
 
 const updateImage = (payload, gid) => {
   const boreholeno = payload.boreholeno;
-  const url = `${jupiterEndpoint}/borehole/image/${boreholeno}/${gid}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/image/${boreholeno}/${gid}?session_id=${authStore.getState().sessionId}`;
   return axios.put(url, payload);
 };
 
 async function getImage(boreholeno) {
   const url = `${extEndpoint}/borehole/image/${boreholeno}`;
   const {data} = await axios.get(url);
-  return data.result;
+  return data.data;
 };
 
 const postElasticSearch = search => {

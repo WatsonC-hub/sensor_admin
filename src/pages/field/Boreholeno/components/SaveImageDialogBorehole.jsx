@@ -28,7 +28,7 @@ function SaveImageDialogBorehole({
   const [disableAdd, setDisableAdd] = useState(false);
   const queryClient = useQueryClient();
   const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
-  console.log(activeImage);
+  //console.log(activeImage);
   const imageUrl = baseUrl + activeImage.imageurl + '.png';
 
   const saveImageMutation = useMutation(

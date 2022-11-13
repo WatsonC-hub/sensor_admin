@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import LocationCamera from '../../../components/LocationCamera';
 import {Button} from '@mui/material';
-import ImageViewer from '../../../components/ImageViewer';
+import ImageViewerBorehole from './components/ImageViewerBorehole';
 import {PhotoCameraRounded} from '@mui/icons-material';
 import {Grid} from '@mui/material';
 import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
@@ -11,7 +11,6 @@ import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
 
 function BoreholeImages(props) {
   const [openCamera, setOpenCamera] = useState(false);
-  const [photoTaken, setPhotoTaken] = useState(false);
   const [dataUri, setdataUri] = useState('');
   const [openSave, setOpenSave] = useState(false);
   const [activeImage, setActiveImage] = useState({
@@ -25,6 +24,7 @@ function BoreholeImages(props) {
 
   const {data: images} = useQuery(['images', props.boreholeno], () => getImage(props.boreholeno));
   console.log(images);
+
   const deleteImageMutation = useMutation((gid) => deleteImage(props.boreholeno, gid), {
     onSuccess: () => {
       queryClient.invalidateQueries(['images', props.boreholeno]);
@@ -113,7 +113,7 @@ function BoreholeImages(props) {
           </label>
         </Grid>
         <Grid item xs={12} sm={12}>
-          <ImageViewer
+          <ImageViewerBorehole
             deleteMutation={deleteImageMutation}
             handleEdit={handleEdit}
             images={images}
