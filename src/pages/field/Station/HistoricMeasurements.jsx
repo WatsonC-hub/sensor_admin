@@ -22,18 +22,18 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
 
-  const [timeseries] = stamdataStore(state => [state.timeseries]);
+  const [timeseries] = stamdataStore((state) => [state.timeseries]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 

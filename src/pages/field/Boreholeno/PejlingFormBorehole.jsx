@@ -19,7 +19,7 @@ import moment from 'moment';
 import SaveIcon from '@mui/icons-material/Save';
 import OwnDatePicker from '../../../components/OwnDatePicker';
 
-export default function PejlingForm({
+export default function PejlingFormBorehole({
   boreholeno,
   intakeno,
   formData,

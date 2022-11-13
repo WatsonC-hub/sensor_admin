@@ -9,8 +9,8 @@ let jupiterEndpoint;
 let searchEndpoint;
 
 if (process.env.NODE_ENV === 'development') {
-  host = 'http://127.0.0.1';
-  extEndpoint = 'http://127.0.0.1/extensions/sensor_app/api';
+  host = 'https://watsonc.admin.gc2.io';
+  extEndpoint = 'https://watsonc.admin.gc2.io/extensions/sensor_app/api';
   // endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc_clone/?q=`;
   userEndpoint = 'https://backend.calypso.watsonc.dk/rest/';
   endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
@@ -99,9 +99,10 @@ const getBorehole = boreholeno => {
   return data;
 };
 
-const getOurWaterlevel = (boreholeno, intakeno) => {
+async function getOurWaterlevel(boreholeno, intakeno) {
   const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}?session_id=${authStore.getState().sessionId}`;
-  return axios.get(url);
+  const {data} = await axios.get(url);
+  return data.result;
 };
 
 const getLastMeasurement = (boreholeno, intakeno) => {
@@ -115,9 +116,10 @@ const getJupiterWaterlevel = (boreholeno, intakeno) => {
   return axios.get(url);
 };
 
-const getBoreholeMP = (boreholeno, intakeno) => {
+async function getBoreholeMP(boreholeno, intakeno) {
   const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}?session_id=${authStore.getState().sessionId}`;
-  return axios.get(url);
+  const {data} = await axios.get(url);
+  return data.result;
 };
 
 const insertMeasurement = (boreholeno, intakeno, formData) => {

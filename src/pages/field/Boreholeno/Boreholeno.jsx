@@ -18,8 +18,9 @@ import {
 } from '../boreholeAPI';
 import moment from 'moment';
 import BoreholeImages from './BoreholeImages';
-import MuiAlert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
+import {toast} from 'react-toastify';
+import useFormData from '../../../hooks/useFormData';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split('T')[0];
@@ -31,9 +32,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
   let navigate = useNavigate();
   let params = useParams();
+  const queryClient = useQueryClient();
 
-  //console.log(boreholeno);
-  const [pejlingData, setPejlingData] = useState({
+  const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
     timeofmeas: formatedTimestamp(new Date()),
     pumpstop: formatedTimestamp(new Date()),
@@ -52,16 +53,17 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   };
 
-  const [mpData, setMpData] = useState({
+  const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: formatedTimestamp(new Date()),
     enddate: formatedTimestamp(new Date('2099-01-01')),
     elevation: 0,
     mp_description: '',
   });
+
   const [updated, setUpdated] = useState(new Date());
-  const [measurements, setMeasurements] = useState([]);
-  const [watlevmp, setWatlevmp] = useState([]);
+  //const [measurements, setMeasurements] = useState([]);
+  //const [watlevmp, setWatlevmp] = useState([]);
   const [control, setcontrol] = useState([]);
   const [dynamic, setDynamic] = useState([]);
   const [canEdit] = useState(true);
@@ -69,6 +71,25 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const [severityDel, setSeverityDel] = useState('success');
   const [openAlert, setOpenAlert] = useState(false);
   const [openDelAlert, setOpenDelAlert] = useState(false);
+
+  const {data: measurements} = useQuery(
+    ['measurements', boreholeno],
+    () => getOurWaterlevel(boreholeno, intakeno),
+    {
+      enabled: boreholeno !== -1 && boreholeno !== null,
+      placeholderData: [],
+    }
+  );
+  console.log(measurements);
+
+  const {data: watlevmp} = useQuery(
+    ['watlevmp', boreholeno],
+    () => getBoreholeMP(boreholeno, intakeno),
+    {
+      enabled: boreholeno !== -1 && boreholeno !== null,
+      placeholderData: [],
+    }
+  );
 
   useEffect(() => {
     if (watlevmp.length > 0) {
@@ -86,137 +107,91 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   }, [pejlingData, watlevmp]);
 
   useEffect(() => {
-    if (boreholeno !== -1 && boreholeno !== null && intakeno !== -1 && intakeno !== null) {
-      //let sessionId = sessionStorage.getItem('session_id');
-      const mp = getBoreholeMP(boreholeno, intakeno);
-      const meas = getOurWaterlevel(boreholeno, intakeno);
-      Promise.all([mp, meas]).then((responses) => {
-        const measures = responses[1].data.result;
-        const mps = responses[0].data.result;
-        setMeasurements(measures);
-        setWatlevmp(mps);
-
-        if (mps.length > 0) {
-          setcontrol(
-            measures.map((e) => {
-              const elev = mps.filter((e2) => {
-                return (
-                  moment(e.timeofmeas) >= moment(e2.startdate) &&
-                  moment(e.timeofmeas) < moment(e2.enddate)
-                );
-              })[0].elevation;
-
-              return {
-                ...e,
-                waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
-              };
-            })
+    var ctrls = [];
+    if (watlevmp.length > 0) {
+      ctrls = measurements.map((e) => {
+        const elev = watlevmp.filter((e2) => {
+          return (
+            moment(e.timeofmeas) >= moment(e2.startdate) &&
+            moment(e.timeofmeas) < moment(e2.enddate)
           );
-        } else {
-          setcontrol(
-            measures.map((elem) => {
-              return {...elem, waterlevel: elem.disttowatertable_m};
-            })
-          );
-        }
+        })[0].elevation;
+
+        return {
+          ...e,
+          waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+        };
+      });
+    } else {
+      ctrls = measurements.map((elem) => {
+        return {...elem, waterlevel: elem.disttowatertable_m};
       });
     }
-  }, [updated, boreholeno, intakeno]);
-
-  const changePejlingData = (field, value) => {
-    setPejlingData({
-      ...pejlingData,
-      [field]: value,
-    });
-  };
-
-  const resetPejlingData = () => {
-    setPejlingData({
-      gid: -1,
-      timeofmeas: formatedTimestamp(new Date()),
-      pumpstop: formatedTimestamp(new Date()),
-      disttowatertable_m: 0,
-      comment: '',
-      service: false,
-    });
-    setFormToShow(null);
-  };
-
-  const changeMpData = (field, value) => {
-    setMpData({
-      ...mpData,
-      [field]: value,
-    });
-  };
-
-  const resetMpData = () => {
-    setMpData({
-      gid: -1,
-      startdate: formatedTimestamp(new Date()),
-      enddate: formatedTimestamp(new Date('2099-01-01')),
-      elevation: 0,
-      mp_description: '',
-    });
-
-    setFormToShow('ADDMAALEPUNKT');
-  };
+    setcontrol(ctrls);
+  }, [watlevmp, measurements]);
 
   const handleMpCancel = () => {
     resetMpData();
     setFormToShow(null);
   };
 
+  const pejlingMutate = useMutation((data) => {
+    if (data.gid === -1) {
+      return insertMeasurement(boreholeno, intakeno, data);
+    } else {
+      return updateMeasurement(boreholeno, intakeno, data);
+    }
+  });
+
   const handlePejlingSubmit = () => {
-    setFormToShow(null);
-    const method = pejlingData.gid !== -1 ? updateMeasurement : insertMeasurement;
+    //setFormToShow(null);
     const userId = sessionStorage.getItem('user');
-    const payload = {...pejlingData, userid: userId};
-    console.log(payload);
+    const payload = {
+      ...pejlingData,
+      userid: userId,
+    };
     var _date = Date.parse(payload.timeofmeas);
     var _datePumpStop = Date.parse(payload.pumpstop);
-    console.log('time before parse: ', payload.timeofmeas);
-    console.log('time after parse: ', _date);
     payload.timeofmeas = formatedTimestamp(new Date(_date));
     payload.pumpstop = formatedTimestamp(new Date(_datePumpStop));
     if (payload.service) payload.pumpstop = null;
-    method(boreholeno, intakeno, payload)
-      .then((res) => {
+    pejlingMutate.mutate(payload, {
+      onSuccess: (data) => {
         resetPejlingData();
-        setUpdated(new Date());
-        setSeverity('success');
-        setTimeout(() => {
-          handleClickOpen();
-        }, 500);
-      })
-      .catch((error) => {
-        setSeverity('error');
-        setOpenAlert(true);
-      });
+        setFormToShow(null);
+        toast.success('Kontrolmåling gemt');
+        queryClient.invalidateQueries(['measurements', boreholeno]);
+      },
+      onError: (error) => {
+        toast.error('Der skete en fejl');
+      },
+    });
   };
 
+  const watlevmpMutate = useMutation((data) => {
+    if (data.gid === -1) {
+      return insertMp(boreholeno, intakeno, data);
+    } else {
+      return updateMp(boreholeno, intakeno, data);
+    }
+  });
+
   const handleMpSubmit = () => {
-    setFormToShow('ADDMAALEPUNKT');
-    const method = mpData.gid !== -1 ? updateMp : insertMp;
     const userId = sessionStorage.getItem('user');
     const payload = {...mpData, userid: userId};
     var _date = Date.parse(payload.startdate);
-    console.log('time before parse: ', payload.startdate);
-    console.log('time after parse: ', _date);
     payload.startdate = formatedTimestamp(new Date(_date));
     payload.enddate = formatedTimestamp(new Date(Date.parse(payload.enddate)));
-    method(boreholeno, intakeno, payload)
-      .then((res) => {
+    watlevmpMutate.mutate(payload, {
+      onSuccess: (data) => {
         resetMpData();
-        setUpdated(new Date());
-        setSeverity('success');
-        setTimeout(() => {
-          handleClickOpen();
-        }, 500);
-      })
-      .catch((error) => {
-        setSeverity('error');
-        setOpenAlert(true);
-      });
+        toast.success('Målepunkt gemt');
+        queryClient.invalidateQueries(['watlevmp', boreholeno]);
+      },
+      onError: (error) => {
+        toast.error('Der skete en fejl');
+      },
+    });
   };
 
   const handleEdit = (type) => {
@@ -242,49 +217,24 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleDelete = (type) => {
     if (type === 'watlevmp') {
       return (gid) => {
-        deleteMP(boreholeno, intakeno, gid)
-          .then((res) => {
-            resetMpData();
-            setUpdated(new Date());
-            setSeverityDel('success');
-            setOpenDelAlert(true);
-          })
-          .catch((error) => {
-            setSeverityDel('error');
-            setOpenDelAlert(true);
-          });
+        deleteMP(boreholeno, intakeno, gid).then((res) => {
+          queryClient.invalidateQueries(['watlevmp', boreholeno]);
+          resetMpData();
+          setUpdated(new Date());
+          toast.success('Målepunkt slettet');
+        });
       };
     } else {
       return (gid) => {
-        deleteMeasurement(boreholeno, intakeno, gid)
-          .then((res) => {
-            resetPejlingData();
-            setUpdated(new Date());
-            setSeverityDel('success');
-            setOpenDelAlert(true);
-          })
-          .catch((error) => {
-            setSeverityDel('error');
-            setOpenDelAlert(true);
-          });
+        deleteMeasurement(boreholeno, intakeno, gid).then((res) => {
+          queryClient.invalidateQueries(['measurements', boreholeno]);
+          resetPejlingData();
+          setUpdated(new Date());
+          toast.success('Kontrolmåling slettet');
+        });
       };
     }
   };
-
-  const handleCloseSnack = (reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenAlert(false);
-  };
-
-  const handleClickOpen = () => {
-    setOpenAlert(true);
-  };
-
-  function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
 
   return (
     <div>
@@ -349,17 +299,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         setFormToShow={setFormToShow}
         canEdit={canEdit}
       />
-      <Snackbar open={openAlert || openDelAlert} autoHideDuration={4000} onClose={handleCloseSnack}>
-        {openAlert === true ? (
-          <Alert onClose={handleCloseSnack} severity={severity}>
-            {severity === 'success' ? 'Indberetningen lykkedes' : 'Indberetningen fejlede'}
-          </Alert>
-        ) : (
-          <Alert onClose={handleCloseSnack} severity={severityDel}>
-            {severityDel === 'success' ? 'Sletningen lykkedes' : 'Sletningen fejlede'}
-          </Alert>
-        )}
-      </Snackbar>
     </div>
   );
 };
