@@ -9,6 +9,7 @@ import DeleteAlert from '../../Station/DeleteAlert';
 import CircularProgress from '@mui/material/CircularProgress';
 import moment from 'moment';
 import {toast} from 'react-toastify';
+import {authStore} from 'src/state/store';
 
 function ImageCardBorehole({image, deleteMutation, handleEdit}) {
   const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
@@ -52,24 +53,26 @@ function ImageCardBorehole({image, deleteMutation, handleEdit}) {
           {image.comment}
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button
-          disabled={deleteMutation.isLoading}
-          onClick={() => setDialogOpen(true)}
-          size="small"
-          color="primary"
-        >
-          {deleteMutation.isLoading ? <CircularProgress /> : 'Slet'}
-        </Button>
-        <Button
-          disabled={deleteMutation.isLoading}
-          onClick={() => handleEdit(image)}
-          size="small"
-          color="primary"
-        >
-          Rediger
-        </Button>
-      </CardActions>
+      {image.organisationid == authStore.getState().organisation && (
+        <CardActions>
+          <Button
+            disabled={deleteMutation.isLoading}
+            onClick={() => setDialogOpen(true)}
+            size="small"
+            color="primary"
+          >
+            {deleteMutation.isLoading ? <CircularProgress /> : 'Slet'}
+          </Button>
+          <Button
+            disabled={deleteMutation.isLoading}
+            onClick={() => handleEdit(image)}
+            size="small"
+            color="primary"
+          >
+            Rediger
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 }

@@ -6,6 +6,7 @@ export const authStore = create(
     devtools((set, get) => ({
       authenticated: false,
       user: null,
+      organisation: null,
       sessionId: null,
       loginExpired: false,
       setAuthenticated: authenticated =>
@@ -24,6 +25,14 @@ export const authStore = create(
           false,
           'setUser'
         ),
+      setOrganisation: organisation =>
+      set(
+        {
+          organisation: organisation,
+        },
+        false,
+        'setOrganisation'
+      ),
       setSessionId: sessionId =>
         set(
           {

@@ -22,15 +22,15 @@ export default function Login({}) {
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
 
-  const [setAuthenticated, setUser, setSessionId, loginExpired, setLoginExpired] = authStore(
-    (state) => [
+  const [setAuthenticated, setUser, setOrganisation, setSessionId, loginExpired, setLoginExpired] =
+    authStore((state) => [
       state.setAuthenticated,
       state.setUser,
+      state.setOrganisation,
       state.setSessionId,
       state.loginExpired,
       state.setLoginExpired,
-    ]
-  );
+    ]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,6 +38,7 @@ export default function Login({}) {
       .then((res) => {
         if (res.data.success) {
           setUser(res.data.data.screen_name);
+          setOrganisation(res.data.data.properties.organisation.id);
           setSessionId(res.data.data.session_id);
           setLoginError(false);
           setLoginExpired(false);
@@ -53,7 +54,6 @@ export default function Login({}) {
       setLoginExpired(false);
     });
   };
-
   const handlePassReset = (e) => {
     console.log(passReset);
     resetPassword({email: passReset})

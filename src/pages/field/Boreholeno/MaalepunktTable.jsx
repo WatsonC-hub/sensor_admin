@@ -23,6 +23,7 @@ import moment from 'moment';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import {authStore} from 'src/state/store';
 
 function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -97,14 +98,14 @@ function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                   </TableCell>
                   <TableCell align="center">{row.mp_description}</TableCell>
                   <TableCell align="right">
-                    {row.organisationid == sessionStorage.getItem('orgid') && (
+                    {row.organisationid == authStore.getState().organisation && (
                       <IconButton onClick={() => handleEdit(row)} disabled={!canEdit} size="large">
                         <EditIcon />
                       </IconButton>
                     )}
                   </TableCell>
                   <TableCell align="left">
-                    {row.organisationid == sessionStorage.getItem('orgid') && (
+                    {row.organisationid == authStore.getState().organisation && (
                       <IconButton
                         onClick={() => {
                           onDeleteBtnClick(row.gid);
@@ -191,27 +192,31 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                     {row.startdate.split(' ')[0] + ' - ' + row.enddate.split(' ')[0]}
                   </Typography>
                   <ListItemSecondaryAction>
-                    <IconButton
-                      edge="end"
-                      onClick={() => {
-                        handleEdit(row);
-                        setTimeout(() => {
-                          window.scrollTo({top: 300, behavior: 'smooth'});
-                        }, 200);
-                      }}
-                      disabled={!canEdit}
-                      size="large"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      edge="end"
-                      onClick={() => onDeleteBtnClick(row.gid)}
-                      disabled={!canEdit}
-                      size="large"
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {row.organisationid == authStore.getState().organisation && (
+                      <IconButton
+                        edge="end"
+                        onClick={() => {
+                          handleEdit(row);
+                          setTimeout(() => {
+                            window.scrollTo({top: 300, behavior: 'smooth'});
+                          }, 200);
+                        }}
+                        disabled={!canEdit}
+                        size="large"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    )}
+                    {row.organisationid == authStore.getState().organisation && (
+                      <IconButton
+                        edge="end"
+                        onClick={() => onDeleteBtnClick(row.gid)}
+                        disabled={!canEdit}
+                        size="large"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </ListItemSecondaryAction>
                 </Box>
               </ListItem>

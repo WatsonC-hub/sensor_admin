@@ -13,18 +13,19 @@ import moment from 'moment';
 import TablePagination from '@mui/material/TablePagination';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import {authStore} from 'src/state/store';
 
 export default function MobileMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 3;
-  const onDeleteBtnClick = id => {
+  const onDeleteBtnClick = (id) => {
     setMeasurementId(id);
     setDialogOpen(true);
   };
 
-  const deleteRow = id => {
+  const deleteRow = (id) => {
     handleDelete(id);
   };
 
@@ -78,7 +79,7 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
                     {moment(row.timeofmeas).format('YYYY-MM-DD HH:mm')}
                   </Typography>
                   <ListItemSecondaryAction>
-                    {row.organisationid == sessionStorage.getItem('orgid') && (
+                    {row.organisationid == authStore.getState().organisation && (
                       <IconButton
                         edge="end"
                         onClick={() => {
@@ -93,7 +94,7 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
                         <EditIcon />
                       </IconButton>
                     )}
-                    {row.organisationid == sessionStorage.getItem('orgid') && (
+                    {row.organisationid == authStore.getState().organisation && (
                       <IconButton
                         edge="end"
                         onClick={() => onDeleteBtnClick(row.gid)}

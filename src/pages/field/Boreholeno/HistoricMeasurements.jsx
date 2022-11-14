@@ -16,6 +16,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Grid from '@mui/material/Grid';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import {authStore} from 'src/state/store';
 
 export default function HistoricMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -110,7 +111,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                     </TableCell>
                     <TableCell align="center">{row.comment}</TableCell>
                     <TableCell align="right">
-                      {row.organisationid == sessionStorage.getItem('orgid') && (
+                      {row.organisationid == authStore.getState().organisation && (
                         <IconButton
                           onClick={() => handleEdit(row)}
                           disabled={!canEdit}
@@ -121,7 +122,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                       )}
                     </TableCell>
                     <TableCell align="left">
-                      {row.organisationid == sessionStorage.getItem('orgid') && (
+                      {row.organisationid == authStore.getState().organisation && (
                         <IconButton
                           onClick={() => {
                             onDeleteBtnClick(row.gid);
