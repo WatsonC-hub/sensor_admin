@@ -289,8 +289,18 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
 
   const {shapelist, annotateList} = transformQAData(qaData);
 
+  var gd = document.getElementById('graph');
+
+  gd?.addEventListener('mousemove', function (evt) {
+    var bb = evt.target.getBoundingClientRect();
+    var x = gd._fullLayout.xaxis.p2d(evt.clientX - bb.left);
+    var y = gd._fullLayout.yaxis.p2d(evt.clientY - bb.top);
+    console.log(x, y);
+  });
+
   return (
     <Plot
+      id="graph"
       data={[
         {
           x: graphData?.x,
@@ -355,6 +365,12 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
       }}
       useResizeHandler={true}
       style={{width: '100%', height: '100%'}}
+      onClickAnnotation={(e) => {
+        console.log(e);
+      }}
+      onClick={(e) => {
+        console.log(e);
+      }}
     />
   );
 }

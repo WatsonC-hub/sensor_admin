@@ -10,6 +10,7 @@ import _ from 'lodash';
 import {Box, Button, TextField, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {atom, useAtom} from 'jotai';
+import NotificationRow from './NotificationRow';
 
 const expandedAtom = atom([]);
 const typeAheadAtom = atom('');
@@ -55,7 +56,7 @@ const NotificationTree = ({notifications}) => {
   }, [notifications]);
 
   return (
-    <Box sx={{height: '80vh', overflowY: 'auto'}} p={2}>
+    <Box sx={{height: '80vh', overflowY: 'auto'}} pt={2}>
       <TextField
         variant="outlined"
         label={'Filtrer notifikationer'}
@@ -107,26 +108,7 @@ const NotificationTree = ({notifications}) => {
                         ?.filter((notification) => notification.stationid === station.stationid)
                         .sort((a, b) => b.flag - a.flag)
                         .map((notification) => {
-                          return (
-                            <Box
-                              key={notification.id}
-                              sx={{
-                                borderLeft: '2px dashed',
-                                borderLeftColor: 'primary.main',
-                                cursor: 'pointer',
-                              }}
-                              p={1}
-                              flexDirection="row"
-                              display="flex"
-                              onClick={() => {
-                                navigate(notification.navigateTo);
-                              }}
-                            >
-                              <ErrorOutlineOutlined sx={{color: notification.color}} />
-                              <Typography>{notification.opgave}</Typography>
-                              <Typography>{notification.dato}</Typography>
-                            </Box>
-                          );
+                          return <NotificationRow notification={notification} />;
                         })}
                     </TreeItem>
                   );
