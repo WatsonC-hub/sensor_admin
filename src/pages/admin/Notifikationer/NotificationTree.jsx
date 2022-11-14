@@ -11,11 +11,12 @@ import {Box, Button, TextField, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {atom, useAtom} from 'jotai';
 import NotificationRow from './NotificationRow';
+import moment from 'moment';
 
 const expandedAtom = atom([]);
 const typeAheadAtom = atom('');
 
-const NotificationTree = ({notifications}) => {
+const NotificationTree = ({notifications, statusMutate}) => {
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
 
@@ -108,7 +109,25 @@ const NotificationTree = ({notifications}) => {
                         ?.filter((notification) => notification.stationid === station.stationid)
                         .sort((a, b) => b.flag - a.flag)
                         .map((notification) => {
-                          return <NotificationRow notification={notification} />;
+                          return (
+                            <NotificationRow
+                              key={notification.id}
+                              notification={notification}
+                              onPostpone={() =>
+                                statusMutate.mutate([
+                                  {
+                                    ts_id: notification.stationid,
+                                    notification_id: notification.notification_id,
+                                    status: 'POSTPONED',
+                                    enddate: moment
+                                      .utc()
+                                      .add(7, 'days')
+                                      .format('YYYY-MM-DDTHH:mm:ss'),
+                                  },
+                                ])
+                              }
+                            />
+                          );
                         })}
                     </TreeItem>
                   );

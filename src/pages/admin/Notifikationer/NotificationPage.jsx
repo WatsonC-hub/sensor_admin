@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import ServiceMap from 'src/pages/admin/Notifikationer/ServiceMap';
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import _ from 'lodash';
 import {Grid, Button, Typography} from '@mui/material';
@@ -23,6 +23,8 @@ const lassoFilterAtom = atom(new Set());
 
 const NotificationPage = () => {
   const [lassoFilter, setLassoFilter] = useAtom(lassoFilterAtom);
+
+  const queryClient = useQueryClient();
   const {data, isLoading, error} = useQuery(
     ['overblik'],
     async ({signal}) => {
@@ -34,7 +36,7 @@ const NotificationPage = () => {
     {staleTime: 1000 * 60 * 60 * 24}
   );
 
-  const mutation = useMutation(
+  const statusMutate = useMutation(
     async (data) => {
       const {data: out} = await apiClient.post(`/sensor_admin/overblik/update_status`, data);
       return out;
@@ -54,9 +56,16 @@ const NotificationPage = () => {
   //   {name: 'stationname', title: 'Navn'},
   // ];
 
-  const sorted = _.reverse(_.sortBy(data, ['flag']));
+  var filtered = data?.map((elem) => {
+    return {
+      ...elem,
+      flag: elem.status == 'POSTPONED' ? 1 : elem.flag,
+      color: elem.status == 'POSTPONED' ? '#00FF00' : elem.color,
+    };
+  });
+  const sorted = _.reverse(_.sortBy(filtered, ['flag']));
   const mapdata = _.uniqBy(sorted, 'locid');
-  const notifications = data
+  const notifications = filtered
     ?.filter((item) => item.opgave != null)
     .map((item, index) => {
       return {
@@ -66,7 +75,7 @@ const NotificationPage = () => {
       };
     })
     .filter((item) => (lassoFilter.size > 0 ? lassoFilter.has(item.locid) : data.length < 20));
-
+  console.log(lassoFilter);
   const numNotifications = _.uniqBy(notifications, 'stationid')?.length;
   const numBattery = notifications?.filter((item) => item.opgave === 'Batterskift').length;
   const numLevel = notifications?.filter((item) => item.opgave === 'Niveau spring').length;
@@ -84,12 +93,20 @@ const NotificationPage = () => {
           variant="contained"
           color="secondary"
           onClick={() =>
-            mutation.mutate({
-              ts_id: 1,
-              status: 'POSTPONED',
-              notification_id: 1,
-              enddate: '2021-10-10T10:10:10',
-            })
+            statusMutate.mutate([
+              {
+                ts_id: 1,
+                status: 'POSTPONED',
+                notification_id: 3,
+                enddate: '2021-10-10T10:10:10',
+              },
+              {
+                ts_id: 2,
+                status: 'POSTPONED',
+                notification_id: 2,
+                enddate: '2021-10-10T10:10:10',
+              },
+            ])
           }
         >
           Lav til opgave
@@ -109,7 +126,7 @@ const NotificationPage = () => {
         <Typography variant="h6">
           Pejling: {numPejling} ud af {numNotifications}
         </Typography>
-        <NotificationTree notifications={notifications} />
+        <NotificationTree notifications={notifications} statusMutate={statusMutate} />
       </Grid>
     </Grid>
   );

@@ -1,8 +1,10 @@
 import React from 'react';
-import {Box, Typography} from '@mui/material';
+import {Box, Typography, Button} from '@mui/material';
 import {ErrorOutlineOutlined} from '@mui/icons-material';
+import {useNavigate} from 'react-router-dom';
 
-const NotificationRow = ({notification}) => {
+const NotificationRow = ({notification, onPostpone}) => {
+  const navigate = useNavigate();
   return (
     <Box
       key={notification.id}
@@ -14,13 +16,21 @@ const NotificationRow = ({notification}) => {
       p={1}
       flexDirection="row"
       display="flex"
-      onClick={() => {
-        navigate(notification.navigateTo);
-      }}
     >
-      <ErrorOutlineOutlined sx={{color: notification.color}} />
-      <Typography>{notification.opgave}</Typography>
-      <Typography>{notification.dato}</Typography>
+      <Box
+        onClick={() => {
+          navigate(notification.navigateTo);
+        }}
+      >
+        <ErrorOutlineOutlined sx={{color: notification.color}} />
+        <Typography>{notification.opgave}</Typography>
+        <Typography>{notification.dato}</Typography>
+      </Box>
+      <Box>
+        <Button onClick={onPostpone} variant="contained" color="secondary">
+          Udskyd
+        </Button>
+      </Box>
     </Box>
   );
 };
