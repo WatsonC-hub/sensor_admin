@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import ServiceMap from 'src/pages/admin/Notifikationer/ServiceMap';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
-import _ from 'lodash';
+import {reverse, sortBy, uniqBy} from 'lodash';
 import {Grid, Button, Typography} from '@mui/material';
 import TableComponent from 'src/components/TableComponent';
 import NotificationTree from './NotificationTree';
@@ -63,8 +63,8 @@ const NotificationPage = () => {
       color: elem.status == 'POSTPONED' ? '#00FF00' : elem.color,
     };
   });
-  const sorted = _.reverse(_.sortBy(filtered, ['flag']));
-  const mapdata = _.uniqBy(sorted, 'locid');
+  const sorted = reverse(sortBy(filtered, ['flag']));
+  const mapdata = uniqBy(sorted, 'locid');
   const notifications = filtered
     ?.filter((item) => item.opgave != null)
     .map((item, index) => {
@@ -76,7 +76,7 @@ const NotificationPage = () => {
     })
     .filter((item) => (lassoFilter.size > 0 ? lassoFilter.has(item.locid) : data.length < 20));
   console.log(lassoFilter);
-  const numNotifications = _.uniqBy(notifications, 'stationid')?.length;
+  const numNotifications = uniqBy(notifications, 'stationid')?.length;
   const numBattery = notifications?.filter((item) => item.notification_id === 1).length;
   const numLevel = notifications?.filter((item) => item.notification_id === 'Niveau spring').length;
   const numAbnormal = notifications?.filter(

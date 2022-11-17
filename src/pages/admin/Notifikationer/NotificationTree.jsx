@@ -6,7 +6,7 @@ import {
   PriorityHighOutlined,
   ErrorOutlineOutlined,
 } from '@mui/icons-material';
-import _ from 'lodash';
+import {sortBy, uniqBy} from 'lodash';
 import {Box, Button, TextField, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {atom, useAtom} from 'jotai';
@@ -30,8 +30,8 @@ const NotificationTree = ({notifications, statusMutate}) => {
     });
   }
   const navigate = useNavigate();
-  const locations = _.sortBy(_.uniqBy(rows, 'locid'), 'locname');
-  const stations = _.sortBy(_.uniqBy(rows, 'stationid'), 'stationname');
+  const locations = sortBy(uniqBy(rows, 'locid'), 'locname');
+  const stations = sortBy(uniqBy(rows, 'stationid'), 'stationname');
 
   const handleToggle = (event, nodeIds) => {
     setExpanded(nodeIds);

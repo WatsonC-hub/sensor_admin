@@ -3,7 +3,6 @@ import {useNavigate} from 'react-router-dom';
 import {Container, Grid, Typography, Button, TextField} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import 'date-fns';
-import _ from 'lodash';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useTheme} from '@mui/material/styles';
 import AddUdstyrForm from './AddUdstyrForm';
@@ -27,7 +26,7 @@ const flex1 = {
 };
 
 function LocationChooser({setLocationDialogOpen}) {
-  const [setLocation, resetLocation] = stamdataStore(store => [
+  const [setLocation, resetLocation] = stamdataStore((store) => [
     store.setLocation,
     store.resetLocation,
   ]);
@@ -35,7 +34,7 @@ function LocationChooser({setLocationDialogOpen}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const populateFormData = locData => {
+  const populateFormData = (locData) => {
     if (locData) {
       setLocation({
         loc_id: locData.loc_id,
@@ -68,8 +67,8 @@ function LocationChooser({setLocationDialogOpen}) {
 
           <Autocomplete
             options={locations ? locations : []}
-            getOptionLabel={option => option.loc_name}
-            renderInput={params => (
+            getOptionLabel={(option) => option.loc_name}
+            renderInput={(params) => (
               <TextField
                 {...params}
                 size="small"
@@ -106,8 +105,8 @@ function LocationChooser({setLocationDialogOpen}) {
         <div style={flex1}>
           <Autocomplete
             options={locations}
-            getOptionLabel={option => option.loc_name}
-            renderInput={params => (
+            getOptionLabel={(option) => option.loc_name}
+            renderInput={(params) => (
               <TextField
                 {...params}
                 size="small"
@@ -158,14 +157,14 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
   const stamdataMutation = useMutation(postStamdata, {
-    onSuccess: data => {
+    onSuccess: (data) => {
       navigate('/');
       queryClient.invalidateQueries('station_list');
       queryClient.invalidateQueries('map_data');
     },
   });
 
-  const changeSelectedStationType = selectedType => {
+  const changeSelectedStationType = (selectedType) => {
     if (selectedType !== selectedStationType) {
       store.resetUnit();
     }
