@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
-import SimpleTabs from './Overview/SimpleTabs';
+import OverviewPage from './Overview/OverviewPage';
 import LocationRouter from './Station/LocationRouter';
 import ScanComponent from '../../components/ScanComponent';
 import OpretStamdata from './Stamdata/OpretStamdata';
@@ -22,7 +22,7 @@ function SensorField({}) {
     <div className="App">
       {open && <CaptureDialog open={open} handleClose={handleClose} />}
       <Routes>
-        <Route path="/" element={<SimpleTabs />} />
+        <Route path="/" element={<OverviewPage />} />
         <Route path="location/:locid/:statid" element={<LocationRouter />} />
         <Route path="location/:locid" element={<LocationRouter />} />
         <Route

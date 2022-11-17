@@ -9,7 +9,8 @@ export const authStore = create(
       organisation: null,
       sessionId: null,
       loginExpired: false,
-      setAuthenticated: authenticated =>
+      boreholeAccess: false,
+      setAuthenticated: (authenticated) =>
         set(
           {
             authenticated: authenticated,
@@ -17,7 +18,7 @@ export const authStore = create(
           false,
           'setAuthenticated'
         ),
-      setUser: user =>
+      setUser: (user) =>
         set(
           {
             user: user,
@@ -25,15 +26,15 @@ export const authStore = create(
           false,
           'setUser'
         ),
-      setOrganisation: organisation =>
-      set(
-        {
-          organisation: organisation,
-        },
-        false,
-        'setOrganisation'
-      ),
-      setSessionId: sessionId =>
+      setOrganisation: (organisation) =>
+        set(
+          {
+            organisation: organisation,
+          },
+          false,
+          'setOrganisation'
+        ),
+      setSessionId: (sessionId) =>
         set(
           {
             sessionId: sessionId,
@@ -41,13 +42,21 @@ export const authStore = create(
           false,
           'setSessionId'
         ),
-      setLoginExpired: loginexpired =>
+      setLoginExpired: (loginexpired) =>
         set(
           {
             loginExpired: loginexpired,
           },
           false,
           'setLoginExpired'
+        ),
+      setBoreholeAccess: (boreholeAccess) =>
+        set(
+          {
+            boreholeAccess: boreholeAccess,
+          },
+          false,
+          'setBoreholeAccess'
         ),
     })),
     {
@@ -94,12 +103,12 @@ const initialState = {
   },
 };
 
-let stamdataStore = set => ({
+let stamdataStore = (set) => ({
   ...initialState,
   resetLocation: () => set({location: initialState.location}),
   resetTimeseries: () => set({timeseries: initialState.timeseries}),
   resetUnit: () => set({unit: initialState.unit}),
-  setLocation: locationData =>
+  setLocation: (locationData) =>
     set(
       {
         location: {
@@ -119,7 +128,7 @@ let stamdataStore = set => ({
       false,
       'setLocation'
     ),
-  setTimeseries: timeseriesdata =>
+  setTimeseries: (timeseriesdata) =>
     set(
       {
         timeseries: {
@@ -136,7 +145,7 @@ let stamdataStore = set => ({
       false,
       'setTimeseries'
     ),
-  setUnit: unitData =>
+  setUnit: (unitData) =>
     set(
       {
         unit: {
@@ -156,7 +165,7 @@ let stamdataStore = set => ({
     ),
   setUnitValue: (key, value) =>
     set(
-      state => ({
+      (state) => ({
         unit: {
           ...state.unit,
           [key]: value,
@@ -167,7 +176,7 @@ let stamdataStore = set => ({
     ),
   setLocationValue: (key, value) =>
     set(
-      state => ({
+      (state) => ({
         location: {
           ...state.location,
           [key]: value,
@@ -178,7 +187,7 @@ let stamdataStore = set => ({
     ),
   setTimeseriesValue: (key, value) =>
     set(
-      state => ({
+      (state) => ({
         timeseries: {
           ...state.timeseries,
           [key]: value,

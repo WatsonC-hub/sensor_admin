@@ -18,7 +18,7 @@ import {apiClient} from 'src/apiClient';
 
 const tabAtom = atom(0);
 
-export default function SimpleTabs() {
+export default function OverviewPage() {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const [tabValue, setTabValue] = useAtom(tabAtom);
