@@ -77,11 +77,13 @@ const NotificationPage = () => {
     .filter((item) => (lassoFilter.size > 0 ? lassoFilter.has(item.locid) : data.length < 20));
   console.log(lassoFilter);
   const numNotifications = _.uniqBy(notifications, 'stationid')?.length;
-  const numBattery = notifications?.filter((item) => item.opgave === 'Batterskift').length;
-  const numLevel = notifications?.filter((item) => item.opgave === 'Niveau spring').length;
-  const numAbnormal = notifications?.filter((item) => item.opgave === 'Abnormal hændelse').length;
-  const numTilsyn = notifications?.filter((item) => item.opgave === 'Tilsyn').length;
-  const numPejling = notifications?.filter((item) => item.opgave === 'Pejling').length;
+  const numBattery = notifications?.filter((item) => item.notification_id === 1).length;
+  const numLevel = notifications?.filter((item) => item.notification_id === 'Niveau spring').length;
+  const numAbnormal = notifications?.filter(
+    (item) => item.notification_id === 'Abnormal hændelse'
+  ).length;
+  const numTilsyn = notifications?.filter((item) => [7, 8].includes(item.notification_id)).length;
+  const numPejling = notifications?.filter((item) => [5, 6].includes(item.notification_id)).length;
 
   return (
     <Grid container>

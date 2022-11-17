@@ -14,6 +14,7 @@ import {getTableData, getSensorData} from 'src/pages/field/fieldAPI';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
 import ScrollTop from '../../../components/ScrollTop';
+import {apiClient} from 'src/apiClient';
 
 const tabAtom = atom(0);
 
@@ -22,8 +23,9 @@ export default function SimpleTabs() {
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const [tabValue, setTabValue] = useAtom(tabAtom);
 
-  const {data, isLoading} = useQuery(['station_list'], () => getTableData(), {
-    refetchInterval: 120000,
+  const {data: tabledata, isLoading} = useQuery(['station_list'], async () => {
+    const {data} = await apiClient.get(`/sensor_field/station_list`);
+    return data;
   });
 
   const {data: mapData, isLoading: mapLoading} = useQuery(['map_data'], () => getSensorData(), {
@@ -59,9 +61,9 @@ export default function SimpleTabs() {
       </Tabs>
       <TabPanel value={tabValue} index={0}>
         {matches ? (
-          <StationList data={data} />
+          <StationList data={tabledata} />
         ) : (
-          <StationListDesktop data={data} loading={isLoading} />
+          <StationListDesktop data={tabledata} loading={isLoading} />
         )}
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
