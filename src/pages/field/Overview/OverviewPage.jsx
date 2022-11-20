@@ -108,7 +108,27 @@ export default function OverviewPage() {
       <TabPanel value={tabValue} index={0}>
         {boreholetabledata === undefined ? (
           matches ? (
-            <StationList data={tabledata} />
+            <div>
+              <AppBar position="static" color="default" style={{width: '50%', marginLeft: '25%'}}>
+                <Tabs
+                  value={tabValueInner}
+                  onChange={handleChangeInner}
+                  indicatorColor="primary"
+                  textColor="primary"
+                  variant="fullWidth"
+                  aria-label="full width tabs example"
+                >
+                  <Tab label="Mine stationer" {...a11yProps(0)} />
+                  <Tab label="Mine DGU boringer" {...a11yProps(1)} />
+                </Tabs>
+              </AppBar>
+              <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
+                <StationList data={tabledata} loading={isLoading} />
+              </TabPanel>
+              <TabPanel value={tabValueInner} index={1} dir={theme.direction}>
+                <BoreholeList data={boreholetabledata} loading={isLoading} />
+              </TabPanel>
+            </div>
           ) : (
             <div>
               <AppBar position="static" color="default" style={{width: '50%', marginLeft: '25%'}}>
