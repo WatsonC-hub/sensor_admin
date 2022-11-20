@@ -38,8 +38,8 @@ const getStatusComp = (status, active, task) => {
   if (!active) {
     return <CheckCircleIcon style={{color: 'grey'}} />;
   }
-  switch (status) {
-    case '#00FF00':
+  switch (task) {
+    case 'Ok':
       return <CheckCircleIcon style={{color: 'mediumseagreen'}} />;
     case null:
       return <CheckCircleIcon style={{color: 'mediumseagreen'}} />;
