@@ -18,7 +18,13 @@ import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-materia
 import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
 import HeightIcon from '@mui/icons-material/Height';
+import PropTypes from 'prop-types';
 import {useTheme} from '@mui/material/styles';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 const RowDetail = ({row}) => (
   <List>
@@ -95,17 +101,6 @@ const TitleCell = (props) => {
 };
 
 const columns = [
-  {name: 'calypso_id', title: 'Calypso ID'},
-  {name: 'ts_name', title: 'Stationsnavn'},
-  {name: 'tstype_name', title: 'Parameter'},
-  // { name: "customer_name", title: "Ejer", width: 200 },
-  {
-    name: 'color',
-    title: 'Status',
-  },
-];
-
-const columnsDGU = [
   {name: 'plant_id', title: 'Anlæg ID'},
   {name: 'borehole_name', title: 'Boringsnavn'},
   {
@@ -114,79 +109,44 @@ const columnsDGU = [
   },
 ];
 
-// function TabPanel(props) {
-//   const {children, value, index, ...other} = props;
-
-//   return (
-//     <div
-//       role="tabpanel"
-//       hidden={value !== index}
-//       id={`full-width-tabpanel-${index}`}
-//       aria-labelledby={`full-width-tab-${index}`}
-//       {...other}
-//     >
-//       {value === index && <Box p={3}>{children}</Box>}
-//     </div>
-//   );
-// }
-
-// TabPanel.propTypes = {
-//   children: PropTypes.node,
-//   index: PropTypes.any.isRequired,
-//   value: PropTypes.any.isRequired,
-// };
-
-// function a11yProps(index) {
-//   return {
-//     id: `full-width-tab-${index}`,
-//     'aria-controls': `full-width-tabpanel-${index}`,
-//   };
-// }
-
-export default function StationListDesktop({data, loading}) {
+export default function BoreholeListDesktop({data, loading}) {
   const [typeAhead, settypeAhead] = useState('');
   const {height, width} = useWindowDimensions();
-  const theme = useTheme();
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
 
   var rows = [];
   if (!loading) {
-    rows = data
-      ?.map((elem, index) => {
-        var text = elem.opgave;
-        switch (elem.color) {
-          case '#00FF00':
-            text = 'Ok';
-            break;
-          case null:
-            text = 'Inaktiv';
-            break;
-        }
-        return {
-          ...elem,
-          station_loc_id: elem.loc_id + '_' + elem.ts_id,
-          id: index,
-          opgave: text,
-          calypso_id: elem.active ? elem.calypso_id : ' ',
-        };
-      })
-      .filter((elem) => {
-        return (
-          elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
-          elem.calypso_id.toString().toLowerCase().includes(typeAhead.toLowerCase())
-        );
-      });
+    // rows = data
+    //   ?.map((elem, index) => {
+    //     var text = elem.opgave;
+    //     switch (elem.color) {
+    //       case '#00FF00':
+    //         text = 'Ok';
+    //         break;
+    //       case null:
+    //         text = 'Inaktiv';
+    //         break;
+    //     }
+    //     return {
+    //       ...elem,
+    //       station_loc_id: elem.loc_id + '_' + elem.ts_id,
+    //       id: index,
+    //       opgave: text,
+    //       calypso_id: elem.active ? elem.calypso_id : ' ',
+    //     };
+    //   })
+    //   .filter((elem) => {
+    //     return (
+    //       elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
+    //       elem.calypso_id.toString().toLowerCase().includes(typeAhead.toLowerCase())
+    //     );
+    //   });
   }
 
   return (
     <div>
       <TextField
         variant="outlined"
-        label={'Filtrer stationer'}
+        label={'Filtrer boringer'}
         InputLabelProps={{shrink: true}}
         placeholder="Søg"
         value={typeAhead}
