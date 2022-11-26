@@ -10,7 +10,7 @@ import Map from './Map';
 import StationListDesktop from './StationListDesktop';
 import StationList from './StationList';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {getTableData, getSensorData} from 'src/pages/field/fieldAPI';
+import {getSensorData} from 'src/pages/field/fieldAPI';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
 import ScrollTop from '../../../components/ScrollTop';
@@ -18,6 +18,7 @@ import {apiClient} from 'src/apiClient';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import BoreholeList from './BoreholeList';
 import BoreholeListDesktop from './BoreholeListDesktop';
 
 const tabAtom = atom(0);
@@ -35,11 +36,11 @@ export default function OverviewPage() {
   });
 
   const {data: boreholetabledata, boreholeIsLoading} = useQuery(['borehole_list'], async () => {
-    const {boreholeData} = await apiClient.get(`/sensor_field/borehole_list`);
-    return boreholeData;
+    const {data} = await apiClient.get(`/sensor_field/borehole_list`);
+    return data;
   });
 
-  console.log(boreholetabledata);
+  //console.log(boreholetabledata);
 
   const {data: mapData, isLoading: mapLoading} = useQuery(['map_data'], () => getSensorData(), {
     refetchInterval: 120000,
@@ -106,10 +107,10 @@ export default function OverviewPage() {
         <Tab icon={KortIcon} />
       </Tabs>
       <TabPanel value={tabValue} index={0}>
-        {boreholetabledata === undefined ? (
+        {boreholetabledata ? (
           matches ? (
             <div>
-              <AppBar position="static" color="default" style={{width: '50%', marginLeft: '25%'}}>
+              <AppBar position="static" color="default" style={{width: '70%', marginLeft: '15%'}}>
                 <Tabs
                   value={tabValueInner}
                   onChange={handleChangeInner}
@@ -126,7 +127,7 @@ export default function OverviewPage() {
                 <StationList data={tabledata} loading={isLoading} />
               </TabPanel>
               <TabPanel value={tabValueInner} index={1} dir={theme.direction}>
-                <BoreholeList data={boreholetabledata} loading={isLoading} />
+                <BoreholeList data={boreholetabledata} loading={boreholeIsLoading} />
               </TabPanel>
             </div>
           ) : (
@@ -148,7 +149,7 @@ export default function OverviewPage() {
                 <StationListDesktop data={tabledata} loading={isLoading} />
               </TabPanel>
               <TabPanel value={tabValueInner} index={1} dir={theme.direction}>
-                <BoreholeListDesktop data={boreholetabledata} loading={isLoading} />
+                <BoreholeListDesktop data={boreholetabledata} loading={boreholeIsLoading} />
               </TabPanel>
             </div>
           )
