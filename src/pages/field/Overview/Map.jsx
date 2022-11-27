@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet.locatecontrol';
 import {atom, useAtom} from 'jotai';
+import {getLastMeasurement} from '../boreholeAPI';
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);
@@ -12,7 +13,12 @@ const style = {
   height: '80vh',
 };
 
-function Map({sensorData, loading}) {
+var boreholeIcon = L.icon({
+  iconUrl: 'boreholeIcon.svg',
+  iconSize: [40, 40], // size of the icon
+});
+
+function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
   const navigate = useNavigate();
   const mapRef = React.useRef(null);
   const layerRef = React.useRef(null);
@@ -23,7 +29,8 @@ function Map({sensorData, loading}) {
     let _popup = document.getElementsByClassName('leaflet-popup-content-wrapper');
     if (_popup && _popup.length > 0) {
       L.DomEvent.on(_popup[0], 'click', () => {
-        navigate('location/' + element.locid);
+        if (element.locid) navigate('location/' + element.locid);
+        else navigate('borehole/' + element.boreholeno + '/1');
       });
     }
   };
@@ -106,11 +113,78 @@ function Map({sensorData, loading}) {
     mapRef.current = renderMap();
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     layerRef.current.clearLayers();
+    const dataBorehole = boreholeData;
     const data = sensorData;
-    if (!loading) {
+    if (!loading || !boreholeIsLoading) {
+      dataBorehole.map((element) => {
+        let lastMeasurements = [];
+        let timeofmeas = [];
+        let content = '';
+        element.intakenos.map((intake) => {
+          getLastMeasurement(element.boreholeno, intake).then((responses) => {
+            if (responses.data.features[0] !== undefined) {
+              lastMeasurements[intake - 1] =
+                responses.data.features[0].properties.disttowatertable_m + ' m - ';
+              timeofmeas[intake - 1] = responses.data.features[0].properties.timeofmeas.split(
+                ' ',
+                1
+              );
+            } else {
+              lastMeasurements[intake - 1] = ' Ingen måling';
+              timeofmeas[intake - 1] = '';
+            }
+            const point = [element.lat, element.lon];
+            if (element.intakenos.length === 1)
+              content =
+                'Indtag ' +
+                intake +
+                ': ' +
+                lastMeasurements[intake - 1] +
+                timeofmeas[intake - 1] +
+                '<br>';
+            else if (element.intakenos.length === 2)
+              content =
+                'Indtag 1: ' +
+                lastMeasurements[0] +
+                timeofmeas[0] +
+                '<br>' +
+                'Indtag 2: ' +
+                lastMeasurements[1] +
+                timeofmeas[1] +
+                '<br>';
+            else
+              content =
+                'Indtag 1: ' +
+                lastMeasurements[0] +
+                timeofmeas[0] +
+                '<br>' +
+                'Indtag 2: ' +
+                lastMeasurements[1] +
+                timeofmeas[1] +
+                '<br>' +
+                'Indtag 3: ' +
+                lastMeasurements[2] +
+                timeofmeas[2] +
+                '<br>';
+
+            const marker = L.marker(point, {
+              icon: boreholeIcon,
+              title: element.boreholeno,
+            }).bindPopup(
+              '<center><b>' +
+                element.boreholeno +
+                '</b><br>Seneste kontrolmåling(er):<br>' +
+                content +
+                '</center>'
+            );
+            marker.on('click', onClickHandler(element));
+            marker.addTo(layerRef.current);
+          });
+        });
+      });
+
       data.forEach((element) => {
         const point = [element.lat, element.long];
-        console.log();
         const marker = L.circleMarker(point, {
           // icon: element.status ? stationIcon : inactiveIcon,
           radius: 8,
@@ -138,7 +212,7 @@ function Map({sensorData, loading}) {
         mapRef.current.remove();
       }
     };
-  }, [sensorData]);
+  }, [sensorData, boreholeData]);
 
   return <div id="map" style={style}></div>;
 }

@@ -40,8 +40,6 @@ export default function OverviewPage() {
     return data;
   });
 
-  //console.log(boreholetabledata);
-
   const {data: mapData, isLoading: mapLoading} = useQuery(['map_data'], () => getSensorData(), {
     refetchInterval: 120000,
   });
@@ -160,7 +158,12 @@ export default function OverviewPage() {
         )}
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
-        <Map sensorData={mapData} loading={mapLoading} />
+        <Map
+          sensorData={mapData}
+          boreholeData={boreholetabledata}
+          loading={mapLoading}
+          boreholeLoading={boreholeIsLoading}
+        />
       </TabPanel>
       {matches && <ScrollTop threshold={100} />}
     </div>
