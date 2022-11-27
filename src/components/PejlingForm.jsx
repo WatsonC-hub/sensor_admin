@@ -37,7 +37,7 @@ export default function PejlingForm({
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
 
   const [currentMP, setCurrentMP] = useState({
-    elevation: 0,
+    elevation: null,
     mp_description: '',
   });
 
@@ -132,6 +132,13 @@ export default function PejlingForm({
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
+          {!currentMP.elevation ? (
+            <p>
+              <span style={{color: 'red'}}>Tilføj venligst et målepunkt først</span>
+            </p>
+          ) : (
+            <p></p>
+          )}
           <Grid item xs={12} sm={12}>
             <Tooltip title="f.eks. tør eller tilfrossen">
               <FormControlLabel
@@ -153,9 +160,17 @@ export default function PejlingForm({
               type="number"
               variant="outlined"
               label={
-                <Typography variant="h5" component="h3">
-                  {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
-                </Typography>
+                !currentMP.elevation ? (
+                  <Tooltip title="Tilføj først et målepunkt">
+                    <Typography variant="h5" component="h3">
+                      {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
+                    </Typography>
+                  </Tooltip>
+                ) : (
+                  <Typography variant="h5" component="h3">
+                    {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
+                  </Typography>
+                )
               }
               InputProps={{
                 endAdornment: (
@@ -168,7 +183,7 @@ export default function PejlingForm({
               fullWidth
               value={formData.measurement}
               onChange={handleDistanceChange}
-              disabled={notPossible}
+              disabled={notPossible || !currentMP.elevation}
             />
           </Grid>
           {isWaterlevel && (
@@ -271,7 +286,7 @@ export default function PejlingForm({
                 handleClickSubmit();
                 handleSubmit();
               }}
-              disabled={pejlingOutOfRange || disableSubmit}
+              disabled={pejlingOutOfRange || disableSubmit || !currentMP.elevation}
               startIcon={<SaveIcon />}
             >
               Gem

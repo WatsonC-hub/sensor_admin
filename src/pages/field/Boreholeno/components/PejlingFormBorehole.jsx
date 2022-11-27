@@ -30,7 +30,7 @@ export default function PejlingFormBorehole({
 }) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const [currentMP, setCurrentMP] = useState({
-    elevation: 0,
+    elevation: null,
     mp_description: '',
   });
 
@@ -122,10 +122,16 @@ export default function PejlingFormBorehole({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? 'Opdater pejling' : 'Indberet pejling'}
         </Typography>
-        <p>
-          Felter med "<span style={{color: 'red'}}>*</span>
-          <span>" skal udfyldes.</span>
-        </p>
+        {!currentMP.elevation ? (
+          <p>
+            <span style={{color: 'red'}}>Tilføj venligst et målepunkt først</span>
+          </p>
+        ) : (
+          <p>
+            Felter med "<span style={{color: 'red'}}>*</span>
+            <span>" skal udfyldes.</span>
+          </p>
+        )}
         <Grid container spacing={3} alignItems="center" justify="center">
           <Grid item xs={12} sm={12}>
             <Tooltip title="f.eks. tør eller tilfrossen">
@@ -187,7 +193,13 @@ export default function PejlingFormBorehole({
               style={{marginTop: '4px'}}
               size="small"
               label={
-                !notPossible ? (
+                !currentMP.elevation ? (
+                  <Tooltip title="Tilføj først et målepunkt">
+                    <Typography variant="h7" component="h4">
+                      Pejling (nedstik)
+                    </Typography>
+                  </Tooltip>
+                ) : !notPossible ? (
                   <Typography variant="h7" component="h4">
                     Pejling (nedstik)<a style={{color: 'red'}}>*</a>
                   </Typography>
@@ -204,7 +216,7 @@ export default function PejlingFormBorehole({
               fullWidth
               value={formData.disttowatertable_m}
               onChange={handleDistanceChange}
-              disabled={notPossible}
+              disabled={notPossible || !currentMP.elevation}
             />
           </Grid>
 
@@ -243,7 +255,7 @@ export default function PejlingFormBorehole({
                 handleClickSubmit();
                 handleSubmit();
               }}
-              disabled={disableSubmit}
+              disabled={disableSubmit || !currentMP.elevation}
               startIcon={<SaveIcon />}
             >
               Gem
