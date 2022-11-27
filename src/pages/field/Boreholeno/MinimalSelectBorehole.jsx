@@ -80,9 +80,22 @@ const MinimalSelect = ({
       }}
     >
       {boreholenoList
-        .filter((t) => t.ts_name !== null)
+        .filter((i) => i.intakeno !== null)
         .map((intake) => (
-          <MenuItem key={intake.boreholeno + intake.intakeno} value={intake.intakeno}>
+          <MenuItem
+            key={intake.boreholeno + intake.intakeno}
+            value={intake.intakeno}
+            sx={{
+              '&:hover': {
+                backgroundColor: 'primary.main',
+                color: 'white',
+              },
+              '&.Mui-selected': {
+                backgroundColor: 'primary.main',
+                color: 'white',
+              },
+            }}
+          >
             {intake.boreholeno + ' - ' + intake.intakeno}
           </MenuItem>
         ))}

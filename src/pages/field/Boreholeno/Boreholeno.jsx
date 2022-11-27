@@ -61,13 +61,12 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     mp_description: '',
   });
 
-  const [updated, setUpdated] = useState(new Date());
   const [control, setcontrol] = useState([]);
   const [dynamic, setDynamic] = useState([]);
   const [canEdit] = useState(true);
 
   const {data: measurements} = useQuery(
-    ['measurements', boreholeno],
+    ['measurements', boreholeno, intakeno],
     () => getOurWaterlevel(boreholeno, intakeno),
     {
       enabled: boreholeno !== -1 && boreholeno !== null,
@@ -76,7 +75,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   );
 
   const {data: watlevmp} = useQuery(
-    ['watlevmp', boreholeno],
+    ['watlevmp', boreholeno, intakeno],
     () => getBoreholeMP(boreholeno, intakeno),
     {
       enabled: boreholeno !== -1 && boreholeno !== null,
@@ -194,7 +193,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.enddate = data.enddate.replace(' ', 'T').substr(0, 19);
         setMpData(data); // Fill form data on Edit
         setFormToShow('ADDMAALEPUNKT'); // update to use state machine
-        // setUpdated(new Date());
       };
     } else {
       return (data) => {
@@ -202,7 +200,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING'); // update to use state machine
-        // setUpdated(new Date());
       };
     }
   };
@@ -213,7 +210,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         deleteMP(boreholeno, intakeno, gid).then((res) => {
           queryClient.invalidateQueries(['watlevmp', boreholeno]);
           resetMpData();
-          setUpdated(new Date());
           toast.success('Målepunkt slettet');
         });
       };
@@ -222,7 +218,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         deleteMeasurement(boreholeno, intakeno, gid).then((res) => {
           queryClient.invalidateQueries(['measurements', boreholeno]);
           resetPejlingData();
-          setUpdated(new Date());
           toast.success('Kontrolmåling slettet');
         });
       };
@@ -235,7 +230,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         <BearingGraph
           boreholeno={boreholeno}
           intakeno={intakeno}
-          updated={updated}
           measurements={control}
           dynamicMeasurement={formToShow !== 'ADDPEJLING' ? undefined : dynamic}
         />

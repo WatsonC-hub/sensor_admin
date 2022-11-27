@@ -73,8 +73,8 @@ const layout3 = {
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const xJupiterData = jupiterData[0] ? JSON.parse(jupiterData[0].data).x : [];
   const yJupiterData = jupiterData[0] ? JSON.parse(jupiterData[0].data).y : [];
-  const xOurData = ourData.map(d => d.timeofmeas);
-  const yOurData = ourData.map(d => d.waterlevel);
+  const xOurData = ourData.map((d) => d.timeofmeas);
+  const yOurData = ourData.map((d) => d.waterlevel);
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
@@ -158,22 +158,16 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   );
 }
 
-export default function BearingGraph({
-  boreholeno,
-  intakeno,
-  updated,
-  measurements,
-  dynamicMeasurement,
-}) {
+export default function BearingGraph({boreholeno, intakeno, measurements, dynamicMeasurement}) {
   const [jupiterData, setJupiterData] = useState([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     if (boreholeno !== -1 && boreholeno !== null && intakeno !== null && intakeno !== -1) {
-      getJupiterWaterlevel(boreholeno, intakeno).then(res => {
+      getJupiterWaterlevel(boreholeno, intakeno).then((res) => {
         if (res.data.success) {
-          setJupiterData(res.data.features.map(elem => elem.properties));
+          setJupiterData(res.data.features.map((elem) => elem.properties));
         }
       });
     }

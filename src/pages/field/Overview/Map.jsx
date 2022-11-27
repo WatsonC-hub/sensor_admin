@@ -15,7 +15,7 @@ const style = {
 
 var boreholeIcon = L.icon({
   iconUrl: 'boreholeIcon.svg',
-  iconSize: [40, 40], // size of the icon
+  iconSize: [30, 30], // size of the icon
 });
 
 function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
