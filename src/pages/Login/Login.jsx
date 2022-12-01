@@ -22,23 +22,23 @@ export default function Login({}) {
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
 
-  const [setAuthenticated, setUser, setOrganisation, setSessionId, loginExpired, setLoginExpired] =
-    authStore((state) => [
+  const [setAuthenticated, setSessionId, loginExpired, setLoginExpired, setProperties] = authStore(
+    (state) => [
       state.setAuthenticated,
-      state.setUser,
-      state.setOrganisation,
       state.setSessionId,
       state.loginExpired,
       state.setLoginExpired,
-    ]);
+      state.setProperties,
+    ]
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     loginUser(userName, password)
       .then((res) => {
         if (res.data.success) {
-          setUser(res.data.data.screen_name);
-          setOrganisation(res.data.data.properties.organisation.id);
+          // setUser(res.data.data.screen_name);
+          // setOrganisation(res.data.data.properties.organisation.id);
           setSessionId(res.data.data.session_id);
           setLoginError(false);
           setLoginExpired(false);
@@ -49,7 +49,7 @@ export default function Login({}) {
       });
 
     loginAPI(userName, password).then((res) => {
-      getUser();
+      setProperties(res.data);
       setAuthenticated(true);
       setLoginExpired(false);
     });

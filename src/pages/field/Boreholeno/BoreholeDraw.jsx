@@ -22,7 +22,6 @@ export default function BoreholeDraw() {
   const theme = useTheme();
   const params = useParams();
   const navigate = useNavigate();
-  let location = useLocation();
 
   const currentStation = (id, stations) => {
     if (stations.length === 0) return null;

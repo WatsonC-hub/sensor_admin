@@ -164,7 +164,7 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
-    if (boreholeno !== -1 && boreholeno !== null && intakeno !== null && intakeno !== -1) {
+    if (boreholeno !== -1 && boreholeno !== null && intakeno !== undefined && intakeno !== -1) {
       getJupiterWaterlevel(boreholeno, intakeno).then((res) => {
         if (res.data.success) {
           setJupiterData(res.data.features.map((elem) => elem.properties));

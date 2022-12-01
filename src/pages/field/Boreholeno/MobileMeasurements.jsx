@@ -25,6 +25,8 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
     setDialogOpen(true);
   };
 
+  const [organisation] = authStore((state) => [state.organisation]);
+
   const deleteRow = (id) => {
     handleDelete(id);
   };
@@ -79,7 +81,7 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
                     {moment(row.timeofmeas).format('YYYY-MM-DD HH:mm')}
                   </Typography>
                   <ListItemSecondaryAction>
-                    {row.organisationid == authStore.getState().organisation && (
+                    {row.organisationid == organisation() && (
                       <IconButton
                         edge="end"
                         onClick={() => {
@@ -94,7 +96,7 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
                         <EditIcon />
                       </IconButton>
                     )}
-                    {row.organisationid == authStore.getState().organisation && (
+                    {row.organisationid == organisation() && (
                       <IconButton
                         edge="end"
                         onClick={() => onDeleteBtnClick(row.gid)}

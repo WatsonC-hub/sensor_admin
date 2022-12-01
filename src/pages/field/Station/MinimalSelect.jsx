@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) => {
-  const [stationId, setStationId] = useState(selectedStation);
+  // const [stationId, setStationId] = useState(selectedStation);
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.statid ? false : true);
@@ -24,7 +24,6 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    setStationId(selectedStation);
     if (selectedStation !== '') {
       setIsOpen(false);
     }
@@ -51,7 +50,7 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
     <Select
       MenuProps={menuProps}
       IconComponent={iconComponent}
-      value={stationId}
+      value={selectedStation}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

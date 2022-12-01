@@ -13,12 +13,11 @@ const MinimalSelect = ({
   setCurrIntake,
   currentIntake,
 }) => {
-  const [intakeno, setIntakeNo] = useState(selectedIntake + '');
   const params = useParams();
 
-  const [isOpen, setIsOpen] = useState(params.statid ? false : true);
+  const [isOpen, setIsOpen] = useState(params.intakeno ? false : true);
   const navigate = useNavigate();
-
+  console.log(params.intakeno);
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
     navigate(`../borehole/${boreholeno}/${event.target.value}`, {
@@ -32,8 +31,7 @@ const MinimalSelect = ({
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    setIntakeNo(selectedIntake);
-    if (selectedIntake !== '') {
+    if (selectedIntake !== -1) {
       setIsOpen(false);
     }
   }, [selectedIntake]);
@@ -60,7 +58,7 @@ const MinimalSelect = ({
       disableUnderline
       MenuProps={menuProps}
       IconComponent={iconComponent}
-      value={intakeno}
+      value={selectedIntake}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

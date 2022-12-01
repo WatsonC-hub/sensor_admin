@@ -69,7 +69,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     ['measurements', boreholeno, intakeno],
     () => getOurWaterlevel(boreholeno, intakeno),
     {
-      enabled: boreholeno !== -1 && boreholeno !== null,
+      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
       placeholderData: [],
     }
   );
@@ -78,7 +78,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     ['watlevmp', boreholeno, intakeno],
     () => getBoreholeMP(boreholeno, intakeno),
     {
-      enabled: boreholeno !== -1 && boreholeno !== null,
+      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
       placeholderData: [],
     }
   );

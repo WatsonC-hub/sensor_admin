@@ -5,7 +5,6 @@ import LocationRouter from './Station/LocationRouter';
 import ScanComponent from '../../components/ScanComponent';
 import OpretStamdata from './Stamdata/OpretStamdata';
 import CaptureDialog from './Station/CaptureDialog';
-import {authStore} from '../../state/store';
 import {useAtom} from 'jotai';
 import {captureDialogAtom} from '../../state/atoms';
 import BoreholeDraw from './Boreholeno/BoreholeDraw';

@@ -23,6 +23,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
+  const [organisation] = authStore((state) => [state.organisation]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -111,7 +112,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                     </TableCell>
                     <TableCell align="center">{row.comment}</TableCell>
                     <TableCell align="right">
-                      {row.organisationid == authStore.getState().organisation && (
+                      {row.organisationid == organisation() && (
                         <IconButton
                           onClick={() => handleEdit(row)}
                           disabled={!canEdit}
@@ -122,7 +123,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                       )}
                     </TableCell>
                     <TableCell align="left">
-                      {row.organisationid == authStore.getState().organisation && (
+                      {row.organisationid == organisation() && (
                         <IconButton
                           onClick={() => {
                             onDeleteBtnClick(row.gid);

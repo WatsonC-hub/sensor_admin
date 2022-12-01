@@ -20,6 +20,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import BoreholeList from './BoreholeList';
 import BoreholeListDesktop from './BoreholeListDesktop';
+import {authStore} from 'src/state/store';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -29,16 +30,21 @@ export default function OverviewPage() {
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const [tabValue, setTabValue] = useAtom(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom(tabAtomInner);
+  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
   const {data: tabledata, isLoading} = useQuery(['station_list'], async () => {
     const {data} = await apiClient.get(`/sensor_field/station_list`);
     return data;
   });
 
-  const {data: boreholetabledata, boreholeIsLoading} = useQuery(['borehole_list'], async () => {
-    const {data} = await apiClient.get(`/sensor_field/borehole_list`);
-    return data;
-  });
+  const {data: boreholetabledata, boreholeIsLoading} = useQuery(
+    ['borehole_list'],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/borehole_list`);
+      return data;
+    },
+    {enabled: boreholeAccess()}
+  );
 
   const {data: mapData, isLoading: mapLoading} = useQuery(['map_data'], () => getSensorData(), {
     refetchInterval: 120000,
@@ -105,7 +111,7 @@ export default function OverviewPage() {
         <Tab icon={KortIcon} />
       </Tabs>
       <TabPanel value={tabValue} index={0}>
-        {boreholetabledata ? (
+        {boreholeAccess() ? (
           matches ? (
             <div>
               <AppBar position="static" color="default" style={{width: '70%', marginLeft: '15%'}}>

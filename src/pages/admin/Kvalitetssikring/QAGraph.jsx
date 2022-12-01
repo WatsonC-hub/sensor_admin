@@ -289,14 +289,7 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
 
   const {shapelist, annotateList} = transformQAData(qaData);
 
-  var gd = document.getElementById('graph');
-
-  gd?.addEventListener('mousemove', function (evt) {
-    var bb = evt.target.getBoundingClientRect();
-    var x = gd._fullLayout.xaxis.p2d(evt.clientX - bb.left);
-    var y = gd._fullLayout.yaxis.p2d(evt.clientY - bb.top);
-    console.log(x, y);
-  });
+;
 
   return (
     <Plot

@@ -16,7 +16,7 @@ const Cell = (props) => {
       onClick={(e) => {
         let boreholeno = props.row.boreholeno;
 
-        navigate(`borehole/${boreholeno}/${1}`);
+        navigate(`borehole/${boreholeno}`);
       }}
     />
   );
@@ -31,8 +31,8 @@ const TitleCell = (props) => {
 };
 
 const columns = [
-  {name: 'plantid', title: 'Anlægs ID'},
   {name: 'boreholeno', title: 'Boringsnavn'},
+  {name: 'plantid', title: 'Anlægs ID'},
   {name: 'comments', title: 'Kommentar'},
 ];
 
