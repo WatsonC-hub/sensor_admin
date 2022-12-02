@@ -3,6 +3,7 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Plot from 'react-plotly.js';
 import {getJupiterWaterlevel} from '../boreholeAPI';
+import {useQuery} from '@tanstack/react-query';
 
 const selectorOptions = {
   buttons: [
@@ -71,8 +72,9 @@ const layout3 = {
 };
 
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
-  const xJupiterData = jupiterData[0] ? JSON.parse(jupiterData[0].data).x : [];
-  const yJupiterData = jupiterData[0] ? JSON.parse(jupiterData[0].data).y : [];
+  const parsed = jupiterData ? JSON.parse(jupiterData.data) : null;
+  const xJupiterData = parsed?.x;
+  const yJupiterData = parsed?.y;
   const xOurData = ourData.map((d) => d.timeofmeas);
   const yOurData = ourData.map((d) => d.waterlevel);
 
@@ -163,15 +165,28 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  useEffect(() => {
-    if (boreholeno !== -1 && boreholeno !== null && intakeno !== undefined && intakeno !== -1) {
-      getJupiterWaterlevel(boreholeno, intakeno).then((res) => {
-        if (res.data.success) {
-          setJupiterData(res.data.features.map((elem) => elem.properties));
-        }
-      });
+  // useEffect(() => {
+  //   if (boreholeno !== -1 && boreholeno !== null && intakeno !== undefined && intakeno !== -1) {
+  //     getJupiterWaterlevel(boreholeno, intakeno).then((res) => {
+  //       if (res.data.success) {
+  //         setJupiterData(res.data.features.map((elem) => elem.properties));
+  //       }
+  //     });
+  //   }
+  // }, [boreholeno, intakeno]);
+
+  const {data} = useQuery(
+    ['jupiter_waterlevel', boreholeno, intakeno],
+    () => getJupiterWaterlevel(boreholeno, intakeno),
+    {
+      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+      select: (data) => {
+        return data[0].properties;
+      },
     }
-  }, [boreholeno, intakeno]);
+  );
+
+  console.log(data);
 
   return (
     <div
@@ -187,7 +202,7 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
       }}
     >
       <PlotGraph
-        jupiterData={jupiterData}
+        jupiterData={data}
         ourData={measurements}
         dynamicMeasurement={dynamicMeasurement}
       />

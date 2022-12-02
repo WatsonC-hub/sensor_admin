@@ -15,7 +15,7 @@ apiClient.interceptors.response.use(
   function (error) {
     if (error.response.status === 401) {
       console.log('JWT expired, refreshing...');
-      authStore.setState({authenticated: false, loginexpired: true});
+      authStore.setState({authenticated: false, loginExpired: true});
     }
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error

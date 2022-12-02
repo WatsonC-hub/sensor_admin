@@ -52,7 +52,9 @@ const dataURLtoFile = (dataurl, filename) => {
 const postImage = (payload, uri) => {
   const boreholeno = payload.boreholeno;
   console.log(payload);
-  const url = `${extEndpoint}/borehole/image/${boreholeno}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/image/${boreholeno}?session_id=${
+    authStore.getState().sessionId
+  }`;
   const file = dataURLtoFile(uri);
   const data = new FormData();
   data.append('files', file, 'tmp');
@@ -67,13 +69,17 @@ const postImage = (payload, uri) => {
 };
 
 const deleteImage = (boreholeno, gid) => {
-  const url = `${extEndpoint}/borehole/image/${boreholeno}/${gid}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/image/${boreholeno}/${gid}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.delete(url);
 };
 
 const updateImage = (payload, gid) => {
   const boreholeno = payload.boreholeno;
-  const url = `${extEndpoint}/borehole/image/${boreholeno}/${gid}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/image/${boreholeno}/${gid}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.put(url, payload);
 };
 
@@ -81,18 +87,18 @@ async function getImage(boreholeno) {
   const url = `${extEndpoint}/borehole/image/${boreholeno}`;
   const {data} = await axios.get(url);
   return data.data;
-};
+}
 
-const postElasticSearch = search => {
+const postElasticSearch = (search) => {
   return axios.post(`${searchEndpoint}`, search);
 };
 
-const getBoreholes = sessionId => {
+const getBoreholes = (sessionId) => {
   const url = `${extEndpoint}/borehole/boreholes?session_id=${sessionId}`;
   return axios.get(url);
 };
 
-const getBorehole = boreholeno => {
+const getBorehole = (boreholeno) => {
   const url = `${jupiterEndpoint}SELECT boreholeno, intakeno, json_agg(DISTINCT intakeno) as intakenos, latitude, longitude
                 FROM grundvandspejling.borehole_data WHERE boreholeno = '${boreholeno}'
                 GROUP BY boreholeno, intakeno, latitude, longitude;`;
@@ -101,10 +107,12 @@ const getBorehole = boreholeno => {
 };
 
 async function getOurWaterlevel(boreholeno, intakeno) {
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}?session_id=${
+    authStore.getState().sessionId
+  }`;
   const {data} = await axios.get(url);
   return data.result;
-};
+}
 
 const getLastMeasurement = (boreholeno, intakeno) => {
   const url = `${jupiterEndpoint}SELECT disttowatertable_m, timeofmeas FROM grundvandspejling.waterlevel 
@@ -112,29 +120,36 @@ const getLastMeasurement = (boreholeno, intakeno) => {
   return axios.get(url);
 };
 
-const getJupiterWaterlevel = (boreholeno, intakeno) => {
+async function getJupiterWaterlevel(boreholeno, intakeno) {
   const url = `${jupiterEndpoint}SELECT * FROM grundvandspejling.borehole_waterlevel WHERE boreholeno = '${boreholeno}'  AND intakeno = ${intakeno}`;
-  return axios.get(url);
-};
+  const {data} = await axios.get(url);
+  return data.features;
+}
 
 async function getBoreholeMP(boreholeno, intakeno) {
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}?session_id=${
+    authStore.getState().sessionId
+  }`;
   const {data} = await axios.get(url);
   return data.result;
-};
+}
 
 const insertMeasurement = (boreholeno, intakeno, formData) => {
   formData['timeofmeas'] = formData['timeofmeas'].split('+')[0];
   formData['boreholeno'] = boreholeno;
   formData['intakeno'] = intakeno;
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.post(url, formData);
 };
 
 const updateMeasurement = (boreholeno, intakeno, formData) => {
   const gid = formData['gid'];
   formData['timeofmeas'] = formData['timeofmeas'].split('+')[0];
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}/${gid}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}/${gid}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.put(url, formData);
 };
 
@@ -143,7 +158,9 @@ const insertMp = (boreholeno, intakeno, formData) => {
   formData['enddate'] = formData['enddate'].split('+')[0];
   formData['boreholeno'] = boreholeno;
   formData['intakeno'] = intakeno;
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.post(url, formData);
 };
 
@@ -151,27 +168,34 @@ const updateMp = (boreholeno, intakeno, formData) => {
   const gid = formData['gid'];
   formData['startdate'] = formData['startdate'].split('+')[0];
   formData['enddate'] = formData['enddate'].split('+')[0];
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}/${gid}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}/${gid}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.put(url, formData);
 };
 
 const deleteMP = (boreholeno, intakeno, gid) => {
   if (!gid) return;
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}/${gid}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}/${gid}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.delete(url);
 };
 
 const deleteMeasurement = (boreholeno, intakeno, gid) => {
   if (!gid) return;
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}/${gid}?session_id=${authStore.getState().sessionId}`;
+  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}/${gid}?session_id=${
+    authStore.getState().sessionId
+  }`;
   return axios.delete(url);
 };
 
-const getCvr = cvr => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
+const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 
-const createUser = payload => axios.post(`${userEndpoint}/calypso/user`, payload);
+const createUser = (payload) => axios.post(`${userEndpoint}/calypso/user`, payload);
 
-const resetPassword = passReset => axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
+const resetPassword = (passReset) =>
+  axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
 
 const loginUser = (user, password) => {
   let sessionUrl = `${host}/api/v2/session/start`;
