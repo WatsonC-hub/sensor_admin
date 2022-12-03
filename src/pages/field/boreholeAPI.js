@@ -93,6 +93,14 @@ const postElasticSearch = (search) => {
   return axios.post(`${searchEndpoint}`, search);
 };
 
+const getBoreholeSearch = (boreholeno) => {
+  const url = `${jupiterEndpoint}SELECT boreholeno, json_agg(DISTINCT intakeno) as intakenos, latitude, longitude
+                FROM grundvandspejling.borehole_data WHERE boreholeno = '${boreholeno}'
+                GROUP BY boreholeno, latitude, longitude;`;
+  const data = axios.get(url);
+  return data;
+};
+
 const getBoreholes = (sessionId) => {
   const url = `${extEndpoint}/borehole/boreholes?session_id=${sessionId}`;
   return axios.get(url);
@@ -230,4 +238,5 @@ export {
   dataURLtoFile,
   postImage,
   getLastMeasurement,
+  getBoreholeSearch,
 };

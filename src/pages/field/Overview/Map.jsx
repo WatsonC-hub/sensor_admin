@@ -1,9 +1,13 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet.locatecontrol';
 import {atom, useAtom} from 'jotai';
-import {getLastMeasurement} from '../boreholeAPI';
+import {getBoreholeSearch, postElasticSearch, getLastMeasurement} from '../boreholeAPI';
+import Autocomplete from '@mui/material/Autocomplete';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {useTheme} from '@mui/material/styles';
+import {TextField} from '@mui/material';
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);
@@ -24,6 +28,9 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
   const layerRef = React.useRef(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
+  const [locItems, setLocItems] = useState([]);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const onClickHandler = (element) => () => {
     let _popup = document.getElementsByClassName('leaflet-popup-content-wrapper');
@@ -184,7 +191,113 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
     };
   }, [sensorData, boreholeData]);
 
-  return <div id="map" style={style}></div>;
+  const elasticSearch = (e) => {
+    let search = {
+      query: {
+        bool: {
+          must: {
+            query_string: {},
+          },
+        },
+      },
+    };
+    search.query.bool.must.query_string.query = e.target.value;
+    postElasticSearch(search).then((res) => {
+      setLocItems(
+        res.data.hits.hits.map((elem) => {
+          return {boreholeno: elem._source.properties.boreholeno};
+        })
+      );
+    });
+  };
+
+  const handleChange = (e, value, map) => {
+    if (value !== null) {
+      getBoreholeSearch(value.boreholeno).then((res) => {
+        let borehole = res.data.features[0].properties;
+        const point = [borehole.latitude, borehole.longitude];
+        let lastMeasurements = [];
+        let timeofmeas = [];
+        borehole.intakenos.map((intake) => {
+          let content = '';
+          getLastMeasurement(value.boreholeno, intake).then((responses) => {
+            if (responses.data.features[0] !== undefined) {
+              lastMeasurements[intake - 1] =
+                responses.data.features[0].properties.disttowatertable_m + ' m - ';
+              timeofmeas[intake - 1] = responses.data.features[0].properties.timeofmeas.split(
+                ' ',
+                1
+              );
+            } else {
+              lastMeasurements[intake - 1] = ' Ingen måling';
+              timeofmeas[intake - 1] = '';
+            }
+            borehole.intakenos.map((intake) => {
+              content +=
+                'Indtag ' +
+                intake +
+                ': ' +
+                lastMeasurements[intake - 1] +
+                timeofmeas[intake - 1] +
+                '<br>';
+            });
+            const marker = L.marker(point, {
+              icon: boreholeIcon,
+              title: borehole.boreholeno,
+            }).bindPopup(
+              '<center><b>' +
+                borehole.boreholeno +
+                '</b><br>Seneste kontrolmåling(er):<br>' +
+                content +
+                '</center>'
+            );
+            marker.on('add', function (e) {
+              mapRef.current.flyTo(point, 12);
+              marker.openPopup();
+              let _popup = document.getElementsByClassName('leaflet-popup-content-wrapper');
+              if (_popup && _popup.length > 0) {
+                L.DomEvent.on(_popup[0], 'click', () => {
+                  context.setLocationId(borehole.boreholeno + '_');
+                  history.push('borehole/' + borehole.boreholeno + '/1');
+                  context.setTabValue(1);
+                });
+              }
+            });
+            marker.addTo(layerRef.current);
+          });
+        });
+      });
+    }
+  };
+
+  return (
+    <div>
+      <Autocomplete
+        freeSolo={true}
+        forcePopupIcon={false}
+        options={locItems}
+        getOptionLabel={(option) => option.boreholeno}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            size="small"
+            variant="outlined"
+            placeholder="Søg efter boring"
+            style={{marginTop: '-6px'}}
+          />
+        )}
+        style={{
+          width: matches ? '90%' : 300,
+          marginLeft: '5%',
+          marginBottom: '12px',
+          marginTop: '12px',
+        }}
+        onChange={handleChange}
+        onInputChange={elasticSearch}
+      />
+      <div id="map" style={style}></div>
+    </div>
+  );
 }
 
 export default Map;
