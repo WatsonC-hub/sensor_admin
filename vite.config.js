@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import svgrPlugin from 'vite-plugin-svgr';
 import {visualizer} from 'rollup-plugin-visualizer';
 import {VitePWA} from 'vite-plugin-pwa';
+import sentryVitePlugin from '@sentry/vite-plugin';
 
 const pwaOptions = {
   registerType: 'autoUpdate',
@@ -32,9 +33,25 @@ const pwaOptions = {
   },
 };
 
+const sentryOptions = {
+  org: 'watsonc',
+  project: 'calypso-field',
+  include: ['./dist'],
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), svgrPlugin(), visualizer(), VitePWA(pwaOptions)],
+  plugins: [
+    react(),
+    svgrPlugin(),
+    visualizer(),
+    VitePWA(pwaOptions),
+    sentryVitePlugin(sentryOptions),
+  ],
+  build: {
+    sourcemap: true,
+  },
   server: {
     proxy: {
       '/api': {
