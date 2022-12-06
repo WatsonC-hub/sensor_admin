@@ -18,7 +18,7 @@ const style = {
 };
 
 var boreholeIcon = L.icon({
-  iconUrl: 'boreholeIcon.svg',
+  iconUrl: '/boreholeIcon.svg',
   iconSize: [32, 32], // size of the icon
 });
 

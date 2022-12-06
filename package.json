@@ -73,6 +73,7 @@
     "eslint": "^8.24.0",
     "rollup-plugin-visualizer": "^5.8.3",
     "vite": "^3.1.8",
+    "vite-plugin-pwa": "^0.13.3",
     "vite-plugin-svgr": "^2.2.2"
   }
 }
