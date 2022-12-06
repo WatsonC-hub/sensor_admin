@@ -20,7 +20,7 @@ const Chooser = () => {
       <Grid item xs={12} sm={4}>
         <ChoiseCard
           navigateTo="/field"
-          title="Sensor @ Field"
+          title="Calypso @ Field"
           text="Indgang til at se tidsserier, lave kontrol målinger, skifte udstyr mm."
           icon={BuildCircleIcon}
         />
@@ -28,7 +28,7 @@ const Chooser = () => {
       <Grid item xs={12} sm={4}>
         <ChoiseCard
           navigateTo="/admin"
-          title="Sensor @ Admin"
+          title="Calypso @ Admin"
           text="Indgang til at omkonfigurere enheder, se notifikationer,
             kvalitetssikre tidsserier mm."
           icon={SettingsIcon}

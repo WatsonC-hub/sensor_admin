@@ -170,7 +170,7 @@ const NavBar = ({children}) => {
     return (
       <AppBarLayout>
         {matches ? <SmallLogo /> : <LogoSvg />}
-        <Typography variant="h4">Sensor</Typography>
+        {/* <Typography variant="h4">Field</Typography> */}
         {location.pathname !== '/register' ? (
           <Button
             color="secondary"
