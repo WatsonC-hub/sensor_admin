@@ -253,15 +253,8 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
             );
             marker.on('add', function (e) {
               mapRef.current.flyTo(point, 12);
+              onClickHandler(borehole);
               marker.openPopup();
-              let _popup = document.getElementsByClassName('leaflet-popup-content-wrapper');
-              if (_popup && _popup.length > 0) {
-                L.DomEvent.on(_popup[0], 'click', () => {
-                  context.setLocationId(borehole.boreholeno + '_');
-                  history.push('borehole/' + borehole.boreholeno + '/1');
-                  context.setTabValue(1);
-                });
-              }
             });
             marker.addTo(layerRef.current);
           });
