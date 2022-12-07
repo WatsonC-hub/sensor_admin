@@ -94,7 +94,7 @@ const postElasticSearch = (search) => {
 };
 
 const getBoreholeSearch = (boreholeno) => {
-  const url = `${jupiterEndpoint}SELECT boreholeno, json_agg(DISTINCT intakeno) as intakenos, latitude, longitude
+  const url = `${jupiterEndpoint}SELECT boreholeno, json_agg(intakeno) as intakenos, latitude, longitude, json_agg(last_value) as last_values
                 FROM grundvandspejling.borehole_data WHERE boreholeno = '${boreholeno}'
                 GROUP BY boreholeno, latitude, longitude;`;
   const data = axios.get(url);

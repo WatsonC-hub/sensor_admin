@@ -32,14 +32,9 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const onClickHandler = (element) => () => {
-    let _popup = document.getElementsByClassName('leaflet-popup-content-wrapper');
-    if (_popup && _popup.length > 0) {
-      L.DomEvent.on(_popup[0], 'click', () => {
-        if (element.locid) navigate('location/' + element.locid);
-        else navigate('borehole/' + element.boreholeno);
-      });
-    }
+  const onPopupClickHandler = (element) => () => {
+    if (element.locid) navigate('location/' + element.locid);
+    else navigate('borehole/' + element.boreholeno);
   };
 
   const renderMap = () => {
@@ -124,14 +119,6 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
     const data = sensorData;
     if (!loading || !boreholeIsLoading) {
       dataBorehole?.map((element) => {
-        // if (responses.data.features[0] !== undefined) {
-        //   lastMeasurements[intake - 1] =
-        //     responses.data.features[0].properties.disttowatertable_m + ' m - ';
-        //   timeofmeas[intake - 1] = responses.data.features[0].properties.timeofmeas.split(' ', 1);
-        // } else {
-        //   lastMeasurements[intake - 1] = ' Ingen måling';
-        //   timeofmeas[intake - 1] = '';
-        // }
         let content = '';
 
         element.intakenos.forEach((intake, index) => {
@@ -147,14 +134,20 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         const marker = L.marker(point, {
           icon: boreholeIcon,
           title: element.boreholeno,
-        }).bindPopup(
+        });
+
+        let popupContent = L.DomUtil.create('div', 'content');
+        popupContent.innerHTML =
           '<center><b>' +
-            element.boreholeno +
-            '</b><br>Seneste kontrolmåling(er):<br>' +
-            content +
-            '</center>'
-        );
-        marker.on('click', onClickHandler(element));
+          element.boreholeno +
+          '</b><br>Seneste kontrolmåling(er):<br>' +
+          content +
+          '</center>';
+
+        let popup = L.popup().setContent(popupContent);
+        marker.bindPopup(popup);
+        L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
+
         marker.addTo(layerRef.current);
       });
 
@@ -168,12 +161,17 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           opacity: 0.8,
           color: '#000000',
           fillColor: element.status ? '#3388ff' : '#C0C0C0',
-        }).bindPopup(
+        });
+        let popupContent = L.DomUtil.create('div', 'content');
+        popupContent.innerHTML =
           element.mouseover.split('<b style="color:#10ae8c;">-----------</b>')[0] +
-            '</p>' +
-            '<a>Se graf</a>'
-        );
-        marker.on('click', onClickHandler(element));
+          '</p>' +
+          '<a>Se graf</a>';
+
+        let popup = L.popup().setContent(popupContent);
+        marker.bindPopup(popup);
+        L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
+
         marker.addTo(layerRef.current);
       });
       if (zoom !== null) {
@@ -216,49 +214,41 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
       getBoreholeSearch(value.boreholeno).then((res) => {
         let borehole = res.data.features[0].properties;
         const point = [borehole.latitude, borehole.longitude];
-        let lastMeasurements = [];
-        let timeofmeas = [];
-        borehole.intakenos.map((intake) => {
-          let content = '';
-          getLastMeasurement(value.boreholeno, intake).then((responses) => {
-            if (responses.data.features[0] !== undefined) {
-              lastMeasurements[intake - 1] =
-                responses.data.features[0].properties.disttowatertable_m + ' m - ';
-              timeofmeas[intake - 1] = responses.data.features[0].properties.timeofmeas.split(
-                ' ',
-                1
-              );
-            } else {
-              lastMeasurements[intake - 1] = ' Ingen måling';
-              timeofmeas[intake - 1] = '';
-            }
-            borehole.intakenos.map((intake) => {
-              content +=
-                'Indtag ' +
-                intake +
-                ': ' +
-                lastMeasurements[intake - 1] +
-                timeofmeas[intake - 1] +
-                '<br>';
-            });
-            const marker = L.marker(point, {
-              icon: boreholeIcon,
-              title: borehole.boreholeno,
-            }).bindPopup(
-              '<center><b>' +
-                borehole.boreholeno +
-                '</b><br>Seneste kontrolmåling(er):<br>' +
-                content +
-                '</center>'
-            );
-            marker.on('add', function (e) {
-              mapRef.current.flyTo(point, 12);
-              onClickHandler(borehole);
-              marker.openPopup();
-            });
-            marker.addTo(layerRef.current);
-          });
+
+        let content = '';
+
+        borehole.intakenos.forEach((intake, index) => {
+          content += `Indtag ${intake} : ${
+            borehole.last_values[index]
+              ? borehole.last_values[index] + ' m (DVR 90)<br>'
+              : 'Ingen måling'
+          }`;
         });
+
+        const marker = L.marker(point, {
+          icon: boreholeIcon,
+          title: borehole.boreholeno,
+        });
+
+        let popupContent = L.DomUtil.create('div', 'content');
+        popupContent.innerHTML =
+          '<center><b>' +
+          borehole.boreholeno +
+          '</b><br>Seneste kontrolmåling(er):<br>' +
+          content +
+          '</center>';
+
+        let popup = L.popup().setContent(popupContent);
+        marker.bindPopup(popup);
+        L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(borehole));
+
+        marker.on('add', function () {
+          mapRef.current.flyTo(point, 12);
+          marker.openPopup();
+          // onClickHandler(borehole);
+        });
+        // marker.on('click', onClickHandler(borehole));
+        marker.addTo(layerRef.current);
       });
     }
   };
