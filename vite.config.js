@@ -9,7 +9,7 @@ const pwaOptions = {
   registerType: 'autoUpdate',
   manifest: {
     name: 'Calypso @ Field',
-    short_name: 'Field',
+    short_name: 'Calypso @ Field',
     description: 'App til at se tidsserier, lave kontrol målinger, skifte udstyr mm.',
     theme_color: '#ffffff',
     icons: [

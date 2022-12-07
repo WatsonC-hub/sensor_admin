@@ -13,11 +13,11 @@ const Chooser = () => {
       spacing={8}
       sx={{
         justifyContent: 'center',
-        alignItems: 'center',
         marginTop: 10,
+        display: 'flex',
       }}
     >
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={4} sx={{display: 'flex'}}>
         <ChoiseCard
           navigateTo="/field"
           title="Calypso @ Field"
@@ -25,7 +25,7 @@ const Chooser = () => {
           icon={BuildCircleIcon}
         />
       </Grid>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={4} sx={{display: 'flex'}}>
         <ChoiseCard
           navigateTo="/admin"
           title="Calypso @ Admin"
