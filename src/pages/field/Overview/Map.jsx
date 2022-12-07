@@ -142,6 +142,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           element.boreholeno +
           '</b><br>Seneste kontrolmåling(er):<br>' +
           content +
+          '<a>Se graf</a>' +
           '</center>';
 
         let popup = L.popup().setContent(popupContent);
@@ -161,6 +162,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           opacity: 0.8,
           color: '#000000',
           fillColor: element.status ? '#3388ff' : '#C0C0C0',
+          title: element.locname,
         });
         let popupContent = L.DomUtil.create('div', 'content');
         popupContent.innerHTML =
@@ -190,66 +192,83 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
   }, [sensorData, boreholeData]);
 
   const elasticSearch = (e) => {
-    let search = {
-      query: {
-        bool: {
-          must: {
-            query_string: {},
+    if (typeof e.target.value == 'string') {
+      let search = {
+        query: {
+          bool: {
+            must: {
+              query_string: {},
+            },
           },
         },
-      },
-    };
-    search.query.bool.must.query_string.query = e.target.value;
-    postElasticSearch(search).then((res) => {
-      setLocItems(
-        res.data.hits.hits.map((elem) => {
-          return {boreholeno: elem._source.properties.boreholeno};
+      };
+      const filteredSensor = sensorData
+        .filter((elem) => elem.locname.toLowerCase().includes(e.target.value?.toLowerCase()))
+        .map((elem) => {
+          return {name: elem.locname, sensor: true, group: 'IoT'};
         })
-      );
-    });
+        .sort((a, b) => a.name.localeCompare(b.name));
+      search.query.bool.must.query_string.query = e.target.value;
+      postElasticSearch(search).then((res) => {
+        const filteredBorehole = res.data.hits.hits.map((elem) => {
+          return {name: elem._source.properties.boreholeno, group: 'Jupiter'};
+        });
+        setLocItems([...filteredSensor, ...filteredBorehole]);
+      });
+    }
   };
 
   const handleChange = (e, value, map) => {
     if (value !== null) {
-      getBoreholeSearch(value.boreholeno).then((res) => {
-        let borehole = res.data.features[0].properties;
-        const point = [borehole.latitude, borehole.longitude];
-
-        let content = '';
-
-        borehole.intakenos.forEach((intake, index) => {
-          content += `Indtag ${intake} : ${
-            borehole.last_values[index]
-              ? borehole.last_values[index] + ' m (DVR 90)<br>'
-              : 'Ingen måling'
-          }`;
+      if (value.sensor) {
+        Object.values(layerRef.current._layers).forEach((layer) => {
+          if (layer.options.title == value.name) {
+            layer.openPopup();
+            mapRef.current.flyTo(layer._latlng, 12);
+          }
         });
+      } else {
+        getBoreholeSearch(value.name).then((res) => {
+          let borehole = res.data.features[0].properties;
+          const point = [borehole.latitude, borehole.longitude];
 
-        const marker = L.marker(point, {
-          icon: boreholeIcon,
-          title: borehole.boreholeno,
+          let content = '';
+
+          borehole.intakenos.forEach((intake, index) => {
+            content += `Indtag ${intake} : ${
+              borehole.last_values[index]
+                ? borehole.last_values[index] + ' m (DVR 90)<br>'
+                : 'Ingen måling'
+            }`;
+          });
+
+          const marker = L.marker(point, {
+            icon: boreholeIcon,
+            title: borehole.boreholeno,
+          });
+
+          let popupContent = L.DomUtil.create('div', 'content');
+          popupContent.innerHTML =
+            '<center><b>' +
+            borehole.boreholeno +
+            '</b><br>Seneste kontrolmåling(er):<br>' +
+            content +
+            '</center>' +
+            '<a>Se graf</a>';
+
+          let popup = L.popup().setContent(popupContent);
+          marker.bindPopup(popup);
+          L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(borehole));
+
+          marker.on('add', function () {
+            mapRef.current.flyTo(point, 12);
+            marker.openPopup();
+            // onClickHandler(borehole);
+          });
+          // marker.on('click', onClickHandler(borehole));
+          marker.addTo(layerRef.current);
         });
-
-        let popupContent = L.DomUtil.create('div', 'content');
-        popupContent.innerHTML =
-          '<center><b>' +
-          borehole.boreholeno +
-          '</b><br>Seneste kontrolmåling(er):<br>' +
-          content +
-          '</center>';
-
-        let popup = L.popup().setContent(popupContent);
-        marker.bindPopup(popup);
-        L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(borehole));
-
-        marker.on('add', function () {
-          mapRef.current.flyTo(point, 12);
-          marker.openPopup();
-          // onClickHandler(borehole);
-        });
-        // marker.on('click', onClickHandler(borehole));
-        marker.addTo(layerRef.current);
-      });
+      }
     }
   };
 
@@ -259,7 +278,8 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
-        getOptionLabel={(option) => option.boreholeno}
+        getOptionLabel={(option) => option.name}
+        groupBy={(option) => option.group}
         renderInput={(params) => (
           <TextField
             {...params}
