@@ -179,7 +179,9 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
       if (zoom !== null) {
         mapRef.current.setView(pan, zoom);
       } else {
-        mapRef.current.fitBounds(layerRef.current.getBounds());
+        if (layerRef.current.getBounds().isValid()) {
+          mapRef.current.fitBounds(layerRef.current.getBounds());
+        }
         setZoom(mapRef.current.getZoom());
         setPan(mapRef.current.getCenter());
       }

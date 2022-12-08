@@ -1,17 +1,22 @@
 import create from 'zustand';
 import {devtools, persist} from 'zustand/middleware';
 
+const authInitialState = {
+  authenticated: false,
+  user: null,
+  org_id: null,
+  sessionId: null,
+  loginExpired: false,
+  boreholeAccess: false,
+  iotAccess: false,
+  properties: {},
+};
+
 export const authStore = create(
   persist(
     devtools((set, get) => ({
-      authenticated: false,
-      user: null,
-      org_id: null,
-      sessionId: null,
-      loginExpired: false,
-      boreholeAccess: false,
-      iotAccess: false,
-      properties: {},
+      ...authInitialState,
+      resetState: () => set(authInitialState, false, 'resetState'),
       setAuthenticated: (authenticated) =>
         set(
           {

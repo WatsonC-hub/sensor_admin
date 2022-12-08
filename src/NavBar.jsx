@@ -29,17 +29,11 @@ import {captureDialogAtom} from './state/atoms';
 import useWhatPage from './hooks/useWhatPage';
 
 const LogOut = ({element: Element}) => {
-  const [setAuthenticated, setProperties, setSessionId] = authStore((state) => [
-    state.setAuthenticated,
-    state.setProperties,
-    state.setSessionId,
-  ]);
+  const [resetState] = authStore((state) => [state.resetState]);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    setAuthenticated(false);
-    setSessionId(null);
-    setProperties({});
+    resetState();
     navigate('/');
   };
 

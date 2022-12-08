@@ -24,6 +24,7 @@ import {authStore} from 'src/state/store';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
+let checked = false;
 
 export default function OverviewPage() {
   const theme = useTheme();
@@ -31,6 +32,13 @@ export default function OverviewPage() {
   const [tabValue, setTabValue] = useAtom(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
+
+  useEffect(() => {
+    if (!iotAccess && !checked) {
+      setTabValue(1);
+    }
+    checked = true;
+  }, [iotAccess]);
 
   const {data: tabledata, isLoading} = useQuery(
     ['station_list'],
