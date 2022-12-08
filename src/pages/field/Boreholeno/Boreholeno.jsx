@@ -21,6 +21,7 @@ import BoreholeImages from './BoreholeImages';
 import {toast} from 'react-toastify';
 import useFormData from '../../../hooks/useFormData';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {Button, Box, Typography} from '@mui/material';
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split('T')[0];
@@ -33,6 +34,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   let navigate = useNavigate();
   let params = useParams();
   const queryClient = useQueryClient();
+  const [addMPOpen, setAddMPOpen] = useState(false);
 
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
@@ -124,7 +126,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const handleMpCancel = () => {
     resetMpData();
-    setFormToShow(null);
+    setAddMPOpen(false);
   };
 
   const pejlingMutate = useMutation((data) => {
@@ -252,23 +254,35 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         />
       )}
       {formToShow === 'ADDMAALEPUNKT' && (
-        <div>
-          <MaalepunktForm
-            boreholeno={boreholeno}
-            formData={mpData}
-            changeFormData={changeMpData}
-            handleSubmit={handleMpSubmit}
-            resetFormData={resetMpData}
-            handleCancel={handleMpCancel}
-            canEdit={canEdit}
-          ></MaalepunktForm>
+        <>
+          {addMPOpen && (
+            <MaalepunktForm
+              formData={mpData}
+              changeFormData={changeMpData}
+              handleSubmit={handleMpSubmit}
+              resetFormData={resetMpData}
+              handleCancel={handleMpCancel}
+              canEdit={canEdit}
+            />
+          )}
+          <Box pl={4}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                setAddMPOpen(true);
+              }}
+            >
+              Indberet målepunkt
+            </Button>
+          </Box>
           <MaalepunktTable
             watlevmp={watlevmp}
             handleEdit={handleEdit('watlevmp')}
             handleDelete={handleDelete('watlevmp')}
             canEdit={canEdit}
-          ></MaalepunktTable>
-        </div>
+          />
+        </>
       )}
       {(formToShow === null || formToShow === 'ADDPEJLING') && (
         <PejlingMeasurements

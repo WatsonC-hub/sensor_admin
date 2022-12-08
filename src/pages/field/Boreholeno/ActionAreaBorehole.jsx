@@ -44,7 +44,7 @@ function BottomNav({setFormToShow, canEdit}) {
       <BottomNavigationAction
         sx={borderGrey}
         disabled={!canEdit}
-        label="Indberet målepunkt"
+        label="Målepunkter"
         onClick={() => {
           setFormToShow('ADDMAALEPUNKT');
         }}
