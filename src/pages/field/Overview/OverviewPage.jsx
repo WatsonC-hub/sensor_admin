@@ -30,12 +30,16 @@ export default function OverviewPage() {
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const [tabValue, setTabValue] = useAtom(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom(tabAtomInner);
-  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
+  const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
-  const {data: tabledata, isLoading} = useQuery(['station_list'], async () => {
-    const {data} = await apiClient.get(`/sensor_field/station_list`);
-    return data;
-  });
+  const {data: tabledata, isLoading} = useQuery(
+    ['station_list'],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station_list`);
+      return data;
+    },
+    {enabled: iotAccess}
+  );
 
   const {data: boreholetabledata, boreholeIsLoading} = useQuery(
     ['borehole_list'],
@@ -43,11 +47,12 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
       return data;
     },
-    {enabled: boreholeAccess()}
+    {enabled: boreholeAccess}
   );
 
   const {data: mapData, isLoading: mapLoading} = useQuery(['map_data'], () => getSensorData(), {
     refetchInterval: 120000,
+    enabled: iotAccess,
   });
 
   const handleChange = (_, newValue) => {
@@ -118,57 +123,46 @@ export default function OverviewPage() {
         </Tabs>
       </Box>
       <TabPanel value={tabValue} index={0}>
-        {boreholeAccess() ? (
-          matches ? (
-            <div>
-              <AppBar position="static" color="default" style={{width: '70%', marginLeft: '15%'}}>
-                <Tabs
-                  value={tabValueInner}
-                  onChange={handleChangeInner}
-                  indicatorColor="primary"
-                  textColor="primary"
-                  variant="fullWidth"
-                  aria-label="full width tabs example"
-                >
-                  <Tab label="Mine stationer" {...a11yProps(0)} />
-                  <Tab label="Mine DGU boringer" {...a11yProps(1)} />
-                </Tabs>
-              </AppBar>
-              <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
+        <>
+          <AppBar
+            position="static"
+            color="default"
+            style={{width: matches ? '70%' : '50%', marginLeft: matches ? '15%' : '25%'}}
+          >
+            <Tabs
+              value={tabValueInner}
+              onChange={handleChangeInner}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="fullWidth"
+              aria-label="full width tabs example"
+            >
+              {iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
+              {boreholeAccess && (
+                <Tab label="Mine DGU boringer" {...a11yProps(iotAccess ? 1 : 0)} />
+              )}
+            </Tabs>
+          </AppBar>
+          {iotAccess && (
+            <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
+              {matches ? (
                 <StationList data={tabledata} loading={isLoading} />
-              </TabPanel>
-              <TabPanel value={tabValueInner} index={1} dir={theme.direction}>
-                <BoreholeList data={boreholetabledata} loading={boreholeIsLoading} />
-              </TabPanel>
-            </div>
-          ) : (
-            <div>
-              <AppBar position="static" color="default" style={{width: '50%', marginLeft: '25%'}}>
-                <Tabs
-                  value={tabValueInner}
-                  onChange={handleChangeInner}
-                  indicatorColor="primary"
-                  textColor="primary"
-                  variant="fullWidth"
-                  aria-label="full width tabs example"
-                >
-                  <Tab label="Mine stationer" {...a11yProps(0)} />
-                  <Tab label="Mine DGU boringer" {...a11yProps(1)} />
-                </Tabs>
-              </AppBar>
-              <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
+              ) : (
                 <StationListDesktop data={tabledata} loading={isLoading} />
-              </TabPanel>
-              <TabPanel value={tabValueInner} index={1} dir={theme.direction}>
+              )}
+            </TabPanel>
+          )}
+          {boreholeAccess && (
+            <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0} dir={theme.direction}>
+              {matches ? (
+                <BoreholeList data={boreholetabledata} loading={boreholeIsLoading} />
+              ) : (
                 <BoreholeListDesktop data={boreholetabledata} loading={boreholeIsLoading} />
-              </TabPanel>
-            </div>
-          )
-        ) : matches ? (
-          <StationList data={tabledata} />
-        ) : (
-          <StationListDesktop data={tabledata} loading={isLoading} />
-        )}
+              )}
+            </TabPanel>
+          )}
+        </>
+        <TabPanel />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <Map

@@ -5,11 +5,12 @@ export const authStore = create(
   persist(
     devtools((set, get) => ({
       authenticated: false,
-      user: () => get()?.properties.properties.screen_name,
-      organisation: () => get()?.properties.properties.organisation.id,
+      user: null,
+      org_id: null,
       sessionId: null,
       loginExpired: false,
-      boreholeAccess: () => get()?.properties.properties.boreholeAccess,
+      boreholeAccess: false,
+      iotAccess: false,
       properties: {},
       setAuthenticated: (authenticated) =>
         set(
@@ -23,6 +24,10 @@ export const authStore = create(
         set(
           {
             properties: properties,
+            boreholeAccess: properties.properties.boreholeAccess,
+            user: properties.properties.screen_name,
+            org_id: properties.properties.organisation.id,
+            iotAccess: properties.properties.iotAccess,
           },
           false,
           'setProperties'
