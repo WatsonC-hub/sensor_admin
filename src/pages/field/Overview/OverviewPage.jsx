@@ -58,10 +58,14 @@ export default function OverviewPage() {
     {enabled: boreholeAccess}
   );
 
-  const {data: mapData, isLoading: mapLoading} = useQuery(['map_data'], () => getSensorData(), {
-    refetchInterval: 120000,
-    enabled: iotAccess,
-  });
+  const {data: mapData, isLoading: mapLoading} = useQuery(
+    ['map_data'],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/map_data`);
+      return data;
+    },
+    {enabled: iotAccess, refetchInterval: 10000, refetchOnWindowFocus: false}
+  );
 
   const handleChange = (_, newValue) => {
     setTabValue(newValue);
@@ -170,7 +174,6 @@ export default function OverviewPage() {
             </TabPanel>
           )}
         </>
-        <TabPanel />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <Map

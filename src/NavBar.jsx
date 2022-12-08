@@ -27,13 +27,16 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import {useAtom} from 'jotai';
 import {captureDialogAtom} from './state/atoms';
 import useWhatPage from './hooks/useWhatPage';
+import {useQueryClient} from '@tanstack/react-query';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     resetState();
+    queryClient.invalidateQueries();
     navigate('/');
   };
 

@@ -8,6 +8,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useTheme} from '@mui/material/styles';
 import {TextField} from '@mui/material';
+import {authStore} from '../../../state/store';
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);
@@ -31,6 +32,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
   const [locItems, setLocItems] = useState([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
   const onPopupClickHandler = (element) => () => {
     if (element.locid) navigate('location/' + element.locid);
@@ -210,13 +212,19 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           return {name: elem.locname, sensor: true, group: 'IoT'};
         })
         .sort((a, b) => a.name.localeCompare(b.name));
-      search.query.bool.must.query_string.query = e.target.value;
-      postElasticSearch(search).then((res) => {
-        const filteredBorehole = res.data.hits.hits.map((elem) => {
-          return {name: elem._source.properties.boreholeno, group: 'Jupiter'};
+
+      let filteredBorehole = [];
+      if (boreholeAccess) {
+        search.query.bool.must.query_string.query = e.target.value;
+        postElasticSearch(search).then((res) => {
+          filteredBorehole = res.data.hits.hits.map((elem) => {
+            return {name: elem._source.properties.boreholeno, group: 'Jupiter'};
+          });
+          setLocItems([...filteredSensor, ...filteredBorehole]);
         });
+      } else {
         setLocItems([...filteredSensor, ...filteredBorehole]);
-      });
+      }
     }
   };
 

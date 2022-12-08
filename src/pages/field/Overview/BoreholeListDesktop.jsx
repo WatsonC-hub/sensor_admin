@@ -46,15 +46,15 @@ export default function BoreholeListDesktop({data, loading}) {
       ?.map((elem, index) => {
         return {
           ...elem,
-          anlæg_id: elem.plantid,
+          plantid: elem.plantid,
           boreholeno: elem.boreholeno,
           id: index,
         };
       })
       .filter((elem) => {
         return (
-          elem.anlæg_id.toString().toLowerCase().includes(typeAhead.toLowerCase()) ||
-          elem.boreholeno.toLowerCase().includes(typeAhead.toLowerCase())
+          elem.plantid?.toString().toLowerCase().includes(typeAhead.toLowerCase()) ||
+          elem.boreholeno?.toLowerCase().includes(typeAhead.toLowerCase())
         );
       });
   }

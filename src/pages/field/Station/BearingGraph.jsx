@@ -16,17 +16,18 @@ const selectorOptions = {
       label: '1 uge',
     },
     {
-      step: 'year',
-      stepmode: 'backward',
-      count: 1,
-      label: '1 år',
-    },
-    {
       step: 'month',
       stepmode: 'backward',
       count: 1,
       label: '1 måned',
     },
+    {
+      step: 'year',
+      stepmode: 'backward',
+      count: 1,
+      label: '1 år',
+    },
+
     {
       step: 'all',
       label: 'Alt',
@@ -173,14 +174,14 @@ const layout3 = {
 };
 
 function PlotGraph({graphData, controlData, dynamicMeasurement}) {
-  const [name, unit, stationtype] = stamdataStore(state => [
+  const [name, unit, stationtype] = stamdataStore((state) => [
     state.timeseries.ts_name,
     state.timeseries.unit,
     state.timeseries.tstype_name,
   ]);
 
-  const xControl = controlData.map(d => d.timeofmeas);
-  const yControl = controlData.map(d => d.waterlevel);
+  const xControl = controlData.map((d) => d.timeofmeas);
+  const yControl = controlData.map((d) => d.waterlevel);
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
