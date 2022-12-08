@@ -264,6 +264,56 @@ const NavBar = ({children}) => {
     );
   }
 
+  if (location.pathname.includes('/admin/')) {
+    return (
+      <AppBarLayout>
+        <IconButton
+          color="inherit"
+          onClick={(e) => {
+            navigate(-1);
+          }}
+          size="large"
+        >
+          <KeyboardBackspaceIcon />
+        </IconButton>
+        <Typography variant="h4">Admin</Typography>
+
+        {matches ? (
+          <>
+            <Box>
+              <NavBarNotifications />
+              <NavBarMenu />
+            </Box>
+          </>
+        ) : (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              maxWidth: 300,
+            }}
+          >
+            <Box sx={{p: 2}}>
+              <NavBarNotifications />
+            </Box>
+            <Button
+              color="grey"
+              variant="contained"
+              onClick={() => {
+                navigate('/field');
+              }}
+              startIcon={<BuildCircleIcon />}
+            >
+              Field
+            </Button>
+            <LogOut element={LogOutButton} />
+          </Box>
+        )}
+      </AppBarLayout>
+    );
+  }
+
   if (location.pathname.includes('/admin')) {
     return (
       <AppBarLayout>

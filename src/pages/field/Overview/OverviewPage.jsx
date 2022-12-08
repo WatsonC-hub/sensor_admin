@@ -100,16 +100,23 @@ export default function OverviewPage() {
   }
 
   return (
-    <div>
-      <Tabs
-        value={tabValue}
-        onChange={handleChange}
-        variant="fullWidth"
-        aria-label="simple tabs example"
+    <>
+      <Box
+        sx={{
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
       >
-        <Tab icon={TableIcon} />
-        <Tab icon={KortIcon} />
-      </Tabs>
+        <Tabs
+          value={tabValue}
+          onChange={handleChange}
+          variant="fullWidth"
+          aria-label="simple tabs example"
+        >
+          <Tab icon={TableIcon} />
+          <Tab icon={KortIcon} />
+        </Tabs>
+      </Box>
       <TabPanel value={tabValue} index={0}>
         {boreholeAccess() ? (
           matches ? (
@@ -172,6 +179,6 @@ export default function OverviewPage() {
         />
       </TabPanel>
       {matches && <ScrollTop threshold={100} />}
-    </div>
+    </>
   );
 }
