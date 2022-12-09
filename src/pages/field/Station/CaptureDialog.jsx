@@ -19,7 +19,7 @@ export default function CaptureDialog({handleClose, open}) {
 
   const [showText, setShowText] = useState(true);
 
-  const handleScan = data => {
+  const handleScan = (data) => {
     if (data !== null) {
       const calypso_id = data['text'].split('/')[3];
       console.log(calypso_id);
@@ -42,7 +42,7 @@ export default function CaptureDialog({handleClose, open}) {
     justifyContent: 'center',
   };
 
-  const handleError = error => console.error(error);
+  const handleError = (error) => console.error(error);
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
@@ -71,8 +71,8 @@ export default function CaptureDialog({handleClose, open}) {
           style={previewStyle}
           onError={handleError}
           onScan={handleScan}
-          onLoad={e => setShowText(false)}
-          facingMode="environment"
+          onLoad={(e) => setShowText(false)}
+          facingMode="rear"
         />
       </div>
     </Dialog>

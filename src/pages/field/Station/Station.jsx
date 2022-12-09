@@ -63,10 +63,10 @@ export default function Station({stationId}) {
   let params = useParams();
 
   const formToShow = location.hash ? location.hash.replace('#', '') : null;
-
   const setFormToShow = (form) => {
+    console.log(location.history);
     if (form) {
-      navigate('#' + form, {replace: location.hash !== ''});
+      navigate('#' + form, {replace: !!location.hash});
     } else {
       navigate(-1);
     }

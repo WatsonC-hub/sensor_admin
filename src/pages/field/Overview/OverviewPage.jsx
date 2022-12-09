@@ -139,7 +139,7 @@ export default function OverviewPage() {
           <AppBar
             position="static"
             color="default"
-            style={{width: matches ? '70%' : '50%', marginLeft: matches ? '15%' : '25%'}}
+            style={{width: matches ? '100%' : '50%', marginLeft: matches ? '0%' : '0%'}}
           >
             <Tabs
               value={tabValueInner}

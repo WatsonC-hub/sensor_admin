@@ -106,7 +106,7 @@ const getType = (type) => {
       return <StraightenIcon style={{color: 'grey', transform: 'rotate(90deg)'}} />;
     case 'Temperatur':
       return (
-        <span style={{color: 'grey'}} class="material-icons">
+        <span style={{color: 'grey'}} className="material-icons">
           thermostat
         </span>
       );

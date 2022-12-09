@@ -35,8 +35,8 @@ const LogOut = ({element: Element}) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    resetState();
     queryClient.invalidateQueries();
+    resetState();
     navigate('/');
   };
 

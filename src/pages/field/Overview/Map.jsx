@@ -206,12 +206,15 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           },
         },
       };
+
       const filteredSensor = sensorData
-        .filter((elem) => elem.locname.toLowerCase().includes(e.target.value?.toLowerCase()))
-        .map((elem) => {
-          return {name: elem.locname, sensor: true, group: 'IoT'};
-        })
-        .sort((a, b) => a.name.localeCompare(b.name));
+        ? sensorData
+            .filter((elem) => elem.locname.toLowerCase().includes(e.target.value?.toLowerCase()))
+            .map((elem) => {
+              return {name: elem.locname, sensor: true, group: 'IoT'};
+            })
+            .sort((a, b) => a.name.localeCompare(b.name))
+        : [];
 
       let filteredBorehole = [];
       if (boreholeAccess) {
