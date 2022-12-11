@@ -32,15 +32,57 @@ const selectorOptions = {
   ],
 };
 
+const layout1 = {
+  xaxis: {
+    rangeselector: selectorOptions,
+    /*rangeslider: {},*/
+    autorange: true,
+    type: 'date',
+    //range:["2020-12-01T00:00:00", A],
+    //domain: [0, 0.97],
+    showline: true,
+  },
+
+  //xaxis: {domain: [0, 0.9]},
+  yaxis: {
+    title: {
+      text: '',
+      font: {size: 12},
+    },
+    showline: true,
+  },
+
+  showlegend: true,
+  legend: {
+    x: 0,
+    y: -0.15,
+    orientation: 'h',
+  },
+  margin: {
+    // l: 70,
+    r: 0,
+    // b: 30,
+    t: 10,
+    pad: 4,
+  },
+  font: {
+    size: 12,
+    color: 'rgb(0, 0, 0)',
+  },
+};
+
 const layout3 = {
   modebar: {
     orientation: 'v',
   },
+  //autosize: true,
   xaxis: {
     rangeselector: selectorOptions,
     autorange: true,
     type: 'date',
-    showline: true,
+    margin: {
+      t: 0,
+    },
   },
 
   yaxis: {
@@ -52,17 +94,17 @@ const layout3 = {
     },
   },
 
-  showlegend: true,
+  showlegend: false,
   legend: {
     x: 0,
     y: -0.15,
     orientation: 'h',
   },
   margin: {
-    // l: 30,
+    l: 50,
     r: 30,
-    // b: 30,
-    t: 10,
+    b: 40,
+    t: 0,
     pad: 4,
   },
   font: {
@@ -82,7 +124,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
 
   useEffect(() => {
-    console.log(dynamicMeasurement);
+    //console.log(dynamicMeasurement);
     if (dynamicMeasurement !== undefined) {
       setXDynamicMeasurement([dynamicMeasurement[0]]);
       setYDynamicMeasurement([dynamicMeasurement[1]]);
@@ -135,9 +177,9 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
               },
             }
           : {
-              ...layout3,
+              ...layout1,
               yaxis: {
-                ...layout3.yaxis,
+                ...layout1.yaxis,
                 title: 'Vandstand',
               },
             }
@@ -153,6 +195,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
           'toggleSpikelines',
         ],
         displaylogo: false,
+        displayModeBar: true,
       }}
       useResizeHandler={true}
       style={{width: '99%', height: '100%'}}
@@ -186,8 +229,6 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
     }
   );
 
-  console.log(data);
-
   return (
     <div
       style={{
@@ -195,10 +236,10 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
         height: matches ? '300px' : '500px',
         marginBottom: '10px',
         paddingTop: '5px',
-        marginLeft: matches ? '-50px' : '50px',
+        marginLeft: matches ? '' : '50px',
         marginRight: matches ? '' : '50px',
         marginTop: matches ? '' : '10px',
-        border: matches ? '' : '2px solid gray',
+        border: '2px solid gray',
       }}
     >
       <PlotGraph

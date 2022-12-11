@@ -27,6 +27,7 @@ export default function PejlingFormBorehole({
   handleSubmit,
   resetFormData,
   mpData,
+  openAddMP,
 }) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const [currentMP, setCurrentMP] = useState({
@@ -120,30 +121,43 @@ export default function PejlingFormBorehole({
     >
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
-          {formData.gid !== -1 ? 'Opdater pejling' : 'Indberet pejling'}
+          {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
         {!currentMP.elevation ? (
-          <p>
-            <span style={{color: 'red'}}>Tilføj venligst et målepunkt først</span>
-          </p>
+          <div>
+            <Box>
+              <span style={{color: 'red'}}>Tilføj venligst et målepunkt først</span>
+            </Box>
+            <Button
+              autoFocus
+              color="secondary"
+              variant="contained"
+              size="small"
+              onClick={() => {
+                openAddMP();
+              }}
+            >
+              Indberet målepunkt
+            </Button>
+          </div>
         ) : (
-          <p>
-            Felter med "<span style={{color: 'red'}}>*</span>
-            <span>" skal udfyldes.</span>
-          </p>
+          <p></p>
         )}
-        <Grid container spacing={3} alignItems="center" justify="center">
+        <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={12}>
             <Tooltip title="f.eks. tør eller tilfrossen">
               <FormControlLabel
-                control={<Checkbox onChange={handleNotPossibleChange} />}
-                label="Pejling ikke mulig"
+                control={
+                  <Checkbox sx={{color: 'primary.main'}} onChange={handleNotPossibleChange} />
+                }
+                label="Måling ikke mulig"
                 disabled={formData.service}
               />
             </Tooltip>
             <FormControlLabel
               control={
                 <Checkbox
+                  sx={{color: 'primary.main'}}
                   checked={formData.service}
                   onChange={handleServiceMeasurement}
                   name="checkedService"
@@ -153,58 +167,25 @@ export default function PejlingFormBorehole({
               label="Driftpejling"
             />
           </Grid>
-        </Grid>
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={4}>
-            <OwnDatePicker
-              label={
-                <Typography variant="h7" component="h4">
-                  Tidspunkt for pejling<a style={{color: 'red'}}>*</a>
-                </Typography>
-              }
-              value={formData.timeofmeas}
-              onChange={(date) => handleDateChange(date)}
-              error={pejlingOutOfRange}
-              helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <OwnDatePicker
-              label={
-                !formData.service ? (
-                  <Typography variant="h7" component="h4">
-                    Tidspunkt for pumpestop<a style={{color: 'red'}}>*</a>
-                  </Typography>
-                ) : (
-                  <Typography variant="h7" component="h4">
-                    Tidspunkt for pumpestop
-                  </Typography>
-                )
-              }
-              value={formData.pumpstop}
-              onChange={(date) => handleDateChangePump(date)}
-              disabled={formData.service}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={7}>
             <TextField
+              sx={{
+                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                '& .MuiOutlinedInput-root': {
+                  '& > fieldset': {borderColor: 'primary.main'},
+                },
+              }}
               type="number"
               variant="outlined"
-              style={{marginTop: '4px'}}
-              size="small"
               label={
                 !currentMP.elevation ? (
                   <Tooltip title="Tilføj først et målepunkt">
-                    <Typography variant="h7" component="h4">
+                    <Typography variant="h5" component="h3">
                       Pejling (nedstik)
                     </Typography>
                   </Tooltip>
-                ) : !notPossible ? (
-                  <Typography variant="h7" component="h4">
-                    Pejling (nedstik)<a style={{color: 'red'}}>*</a>
-                  </Typography>
                 ) : (
-                  <Typography variant="h7" component="h4">
+                  <Typography variant="h5" component="h3">
                     Pejling (nedstik)
                   </Typography>
                 )
@@ -219,21 +200,68 @@ export default function PejlingFormBorehole({
               disabled={notPossible || !currentMP.elevation}
             />
           </Grid>
-
-          <Grid item xs={12} sm={4}>
-            <Box p={0} borderColor="gray" border={1} borderRadius={8}>
-              <p>Målepunktskote: {currentMP.elevation} m</p>
+          <Grid item xs={12} sm={7}>
+            <Box
+              // height={40}
+              p={0}
+              border={1}
+              borderRadius={8}
+              borderColor="gray"
+            >
+              <Typography>
+                Målepunkt:
+                {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
+              </Typography>
+              <Typography>Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m</Typography>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box p={0} border={1} borderRadius={8} borderColor="gray">
-              <p>Målepunkt placering: {currentMP.mp_description}</p>
-            </Box>
+          <Grid item xs={12} sm={7}>
+            <OwnDatePicker
+              sx={{
+                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                '& .MuiOutlinedInput-root': {
+                  '& > fieldset': {borderColor: 'primary.main'},
+                },
+              }}
+              label={
+                <Typography variant="h6" component="h3">
+                  Tidspunkt for pejling
+                </Typography>
+              }
+              value={formData.timeofmeas}
+              onChange={(date) => handleDateChange(date)}
+              error={pejlingOutOfRange}
+              helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
+            />
+          </Grid>
+          <Grid item xs={12} sm={7}>
+            <OwnDatePicker
+              sx={{
+                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                '& .MuiOutlinedInput-root': {
+                  '& > fieldset': {borderColor: 'primary.main'},
+                },
+              }}
+              label={
+                <Typography variant="h6" component="h3">
+                  Tidspunkt for pumpestop
+                </Typography>
+              }
+              value={formData.pumpstop}
+              onChange={(date) => handleDateChangePump(date)}
+              disabled={formData.service}
+            />
           </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
+              sx={{
+                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                '& .MuiOutlinedInput-root': {
+                  '& > fieldset': {borderColor: 'primary.main'},
+                },
+              }}
               label={
-                <Typography variant="h7" component="h4">
+                <Typography variant="h6" component="h3">
                   Kommentar
                 </Typography>
               }

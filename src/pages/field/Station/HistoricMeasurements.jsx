@@ -51,12 +51,22 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Grid container>
+      <Grid container style={{marginLeft: '2%'}}>
         <StraightenIcon style={{marginTop: '0.3%', transform: 'rotate(90deg)'}} />
         <Grid item xs={8}>
           <Typography gutterBottom variant="h5" component="h2">
             Kontrolmålinger
           </Typography>
+        </Grid>
+        <Grid item xs={3} style={{marginLeft: '5%'}}>
+          <TablePagination
+            rowsPerPageOptions={[5]}
+            component="div"
+            count={measurements.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+          />
         </Grid>
       </Grid>
       <TableContainer>
@@ -118,14 +128,6 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5]}
-        component="div"
-        count={measurements.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-      />
     </Fragment>
   );
 }

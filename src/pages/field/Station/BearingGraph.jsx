@@ -265,7 +265,7 @@ function PlotGraph({graphData, controlData, dynamicMeasurement}) {
               ...layout3,
               yaxis: {
                 ...layout3.yaxis,
-                title: stationtype + ', ' + unit,
+                //title: stationtype + ', ' + unit,
               },
             }
           : {
@@ -287,7 +287,7 @@ function PlotGraph({graphData, controlData, dynamicMeasurement}) {
         displayModeBar: true,
       }}
       useResizeHandler={true}
-      style={{width: '100%', height: '100%'}}
+      style={{width: '99%', height: '100%'}}
     />
   );
 }
@@ -319,13 +319,11 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
         width: 'auto',
         height: matches ? '300px' : '500px',
         marginBottom: '10px',
-        marginTop: '-10px',
         paddingTop: '5px',
+        marginLeft: matches ? '' : '50px',
+        marginRight: matches ? '' : '50px',
+        marginTop: matches ? '' : '10px',
         border: '2px solid gray',
-        // position: "-webkit-sticky",
-        // position: "sticky",
-        // top: 20,
-        // zIndex: 100,
       }}
     >
       <PlotGraph

@@ -68,8 +68,7 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
               <ListItem key={index} dense>
                 <Box
                   borderColor="rgb(237, 237, 237)"
-                  border={1}
-                  borderRadius="8px"
+                  borderRadius={8}
                   bgcolor="rgb(237, 237, 237)"
                   width="100%"
                   paddingLeft={1.5}

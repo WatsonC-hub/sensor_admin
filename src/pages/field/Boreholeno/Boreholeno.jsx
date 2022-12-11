@@ -129,6 +129,11 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     setAddMPOpen(false);
   };
 
+  const openAddMP = () => {
+    setFormToShow('ADDMAALEPUNKT');
+    setAddMPOpen(true);
+  };
+
   const pejlingMutate = useMutation((data) => {
     if (data.gid === -1) {
       return insertMeasurement(boreholeno, intakeno, data);
@@ -243,6 +248,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}
+          openAddMP={openAddMP}
           resetFormData={() => {
             resetPejlingData();
             setFormToShow(null);

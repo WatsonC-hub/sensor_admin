@@ -171,6 +171,10 @@ export default function Station({stationId}) {
     setFormToShow(null);
   };
 
+  const openAddMP = () => {
+    setFormToShow('ADDMAALEPUNKT');
+  };
+
   const pejlingMutate = useMutation((data) => {
     if (data.gid === -1) {
       return insertMeasurement(data);
@@ -327,6 +331,7 @@ export default function Station({stationId}) {
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}
+          openAddMP={openAddMP}
           resetFormData={() => {
             resetPejlingData();
             setFormToShow(null);

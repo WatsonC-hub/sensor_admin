@@ -33,6 +33,7 @@ export default function PejlingForm({
   mpData,
   isWaterlevel,
   isFlow,
+  openAddMP,
 }) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
 
@@ -131,14 +132,27 @@ export default function PejlingForm({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
-          {!currentMP.elevation ? (
-            <p>
+        {!currentMP.elevation ? (
+          <div>
+            <Box>
               <span style={{color: 'red'}}>Tilføj venligst et målepunkt først</span>
-            </p>
-          ) : (
-            <p></p>
-          )}
+            </Box>
+            <Button
+              autoFocus
+              color="secondary"
+              variant="contained"
+              size="small"
+              onClick={() => {
+                openAddMP();
+              }}
+            >
+              Indberet målepunkt
+            </Button>
+          </div>
+        ) : (
+          <p></p>
+        )}
+        <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={12}>
             <Tooltip title="f.eks. tør eller tilfrossen">
               <FormControlLabel
@@ -189,21 +203,19 @@ export default function PejlingForm({
           {isWaterlevel && (
             <>
               <Grid item xs={12} sm={7}>
-                <Tooltip title={<Typography>WHWAT</Typography>} enterTouchDelay={100}>
-                  <Box
-                    // height={40}
-                    p={0}
-                    border={1}
-                    borderRadius={8}
-                    borderColor="gray"
-                  >
-                    <Typography>
-                      Målepunkt:
-                      {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
-                    </Typography>
-                    <Typography>Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m</Typography>
-                  </Box>
-                </Tooltip>
+                <Box
+                  // height={40}
+                  p={0}
+                  border={1}
+                  borderRadius={8}
+                  borderColor="gray"
+                >
+                  <Typography>
+                    Målepunkt:
+                    {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
+                  </Typography>
+                  <Typography>Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m</Typography>
+                </Box>
               </Grid>
             </>
           )}
