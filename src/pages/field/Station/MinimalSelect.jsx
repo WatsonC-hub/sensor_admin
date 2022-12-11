@@ -49,7 +49,7 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
     // <FormControl>
     <Select
       MenuProps={menuProps}
-      IconComponent={iconComponent}
+      //IconComponent={iconComponent}
       value={selectedStation}
       onChange={handleChange}
       open={isOpen}

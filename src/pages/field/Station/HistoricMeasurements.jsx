@@ -52,7 +52,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
         onOkDelete={deleteRow}
       />
       <Grid container style={{marginLeft: '2%'}}>
-        <StraightenIcon style={{marginTop: '0.3%', transform: 'rotate(90deg)'}} />
+        <StraightenIcon style={{marginTop: '0.5%', transform: 'rotate(90deg)'}} />
         <Grid item xs={8}>
           <Typography gutterBottom variant="h5" component="h2">
             Kontrolmålinger

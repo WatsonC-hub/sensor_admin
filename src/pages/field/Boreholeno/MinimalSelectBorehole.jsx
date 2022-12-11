@@ -57,7 +57,7 @@ const MinimalSelect = ({
     <Select
       disableUnderline
       MenuProps={menuProps}
-      IconComponent={iconComponent}
+      //IconComponent={iconComponent}
       value={selectedIntake}
       onChange={handleChange}
       open={isOpen}
