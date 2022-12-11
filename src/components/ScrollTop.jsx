@@ -16,9 +16,8 @@ export default function ScrollTop({threshold}) {
     disableHysteresis: true,
     threshold: threshold,
   });
-  console.log(trigger);
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     window.scrollTo({top: 0, behavior: 'smooth'});
   };
 

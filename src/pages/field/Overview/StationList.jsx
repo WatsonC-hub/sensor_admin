@@ -9,7 +9,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {TextField} from '@mui/material';
 import Divider from '@mui/material/Divider';
 import StraightenIcon from '@mui/icons-material/Straighten';
-import {CircularProgress} from '@mui/material';
+import {CircularProgress, Box} from '@mui/material';
 import SpeedIcon from '@mui/icons-material/Speed';
 import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded';
 import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
@@ -47,7 +47,9 @@ export default function StationList({data}) {
         component="div"
         disablePadding
       >
-        <TypeIcon row={rows[index]} />
+        <Box style={{width: '10%'}}>
+          <TypeIcon row={rows[index]} />
+        </Box>
         <ListItemText
           primary={rows[index].ts_name}
           secondary={rows[index].active ? 'Calypso ID: ' + rows[index].calypso_id : ' '}
@@ -72,7 +74,7 @@ export default function StationList({data}) {
         align="center"
       />
       <FixedSizeList
-        itemSize={46}
+        itemSize={60}
         itemCount={rows.length}
         overscanCount={5}
         height={height - 56 - 48 - 40 - 80}
@@ -128,17 +130,6 @@ const getType = (type) => {
       return '';
   }
 };
-// Vandføring #6D6D6D
-// Nedbør
-// Hastighed
-// Tryk
-// Temperatur
-// Fugtighed
-// Opløst ilt
-// Nitrat
-// Salinitet
-// Konduktivitet
-// Vandets iltindhold
 
 function StatusText(props) {
   return (
@@ -149,11 +140,7 @@ function StatusText(props) {
         justifyContent: 'space-between',
       }}
     >
-      <ListItemText
-        primary={getStatusComp(props.row.color, props.row.active, props.row.opgave)}
-        // secondary={props.row.opgave}
-      />
-      {/* <Typography>{getStatusComp(props.row.color)}</Typography> */}
+      <ListItemText primary={getStatusComp(props.row.color, props.row.active, props.row.opgave)} />
     </span>
   );
 }
@@ -162,14 +149,6 @@ const getStatusComp = (status, active, task) => {
   if (!active) {
     return <CheckCircleIcon style={{color: 'grey'}} />;
   }
-  // switch (status) {
-  //   case "#00FF00":
-  //     return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
-  //   case null:
-  //     return <CheckCircleIcon style={{ color: "mediumseagreen" }} />;
-  //   default:
-  //     return <PriorityHighIcon style={{ color: status }} />;
-  // }
 
   switch (task) {
     case 'Ok':
