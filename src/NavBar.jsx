@@ -152,7 +152,7 @@ const NavBarMenu = () => {
 };
 
 const NavBar = ({children}) => {
-  const [authenticated] = authStore((state) => [state.authenticated]);
+  const [authenticated, iotAccess] = authStore((state) => [state.authenticated, state.iotAccess]);
   const [open, setOpen] = useAtom(captureDialogAtom);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -194,17 +194,21 @@ const NavBar = ({children}) => {
     return (
       <AppBarLayout>
         {!location.pathname.includes('/stamdata') ? (
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={() => {
-              navigate('stamdata');
-              //setAddStationDisabled(true);
-            }}
-            size="small"
-          >
-            Opret station
-          </Button>
+          iotAccess ? (
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={() => {
+                navigate('stamdata');
+                //setAddStationDisabled(true);
+              }}
+              size="small"
+            >
+              Opret station
+            </Button>
+          ) : (
+            <LogoSvg />
+          )
         ) : (
           <IconButton
             color="inherit"
