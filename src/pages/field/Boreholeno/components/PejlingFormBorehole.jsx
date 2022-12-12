@@ -13,6 +13,7 @@ import {
   Checkbox,
   InputAdornment,
   Box,
+  Link,
 } from '@mui/material';
 import {isValid} from 'date-fns';
 import moment from 'moment';
@@ -20,8 +21,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import OwnDatePicker from '../../../../components/OwnDatePicker';
 
 export default function PejlingFormBorehole({
-  boreholeno,
-  intakeno,
   formData,
   changeFormData,
   handleSubmit,
@@ -113,7 +112,7 @@ export default function PejlingFormBorehole({
       style={{marginBottom: 25}}
       sx={{
         width: {xs: '100%', sm: '60%'},
-        marginLeft: {xs: '0%', sm: '20%'},
+        ml: {xs: '0%', sm: '20%'},
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
@@ -124,22 +123,11 @@ export default function PejlingFormBorehole({
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
         {!currentMP.elevation ? (
-          <div>
-            <Box>
-              <span style={{color: 'red'}}>Tilføj venligst et målepunkt først</span>
-            </Box>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              size="small"
-              onClick={() => {
-                openAddMP();
-              }}
-            >
-              Indberet målepunkt
-            </Button>
-          </div>
+          <Box>
+            <Link component="button" variant="body2" color="error" onClick={openAddMP}>
+              Tilføj venligst et målepunkt først
+            </Link>
+          </Box>
         ) : (
           <p></p>
         )}
@@ -249,7 +237,7 @@ export default function PejlingFormBorehole({
               }
               value={formData.pumpstop}
               onChange={(date) => handleDateChangePump(date)}
-              disabled={formData.service}
+              disabled={!!formData.service}
             />
           </Grid>
           <Grid item xs={12} sm={12}>

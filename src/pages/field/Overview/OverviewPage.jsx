@@ -136,11 +136,7 @@ export default function OverviewPage() {
       </Box>
       <TabPanel value={tabValue} index={0}>
         <>
-          <AppBar
-            position="static"
-            color="default"
-            style={{width: matches ? '100%' : '50%', marginLeft: matches ? '0%' : '25%'}}
-          >
+          <AppBar position="static" color="default" style={{width: matches ? '100%' : '50%'}}>
             <Tabs
               value={tabValueInner}
               onChange={handleChangeInner}

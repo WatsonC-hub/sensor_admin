@@ -21,7 +21,8 @@ import BoreholeImages from './BoreholeImages';
 import {toast} from 'react-toastify';
 import useFormData from '../../../hooks/useFormData';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {Button, Box, Typography} from '@mui/material';
+import {Button, Box, Typography, Grid} from '@mui/material';
+import LastJupiterMP from './components/LastJupiterMP';
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split('T')[0];
@@ -243,8 +244,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       )}
       {formToShow === 'ADDPEJLING' && (
         <PejlingFormBorehole
-          boreholeno={boreholeno}
-          intakeno={intakeno}
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}
@@ -261,6 +260,24 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       )}
       {formToShow === 'ADDMAALEPUNKT' && (
         <>
+          <Grid container spacing={2}>
+            <Grid
+              item
+              xs={12}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <LastJupiterMP
+                boreholeno={boreholeno}
+                intakeno={intakeno}
+                lastOurMP={watlevmp?.[0]}
+                watlevmpMutate={watlevmpMutate}
+              />
+            </Grid>
+          </Grid>
           {addMPOpen && (
             <MaalepunktForm
               formData={mpData}

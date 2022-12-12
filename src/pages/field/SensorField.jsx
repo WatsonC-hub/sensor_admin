@@ -7,7 +7,7 @@ import OpretStamdata from './Stamdata/OpretStamdata';
 import CaptureDialog from './Station/CaptureDialog';
 import {useAtom} from 'jotai';
 import {captureDialogAtom} from '../../state/atoms';
-import BoreholeDraw from './Boreholeno/BoreholeDraw';
+import BoreholeRouter from './Boreholeno/BoreholeRouter';
 
 function SensorField({}) {
   const [addStationDisabled, setAddStationDisabled] = useState(false);
@@ -29,8 +29,8 @@ function SensorField({}) {
           element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
         />
         <Route path="/:labelid" element={<ScanComponent />} />
-        <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeDraw />} />
-        <Route path="borehole/:boreholeno" element={<BoreholeDraw />} />
+        <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeRouter />} />
+        <Route path="borehole/:boreholeno" element={<BoreholeRouter />} />
       </Routes>
     </div>
   );

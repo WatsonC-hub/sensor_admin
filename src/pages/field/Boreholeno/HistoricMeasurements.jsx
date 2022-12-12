@@ -34,27 +34,6 @@ export default function HistoricMeasurements({
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
   const [org_id] = authStore((state) => [state.org_id]);
-  const [lastJupMeasurement, setLastJupMeasurement] = useState();
-  const [lastJupTime, setLastJupTime] = useState();
-
-  const {data: lastJupiterMeasurement, lastJupiterMeasurementIsLoading} = useQuery(
-    ['last_jupiter_measurement', boreholeno, intakeno],
-    async () => {
-      const {data} = await apiClient.get(
-        `/sensor_field/${boreholeno}/${intakeno}/jupiter_measurement`
-      );
-      return data;
-    },
-    {
-      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
-      onSuccess: (data) => {
-        setLastJupMeasurement(data[0].watlevmp);
-        setLastJupTime(data[0].timeofmeas);
-      },
-    }
-  );
-
-  console.log(lastJupiterMeasurement);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -80,25 +59,12 @@ export default function HistoricMeasurements({
         />
         <Grid container style={{marginLeft: '2%'}}>
           <StraightenIcon style={{marginTop: '0.5%', transform: 'rotate(90deg)'}} />
-          <Grid item xs={4}>
+          <Grid item xs={8}>
             <Typography gutterBottom variant="h5" component="h2">
               Kontrolmålinger
             </Typography>
           </Grid>
-          {lastJupMeasurement && (
-            <Grid item xs={3}>
-              <Box
-                // height={40}
-                p={1}
-                border={1}
-                borderRadius={8}
-                borderColor="gray"
-              >
-                <Typography>Målepunkt fra Jupiter: {lastJupMeasurement} m</Typography>
-                <Typography>Tidspunkt:{lastJupTime}</Typography>
-              </Box>
-            </Grid>
-          )}
+
           <Grid item xs={3} style={{marginLeft: '5%'}}>
             <TablePagination
               rowsPerPageOptions={[5]}

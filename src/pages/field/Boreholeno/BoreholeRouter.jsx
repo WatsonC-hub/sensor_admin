@@ -11,7 +11,7 @@ import MinimalSelectBorehole from './MinimalSelectBorehole';
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
 import Boreholeno from './Boreholeno';
 
-export default function BoreholeDraw() {
+export default function BoreholeRouter() {
   const open = false;
   const [formToShow, setFormToShow] = useState(null);
   const [currIntake, setCurrIntake] = useState(null);
@@ -87,7 +87,7 @@ export default function BoreholeDraw() {
       <main
         style={{
           flexGrow: 1,
-          padding: theme.spacing(3),
+          padding: theme.spacing(0.5),
         }}
       >
         <div />

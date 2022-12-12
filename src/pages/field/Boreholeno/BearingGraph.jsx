@@ -236,9 +236,6 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
         height: matches ? '300px' : '500px',
         marginBottom: '10px',
         paddingTop: '5px',
-        marginLeft: matches ? '' : '50px',
-        marginRight: matches ? '' : '50px',
-        marginTop: matches ? '' : '10px',
         border: '2px solid gray',
       }}
     >

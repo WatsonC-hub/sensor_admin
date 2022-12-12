@@ -231,7 +231,7 @@ function PlotGraph({graphData, controlData, dynamicMeasurement}) {
           x: graphData?.x,
           y: graphData?.y,
           name: name,
-          type: 'scatter',
+          type: 'scattergl',
           line: {width: 2},
           mode: 'lines',
           marker: {symbol: '100', size: '3', color: '#177FC1'},
@@ -320,9 +320,6 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
         height: matches ? '300px' : '500px',
         marginBottom: '10px',
         paddingTop: '5px',
-        marginLeft: matches ? '' : '50px',
-        marginRight: matches ? '' : '50px',
-        marginTop: matches ? '' : '10px',
         border: '2px solid gray',
       }}
     >

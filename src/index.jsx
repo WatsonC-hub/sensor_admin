@@ -25,7 +25,21 @@ if (import.meta.env.PROD) {
   });
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        if (error.response.status === 401 || error.response.status === 404) {
+          return false;
+        }
+        if (failureCount < 3) {
+          return true;
+        }
+        return false;
+      },
+    },
+  },
+});
 const container = document.getElementById('root');
 const root = createRoot(container);
 
