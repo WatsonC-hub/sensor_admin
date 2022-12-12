@@ -292,6 +292,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       )}
       {(formToShow === null || formToShow === 'ADDPEJLING') && (
         <PejlingMeasurements
+          boreholeno={boreholeno}
+          intakeno={intakeno}
           measurements={measurements}
           handleEdit={handleEdit('pejling')}
           handleDelete={handleDelete('pejling')}
