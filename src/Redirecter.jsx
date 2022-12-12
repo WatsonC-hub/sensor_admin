@@ -19,6 +19,11 @@ const Redirecter = ({SensorField}) => {
     setAuthChecked(true);
   }, [iotAccess]);
 
+  // USE THIS FOR TEMP PRODUCTION AND COMMENT OUT ALL OTHER THAN FIELD ROUTES
+  // useEffect(() => {
+  //   navigate('/field');
+  // }, []);
+
   return (
     <>
       <Routes>

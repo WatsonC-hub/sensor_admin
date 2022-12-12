@@ -225,38 +225,41 @@ const NavBar = ({children}) => {
           </IconButton>
         )}
 
-        {matches ? (
-          <>
-            <Box>
-              <NavBarNotifications />
-              <NavBarMenu />
-            </Box>
-          </>
-        ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              maxWidth: 300,
-            }}
-          >
-            <Box sx={{p: 2}}>
-              <NavBarNotifications />
-            </Box>
-            <Button
-              color="grey"
-              variant="contained"
-              onClick={() => {
-                navigate('/admin');
+        {
+          //COMMENT THIS FOR TEMP PRODUCTION
+          matches ? (
+            <>
+              <Box>
+                <NavBarNotifications />
+                <NavBarMenu />
+              </Box>
+            </>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                maxWidth: 300,
               }}
-              startIcon={<SettingsIcon />}
             >
-              Admin
-            </Button>
-            <LogOut element={LogOutButton} />
-          </Box>
-        )}
+              <Box sx={{p: 2}}>
+                <NavBarNotifications />
+              </Box>
+              <Button
+                color="grey"
+                variant="contained"
+                onClick={() => {
+                  navigate('/admin');
+                }}
+                startIcon={<SettingsIcon />}
+              >
+                Admin
+              </Button>
+              <LogOut element={LogOutButton} />
+            </Box>
+          )
+        }
       </AppBarLayout>
     );
   }
