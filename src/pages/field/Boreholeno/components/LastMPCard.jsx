@@ -5,7 +5,7 @@ const LastMPCard = ({title, children}) => {
   return (
     <Card
       sx={{
-        textAlign: 'center',
+        // textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
         borderRadius: 2,
@@ -19,7 +19,7 @@ const LastMPCard = ({title, children}) => {
       <CardHeader title={title} sx={{}} />
       <CardContent
         sx={{
-          p: 0,
+          p: 1,
           m: 0,
         }}
       >

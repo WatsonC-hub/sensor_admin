@@ -192,6 +192,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         toast.error('Der skete en fejl');
       },
     });
+    setAddMPOpen(false);
   };
 
   const handleEdit = (type) => {
@@ -288,7 +289,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
               canEdit={canEdit}
             />
           )}
-          <Box pl={4}>
+          <Box p={2}>
             <Button
               variant="contained"
               color="secondary"

@@ -58,17 +58,38 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate}) => {
   return (
     <>
       <LastMPCard title="Gældende målepunkt">
+        <Typography>I app</Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            ml: 1,
+          }}
+        >
+          {lastOurMP && <Typography>Kote: {lastOurMP.elevation + ' m'}</Typography>}
+          {!lastOurMP && (
+            <Typography color="secondary.light">Registreret venligst målepunkt i app</Typography>
+          )}
+          {lastOurMP && (
+            <Typography color="grey.400" ml={1}>
+              {moment(lastOurMP?.startdate).format('YYYY-MM-DD')}
+            </Typography>
+          )}
+        </Box>
+        {lastOurMP && (
+          <Typography ml={1} pb={0.5}>
+            Placering: {lastOurMP?.mp_description}
+          </Typography>
+        )}
         <Typography>Jupiter</Typography>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
           {(isLoading || isSuccess) && (
-            <Typography>
+            <Typography ml={1}>
               Kote: {isLoading && <CircularProgress size={12} />}
               {isSuccess && data?.elevation + ' m'}
             </Typography>
@@ -80,36 +101,17 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate}) => {
             </Typography>
           )}
 
-          {!isLoading && !isError && (
+          {isSuccess && (
             <Typography color="grey.400" ml={1}>
               {moment(data.startdate).format('YYYY-MM-DD')}
             </Typography>
           )}
         </Box>
-        <Typography>I app</Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {lastOurMP && <Typography>Kote: {lastOurMP.elevation + ' m'}</Typography>}
-          {!lastOurMP && (
-            <Typography ml={1} color="secondary.light">
-              Registreret venligst målepunkt i app
-            </Typography>
-          )}
-          {lastOurMP && (
-            <Typography color="grey.400" ml={1}>
-              {moment(lastOurMP?.startdate).format('YYYY-MM-DD')}
-            </Typography>
-          )}
-        </Box>
+        {isSuccess && <Typography ml={1}>Placering: {data?.descriptio}</Typography>}
+
         {showQuickAdd && (
           <Button variant="contained" color="secondary" onClick={handleQuickAdd}>
-            Tilføj målepunkt
+            Tilføj Jupiter målepunkt
           </Button>
         )}
       </LastMPCard>
