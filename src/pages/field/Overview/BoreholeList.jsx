@@ -3,18 +3,9 @@ import {useNavigate} from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import {TextField} from '@mui/material';
-import Divider from '@mui/material/Divider';
-import StraightenIcon from '@mui/icons-material/Straighten';
+import {TextField, ListItemIcon} from '@mui/material';
+import {ReactComponent as BoreholeIcon} from 'public/boreholeIconNofill.svg';
 import {CircularProgress} from '@mui/material';
-import SpeedIcon from '@mui/icons-material/Speed';
-import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded';
-import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
-import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
-import HeightIcon from '@mui/icons-material/Height';
 import {FixedSizeList} from 'react-window';
 import useWindowDimensions from '../../../hooks/useWindowDimensions';
 
@@ -38,17 +29,20 @@ export default function BoreholeList({data}) {
 
   const Row = ({index, style}) => (
     <>
-      <ListItem
-        onClick={(e) => handleClick(rows[index])}
-        dense
-        style={style}
-        key={index}
-        component="div"
-        disablePadding
-      >
+      <ListItem onClick={(e) => handleClick(rows[index])} dense style={style} key={index}>
+        <ListItemIcon
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            minWidth: '32px',
+          }}
+        >
+          {/* <TypeIcon type={rows[index].tstype_name} /> */}
+          <BoreholeIcon width={32} height={32} />
+        </ListItemIcon>
         <ListItemText
-          primary={'Boringsnavn: ' + rows[index].boreholeno}
-          secondary={'Anlægs ID: ' + rows[index].plantid}
+          primary={rows[index].boreholeno}
+          secondary={rows[index].plantid ? 'Anlægs ID: ' + rows[index].plantid : null}
         />
       </ListItem>
     </>
@@ -72,7 +66,7 @@ export default function BoreholeList({data}) {
         itemSize={46}
         itemCount={rows.length}
         overscanCount={5}
-        height={height - 56 - 48 - 40 - 80}
+        height={height - 56 - 48 - 59 - 40 - 20 - 50}
       >
         {Row}
       </FixedSizeList>

@@ -1,13 +1,9 @@
 import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import {TextField} from '@mui/material';
-import Divider from '@mui/material/Divider';
+import {TextField, ListItemIcon, ListItem, ListItemText, Typography, Divider} from '@mui/material';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import {CircularProgress, Box} from '@mui/material';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -38,29 +34,49 @@ export default function StationList({data}) {
   });
 
   const Row = ({index, style}) => (
-    <>
-      <ListItem
-        onClick={(e) => handleClick(rows[index])}
-        dense
-        style={style}
-        key={index}
-        component="div"
-        disablePadding
+    <ListItem
+      onClick={(e) => handleClick(rows[index])}
+      dense
+      style={style}
+      key={index}
+      // component="div"
+      sx={{
+        display: 'flex',
+        pl: 0,
+      }}
+    >
+      <ListItemIcon
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          minWidth: '30px',
+        }}
       >
-        <Box style={{width: '10%'}}>
-          <TypeIcon row={rows[index]} />
-        </Box>
-        <ListItemText
-          primary={rows[index].ts_name}
-          secondary={rows[index].active ? 'Calypso ID: ' + rows[index].calypso_id : ' '}
+        <TypeIcon type={rows[index].tstype_name} />
+      </ListItemIcon>
+      <ListItemText
+        primary={rows[index].ts_name}
+        secondary={rows[index].active ? 'Calypso ID: ' + rows[index].calypso_id : ' '}
+      />
+      {/* <StatusText row={rows[index]} /> */}
+      <ListItemIcon
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          minWidth: '30px',
+        }}
+      >
+        <StatusIcon
+          color={rows[index].color}
+          task={rows[index].opgave}
+          active={rows[index].active}
         />
-        <StatusText row={rows[index]} />
-      </ListItem>
-    </>
+      </ListItemIcon>
+    </ListItem>
   );
 
   return (
-    <div>
+    <>
       <TextField
         fullWidth
         variant="outlined"
@@ -74,35 +90,19 @@ export default function StationList({data}) {
         align="center"
       />
       <FixedSizeList
-        itemSize={60}
+        itemSize={65}
         itemCount={rows.length}
         overscanCount={5}
-        height={height - 56 - 48 - 40 - 80}
+        height={height - 56 - 48 - 59 - 40 - 20 - 50}
+        width="100%"
       >
         {Row}
       </FixedSizeList>
-    </div>
+    </>
   );
 }
 
-function TypeIcon(props) {
-  return (
-    <span
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-      }}
-    >
-      <ListItemText
-        primary={getType(props.row.tstype_name)}
-        // secondary={props.row.opgave}
-      />
-    </span>
-  );
-}
-
-const getType = (type) => {
+function TypeIcon({type}) {
   switch (type) {
     case 'Vandstand':
       return <StraightenIcon style={{color: 'grey', transform: 'rotate(90deg)'}} />;
@@ -129,23 +129,9 @@ const getType = (type) => {
     default:
       return '';
   }
-};
-
-function StatusText(props) {
-  return (
-    <span
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-      }}
-    >
-      <ListItemText primary={getStatusComp(props.row.color, props.row.active, props.row.opgave)} />
-    </span>
-  );
 }
 
-const getStatusComp = (status, active, task) => {
+function StatusIcon({color, active, task}) {
   if (!active) {
     return <CheckCircleIcon style={{color: 'grey'}} />;
   }
@@ -157,14 +143,14 @@ const getStatusComp = (status, active, task) => {
       return <CheckCircleIcon style={{color: 'mediumseagreen'}} />;
     case 'Sender ikke':
     case 'Sender null':
-      return <SignalCellularConnectedNoInternet0BarRoundedIcon style={{color: status}} />;
+      return <SignalCellularConnectedNoInternet0BarRoundedIcon style={{color: color}} />;
     case 'Batterskift':
-      return <BatteryAlertIcon style={{color: status}} />;
+      return <BatteryAlertIcon style={{color: color}} />;
     case 'Tilsyn':
-      return <BuildRoundedIcon style={{color: status}} />;
+      return <BuildRoundedIcon style={{color: color}} />;
     case 'Pejling':
-      return <HeightIcon style={{color: status}} />;
+      return <HeightIcon style={{color: color}} />;
     default:
-      return <PriorityHighIcon style={{color: status}} />;
+      return <PriorityHighIcon style={{color: color}} />;
   }
-};
+}
