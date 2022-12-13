@@ -56,8 +56,6 @@ export default function Station({stationId}) {
     kommentar: '',
   });
 
-  // const [formToShow, setFormToShow] = useState(null);
-
   let location = useLocation();
   let navigate = useNavigate();
   let params = useParams();
@@ -75,9 +73,6 @@ export default function Station({stationId}) {
   const [dynamic, setDynamic] = useState([]);
   const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
-  const [isWaterlevel, setIsWaterlevel] = useState(false);
-  const [isCalculated, setIsCalculated] = useState(false);
-  const [isFlow, setIsFlow] = useState(false);
 
   const store = stamdataStore();
   const queryClient = useQueryClient();
@@ -96,9 +91,6 @@ export default function Station({stationId}) {
     {
       enabled: stationId !== -1 && stationId !== null,
       onSuccess: (data) => {
-        setIsWaterlevel(data.tstype_id === 1);
-        setIsFlow(data.tstype_id === 2);
-        setIsCalculated(data.calculated);
         store.setLocation(data);
         store.setTimeseries(data);
         store.setUnit(data);
@@ -106,6 +98,10 @@ export default function Station({stationId}) {
       refetchOnWindowFocus: false,
     }
   );
+
+  const isWaterlevel = stamdata ? stamdata?.tstype_id === 1 : false;
+  const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;
+  const isCalculated = stamdata ? stamdata?.calculated : false;
 
   const {data: watlevmp} = useQuery(['watlevmp', stationId], () => getMP(stationId), {
     enabled: stationId !== -1 && stationId !== null,
