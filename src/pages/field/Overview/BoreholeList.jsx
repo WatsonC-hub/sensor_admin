@@ -22,8 +22,8 @@ export default function BoreholeList({data}) {
 
   let rows = data.filter((elem) => {
     return (
-      elem.boreholeno.toLowerCase().includes(typeAhead.toLowerCase()) ||
-      elem.plantid.toString().toLowerCase().includes(typeAhead.toLowerCase())
+      elem.boreholeno?.toLowerCase().includes(typeAhead.toLowerCase()) ||
+      elem.plantid?.toString().toLowerCase().includes(typeAhead.toLowerCase())
     );
   });
 
