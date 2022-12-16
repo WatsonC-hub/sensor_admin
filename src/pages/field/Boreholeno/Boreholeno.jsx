@@ -12,9 +12,7 @@ import {
   deleteMeasurement,
   insertMp,
   updateMp,
-  getBoreholeMP,
   deleteMP,
-  getOurWaterlevel,
 } from '../boreholeAPI';
 import moment from 'moment';
 import BoreholeImages from './BoreholeImages';
@@ -23,6 +21,7 @@ import useFormData from '../../../hooks/useFormData';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {Button, Box, Grid} from '@mui/material';
 import LastJupiterMP from './components/LastJupiterMP';
+import {apiClient} from 'src/apiClient';
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split('T')[0];
@@ -70,7 +69,12 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const {data: measurements} = useQuery(
     ['measurements', boreholeno, intakeno],
-    () => getOurWaterlevel(boreholeno, intakeno),
+    async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
     {
       enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
       placeholderData: [],
@@ -79,7 +83,12 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const {data: watlevmp} = useQuery(
     ['watlevmp', boreholeno, intakeno],
-    () => getBoreholeMP(boreholeno, intakeno),
+    async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
     {
       enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
       placeholderData: [],

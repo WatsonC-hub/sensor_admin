@@ -114,28 +114,6 @@ const getBorehole = (boreholeno) => {
   return data;
 };
 
-async function getOurWaterlevel(boreholeno, intakeno) {
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const {data} = await axios.get(url);
-  return data.result;
-}
-
-async function getJupiterWaterlevel(boreholeno, intakeno) {
-  const url = `${jupiterEndpoint}SELECT * FROM grundvandspejling.borehole_waterlevel WHERE boreholeno = '${boreholeno}'  AND intakeno = ${intakeno}`;
-  const {data} = await axios.get(url);
-  return data.features;
-}
-
-async function getBoreholeMP(boreholeno, intakeno) {
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const {data} = await axios.get(url);
-  return data.result;
-}
-
 const insertMeasurement = (boreholeno, intakeno, formData) => {
   formData['timeofmeas'] = formData['timeofmeas'].split('+')[0];
   formData['boreholeno'] = boreholeno;
@@ -223,9 +201,6 @@ export {
   getBoreholes,
   getBorehole,
   postElasticSearch,
-  getOurWaterlevel,
-  getBoreholeMP,
-  getJupiterWaterlevel,
   getImage,
   deleteImage,
   updateImage,

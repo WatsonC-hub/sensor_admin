@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Plot from 'react-plotly.js';
-import {getJupiterWaterlevel} from '../boreholeAPI';
 import {useQuery} from '@tanstack/react-query';
+import {apiClient} from 'src/apiClient';
 
 const selectorOptions = {
   buttons: [
@@ -114,7 +114,7 @@ const layout3 = {
 };
 
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
-  const parsed = jupiterData ? JSON.parse(jupiterData.data) : null;
+  const parsed = jupiterData ? jupiterData.data : null;
   const xJupiterData = parsed?.x;
   const yJupiterData = parsed?.y;
   const xOurData = ourData.map((d) => d.timeofmeas);
@@ -208,26 +208,20 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  // useEffect(() => {
-  //   if (boreholeno !== -1 && boreholeno !== null && intakeno !== undefined && intakeno !== -1) {
-  //     getJupiterWaterlevel(boreholeno, intakeno).then((res) => {
-  //       if (res.data.success) {
-  //         setJupiterData(res.data.features.map((elem) => elem.properties));
-  //       }
-  //     });
-  //   }
-  // }, [boreholeno, intakeno]);
-
   const {data} = useQuery(
     ['jupiter_waterlevel', boreholeno, intakeno],
-    () => getJupiterWaterlevel(boreholeno, intakeno),
+    async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
     {
       enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
-      select: (data) => {
-        return data[0].properties;
-      },
     }
   );
+
+  console.log(data);
 
   return (
     <div
