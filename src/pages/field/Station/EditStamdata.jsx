@@ -201,6 +201,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
             variant="contained"
             onClick={() => {
               setOpenAddUdstyr(true);
+              setselected('');
             }}
           >
             Tilføj udstyr
@@ -244,11 +245,12 @@ export default function EditStamdata({setFormToShow, stationId}) {
   }, []);
 
   const handleSubmit = () => {
-    console.log(selectedUnit);
+    console.log(unit);
+
     updateStamdata({
       location,
       station: timeseries,
-      udstyr: {...unit, gid: selectedUnit},
+      udstyr: {...unit, gid: selectedUnit == '' ? -1 : selectedUnit},
     })
       .then((res) => {
         console.log(res);
