@@ -3,7 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet.locatecontrol';
 import {atom, useAtom} from 'jotai';
-import {getBoreholeSearch, postElasticSearch, getLastMeasurement} from '../boreholeAPI';
+import {getBoreholeSearch, postElasticSearch} from '../boreholeAPI';
 import Autocomplete from '@mui/material/Autocomplete';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useTheme} from '@mui/material/styles';

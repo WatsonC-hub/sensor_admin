@@ -22,12 +22,6 @@ if (process.env.NODE_ENV === 'developments') {
   userEndpoint = 'https://backend.calypso.watsonc.dk/rest/';
 }
 
-async function getSensorData() {
-  const url = `${extEndpoint}/sensordata?session_id=${authStore.getState().sessionId}`;
-  const {data} = await axios.get(url);
-  return data.data;
-}
-
 async function getDTMQuota(x, y) {
   const url = `https://services.datafordeler.dk/DHMTerraen/DHMKoter/1.0.0/GEOREST/HentKoter?geop=POINT(${x} ${y})&username=WXIJZOCTKQ&password=E7WfqcwH_`;
   const {data} = await axios.get(url);
@@ -39,12 +33,6 @@ async function getStationTypes() {
     `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
   );
   return data.features;
-}
-
-async function getStamData() {
-  const url = `${extEndpoint}/stamdata`;
-  const {data} = await axios.get(url);
-  return data.data;
 }
 
 async function getStamdataByStation(stationId) {
@@ -298,7 +286,6 @@ const takeHomeEquipment = (gid, data) => {
 };
 
 export {
-  getSensorData,
   getTableData,
   // getSingleElem,
   getStations,
@@ -311,7 +298,6 @@ export {
   getControlData,
   getGraphData,
   getLocidFromLabel,
-  getStamData,
   getStationTypes,
   getAvailableUnits,
   postStamdata,

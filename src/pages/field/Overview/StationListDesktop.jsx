@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import List from '@mui/material/List';
@@ -6,12 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CircularProgress from '@mui/material/CircularProgress';
-import {
-  Grid,
-  VirtualTable,
-  TableHeaderRow,
-  TableRowDetail,
-} from '@devexpress/dx-react-grid-material-ui';
+import {Grid, VirtualTable, TableHeaderRow} from '@devexpress/dx-react-grid-material-ui';
 import {TextField, Tooltip} from '@mui/material';
 import useWindowDimensions from '../../../hooks/useWindowDimensions';
 import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded';

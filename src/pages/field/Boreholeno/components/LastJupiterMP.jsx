@@ -1,15 +1,7 @@
 import React from 'react';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CardHeader,
-  CircularProgress,
-  Button,
-} from '@mui/material';
+import {Box, Typography, CircularProgress, Button} from '@mui/material';
 import {apiClient} from 'src/apiClient';
 import LastMPCard from './LastMPCard';
 import {toast} from 'react-toastify';

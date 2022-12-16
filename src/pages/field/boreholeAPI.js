@@ -122,12 +122,6 @@ async function getOurWaterlevel(boreholeno, intakeno) {
   return data.result;
 }
 
-const getLastMeasurement = (boreholeno, intakeno) => {
-  const url = `${jupiterEndpoint}SELECT disttowatertable_m, timeofmeas FROM grundvandspejling.waterlevel 
-                WHERE boreholeno = '${boreholeno}' AND intakeno = '${intakeno}' ORDER BY timeofmeas DESC LIMIT 1`;
-  return axios.get(url);
-};
-
 async function getJupiterWaterlevel(boreholeno, intakeno) {
   const url = `${jupiterEndpoint}SELECT * FROM grundvandspejling.borehole_waterlevel WHERE boreholeno = '${boreholeno}'  AND intakeno = ${intakeno}`;
   const {data} = await axios.get(url);
@@ -237,6 +231,5 @@ export {
   updateImage,
   dataURLtoFile,
   postImage,
-  getLastMeasurement,
   getBoreholeSearch,
 };

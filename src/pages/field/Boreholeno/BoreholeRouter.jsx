@@ -1,5 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
-import clsx from 'clsx';
+import React, {useEffect, useState} from 'react';
 import {useTheme} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
@@ -8,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {getBorehole} from '../boreholeAPI';
 import MinimalSelectBorehole from './MinimalSelectBorehole';
-import {useParams, useNavigate, useLocation} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import Boreholeno from './Boreholeno';
 
 export default function BoreholeRouter() {

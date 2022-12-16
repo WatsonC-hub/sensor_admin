@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardContent, CardHeader, Grid, Typography} from '@mui/material';
+import {Card, CardContent, CardHeader, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 
 const ChoiseCard = ({navigateTo, title, text, icon: Icon}) => {

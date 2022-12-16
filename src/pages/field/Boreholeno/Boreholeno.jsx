@@ -21,7 +21,7 @@ import BoreholeImages from './BoreholeImages';
 import {toast} from 'react-toastify';
 import useFormData from '../../../hooks/useFormData';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {Button, Box, Typography, Grid} from '@mui/material';
+import {Button, Box, Grid} from '@mui/material';
 import LastJupiterMP from './components/LastJupiterMP';
 
 function formatedTimestamp(d) {

@@ -1,16 +1,14 @@
-import React, {useState, useContext, useRef, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {useTheme} from '@mui/material/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Tooltip from '@mui/material/Tooltip';
 import MapIcon from '@mui/icons-material/Map';
 import TableChart from '@mui/icons-material/TableChart';
-import TabPanel from './TabPanel';
 import Map from './Map';
 import StationListDesktop from './StationListDesktop';
 import StationList from './StationList';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {getSensorData} from 'src/pages/field/fieldAPI';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
 import ScrollTop from '../../../components/ScrollTop';

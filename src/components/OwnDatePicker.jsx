@@ -2,9 +2,9 @@ import React from 'react';
 import {MobileDateTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import daLocale from 'date-fns/locale/da';
-import {TextField, Typography} from '@mui/material';
+import {TextField} from '@mui/material';
 
-const OwnDatePicker = props => {
+const OwnDatePicker = (props) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={daLocale}>
       <MobileDateTimePicker
@@ -27,7 +27,7 @@ const OwnDatePicker = props => {
         KeyboardButtonProps={{
           'aria-label': 'change date',
         }}
-        renderInput={params => (
+        renderInput={(params) => (
           <TextField
             sx={props.error ? {} : props.sx}
             {...params}

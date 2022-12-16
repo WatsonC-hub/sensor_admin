@@ -17,9 +17,6 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Grid from '@mui/material/Grid';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import {authStore} from 'src/state/store';
-import {Box} from '@mui/material';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
 
 export default function HistoricMeasurements({
   boreholeno,

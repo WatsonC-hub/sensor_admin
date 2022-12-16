@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Grid, MenuItem, TextField} from '@mui/material';
 import {InputAdornment} from '@mui/material';
-import {getLocationTypes} from '../../fieldAPI';
 import LocationTypeSelect from './LocationTypeSelect';
 import {stamdataStore} from '../../../../state/store';
 
 export default function LocationForm({mode}) {
-  const [location, setLocationValue] = stamdataStore(store => [
+  const [location, setLocationValue] = stamdataStore((store) => [
     store.location,
     store.setLocationValue,
   ]);
@@ -25,7 +24,7 @@ export default function LocationForm({mode}) {
           type="text"
           label="Navn"
           value={location.loc_name}
-          onChange={event => {
+          onChange={(event) => {
             setLocationValue('loc_name', event.target.value);
           }}
           InputLabelProps={{shrink: true}}
@@ -44,7 +43,7 @@ export default function LocationForm({mode}) {
           type="text"
           label="Hoved lokation"
           value={location.mainloc}
-          onChange={event => setLocationValue('mainloc', event.target.value)}
+          onChange={(event) => setLocationValue('mainloc', event.target.value)}
           InputLabelProps={{shrink: true}}
           fullWidth
           placeholder="f.eks. Aarhus Kommune"
@@ -61,7 +60,7 @@ export default function LocationForm({mode}) {
           type="number"
           label="X-koordinat (UTM)"
           value={location.x}
-          onChange={event => setLocationValue('x', event.target.value)}
+          onChange={(event) => setLocationValue('x', event.target.value)}
           InputLabelProps={{shrink: true}}
           fullWidth
           margin="dense"
@@ -77,7 +76,7 @@ export default function LocationForm({mode}) {
           type="number"
           label="Y-koordinat (UTM)"
           value={location.y}
-          onChange={event => setLocationValue('y', event.target.value)}
+          onChange={(event) => setLocationValue('y', event.target.value)}
           InputLabelProps={{shrink: true}}
           fullWidth
           margin="dense"
@@ -94,7 +93,7 @@ export default function LocationForm({mode}) {
           type="number"
           label="Terrænkote"
           value={location.terrainlevel}
-          onChange={event => setLocationValue('terrainlevel', event.target.value)}
+          onChange={(event) => setLocationValue('terrainlevel', event.target.value)}
           InputLabelProps={{shrink: true}}
           fullWidth
           margin="dense"
@@ -113,7 +112,7 @@ export default function LocationForm({mode}) {
           margin="dense"
           label="Type af terrænkote"
           value={location.terrainqual}
-          onChange={event => setLocationValue('terrainqual', event.target.value)}
+          onChange={(event) => setLocationValue('terrainqual', event.target.value)}
           InputLabelProps={{shrink: true}}
           fullWidth
         >
@@ -125,7 +124,7 @@ export default function LocationForm({mode}) {
       <Grid item xs={12} sm={6}>
         <LocationTypeSelect
           selectedLocationType={location.loctype_id}
-          onChange={e => setLocationValue('loctype_id', e.target.value)}
+          onChange={(e) => setLocationValue('loctype_id', e.target.value)}
           disabled={location.loc_name === '' ? true : false}
         />
       </Grid>
@@ -140,7 +139,7 @@ export default function LocationForm({mode}) {
           type="text"
           label="Kommentar"
           value={location.description}
-          onChange={event => setLocationValue('description', event.target.value)}
+          onChange={(event) => setLocationValue('description', event.target.value)}
           InputLabelProps={{shrink: true}}
           fullWidth
           margin="dense"

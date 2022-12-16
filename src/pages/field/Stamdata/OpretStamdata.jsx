@@ -9,7 +9,7 @@ import AddUdstyrForm from './AddUdstyrForm';
 import AddLocationForm from './AddLocationForm';
 import LocationForm from './components/LocationForm';
 import StationForm from './components/StationForm';
-import {apiClient, getStamData, postStamdata} from '../fieldAPI';
+import {apiClient, postStamdata} from '../fieldAPI';
 import UdstyrForm from './components/UdstyrForm';
 
 import SaveIcon from '@mui/icons-material/Save';

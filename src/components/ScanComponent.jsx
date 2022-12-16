@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {useParams, Navigate} from 'react-router-dom';
-import {getLocidFromLabel, apiClient} from 'src/pages/field/fieldAPI';
+import {apiClient} from 'src/pages/field/fieldAPI';
 import {CircularProgress} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 
