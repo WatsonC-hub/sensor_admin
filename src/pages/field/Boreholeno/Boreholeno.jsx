@@ -95,6 +95,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   );
 
+  console.log(watlevmp);
+
   useEffect(() => {
     if (watlevmp.length > 0) {
       const elev = watlevmp.filter((e2) => {
@@ -102,7 +104,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
           moment(pejlingData.timeofmeas) < moment(e2.enddate)
         );
-      })[0].elevation;
+      })[0]?.elevation;
 
       let dynamicDate = pejlingData.timeofmeas;
       let dynamicMeas = elev - pejlingData.disttowatertable_m;

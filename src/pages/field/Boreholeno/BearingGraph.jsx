@@ -221,8 +221,6 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
     }
   );
 
-  console.log(data);
-
   return (
     <div
       style={{

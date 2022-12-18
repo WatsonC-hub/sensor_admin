@@ -4,25 +4,17 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const MinimalSelect = ({
-  boreholeno,
-  boreholenoList,
-  selectedIntake,
-  setSelectedItem,
-  setCurrIntake,
-  currentIntake,
-}) => {
+const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedItem}) => {
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.intakeno ? false : true);
   const navigate = useNavigate();
-  console.log(params.intakeno);
+
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
     navigate(`../borehole/${boreholeno}/${event.target.value}`, {
       replace: true,
     });
-    setCurrIntake(boreholenoList.find((s) => s.ts_id + '' === event.target.value + ''));
     setIsOpen(false);
   };
 
@@ -30,14 +22,10 @@ const MinimalSelect = ({
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    if (selectedIntake !== -1) {
+    if (selectedIntake !== '') {
       setIsOpen(false);
     }
   }, [selectedIntake]);
-
-  const iconComponent = (props) => {
-    return <ExpandMoreIcon />;
-  };
 
   // moves the menu below the select input
   const menuProps = {
@@ -52,11 +40,9 @@ const MinimalSelect = ({
   };
 
   return (
-    //<FormControl>
     <Select
       disableUnderline
       MenuProps={menuProps}
-      //IconComponent={iconComponent}
       value={selectedIntake}
       onChange={handleChange}
       open={isOpen}
@@ -76,26 +62,27 @@ const MinimalSelect = ({
         boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.14)',
       }}
     >
-      {boreholenoList
-        .filter((i) => i.intakeno !== null)
-        .map((intake) => (
-          <MenuItem
-            key={intake.boreholeno + intake.intakeno}
-            value={intake.intakeno}
-            sx={{
-              '&:hover': {
-                backgroundColor: 'primary.main',
-                color: 'white',
-              },
-              '&.Mui-selected': {
-                backgroundColor: 'primary.main',
-                color: 'white',
-              },
-            }}
-          >
-            {intake.boreholeno + ' - ' + intake.intakeno}
-          </MenuItem>
-        ))}
+      {boreholenoList &&
+        boreholenoList
+          .filter((i) => i.intakeno !== null)
+          .map((intake) => (
+            <MenuItem
+              key={intake.intakeno}
+              value={intake.intakeno}
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                },
+                '&.Mui-selected': {
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                },
+              }}
+            >
+              {intake.boreholeno + ' - ' + intake.intakeno}
+            </MenuItem>
+          ))}
     </Select>
     //</FormControl>
   );
