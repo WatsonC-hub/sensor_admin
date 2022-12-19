@@ -103,6 +103,7 @@ const initialState = {
     startdato: '',
     slutdato: '',
     uuid: '',
+    gid: -1,
   },
 };
 
@@ -161,6 +162,7 @@ let stamdataStore = (set) => ({
           startdato: unitData.startdato,
           slutdato: unitData.slutdato,
           uuid: unitData.uuid,
+          gid: unitData.gid,
         },
       },
       false,

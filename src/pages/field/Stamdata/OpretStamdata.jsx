@@ -249,7 +249,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               color="grey"
               variant="contained"
               onClick={() => {
-                navigate('/');
+                navigate('/field');
                 setAddStationDisabled(false);
               }}
             >

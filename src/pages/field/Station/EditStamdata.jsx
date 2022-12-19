@@ -201,7 +201,6 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
             variant="contained"
             onClick={() => {
               setOpenAddUdstyr(true);
-              setselected('');
             }}
           >
             Tilføj udstyr
@@ -219,6 +218,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
         udstyrDialogOpen={openAddUdstyr}
         setUdstyrDialogOpen={setOpenAddUdstyr}
         tstype_id={tstype_id}
+        mode="edit"
       />
     </Grid>
   );
@@ -331,11 +331,11 @@ export default function EditStamdata({setFormToShow, stationId}) {
                   selected={selectedUnit}
                   setselected={setSelectedUnit}
                 />
-                <UdstyrForm mode={'edit'} />
+                <UdstyrForm mode="edit" />
               </Box>
             </SwiperSlide>
             <SwiperSlide>
-              <LocationForm />
+              <LocationForm mode="edit" />
             </SwiperSlide>
             <SwiperSlide>
               <StationForm />
@@ -348,7 +348,7 @@ export default function EditStamdata({setFormToShow, stationId}) {
             justifyContent="center"
             style={{marginTop: matches ? '4%' : ''}}
           >
-            <Grid xs={4} sm={2}>
+            <Grid item xs={4} sm={2}>
               <Button
                 autoFocus
                 color="secondary"
@@ -359,7 +359,7 @@ export default function EditStamdata({setFormToShow, stationId}) {
                 Gem
               </Button>
             </Grid>
-            <Grid xs={4} sm={2}>
+            <Grid item xs={4} sm={2}>
               <Button
                 color="grey"
                 variant="contained"

@@ -147,7 +147,7 @@ export default function Station({stationId}) {
       ctrls = measurements.map((e) => {
         const elev = watlevmp.filter((e2) => {
           return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
-        })[0].elevation;
+        })[0]?.elevation;
 
         return {
           ...e,

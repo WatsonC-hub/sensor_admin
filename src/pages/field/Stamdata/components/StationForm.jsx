@@ -4,6 +4,7 @@ import {getStationTypes} from '../../fieldAPI';
 import {InputAdornment} from '@mui/material';
 import {stamdataStore} from '../../../../state/store';
 import {useQuery} from '@tanstack/react-query';
+import FormTextField from './FormTextField';
 
 const StationTypeSelect = ({
   selectedStationType,
@@ -12,7 +13,7 @@ const StationTypeSelect = ({
   onChange,
   isLoading,
 }) => {
-  const handleSelection = event => {
+  const handleSelection = (event) => {
     setSelectedStationType(event.target.value);
     onChange(event);
   };
@@ -22,31 +23,28 @@ const StationTypeSelect = ({
   }
 
   let menuItems = stationTypes
-    .filter(i => i.properties.tstype_id !== 0)
-    .map(item => (
+    .filter((i) => i.properties.tstype_id !== 0)
+    .map((item) => (
       <MenuItem value={item.properties.tstype_id} key={item.properties.tstype_id}>
         {item.properties.tstype_name}
       </MenuItem>
     ));
 
   return (
-    <TextField
-      variant="outlined"
+    <FormTextField
       select
-      margin="dense"
       value={selectedStationType}
       onChange={handleSelection}
       label="Station type"
-      fullWidth
     >
       <MenuItem value={-1}>Vælg type</MenuItem>
       {menuItems}
-    </TextField>
+    </FormTextField>
   );
 };
 
 export default function StationForm({mode, selectedStationType, setSelectedStationType}) {
-  const [timeseries, setTimeseriesValue] = stamdataStore(store => [
+  const [timeseries, setTimeseriesValue] = stamdataStore((store) => [
     store.timeseries,
     store.setTimeseriesValue,
   ]);
@@ -57,18 +55,11 @@ export default function StationForm({mode, selectedStationType, setSelectedStati
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
-        <TextField
-          variant="outlined"
-          type="text"
+        <FormTextField
           label="Navn"
           value={timeseries.ts_name}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          fullWidth
-          margin="dense"
           placeholder="f.eks. Brabrand_1_vandstand"
-          onChange={e => setTimeseriesValue('ts_name', e.target.value)}
+          onChange={(e) => setTimeseriesValue('ts_name', e.target.value)}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -78,80 +69,52 @@ export default function StationForm({mode, selectedStationType, setSelectedStati
             setSelectedStationType={setSelectedStationType}
             stationTypes={timeseries_types}
             isLoading={isLoading}
-            onChange={e => setTimeseriesValue('tstype_id', e.target.value)}
+            onChange={(e) => setTimeseriesValue('tstype_id', e.target.value)}
           />
         ) : (
-          <TextField
-            InputProps={{
-              style: {color: 'black'},
-            }}
-            disabled={true}
-            variant="outlined"
-            type="text"
+          <FormTextField
+            disabled
             label="Station type"
             value={
-              timeseries_types?.filter(elem => elem.properties.tstype_id == timeseries.tstype_id)[0]
-                ?.properties?.tstype_name
+              timeseries_types?.filter(
+                (elem) => elem.properties.tstype_id == timeseries.tstype_id
+              )[0]?.properties?.tstype_name
             }
-            InputLabelProps={{
-              shrink: true,
-            }}
-            fullWidth
-            margin="dense"
           />
         )}
       </Grid>
       {mode === 'add' && selectedStationType === 1 && (
         <Grid item xs={12} sm={6} md={2}>
-          <TextField
-            variant="outlined"
+          <FormTextField
             type="number"
             label="Målepunktskote"
             value={timeseries.maalepunktskote}
             InputProps={{
               endAdornment: <InputAdornment position="start">m</InputAdornment>,
             }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            fullWidth
-            margin="dense"
-            onChange={e => setTimeseriesValue('maalepunktskote', e.target.value)}
+            onChange={(e) => setTimeseriesValue('maalepunktskote', e.target.value)}
           />
         </Grid>
       )}
       {mode === 'add' && selectedStationType === 1 && (
         <Grid item xs={12} sm={6} md={4}>
-          <TextField
-            variant="outlined"
-            type="text"
+          <FormTextField
             label="Målepunkt placering"
             value={timeseries.mp_description}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            fullWidth
             placeholder="f.eks. top af rør"
-            margin="dense"
-            onChange={e => setTimeseriesValue('mp_description', e.target.value)}
+            onChange={(e) => setTimeseriesValue('mp_description', e.target.value)}
           />
         </Grid>
       )}
       <Grid item xs={12} sm={6}>
-        <TextField
-          variant="outlined"
+        <FormTextField
           type="number"
           label="Evt. loggerdybde under målepunkt"
           value={timeseries.sensor_depth_m}
-          InputLabelProps={{
-            shrink: true,
-          }}
           InputProps={{
             endAdornment: <InputAdornment position="start">m</InputAdornment>,
           }}
-          fullWidth
-          margin="dense"
-          onChange={e => setTimeseriesValue('sensor_depth_m', e.target.value)}
+          onChange={(e) => setTimeseriesValue('sensor_depth_m', e.target.value)}
         />
       </Grid>
     </Grid>
