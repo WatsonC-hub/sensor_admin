@@ -168,7 +168,7 @@ export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, ts
                 <MenuItem key={-1} value={-1}>
                   Vælg calypso ID
                 </MenuItem>
-                {uniqueCalypsoIds.map((option) => (
+                {uniqueCalypsoIds?.map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
                   </MenuItem>
@@ -187,7 +187,7 @@ export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, ts
                 <MenuItem key={-1} value={''}>
                   Vælg Sensor ID
                 </MenuItem>
-                {sensorsForCalyspoId(unitData.calypso_id).map((option) => (
+                {sensorsForCalyspoId(unitData.calypso_id)?.map((option) => (
                   <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
                     {option.channel} - {option.sensortypename}
                   </MenuItem>

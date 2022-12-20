@@ -24,6 +24,8 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
   useEffect(() => {
     if (selectedIntake !== '') {
       setIsOpen(false);
+    } else {
+      setIsOpen(true);
     }
   }, [selectedIntake]);
 

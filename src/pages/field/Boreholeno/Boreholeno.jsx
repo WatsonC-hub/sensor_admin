@@ -95,8 +95,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   );
 
-  console.log(watlevmp);
-
   useEffect(() => {
     if (watlevmp.length > 0) {
       const elev = watlevmp.filter((e2) => {
@@ -129,7 +127,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         };
       });
     } else {
-      ctrls = measurements.map((elem) => {
+      ctrls = measurements?.map((elem) => {
         return {...elem, waterlevel: elem.disttowatertable_m};
       });
     }

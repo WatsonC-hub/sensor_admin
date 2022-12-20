@@ -31,7 +31,7 @@ const TitleCell = (props) => {
 };
 
 const columns = [
-  {name: 'boreholeno', title: 'Boringsnavn'},
+  {name: 'boreholeno', title: 'DGU. NR.'},
   {name: 'plantid', title: 'Anlægs ID'},
   {name: 'comments', title: 'Kommentar'},
 ];

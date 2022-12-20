@@ -44,16 +44,12 @@ export default function BoreholeRouter() {
       } else {
         intakeno = '';
         if (data.length === 1) {
-          intakeno = data.intakeno;
+          intakeno = data[0].intakeno;
           navigate(`../borehole/${params.boreholeno}/${intakeno}`, {
             replace: true,
           });
-        } else {
-          navigate(`../borehole/${params.boreholeno}/${1}`, {
-            replace: true,
-          });
         }
-        setSelectedItem(1);
+        setSelectedItem(intakeno);
       }
     }
   }, [data]);
@@ -66,13 +62,7 @@ export default function BoreholeRouter() {
           <IconButton
             color="inherit"
             onClick={(e) => {
-              if (location.hash == '') {
-                navigate(-1);
-              } else {
-                navigate(`../location/${params.boreholeno}/${params.intakeno}`, {
-                  replace: true,
-                });
-              }
+              navigate(-1);
             }}
             size="large"
           >
@@ -94,10 +84,7 @@ export default function BoreholeRouter() {
         }}
       >
         <div />
-        <Boreholeno
-          boreholeno={params.boreholeno}
-          intakeno={params.intakeno ? params.intakeno : -1}
-        />
+        <Boreholeno boreholeno={params.boreholeno} intakeno={params.intakeno} />
       </main>
     </div>
   );

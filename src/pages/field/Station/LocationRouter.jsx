@@ -50,13 +50,7 @@ export default function LocationRouter() {
           <IconButton
             color="inherit"
             onClick={(e) => {
-              if (location.hash == '') {
-                navigate(-1);
-              } else {
-                navigate(`../location/${params.locid}/${params.statid}`, {
-                  replace: true,
-                });
-              }
+              navigate(-1);
             }}
             size="large"
           >
