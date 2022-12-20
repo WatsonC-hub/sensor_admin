@@ -40,9 +40,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
     timeofmeas: formatedTimestamp(new Date()),
-    pumpstop: formatedTimestamp(new Date()),
+    pumpstop: null,
     disttowatertable_m: 0,
-    service: 0,
+    service: false,
     comment: '',
     extrema: null,
   });
@@ -163,34 +163,18 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     setAddMPOpen(true);
   };
 
-  const pejlingMutate = useMutation((data) => {
-    if (data.gid === -1) {
-      return insertMeasurement(boreholeno, intakeno, data);
-    } else {
-      return updateMeasurement(boreholeno, intakeno, data);
-    }
-  });
-
   const addOrEditPejling = useMutation(async (data) => {
     if (data.gid === -1) {
       await apiClient.post(`/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`, data);
     } else {
-      await apiClient.put(`/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`, data);
+      await apiClient.put(`/sensor_field/borehole/measurements/${data.gid}`, data);
     }
   });
 
   const handlePejlingSubmit = () => {
-    const userId = sessionStorage.getItem('user');
-    const payload = {
-      ...pejlingData,
-      userid: userId,
-    };
-    var _date = Date.parse(payload.timeofmeas);
-    var _datePumpStop = Date.parse(payload.pumpstop);
-    payload.timeofmeas = formatedTimestamp(new Date(_date));
-    payload.pumpstop = formatedTimestamp(new Date(_datePumpStop));
+    let payload = {...pejlingData};
     if (payload.service) payload.pumpstop = null;
-    pejlingMutate.mutate(payload, {
+    addOrEditPejling.mutate(payload, {
       onSuccess: (data) => {
         resetPejlingData();
         setFormToShow(null);
@@ -198,7 +182,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         queryClient.invalidateQueries(['measurements', boreholeno]);
       },
       onError: (error) => {
-        toast.error('Der skete en fejl');
+        toast.error('Kontrolmåling kunne ikke gemmes');
       },
     });
   };
@@ -237,6 +221,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.enddate = data.enddate.replace(' ', 'T').substr(0, 19);
         setMpData(data); // Fill form data on Edit
         setFormToShow('ADDMAALEPUNKT'); // update to use state machine
+        setAddMPOpen(true);
       };
     } else {
       return (data) => {
@@ -290,6 +275,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           }}
           mpData={watlevmp}
           stamdata={stamdata}
+          lastMeasurementPump={
+            measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
+          }
         />
       )}
       {formToShow === 'ADDMAALEPUNKT' && (

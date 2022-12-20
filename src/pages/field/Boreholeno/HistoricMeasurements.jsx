@@ -18,14 +18,7 @@ import Grid from '@mui/material/Grid';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import {authStore} from 'src/state/store';
 
-export default function HistoricMeasurements({
-  boreholeno,
-  intakeno,
-  measurements,
-  handleEdit,
-  handleDelete,
-  canEdit,
-}) {
+export default function HistoricMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [measurementId, setMeasurementId] = useState(-1);
   const [page, setPage] = React.useState(0);
@@ -83,8 +76,10 @@ export default function HistoricMeasurements({
                 <TableCell align="center">Pejling (nedstik) [m]</TableCell>
                 <TableCell align="center">Organisation</TableCell>
                 <TableCell align="center">Uploaded til Jupiter</TableCell>
-                <TableCell align="center">Driftpejling</TableCell>
+                {/* <TableCell align="center">Driftpejling</TableCell> */}
                 <TableCell align="center">Kommentar</TableCell>
+                <TableCell align="center"></TableCell>
+                <TableCell align="center"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -97,7 +92,10 @@ export default function HistoricMeasurements({
                     </TableCell>
                     <TableCell align="center">
                       {row.pumpstop !== null
-                        ? moment(row.pumpstop).format('YYYY-MM-DD HH:mm')
+                        ? moment(row.timeofmeas).diff(moment(row.pumpstop), 'hours') +
+                          ' timer siden'
+                        : row.service === true
+                        ? 'I drift'
                         : '-'}
                     </TableCell>
                     <TableCell align="center">{row.disttowatertable_m}</TableCell>
@@ -111,13 +109,13 @@ export default function HistoricMeasurements({
                         <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
                       )}
                     </TableCell>
-                    <TableCell align="center">
+                    {/* <TableCell align="center">
                       {row.service === true ? ( //driftpejling
                         <CheckBoxIcon color="action"></CheckBoxIcon>
                       ) : (
                         <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
                       )}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell align="center">{row.comment}</TableCell>
                     <TableCell align="right">
                       {row.organisationid == org_id && (

@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import StraightenIcon from '@mui/icons-material/Straighten';
 import DeleteAlert from './DeleteAlert';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import {Fragment} from 'react';
@@ -43,7 +44,18 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
         onOkDelete={deleteRow}
       />
       <Grid container>
-        <Grid item xs={5} style={{marginTop: '2.5%'}}>
+        <Grid
+          item
+          xs={4}
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: 'flex',
+            mt: '2.5%',
+            ml: 3,
+          }}
+        >
+          <StraightenIcon style={{marginTop: '0.5%', transform: 'rotate(90deg)'}} />
           <Typography gutterBottom variant="h6" component="h2">
             Kontrolmålinger
           </Typography>
@@ -73,7 +85,9 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
                   paddingLeft={1.5}
                 >
                   <Typography variant="h6" display="inline">
-                    <bold>{row.disttowatertable_m + ' m '}</bold>
+                    {row.disttowatertable_m !== null
+                      ? row.disttowatertable_m + ' m '
+                      : 'Ikke mulig '}
                   </Typography>
                   <Typography color="#868686" variant="h7" display="inline">
                     {moment(row.timeofmeas).format('YYYY-MM-DD HH:mm')}

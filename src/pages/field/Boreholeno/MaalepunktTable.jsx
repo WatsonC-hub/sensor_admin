@@ -30,6 +30,8 @@ function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
 
+  const [org_id] = authStore((state) => [state.org_id]);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -97,14 +99,14 @@ function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                   </TableCell>
                   <TableCell align="center">{row.mp_description}</TableCell>
                   <TableCell align="right">
-                    {row.organisationid == authStore.getState().organisation && (
+                    {row.organisationid == org_id && (
                       <IconButton onClick={() => handleEdit(row)} disabled={!canEdit} size="large">
                         <EditIcon />
                       </IconButton>
                     )}
                   </TableCell>
                   <TableCell align="left">
-                    {row.organisationid == authStore.getState().organisation && (
+                    {row.organisationid == org_id && (
                       <IconButton
                         onClick={() => {
                           onDeleteBtnClick(row.gid);
@@ -131,6 +133,8 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 3;
 
+  const [org_id] = authStore((state) => [state.org_id]);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -153,8 +157,18 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
         onOkDelete={deleteRow}
       />
       <Grid container>
-        <Grid item xs={5} style={{marginTop: '2.5%'}}>
-          {/* <img class={classes.icon} width="35" height="35" align="left" src={process.env.PUBLIC_URL + "/RulerMPIcon.svg"} /> */}
+        <Grid
+          item
+          xs={4}
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            display: 'flex',
+            mt: '2.5%',
+            ml: 3,
+          }}
+        >
+          <StraightenIcon style={{marginTop: '0.25%', transform: 'rotate(90deg)'}} />
           <Typography gutterBottom variant="h5" component="h2">
             Målepunkter
           </Typography>
@@ -187,16 +201,16 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                     <bold>{row.elevation + ' m '}</bold>
                   </Typography>
                   <Typography color="#868686" variant="h7" display="inline">
-                    {row.startdate.split(' ')[0] + ' - ' + row.enddate.split(' ')[0]}
+                    {row.startdate.split('T')[0] + ' - ' + row.enddate.split('T')[0]}
                   </Typography>
                   <ListItemSecondaryAction>
-                    {row.organisationid == authStore.getState().organisation && (
+                    {row.organisationid == org_id && (
                       <IconButton
                         edge="end"
                         onClick={() => {
                           handleEdit(row);
                           setTimeout(() => {
-                            window.scrollTo({top: 300, behavior: 'smooth'});
+                            window.scrollTo({top: 550, behavior: 'smooth'});
                           }, 200);
                         }}
                         disabled={!canEdit}
@@ -205,7 +219,7 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                         <EditIcon />
                       </IconButton>
                     )}
-                    {row.organisationid == authStore.getState().organisation && (
+                    {row.organisationid == org_id && (
                       <IconButton
                         edge="end"
                         onClick={() => onDeleteBtnClick(row.gid)}

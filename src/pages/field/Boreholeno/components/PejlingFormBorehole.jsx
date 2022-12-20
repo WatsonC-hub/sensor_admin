@@ -31,7 +31,7 @@ export default function PejlingFormBorehole({
   resetFormData,
   mpData,
   openAddMP,
-  stamdata,
+  lastMeasurementPump,
 }) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const [currentMP, setCurrentMP] = useState({
@@ -39,9 +39,9 @@ export default function PejlingFormBorehole({
     mp_description: '',
   });
 
-  const [notPossible, setNotPossible] = useState(false);
+  const [notPossible, setNotPossible] = useState(formData.disttowatertable_m == null);
   const [disableSubmit, setDisableSubmit] = useState(false);
-  const [isPump, setIsPump] = useState(false);
+  const [isPump, setIsPump] = useState(lastMeasurementPump);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -136,7 +136,11 @@ export default function PejlingFormBorehole({
                 <Tooltip title="f.eks. tør eller overløb">
                   <FormControlLabel
                     control={
-                      <Checkbox sx={{color: 'primary.main'}} onChange={handleNotPossibleChange} />
+                      <Checkbox
+                        sx={{color: 'primary.main'}}
+                        checked={notPossible}
+                        onChange={handleNotPossibleChange}
+                      />
                     }
                     label="Måling ikke mulig"
                   />
@@ -159,6 +163,7 @@ export default function PejlingFormBorehole({
                   control={
                     <Checkbox
                       sx={{color: 'primary.main'}}
+                      checked={isPump}
                       onChange={(e) => setIsPump(e.target.checked)}
                     />
                   }
@@ -201,7 +206,7 @@ export default function PejlingFormBorehole({
               borderColor="gray"
             >
               <Typography>
-                Målepunkt:
+                Målepunkt:{' '}
                 {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
               </Typography>
               <Typography>Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m</Typography>
@@ -234,9 +239,8 @@ export default function PejlingFormBorehole({
                     <Checkbox
                       sx={{color: 'primary.main'}}
                       checked={formData.service}
-                      onChange={(e) => changeFormData('service', e.target.checked ? 1 : 0)}
+                      onChange={(e) => changeFormData('service', e.target.checked)}
                       name="checkedService"
-                      disabled={notPossible}
                     />
                   }
                   label="Driftpejling"
@@ -249,7 +253,7 @@ export default function PejlingFormBorehole({
                     },
                   }}
                   label={
-                    <Typography variant="h6" component="h3">
+                    <Typography variant="body1" component="h3">
                       Tidspunkt for pumpestop
                     </Typography>
                   }
