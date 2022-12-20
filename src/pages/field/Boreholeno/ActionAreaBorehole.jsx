@@ -1,5 +1,5 @@
 import React from 'react';
-import {AddCircle, Straighten} from '@mui/icons-material';
+import {AddCircle, Straighten, EditRounded} from '@mui/icons-material';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
@@ -60,6 +60,16 @@ function BottomNav({setFormToShow, canEdit}) {
         icon={<PhotoCameraRoundedIcon />}
         onClick={() => {
           setFormToShow('CAMERA');
+        }}
+      />
+      <BottomNavigationAction
+        sx={borderGrey}
+        disabled={!canEdit}
+        label="Stamdata"
+        showLabel={true}
+        icon={<EditRounded />}
+        onClick={() => {
+          setFormToShow('STAMDATA');
         }}
       />
     </BottomNavigation>

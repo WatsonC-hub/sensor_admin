@@ -14,6 +14,10 @@ import {
   InputAdornment,
   Box,
   Link,
+  Radio,
+  RadioGroup,
+  FormControl,
+  FormLabel,
 } from '@mui/material';
 import {isValid} from 'date-fns';
 import moment from 'moment';
@@ -27,6 +31,7 @@ export default function PejlingFormBorehole({
   resetFormData,
   mpData,
   openAddMP,
+  stamdata,
 }) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const [currentMP, setCurrentMP] = useState({
@@ -36,8 +41,7 @@ export default function PejlingFormBorehole({
 
   const [notPossible, setNotPossible] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState(false);
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const [isPump, setIsPump] = useState(false);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -67,11 +71,10 @@ export default function PejlingFormBorehole({
 
   const handleDateChange = (date) => {
     if (isValid(date)) {
-      console.log('date is valid again: ', date);
       changeFormData('timeofmeas', date);
     }
 
-    var mp = mpData.filter((elem) => {
+    var mp = mpData?.filter((elem) => {
       if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
         return true;
       }
@@ -85,26 +88,9 @@ export default function PejlingFormBorehole({
     }
   };
 
-  const handleDateChangePump = (date) => {
-    changeFormData('pumpstop', date);
-  };
-
-  const handleCommentChange = (e) => {
-    changeFormData('comment', e.target.value);
-  };
-
-  const handleDistanceChange = (e) => {
-    changeFormData('disttowatertable_m', e.target.value);
-  };
-
-  const handleNotPossibleChange = () => {
-    setNotPossible(!notPossible);
+  const handleNotPossibleChange = (event) => {
+    setNotPossible(event.target.checked);
     changeFormData('disttowatertable_m', null);
-  };
-
-  const handleServiceMeasurement = (e) => {
-    if (e.target.checked === true) changeFormData('service', 1);
-    else if (e.target.checked === false) changeFormData('service', 0);
   };
 
   return (
@@ -133,27 +119,53 @@ export default function PejlingFormBorehole({
         )}
         <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={12}>
-            <Tooltip title="f.eks. tør eller tilfrossen">
-              <FormControlLabel
-                control={
-                  <Checkbox sx={{color: 'primary.main'}} onChange={handleNotPossibleChange} />
-                }
-                label="Måling ikke mulig"
-                disabled={formData.service}
-              />
-            </Tooltip>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  sx={{color: 'primary.main'}}
-                  checked={formData.service}
-                  onChange={handleServiceMeasurement}
-                  name="checkedService"
-                  disabled={notPossible}
+            <Box
+              sx={{
+                justifyContent: 'center',
+                display: 'flex',
+              }}
+            >
+              <Box
+                sx={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <Tooltip title="f.eks. tør eller overløb">
+                  <FormControlLabel
+                    control={
+                      <Checkbox sx={{color: 'primary.main'}} onChange={handleNotPossibleChange} />
+                    }
+                    label="Måling ikke mulig"
+                  />
+                </Tooltip>
+                {notPossible && (
+                  <FormControl component="fieldset">
+                    <RadioGroup
+                      value={formData.extrema}
+                      onChange={(event) => changeFormData('extrema', event.target.value)}
+                    >
+                      <FormControlLabel value="O" control={<Radio />} label="Overløb" />
+                      <FormControlLabel value="T" control={<Radio />} label="Tør" />
+                      <FormControlLabel value="A" control={<Radio />} label="Andet" />
+                    </RadioGroup>
+                  </FormControl>
+                )}
+              </Box>
+              <Tooltip title="Sæt kryds hvis pumpeinformation skal registreres">
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{color: 'primary.main'}}
+                      onChange={(e) => setIsPump(e.target.checked)}
+                    />
+                  }
+                  label="Pumpeboring"
                 />
-              }
-              label="Driftpejling"
-            />
+              </Tooltip>
+            </Box>
           </Grid>
           <Grid item xs={12} sm={7}>
             <TextField
@@ -166,17 +178,9 @@ export default function PejlingFormBorehole({
               type="number"
               variant="outlined"
               label={
-                !currentMP.elevation ? (
-                  <Tooltip title="Tilføj først et målepunkt">
-                    <Typography variant="h5" component="h3">
-                      Pejling (nedstik)
-                    </Typography>
-                  </Tooltip>
-                ) : (
-                  <Typography variant="h5" component="h3">
-                    Pejling (nedstik)
-                  </Typography>
-                )
+                <Typography variant="h5" component="h3">
+                  Pejling (nedstik)
+                </Typography>
               }
               InputProps={{
                 endAdornment: <InputAdornment position="start">m</InputAdornment>,
@@ -184,7 +188,7 @@ export default function PejlingFormBorehole({
               InputLabelProps={{shrink: true}}
               fullWidth
               value={formData.disttowatertable_m}
-              onChange={handleDistanceChange}
+              onChange={(e) => changeFormData('disttowatertable_m', e.target.value)}
               disabled={notPossible || !currentMP.elevation}
             />
           </Grid>
@@ -223,22 +227,38 @@ export default function PejlingFormBorehole({
             />
           </Grid>
           <Grid item xs={12} sm={7}>
-            <OwnDatePicker
-              sx={{
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-              }}
-              label={
-                <Typography variant="h6" component="h3">
-                  Tidspunkt for pumpestop
-                </Typography>
-              }
-              value={formData.pumpstop}
-              onChange={(date) => handleDateChangePump(date)}
-              disabled={!!formData.service}
-            />
+            {isPump && (
+              <>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      sx={{color: 'primary.main'}}
+                      checked={formData.service}
+                      onChange={(e) => changeFormData('service', e.target.checked ? 1 : 0)}
+                      name="checkedService"
+                      disabled={notPossible}
+                    />
+                  }
+                  label="Driftpejling"
+                />
+                <OwnDatePicker
+                  sx={{
+                    '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                    '& .MuiOutlinedInput-root': {
+                      '& > fieldset': {borderColor: 'primary.main'},
+                    },
+                  }}
+                  label={
+                    <Typography variant="h6" component="h3">
+                      Tidspunkt for pumpestop
+                    </Typography>
+                  }
+                  value={formData.pumpstop}
+                  onChange={(date) => changeFormData('pumpstop', date)}
+                  disabled={!!formData.service}
+                />
+              </>
+            )}
           </Grid>
           <Grid item xs={12} sm={12}>
             <TextField
@@ -259,7 +279,7 @@ export default function PejlingFormBorehole({
               rows={4}
               InputLabelProps={{shrink: true}}
               fullWidth
-              onChange={handleCommentChange}
+              onChange={(e) => changeFormData('comment', e.target.value)}
             />
           </Grid>
           <Grid item xs={4} sm={2}>

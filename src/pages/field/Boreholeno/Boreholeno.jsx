@@ -22,6 +22,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {Button, Box, Grid} from '@mui/material';
 import LastJupiterMP from './components/LastJupiterMP';
 import {apiClient} from 'src/apiClient';
+import BoreholeStamdata from './BoreholeStamdata';
 
 function formatedTimestamp(d) {
   const date = d.toISOString().split('T')[0];
@@ -43,6 +44,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     disttowatertable_m: 0,
     service: 0,
     comment: '',
+    extrema: null,
   });
 
   const formToShow = location.hash ? location.hash.replace('#', '') : null;
@@ -78,6 +80,23 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     {
       enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
       placeholderData: [],
+    }
+  );
+
+  const {data: stamdata} = useQuery(
+    ['borehole_stamdata', boreholeno, intakeno],
+    () => {
+      return {
+        local_number: 'Brabrand_1',
+        borehole_description: 'Aarhus Kommune',
+        borehole_type: 1,
+        intake_description: 'Brabrand_1',
+      };
+    },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
     }
   );
 
@@ -152,8 +171,15 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   });
 
+  const addOrEditPejling = useMutation(async (data) => {
+    if (data.gid === -1) {
+      await apiClient.post(`/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`, data);
+    } else {
+      await apiClient.put(`/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`, data);
+    }
+  });
+
   const handlePejlingSubmit = () => {
-    //setFormToShow(null);
     const userId = sessionStorage.getItem('user');
     const payload = {
       ...pejlingData,
@@ -262,10 +288,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             resetPejlingData();
             setFormToShow(null);
           }}
-          canEdit={canEdit}
           mpData={watlevmp}
-          isWaterlevel={true}
-          isFlow={false}
+          stamdata={stamdata}
         />
       )}
       {formToShow === 'ADDMAALEPUNKT' && (
@@ -327,7 +351,10 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           canEdit={canEdit}
         />
       )}
-      {formToShow === 'CAMERA' && <BoreholeImages boreholeno={params.boreholeno} />}
+      {formToShow === 'CAMERA' && <BoreholeImages boreholeno={boreholeno} />}
+      {formToShow === 'STAMDATA' && (
+        <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
+      )}
       <ActionAreaBorehole
         open={open}
         boreholeno={boreholeno}
