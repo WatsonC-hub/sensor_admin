@@ -101,38 +101,6 @@ const getBoreholeSearch = (boreholeno) => {
   return data;
 };
 
-const getBoreholes = (sessionId) => {
-  const url = `${extEndpoint}/borehole/boreholes?session_id=${sessionId}`;
-  return axios.get(url);
-};
-
-const getBorehole = (boreholeno) => {
-  const url = `${jupiterEndpoint}SELECT boreholeno, intakeno, json_agg(DISTINCT intakeno) as intakenos, latitude, longitude
-                FROM grundvandspejling.borehole_data WHERE boreholeno = '${boreholeno}'
-                GROUP BY boreholeno, intakeno, latitude, longitude;`;
-  const data = axios.get(url);
-  return data;
-};
-
-const insertMeasurement = (boreholeno, intakeno, formData) => {
-  formData['timeofmeas'] = formData['timeofmeas'].split('+')[0];
-  formData['boreholeno'] = boreholeno;
-  formData['intakeno'] = intakeno;
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.post(url, formData);
-};
-
-const updateMeasurement = (boreholeno, intakeno, formData) => {
-  const gid = formData['gid'];
-  formData['timeofmeas'] = formData['timeofmeas'].split('+')[0];
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.put(url, formData);
-};
-
 const insertMp = (boreholeno, intakeno, formData) => {
   formData['startdate'] = formData['startdate'].split('+')[0];
   formData['enddate'] = formData['enddate'].split('+')[0];
@@ -170,36 +138,11 @@ const deleteMeasurement = (boreholeno, intakeno, gid) => {
   return axios.delete(url);
 };
 
-const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
-
-const createUser = (payload) => axios.post(`${userEndpoint}/calypso/user`, payload);
-
-const resetPassword = (passReset) =>
-  axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
-
-const loginUser = (user, password) => {
-  let sessionUrl = `${host}/api/v2/session/start`;
-  const loginData = {
-    user,
-    password,
-    schema: null,
-  };
-  return axios.post(sessionUrl, loginData);
-};
-
 export {
-  insertMeasurement,
-  updateMeasurement,
   deleteMeasurement,
   insertMp,
   updateMp,
-  getCvr,
-  createUser,
-  loginUser,
-  resetPassword,
   deleteMP,
-  getBoreholes,
-  getBorehole,
   postElasticSearch,
   getImage,
   deleteImage,

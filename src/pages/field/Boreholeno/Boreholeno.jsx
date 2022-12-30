@@ -6,14 +6,7 @@ import PejlingMeasurements from './PejlingMeasurements';
 import MaalepunktForm from '../../../components/MaalepunktForm';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import MaalepunktTable from './MaalepunktTable';
-import {
-  insertMeasurement,
-  updateMeasurement,
-  deleteMeasurement,
-  insertMp,
-  updateMp,
-  deleteMP,
-} from '../boreholeAPI';
+import {deleteMeasurement, insertMp, updateMp, deleteMP} from '../boreholeAPI';
 import moment from 'moment';
 import BoreholeImages from './BoreholeImages';
 import {toast} from 'react-toastify';

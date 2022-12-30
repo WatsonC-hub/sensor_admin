@@ -5,12 +5,11 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import {getBorehole} from '../boreholeAPI';
 import MinimalSelectBorehole from './MinimalSelectBorehole';
 import {useParams, useNavigate} from 'react-router-dom';
 import Boreholeno from './Boreholeno';
 import {apiClient} from 'src/apiClient';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 
 export default function BoreholeRouter() {
   const open = false;
