@@ -12,6 +12,7 @@ import {
   FormControl,
   FormLabel,
   Box,
+  Alert,
 } from '@mui/material';
 import {isValid} from 'date-fns';
 import {InputAdornment} from '@mui/material';
@@ -132,129 +133,126 @@ export default function PejlingForm({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
-        {!currentMP.elevation ? (
-          <div>
-            <Box>
-              <span style={{color: 'red'}}>Tilføj venligst et målepunkt først</span>
-            </Box>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              size="small"
-              onClick={() => {
-                openAddMP();
-              }}
-            >
-              Indberet målepunkt
-            </Button>
-          </div>
-        ) : (
-          <p></p>
-        )}
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={12}>
-            <Tooltip title="f.eks. tør eller tilfrossen">
-              <FormControlLabel
-                control={
-                  <Checkbox sx={{color: 'primary.main'}} onChange={handleNotPossibleChange} />
-                }
-                label="Måling ikke mulig"
-              />
-            </Tooltip>
-          </Grid>
-          <Grid item xs={12} sm={7}>
-            <TextField
-              sx={{
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-              }}
-              type="number"
-              variant="outlined"
-              label={
-                !currentMP.elevation ? (
-                  <Tooltip title="Tilføj først et målepunkt">
+          {!currentMP.elevation ? (
+            <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+              <Alert
+                severity="error"
+                sx={{
+                  justifyContent: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '80px',
+                }}
+              >
+                <Link component="button" variant="body2" color="error" onClick={openAddMP}>
+                  Tilføj venligst et målepunkt først
+                </Link>
+              </Alert>
+            </Grid>
+          ) : (
+            <>
+              <Grid item xs={12} sm={12}>
+                <Tooltip title="f.eks. tør eller tilfrossen">
+                  <FormControlLabel
+                    control={
+                      <Checkbox sx={{color: 'primary.main'}} onChange={handleNotPossibleChange} />
+                    }
+                    label="Måling ikke mulig"
+                  />
+                </Tooltip>
+              </Grid>
+              <Grid item xs={12} sm={7}>
+                <TextField
+                  sx={{
+                    '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                    '& .MuiOutlinedInput-root': {
+                      '& > fieldset': {borderColor: 'primary.main'},
+                    },
+                  }}
+                  type="number"
+                  variant="outlined"
+                  label={
                     <Typography variant="h5" component="h3">
                       {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
                     </Typography>
-                  </Tooltip>
-                ) : (
-                  <Typography variant="h5" component="h3">
-                    {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
-                  </Typography>
-                )
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="start">
-                    {isWaterlevel ? 'm' : stationUnit}
-                  </InputAdornment>
-                ),
-              }}
-              InputLabelProps={{shrink: true}}
-              fullWidth
-              value={formData.measurement}
-              onChange={handleDistanceChange}
-              disabled={notPossible || !currentMP.elevation}
-            />
-          </Grid>
-          {isWaterlevel && (
-            <>
-              <Grid item xs={12} sm={7}>
-                <Box
-                  // height={40}
-                  p={0}
-                  border={1}
-                  borderRadius={8}
-                  borderColor="gray"
-                >
-                  <Typography>
-                    Målepunkt:
-                    {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
-                  </Typography>
-                  <Typography>Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m</Typography>
-                </Box>
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start">
+                        {isWaterlevel ? 'm' : stationUnit}
+                      </InputAdornment>
+                    ),
+                  }}
+                  InputLabelProps={{shrink: true}}
+                  fullWidth
+                  value={formData.measurement}
+                  onChange={handleDistanceChange}
+                  disabled={notPossible || !currentMP.elevation}
+                />
               </Grid>
-            </>
-          )}
-          <Grid item xs={12} sm={7}>
-            <OwnDatePicker
-              sx={{
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-              }}
-              label={
-                <Typography variant="h6" component="h3">
-                  Tidspunkt for måling
-                </Typography>
-              }
-              value={new Date(formData.timeofmeas)}
-              onChange={(date) => handleDateChange(date)}
-              error={pejlingOutOfRange}
-              helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
-            />
-          </Grid>
-          {(isWaterlevel || isFlow) && (
-            <Grid item xs={12} sm={12}>
-              <FormControl component="fieldset">
-                <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
-                <RadioGroup value={formData.useforcorrection + ''} onChange={handleUsageChange}>
-                  <FormControlLabel value="0" control={<Radio />} label="Kontrol" />
-                  <FormControlLabel value="1" control={<Radio />} label="Korrektion fremadrettet" />
-                  <FormControlLabel
-                    value="2"
-                    control={<Radio />}
-                    label="Korrektion bagud og fremadrettet"
-                  />
-                </RadioGroup>
-              </FormControl>
-            </Grid>
-          )}
-          {/* {isWaterlevel && (
+              {isWaterlevel && (
+                <>
+                  <Grid item xs={12} sm={7}>
+                    <Alert
+                      severity="info"
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography>
+                        Målepunkt:{' '}
+                        {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
+                      </Typography>
+                      <Typography>
+                        Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m
+                      </Typography>
+                    </Alert>
+                  </Grid>
+                </>
+              )}
+              <Grid item xs={12} sm={7}>
+                <OwnDatePicker
+                  sx={{
+                    '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                    '& .MuiOutlinedInput-root': {
+                      '& > fieldset': {borderColor: 'primary.main'},
+                    },
+                  }}
+                  label={
+                    <Typography variant="h6" component="h3">
+                      Tidspunkt for måling
+                    </Typography>
+                  }
+                  value={new Date(formData.timeofmeas)}
+                  onChange={(date) => handleDateChange(date)}
+                  error={pejlingOutOfRange}
+                  helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
+                />
+              </Grid>
+              {(isWaterlevel || isFlow) && (
+                <Grid item xs={12} sm={12}>
+                  <FormControl component="fieldset">
+                    <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
+                    <RadioGroup value={formData.useforcorrection + ''} onChange={handleUsageChange}>
+                      <FormControlLabel value="0" control={<Radio />} label="Kontrol" />
+                      <FormControlLabel
+                        value="1"
+                        control={<Radio />}
+                        label="Korrektion fremadrettet"
+                      />
+                      <FormControlLabel
+                        value="2"
+                        control={<Radio />}
+                        label="Korrektion bagud og fremadrettet"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+              )}
+              {/* {isWaterlevel && (
             <>
               <Grid item xs={12} sm={7}>
                 <Box p={0} border={1} borderRadius={8} borderColor="gray">
@@ -266,49 +264,51 @@ export default function PejlingForm({
               </Grid>
             </>
           )} */}
-          <Grid item xs={12} sm={12}>
-            <TextField
-              sx={{
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-              }}
-              label={
-                <Typography variant="h6" component="h3">
-                  Kommentar
-                </Typography>
-              }
-              value={formData.comment}
-              variant="outlined"
-              multiline
-              rows={4}
-              InputLabelProps={{shrink: true}}
-              fullWidth
-              onChange={handleCommentChange}
-            />
-          </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  sx={{
+                    '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                    '& .MuiOutlinedInput-root': {
+                      '& > fieldset': {borderColor: 'primary.main'},
+                    },
+                  }}
+                  label={
+                    <Typography variant="h6" component="h3">
+                      Kommentar
+                    </Typography>
+                  }
+                  value={formData.comment}
+                  variant="outlined"
+                  multiline
+                  rows={4}
+                  InputLabelProps={{shrink: true}}
+                  fullWidth
+                  onChange={handleCommentChange}
+                />
+              </Grid>
 
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              onClick={() => {
-                handleClickSubmit();
-                handleSubmit();
-              }}
-              disabled={pejlingOutOfRange || disableSubmit || !currentMP.elevation}
-              startIcon={<SaveIcon />}
-            >
-              Gem
-            </Button>
-          </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button color="grey" variant="contained" onClick={resetFormData}>
-              Annuller
-            </Button>
-          </Grid>
+              <Grid item xs={4} sm={2}>
+                <Button
+                  autoFocus
+                  color="secondary"
+                  variant="contained"
+                  onClick={() => {
+                    handleClickSubmit();
+                    handleSubmit();
+                  }}
+                  disabled={pejlingOutOfRange || disableSubmit || !currentMP.elevation}
+                  startIcon={<SaveIcon />}
+                >
+                  Gem
+                </Button>
+              </Grid>
+              <Grid item xs={4} sm={2}>
+                <Button color="grey" variant="contained" onClick={resetFormData}>
+                  Annuller
+                </Button>
+              </Grid>
+            </>
+          )}
         </Grid>
       </CardContent>
     </Card>
