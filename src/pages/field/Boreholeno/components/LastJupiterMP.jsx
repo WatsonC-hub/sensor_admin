@@ -7,7 +7,7 @@ import LastMPCard from './LastMPCard';
 import {toast} from 'react-toastify';
 import {useQueryClient} from '@tanstack/react-query';
 
-const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate}) => {
+const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddMPOpen}) => {
   const queryClient = useQueryClient();
   const {data, isLoading, isError, isSuccess} = useQuery(
     ['last_jupiter_mp', boreholeno, intakeno],
@@ -40,6 +40,7 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate}) => {
       onSuccess: (data) => {
         toast.success('Målepunkt gemt');
         queryClient.invalidateQueries(['watlevmp', boreholeno]);
+        setAddMPOpen(false);
       },
       onError: (error) => {
         toast.error('Der skete en fejl');

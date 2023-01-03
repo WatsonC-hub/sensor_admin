@@ -117,8 +117,8 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const parsed = jupiterData ? jupiterData.data : null;
   const xJupiterData = parsed?.x;
   const yJupiterData = parsed?.y;
-  const xOurData = ourData.map((d) => d.timeofmeas);
-  const yOurData = ourData.map((d) => d.waterlevel);
+  const xOurData = ourData?.map((d) => d.timeofmeas);
+  const yOurData = ourData?.map((d) => d.waterlevel);
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
@@ -204,7 +204,6 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
 }
 
 export default function BearingGraph({boreholeno, intakeno, measurements, dynamicMeasurement}) {
-  const [jupiterData, setJupiterData] = useState([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 

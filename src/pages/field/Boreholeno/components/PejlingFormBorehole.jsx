@@ -18,6 +18,8 @@ import {
   RadioGroup,
   FormControl,
   FormLabel,
+  Alert,
+  Backdrop,
 } from '@mui/material';
 import {isValid} from 'date-fns';
 import moment from 'moment';
@@ -108,143 +110,124 @@ export default function PejlingFormBorehole({
         <Typography gutterBottom variant="h5" component="h2">
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
-        {!currentMP.elevation ? (
-          <Box>
-            <Link component="button" variant="body2" color="error" onClick={openAddMP}>
-              Tilføj venligst et målepunkt først
-            </Link>
-          </Box>
-        ) : (
-          <p></p>
-        )}
+
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={12}>
-            <Box
-              sx={{
-                justifyContent: 'center',
-                display: 'flex',
-              }}
-            >
-              <Box
+          {!currentMP.elevation ? (
+            <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+              <Alert
+                severity="error"
                 sx={{
-                  alignItems: 'center',
                   justifyContent: 'center',
                   display: 'flex',
-                  flexDirection: 'column',
+                  alignItems: 'center',
+                  height: '80px',
                 }}
               >
-                <Tooltip title="f.eks. tør eller overløb">
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        sx={{color: 'primary.main'}}
-                        checked={notPossible}
-                        onChange={handleNotPossibleChange}
+                <Link component="button" variant="body2" color="error" onClick={openAddMP}>
+                  Tilføj venligst et målepunkt først
+                </Link>
+              </Alert>
+            </Grid>
+          ) : (
+            <>
+              <Grid item xs={12} sm={12}>
+                <Box
+                  sx={{
+                    justifyContent: 'center',
+                    display: 'flex',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <Tooltip title="f.eks. tør eller overløb">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            sx={{color: 'primary.main'}}
+                            checked={notPossible}
+                            onChange={handleNotPossibleChange}
+                          />
+                        }
+                        label="Måling ikke mulig"
                       />
-                    }
-                    label="Måling ikke mulig"
-                  />
-                </Tooltip>
-                {notPossible && (
-                  <FormControl component="fieldset">
-                    <RadioGroup
-                      value={formData.extrema}
-                      onChange={(event) => changeFormData('extrema', event.target.value)}
-                    >
-                      <FormControlLabel value="O" control={<Radio />} label="Overløb" />
-                      <FormControlLabel value="T" control={<Radio />} label="Tør" />
-                      <FormControlLabel value="A" control={<Radio />} label="Andet" />
-                    </RadioGroup>
-                  </FormControl>
-                )}
-              </Box>
-              <Tooltip title="Sæt kryds hvis pumpeinformation skal registreres">
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      sx={{color: 'primary.main'}}
-                      checked={isPump}
-                      onChange={(e) => setIsPump(e.target.checked)}
+                    </Tooltip>
+                    {notPossible && (
+                      <FormControl component="fieldset">
+                        <RadioGroup
+                          value={formData.extrema}
+                          onChange={(event) => changeFormData('extrema', event.target.value)}
+                        >
+                          <FormControlLabel value="O" control={<Radio />} label="Overløb" />
+                          <FormControlLabel value="T" control={<Radio />} label="Tør" />
+                          <FormControlLabel value="A" control={<Radio />} label="Andet" />
+                        </RadioGroup>
+                      </FormControl>
+                    )}
+                  </Box>
+                  <Tooltip title="Sæt kryds hvis pumpeinformation skal registreres">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          sx={{color: 'primary.main'}}
+                          checked={isPump}
+                          onChange={(e) => setIsPump(e.target.checked)}
+                        />
+                      }
+                      label="Pumpeboring"
                     />
+                  </Tooltip>
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={7}>
+                <TextField
+                  sx={{
+                    '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                    '& .MuiOutlinedInput-root': {
+                      '& > fieldset': {borderColor: 'primary.main'},
+                    },
+                  }}
+                  type="number"
+                  variant="outlined"
+                  label={
+                    <Typography variant="h5" component="h3">
+                      Pejling (nedstik)
+                    </Typography>
                   }
-                  label="Pumpeboring"
+                  InputProps={{
+                    endAdornment: <InputAdornment position="start">m</InputAdornment>,
+                  }}
+                  InputLabelProps={{shrink: true}}
+                  fullWidth
+                  value={formData.disttowatertable_m}
+                  onChange={(e) => changeFormData('disttowatertable_m', e.target.value)}
+                  disabled={notPossible || !currentMP.elevation}
                 />
-              </Tooltip>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={7}>
-            <TextField
-              sx={{
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-              }}
-              type="number"
-              variant="outlined"
-              label={
-                <Typography variant="h5" component="h3">
-                  Pejling (nedstik)
-                </Typography>
-              }
-              InputProps={{
-                endAdornment: <InputAdornment position="start">m</InputAdornment>,
-              }}
-              InputLabelProps={{shrink: true}}
-              fullWidth
-              value={formData.disttowatertable_m}
-              onChange={(e) => changeFormData('disttowatertable_m', e.target.value)}
-              disabled={notPossible || !currentMP.elevation}
-            />
-          </Grid>
-          <Grid item xs={12} sm={7}>
-            <Box
-              // height={40}
-              p={0}
-              border={1}
-              borderRadius={8}
-              borderColor="gray"
-            >
-              <Typography>
-                Målepunkt:{' '}
-                {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
-              </Typography>
-              <Typography>Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={7}>
-            <OwnDatePicker
-              sx={{
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-              }}
-              label={
-                <Typography variant="h6" component="h3">
-                  Tidspunkt for pejling
-                </Typography>
-              }
-              value={formData.timeofmeas}
-              onChange={(date) => handleDateChange(date)}
-              error={pejlingOutOfRange}
-              helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
-            />
-          </Grid>
-          <Grid item xs={12} sm={7}>
-            {isPump && (
-              <>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      sx={{color: 'primary.main'}}
-                      checked={formData.service}
-                      onChange={(e) => changeFormData('service', e.target.checked)}
-                      name="checkedService"
-                    />
-                  }
-                  label="Driftpejling"
-                />
+              </Grid>
+              <Grid item xs={12} sm={7} mt={-1}>
+                <Alert
+                  severity="info"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography variant="body2">
+                    Målepunkt:{' '}
+                    {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
+                  </Typography>
+                  <Typography variant="body2">
+                    Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m
+                  </Typography>
+                </Alert>
+              </Grid>
+              <Grid item xs={12} sm={12}>
                 <OwnDatePicker
                   sx={{
                     '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
@@ -253,59 +236,109 @@ export default function PejlingFormBorehole({
                     },
                   }}
                   label={
-                    <Typography variant="body1" component="h3">
-                      Tidspunkt for pumpestop
+                    <Typography variant="h6" component="h3">
+                      Tidspunkt for pejling
                     </Typography>
                   }
-                  value={formData.pumpstop}
-                  onChange={(date) => changeFormData('pumpstop', date)}
-                  disabled={!!formData.service}
+                  value={formData.timeofmeas}
+                  onChange={(date) => handleDateChange(date)}
+                  error={pejlingOutOfRange}
+                  helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
                 />
-              </>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={12}>
-            <TextField
-              sx={{
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-              }}
-              label={
-                <Typography variant="h6" component="h3">
-                  Kommentar
-                </Typography>
-              }
-              value={formData.comment}
-              variant="outlined"
-              multiline
-              rows={4}
-              InputLabelProps={{shrink: true}}
-              fullWidth
-              onChange={(e) => changeFormData('comment', e.target.value)}
-            />
-          </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              color="secondary"
-              variant="contained"
-              onClick={() => {
-                handleClickSubmit();
-                handleSubmit();
-              }}
-              disabled={disableSubmit || !currentMP.elevation}
-              startIcon={<SaveIcon />}
-            >
-              Gem
-            </Button>
-          </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button autoFocus color="secondary" variant="contained" onClick={resetFormData}>
-              Annuller
-            </Button>
-          </Grid>
+                {/* </Grid>
+          <Grid item xs={12} sm={7}> */}
+                {isPump && (
+                  <>
+                    <FormControlLabel
+                      sx={{
+                        p: 1,
+                      }}
+                      control={
+                        <Checkbox
+                          sx={{color: 'primary.main'}}
+                          checked={formData.service}
+                          onChange={(e) => changeFormData('service', e.target.checked)}
+                          name="checkedService"
+                        />
+                      }
+                      label="Driftpejling"
+                    />
+                    <OwnDatePicker
+                      sx={{
+                        '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                        '& .MuiOutlinedInput-root': {
+                          '& > fieldset': {borderColor: 'primary.main'},
+                        },
+                      }}
+                      label={
+                        <Typography variant="body1" component="h3">
+                          Tidspunkt for pumpestop
+                        </Typography>
+                      }
+                      error={formData.pumpstop > formData.timeofmeas}
+                      helperText={
+                        formData.pumpstop > formData.timeofmeas
+                          ? 'Pumpestop skal være før pejletidspunkt'
+                          : ''
+                      }
+                      value={formData.pumpstop}
+                      onChange={(date) => changeFormData('pumpstop', date)}
+                      disabled={!!formData.service}
+                      max={formData.timeofmeas}
+                    />
+                  </>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  sx={{
+                    '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                    '& .MuiOutlinedInput-root': {
+                      '& > fieldset': {borderColor: 'primary.main'},
+                    },
+                  }}
+                  label={
+                    <Typography variant="h6" component="h3">
+                      Kommentar
+                    </Typography>
+                  }
+                  value={formData.comment}
+                  variant="outlined"
+                  multiline
+                  rows={4}
+                  InputLabelProps={{shrink: true}}
+                  fullWidth
+                  onChange={(e) => changeFormData('comment', e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={4} sm={2}>
+                <Button
+                  autoFocus
+                  color="secondary"
+                  variant="contained"
+                  onClick={() => {
+                    handleClickSubmit();
+                    handleSubmit();
+                  }}
+                  disabled={
+                    disableSubmit ||
+                    !currentMP.elevation ||
+                    pejlingOutOfRange ||
+                    !formData.timeofmeas ||
+                    (isPump && formData.pumpstop > formData.timeofmeas)
+                  }
+                  startIcon={<SaveIcon />}
+                >
+                  Gem
+                </Button>
+              </Grid>
+              <Grid item xs={4} sm={2}>
+                <Button autoFocus color="secondary" variant="contained" onClick={resetFormData}>
+                  Annuller
+                </Button>
+              </Grid>
+            </>
+          )}
         </Grid>
       </CardContent>
     </Card>

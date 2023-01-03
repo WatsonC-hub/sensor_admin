@@ -210,8 +210,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleEdit = (type) => {
     if (type === 'watlevmp') {
       return (data) => {
-        data.startdate = data.startdate.replace(' ', 'T').substr(0, 19);
-        data.enddate = data.enddate.replace(' ', 'T').substr(0, 19);
+        data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
+        data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
         setFormToShow('ADDMAALEPUNKT'); // update to use state machine
         setAddMPOpen(true);
@@ -219,7 +219,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     } else {
       return (data) => {
         console.log(data);
-        data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
+        data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING'); // update to use state machine
       };
@@ -290,6 +290,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
                 intakeno={intakeno}
                 lastOurMP={watlevmp?.[0]}
                 watlevmpMutate={watlevmpMutate}
+                setAddMPOpen={setAddMPOpen}
               />
             </Grid>
           </Grid>
