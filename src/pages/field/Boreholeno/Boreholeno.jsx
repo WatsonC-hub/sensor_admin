@@ -32,7 +32,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
-    timeofmeas: formatedTimestamp(new Date()),
+    timeofmeas: new Date(),
     pumpstop: null,
     disttowatertable_m: 0,
     service: false,
