@@ -6,7 +6,6 @@ import PejlingMeasurements from './PejlingMeasurements';
 import MaalepunktForm from '../../../components/MaalepunktForm';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import MaalepunktTable from './MaalepunktTable';
-import {deleteMeasurement, insertMp, updateMp, deleteMP} from '../boreholeAPI';
 import moment from 'moment';
 import BoreholeImages from './BoreholeImages';
 import {toast} from 'react-toastify';
@@ -17,16 +16,9 @@ import LastJupiterMP from './components/LastJupiterMP';
 import {apiClient} from 'src/apiClient';
 import BoreholeStamdata from './BoreholeStamdata';
 
-function formatedTimestamp(d) {
-  const date = d.toISOString().split('T')[0];
-  const time = d.toTimeString().split(' ')[0];
-  return `${date} ${time}`;
-}
-
 const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
   let navigate = useNavigate();
-  let params = useParams();
   const queryClient = useQueryClient();
   const [addMPOpen, setAddMPOpen] = useState(false);
 
@@ -52,8 +44,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
-    startdate: formatedTimestamp(new Date()),
-    enddate: formatedTimestamp(new Date('2099-01-01')),
+    startdate: new Date(),
+    enddate: new Date('2099-01-01'),
     elevation: 0,
     mp_description: '',
   });
@@ -180,21 +172,18 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     });
   };
 
-  const watlevmpMutate = useMutation((data) => {
+  const addOrEditWatlevmp = useMutation(async (data) => {
     if (data.gid === -1) {
-      return insertMp(boreholeno, intakeno, data);
+      await apiClient.post(`/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`, data);
     } else {
-      return updateMp(boreholeno, intakeno, data);
+      await apiClient.put(`/sensor_field/borehole/watlevmp/${data.gid}`, data);
     }
   });
 
   const handleMpSubmit = () => {
-    const userId = sessionStorage.getItem('user');
-    const payload = {...mpData, userid: userId};
-    var _date = Date.parse(payload.startdate);
-    payload.startdate = formatedTimestamp(new Date(_date));
-    payload.enddate = formatedTimestamp(new Date(Date.parse(payload.enddate)));
-    watlevmpMutate.mutate(payload, {
+    let payload = {...mpData};
+    console.log(payload);
+    addOrEditWatlevmp.mutate(payload, {
       onSuccess: (data) => {
         resetMpData();
         toast.success('Målepunkt gemt');
@@ -229,7 +218,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleDelete = (type) => {
     if (type === 'watlevmp') {
       return (gid) => {
-        deleteMP(boreholeno, intakeno, gid).then((res) => {
+        apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then((res) => {
           queryClient.invalidateQueries(['watlevmp', boreholeno]);
           resetMpData();
           toast.success('Målepunkt slettet');
@@ -237,7 +226,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       };
     } else {
       return (gid) => {
-        deleteMeasurement(boreholeno, intakeno, gid).then((res) => {
+        apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then((res) => {
           queryClient.invalidateQueries(['measurements', boreholeno]);
           resetPejlingData();
           toast.success('Kontrolmåling slettet');
@@ -289,7 +278,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
                 boreholeno={boreholeno}
                 intakeno={intakeno}
                 lastOurMP={watlevmp?.[0]}
-                watlevmpMutate={watlevmpMutate}
+                watlevmpMutate={addOrEditWatlevmp}
                 setAddMPOpen={setAddMPOpen}
               />
             </Grid>

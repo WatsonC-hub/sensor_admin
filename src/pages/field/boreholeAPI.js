@@ -93,48 +93,7 @@ const postElasticSearch = (search) => {
   return axios.post(`${searchEndpoint}`, search);
 };
 
-const insertMp = (boreholeno, intakeno, formData) => {
-  formData['startdate'] = formData['startdate'].split('+')[0];
-  formData['enddate'] = formData['enddate'].split('+')[0];
-  formData['boreholeno'] = boreholeno;
-  formData['intakeno'] = intakeno;
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.post(url, formData);
-};
-
-const updateMp = (boreholeno, intakeno, formData) => {
-  const gid = formData['gid'];
-  formData['startdate'] = formData['startdate'].split('+')[0];
-  formData['enddate'] = formData['enddate'].split('+')[0];
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.put(url, formData);
-};
-
-const deleteMP = (boreholeno, intakeno, gid) => {
-  if (!gid) return;
-  const url = `${extEndpoint}/borehole/watlevmp/${boreholeno}/${intakeno}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.delete(url);
-};
-
-const deleteMeasurement = (boreholeno, intakeno, gid) => {
-  if (!gid) return;
-  const url = `${extEndpoint}/borehole/measurements/${boreholeno}/${intakeno}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.delete(url);
-};
-
 export {
-  deleteMeasurement,
-  insertMp,
-  updateMp,
-  deleteMP,
   postElasticSearch,
   getImage,
   deleteImage,
