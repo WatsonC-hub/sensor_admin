@@ -53,7 +53,7 @@ function ImageCardBorehole({image, deleteMutation, handleEdit}) {
           {image.comment}
         </Typography>
       </CardContent>
-      {image.organisationid == authStore.getState().organisation && (
+      {image.organisationid == authStore.getState().org_id && (
         <CardActions>
           <Button
             disabled={deleteMutation.isLoading}

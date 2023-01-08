@@ -5,9 +5,10 @@ import ImageViewerBorehole from './components/ImageViewerBorehole';
 import {PhotoCameraRounded} from '@mui/icons-material';
 import {Grid} from '@mui/material';
 import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
-import {deleteImage, getImage} from 'src/pages/field/boreholeAPI';
+import {deleteImage} from 'src/pages/field/boreholeAPI';
 import moment from 'moment';
 import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
+import {apiClient} from 'src/apiClient';
 
 function BoreholeImages(props) {
   const [openCamera, setOpenCamera] = useState(false);
@@ -22,8 +23,10 @@ function BoreholeImages(props) {
   });
   const queryClient = useQueryClient();
 
-  const {data: images} = useQuery(['images', props.boreholeno], () => getImage(props.boreholeno));
-  console.log(images);
+  const {data: images} = useQuery(['images', props.boreholeno], async () => {
+    const {data} = await apiClient.get(`/sensor_field/borehole/images/${props.boreholeno}`);
+    return data;
+  });
 
   const deleteImageMutation = useMutation((gid) => deleteImage(props.boreholeno, gid), {
     onSuccess: () => {

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {postImage, updateImage} from '../../boreholeAPI';
+import {postImage} from '../../boreholeAPI';
 import {TextField, Typography, Grid, Button, CircularProgress} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -13,6 +13,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {useTheme} from '@mui/material/styles';
 import {useQueryClient, useMutation} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
+import {apiClient} from 'src/apiClient';
 
 function SaveImageDialogBorehole({
   activeImage,
@@ -33,8 +34,9 @@ function SaveImageDialogBorehole({
 
   const saveImageMutation = useMutation(
     (data) => {
+      console.log(data);
       if (activeImage.gid !== -1) {
-        return updateImage(data, activeImage.gid);
+        return apiClient.put(`/sensor_field/borehole/image/${data.gid}`, data);
       } else {
         return postImage(data, dataUri);
       }
@@ -49,6 +51,7 @@ function SaveImageDialogBorehole({
 
   function saveImage() {
     const payload = {
+      gid: activeImage.gid,
       boreholeno: boreholeno,
       comment: activeImage.comment,
       public: activeImage.public.toString(),
