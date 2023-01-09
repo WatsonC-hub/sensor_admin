@@ -6,6 +6,18 @@ const apiClient = axios.create({
   withCredentials: true,
 });
 
+apiClient.interceptors.request.use(
+  function (config) {
+    // Add csrf token to request header
+    config.headers['X-CSRF-TOKEN'] = authStore.getState().csrfToken;
+    return config;
+  },
+  function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
+
 apiClient.interceptors.response.use(
   function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger

@@ -48,7 +48,8 @@ export default function Login({}) {
         setLoginError(true);
       });
 
-    loginAPI(userName, password).then((res) => {
+    loginAPI(userName.toLowerCase().trim(), password).then((res) => {
+      console.log(res.data);
       setProperties(res.data);
       setAuthenticated(true);
       setLoginExpired(false);
