@@ -11,6 +11,8 @@ import {getStations} from 'src/pages/field/fieldAPI';
 import MinimalSelect from './MinimalSelect';
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
+import {ErrorBoundary} from 'react-error-boundary';
+import ErrorPage from './ErrorPage';
 
 export default function LocationRouter() {
   const [selectedItem, setSelectedItem] = useState('');
@@ -71,7 +73,9 @@ export default function LocationRouter() {
           padding: theme.spacing(0.5),
         }}
       >
-        <Station stationId={params.statid ? params.statid : -1} />
+        <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
+          <Station stationId={params.statid ? params.statid : -1} />
+        </ErrorBoundary>
       </main>
     </div>
   );

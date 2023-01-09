@@ -343,6 +343,7 @@ export default function Station({stationId}) {
       )}
       {formToShow === 'ADDMAALEPUNKT' && (
         <>
+          <Hej />
           <MaalepunktForm
             formData={mpData}
             changeFormData={changeMpData}
