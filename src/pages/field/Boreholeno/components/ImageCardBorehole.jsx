@@ -15,6 +15,7 @@ function ImageCardBorehole({image, deleteMutation, handleEdit}) {
   const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
   const imageUrl = baseUrl + image.imageurl + '.png';
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [org_id] = authStore((state) => [state.org_id]);
 
   function handleDelete() {
     toast.promise(() => deleteMutation.mutateAsync(image.gid), {
@@ -53,7 +54,7 @@ function ImageCardBorehole({image, deleteMutation, handleEdit}) {
           {image.comment}
         </Typography>
       </CardContent>
-      {image.organisationid == authStore.getState().org_id && (
+      {image.organisationid == org_id && (
         <CardActions>
           <Button
             disabled={deleteMutation.isLoading}

@@ -119,9 +119,6 @@ export default function StationListDesktop({data, loading}) {
           case '#00FF00':
             text = 'Ok';
             break;
-          case null:
-            text = 'Inaktiv';
-            break;
         }
         return {
           ...elem,

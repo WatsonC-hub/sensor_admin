@@ -10,6 +10,7 @@ const authInitialState = {
   boreholeAccess: false,
   iotAccess: false,
   properties: {},
+  csrfToken: null,
 };
 
 export const authStore = create(
@@ -30,9 +31,10 @@ export const authStore = create(
           {
             properties: properties,
             boreholeAccess: properties.properties.boreholeAccess,
-            user: properties.properties.screen_name,
+            user: parseInt(properties.screenname),
             org_id: properties.properties.organisation.id,
             iotAccess: properties.properties.iotAccess,
+            csrfToken: properties.csrf_token,
           },
           false,
           'setProperties'
@@ -53,14 +55,14 @@ export const authStore = create(
           false,
           'setLoginExpired'
         ),
-      setBoreholeAccess: (boreholeAccess) =>
-        set(
-          {
-            boreholeAccess: boreholeAccess,
-          },
-          false,
-          'setBoreholeAccess'
-        ),
+      // setBoreholeAccess: (boreholeAccess) =>
+      //   set(
+      //     {
+      //       boreholeAccess: boreholeAccess,
+      //     },
+      //     false,
+      //     'setBoreholeAccess'
+      //   ),
     })),
     {
       name: 'auth-storage', // name of item in the storage (must be unique)

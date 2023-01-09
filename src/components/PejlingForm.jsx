@@ -12,6 +12,7 @@ import {
   FormControl,
   FormLabel,
   Box,
+  Link,
   Alert,
 } from '@mui/material';
 import {isValid} from 'date-fns';
@@ -252,18 +253,6 @@ export default function PejlingForm({
                   </FormControl>
                 </Grid>
               )}
-              {/* {isWaterlevel && (
-            <>
-              <Grid item xs={12} sm={7}>
-                <Box p={0} border={1} borderRadius={8} borderColor="gray">
-                  <p>
-                    Målepunktskote:{" "}
-                    {pejlingOutOfRange ? "" : currentMP.elevation}
-                  </p>
-                </Box>
-              </Grid>
-            </>
-          )} */}
               <Grid item xs={12} sm={12}>
                 <TextField
                   sx={{

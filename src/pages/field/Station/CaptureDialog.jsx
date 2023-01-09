@@ -8,13 +8,15 @@ import Slide from '@mui/material/Slide';
 import QrReader from 'react-qr-scanner';
 import {useNavigate} from 'react-router-dom';
 import {Typography} from '@mui/material';
+import useBreakpoints from '../../../hooks/useBreakpoints';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 export default function CaptureDialog({handleClose, open}) {
-  // const classes = useStyles();
+  const {isTouch} = useBreakpoints();
+  console.log(isTouch);
   const navigate = useNavigate();
 
   const [showText, setShowText] = useState(true);
@@ -68,11 +70,15 @@ export default function CaptureDialog({handleClose, open}) {
         )}
         <QrReader
           delay={100}
-          style={previewStyle}
+          // style={previewStyle}
           onError={handleError}
           onScan={handleScan}
           onLoad={(e) => setShowText(false)}
-          facingMode="rear"
+          constraints={{
+            video: {
+              facingMode: 'environment',
+            },
+          }}
         />
       </div>
     </Dialog>
