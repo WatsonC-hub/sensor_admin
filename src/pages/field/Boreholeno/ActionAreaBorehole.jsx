@@ -62,7 +62,7 @@ function BottomNav({setFormToShow, canEdit}) {
           setFormToShow('CAMERA');
         }}
       />
-      <BottomNavigationAction
+      {/* <BottomNavigationAction
         sx={borderGrey}
         disabled={!canEdit}
         label="Stamdata"
@@ -71,7 +71,7 @@ function BottomNav({setFormToShow, canEdit}) {
         onClick={() => {
           setFormToShow('STAMDATA');
         }}
-      />
+      /> */}
     </BottomNavigation>
   );
 }

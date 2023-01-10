@@ -51,7 +51,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
         setDialogOpen={setDialogOpen}
         onOkDelete={deleteRow}
       />
-      <Grid container style={{marginLeft: '2%'}}>
+      <Grid container>
         <StraightenIcon style={{marginTop: '0.5%', transform: 'rotate(90deg)'}} />
         <Grid item xs={8}>
           <Typography gutterBottom variant="h5" component="h2">

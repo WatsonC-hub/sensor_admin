@@ -27,7 +27,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import {useAtom} from 'jotai';
 import {captureDialogAtom} from './state/atoms';
 import useWhatPage from './hooks/useWhatPage';
-import {useQueryClient} from '@tanstack/react-query';
+import {useQueryClient, useQuery} from '@tanstack/react-query';
+import {apiClient} from './apiClient';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);
@@ -35,9 +36,9 @@ const LogOut = ({element: Element}) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    queryClient.invalidateQueries();
     resetState();
     navigate('/');
+    queryClient.clear();
   };
 
   return <Box onClick={handleLogout}>{Element}</Box>;
@@ -61,15 +62,24 @@ const AppBarLayout = ({children}) => {
 
 const NavBarNotifications = () => {
   const navigate = useNavigate();
+
+  const {data, isLoading, error} = useQuery(['overblik'], async ({signal}) => {
+    const {data} = await apiClient.get(`/sensor_admin/overblik`, {
+      signal,
+    });
+    return data;
+  });
+
   return (
     <Badge
-      badgeContent={17}
+      badgeContent={data?.filter((item) => item.flag === 3).length}
       color="error"
       onClick={() => {
         if (!window.location.pathname.includes('/notifikationer')) {
           navigate('/admin/notifikationer');
         }
       }}
+      sx={{cursor: 'pointer'}}
     >
       <NotificationsIcon />
     </Badge>
@@ -152,7 +162,11 @@ const NavBarMenu = () => {
 };
 
 const NavBar = ({children}) => {
-  const [authenticated, iotAccess] = authStore((state) => [state.authenticated, state.iotAccess]);
+  const [authenticated, iotAccess, adminAccess] = authStore((state) => [
+    state.authenticated,
+    state.iotAccess,
+    state.adminAccess,
+  ]);
   const [open, setOpen] = useAtom(captureDialogAtom);
   const navigate = useNavigate();
   const theme = useTheme();

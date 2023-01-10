@@ -2,7 +2,7 @@ import React from 'react';
 import {Card, CardContent, CardHeader, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 
-const ChoiseCard = ({navigateTo, title, text, icon: Icon}) => {
+const ChoiseCard = ({navigateTo, title, text, icon: Icon, sx}) => {
   let navigate = useNavigate();
   return (
     <Card
@@ -15,6 +15,7 @@ const ChoiseCard = ({navigateTo, title, text, icon: Icon}) => {
         backgroundColor: 'primary.light',
         color: 'primary.contrastText',
         cursor: 'pointer',
+        ...sx,
       }}
       onClick={() => navigate(navigateTo)}
     >

@@ -323,9 +323,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         />
       )}
       {formToShow === 'CAMERA' && <BoreholeImages boreholeno={boreholeno} />}
-      {formToShow === 'STAMDATA' && (
+      {/* {formToShow === 'STAMDATA' && (
         <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
-      )}
+      )} */}
       <ActionAreaBorehole
         open={open}
         boreholeno={boreholeno}

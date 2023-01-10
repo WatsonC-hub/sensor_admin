@@ -9,6 +9,7 @@ const authInitialState = {
   loginExpired: false,
   boreholeAccess: false,
   iotAccess: false,
+  adminAccess: false,
   properties: {},
   csrfToken: null,
 };
@@ -35,6 +36,7 @@ export const authStore = create(
             org_id: properties.properties.organisation.id,
             iotAccess: properties.properties.iotAccess,
             csrfToken: properties.csrf_token,
+            adminAccess: properties.properties.adminAccess,
           },
           false,
           'setProperties'

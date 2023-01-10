@@ -9,11 +9,12 @@ import Chooser from './Chooser';
 
 const Redirecter = ({SensorField}) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [authChecked, setAuthChecked] = useState(false);
-  const [iotAccess] = authStore((state) => [state.iotAccess]);
+  const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
 
   useEffect(() => {
-    if (!iotAccess) {
+    if (!iotAccess && location.pathname == '/') {
       navigate('/field');
     }
     setAuthChecked(true);
@@ -23,6 +24,12 @@ const Redirecter = ({SensorField}) => {
   // useEffect(() => {
   //   navigate('/field');
   // }, []);
+
+  useEffect(() => {
+    if (!adminAccess && location.pathname == '/') {
+      navigate('/field');
+    }
+  }, [adminAccess]);
 
   return (
     <>
