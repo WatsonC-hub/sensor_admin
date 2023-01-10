@@ -10,6 +10,7 @@
 
 # production
 /build
+/dist
 .vscode
 
 # misc
@@ -22,3 +23,5 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.env
