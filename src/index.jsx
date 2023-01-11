@@ -17,7 +17,7 @@ if (import.meta.env.PROD) {
   Sentry.init({
     dsn: 'https://bed215865bd94af0a00cf106f9e990b0@o4504178973474816.ingest.sentry.io/4504178982715392',
     integrations: [new BrowserTracing()],
-    environment: import.meta.env.ENVIRONMENT,
+    environment: import.meta.env.VITE_ENVIRONMENT,
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production
