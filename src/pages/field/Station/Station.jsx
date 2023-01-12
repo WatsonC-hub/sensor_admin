@@ -6,10 +6,10 @@ import {
   insertMeasurement,
   updateMeasurement,
   deleteMeasurement,
-  getMeasurements,
+  //getMeasurements,
   insertMp,
   updateMp,
-  getMP,
+  //getMP,
   deleteMP,
   getStamdataByStation,
   getService,
@@ -30,6 +30,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {stamdataStore} from '../../../state/store';
 import {toast} from 'react-toastify';
 import useFormData from '../../../hooks/useFormData';
+import {apiClient} from 'src/apiClient';
 
 export default function Station({stationId}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
@@ -103,14 +104,26 @@ export default function Station({stationId}) {
   const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;
   const isCalculated = stamdata ? stamdata?.calculated : false;
 
-  const {data: watlevmp} = useQuery(['watlevmp', stationId], () => getMP(stationId), {
-    enabled: stationId !== -1 && stationId !== null,
-    placeholderData: [],
-  });
+  const {data: watlevmp} = useQuery(
+    ['watlevmp', stationId],
+    //() => getMP(stationId), {
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
+      return data;
+    },
+    {
+      enabled: stationId !== -1 && stationId !== null,
+      placeholderData: [],
+    }
+  );
 
   const {data: measurements} = useQuery(
+    //() => getMeasurements(stationId),
     ['measurements', stationId],
-    () => getMeasurements(stationId),
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);
+      return data;
+    },
     {
       enabled: stationId !== -1 && stationId !== null,
       placeholderData: [],
