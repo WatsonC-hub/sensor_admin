@@ -135,7 +135,7 @@ export default function PejlingForm({
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          {isWaterlevel && !currentMP.elevation ? (
+          {isWaterlevel && mpData.length < 1 ? (
             <Grid item xs={12} sm={12} display="flex" justifyContent="center">
               <Alert
                 severity="error"

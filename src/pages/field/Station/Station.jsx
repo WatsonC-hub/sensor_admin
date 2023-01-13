@@ -193,7 +193,6 @@ export default function Station({stationId}) {
   });
 
   const handlePejlingSubmit = () => {
-    setFormToShow(null);
     const userId = sessionStorage.getItem('user');
     const payload = {
       ...pejlingData,
