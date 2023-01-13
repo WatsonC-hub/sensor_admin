@@ -112,7 +112,7 @@ export default function PejlingFormBorehole({
         </Typography>
 
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          {!currentMP.elevation ? (
+          {mpData.length < 1 ? (
             <Grid item xs={12} sm={12} display="flex" justifyContent="center">
               <Alert
                 severity="error"

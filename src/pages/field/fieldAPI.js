@@ -58,21 +58,21 @@ async function getLocationTypes() {
   return data.features;
 }
 
-async function getMeasurements(stationId) {
-  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const {data} = await axios.get(url);
-  return data.result;
-}
+// async function getMeasurements(stationId) {
+//   const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${
+//     authStore.getState().sessionId
+//   }`;
+//   const {data} = await axios.get(url);
+//   return data.result;
+// }
 
-async function getMP(stationId) {
-  const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const {data} = await axios.get(url);
-  return data.result;
-}
+// async function getMP(stationId) {
+//   const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${
+//     authStore.getState().sessionId
+//   }`;
+//   const {data} = await axios.get(url);
+//   return data.result;
+// }
 
 async function getService(stationId) {
   const url = `${extEndpoint}/station/service/${stationId}`;
@@ -144,11 +144,11 @@ async function insertService(formData) {
   return resp;
 }
 
-async function getImage(loc_id) {
-  const url = `${extEndpoint}/image/${loc_id}`;
-  const {data} = await axios.get(url);
-  return data.data;
-}
+// async function getImage(loc_id) {
+//   const url = `${extEndpoint}/image/${loc_id}`;
+//   const {data} = await axios.get(url);
+//   return data.data;
+// }
 
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(',');
@@ -289,7 +289,7 @@ export {
   getTableData,
   // getSingleElem,
   getStations,
-  getMeasurements,
+  //getMeasurements,
   insertMeasurement,
   updateMeasurement,
   deleteMeasurement,
@@ -307,7 +307,7 @@ export {
   createUser,
   loginUser,
   resetPassword,
-  getMP,
+  //getMP,
   deleteMP,
   takeHomeEquipment,
   updateStamdata,
@@ -318,7 +318,7 @@ export {
   insertService,
   deleteService,
   postImage,
-  getImage,
+  //getImage,
   deleteImage,
   updateImage,
   loginAPI,

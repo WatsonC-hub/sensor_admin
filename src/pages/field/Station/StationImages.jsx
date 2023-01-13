@@ -5,9 +5,10 @@ import ImageViewer from '../../../components/ImageViewer';
 import {PhotoCameraRounded} from '@mui/icons-material';
 import {Grid} from '@mui/material';
 import SaveImageDialog from '../../../components/SaveImageDialog';
-import {deleteImage, getImage} from 'src/pages/field/fieldAPI';
+import {deleteImage} from 'src/pages/field/fieldAPI';
 import moment from 'moment';
 import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
+import {apiClient} from 'src/apiClient';
 
 function StationImages(props) {
   const [openCamera, setOpenCamera] = useState(false);
@@ -23,7 +24,13 @@ function StationImages(props) {
 
   const queryClient = useQueryClient();
 
-  const {data: images} = useQuery(['images', props.locationId], () => getImage(props.locationId));
+  const {data: images} = useQuery(
+    ['images', props.locationId], //() => getImage(props.locationId));
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/images/${props.locationId}`);
+      return data;
+    }
+  );
 
   const deleteImageMutation = useMutation((gid) => deleteImage(props.locationid, gid), {
     onSuccess: () => {
