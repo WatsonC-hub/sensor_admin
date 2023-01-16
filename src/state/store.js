@@ -68,7 +68,7 @@ export const authStore = create(
     })),
     {
       name: 'auth-storage', // name of item in the storage (must be unique)
-      getStorage: () => sessionStorage, // (optional) by default the 'localStorage' is used
+      getStorage: () => localStorage, // (optional) by default the 'localStorage' is used
     }
   )
 );
