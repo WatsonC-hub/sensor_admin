@@ -25,6 +25,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   function (error) {
+    // const originalRequest = error.config;
     if (error.response.status === 401) {
       authStore.setState({authenticated: false, loginExpired: true});
     }
