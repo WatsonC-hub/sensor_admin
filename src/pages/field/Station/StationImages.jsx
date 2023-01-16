@@ -32,7 +32,7 @@ function StationImages(props) {
     }
   );
 
-  const deleteImageMutation = useMutation((gid) => deleteImage(props.locationid, gid), {
+  const deleteImageMutation = useMutation((gid) => deleteImage(props.locationId, gid), {
     onSuccess: () => {
       queryClient.invalidateQueries(['images', props.locationId]);
     },
