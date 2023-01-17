@@ -158,7 +158,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
   const stamdataMutation = useMutation(postStamdata, {
     onSuccess: (data) => {
-      navigate('/');
+      navigate(-1);
       queryClient.invalidateQueries('station_list');
       queryClient.invalidateQueries('map_data');
     },
