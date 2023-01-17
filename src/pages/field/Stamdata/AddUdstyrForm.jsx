@@ -68,7 +68,10 @@ export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, ts
   });
 
   const sensorsForCalyspoId = (id) =>
-    availableUnits?.filter((unit) => unit.calypso_id === id && unit.sensortypeid === tstype_id);
+    availableUnits?.filter(
+      (unit) =>
+        (unit.calypso_id === id || unit.terminal_id === id) && unit.sensortypeid === tstype_id
+    );
 
   const handleCalypsoId = (event) => {
     setUnitData({

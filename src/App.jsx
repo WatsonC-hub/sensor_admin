@@ -8,6 +8,8 @@ import LoadingSkeleton from './LoadingSkeleton';
 import {apiClient} from './apiClient';
 import Redirecter from './Redirecter';
 import NavBar from './NavBar';
+import {ErrorBoundary} from 'react-error-boundary';
+import {Typography} from '@mui/material';
 
 function App() {
   const [authenticated] = authStore((state) => [state.authenticated]);
@@ -35,9 +37,25 @@ function App() {
   }
 
   return (
-    <Suspense fallback={<LoadingSkeleton />}>
-      <Redirecter SensorField={SensorField} />
-    </Suspense>
+    <ErrorBoundary
+      FallbackComponent={() => (
+        <>
+          <NavBar />
+          <Typography variant="h4" component="h1" sx={{textAlign: 'center', mt: 5}}>
+            Noget gik galt. Prøver at genindlæse siden.
+          </Typography>
+        </>
+      )}
+      onError={(error, componentStack) => {
+        if (error.message.includes('Failed to fetch dynamically imported module')) {
+          window.location.reload();
+        }
+      }}
+    >
+      <Suspense fallback={<LoadingSkeleton />}>
+        <Redirecter SensorField={SensorField} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
