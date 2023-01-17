@@ -314,7 +314,7 @@ export default function EditStamdata({setFormToShow, stationId}) {
             </Tabs>
           </AppBar>
           <Swiper
-            initialSlide={0}
+            initialSlide={2}
             onSwiper={(swiper) => {
               setSwiper((prev) => {
                 setValue(0);
