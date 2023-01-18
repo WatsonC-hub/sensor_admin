@@ -48,7 +48,7 @@ function App() {
       )}
       onError={(error, componentStack) => {
         if (error.message.includes('Failed to fetch dynamically imported module')) {
-          window.location.reload();
+          window.location.reload(true);
         }
       }}
     >
