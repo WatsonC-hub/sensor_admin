@@ -203,7 +203,6 @@ export default function PejlingFormBorehole({
                     endAdornment: <InputAdornment position="start">m</InputAdornment>,
                   }}
                   InputLabelProps={{shrink: true}}
-                  fullWidth
                   value={formData.disttowatertable_m}
                   onChange={(e) => changeFormData('disttowatertable_m', e.target.value)}
                   disabled={notPossible || !currentMP.elevation}
@@ -296,6 +295,7 @@ export default function PejlingFormBorehole({
                     '& .MuiOutlinedInput-root': {
                       '& > fieldset': {borderColor: 'primary.main'},
                     },
+                    maxWidth: '600px',
                   }}
                   label={
                     <Typography variant="h6" component="h3">

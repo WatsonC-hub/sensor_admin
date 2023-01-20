@@ -40,6 +40,7 @@ export default function UdstyrForm(props) {
             label="Startdato"
             value={moment(unit.startdato)}
             onChange={(date) => setUnitValue('startdato', moment(date).format('YYYY-MM-DD HH:mm'))}
+            fullWidth
           />
         )}
       </Grid>
@@ -49,6 +50,7 @@ export default function UdstyrForm(props) {
             label="Slutdato"
             value={moment(unit.slutdato)}
             onChange={(date) => setUnitValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'))}
+            fullWidth
           />
         )}
       </Grid>
