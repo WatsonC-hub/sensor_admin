@@ -36,7 +36,7 @@ export default function Station({stationId}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
     timeofmeas: new Date(),
-    measurement: 0,
+    disttowatertable_m: 0,
     useforcorrection: 0,
     comment: '',
   });
@@ -146,7 +146,7 @@ export default function Station({stationId}) {
 
       if (elev) {
         let dynamicDate = pejlingData.timeofmeas;
-        let dynamicMeas = elev - pejlingData.measurement;
+        let dynamicMeas = elev - pejlingData.disttowatertable_m;
         setDynamic([dynamicDate, dynamicMeas]);
       } else {
         setDynamic([]);
@@ -164,12 +164,12 @@ export default function Station({stationId}) {
 
         return {
           ...e,
-          waterlevel: e.measurement ? elev - e.measurement : null,
+          waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
         };
       });
     } else {
       ctrls = measurements.map((elem) => {
-        return {...elem, waterlevel: elem.measurement};
+        return {...elem, waterlevel: elem.disttowatertable_m};
       });
     }
     setcontrol(ctrls);
@@ -184,20 +184,20 @@ export default function Station({stationId}) {
     setFormToShow('ADDMAALEPUNKT');
   };
 
-  const pejlingMutate = useMutation((data) => {
+  const pejlingMutate = useMutation(async (data) => {
     if (data.gid === -1) {
-      return insertMeasurement(data);
+      await apiClient.post(`/sensor_field/station/measurements/${stationId}`, data);
+      //return insertMeasurement(data);
     } else {
-      return updateMeasurement(data);
+      await apiClient.put(`/sensor_field/station/measurements/${stationId}/${data.gid}`, data);
+      //return updateMeasurement(data);
     }
   });
 
   const handlePejlingSubmit = () => {
-    const userId = sessionStorage.getItem('user');
     const payload = {
       ...pejlingData,
       stationid: stationId,
-      userid: userId,
       isWaterlevel: isWaterlevel,
     };
     payload.timeofmeas = moment(payload.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
@@ -289,6 +289,7 @@ export default function Station({stationId}) {
     } else {
       return (data) => {
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
+        data.disttowatertable_m = data.measurement;
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING');
       };
@@ -314,7 +315,7 @@ export default function Station({stationId}) {
       };
     } else {
       return (gid) => {
-        deleteMeasurement(stationId, gid).then((res) => {
+        apiClient.delete(`/sensor_field/station/measurements/${stationId}/${gid}`).then((res) => {
           queryClient.invalidateQueries(['measurements', stationId]);
           resetPejlingData();
           setFormToShow(null);

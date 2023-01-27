@@ -111,12 +111,12 @@ export default function PejlingForm({
   };
 
   const handleDistanceChange = (e) => {
-    changeFormData('measurement', e.target.value);
+    changeFormData('disttowatertable_m', e.target.value);
   };
 
   const handleNotPossibleChange = (e) => {
     setNotPossible(!notPossible);
-    changeFormData('measurement', null);
+    changeFormData('disttowatertable_m', null);
   };
 
   return (
@@ -187,7 +187,7 @@ export default function PejlingForm({
                   }}
                   InputLabelProps={{shrink: true}}
                   fullWidth
-                  value={formData.measurement}
+                  value={formData.disttowatertable_m}
                   onChange={handleDistanceChange}
                   disabled={notPossible || !currentMP.elevation}
                 />
