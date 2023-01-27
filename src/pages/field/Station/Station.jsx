@@ -318,7 +318,6 @@ export default function Station({stationId}) {
         apiClient.delete(`/sensor_field/station/measurements/${stationId}/${gid}`).then((res) => {
           queryClient.invalidateQueries(['measurements', stationId]);
           resetPejlingData();
-          setFormToShow(null);
           toast.success('Kontrolmåling slettet');
         });
       };

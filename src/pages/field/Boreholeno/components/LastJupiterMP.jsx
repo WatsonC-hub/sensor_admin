@@ -31,8 +31,8 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddM
   const handleQuickAdd = () => {
     const payload = {
       gid: -1,
-      startdate: moment(data.startdate).format('YYYY-MM-DD'),
-      enddate: moment('2099-01-01').format('YYYY-MM-DD'),
+      startdate: moment(data.startdate).toISOString(),
+      enddate: moment('2099-01-01').toISOString(),
       elevation: data.elevation,
       mp_description: data.descriptio,
     };
