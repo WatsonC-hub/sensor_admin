@@ -9,7 +9,7 @@ const OwnDatePicker = (props) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={daLocale}>
       <TextField
-        id={props.label}
+        id={typeof props.label == 'string' ? props.label : props.label.props.children}
         label={props.label}
         type="datetime-local"
         error={props.error}

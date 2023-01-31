@@ -35,23 +35,23 @@ import {apiClient} from 'src/apiClient';
 export default function Station({stationId}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
-    timeofmeas: new Date(),
-    disttowatertable_m: 0,
+    timeofmeas: moment(),
+    measurement: 0,
     useforcorrection: 0,
     comment: '',
   });
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
-    startdate: new Date(),
-    enddate: new Date('2099-01-01'),
+    startdate: moment(),
+    enddate: moment('2099-01-01'),
     elevation: 0,
     mp_description: '',
   });
 
   const [serviceData, setServiceData, changeServiceData, resetServiceData] = useFormData({
     gid: -1,
-    dato: new Date(),
+    dato: moment(),
     batteriskift: false,
     tilsyn: false,
     kommentar: '',
@@ -122,7 +122,9 @@ export default function Station({stationId}) {
     ['measurements', stationId],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);
-      return data;
+      return data.map((m) => {
+        return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
+      });
     },
     {
       enabled: stationId !== -1 && stationId !== null,
@@ -146,7 +148,7 @@ export default function Station({stationId}) {
 
       if (elev) {
         let dynamicDate = pejlingData.timeofmeas;
-        let dynamicMeas = elev - pejlingData.disttowatertable_m;
+        let dynamicMeas = elev - pejlingData.measurement;
         setDynamic([dynamicDate, dynamicMeas]);
       } else {
         setDynamic([]);
@@ -164,12 +166,12 @@ export default function Station({stationId}) {
 
         return {
           ...e,
-          waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+          waterlevel: e.measurement ? elev - e.measurement : null,
         };
       });
     } else {
       ctrls = measurements.map((elem) => {
-        return {...elem, waterlevel: elem.disttowatertable_m};
+        return {...elem, waterlevel: elem.measurement};
       });
     }
     setcontrol(ctrls);
@@ -197,7 +199,6 @@ export default function Station({stationId}) {
   const handlePejlingSubmit = () => {
     const payload = {
       ...pejlingData,
-      stationid: stationId,
       isWaterlevel: isWaterlevel,
     };
     payload.timeofmeas = moment(payload.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
@@ -289,7 +290,7 @@ export default function Station({stationId}) {
     } else {
       return (data) => {
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-        data.disttowatertable_m = data.measurement;
+        data.measurement = data.measurement;
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING');
       };

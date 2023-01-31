@@ -115,12 +115,12 @@ export default function PejlingForm({
   };
 
   const handleDistanceChange = (e) => {
-    changeFormData('disttowatertable_m', e.target.value);
+    changeFormData('measurement', e.target.value);
   };
 
   const handleNotPossibleChange = (e) => {
     setNotPossible(!notPossible);
-    changeFormData('disttowatertable_m', null);
+    changeFormData('measurement', null);
   };
 
   return (
@@ -191,9 +191,9 @@ export default function PejlingForm({
                   }}
                   InputLabelProps={{shrink: true}}
                   fullWidth
-                  value={formData.disttowatertable_m}
+                  value={formData.measurement}
                   onChange={handleDistanceChange}
-                  disabled={notPossible || currentMP.elevation === null}
+                  disabled={notPossible || (isWaterlevel && currentMP.elevation === null)}
                 />
               </Grid>
               {isWaterlevel && (
@@ -289,7 +289,11 @@ export default function PejlingForm({
                     handleClickSubmit();
                     handleSubmit();
                   }}
-                  disabled={pejlingOutOfRange || disableSubmit || currentMP.elevation === null}
+                  disabled={
+                    pejlingOutOfRange ||
+                    disableSubmit ||
+                    (isWaterlevel && currentMP.elevation === null)
+                  }
                   startIcon={<SaveIcon />}
                 >
                   Gem
