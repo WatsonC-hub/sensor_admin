@@ -106,7 +106,7 @@ function MobileBottomNav({setFormToShow, canEdit, isCalculated, isWaterlevel}) {
   const open = Boolean(anchorEl);
   let navigate = useNavigate();
 
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 

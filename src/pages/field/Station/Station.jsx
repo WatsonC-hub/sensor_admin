@@ -63,7 +63,6 @@ export default function Station({stationId}) {
 
   const formToShow = location.hash ? location.hash.replace('#', '') : null;
   const setFormToShow = (form) => {
-    console.log(location.history);
     if (form) {
       navigate('#' + form, {replace: !!location.hash});
     } else {
@@ -132,10 +131,19 @@ export default function Station({stationId}) {
     }
   );
 
-  const {data: services} = useQuery(['service', stationId], () => getService(stationId), {
-    enabled: stationId !== -1 && stationId !== null,
-    placeholderData: [],
-  });
+  const {data: services} = useQuery(
+    ['service', stationId],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/service/${stationId}`);
+      return data.map((m) => {
+        return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
+      });
+    },
+    {
+      enabled: stationId !== -1 && stationId !== null,
+      placeholderData: [],
+    }
+  );
 
   useEffect(() => {
     if (watlevmp.length > 0) {
@@ -242,11 +250,13 @@ export default function Station({stationId}) {
     });
   };
 
-  const serviceMutate = useMutation((data) => {
+  const serviceMutate = useMutation(async (data) => {
     if (data.gid === -1) {
-      return insertService(data);
+      await apiClient.post(`/sensor_field/station/service/${stationId}`, data);
+      //return insertMeasurement(data);
     } else {
-      return updateService(data);
+      await apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
+      //return updateMeasurement(data);
     }
   });
 
@@ -270,7 +280,11 @@ export default function Station({stationId}) {
         queryClient.invalidateQueries(['service', stationId]);
       },
       onError: (error) => {
-        toast.error('Der skete en fejl');
+        if (error.response.data.detail.includes('No unit')) {
+          toast.error('Der er ingen enhed tilknyttet på denne dato');
+        } else {
+          toast.error('Der skete en fejl');
+        }
       },
     });
   };
@@ -308,8 +322,8 @@ export default function Station({stationId}) {
       };
     } else if (type === 'service') {
       return (gid) => {
-        deleteService(stationId, gid).then((res) => {
-          queryClient.invalidateQueries(['services', stationId]);
+        apiClient.delete(`/sensor_field/station/service/${stationId}/${gid}`).then((res) => {
+          queryClient.invalidateQueries(['service', stationId]);
           resetServiceData();
           toast.success('Tilsyn slettet');
         });
@@ -386,7 +400,7 @@ export default function Station({stationId}) {
             formData={serviceData}
             changeFormData={changeServiceData}
             handleSubmit={handleServiceSubmit}
-            resetFormData={() => setFormToShow(null)}
+            resetFormData={resetServiceData}
           />
           <TilsynTable
             services={services}
