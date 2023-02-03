@@ -86,6 +86,7 @@ export default function MaalepunktForm({
               label={'Start dato'}
               value={formData.startdate}
               onChange={(date) => handleStartdateChange(date)}
+              fullWidth
             />
           </Grid>
           {formData.gid !== -1 && (
@@ -94,6 +95,7 @@ export default function MaalepunktForm({
                 label={'Slut dato'}
                 value={formData.enddate}
                 onChange={(date) => handleEnddateChange(date)}
+                fullWidth
               />
             </Grid>
           )}

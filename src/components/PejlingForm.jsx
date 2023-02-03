@@ -80,6 +80,10 @@ export default function PejlingForm({
         setCurrentMP(mp[0]);
       } else {
         setPejlingOutOfRange(true);
+        setCurrentMP({
+          elevation: null,
+          mp_description: '',
+        });
       }
     }
   }, [formData.gid, mpData]);
@@ -189,7 +193,7 @@ export default function PejlingForm({
                   fullWidth
                   value={formData.measurement}
                   onChange={handleDistanceChange}
-                  disabled={notPossible || !currentMP.elevation}
+                  disabled={notPossible || (isWaterlevel && currentMP.elevation === null)}
                 />
               </Grid>
               {isWaterlevel && (
@@ -285,7 +289,11 @@ export default function PejlingForm({
                     handleClickSubmit();
                     handleSubmit();
                   }}
-                  disabled={pejlingOutOfRange || disableSubmit || !currentMP.elevation}
+                  disabled={
+                    pejlingOutOfRange ||
+                    disableSubmit ||
+                    (isWaterlevel && currentMP.elevation === null)
+                  }
                   startIcon={<SaveIcon />}
                 >
                   Gem
