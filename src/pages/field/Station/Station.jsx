@@ -108,7 +108,13 @@ export default function Station({stationId}) {
     //() => getMP(stationId), {
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
-      return data;
+      return data.map((m) => {
+        return {
+          ...m,
+          startdate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
+          enddate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
+        };
+      });
     },
     {
       enabled: stationId !== -1 && stationId !== null,
@@ -171,7 +177,6 @@ export default function Station({stationId}) {
         const elev = watlevmp.filter((e2) => {
           return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
         })[0]?.elevation;
-
         return {
           ...e,
           waterlevel: e.measurement ? elev - e.measurement : null,
