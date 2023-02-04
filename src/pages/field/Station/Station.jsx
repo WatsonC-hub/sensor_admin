@@ -2,21 +2,7 @@ import React, {useEffect, useState} from 'react';
 import BearingGraph from './BearingGraph';
 import ActionArea from './ActionArea';
 import PejlingForm from '../../../components/PejlingForm';
-import {
-  insertMeasurement,
-  updateMeasurement,
-  deleteMeasurement,
-  //getMeasurements,
-  insertMp,
-  updateMp,
-  //getMP,
-  deleteMP,
-  getStamdataByStation,
-  getService,
-  updateService,
-  insertService,
-  deleteService,
-} from 'src/pages/field/fieldAPI';
+import {getStamdataByStation} from 'src/pages/field/fieldAPI';
 import EditStamdata from './EditStamdata';
 import PejlingMeasurements from './PejlingMeasurements';
 import MaalepunktForm from '../../../components/MaalepunktForm';
@@ -202,10 +188,8 @@ export default function Station({stationId}) {
   const pejlingMutate = useMutation(async (data) => {
     if (data.gid === -1) {
       await apiClient.post(`/sensor_field/station/measurements/${stationId}`, data);
-      //return insertMeasurement(data);
     } else {
       await apiClient.put(`/sensor_field/station/measurements/${stationId}/${data.gid}`, data);
-      //return updateMeasurement(data);
     }
   });
 
@@ -228,18 +212,16 @@ export default function Station({stationId}) {
     });
   };
 
-  const watlevmpMutate = useMutation((data) => {
+  const watlevmpMutate = useMutation(async (data) => {
     if (data.gid === -1) {
-      return insertMp(data);
+      await apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
     } else {
-      return updateMp(data);
+      await apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
     }
   });
 
   const handleMpSubmit = () => {
-    // setFormToShow("ADDMAALEPUNKT");
-    const userId = sessionStorage.getItem('user');
-    const payload = {...mpData, userid: userId, stationid: stationId};
+    const payload = {...mpData, stationid: stationId};
     payload.startdate = moment(payload.startdate).format('YYYY-MM-DD HH:mm:ss');
     payload.enddate = moment(payload.enddate).format('YYYY-MM-DD HH:mm:ss');
 
@@ -258,10 +240,8 @@ export default function Station({stationId}) {
   const serviceMutate = useMutation(async (data) => {
     if (data.gid === -1) {
       await apiClient.post(`/sensor_field/station/service/${stationId}`, data);
-      //return insertMeasurement(data);
     } else {
       await apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
-      //return updateMeasurement(data);
     }
   });
 
@@ -319,7 +299,7 @@ export default function Station({stationId}) {
   const handleDelete = (type) => {
     if (type === 'watlevmp') {
       return (gid) => {
-        deleteMP(stationId, gid).then((res) => {
+        apiClient.delete(`/sensor_field/station/watlevmp/${stationId}/${gid}`).then((res) => {
           queryClient.invalidateQueries(['watlevmp', stationId]);
           resetMpData();
           toast.success('Målepunkt slettet');
