@@ -6,6 +6,7 @@ import axios from 'axios';
 import {useQuery} from '@tanstack/react-query';
 import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/pages/field/fieldAPI';
+import React, {useEffect, useState} from 'react';
 
 const selectorOptions = {
   buttons: [
@@ -237,11 +238,21 @@ const transformQAData = (data) => {
 };
 
 function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
-  // const [name, unit, stationtype] = stamdataStore((state) => [
-  //   state.timeseries.ts_name,
-  //   state.timeseries.unit,
-  //   state.timeseries.tstype_name,
-  // ]);
+  const [selectedData, setSelectedData] = useState({x: [], y: [], colors: []});
+
+  const handlePlotlySelected = (eventData) => {
+    const x = [];
+    const y = [];
+    const colors = [];
+    //for (let i = 0; i < N; i++) colors.push(color1Light);
+    console.log(eventData);
+    eventData.points.forEach((pt) => {
+      x.push(pt.x);
+      y.push(pt.y);
+      //colors[pt.pointNumber] = color1;
+    });
+    setSelectedData({x, y, colors});
+  };
 
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
@@ -289,10 +300,9 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
 
   const {shapelist, annotateList} = transformQAData(qaData);
 
-;
-
   return (
     <Plot
+      onSelected={handlePlotlySelected}
       id="graph"
       data={[
         {
@@ -348,9 +358,9 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
       }
       config={{
         responsive: true,
-        modeBarButtons: [
+        buttons: [
           [downloadButton, makeLinkButton],
-          ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+          ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
         ],
 
         displaylogo: false,

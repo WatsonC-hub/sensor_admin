@@ -2,7 +2,7 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Plot from 'react-plotly.js';
 import moment from 'moment';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useQuery} from '@tanstack/react-query';
 import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/pages/field/fieldAPI';
@@ -95,15 +95,10 @@ function exportToCsv(filename, rows) {
 const layout1 = {
   xaxis: {
     rangeselector: selectorOptions,
-    /*rangeslider: {},*/
     autorange: true,
     type: 'date',
-    //range:["2020-12-01T00:00:00", A],
-    //domain: [0, 0.97],
     showline: true,
   },
-
-  //xaxis: {domain: [0, 0.9]},
   yaxis: {
     title: {
       text: '',
@@ -184,14 +179,32 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     state.timeseries.unit,
     state.timeseries.tstype_name,
   ]);
+
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [xRange, setXRange] = useState(initRange);
+  const [layout, setLayout] = useState(matches ? layout3 : layout1);
+  const [dragmode, setDragmode] = useState('zoom');
+
+  useEffect(() => {
+    setLayout((prev) => {
+      return {...(matches ? layout3 : layout1), dragmode: dragmode};
+    });
+  }, [matches]);
 
   const handleXRangeChange = (e) => {
-    console.log(e);
+    if (e['dragmode']) {
+      // setXRange(initRange);
+      setLayout((prev) => {
+        return {...prev, dragmode: e['dragmode']};
+      });
+      return;
+    }
     if (e['xaxis.range[0]'] === undefined) {
       setXRange(initRange);
       return;
     }
+
     let x0 = moment(e['xaxis.range[0]']);
     let x1 = moment(e['xaxis.range[1]']);
 
@@ -207,7 +220,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const {data: graphData} = useQuery(
     ['graphData', ts_id, xRange],
     async ({signal}) => {
-      const {data} = await apiClient.get(`/data/test/${ts_id}`, {
+      const {data} = await apiClient.get(`/data/timeseriesV2/${ts_id}`, {
         signal,
         params: {
           start: xRange[0],
@@ -229,8 +242,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   var downloadButton = {
     name: 'Download data',
@@ -305,28 +316,12 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
         },
       ]}
-      layout={
-        matches
-          ? {
-              ...layout3,
-              yaxis: {
-                ...layout3.yaxis,
-                //title: stationtype + ', ' + unit,
-              },
-            }
-          : {
-              ...layout1,
-              yaxis: {
-                ...layout1.yaxis,
-                title: stationtype + ', ' + unit,
-              },
-            }
-      }
+      layout={layout}
       config={{
         responsive: true,
         modeBarButtons: [
           [downloadButton, makeLinkButton],
-          ['zoom2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+          ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
         ],
 
         displaylogo: false,

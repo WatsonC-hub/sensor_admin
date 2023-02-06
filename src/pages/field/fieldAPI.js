@@ -58,98 +58,6 @@ async function getLocationTypes() {
   return data.features;
 }
 
-// async function getMeasurements(stationId) {
-//   const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${
-//     authStore.getState().sessionId
-//   }`;
-//   const {data} = await axios.get(url);
-//   return data.result;
-// }
-
-// async function getMP(stationId) {
-//   const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${
-//     authStore.getState().sessionId
-//   }`;
-//   const {data} = await axios.get(url);
-//   return data.result;
-// }
-
-async function getService(stationId) {
-  const url = `${extEndpoint}/station/service/${stationId}`;
-  const {data} = await axios.get(url);
-  return data.result;
-}
-
-async function getUnitHistory(stationId) {
-  const {data} = await axios.get(`${extEndpoint}/stamdata/unithistory/${stationId}`);
-  return data.data;
-}
-
-async function insertMeasurement(formData) {
-  const stationId = formData['stationid'];
-  const url = `${extEndpoint}/station/measurements/${stationId}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const resp = await axios.post(url, formData);
-  return resp;
-}
-
-async function updateMeasurement(formData) {
-  const gid = formData['gid'];
-  const stationId = formData['stationid'];
-  const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const resp = await axios.put(url, formData);
-  return resp;
-}
-
-async function insertMp(formData) {
-  const stationId = formData['stationid'];
-  const url = `${extEndpoint}/station/watlevmp/${stationId}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const resp = await axios.post(url, formData);
-  return resp;
-}
-
-async function updateMp(formData) {
-  const gid = formData['gid'];
-  const stationId = formData['stationid'];
-  const url = `${extEndpoint}/station/watlevmp/${stationId}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const resp = await axios.put(url, formData);
-  return resp;
-}
-
-async function updateService(formData) {
-  const gid = formData['gid'];
-  const stationId = formData['stationid'];
-  formData['dato'] = formData['dato'].split('+')[0];
-  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const resp = await axios.put(url, formData);
-  return resp;
-}
-
-async function insertService(formData) {
-  formData['dato'] = formData['dato'].split('+')[0];
-  const stationId = formData['stationid'];
-  const url = `${extEndpoint}/station/service/${stationId}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  const resp = await axios.post(url, formData);
-  return resp;
-}
-
-// async function getImage(loc_id) {
-//   const url = `${extEndpoint}/image/${loc_id}`;
-//   const {data} = await axios.get(url);
-//   return data.data;
-// }
-
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -193,54 +101,6 @@ const updateImage = async (payload, gid) => {
   return resp;
 };
 
-async function getTableData() {
-  const url = `${extEndpoint}/tabledata?session_id=${authStore.getState().sessionId}`;
-  const {data} = await axios.get(url);
-  return data.result;
-}
-
-const getGraphData = stationId => {
-  const sql = `${endpoint}SELECT * FROM calypso_stationer.sensordata_station_json WHERE ts_id=${stationId}`;
-  return axios.get(sql);
-};
-
-// const getSingleElem = () => getData("getSingleElem");
-
-const getLocidFromLabel = async labelId => {
-  const sql = `${endpoint}SELECT loc_id, ts_id FROM sensor.qrid_to_ts_id where calypso_id =${labelId}`;
-  const {data} = await axios.get(sql);
-  return data.features;
-};
-
-const getControlData = stationId => {
-  const sql = `${endpoint}SELECT * FROM sensor.station_pejlinger WHERE stationid=${stationId} ORDER BY timeofmeas`;
-  return axios.get(sql);
-};
-
-const deleteMP = (stationId, gid) => {
-  if (!gid) return;
-  const url = `${extEndpoint}/station/watlevmp/${stationId}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.delete(url);
-};
-
-const deleteMeasurement = (stationId, gid) => {
-  if (!gid) return;
-  const url = `${extEndpoint}/station/measurements/${stationId}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.delete(url);
-};
-
-const deleteService = (stationId, gid) => {
-  if (!gid) return;
-  const url = `${extEndpoint}/station/service/${stationId}/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.delete(url);
-};
-
 const postStamdata = data => axios.post(`${extEndpoint}/stamdata`, data);
 
 const updateStamdata = data =>
@@ -274,54 +134,22 @@ const loginAPI = async (username, password) => {
   });
 };
 
-const getUser = async () => {
-  return await apiClient.get('/auth/me/secure');
-};
-
-const takeHomeEquipment = (gid, data) => {
-  const url = `${extEndpoint}/stamdata/unithistory/${gid}?session_id=${
-    authStore.getState().sessionId
-  }`;
-  return axios.put(url, data);
-};
-
 export {
-  getTableData,
-  // getSingleElem,
   getStations,
-  //getMeasurements,
-  insertMeasurement,
-  updateMeasurement,
-  deleteMeasurement,
-  insertMp,
-  updateMp,
-  getControlData,
-  getGraphData,
-  getLocidFromLabel,
   getStationTypes,
   getAvailableUnits,
   postStamdata,
   getStamdataByStation,
-  getUnitHistory,
   getCvr,
   createUser,
   loginUser,
   resetPassword,
-  //getMP,
-  deleteMP,
-  takeHomeEquipment,
   updateStamdata,
   getLocationTypes,
   getDTMQuota,
-  getService,
-  updateService,
-  insertService,
-  deleteService,
   postImage,
-  //getImage,
   deleteImage,
   updateImage,
   loginAPI,
-  getUser,
   apiClient,
 };

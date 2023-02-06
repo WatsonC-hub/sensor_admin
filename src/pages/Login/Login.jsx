@@ -4,8 +4,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
 import Container from '@mui/material/Container';
-import {loginUser, loginAPI, getUser, resetPassword} from 'src/pages/field/fieldAPI';
-import {useTheme} from '@mui/material';
+import {loginUser, loginAPI, resetPassword} from 'src/pages/field/fieldAPI';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
