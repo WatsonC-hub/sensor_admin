@@ -348,7 +348,7 @@ export default function EditStamdata({setFormToShow, stationId}) {
             justifyContent="center"
             style={{marginTop: matches ? '4%' : ''}}
           >
-            <Grid item xs={4} sm={2}>
+            <Grid item xs={4} sm={4}>
               <Button
                 autoFocus
                 color="secondary"
@@ -359,7 +359,7 @@ export default function EditStamdata({setFormToShow, stationId}) {
                 Gem
               </Button>
             </Grid>
-            <Grid item xs={4} sm={2}>
+            <Grid item xs={4} sm={4}>
               <Button
                 color="grey"
                 variant="contained"
