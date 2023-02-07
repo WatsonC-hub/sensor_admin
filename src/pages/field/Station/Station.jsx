@@ -198,7 +198,7 @@ export default function Station({stationId}) {
       ...pejlingData,
       isWaterlevel: isWaterlevel,
     };
-    payload.timeofmeas = moment(payload.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
+    payload.timeofmeas = moment(payload.timeofmeas).toISOString();
     pejlingMutate.mutate(payload, {
       onSuccess: (data) => {
         resetPejlingData();
@@ -222,8 +222,8 @@ export default function Station({stationId}) {
 
   const handleMpSubmit = () => {
     const payload = {...mpData, stationid: stationId};
-    payload.startdate = moment(payload.startdate).format('YYYY-MM-DD HH:mm:ss');
-    payload.enddate = moment(payload.enddate).format('YYYY-MM-DD HH:mm:ss');
+    payload.startdate = moment(payload.startdate).toISOString();
+    payload.enddate = moment(payload.enddate).toISOString();
 
     watlevmpMutate.mutate(payload, {
       onSuccess: (data) => {
@@ -256,7 +256,7 @@ export default function Station({stationId}) {
       stationid: stationId,
     };
 
-    payload.dato = moment(payload.dato).format('YYYY-MM-DD HH:mm:ss');
+    payload.dato = moment(payload.dato).toISOString();
 
     serviceMutate.mutate(payload, {
       onSuccess: (data) => {

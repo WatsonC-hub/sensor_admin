@@ -1,5 +1,6 @@
 import create from 'zustand';
 import {devtools, persist} from 'zustand/middleware';
+import * as Sentry from '@sentry/react';
 
 const authInitialState = {
   authenticated: false,
@@ -18,7 +19,10 @@ export const authStore = create(
   persist(
     devtools((set, get) => ({
       ...authInitialState,
-      resetState: () => set(authInitialState, false, 'resetState'),
+      resetState: () => {
+        set(authInitialState, false, 'resetState');
+        Sentry.setUser(null);
+      },
       setAuthenticated: (authenticated) =>
         set(
           {
@@ -27,7 +31,7 @@ export const authStore = create(
           false,
           'setAuthenticated'
         ),
-      setProperties: (properties) =>
+      setProperties: (properties) => {
         set(
           {
             properties: properties,
@@ -40,7 +44,9 @@ export const authStore = create(
           },
           false,
           'setProperties'
-        ),
+        );
+        Sentry.setUser({id: properties.screenname});
+      },
       setSessionId: (sessionId) =>
         set(
           {
