@@ -1,9 +1,11 @@
 import React from 'react';
-import {Grid, MenuItem, TextField} from '@mui/material';
+import {Button, Grid, MenuItem, TextField} from '@mui/material';
 import {InputAdornment} from '@mui/material';
 import LocationTypeSelect from './LocationTypeSelect';
 import {stamdataStore} from '../../../../state/store';
 import FormTextField from './FormTextField';
+import {useQuery} from '@tanstack/react-query';
+import {getDTMQuota} from '../../fieldAPI';
 
 export default function LocationForm({mode}) {
   const [location, setLocationValue] = stamdataStore((store) => [
@@ -11,10 +13,24 @@ export default function LocationForm({mode}) {
     store.setLocationValue,
   ]);
 
+  const {
+    data: DTMData,
+    isFetching,
+    refetch: refetchDTM,
+  } = useQuery(['dtm'], () => getDTMQuota(location.x, location.y), {
+    refetchOnWindowFocus: false,
+    enabled: false,
+    onSuccess: (data) => {
+      if (data.HentKoterRespons.data[0].kote !== null) {
+        setLocationValue('terrainlevel', data.HentKoterRespons.data[0].kote);
+      }
+    },
+  });
+
   // console.log("got formdata => ", formData);
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} alignItems="center">
       <Grid item xs={12} sm={6}>
         <FormTextField
           disabled={location.loc_name === '' && mode != 'edit' ? true : false}
@@ -53,7 +69,7 @@ export default function LocationForm({mode}) {
           onChange={(event) => setLocationValue('y', event.target.value)}
         />
       </Grid>
-      <Grid item xs={6} sm={6} md={3}>
+      <Grid item xs={12} sm={6} md={3}>
         <FormTextField
           InputProps={{
             endAdornment: <InputAdornment position="start">m</InputAdornment>,
@@ -65,8 +81,7 @@ export default function LocationForm({mode}) {
           onChange={(event) => setLocationValue('terrainlevel', event.target.value)}
         />
       </Grid>
-
-      <Grid item xs={6} sm={6} md={3}>
+      <Grid item xs={6} sm={3} md={1.5}>
         <FormTextField
           disabled={location.loc_name === '' ? true : false}
           autoFocus
@@ -79,6 +94,13 @@ export default function LocationForm({mode}) {
           <MenuItem value="dGPS">dGPS</MenuItem>
           <MenuItem value="DTM">DTM</MenuItem>
         </FormTextField>
+      </Grid>
+      <Grid item xs={6} sm={3} md={1.5}>
+        {mode === 'edit' && location.terrainqual === 'DTM' ? (
+          <Button variant="contained" color="secondary" onClick={refetchDTM}>
+            Hent DTM
+          </Button>
+        ) : null}
       </Grid>
       <Grid item xs={12} sm={6}>
         <LocationTypeSelect
