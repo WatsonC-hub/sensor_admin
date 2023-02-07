@@ -147,7 +147,7 @@ export default function Station({stationId}) {
       })[0]?.elevation;
 
       if (elev) {
-        let dynamicDate = pejlingData.timeofmeas;
+        let dynamicDate = moment(pejlingData.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
         let dynamicMeas = elev - pejlingData.measurement;
         setDynamic([dynamicDate, dynamicMeas]);
       } else {
