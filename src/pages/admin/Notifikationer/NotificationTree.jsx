@@ -123,18 +123,18 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
                                   },
                                 ])
                               }
-                              onIgnore={() =>
+                              onIgnore={(enddate) =>
                                 statusMutate.mutate([
                                   {
                                     ts_id: notification.stationid,
                                     notification_id: notification.notification_id,
                                     status: 'IGNORED',
-                                    enddate: null,
+                                    enddate: enddate,
                                   },
                                 ])
                               }
-                              onSchedule={() => {
-                                trelloMutate.mutate([notification]);
+                              onSchedule={(description) => {
+                                trelloMutate.mutate([{...notification, description}]);
                                 statusMutate.mutate([
                                   {
                                     ts_id: notification.stationid,

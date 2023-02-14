@@ -72,7 +72,9 @@ const NavBarNotifications = () => {
 
   return (
     <Badge
-      badgeContent={data?.filter((item) => item.flag === 3).length}
+      badgeContent={
+        data?.filter((item) => item.flag === 3 && item.is_customer_service === false).length
+      }
       color="error"
       onClick={() => {
         if (!window.location.pathname.includes('/notifikationer')) {

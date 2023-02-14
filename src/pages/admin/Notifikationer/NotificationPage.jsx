@@ -3,7 +3,18 @@ import ServiceMap from 'src/pages/admin/Notifikationer/ServiceMap';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import {reverse, sortBy, uniqBy, uniq} from 'lodash';
-import {Grid, Button, Typography, Select, Box, Chip, OutlinedInput, MenuItem} from '@mui/material';
+import {
+  Grid,
+  Button,
+  Typography,
+  Select,
+  Box,
+  Chip,
+  OutlinedInput,
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+} from '@mui/material';
 import TableComponent from 'src/components/TableComponent';
 import NotificationTree from './NotificationTree';
 import {atom, useAtom} from 'jotai';
@@ -30,6 +41,7 @@ const NotificationPage = () => {
   const [mapdata, setMapdata] = useState([]);
   const [lassoFilter, setLassoFilter] = useAtom(lassoFilterAtom);
   const [selectFilters, setSelectFilters] = useAtom(selectFiltersAtom);
+  const [isCustomerService, setIsCustomerService] = useState(false);
 
   const queryClient = useQueryClient();
   const {data, isLoading, error} = useQuery(
@@ -42,10 +54,6 @@ const NotificationPage = () => {
     },
 
     {
-      onSuccess: (data) => {
-        const sorted = reverse(sortBy(data, ['flag']));
-        setMapdata(uniqBy(sorted, 'locid'));
-      },
       staleTime: 1000 * 60 * 60 * 24,
     }
   );
@@ -65,12 +73,15 @@ const NotificationPage = () => {
   useEffect(() => {
     const sorted = reverse(
       sortBy(
-        data?.filter((item) => selectFilters.includes(item.flag)),
-        ['flag']
+        data?.filter(
+          (item) =>
+            selectFilters.includes(item.flag) && item.is_customer_service === isCustomerService
+        ),
+        [(item) => (item.status ? item.status : 'aaaaaaaaa'), (item) => item.flag]
       )
     );
     setMapdata(uniqBy(sorted, 'locid'));
-  }, [selectFilters]);
+  }, [selectFilters, isCustomerService, data]);
 
   const trelloMutate = useMutation(async (data) => {
     const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_trello`, data);
@@ -78,8 +89,7 @@ const NotificationPage = () => {
   });
 
   const notifications = data
-    ?.filter((item) => item.opgave != null)
-    .map((item, index) => {
+    ?.map((item, index) => {
       return {
         ...item,
         id: index,
@@ -136,6 +146,10 @@ const NotificationPage = () => {
             </MenuItem>
           ))}
         </Select>
+        <FormControlLabel
+          control={<Checkbox onChange={(e) => setIsCustomerService(e.target.checked)} />}
+          label="Vis kundeservice"
+        />
         <ServiceMap data={mapdata} isLoading={isLoading} setLassoFilter={setLassoFilter} />
       </Grid>
       <Grid item xs={12} md={6} p={2}>

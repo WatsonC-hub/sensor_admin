@@ -1,9 +1,13 @@
-import React from 'react';
+import {useState} from 'react';
 import {Box, Typography, Button} from '@mui/material';
 import {ErrorOutlineOutlined} from '@mui/icons-material';
 import {useNavigate} from 'react-router-dom';
+import moment from 'moment';
+import TrelloModal from './TrelloModal';
 
 const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
+  const [open, setOpen] = useState(false);
+
   const navigate = useNavigate();
   return (
     <Box
@@ -30,22 +34,39 @@ const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
         <Typography>{notification.dato}</Typography>
       </Box>
       <Box gap={2} display="inline-flex" height="40px" flexWrap="wrap">
-        <Button onClick={onSchedule} variant="contained" color="secondary">
+        <Button
+          onClick={() => setOpen(true)}
+          variant="contained"
+          color={notification.status === 'SCHEDULED' ? 'success' : 'warning'}
+        >
           Skemalæg
         </Button>
-        <Button onClick={onPostpone} variant="contained" color="secondary">
+        <Button
+          onClick={onPostpone}
+          variant="contained"
+          color={notification.status === 'POSTPONED' ? 'success' : 'warning'}
+        >
           Udskyd
         </Button>
         {notification.status === 'IGNORED' ? (
-          <Button onClick={onIgnore} variant="contained" color="secondary">
+          <Button
+            onClick={() => onIgnore(moment(notification.dato).format('YYYY-MM-DDTHH:mm:ss'))}
+            variant="contained"
+            color={notification.status === 'IGNORED' ? 'success' : 'warning'}
+          >
             Afignorer
           </Button>
         ) : (
-          <Button onClick={onIgnore} variant="contained" color="secondary">
+          <Button
+            onClick={() => onIgnore(null)}
+            variant="contained"
+            color={notification.status === 'IGNORED' ? 'success' : 'warning'}
+          >
             Ignorer
           </Button>
         )}
       </Box>
+      <TrelloModal open={open} setOpen={setOpen} onSchedule={onSchedule} />
     </Box>
   );
 };
