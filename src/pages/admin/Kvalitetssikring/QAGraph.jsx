@@ -8,6 +8,8 @@ import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/pages/field/fieldAPI';
 import React, {useEffect, useState} from 'react';
 import {Typography, Alert, Grid} from '@mui/material';
+import GraphForms from './GraphForms';
+import useFormData from '../../../hooks/useFormData';
 
 const selectorOptions = {
   buttons: [
@@ -238,27 +240,35 @@ const transformQAData = (data) => {
   return {shapelist, annotateList};
 };
 
-function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
+function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, changeFormData}) {
   const [selectedData, setSelectedData] = useState([{x: [], y: []}]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
-  const [minDate, setMinDate] = useState();
-  const [maxDate, setMaxDate] = useState();
+  // const [minDate, setMinDate] = useState();
+  // const [maxDate, setMaxDate] = useState();
   const [selected, setSelected] = useState(false);
 
   const handlePlotlySelected = (eventData) => {
-    setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
     setSelected(true);
+    setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
+  };
+  const handleDateChange = (date) => {
+    if (isValid(date)) {
+      console.log('date is valid again: ', date);
+      changeFormData('timeofmeas', date);
+    }
   };
 
   if (selected) {
     var dates = selectedData.map((pt) => moment(pt[0].x));
     console.log('dates: ', dates);
-    setMinDate(moment.min(dates));
-    setMaxDate(moment.max(dates));
-    console.log('Minimum date:', minDate);
-    console.log('Maximum date:', maxDate);
+    changeFormData('minDate', moment.min(dates));
+    changeFormData('maxDate', moment.max(dates));
+    // setMinDate(moment.min(dates));
+    // setMaxDate(moment.max(dates));
+    // console.log('Minimum date:', minDate?.format('YYYY-MM-DD HH:mm'));
+    // console.log('Maximum date:', maxDate?.format('YYYY-MM-DD HH:mm'));
     setSelected(false);
   }
 
@@ -307,89 +317,75 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
 
   return (
     <div>
-      <div>
-        <Plot
-          onSelected={handlePlotlySelected}
-          //onRelayout={(e) => console.log('relayout', e)}
-          id="graph"
-          data={[
-            {
-              x: graphData?.x,
-              y: graphData?.y,
-              name: graphData?.name,
-              type: 'scatter',
-              line: {width: 2},
-              mode: 'lines+markers',
-              marker: {symbol: '100', size: '5', color: '#177FC1'},
+      <Plot
+        onSelected={handlePlotlySelected}
+        //onRelayout={(e) => console.log('relayout', e)}
+        id="graph"
+        data={[
+          {
+            x: graphData?.x,
+            y: graphData?.y,
+            name: graphData?.name,
+            type: 'scatter',
+            line: {width: 2},
+            mode: 'lines+markers',
+            marker: {symbol: '100', size: '5', color: '#177FC1'},
+          },
+          {
+            x: xControl,
+            y: yControl,
+            name: 'Kontrolpejlinger',
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+              symbol: '200',
+              size: '8',
+              color: '#177FC1',
+              line: {color: 'rgb(0,0,0)', width: 1},
             },
-            {
-              x: xControl,
-              y: yControl,
-              name: 'Kontrolpejlinger',
-              type: 'scatter',
-              mode: 'markers',
-              marker: {
-                symbol: '200',
-                size: '8',
-                color: '#177FC1',
-                line: {color: 'rgb(0,0,0)', width: 1},
-              },
-            },
-            {
-              x: [dynamicMeasurement?.[0]],
-              y: [dynamicMeasurement?.[1]],
-              name: '',
-              type: 'scatter',
-              mode: 'markers',
-              showlegend: false,
-              marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
-            },
-          ]}
-          layout={layout}
-          config={{
-            responsive: true,
-            buttons: [
-              [downloadButton, makeLinkButton],
-              ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
-            ],
+          },
+          {
+            x: [dynamicMeasurement?.[0]],
+            y: [dynamicMeasurement?.[1]],
+            name: '',
+            type: 'scatter',
+            mode: 'markers',
+            showlegend: false,
+            marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
+          },
+        ]}
+        layout={layout}
+        config={{
+          responsive: true,
+          buttons: [
+            [downloadButton, makeLinkButton],
+            ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+          ],
 
-            displaylogo: false,
-            displayModeBar: true,
-          }}
-          useResizeHandler={true}
-          style={{width: '100%', height: '100%'}}
-          onClickAnnotation={(e) => {
-            console.log(e);
-          }}
-          onClick={(e) => {
-            console.log(e);
-          }}
-        />
-      </div>
-      {/* <div>
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={7}>
-            <Alert
-              severity="info"
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Typography>Selected Minimum date: {minDate?.format('YYYY-MM-DD HH:mm')}</Typography>
-              <Typography>Selected Maximum date: {maxDate?.format('YYYY-MM-DD HH:mm')}</Typography>
-            </Alert>
-          </Grid>
-        </Grid>
-      </div> */}
+          displaylogo: false,
+          displayModeBar: true,
+        }}
+        useResizeHandler={true}
+        style={{width: '100%', height: '100%'}}
+        onClickAnnotation={(e) => {
+          console.log(e);
+        }}
+        onClick={(e) => {
+          console.log(e);
+        }}
+      />
     </div>
   );
 }
 
-export default function QAGraph({stationId, measurements, dynamicMeasurement}) {
+export default function QAGraph({stationId, measurements}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
+
+  const [selectedMinMaxDate, changeSelectedMinMaxDate] = useFormData({
+    minDate: moment(),
+    maxDate: moment(),
+  });
 
   const {
     data: qaData,
@@ -420,21 +416,29 @@ export default function QAGraph({stationId, measurements, dynamicMeasurement}) {
   );
 
   return (
-    <div
-      style={{
-        width: 'auto',
-        height: matches ? '300px' : '500px',
-        marginBottom: '10px',
-        marginTop: '-10px',
-        paddingTop: '5px',
-        border: '2px solid gray',
-        // position: "-webkit-sticky",
-        // position: "sticky",
-        // top: 20,
-        // zIndex: 100,
-      }}
-    >
-      <PlotGraph graphData={graphData} controlData={measurements} qaData={qaData} />
+    <div>
+      <div
+        style={{
+          width: 'auto',
+          height: matches ? '300px' : '500px',
+          marginBottom: '10px',
+          marginTop: '-10px',
+          paddingTop: '5px',
+          border: '2px solid gray',
+          // position: "-webkit-sticky",
+          // position: "sticky",
+          // top: 20,
+          // zIndex: 100,
+        }}
+      >
+        <PlotGraph
+          graphData={graphData}
+          controlData={measurements}
+          qaData={qaData}
+          changeFormData={changeSelectedMinMaxDate}
+        />
+      </div>
+      <GraphForms formData={selectedMinMaxDate} changeFormData={changeSelectedMinMaxDate} />
     </div>
   );
 }
