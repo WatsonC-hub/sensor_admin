@@ -292,7 +292,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       onSuccess: () => {
         setTimeout(() => {
           refetch();
-        }, 1000);
+        }, 3000);
         //handleXRangeChange({'xaxis.range[0]': undefined});
       },
     }
