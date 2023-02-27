@@ -260,7 +260,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     {
       enabled: true,
       refetchInterval: (status) => {
-        return status === 204 ? 500 : false;
+        return status === 204 ? 1000 : false;
       },
       onSuccess: (status) => {
         if (status === 200) {
@@ -328,7 +328,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     name: 'Ekstern link',
     icon: makeLinkIcon,
     click: function (gd) {
-      var ts_id = window.location.href.split('/').at(-1);
+      var ts_id = window.location.href.split('/').at(-1).split('#').at(0);
 
       var link = document.createElement('a');
       if (link.download !== undefined) {

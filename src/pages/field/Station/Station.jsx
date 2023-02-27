@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import BearingGraph from './BearingGraph';
+import BearingGraph from './newBearingGraph';
 import ActionArea from './ActionArea';
 import PejlingForm from '../../../components/PejlingForm';
 import {getStamdataByStation} from 'src/pages/field/fieldAPI';
