@@ -9,22 +9,48 @@ import {apiClient} from 'src/pages/field/fieldAPI';
 import React, {useEffect, useState} from 'react';
 import {Grid, Typography, TextField, Button, Card, CardContent, Alert} from '@mui/material';
 import OwnDatePicker from 'src/components/OwnDatePicker';
+import {isValid} from 'date-fns';
 
-export default function GraphForms({formData, changeFormData}) {
+export default function GraphForms({graphData, formData, changeFormData}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const [disablePreview, setDisablePreview] = useState(false);
+
+  console.log('graphdata:', graphData);
 
   const handleMinDateChange = (date) => {
     if (isValid(date)) {
       console.log('date is valid again: ', date);
-      changeFormData('minDate', moment(date));
+      changeFormData('minDate', date);
     }
   };
 
   const handleMaxDateChange = (date) => {
     if (isValid(date)) {
       console.log('date is valid again: ', date);
-      changeFormData('maxDate', moment(date));
+      changeFormData('maxDate', date);
+    }
+  };
+
+  const handleClickPreview = () => {
+    setDisablePreview(true);
+
+    if (graphData.length > 0) {
+      var newData = graphData.filter((elem) => {
+        if (
+          moment(elem.x).isSameOrAfter(formData.minDate) &&
+          moment(elem.x).isBefore(formData.maxDate)
+        ) {
+          return true;
+        }
+      });
+      changeFormData('data', {newData});
+      setTimeout(() => {
+        window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'});
+      }, 200);
+      setTimeout(() => {
+        setDisablePreview(false);
+      }, 2500);
     }
   };
 
@@ -55,10 +81,10 @@ export default function GraphForms({formData, changeFormData}) {
             }}
           >
             <Typography>
-              Selected Minimum date: {formData.minDate?.format('YYYY-MM-DD HH:mm')}
+              Valgt minimums dato: {formData.minDate?.format('YYYY-MM-DD HH:mm')}
             </Typography>
             <Typography>
-              Selected Maximum date: {formData.maxDate?.format('YYYY-MM-DD HH:mm')}
+              Valgt maksimums dato: {formData.maxDate?.format('YYYY-MM-DD HH:mm')}
             </Typography>
           </Alert>
         </Grid>
@@ -105,6 +131,16 @@ export default function GraphForms({formData, changeFormData}) {
                 value={formData.maxDate}
                 onChange={(date) => handleMaxDateChange(date)}
               />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <Button
+                color="secondary"
+                variant="contained"
+                onClick={handleClickPreview}
+                disabled={disablePreview}
+              >
+                Se preview
+              </Button>
             </Grid>
           </CardContent>
         </Card>

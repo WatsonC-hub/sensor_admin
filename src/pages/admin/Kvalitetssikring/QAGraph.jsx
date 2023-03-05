@@ -245,32 +245,19 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, changeFo
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
-  // const [minDate, setMinDate] = useState();
-  // const [maxDate, setMaxDate] = useState();
   const [selected, setSelected] = useState(false);
 
   const handlePlotlySelected = (eventData) => {
-    setSelected(true);
     setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
-  };
-  const handleDateChange = (date) => {
-    if (isValid(date)) {
-      console.log('date is valid again: ', date);
-      changeFormData('timeofmeas', date);
+    const dates = selectedData.map((pt) => moment(pt[0].x));
+    console.log('dates: ', dates);
+    if (dates.length > 0) {
+      changeFormData('minDate', moment.min(dates)._i);
+      changeFormData('maxDate', moment.max(dates)._i);
+      console.log('min date: ', moment.min(dates)._i);
+      console.log('max date: ', moment.max(dates)._i);
     }
   };
-
-  if (selected) {
-    var dates = selectedData.map((pt) => moment(pt[0].x));
-    console.log('dates: ', dates);
-    changeFormData('minDate', moment.min(dates));
-    changeFormData('maxDate', moment.max(dates));
-    // setMinDate(moment.min(dates));
-    // setMaxDate(moment.max(dates));
-    // console.log('Minimum date:', minDate?.format('YYYY-MM-DD HH:mm'));
-    // console.log('Maximum date:', maxDate?.format('YYYY-MM-DD HH:mm'));
-    setSelected(false);
-  }
 
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
@@ -382,22 +369,6 @@ export default function QAGraph({stationId, measurements}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [selectedMinMaxDate, changeSelectedMinMaxDate] = useFormData({
-    minDate: moment(),
-    maxDate: moment(),
-  });
-
-  const {
-    data: qaData,
-    isLoading,
-    error,
-  } = useQuery(['qa_labels', stationId], async ({signal}) => {
-    const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
-      signal,
-    });
-    return data;
-  });
-
   const {data: graphData} = useQuery(
     ['graphData', stationId],
     async ({signal}) => {
@@ -414,6 +385,25 @@ export default function QAGraph({stationId, measurements}) {
       refetchInterval: false,
     }
   );
+
+  const [previewData, changePreviewData] = useFormData({
+    minDate: moment(),
+    maxDate: moment(),
+    data: {},
+  });
+
+  console.log('previewData:', previewData);
+
+  const {
+    data: qaData,
+    isLoading,
+    error,
+  } = useQuery(['qa_labels', stationId], async ({signal}) => {
+    const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
+      signal,
+    });
+    return data;
+  });
 
   return (
     <div>
@@ -435,10 +425,26 @@ export default function QAGraph({stationId, measurements}) {
           graphData={graphData}
           controlData={measurements}
           qaData={qaData}
-          changeFormData={changeSelectedMinMaxDate}
+          changeFormData={changePreviewData}
         />
       </div>
-      <GraphForms formData={selectedMinMaxDate} changeFormData={changeSelectedMinMaxDate} />
+      <GraphForms graphData={graphData} formData={previewData} changeFormData={changePreviewData} />
+      <div
+        style={{
+          width: 'auto',
+          height: matches ? '300px' : '500px',
+          marginBottom: '10px',
+          marginTop: '-10px',
+          paddingTop: '5px',
+          border: '2px solid gray',
+          // position: "-webkit-sticky",
+          // position: "sticky",
+          // top: 20,
+          // zIndex: 100,
+        }}
+      >
+        <PlotGraph graphData={previewData.previewData} controlData={measurements} qaData={qaData} />
+      </div>
     </div>
   );
 }
