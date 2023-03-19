@@ -240,7 +240,7 @@ const transformQAData = (data) => {
   return {shapelist, annotateList};
 };
 
-function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, changeFormData}) {
+function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, formData, changeFormData}) {
   const [selectedData, setSelectedData] = useState([{x: [], y: []}]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -252,10 +252,16 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, changeFo
     const dates = selectedData.map((pt) => moment(pt[0].x));
     console.log('dates: ', dates);
     if (dates.length > 0) {
-      changeFormData('minDate', moment.min(dates)._i);
-      changeFormData('maxDate', moment.max(dates)._i);
-      console.log('min date: ', moment.min(dates)._i);
-      console.log('max date: ', moment.max(dates)._i);
+      const sortedDates = dates.sort((a, b) => moment(a) - moment(b));
+      console.log('NEWEST Date', sortedDates[sortedDates.length - 1]);
+      console.log('OLDEST Date', sortedDates[0]);
+
+      const minDate = sortedDates[0];
+      const maxDate = sortedDates[sortedDates.length - 1];
+      changeFormData('minDate', minDate);
+      changeFormData('maxDate', maxDate);
+      console.log('min date: ', formData.minDate);
+      console.log('max date: ', formData.maxDate);
     }
   };
 
@@ -386,13 +392,13 @@ export default function QAGraph({stationId, measurements}) {
     }
   );
 
-  const [previewData, changePreviewData] = useFormData({
+  const [previewData, setPreviewData, changePreviewData, resetPreviewData] = useFormData({
     minDate: moment(),
     maxDate: moment(),
     data: {},
   });
 
-  console.log('previewData:', previewData);
+  console.log('previewData', previewData);
 
   const {
     data: qaData,
@@ -425,6 +431,7 @@ export default function QAGraph({stationId, measurements}) {
           graphData={graphData}
           controlData={measurements}
           qaData={qaData}
+          formData={previewData}
           changeFormData={changePreviewData}
         />
       </div>

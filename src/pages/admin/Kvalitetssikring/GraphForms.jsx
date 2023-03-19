@@ -44,6 +44,7 @@ export default function GraphForms({graphData, formData, changeFormData}) {
           return true;
         }
       });
+      console.log('newData', newData);
       changeFormData('data', {newData});
       setTimeout(() => {
         window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'});
@@ -80,12 +81,12 @@ export default function GraphForms({graphData, formData, changeFormData}) {
               alignItems: 'center',
             }}
           >
-            <Typography>
+            {/* <Typography>
               Valgt minimums dato: {formData.minDate?.format('YYYY-MM-DD HH:mm')}
             </Typography>
             <Typography>
               Valgt maksimums dato: {formData.maxDate?.format('YYYY-MM-DD HH:mm')}
-            </Typography>
+            </Typography> */}
           </Alert>
         </Grid>
         <Card
