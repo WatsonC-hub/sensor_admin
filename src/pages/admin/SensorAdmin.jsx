@@ -6,6 +6,7 @@ import QualityAssuranceOverview from './Kvalitetssikring/QualityAssuranceOvervie
 import {RemoveCircleOutlineSharp} from '@mui/icons-material';
 import NotificationPage from 'src/pages/admin/Notifikationer/NotificationPage';
 import UserAdmin from 'src/pages/admin/Brugerstyring/UserAdmin';
+import ConfigurationPage from 'src/pages/admin/Konfiguration/ConfigurationPage';
 
 const SensorAdmin = () => {
   return (
@@ -17,6 +18,7 @@ const SensorAdmin = () => {
         <Route path="/kvalitetssikring/:ts_id" element={<QualityAssurance />} />
         <Route path="/notifikationer" element={<NotificationPage />} />
         <Route path="/brugerstyring" element={<UserAdmin />} />
+        <Route path="/konfiguration" element={<ConfigurationPage />} />
       </Routes>
     </>
   );

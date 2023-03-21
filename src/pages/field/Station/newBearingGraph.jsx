@@ -223,8 +223,8 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
     const daysdiff = x1.diff(x0, 'days');
 
-    x0 = x0.subtract(daysdiff * 0.2, 'days').startOf('month');
-    x1 = x1.add(daysdiff * 0.2, 'days').endOf('month');
+    x0 = x0.subtract(daysdiff * 0.2, 'days');
+    x1 = x1.add(daysdiff * 0.2, 'days');
 
     setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
   };
@@ -292,7 +292,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       onSuccess: () => {
         setTimeout(() => {
           refetch();
-        }, 3000);
+        }, 5000);
         //handleXRangeChange({'xaxis.range[0]': undefined});
       },
     }
@@ -383,7 +383,12 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
         },
       ]}
-      layout={layout}
+      layout={{
+        ...layout,
+        yaxis: {
+          title: `${stationtype} [${unit}]`,
+        },
+      }}
       config={{
         responsive: true,
         modeBarButtons: [

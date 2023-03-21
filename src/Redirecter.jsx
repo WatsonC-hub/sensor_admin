@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {Route, Routes, useNavigate, useLocation} from 'react-router-dom';
-const sensorAdminPromise = import('./pages/admin/SensorAdmin');
-const SensorAdmin = React.lazy(() => sensorAdminPromise);
+// const sensorAdminPromise = import('./pages/admin/SensorAdmin');
+// const SensorAdmin = React.lazy(() => sensorAdminPromise);
+import SensorField from './pages/field/SensorField';
+import SensorAdmin from './pages/admin/SensorAdmin';
 import {authStore} from './state/store';
 import LoadingSkeleton from './LoadingSkeleton';
 import NavBar from './NavBar';
 import Chooser from './Chooser';
 
-const Redirecter = ({SensorField}) => {
+const Redirecter = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [authChecked, setAuthChecked] = useState(false);

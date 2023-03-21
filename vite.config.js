@@ -7,6 +7,7 @@ import sentryVitePlugin from '@sentry/vite-plugin';
 
 const pwaOptions = {
   registerType: 'autoUpdate',
+  injectRegister: null,
   manifest: {
     name: 'Calypso @ Field',
     short_name: 'Calypso @ Field',
@@ -51,6 +52,12 @@ export default defineConfig({
   ],
   build: {
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+      },
+    },
   },
   server: {
     proxy: {

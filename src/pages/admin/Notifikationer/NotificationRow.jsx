@@ -31,7 +31,10 @@ const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
       >
         <ErrorOutlineOutlined sx={{color: notification.color}} />
         <Typography>{notification.opgave}</Typography>
-        <Typography>{notification.dato}</Typography>
+        <Typography>
+          {moment(notification.dato).isValid() &&
+            moment(notification.dato).format('DD-MM-YYYY HH:mm')}
+        </Typography>
       </Box>
       <Box gap={2} display="inline-flex" height="40px" flexWrap="wrap">
         <Button
