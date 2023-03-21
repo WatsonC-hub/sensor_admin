@@ -8,6 +8,11 @@ import sentryVitePlugin from '@sentry/vite-plugin';
 const pwaOptions = {
   registerType: 'autoUpdate',
   injectRegister: null,
+  workbox: {
+    globPatterns: ['**/*'],
+    maximumFileSizeToCacheInBytes: 100000000,
+  },
+  includeAssets: ['**/*'],
   manifest: {
     name: 'Calypso @ Field',
     short_name: 'Calypso @ Field',
