@@ -26,7 +26,7 @@ const pwaOptions = {
   workbox: {
     globPatterns: ['**/*'],
     maximumFileSizeToCacheInBytes: 100000000,
-    runtimeCaching: [getCache({name: 'api', pattern: /^\/api\/(?!data).*/})],
+    runtimeCaching: [getCache({name: 'api', pattern: /\/api\/(?!data).*/})],
   },
   includeAssets: ['**/*'],
   manifest: {
