@@ -5,12 +5,28 @@ import {visualizer} from 'rollup-plugin-visualizer';
 import {VitePWA} from 'vite-plugin-pwa';
 import sentryVitePlugin from '@sentry/vite-plugin';
 
+const getCache = ({name, pattern}) => ({
+  urlPattern: pattern,
+  handler: 'NetworkFirst',
+  options: {
+    cacheName: name,
+    expiration: {
+      maxEntries: 500,
+      maxAgeSeconds: 60 * 60 * 24, // 1 day
+    },
+    cacheableResponse: {
+      statuses: [200],
+    },
+  },
+});
+
 const pwaOptions = {
   registerType: 'autoUpdate',
   injectRegister: null,
   workbox: {
     globPatterns: ['**/*'],
     maximumFileSizeToCacheInBytes: 100000000,
+    runtimeCaching: [getCache({name: 'api', pattern: /^\/api\/(?!data).*/})],
   },
   includeAssets: ['**/*'],
   manifest: {

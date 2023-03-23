@@ -62,7 +62,13 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/map_data`);
       return data;
     },
-    {enabled: iotAccess, refetchInterval: 10000, refetchOnWindowFocus: false}
+    {
+      enabled: iotAccess,
+      refetchInterval: 10000,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    }
   );
 
   const handleChange = (_, newValue) => {

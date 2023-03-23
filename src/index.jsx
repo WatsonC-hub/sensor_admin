@@ -31,7 +31,9 @@ if ('serviceWorker' in navigator) {
   // && !/localhost/.test(window.location)) {
   registerSW({
     onNeedRefresh() {
-      toast('En ny version af siden er klar. Genindlæs for at få den nyeste version.');
+      if (confirm('Opdatering tilgængelig. Vil du opdatere?')) {
+        updateSW(true);
+      }
     },
   });
 }
