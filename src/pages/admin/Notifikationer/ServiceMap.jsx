@@ -95,13 +95,13 @@ function Map({data, isLoading, setLassoFilter}) {
     var map = L.map('map', {
       center: [55.876823, 8.961644],
       zoom: 7,
-      layers: [outdormapbox],
+      layers: [toposkaermkortwmts],
       tap: false,
     });
 
     var baseMaps = {
-      OpenStreetMap: outdormapbox,
       Vandløb: toposkaermkortwmts,
+      OpenStreetMap: outdormapbox,
       Satelit: satelitemapbox,
     };
 
