@@ -41,6 +41,7 @@ if ('serviceWorker' in navigator) {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      networkMode: 'offlineFirst',
       retry: (failureCount, error) => {
         if (error.response.status === 401 || error.response.status === 404) {
           return false;
