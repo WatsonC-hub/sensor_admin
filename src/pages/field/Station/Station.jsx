@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import BearingGraph from './newBearingGraph';
 import ActionArea from './ActionArea';
 import PejlingForm from '../../../components/PejlingForm';
-import {getStamdataByStation} from 'src/pages/field/fieldAPI';
 import EditStamdata from './EditStamdata';
 import PejlingMeasurements from './PejlingMeasurements';
 import MaalepunktForm from '../../../components/MaalepunktForm';
@@ -18,7 +17,7 @@ import {toast} from 'react-toastify';
 import useFormData from '../../../hooks/useFormData';
 import {apiClient} from 'src/apiClient';
 
-export default function Station({stationId}) {
+export default function Station({stationId, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
     timeofmeas: moment(),
@@ -64,26 +63,17 @@ export default function Station({stationId}) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (stamdata) {
+      store.setLocation(stamdata);
+      store.setTimeseries(stamdata);
+      store.setUnit(stamdata);
+    }
     return () => {
       store.resetLocation();
       store.resetTimeseries();
       store.resetUnit();
     };
-  }, []);
-
-  const {data: stamdata} = useQuery(
-    ['stamdata', stationId],
-    () => getStamdataByStation(stationId),
-    {
-      enabled: stationId !== -1 && stationId !== null,
-      onSuccess: (data) => {
-        store.setLocation(data);
-        store.setTimeseries(data);
-        store.setUnit(data);
-      },
-      refetchOnWindowFocus: false,
-    }
-  );
+  }, [stamdata]);
 
   const isWaterlevel = stamdata ? stamdata?.tstype_id === 1 : false;
   const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;

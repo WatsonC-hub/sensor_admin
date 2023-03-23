@@ -6,8 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import {getAvailableUnits} from '../fieldAPI';
-
 import {CircularProgress, MenuItem, useTheme} from '@mui/material';
 import OwnDatePicker from '../../../components/OwnDatePicker';
 import {Typography} from '@mui/material';
@@ -20,7 +18,10 @@ export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, ts
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
   const queryClient = useQueryClient();
 
-  const {data: availableUnits, isLoading} = useQuery(['available_units'], getAvailableUnits);
+  const {data: availableUnits, isLoading} = useQuery(['available_units'], async () => {
+    const {data} = await apiClient.get(`/sensor_field/stamdata/available_units`);
+    return data;
+  });
 
   const addUnit = useMutation(
     async (data) => {

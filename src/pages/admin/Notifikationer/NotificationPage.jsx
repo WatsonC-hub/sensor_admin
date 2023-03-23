@@ -19,8 +19,6 @@ import TableComponent from 'src/components/TableComponent';
 import NotificationTree from './NotificationTree';
 import {atom, useAtom} from 'jotai';
 import {useEffect} from 'react';
-import {dataURLtoFile} from '../../field/boreholeAPI';
-import moment from 'moment';
 
 const getNavigation = (item) => {
   switch (item.opgave) {
