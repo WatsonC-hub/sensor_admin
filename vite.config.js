@@ -5,9 +5,9 @@ import {visualizer} from 'rollup-plugin-visualizer';
 import {VitePWA} from 'vite-plugin-pwa';
 import sentryVitePlugin from '@sentry/vite-plugin';
 
-const getCache = ({name, pattern}) => ({
+const getCache = ({name, pattern, handler}) => ({
   urlPattern: pattern,
-  handler: 'NetworkFirst',
+  handler: handler,
   options: {
     cacheName: name,
     expiration: {
@@ -22,11 +22,13 @@ const getCache = ({name, pattern}) => ({
 
 const pwaOptions = {
   registerType: 'autoUpdate',
-  injectRegister: null,
   workbox: {
     globPatterns: ['**/*'],
     maximumFileSizeToCacheInBytes: 100000000,
-    runtimeCaching: [getCache({name: 'api', pattern: /\/api\/(?!data).*/})],
+    runtimeCaching: [
+      getCache({name: 'api', pattern: /\/api\/(?!data).*/, handler: 'NetworkFirst'}),
+      getCache({name: 'manual', pattern: /workbox-window/, handler: 'CacheFirst'}),
+    ],
   },
   includeAssets: ['**/*'],
   manifest: {
