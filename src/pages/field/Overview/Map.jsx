@@ -11,6 +11,7 @@ import {authStore} from '../../../state/store';
 import {useNavigate} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
+import {mapboxToken} from 'src/consts';
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);
@@ -57,7 +58,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
     );
 
     const satelitemapbox = L.tileLayer(
-      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
+      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={token}',
       {
         maxZoom: 20,
         attribution:
@@ -67,11 +68,12 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         id: 'mapbox/satellite-v9',
         tileSize: 512,
         zoomOffset: -1,
+        token: mapboxToken,
       }
     );
 
     const outdormapbox = L.tileLayer(
-      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
+      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={token}',
       {
         maxZoom: 20,
         attribution:
@@ -81,19 +83,20 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         id: 'mapbox/outdoors-v11',
         tileSize: 512,
         zoomOffset: -1,
+        token: mapboxToken,
       }
     );
 
     var map = L.map('map', {
       center: [55.876823, 8.961644],
       zoom: 7,
-      layers: [toposkaermkortwmts],
+      layers: [outdormapbox],
       tap: false,
     });
 
     var baseMaps = {
-      Vandløb: toposkaermkortwmts,
       OpenStreetMap: outdormapbox,
+      Vandløb: toposkaermkortwmts,
       Satelit: satelitemapbox,
     };
 
