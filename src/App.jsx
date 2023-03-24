@@ -19,11 +19,6 @@ function App() {
   }, []);
 
   console.log('authenticated => ', authenticated);
-  // const sensorFieldPromise = import('./pages/field/SensorField');
-  // const SensorField = React.lazy(() => sensorFieldPromise);
-
-  // TODO:
-  // 1. Added token expiration check
 
   if (!authenticated) {
     return (

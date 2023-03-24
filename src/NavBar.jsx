@@ -45,15 +45,19 @@ const LogOut = ({element: Element}) => {
   return <Box onClick={handleLogout}>{Element}</Box>;
 };
 
-const AppBarLayout = ({children}) => {
+export const AppBarLayout = ({children, style}) => {
   return (
     <AppBar position="sticky">
       <Toolbar
-        style={{
-          flexGrow: 1,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
+        style={
+          style
+            ? style
+            : {
+                flexGrow: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }
+        }
       >
         {children}
       </Toolbar>

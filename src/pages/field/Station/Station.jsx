@@ -128,8 +128,8 @@ export default function Station({stationId, stamdata}) {
   );
 
   useEffect(() => {
-    if (watlevmp.length > 0) {
-      const elev = watlevmp.filter((e2) => {
+    if (watlevmp?.length > 0) {
+      const elev = watlevmp?.filter((e2) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
           moment(pejlingData.timeofmeas) < moment(e2.enddate)
@@ -148,9 +148,9 @@ export default function Station({stationId, stamdata}) {
 
   useEffect(() => {
     var ctrls = [];
-    if (watlevmp.length > 0) {
-      ctrls = measurements.map((e) => {
-        const elev = watlevmp.filter((e2) => {
+    if (watlevmp?.length > 0) {
+      ctrls = measurements?.map((e) => {
+        const elev = watlevmp?.filter((e2) => {
           return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
         })[0]?.elevation;
         return {
@@ -159,7 +159,7 @@ export default function Station({stationId, stamdata}) {
         };
       });
     } else {
-      ctrls = measurements.map((elem) => {
+      ctrls = measurements?.map((elem) => {
         return {...elem, waterlevel: elem.measurement};
       });
     }
@@ -178,12 +178,16 @@ export default function Station({stationId, stamdata}) {
   const pejlingMutate = useMutation(
     (data) => {
       if (data.gid === -1) {
-        return apiClient.post(`/sensor_field/station/measurements/${stationId}`, data);
+        return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);
       } else {
-        return apiClient.put(`/sensor_field/station/measurements/${stationId}/${data.gid}`, data);
+        return apiClient.put(
+          `/sensor_field/station/measurements/${data.stationid}/${data.gid}`,
+          data
+        );
       }
     },
     {
+      mutationKey: 'pejling',
       onSuccess: (data) => {
         resetPejlingData();
         setFormToShow(null);
@@ -200,6 +204,7 @@ export default function Station({stationId, stamdata}) {
     const payload = {
       ...pejlingData,
       isWaterlevel: isWaterlevel,
+      stationid: stationId,
     };
     payload.timeofmeas = moment(payload.timeofmeas).toISOString();
     pejlingMutate.mutate(payload);

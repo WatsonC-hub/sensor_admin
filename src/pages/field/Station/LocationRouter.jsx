@@ -13,6 +13,7 @@ import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
 import ErrorPage from './ErrorPage';
 import {apiClient} from 'src/apiClient';
+import {AppBarLayout} from 'src/NavBar';
 
 export default function LocationRouter() {
   const theme = useTheme();
@@ -40,20 +41,22 @@ export default function LocationRouter() {
   return (
     <div>
       <CssBaseline />
-      <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            onClick={(e) => {
-              navigate(-1);
-            }}
-            size="large"
-          >
-            <KeyboardBackspaceIcon />
-          </IconButton>
-          <MinimalSelect locid={params.locid} stationList={data} />
-        </Toolbar>
-      </AppBar>
+      {/* <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
+        <Toolbar> */}
+      <AppBarLayout style={{}}>
+        <IconButton
+          color="inherit"
+          onClick={(e) => {
+            navigate(-1);
+          }}
+          size="large"
+        >
+          <KeyboardBackspaceIcon />
+        </IconButton>
+        <MinimalSelect locid={params.locid} stationList={data} />
+      </AppBarLayout>
+      {/* </Toolbar>
+      </AppBar> */}
 
       <main
         style={{

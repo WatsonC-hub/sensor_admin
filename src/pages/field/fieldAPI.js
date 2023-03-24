@@ -28,11 +28,6 @@ async function getDTMQuota(x, y) {
   return data;
 }
 
-async function getLocationTypes() {
-  const {data} = await axios.get(`${endpoint}SELECT loctype_id, loctypename FROM sensor.loctype2`);
-  return data.features;
-}
-
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -117,7 +112,6 @@ export {
   loginUser,
   resetPassword,
   updateStamdata,
-  getLocationTypes,
   getDTMQuota,
   postImage,
   deleteImage,
