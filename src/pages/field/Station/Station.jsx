@@ -175,21 +175,15 @@ export default function Station({stationId, stamdata}) {
     setFormToShow('ADDMAALEPUNKT');
   };
 
-  const pejlingMutate = useMutation(async (data) => {
-    if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/station/measurements/${stationId}`, data);
-    } else {
-      await apiClient.put(`/sensor_field/station/measurements/${stationId}/${data.gid}`, data);
-    }
-  });
-
-  const handlePejlingSubmit = () => {
-    const payload = {
-      ...pejlingData,
-      isWaterlevel: isWaterlevel,
-    };
-    payload.timeofmeas = moment(payload.timeofmeas).toISOString();
-    pejlingMutate.mutate(payload, {
+  const pejlingMutate = useMutation(
+    (data) => {
+      if (data.gid === -1) {
+        return apiClient.post(`/sensor_field/station/measurements/${stationId}`, data);
+      } else {
+        return apiClient.put(`/sensor_field/station/measurements/${stationId}/${data.gid}`, data);
+      }
+    },
+    {
       onSuccess: (data) => {
         resetPejlingData();
         setFormToShow(null);
@@ -199,14 +193,23 @@ export default function Station({stationId, stamdata}) {
       onError: (error) => {
         toast.error('Der skete en fejl');
       },
-    });
+    }
+  );
+
+  const handlePejlingSubmit = () => {
+    const payload = {
+      ...pejlingData,
+      isWaterlevel: isWaterlevel,
+    };
+    payload.timeofmeas = moment(payload.timeofmeas).toISOString();
+    pejlingMutate.mutate(payload);
   };
 
-  const watlevmpMutate = useMutation(async (data) => {
+  const watlevmpMutate = useMutation((data) => {
     if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
+      return apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
     } else {
-      await apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
+      return apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
     }
   });
 
@@ -227,11 +230,11 @@ export default function Station({stationId, stamdata}) {
     });
   };
 
-  const serviceMutate = useMutation(async (data) => {
+  const serviceMutate = useMutation((data) => {
     if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/station/service/${stationId}`, data);
+      return apiClient.post(`/sensor_field/station/service/${stationId}`, data);
     } else {
-      await apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
+      return apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
     }
   });
 
