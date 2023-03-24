@@ -267,17 +267,26 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           });
 
           let popupContent = L.DomUtil.create('div', 'content');
-          popupContent.innerHTML =
-            '<center><b>' +
-            borehole.boreholeno +
-            '</b><br>Seneste kontrolmåling(er):<br>' +
-            content +
-            '</center>' +
-            '<a>Se graf</a>';
+          if (borehole.intakenos.reduce((a, b) => b == null || a, false)) {
+            popupContent.innerHTML =
+              '<center><b>' +
+              borehole.boreholeno +
+              '</b>' +
+              '<br>Der er ikke registreret et indtag på denne boring</br>' +
+              '</center>';
+          } else {
+            popupContent.innerHTML =
+              '<center><b>' +
+              borehole.boreholeno +
+              '</b><br>Seneste kontrolmåling(er):<br>' +
+              content +
+              '</center>' +
+              '<a>Se graf</a>';
+            L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(borehole));
+          }
 
           let popup = L.popup().setContent(popupContent);
           marker.bindPopup(popup);
-          L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(borehole));
 
           marker.on('add', function () {
             mapRef.current.flyTo(point, 12);
