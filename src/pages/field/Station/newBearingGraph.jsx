@@ -240,6 +240,10 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           limit: 4000,
         },
       });
+      console.log('watlevmpdata', data);
+      if (data === null) {
+        return [];
+      }
       return data;
     },
     {
@@ -298,8 +302,8 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     }
   );
 
-  const xControl = controlData.map((d) => d.timeofmeas);
-  const yControl = controlData.map((d) => d.waterlevel);
+  const xControl = controlData?.map((d) => d.timeofmeas);
+  const yControl = controlData?.map((d) => d.waterlevel);
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
   var downloadButton = {

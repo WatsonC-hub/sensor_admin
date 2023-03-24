@@ -75,7 +75,7 @@ export default function Station({stationId, stamdata}) {
     };
   }, [stamdata]);
 
-  const isWaterlevel = stamdata ? stamdata?.tstype_id === 1 : false;
+  const isWaterlevel = stamdata ? stamdata?.tstype_id === 1 : true;
   const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;
   const isCalculated = stamdata ? stamdata?.calculated : false;
 
@@ -84,6 +84,7 @@ export default function Station({stationId, stamdata}) {
     //() => getMP(stationId), {
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
+
       return data.map((m) => {
         return {
           ...m,
@@ -94,7 +95,7 @@ export default function Station({stationId, stamdata}) {
     },
     {
       enabled: stationId !== -1 && stationId !== null,
-      placeholderData: [],
+      initialData: [],
     }
   );
 
@@ -103,13 +104,14 @@ export default function Station({stationId, stamdata}) {
     ['measurements', stationId],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);
+
       return data.map((m) => {
         return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
     {
       enabled: stationId !== -1 && stationId !== null,
-      placeholderData: [],
+      initialData: [],
     }
   );
 
@@ -117,13 +119,14 @@ export default function Station({stationId, stamdata}) {
     ['service', stationId],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${stationId}`);
+
       return data.map((m) => {
         return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
     {
       enabled: stationId !== -1 && stationId !== null,
-      placeholderData: [],
+      initialData: [],
     }
   );
 
