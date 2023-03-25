@@ -11,48 +11,35 @@ import {Grid, Typography, TextField, Button, Card, CardContent, Alert} from '@mu
 import OwnDatePicker from 'src/components/OwnDatePicker';
 import {isValid} from 'date-fns';
 
-export default function GraphForms({graphData, formData, changeFormData}) {
+export default function GraphForms({graphData, previewData, setDataPreview, setReviewData}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [disablePreview, setDisablePreview] = useState(false);
 
   console.log('graphdata:', graphData);
 
-  const handleMinDateChange = (date) => {
-    if (isValid(date)) {
-      console.log('date is valid again: ', date);
-      changeFormData('minDate', date);
-    }
-  };
-
-  const handleMaxDateChange = (date) => {
-    if (isValid(date)) {
-      console.log('date is valid again: ', date);
-      changeFormData('maxDate', date);
-    }
-  };
-
   const handleClickPreview = () => {
+    console.log('start');
     setDisablePreview(true);
 
-    if (graphData.length > 0) {
-      var newData = graphData.filter((elem) => {
-        if (
-          moment(elem.x).isSameOrAfter(formData.minDate) &&
-          moment(elem.x).isBefore(formData.maxDate)
-        ) {
-          return true;
-        }
-      });
-      console.log('newData', newData);
-      changeFormData('data', {newData});
-      setTimeout(() => {
-        window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'});
-      }, 200);
-      setTimeout(() => {
-        setDisablePreview(false);
-      }, 2500);
-    }
+    setReviewData(
+      (x = graphData.x.filter(
+        (coord) => !previewData.selectedDataFix.x.some((subsetCoord) => subsetCoord.x === coord.x)
+      )),
+      (y = graphData.y.filter(
+        (coord) => !previewData.selectedDataFix.y.some((subsetCoord) => subsetCoord.y === coord.y)
+      ))
+    );
+
+    setReviewData(graphData - previewData.selectedDataFix);
+    setTimeout(() => {
+      window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'});
+    }, 200);
+    setTimeout(() => {
+      setDisablePreview(false);
+    }, 2500);
+    console.log('slut');
+    setDisablePreview(false);
   };
 
   return (
@@ -109,11 +96,11 @@ export default function GraphForms({graphData, formData, changeFormData}) {
                 }}
                 label={
                   <Typography variant="h6" component="h3">
-                    Minimums dato
+                    Ældste dato
                   </Typography>
                 }
-                value={formData.minDate}
-                onChange={(date) => handleMinDateChange(date)}
+                value={previewData.oldDate}
+                onChange={(date) => handleOldDateChange(date)}
               />
             </Grid>
             <Grid item xs={12} sm={7}>
@@ -126,11 +113,11 @@ export default function GraphForms({graphData, formData, changeFormData}) {
                 }}
                 label={
                   <Typography variant="h6" component="h3">
-                    Maksimums dato
+                    Nyeste dato
                   </Typography>
                 }
-                value={formData.maxDate}
-                onChange={(date) => handleMaxDateChange(date)}
+                value={previewData.newDate}
+                onChange={(date) => handleNewDateChange(date)}
               />
             </Grid>
             <Grid item xs={12} sm={12}>

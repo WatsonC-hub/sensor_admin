@@ -240,12 +240,15 @@ const transformQAData = (data) => {
   return {shapelist, annotateList};
 };
 
-function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, formData, changeFormData}) {
+function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, setPreviewData}) {
   const [selectedData, setSelectedData] = useState([{x: [], y: []}]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
-  const [selected, setSelected] = useState(false);
+  const selectedDataFix = {
+    x: [],
+    y: [],
+  };
 
   const handlePlotlySelected = (eventData) => {
     setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
@@ -253,15 +256,20 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, formData
     console.log('dates: ', dates);
     if (dates.length > 0) {
       const sortedDates = dates.sort((a, b) => moment(a) - moment(b));
-      console.log('NEWEST Date', sortedDates[sortedDates.length - 1]);
-      console.log('OLDEST Date', sortedDates[0]);
 
-      const minDate = sortedDates[0];
-      const maxDate = sortedDates[sortedDates.length - 1];
-      changeFormData('minDate', minDate);
-      changeFormData('maxDate', maxDate);
-      console.log('min date: ', formData.minDate);
-      console.log('max date: ', formData.maxDate);
+      console.log('OLDEST Date', sortedDates[0]);
+      const oldDate = sortedDates[0];
+      console.log('NEWEST Date', sortedDates[sortedDates.length - 1]);
+      const newDate = sortedDates[sortedDates.length - 1];
+
+      Object.values(selectedData).forEach((arr) => {
+        arr.forEach((obj) => {
+          selectedDataFix.x.push(obj.x);
+          selectedDataFix.y.push(obj.y);
+        });
+      });
+
+      setPreviewData({oldDate, newDate, selectedDataFix});
     }
   };
 
@@ -374,7 +382,8 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, formData
 export default function QAGraph({stationId, measurements}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
+  const [reviewData, setReviewData] = useState({x: [], y: []});
+  console.log('reviewData', reviewData);
   const {data: graphData} = useQuery(
     ['graphData', stationId],
     async ({signal}) => {
@@ -392,11 +401,7 @@ export default function QAGraph({stationId, measurements}) {
     }
   );
 
-  const [previewData, setPreviewData, changePreviewData, resetPreviewData] = useFormData({
-    minDate: moment(),
-    maxDate: moment(),
-    data: {},
-  });
+  const [previewData, setPreviewData] = useState({oldDate: moment(), newDate: moment(), data: {}});
 
   console.log('previewData', previewData);
 
@@ -431,11 +436,15 @@ export default function QAGraph({stationId, measurements}) {
           graphData={graphData}
           controlData={measurements}
           qaData={qaData}
-          formData={previewData}
-          changeFormData={changePreviewData}
+          setPreviewData={setPreviewData}
         />
       </div>
-      <GraphForms graphData={graphData} formData={previewData} changeFormData={changePreviewData} />
+      <GraphForms
+        graphData={graphData}
+        previewData={previewData}
+        setPreviewData={setPreviewData}
+        setReviewData={setReviewData}
+      />
       <div
         style={{
           width: 'auto',
@@ -450,7 +459,7 @@ export default function QAGraph({stationId, measurements}) {
           // zIndex: 100,
         }}
       >
-        <PlotGraph graphData={previewData.previewData} controlData={measurements} qaData={qaData} />
+        <PlotGraph graphData={reviewData} controlData={measurements} qaData={qaData} />
       </div>
     </div>
   );
