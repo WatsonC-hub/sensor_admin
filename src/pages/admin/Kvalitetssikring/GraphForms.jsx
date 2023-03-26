@@ -11,35 +11,39 @@ import {Grid, Typography, TextField, Button, Card, CardContent, Alert} from '@mu
 import OwnDatePicker from 'src/components/OwnDatePicker';
 import {isValid} from 'date-fns';
 
-export default function GraphForms({graphData, previewData, setDataPreview, setReviewData}) {
+export default function GraphForms({graphData, previewData, reviewData, setReviewData}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [disablePreview, setDisablePreview] = useState(false);
+  const [disableReview, setDisableReview] = useState(true);
 
   console.log('graphdata:', graphData);
 
   const handleClickPreview = () => {
-    console.log('start');
-    setDisablePreview(true);
+    if (previewData.selectedDataFix) {
+      setDisablePreview(true);
+      setReviewData({
+        x: graphData.x.filter(
+          (coordinate, index) =>
+            !previewData.selectedDataFix.x.includes(coordinate) ||
+            previewData.selectedDataFix.y.indexOf(graphData.y[index]) === -1
+        ),
+        y: graphData.y.filter(
+          (coordinate, index) =>
+            !previewData.selectedDataFix.y.includes(coordinate) ||
+            previewData.selectedDataFix.x.indexOf(graphData.x[index]) === -1
+        ),
+      });
+      console.log('reviewData', reviewData);
 
-    setReviewData(
-      (x = graphData.x.filter(
-        (coord) => !previewData.selectedDataFix.x.some((subsetCoord) => subsetCoord.x === coord.x)
-      )),
-      (y = graphData.y.filter(
-        (coord) => !previewData.selectedDataFix.y.some((subsetCoord) => subsetCoord.y === coord.y)
-      ))
-    );
-
-    setReviewData(graphData - previewData.selectedDataFix);
-    setTimeout(() => {
-      window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'});
-    }, 200);
-    setTimeout(() => {
-      setDisablePreview(false);
-    }, 2500);
-    console.log('slut');
-    setDisablePreview(false);
+      setTimeout(() => {
+        window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'});
+      }, 200);
+      setTimeout(() => {
+        setDisablePreview(false);
+      }, 2500);
+      setDisableReview(false);
+    }
   };
 
   return (
@@ -68,12 +72,12 @@ export default function GraphForms({graphData, previewData, setDataPreview, setR
               alignItems: 'center',
             }}
           >
-            {/* <Typography>
-              Valgt minimums dato: {formData.minDate?.format('YYYY-MM-DD HH:mm')}
+            <Typography>
+              Ældste valgte dato: {previewData.oldDate?.format('DD-MM-YYYY HH:mm')}
             </Typography>
             <Typography>
-              Valgt maksimums dato: {formData.maxDate?.format('YYYY-MM-DD HH:mm')}
-            </Typography> */}
+              Nyeste valgte dato: {previewData.newDate?.format('DD-MM-YYYY HH:mm')}
+            </Typography>
           </Alert>
         </Grid>
         <Card
@@ -132,6 +136,20 @@ export default function GraphForms({graphData, previewData, setDataPreview, setR
             </Grid>
           </CardContent>
         </Card>
+        {!disableReview ? (
+          <Grid item xs={12} sm={12}>
+            <Button
+              color="secondary"
+              variant="contained"
+              //onClick={handleClickPreview}
+              disabled={disableReview}
+            >
+              Bekræft ændringer
+            </Button>
+          </Grid>
+        ) : (
+          ''
+        )}
       </Grid>
     </div>
   );

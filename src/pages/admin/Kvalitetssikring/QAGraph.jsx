@@ -264,7 +264,7 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, setPrevi
 
       Object.values(selectedData).forEach((arr) => {
         arr.forEach((obj) => {
-          selectedDataFix.x.push(obj.x);
+          selectedDataFix.x.push(moment(obj.x).format());
           selectedDataFix.y.push(obj.y);
         });
       });
@@ -443,6 +443,7 @@ export default function QAGraph({stationId, measurements}) {
         graphData={graphData}
         previewData={previewData}
         setPreviewData={setPreviewData}
+        reviewData={reviewData}
         setReviewData={setReviewData}
       />
       <div
@@ -450,8 +451,8 @@ export default function QAGraph({stationId, measurements}) {
           width: 'auto',
           height: matches ? '300px' : '500px',
           marginBottom: '10px',
-          marginTop: '-10px',
-          paddingTop: '5px',
+          marginTop: '-70px',
+          //paddingTop: '5px',
           border: '2px solid gray',
           // position: "-webkit-sticky",
           // position: "sticky",
