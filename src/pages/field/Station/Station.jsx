@@ -386,7 +386,10 @@ export default function Station({stationId, stamdata}) {
             formData={serviceData}
             changeFormData={changeServiceData}
             handleSubmit={handleServiceSubmit}
-            resetFormData={resetServiceData}
+            cancel={() => {
+              resetServiceData();
+              setFormToShow(null);
+            }}
           />
           <TilsynTable
             services={services}

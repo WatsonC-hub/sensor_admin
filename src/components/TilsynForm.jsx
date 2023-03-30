@@ -6,7 +6,7 @@ import OwnDatePicker from './OwnDatePicker';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-export default function TilsynForm({formData, changeFormData, handleSubmit, resetFormData}) {
+export default function TilsynForm({formData, changeFormData, handleSubmit, cancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, rese
             </Button>
           </Grid>
           <Grid item xs={4} sm={2}>
-            <Button onClick={resetFormData} color="grey" variant="contained">
+            <Button onClick={cancel} color="grey" variant="contained">
               Annuller
             </Button>
           </Grid>

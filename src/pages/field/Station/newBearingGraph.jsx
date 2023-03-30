@@ -114,6 +114,7 @@ const layout1 = {
       font: {size: 12},
     },
     showline: true,
+    autorange: true,
   },
 
   showlegend: true,
@@ -150,6 +151,7 @@ const layout3 = {
   },
 
   yaxis: {
+    autorange: true,
     showline: true,
     y: 1,
     title: {
@@ -196,60 +198,57 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [xRange, setXRange] = useState(initRange);
-  const [layout, setLayout] = useState(matches ? layout3 : layout1);
-  const [dragmode, setDragmode] = useState('zoom');
+  const [layout, setLayout] = useState(
+    matches ? structuredClone(layout3) : structuredClone(layout1)
+  );
+
+  // useEffect(() => {
+  //   setLayout((prev) => {
+  //     return matches ? layout3 : layout1;
+  //   });
+  // }, [matches]);
 
   useEffect(() => {
-    setLayout((prev) => {
-      return {...(matches ? layout3 : layout1), dragmode: dragmode};
-    });
-  }, [matches]);
+    refetchData([ts_id, initRange]);
+  }, [ts_id]);
 
-  const handleXRangeChange = (e) => {
-    if (e['dragmode']) {
-      // setXRange(initRange);
-      setLayout((prev) => {
-        return {...prev, dragmode: e['dragmode']};
-      });
-      return;
-    }
-    if (e['xaxis.range[0]'] === undefined) {
+  const handleRelayout = (e) => {
+    console.log(e);
+    if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
     }
 
-    let x0 = moment(e['xaxis.range[0]']);
-    let x1 = moment(e['xaxis.range[1]']);
+    if (e['xaxis.range[0]'] !== undefined) {
+      let x0 = moment(e['xaxis.range[0]']);
+      let x1 = moment(e['xaxis.range[1]']);
 
-    const daysdiff = x1.diff(x0, 'days');
+      const daysdiff = x1.diff(x0, 'days');
 
-    x0 = x0.subtract(daysdiff * 0.2, 'days');
-    x1 = x1.add(daysdiff * 0.2, 'days');
+      x0 = x0.subtract(daysdiff * 0.2, 'days');
+      x1 = x1.add(daysdiff * 0.2, 'days');
 
-    setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
+      setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
+    }
   };
 
-  const {data: graphData} = useQuery(
+  const {data: graphData, refetch: refetchData} = useQuery(
     ['graphData', ts_id, xRange],
     async ({signal}) => {
       const {data} = await apiClient.get(`/data/timeseriesV2/${ts_id}`, {
-        signal,
         params: {
           start: xRange[0],
           stop: xRange[1],
           limit: 4000,
         },
       });
-      console.log('watlevmpdata', data);
       if (data === null) {
         return [];
       }
       return data;
     },
     {
-      enabled: ts_id !== -1 && ts_id !== null,
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
       refetchOnReconnect: false,
       refetchInterval: false,
     }
@@ -354,6 +353,8 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   return (
     <Plot
+      key={ts_id}
+      divId={`graph_${ts_id}`}
       data={[
         {
           x: graphData?.x,
@@ -402,10 +403,12 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
         displaylogo: false,
         displayModeBar: true,
+        doubleClick: 'reset',
       }}
       useResizeHandler={true}
       style={{width: '99%', height: '100%'}}
-      onRelayout={handleXRangeChange}
+      onRelayout={handleRelayout}
+      // onDoubleClick={() => setXRange(initRange)}
     />
   );
 }
