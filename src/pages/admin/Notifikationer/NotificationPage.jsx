@@ -83,6 +83,7 @@ const NotificationPage = () => {
 
   const trelloMutate = useMutation(async (data) => {
     const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
+    const {data: out2} = await apiClient.post(`/sensor_admin/overblik/make_trello`, data);
     return out;
   });
 
