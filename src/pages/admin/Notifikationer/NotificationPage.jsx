@@ -75,7 +75,7 @@ const NotificationPage = () => {
           (item) =>
             selectFilters.includes(item.flag) && item.is_customer_service === isCustomerService
         ),
-        [(item) => (item.status ? item.status : 'aaaaaaaaa'), (item) => item.flag]
+        [(item) => (item.status ? item.status : ''), (item) => item.flag]
       )
     );
     setMapdata(uniqBy(sorted, 'locid'));
@@ -152,32 +152,15 @@ const NotificationPage = () => {
         <ServiceMap data={mapdata} isLoading={isLoading} setLassoFilter={setLassoFilter} />
       </Grid>
       <Grid item xs={12} md={6} p={2}>
-        {/* <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => {
-            trelloMutate.mutate(notifications);
-            statusMutate.mutate(
-              notifications.map((item) => ({
-                ts_id: item.stationid,
-                status: 'SCHEDULED',
-                notification_id: item.notification_id,
-                enddate: moment().format('YYYY-MM-DDTHH:mm:ss'),
-              }))
-            );
-          }}
-        >
-          Lav til opgave
-        </Button> */}
         <Typography variant="h6">
           Batteriskift: {numBattery} ud af {numNotifications}
         </Typography>
-        <Typography variant="h6">
+        {/* <Typography variant="h6">
           Niveau spring: {numLevel} ud af {numNotifications}
         </Typography>
         <Typography variant="h6">
           Abnormal hændelse: {numAbnormal} ud af {numNotifications}
-        </Typography>
+        </Typography> */}
         <Typography variant="h6">
           Tilsyn: {numTilsyn} ud af {numNotifications}
         </Typography>
