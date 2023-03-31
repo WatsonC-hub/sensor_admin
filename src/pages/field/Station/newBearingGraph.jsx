@@ -60,6 +60,15 @@ var rerunIcon = {
   descent: -50,
 };
 
+var rawDataIcon = {
+  width: 32,
+  height: 32,
+  viewBox: '0 0 32 32',
+  path: 'M29.5 7c-1.381 0-2.5 1.12-2.5 2.5 0 0.284 0.058 0.551 0.144 0.805l-6.094 5.247c-0.427-0.341-0.961-0.553-1.55-0.553-0.68 0-1.294 0.273-1.744 0.713l-4.774-2.39c-0.093-1.296-1.162-2.323-2.482-2.323-1.38 0-2.5 1.12-2.5 2.5 0 0.378 0.090 0.732 0.24 1.053l-4.867 5.612c-0.273-0.102-0.564-0.166-0.873-0.166-1.381 0-2.5 1.119-2.5 2.5s1.119 2.5 2.5 2.5c1.381 0 2.5-1.119 2.5-2.5 0-0.332-0.068-0.649-0.186-0.939l4.946-5.685c0.236 0.073 0.48 0.124 0.74 0.124 0.727 0 1.377-0.316 1.834-0.813l4.669 2.341c0.017 1.367 1.127 2.471 2.497 2.471 1.381 0 2.5-1.119 2.5-2.5 0-0.044-0.011-0.086-0.013-0.13l6.503-5.587c0.309 0.137 0.649 0.216 1.010 0.216 1.381 0 2.5-1.119 2.5-2.5s-1.119-2.5-2.5-2.5z',
+  // ascent: 28,
+  // descent: 50,
+};
+
 function exportToCsv(filename, rows) {
   var processRow = function (row) {
     var finalVal = '';
@@ -101,12 +110,13 @@ function exportToCsv(filename, rows) {
   }
 }
 
-const layout1 = {
+const desktopLayout = {
   xaxis: {
     rangeselector: selectorOptions,
     autorange: true,
     type: 'date',
     showline: true,
+    domain: [0, 0.97],
   },
   yaxis: {
     title: {
@@ -115,6 +125,20 @@ const layout1 = {
     },
     showline: true,
     autorange: true,
+  },
+  yaxis2: {
+    showgrid: false,
+    overlaying: 'y',
+    side: 'right',
+    position: 0.9,
+    anchor: 'x',
+    visible: false,
+    title: {
+      text: '',
+      font: {
+        size: 12,
+      },
+    },
   },
 
   showlegend: true,
@@ -136,7 +160,7 @@ const layout1 = {
   },
 };
 
-const layout3 = {
+const mobileLayout = {
   modebar: {
     orientation: 'v',
   },
@@ -148,6 +172,7 @@ const layout3 = {
     margin: {
       t: 0,
     },
+    domain: [0, 0.97],
   },
 
   yaxis: {
@@ -157,6 +182,19 @@ const layout3 = {
     title: {
       text: '',
       font: {size: 12},
+    },
+  },
+  yaxis2: {
+    showgrid: false,
+    overlaying: 'y',
+    side: 'right',
+    position: 0.9,
+    anchor: 'x',
+    visible: false,
+    title: {
+      font: {
+        size: 12,
+      },
     },
   },
 
@@ -185,10 +223,11 @@ const initRange = [
 ];
 
 function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
-  const [name, unit, stationtype] = stamdataStore((state) => [
+  const [name, unit, stationtype, terrainlevel] = stamdataStore((state) => [
     state.timeseries.ts_name,
     state.timeseries.unit,
     state.timeseries.tstype_name,
+    state.location.terrainlevel,
   ]);
 
   const toastId = useRef(null);
@@ -199,7 +238,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [xRange, setXRange] = useState(initRange);
   const [layout, setLayout] = useState(
-    matches ? structuredClone(layout3) : structuredClone(layout1)
+    matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
   );
 
   // useEffect(() => {
@@ -251,6 +290,21 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       refetchInterval: false,
+    }
+  );
+
+  const {data: rawData, refetch: fetchRaw} = useQuery(
+    ['rawdata', ts_id],
+    async ({signal}) => {
+      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
+      if (data === null) {
+        return [];
+      }
+      return data;
+    },
+    {
+      enabled: false,
+      placeholderData: [],
     }
   );
 
@@ -327,6 +381,51 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     },
   };
 
+  var getRawData = {
+    name: 'Hent rådata',
+    icon: rawDataIcon,
+    click: function (gd) {
+      fetchRaw();
+      gd.layout = {
+        ...gd.layout,
+        yaxis2: {
+          ...gd.layout.yaxis2,
+          visible: true,
+        },
+      };
+      setLayout(gd.layout);
+    },
+  };
+
+  console.log('terrainlevel', terrainlevel);
+
+  // var addHorizontalLine = {
+  //   name: 'Tilføj terrænkote',
+  //   icon: rerunIcon,
+  //   click: function (gd) {
+  //     gd.layout = {
+  //       ...gd.layout,
+  //       shapes: [
+  //         {
+  //           type: 'line',
+  //           xref: 'paper',
+  //           yref: 'y',
+  //           x0: 0,
+  //           y0: terrainlevel,
+  //           x1: 1,
+  //           y1: terrainlevel,
+  //           line: {
+  //             color: 'rgb(55, 128, 191)',
+  //             width: 3,
+  //             dash: 'dot',
+  //           },
+  //         },
+  //       ],
+  //     };
+  //     setLayout(gd.layout);
+  //   },
+  // };
+
   var makeLinkButton = {
     name: 'Ekstern link',
     icon: makeLinkIcon,
@@ -366,6 +465,16 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           marker: {symbol: '100', size: '3', color: '#177FC1'},
         },
         {
+          x: rawData?.x,
+          y: rawData?.y,
+          name: 'Rådata',
+          type: 'scattergl',
+          yaxis: 'y2',
+          line: {width: 2},
+          mode: 'lines',
+          marker: {symbol: '100', size: '3'},
+        },
+        {
           x: xControl,
           y: yControl,
           name: 'Kontrolpejlinger',
@@ -397,7 +506,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       config={{
         responsive: true,
         modeBarButtons: [
-          [downloadButton, makeLinkButton, rerunButton],
+          [downloadButton, makeLinkButton, rerunButton, getRawData],
           ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
         ],
 
