@@ -1,19 +1,23 @@
 import {TextField} from '@mui/material';
-import {Controller, useFormContext} from 'react-hook-form';
+import {Controller, useFormContext, get} from 'react-hook-form';
 
-const FormInput = ({name, ...otherProps}) => {
+const FormInput = ({name, warning, children, ...otherProps}) => {
   const {
     control,
     formState: {errors},
+    defaultValues,
   } = useFormContext();
 
   return (
     <Controller
       control={control}
       name={name}
-      defaultvalue=""
-      render={({field}) => (
+      defaultvalue={get(defaultValues, name)}
+      render={({field, formState, fieldState}) => (
         <TextField
+          {...otherProps}
+          {...field}
+          defaultValue={''}
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {
               WebkitTextFillColor: '#000000',
@@ -23,17 +27,27 @@ const FormInput = ({name, ...otherProps}) => {
             '& .MuiOutlinedInput-root': {
               '& > fieldset': {borderColor: 'primary.main'},
             },
+            '.MuiFormHelperText-root': {color: warning && warning(field.value) ? 'orange' : 'red'},
           }}
           className="swiper-no-swiping"
           variant="outlined"
           InputLabelProps={{shrink: true}}
           fullWidth
           margin="dense"
-          {...otherProps}
-          {...field}
-          error={!!errors[name]}
-          helperText={errors[name] ? errors[name].message : ''}
-        />
+          onChange={(e) => {
+            if (otherProps.type === 'number' && e.target.value !== '') {
+              field.onChange(Number(e.target.value));
+            } else {
+              field.onChange(e);
+            }
+          }}
+          error={!!get(errors, name)}
+          helperText={
+            get(errors, name) ? get(errors, name).message : '' || (warning && warning(field.value))
+          }
+        >
+          {children}
+        </TextField>
       )}
     />
   );

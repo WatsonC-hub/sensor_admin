@@ -2,12 +2,12 @@ import React from 'react';
 import {Grid, TextField} from '@mui/material';
 import 'date-fns';
 import moment from 'moment';
-import OwnDatePicker from '../../../../components/OwnDatePicker';
-import {stamdataStore} from '../../../../state/store';
+import OwnDatePicker from 'src/components/OwnDatePicker';
+import {stamdataStore} from 'src/state/store';
 import FormTextField from './FormTextField';
 
-export default function UdstyrForm(props) {
-  const editMode = props.mode === 'edit';
+export default function UnitForm({mode}) {
+  const editMode = mode === 'edit';
 
   const [unit, setUnitValue] = stamdataStore((store) => [store.unit, store.setUnitValue]);
 

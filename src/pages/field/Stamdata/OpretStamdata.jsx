@@ -5,19 +5,21 @@ import Autocomplete from '@mui/material/Autocomplete';
 import 'date-fns';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useTheme} from '@mui/material/styles';
-import AddUdstyrForm from './AddUdstyrForm';
+import AddUnitForm from './AddUnitForm';
 import AddLocationForm from './AddLocationForm';
 import LocationForm from './components/LocationForm';
-import StationForm from './components/StationForm';
+import TimeseriesForm from './components/TimeseriesForm';
 import {apiClient, postStamdata} from '../fieldAPI';
-import UdstyrForm from './components/UdstyrForm';
+import UnitForm from './components/UnitForm';
+import {DevTool} from '@hookform/devtools';
 
 import SaveIcon from '@mui/icons-material/Save';
 import moment from 'moment';
 import {stamdataStore} from '../../../state/store';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {toast} from 'react-toastify';
-import axios from 'axios';
+import {metadataSchema} from 'src/helpers/zodSchemas';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm, FormProvider, useFormContext} from 'react-hook-form';
 
 const flex1 = {
   display: 'flex',
@@ -31,26 +33,44 @@ function LocationChooser({setLocationDialogOpen}) {
     store.resetLocation,
   ]);
 
+  const formMethods = useFormContext();
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const populateFormData = (locData) => {
     if (locData) {
-      setLocation({
-        loc_id: locData.loc_id,
-        loc_name: locData.loc_name,
-        mainloc: locData.mainloc,
-        subloc: locData.subloc,
-        subsubloc: locData.subsubloc,
-        x: locData.x,
-        y: locData.y,
-        terrainqual: locData.terrainqual,
-        terrainlevel: locData.terrainlevel,
-        description: locData.description,
-        loctype_id: locData.loctype_id,
+      formMethods.reset({
+        location: {
+          loc_id: locData.loc_id,
+          loc_name: locData.loc_name,
+          mainloc: locData.mainloc,
+          subloc: locData.subloc,
+          subsubloc: locData.subsubloc,
+          x: locData.x,
+          y: locData.y,
+          terrainqual: locData.terrainqual,
+          terrainlevel: locData.terrainlevel,
+          description: locData.description,
+          loctype_id: locData.loctype_id,
+        },
       });
     } else {
-      resetLocation();
+      formMethods.reset({
+        location: {
+          loc_id: '',
+          loc_name: '',
+          mainloc: '',
+          subloc: '',
+          subsubloc: '',
+          x: '',
+          y: '',
+          terrainqual: '',
+          terrainlevel: '',
+          description: '',
+          loctype_id: '',
+        },
+      });
     }
   };
 
@@ -154,110 +174,139 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const store = stamdataStore();
   const queryClient = useQueryClient();
 
-  const [selectedStationType, setSelectedStationType] = useState(-1);
+  useEffect(() => {
+    return () => {
+      store.resetUnit();
+    };
+  }, []);
 
-  const stamdataMutation = useMutation(postStamdata, {
-    onSuccess: (data) => {
-      navigate(-1);
-      queryClient.invalidateQueries('station_list');
-      queryClient.invalidateQueries('map_data');
+  const formMethods = useForm({
+    resolver: zodResolver(metadataSchema),
+    defaultValues: {
+      location: {
+        loc_name: '',
+        terrainqual: '',
+        loctype_id: -1,
+      },
+      timeseries: {
+        tstype_id: -1,
+      },
     },
   });
 
-  const changeSelectedStationType = (selectedType) => {
-    if (selectedType !== selectedStationType) {
-      store.resetUnit();
-    }
-    setSelectedStationType(selectedType);
+  const {
+    formState: {errors, isSubmitSuccessful, values},
+    reset,
+    watch,
+    getValues,
+    handleSubmit,
+    control,
+  } = formMethods;
+
+  const [selectedStationType, setSelectedStationType] = useState(-1);
+
+  const stamdataNewMutation = useMutation(async (data) => {
+    const {data: out} = await apiClient.post(`/sensor_field/stamdata/new`, data);
+    return out;
+  });
+
+  const handleDebug = (error) => {
+    console.log('values', getValues());
+    console.log('error', error);
   };
 
-  const handleSubmit = () => {
+  const handleOpret = () => {
     setAddStationDisabled(false);
     let form = {
       location: {
-        ...store.location,
+        ...getValues()?.location,
       },
-      station: {
-        ...store.timeseries,
-        mpstartdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
+      timeseries: {
+        ...getValues()?.timeseries,
       },
-      udstyr: {
-        ...store.unit,
+      unit: {
+        startdate: store.unit.startdato,
+        unit_uuid: store.unit.uuid,
       },
     };
 
-    toast.promise(() => stamdataMutation.mutateAsync(form), {
-      pending: 'Opretter station',
-      success: 'Stationen er oprettet',
-      error: 'Der skete en fejl',
-    });
+    if (getValues()?.timeseries.tstype_id === 1) {
+      form['watlevmp'] = {
+        startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
+        ...getValues()?.watlevmp,
+      };
+    }
+
+    stamdataNewMutation.mutate(form);
   };
+
+  const watchtstype_id = watch('timeseries.tstype_id');
 
   return (
     <div>
-      <AddUdstyrForm
-        udstyrDialogOpen={udstyrDialogOpen}
-        setUdstyrDialogOpen={setUdstyrDialogOpen}
-        tstype_id={selectedStationType}
-      />
-      <AddLocationForm
-        locationDialogOpen={locationDialogOpen}
-        setLocationDialogOpen={setLocationDialogOpen}
-      />
-      <Container fixed>
-        <Typography variant="h6" component="h3">
-          Stamdata
-        </Typography>
+      <FormProvider {...formMethods}>
+        <Container fixed>
+          <Typography variant="h6" component="h3">
+            Stamdata
+          </Typography>
 
-        <Location setLocationDialogOpen={setLocationDialogOpen} />
-        <Typography>Station</Typography>
-        <StationForm
-          mode="add"
-          selectedStationType={selectedStationType}
-          setSelectedStationType={changeSelectedStationType}
-        />
-        <div style={flex1}>
-          <Typography>Udstyr</Typography>
-          <Button
-            disabled={selectedStationType === -1}
-            size="small"
-            style={{
-              textTransform: 'none',
-              marginLeft: '12px',
-            }}
-            color="secondary"
-            variant="contained"
-            onClick={() => setUdstyrDialogOpen(true)}
-          >
-            {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
-          </Button>
-        </div>
-        <UdstyrForm mode="add" />
-        <Grid container spacing={3}>
-          <Grid item xs={4} sm={2}>
+          <Location setLocationDialogOpen={setLocationDialogOpen} />
+          <Typography>Tidsserie</Typography>
+          <TimeseriesForm mode="add" />
+          <div style={flex1}>
+            <Typography>Udstyr</Typography>
             <Button
+              disabled={watchtstype_id === -1}
+              size="small"
+              style={{
+                textTransform: 'none',
+                marginLeft: '12px',
+              }}
               color="secondary"
               variant="contained"
-              onClick={handleSubmit}
-              startIcon={<SaveIcon />}
+              onClick={() => setUdstyrDialogOpen(true)}
             >
-              Gem
+              {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
             </Button>
+          </div>
+          <UnitForm mode="add" />
+          <Grid container spacing={3}>
+            <Grid item xs={4} sm={2}>
+              <Button
+                color="secondary"
+                variant="contained"
+                onClick={handleSubmit(handleOpret, handleDebug)}
+                startIcon={<SaveIcon />}
+              >
+                Gem
+              </Button>
+            </Grid>
+            <Grid item xs={4} sm={2}>
+              <Button
+                color="grey"
+                variant="contained"
+                onClick={() => {
+                  navigate('/field');
+                  setAddStationDisabled(false);
+                }}
+              >
+                Annuller
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button
-              color="grey"
-              variant="contained"
-              onClick={() => {
-                navigate('/field');
-                setAddStationDisabled(false);
-              }}
-            >
-              Annuller
-            </Button>
-          </Grid>
-        </Grid>
-      </Container>
+        </Container>
+        <AddUnitForm
+          udstyrDialogOpen={udstyrDialogOpen}
+          setUdstyrDialogOpen={setUdstyrDialogOpen}
+          tstype_id={watchtstype_id}
+        />
+        <AddLocationForm
+          locationDialogOpen={locationDialogOpen}
+          setLocationDialogOpen={setLocationDialogOpen}
+          formMethods={formMethods}
+        />
+        <DevTool control={control} />
+      </FormProvider>
     </div>
   );
 }

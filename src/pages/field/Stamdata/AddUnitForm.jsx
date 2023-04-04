@@ -13,8 +13,10 @@ import {stamdataStore, initialState} from '../../../state/store';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import {toast} from 'react-toastify';
+import {useFormContext} from 'react-hook-form';
+import moment from 'moment';
 
-export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
+export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
   const queryClient = useQueryClient();
 
@@ -37,6 +39,8 @@ export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, ts
       },
     }
   );
+
+  const formMethods = useFormContext();
 
   const [unitData, setUnitData] = useState({
     calypso_id: -1,
@@ -125,6 +129,12 @@ export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, ts
 
       if (!unit) return;
 
+      formMethods.trigger('unit');
+      formMethods.setValue('unit', {
+        unit_uuid: unit.unit_uuid,
+        startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
+      });
+
       setUnit({
         terminal_type: unit.type,
         terminal_id: unit.terminal_id,
@@ -156,7 +166,7 @@ export default function AddUdstyrForm({udstyrDialogOpen, setUdstyrDialogOpen, ts
             <DialogContent>
               {uniqueCalypsoIds.length === 0 && (
                 <Typography variant="subtitle2" component="h3" color="error">
-                  * ingen enheder der passer til stationstypen er tilgængelig
+                  * ingen enheder der passer til tidsserietypen er tilgængelig
                 </Typography>
               )}
               <TextField
