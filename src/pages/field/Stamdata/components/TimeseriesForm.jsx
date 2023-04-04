@@ -109,22 +109,22 @@ export default function TimeseriesForm({mode}) {
               placeholder="f.eks. top af rør"
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormInput
-              type="number"
-              label="Evt. loggerdybde under målepunkt"
-              name="timeseries.sensor_depth_m"
-              fullWidth
-              sx={{
-                mb: 2,
-              }}
-              InputProps={{
-                endAdornment: <InputAdornment position="start">m</InputAdornment>,
-              }}
-            />
-          </Grid>
         </>
       )}
+      <Grid item xs={12} sm={6}>
+        <FormInput
+          type="number"
+          label="Evt. loggerdybde under målepunkt"
+          name="timeseries.sensor_depth_m"
+          fullWidth
+          sx={{
+            mb: 2,
+          }}
+          InputProps={{
+            endAdornment: <InputAdornment position="start">m</InputAdornment>,
+          }}
+        />
+      </Grid>
     </Grid>
   );
 }

@@ -5,9 +5,13 @@ import moment from 'moment';
 import OwnDatePicker from 'src/components/OwnDatePicker';
 import {stamdataStore} from 'src/state/store';
 import FormTextField from './FormTextField';
+import FormInput from 'src/components/FormInput';
+import {useFormContext} from 'react-hook-form';
 
 export default function UnitForm({mode}) {
   const editMode = mode === 'edit';
+
+  const formMethods = useFormContext();
 
   const [unit, setUnitValue] = stamdataStore((store) => [store.unit, store.setUnitValue]);
 
@@ -36,21 +40,23 @@ export default function UnitForm({mode}) {
             value={unit.startdato ? moment(unit.startdato).format('YYYY-MM-DD HH:mm') : ''}
           />
         ) : (
-          <OwnDatePicker
+          <FormInput
+            name="unit.startdate"
             label="Startdato"
-            value={moment(unit.startdato)}
-            onChange={(date) => setUnitValue('startdato', moment(date).format('YYYY-MM-DD HH:mm'))}
             fullWidth
+            type="datetime-local"
+            required
           />
         )}
       </Grid>
       <Grid item xs={12} sm={3}>
         {editMode && (
-          <OwnDatePicker
+          <FormInput
+            name="unit.enddate"
             label="Slutdato"
-            value={moment(unit.slutdato)}
-            onChange={(date) => setUnitValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'))}
             fullWidth
+            type="datetime-local"
+            required
           />
         )}
       </Grid>

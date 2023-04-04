@@ -13,7 +13,7 @@ export default function LocationForm({mode}) {
     data: DTMData,
     isFetching,
     refetch: refetchDTM,
-  } = useQuery(['dtm'], () => getDTMQuota(location.x, location.y), {
+  } = useQuery(['dtm'], () => getDTMQuota(getValues()?.location.x, getValues()?.location.y), {
     refetchOnWindowFocus: false,
     enabled: false,
     onSuccess: (data) => {
@@ -31,6 +31,7 @@ export default function LocationForm({mode}) {
     register,
     setValue,
     formState: {isSubmitSuccessful, errors},
+    getValues,
   } = useFormContext();
 
   const watchTerrainqual = watch('location.terrainqual', '');

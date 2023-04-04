@@ -9,7 +9,7 @@ import AddUnitForm from './AddUnitForm';
 import AddLocationForm from './AddLocationForm';
 import LocationForm from './components/LocationForm';
 import TimeseriesForm from './components/TimeseriesForm';
-import {apiClient, postStamdata} from '../fieldAPI';
+import {apiClient} from 'src/apiClient';
 import UnitForm from './components/UnitForm';
 import {DevTool} from '@hookform/devtools';
 
@@ -58,7 +58,6 @@ function LocationChooser({setLocationDialogOpen}) {
     } else {
       formMethods.reset({
         location: {
-          loc_id: '',
           loc_name: '',
           mainloc: '',
           subloc: '',
@@ -206,7 +205,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const [selectedStationType, setSelectedStationType] = useState(-1);
 
   const stamdataNewMutation = useMutation(async (data) => {
-    const {data: out} = await apiClient.post(`/sensor_field/stamdata/new`, data);
+    const {data: out} = await apiClient.post(`/sensor_field/stamdata/`, data);
     return out;
   });
 

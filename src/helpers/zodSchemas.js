@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-const metadataSchema = z.object({
+const metadataBaseSchema = z.object({
   location: z.object({
     loc_id: z.number().optional(),
     loc_name: z
@@ -17,17 +17,19 @@ const metadataSchema = z.object({
     loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
   }),
   timeseries: z.object({
-    ts_id: z.number().optional(),
     prefix: z.string().nullish(),
+  }),
+  unit: z.object({
+    unit_uuid: z.string().uuid(),
+    startdate: z.string(),
+  }),
+});
+
+const metadataSchema = metadataBaseSchema.extend({
+  timeseries: metadataBaseSchema.shape.timeseries.extend({
     tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
     sensor_depth_m: z.number().nullish(),
   }),
-  unit: z
-    .object({
-      unit_uuid: z.string().uuid(),
-      startdate: z.string(),
-    })
-    .optional(),
   watlevmp: z
     .object({
       elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
@@ -38,4 +40,52 @@ const metadataSchema = z.object({
     .optional(),
 });
 
-export {metadataSchema};
+const metadataPutSchema = metadataBaseSchema.extend({
+  timeseries: metadataBaseSchema.shape.timeseries.extend({
+    ts_id: z.number(),
+    tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
+  }),
+  unit: metadataBaseSchema.shape.unit.extend({
+    enddate: z.string(),
+  }),
+});
+
+// const metadataSchema = z.object({
+//   location: z.object({
+//     loc_id: z.number().optional(),
+//     loc_name: z
+//       .string({required_error: 'Lokationsnavn skal udfyldes'})
+//       .min(6, {message: 'Lokationsnavn skal være mindst 6 tegn'}),
+//     mainloc: z.string().nullish(),
+//     subloc: z.string().nullish(),
+//     subsubloc: z.string().nullish(),
+//     x: z.number({required_error: 'X-koordinat skal udfyldes'}),
+//     y: z.number({required_error: 'Y-koordinat skal udfyldes'}),
+//     terrainqual: z.enum(['dGPS', 'DTM', '']).nullish(),
+//     terrainlevel: z.number().nullish(),
+//     description: z.string().nullish(),
+//     loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
+//   }),
+//   timeseries: z.object({
+
+//     prefix: z.string().nullish(),
+//     tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
+//     sensor_depth_m: z.number().nullish(),
+//   }),
+//   unit: z
+//     .object({
+//       unit_uuid: z.string().uuid(),
+//       startdate: z.string(),
+//     })
+//     .optional(),
+//   watlevmp: z
+//     .object({
+//       elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
+//       description: z
+//         .string({required_error: 'Beskrivelse skal udfyldes'})
+//         .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
+//     })
+//     .optional(),
+// });
+
+export {metadataSchema, metadataPutSchema};

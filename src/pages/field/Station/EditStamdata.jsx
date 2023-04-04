@@ -32,43 +32,10 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {metadataSchema} from 'src/helpers/zodSchemas';
+import {metadataPutSchema} from 'src/helpers/zodSchemas';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm, FormProvider, useFormContext} from 'react-hook-form';
 import SwiperInstance from './SwiperInstance';
-
-function TabPanel(props) {
-  const {children, value, index, ...other} = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
-  };
-}
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
   const [date, setdate] = useState(new Date());
@@ -138,6 +105,8 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
     store.setUnit,
   ]);
 
+  const formMethods = useFormContext();
+
   const {data} = useQuery(
     ['udstyr', stationId],
     async () => {
@@ -152,14 +121,14 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
   );
 
   const handleChange = (event) => {
-    setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
+    const localUnit = data.filter((elem) => elem.gid === event.target.value)[0];
+    setUnit(localUnit);
     setselected(event.target.value);
-  };
-
-  const flex1 = {
-    display: 'flex',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
+    formMethods.setValue('unit', {
+      unit_uuid: localUnit.uuid,
+      startdate: localUnit.startdato,
+      enddate: localUnit.slutdato,
+    });
   };
 
   return (
@@ -234,9 +203,14 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
     store.unit,
   ]);
 
+  const metadataEditMutation = useMutation(async (data) => {
+    const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
+    return out;
+  });
+
   const formMethods = useForm({
-    resolver: zodResolver(metadataSchema),
-    defaultValues: {
+    resolver: zodResolver(metadataPutSchema),
+    defaultValues: metadataPutSchema.safeParse({
       location: {
         ...metadata,
       },
@@ -245,8 +219,10 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
       },
       unit: {
         ...metadata,
+        startdate: metadata.startdato,
+        enddate: metadata.slutdato,
       },
-    },
+    }).data,
   });
 
   const theme = useTheme();
@@ -257,22 +233,25 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
     window.scrollTo({top: 300, behavior: 'smooth'});
   }, []);
 
-  const handleSubmit = () => {
-    console.log(unit);
+  const handleUpdate = (values) => {
+    console.log(formMethods.getValues());
+    console.log(values);
 
-    updateStamdata({
-      location,
-      station: timeseries,
-      udstyr: {...unit, gid: selectedUnit == '' ? -1 : selectedUnit},
-    })
-      .then((res) => {
-        console.log(res);
-        toast.success('Stamdata er opdateret');
-        queryClient.invalidateQueries(['udstyr', ts_id]);
-      })
-      .catch((error) => {
-        toast.error('Der skete en fejl');
-      });
+    metadataEditMutation.mutate(values);
+
+    // updateStamdata({
+    //   location,
+    //   station: timeseries,
+    //   udstyr: {...unit, gid: selectedUnit == '' ? -1 : selectedUnit},
+    // })
+    //   .then((res) => {
+    //     console.log(res);
+    //     toast.success('Stamdata er opdateret');
+    //     queryClient.invalidateQueries(['udstyr', ts_id]);
+    //   })
+    //   .catch((error) => {
+    //     toast.error('Der skete en fejl');
+    //   });
   };
 
   return (
@@ -323,7 +302,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
                   color="secondary"
                   variant="contained"
                   startIcon={<SaveIcon />}
-                  onClick={handleSubmit}
+                  onClick={formMethods.handleSubmit(handleUpdate, handleUpdate)}
                 >
                   Gem
                 </Button>
