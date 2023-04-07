@@ -240,7 +240,14 @@ const transformQAData = (data) => {
   return {shapelist, annotateList};
 };
 
-function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, setPreviewData}) {
+function PlotGraph({
+  graphData,
+  reviewData,
+  controlData,
+  dynamicMeasurement,
+  qaData,
+  setPreviewData,
+}) {
   const [selectedData, setSelectedData] = useState([{x: [], y: []}]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -324,10 +331,19 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, setPrevi
         id="graph"
         data={[
           {
+            x: reviewData?.x,
+            y: reviewData?.y,
+            name: 'Preview',
+            type: 'scattergl',
+            line: {width: 2},
+            mode: 'lines+markers',
+            marker: {symbol: '100', size: '5', color: '#00FF00'},
+          },
+          {
             x: graphData?.x,
             y: graphData?.y,
             name: graphData?.name,
-            type: 'scatter',
+            type: 'scattergl',
             line: {width: 2},
             mode: 'lines+markers',
             marker: {symbol: '100', size: '5', color: '#177FC1'},
@@ -434,6 +450,7 @@ export default function QAGraph({stationId, measurements}) {
       >
         <PlotGraph
           graphData={graphData}
+          reviewData={reviewData}
           controlData={measurements}
           qaData={qaData}
           setPreviewData={setPreviewData}
@@ -446,22 +463,6 @@ export default function QAGraph({stationId, measurements}) {
         reviewData={reviewData}
         setReviewData={setReviewData}
       />
-      <div
-        style={{
-          width: 'auto',
-          height: matches ? '300px' : '500px',
-          marginBottom: '10px',
-          marginTop: '-70px',
-          //paddingTop: '5px',
-          border: '2px solid gray',
-          // position: "-webkit-sticky",
-          // position: "sticky",
-          // top: 20,
-          // zIndex: 100,
-        }}
-      >
-        <PlotGraph graphData={reviewData} controlData={measurements} qaData={qaData} />
-      </div>
     </div>
   );
 }

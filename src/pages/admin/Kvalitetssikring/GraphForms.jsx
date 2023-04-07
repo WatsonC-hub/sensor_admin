@@ -10,6 +10,7 @@ import React, {useEffect, useState} from 'react';
 import {Grid, Typography, TextField, Button, Card, CardContent, Alert} from '@mui/material';
 import OwnDatePicker from 'src/components/OwnDatePicker';
 import {isValid} from 'date-fns';
+import CardComponent from './CardComponent';
 
 export default function GraphForms({graphData, previewData, reviewData, setReviewData}) {
   const theme = useTheme();
@@ -18,6 +19,19 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
   const [disableReview, setDisableReview] = useState(true);
 
   console.log('graphdata:', graphData);
+
+  const options = [
+    {
+      type: 'dateTime',
+      label: 'newDate',
+      name: 'exclude-data',
+    },
+    {
+      type: 'double',
+      label: 'min-max cutoff',
+      name: 'minmax-data',
+    },
+  ];
 
   const handleClickPreview = () => {
     if (previewData.selectedDataFix) {
@@ -37,7 +51,7 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
       console.log('reviewData', reviewData);
 
       setTimeout(() => {
-        window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'});
+        window.scrollTo({top: 0, behavior: 'smooth'});
       }, 200);
       setTimeout(() => {
         setDisablePreview(false);
@@ -80,7 +94,10 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
             </Typography>
           </Alert>
         </Grid>
-        <Card
+        <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+          <CardComponent options={options} />;
+        </Grid>
+        {/* <Card
           style={{marginTop: 15, marginBottom: 15}}
           sx={{
             textAlign: 'center',
@@ -135,7 +152,7 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
               </Button>
             </Grid>
           </CardContent>
-        </Card>
+        </Card> */}
         {!disableReview ? (
           <Grid item xs={12} sm={12}>
             <Button
