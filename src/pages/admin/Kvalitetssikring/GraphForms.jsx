@@ -10,7 +10,7 @@ import React, {useEffect, useState} from 'react';
 import {Grid, Typography, TextField, Button, Card, CardContent, Alert} from '@mui/material';
 import OwnDatePicker from 'src/components/OwnDatePicker';
 import {isValid} from 'date-fns';
-import CardComponent from './CardComponent';
+import OptionsCard from './OptionsCard';
 
 export default function GraphForms({graphData, previewData, reviewData, setReviewData}) {
   const theme = useTheme();
@@ -32,6 +32,13 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
       name: 'minmax-data',
     },
   ];
+
+  const formStyle = {
+    '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+    '& .MuiOutlinedInput-root': {
+      '& > fieldset': {borderColor: 'primary.main'},
+    },
+  };
 
   const handleClickPreview = () => {
     if (previewData.selectedDataFix) {
@@ -94,27 +101,12 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
             </Typography>
           </Alert>
         </Grid>
+
         <Grid item xs={12} sm={12} display="flex" justifyContent="center">
-          <CardComponent options={options} />;
-        </Grid>
-        {/* <Card
-          style={{marginTop: 15, marginBottom: 15}}
-          sx={{
-            textAlign: 'center',
-            justifyContent: 'center',
-            alignContent: 'center',
-          }}
-        >
-          <CardContent>
-            <Typography>Ekskluder data</Typography>
-            <Grid item xs={12} sm={7}>
+          <OptionsCard title={'exclude-data'} handleClick={handleClickPreview}>
+            <Grid item xs={12} sm={12}>
               <OwnDatePicker
-                sx={{
-                  '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                  '& .MuiOutlinedInput-root': {
-                    '& > fieldset': {borderColor: 'primary.main'},
-                  },
-                }}
+                sx={formStyle}
                 label={
                   <Typography variant="h6" component="h3">
                     Ældste dato
@@ -124,14 +116,9 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
                 onChange={(date) => handleOldDateChange(date)}
               />
             </Grid>
-            <Grid item xs={12} sm={7}>
+            <Grid item xs={12} sm={12}>
               <OwnDatePicker
-                sx={{
-                  '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                  '& .MuiOutlinedInput-root': {
-                    '& > fieldset': {borderColor: 'primary.main'},
-                  },
-                }}
+                sx={formStyle}
                 label={
                   <Typography variant="h6" component="h3">
                     Nyeste dato
@@ -141,18 +128,38 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
                 onChange={(date) => handleNewDateChange(date)}
               />
             </Grid>
-            <Grid item xs={12} sm={12}>
-              <Button
-                color="secondary"
-                variant="contained"
-                onClick={handleClickPreview}
-                disabled={disablePreview}
-              >
-                Se preview
-              </Button>
+          </OptionsCard>
+          <OptionsCard title={'minmax-cutoff'}>
+            <Grid item xs={12} sm={12} style={{padding: 7}}>
+              <TextField
+                sx={formStyle}
+                type="number"
+                variant="outlined"
+                label={
+                  <Typography variant="h6" component="h3">
+                    Min cutoff
+                  </Typography>
+                }
+                InputLabelProps={{shrink: true}}
+                //value={}
+              />
             </Grid>
-          </CardContent>
-        </Card> */}
+            <Grid item xs={12} sm={12} style={{padding: 5}}>
+              <TextField
+                sx={formStyle}
+                type="number"
+                variant="outlined"
+                label={
+                  <Typography variant="h6" component="h3">
+                    Max cutoff
+                  </Typography>
+                }
+                InputLabelProps={{shrink: true}}
+                //value={}
+              />
+            </Grid>
+          </OptionsCard>
+        </Grid>
         {!disableReview ? (
           <Grid item xs={12} sm={12}>
             <Button
