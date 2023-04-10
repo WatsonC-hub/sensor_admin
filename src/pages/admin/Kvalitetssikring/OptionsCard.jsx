@@ -8,11 +8,11 @@ const OptionsCard = ({title, children, handleClick}) => {
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
-        borderRadius: 2,
-        border: 2,
-        borderColor: 'secondary.main',
+        // borderRadius: 2,
+        border: 1,
+        borderColor: 'primary.main',
         width: 250,
-        marginRight: 1,
+        padding: 2,
       }}
     >
       <CardHeader title={title} sx={{textAlign: 'center'}} />
@@ -22,16 +22,20 @@ const OptionsCard = ({title, children, handleClick}) => {
           m: 0,
         }}
       >
-        {children}
-        <Grid item xs={12} sm={12} display="flex" justifyContent="center">
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={handleClick}
-            //disabled={disablePreview}
-          >
-            Se preview
-          </Button>
+        <Grid container spacing={1} display="flex" justifyContent="center">
+          <Grid item xs={12} sm={12}>
+            {children}
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <Button
+              color="secondary"
+              variant="contained"
+              onClick={handleClick}
+              //disabled={disablePreview}
+            >
+              Se preview
+            </Button>
+          </Grid>
         </Grid>
       </CardContent>
     </Card>

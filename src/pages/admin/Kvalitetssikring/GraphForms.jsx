@@ -7,7 +7,7 @@ import {useQuery} from '@tanstack/react-query';
 import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/pages/field/fieldAPI';
 import React, {useEffect, useState} from 'react';
-import {Grid, Typography, TextField, Button, Card, CardContent, Alert} from '@mui/material';
+import {Grid, Typography, TextField, Button, Box, Alert} from '@mui/material';
 import OwnDatePicker from 'src/components/OwnDatePicker';
 import {isValid} from 'date-fns';
 import OptionsCard from './OptionsCard';
@@ -74,6 +74,7 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
         height: matches ? '300px' : '500px',
         marginBottom: '10px',
         marginTop: '-10px',
+        flexGrow: 1,
         //paddingTop: '5px',
         //border: '2px solid gray',
         // position: "-webkit-sticky",
@@ -101,80 +102,75 @@ export default function GraphForms({graphData, previewData, reviewData, setRevie
             </Typography>
           </Alert>
         </Grid>
-
-        <Grid item xs={12} sm={12} display="flex" justifyContent="center">
+        <Grid item xs={6} sm={6} lg={'auto'}>
           <OptionsCard title={'exclude-data'} handleClick={handleClickPreview}>
-            <Grid item xs={12} sm={12}>
-              <OwnDatePicker
-                sx={formStyle}
-                label={
-                  <Typography variant="h6" component="h3">
-                    Ældste dato
-                  </Typography>
-                }
-                value={previewData.oldDate}
-                onChange={(date) => handleOldDateChange(date)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <OwnDatePicker
-                sx={formStyle}
-                label={
-                  <Typography variant="h6" component="h3">
-                    Nyeste dato
-                  </Typography>
-                }
-                value={previewData.newDate}
-                onChange={(date) => handleNewDateChange(date)}
-              />
-            </Grid>
-          </OptionsCard>
-          <OptionsCard title={'minmax-cutoff'}>
-            <Grid item xs={12} sm={12} style={{padding: 7}}>
-              <TextField
-                sx={formStyle}
-                type="number"
-                variant="outlined"
-                label={
-                  <Typography variant="h6" component="h3">
-                    Min cutoff
-                  </Typography>
-                }
-                InputLabelProps={{shrink: true}}
-                //value={}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12} style={{padding: 5}}>
-              <TextField
-                sx={formStyle}
-                type="number"
-                variant="outlined"
-                label={
-                  <Typography variant="h6" component="h3">
-                    Max cutoff
-                  </Typography>
-                }
-                InputLabelProps={{shrink: true}}
-                //value={}
-              />
-            </Grid>
+            <OwnDatePicker
+              sx={formStyle}
+              label={
+                <Typography variant="h6" component="h3">
+                  Ældste dato
+                </Typography>
+              }
+              value={previewData.oldDate}
+              onChange={(date) => handleOldDateChange(date)}
+            />
+            <OwnDatePicker
+              sx={formStyle}
+              label={
+                <Typography variant="h6" component="h3">
+                  Nyeste dato
+                </Typography>
+              }
+              value={previewData.newDate}
+              onChange={(date) => handleNewDateChange(date)}
+            />
           </OptionsCard>
         </Grid>
-        {!disableReview ? (
-          <Grid item xs={12} sm={12}>
-            <Button
-              color="secondary"
-              variant="contained"
-              //onClick={handleClickPreview}
-              disabled={disableReview}
-            >
-              Bekræft ændringer
-            </Button>
-          </Grid>
-        ) : (
-          ''
-        )}
+        <Grid item xs={6} sm={6} lg={'auto'}>
+          <OptionsCard title={'minmax-cutoff'}>
+            <TextField
+              sx={formStyle}
+              type="number"
+              variant="outlined"
+              style={{marginTop: '1%', padding: 3}}
+              label={
+                <Typography variant="h6" component="h3">
+                  Min cutoff
+                </Typography>
+              }
+              InputLabelProps={{shrink: true}}
+              //value={}
+            />
+            <TextField
+              sx={formStyle}
+              style={{marginTop: '5%', marginBottom: '2%'}}
+              type="number"
+              variant="outlined"
+              label={
+                <Typography variant="h6" component="h3">
+                  Max cutoff
+                </Typography>
+              }
+              InputLabelProps={{shrink: true}}
+              //value={}
+            />
+          </OptionsCard>
+        </Grid>
       </Grid>
+      {!disableReview ? (
+        <Grid item xs={12} sm={12}>
+          <Button
+            color="secondary"
+            variant="contained"
+            //onClick={handleClickPreview}
+            disabled={disableReview}
+          >
+            Bekræft ændringer
+          </Button>
+        </Grid>
+      ) : (
+        ''
+      )}
     </div>
   );
 }
