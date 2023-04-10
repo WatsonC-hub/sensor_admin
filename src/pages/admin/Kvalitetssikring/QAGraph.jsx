@@ -10,6 +10,7 @@ import React, {useEffect, useState} from 'react';
 import {Typography, Alert, Grid} from '@mui/material';
 import GraphForms from './GraphForms';
 import useFormData from '../../../hooks/useFormData';
+import QAHistory from './QAHistory';
 
 const selectorOptions = {
   buttons: [
@@ -433,29 +434,34 @@ export default function QAGraph({stationId, measurements}) {
   });
 
   return (
-    <div>
-      <div
-        style={{
-          width: 'auto',
-          height: matches ? '300px' : '500px',
-          marginBottom: '10px',
-          marginTop: '-10px',
-          paddingTop: '5px',
-          border: '2px solid gray',
-          // position: "-webkit-sticky",
-          // position: "sticky",
-          // top: 20,
-          // zIndex: 100,
-        }}
-      >
-        <PlotGraph
-          graphData={graphData}
-          reviewData={reviewData}
-          controlData={measurements}
-          qaData={qaData}
-          setPreviewData={setPreviewData}
-        />
-      </div>
+    <Grid container spacing={3}>
+      <Grid item xs={10} sm={10}>
+        <div
+          style={{
+            width: 'auto',
+            height: matches ? '300px' : '500px',
+            marginBottom: '10px',
+            marginTop: '-10px',
+            paddingTop: '5px',
+            border: '2px solid gray',
+            // position: "-webkit-sticky",
+            // position: "sticky",
+            // top: 20,
+            // zIndex: 100,
+          }}
+        >
+          <PlotGraph
+            graphData={graphData}
+            reviewData={reviewData}
+            controlData={measurements}
+            qaData={qaData}
+            setPreviewData={setPreviewData}
+          />
+        </div>
+      </Grid>
+      <Grid item xs={2} sm={2}>
+        <QAHistory />
+      </Grid>
       <GraphForms
         graphData={graphData}
         previewData={previewData}
@@ -463,6 +469,6 @@ export default function QAGraph({stationId, measurements}) {
         reviewData={reviewData}
         setReviewData={setReviewData}
       />
-    </div>
+    </Grid>
   );
 }

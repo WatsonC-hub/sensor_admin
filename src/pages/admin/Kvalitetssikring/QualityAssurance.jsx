@@ -24,7 +24,6 @@ const QualityAssurance = () => {
   return (
     <>
       <QAGraph stationId={params.ts_id} measurements={[]} />
-      <button onClick={handleClick}>Click</button>
     </>
   );
 };
