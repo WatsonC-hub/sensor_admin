@@ -160,7 +160,7 @@ function Location({setLocationDialogOpen}) {
   return (
     <Grid container>
       <LocationChooser setLocationDialogOpen={setLocationDialogOpen} />
-      <LocationForm />
+      <LocationForm disable />
     </Grid>
   );
 }
@@ -235,7 +235,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
         ...getValues()?.watlevmp,
       };
     }
-
+    // console.log(form);
     stamdataNewMutation.mutate(form);
   };
 

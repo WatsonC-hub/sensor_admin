@@ -6,7 +6,7 @@ import FormTextField from './FormTextField';
 import {apiClient} from 'src/apiClient';
 import FormInput from 'src/components/FormInput';
 
-export default function LocationTypeSelect({}) {
+export default function LocationTypeSelect({disable}) {
   const {data} = useQuery(
     ['location_types'],
     async () => {
@@ -30,6 +30,7 @@ export default function LocationTypeSelect({}) {
       sx={{
         mb: 2,
       }}
+      disabled={disable}
     >
       <MenuItem value={-1} key={-1}>
         Vælg type

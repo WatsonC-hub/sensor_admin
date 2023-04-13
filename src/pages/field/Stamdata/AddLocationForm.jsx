@@ -9,8 +9,9 @@ import LocationForm from './components/LocationForm';
 import {useFormContext} from 'react-hook-form';
 
 export default function AddLocationForm({locationDialogOpen, setLocationDialogOpen}) {
-  const handleSave = () => {
-    setLocationDialogOpen(false);
+  const handleSave = async () => {
+    const result = await formMethods.trigger('location');
+    setLocationDialogOpen(!result);
   };
 
   const formMethods = useFormContext();

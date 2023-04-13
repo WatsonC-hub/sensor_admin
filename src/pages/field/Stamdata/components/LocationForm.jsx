@@ -8,7 +8,7 @@ import {FormProvider, Controller} from 'react-hook-form';
 import FormInput from 'src/components/FormInput';
 import {useFormContext} from 'react-hook-form';
 
-export default function LocationForm({mode}) {
+export default function LocationForm({mode, disable}) {
   const {
     data: DTMData,
     isFetching,
@@ -52,6 +52,7 @@ export default function LocationForm({mode}) {
           sx={{
             mb: 2,
           }}
+          disabled={disable}
         />
       </Grid>
       <Grid item xs={12} sm={gridsize}>
@@ -64,6 +65,7 @@ export default function LocationForm({mode}) {
           sx={{
             mb: 2,
           }}
+          disabled={disable}
         />
       </Grid>
       <Grid item xs={12} sm={gridsize}>
@@ -81,6 +83,7 @@ export default function LocationForm({mode}) {
           sx={{
             mb: 2,
           }}
+          disabled={disable}
         />
       </Grid>
       <Grid item xs={12} sm={gridsize}>
@@ -98,6 +101,7 @@ export default function LocationForm({mode}) {
           sx={{
             mb: 2,
           }}
+          disabled={disable}
         />
       </Grid>
       <Grid item xs={6} sm={gridsize / 2} md={gridsize / 2}>
@@ -113,6 +117,7 @@ export default function LocationForm({mode}) {
           sx={{
             mb: 2,
           }}
+          disabled={disable}
         />
       </Grid>
       <Grid item xs={6} sm={gridsize / 2} md={gridsize / 4}>
@@ -125,6 +130,7 @@ export default function LocationForm({mode}) {
           sx={{
             mb: 2,
           }}
+          disabled={disable}
         >
           <MenuItem value=""> Vælg type </MenuItem>
           <MenuItem value="dGPS">dGPS</MenuItem>
@@ -132,14 +138,14 @@ export default function LocationForm({mode}) {
         </FormInput>
       </Grid>
       <Grid item xs={6} sm={gridsize / 2} md={gridsize / 4}>
-        {watchTerrainqual === 'DTM' ? (
+        {watchTerrainqual === 'DTM' && !disable ? (
           <Button variant="contained" color="secondary" onClick={refetchDTM}>
             Hent DTM
           </Button>
         ) : null}
       </Grid>
       <Grid item xs={12} sm={gridsize}>
-        <LocationTypeSelect />
+        <LocationTypeSelect disable={disable} />
       </Grid>
       <Grid item xs={12} sm={gridsize}>
         <FormInput
@@ -150,50 +156,10 @@ export default function LocationForm({mode}) {
           sx={{
             mb: 2,
           }}
+          disabled={disable}
           placeholder="f.eks. ligger tæt ved broen"
         />
       </Grid>
     </Grid>
-    // </FormProvider>
-
-    //   <Grid item xs={6} sm={3} md={1.5}>
-    //     <FormTextField
-    //       disabled={location.loc_name === '' ? true : false}
-    //       autoFocus
-    //       select
-    //       label="Type af terrænkote"
-    //       value={location.terrainqual}
-    //       onChange={(event) => setLocationValue('terrainqual', event.target.value)}
-    //     >
-    //       <MenuItem value={-1}> Vælg type </MenuItem>
-    //       <MenuItem value="dGPS">dGPS</MenuItem>
-    //       <MenuItem value="DTM">DTM</MenuItem>
-    //     </FormTextField>
-    //   </Grid>
-    //   <Grid item xs={6} sm={3} md={1.5}>
-    //     {mode === 'edit' && location.terrainqual === 'DTM' ? (
-    //       <Button variant="contained" color="secondary" onClick={refetchDTM}>
-    //         Hent DTM
-    //       </Button>
-    //     ) : null}
-    //   </Grid>
-    //   <Grid item xs={12} sm={6}>
-    //     <LocationTypeSelect
-    //       selectedLocationType={location.loctype_id}
-    //       onChange={(e) => setLocationValue('loctype_id', e.target.value)}
-    //       disabled={location.loc_name === '' ? true : false}
-    //     />
-    //   </Grid>
-
-    //   <Grid item xs={12} sm={6}>
-    //     <FormTextField
-    //       disabled={location.loc_name === '' ? true : false}
-    //       label="Kommentar"
-    //       value={location.description}
-    //       onChange={(event) => setLocationValue('description', event.target.value)}
-    //       placeholder="f.eks. ligger tæt ved broen"
-    //     />
-    //   </Grid>
-    // </Grid>
   );
 }
