@@ -203,10 +203,22 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
     store.unit,
   ]);
 
-  const metadataEditMutation = useMutation(async (data) => {
-    const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
-    return out;
-  });
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const queryClient = useQueryClient();
+
+  const metadataEditMutation = useMutation(
+    async (data) => {
+      const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
+      return out;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(['stations', metadata.loc_id.toString()]);
+        queryClient.invalidateQueries(['udstyr', ts_id]);
+      },
+    }
+  );
 
   const formMethods = useForm({
     resolver: zodResolver(metadataPutSchema),
@@ -225,33 +237,16 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
     }).data,
   });
 
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const queryClient = useQueryClient();
-
   useEffect(() => {
     window.scrollTo({top: 300, behavior: 'smooth'});
   }, []);
 
   const handleUpdate = (values) => {
-    console.log(formMethods.getValues());
-    console.log(values);
-
-    metadataEditMutation.mutate(values);
-
-    // updateStamdata({
-    //   location,
-    //   station: timeseries,
-    //   udstyr: {...unit, gid: selectedUnit == '' ? -1 : selectedUnit},
-    // })
-    //   .then((res) => {
-    //     console.log(res);
-    //     toast.success('Stamdata er opdateret');
-    //     queryClient.invalidateQueries(['udstyr', ts_id]);
-    //   })
-    //   .catch((error) => {
-    //     toast.error('Der skete en fejl');
-    //   });
+    toast.promise(() => metadataEditMutation.mutateAsync(values), {
+      pending: 'Opdaterer stamdata...',
+      success: 'Stamdata er opdateret',
+      error: 'Der skete en fejl',
+    });
   };
 
   return (

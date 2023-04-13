@@ -18,6 +18,7 @@ const metadataBaseSchema = z.object({
   }),
   timeseries: z.object({
     prefix: z.string().nullish(),
+    sensor_depth_m: z.number().nullish(),
   }),
   unit: z.object({
     unit_uuid: z.string().uuid(),
@@ -28,7 +29,6 @@ const metadataBaseSchema = z.object({
 const metadataSchema = metadataBaseSchema.extend({
   timeseries: metadataBaseSchema.shape.timeseries.extend({
     tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
-    sensor_depth_m: z.number().nullish(),
   }),
   watlevmp: z
     .object({
@@ -41,10 +41,6 @@ const metadataSchema = metadataBaseSchema.extend({
 });
 
 const metadataPutSchema = metadataBaseSchema.extend({
-  timeseries: metadataBaseSchema.shape.timeseries.extend({
-    ts_id: z.number(),
-    tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
-  }),
   unit: metadataBaseSchema.shape.unit.extend({
     enddate: z.string(),
   }),
