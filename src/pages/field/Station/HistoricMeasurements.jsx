@@ -62,7 +62,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
           <TablePagination
             rowsPerPageOptions={[5]}
             component="div"
-            count={measurements.length}
+            count={measurements?.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -85,8 +85,8 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
           </TableHead>
           <TableBody>
             {measurements
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => (
+              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              ?.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell component="th" scope="row">
                     {moment(row.timeofmeas).format('YYYY-MM-DD HH:mm')}

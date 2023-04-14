@@ -29,6 +29,7 @@ import {captureDialogAtom} from './state/atoms';
 import useWhatPage from './hooks/useWhatPage';
 import {useQueryClient, useQuery} from '@tanstack/react-query';
 import {apiClient} from './apiClient';
+import moment from 'moment';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);
@@ -44,15 +45,19 @@ const LogOut = ({element: Element}) => {
   return <Box onClick={handleLogout}>{Element}</Box>;
 };
 
-const AppBarLayout = ({children}) => {
+export const AppBarLayout = ({children, style}) => {
   return (
     <AppBar position="sticky">
       <Toolbar
-        style={{
-          flexGrow: 1,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}
+        style={
+          style
+            ? style
+            : {
+                flexGrow: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }
+        }
       >
         {children}
       </Toolbar>
@@ -72,16 +77,35 @@ const NavBarNotifications = () => {
 
   return (
     <Badge
-      badgeContent={data?.filter((item) => item.flag === 3).length}
+      badgeContent={
+        data?.filter(
+          (item) =>
+            item.flag === 3 &&
+            item.is_customer_service === false &&
+            moment(item.dato).diff(moment(), 'hours') > -24
+        ).length
+      }
       color="error"
       onClick={() => {
         if (!window.location.pathname.includes('/notifikationer')) {
           navigate('/admin/notifikationer');
         }
       }}
-      sx={{cursor: 'pointer'}}
+      sx={{cursor: 'pointer', '& .MuiBadge-badge': {fontSize: 10}}}
     >
-      <NotificationsIcon />
+      <Badge
+        badgeContent={
+          data?.filter((item) => item.flag === 3 && item.is_customer_service === false).length
+        }
+        color="error"
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        sx={{'& .MuiBadge-badge': {fontSize: 10}}}
+      >
+        <NotificationsIcon />
+      </Badge>
     </Badge>
   );
 };

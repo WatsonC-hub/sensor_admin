@@ -5,8 +5,32 @@ import {visualizer} from 'rollup-plugin-visualizer';
 import {VitePWA} from 'vite-plugin-pwa';
 import sentryVitePlugin from '@sentry/vite-plugin';
 
+const getCache = ({name, pattern, handler}) => ({
+  urlPattern: pattern,
+  handler: handler,
+  options: {
+    cacheName: name,
+    expiration: {
+      maxEntries: 500,
+      maxAgeSeconds: 60 * 60 * 24, // 1 day
+    },
+    cacheableResponse: {
+      statuses: [200],
+    },
+  },
+});
+
 const pwaOptions = {
   registerType: 'autoUpdate',
+  workbox: {
+    globPatterns: ['**/*'],
+    maximumFileSizeToCacheInBytes: 100000000,
+    runtimeCaching: [
+      getCache({name: 'api', pattern: /\/api\/(?!data).*/, handler: 'NetworkFirst'}),
+      getCache({name: 'manual', pattern: /workbox-window/, handler: 'CacheFirst'}),
+    ],
+  },
+  includeAssets: ['**/*'],
   manifest: {
     name: 'Calypso @ Field',
     short_name: 'Calypso @ Field',
@@ -51,6 +75,12 @@ export default defineConfig({
   ],
   build: {
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+      },
+    },
   },
   server: {
     proxy: {

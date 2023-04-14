@@ -28,36 +28,6 @@ async function getDTMQuota(x, y) {
   return data;
 }
 
-async function getStationTypes() {
-  const {data} = await axios.get(
-    `${endpoint}SELECT tstype_id, tstype_name FROM sensor.timeseries_type`
-  );
-  return data.features;
-}
-
-async function getStamdataByStation(stationId) {
-  const {data} = await axios.get(`${extEndpoint}/stamdata/station/${stationId}`);
-  return data.data;
-}
-
-async function getStations(locid) {
-  const url = `${extEndpoint}/station/${locid}?session_id=${authStore.getState().sessionId}`;
-  const {data} = await axios.get(url);
-  return data.res;
-}
-
-async function getAvailableUnits() {
-  const {data} = await axios.get(
-    `${extEndpoint}/stamdata/units?session_id=${authStore.getState().sessionId}`
-  );
-  return data.result;
-}
-
-async function getLocationTypes() {
-  const {data} = await axios.get(`${endpoint}SELECT loctype_id, loctypename FROM sensor.loctype2`);
-  return data.features;
-}
-
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -101,16 +71,17 @@ const updateImage = async (payload, gid) => {
   return resp;
 };
 
-const postStamdata = data => axios.post(`${extEndpoint}/stamdata`, data);
+const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
 
-const updateStamdata = data =>
+const updateStamdata = (data) =>
   axios.put(`${extEndpoint}/stamdata?session_id=${authStore.getState().sessionId}`, data);
 
-const getCvr = cvr => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
+const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 
-const createUser = payload => axios.post(`${userEndpoint}calypso/user`, payload);
+const createUser = (payload) => axios.post(`${userEndpoint}calypso/user`, payload);
 
-const resetPassword = passReset => axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
+const resetPassword = (passReset) =>
+  axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
 
 const loginUser = (user, password) => {
   let sessionUrl = `${host}/api/v2/session/start`;
@@ -135,17 +106,12 @@ const loginAPI = async (username, password) => {
 };
 
 export {
-  getStations,
-  getStationTypes,
-  getAvailableUnits,
   postStamdata,
-  getStamdataByStation,
   getCvr,
   createUser,
   loginUser,
   resetPassword,
   updateStamdata,
-  getLocationTypes,
   getDTMQuota,
   postImage,
   deleteImage,

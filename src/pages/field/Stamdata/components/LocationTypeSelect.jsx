@@ -1,21 +1,23 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Grid, MenuItem, TextField} from '@mui/material';
-import {InputAdornment} from '@mui/material';
-import {getLocationTypes} from '../../fieldAPI';
+
 import {useQuery} from '@tanstack/react-query';
 import FormTextField from './FormTextField';
+import {apiClient} from 'src/apiClient';
 
 export default function LocationTypeSelect({selectedLocationType, onChange, disabled}) {
-  const {data, isLoading} = useQuery(['location_types'], getLocationTypes, {
-    select: (data) =>
-      data
-        .filter((i) => i.properties.loctype_id !== 0)
-        .map((item) => (
-          <MenuItem value={item.properties.loctype_id} key={item.properties.loctype_id}>
-            {item.properties.loctypename}
-          </MenuItem>
-        )),
-  });
+  const {data} = useQuery(
+    ['location_types'],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
+      return data;
+    },
+    {
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  );
 
   const handleSelection = (event) => {
     onChange(event);
@@ -29,8 +31,14 @@ export default function LocationTypeSelect({selectedLocationType, onChange, disa
       onChange={handleSelection}
       label="Lokation type"
     >
-      <MenuItem value={-1}>Vælg type</MenuItem>
-      {data}
+      <MenuItem value={-1} key={-1}>
+        Vælg type
+      </MenuItem>
+      {data?.map((item) => (
+        <MenuItem value={item.loctype_id} key={item.loctype_id}>
+          {item.loctypename}
+        </MenuItem>
+      ))}
     </FormTextField>
   );
 }

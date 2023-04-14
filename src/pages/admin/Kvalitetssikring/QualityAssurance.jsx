@@ -5,6 +5,8 @@ import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import QAGraph from './QAGraph';
 import useFormData from '../../../hooks/useFormData';
+import GraphForms from './GraphForms';
+import moment from 'moment';
 
 const QualityAssurance = () => {
   let params = useParams();
@@ -21,7 +23,7 @@ const QualityAssurance = () => {
   };
   return (
     <>
-      <QAGraph stationId={params.ts_id} measurements={[]} dynamicMeasurement={[]} />
+      <QAGraph stationId={params.ts_id} measurements={[]} />
       <button onClick={handleClick}>Click</button>
     </>
   );

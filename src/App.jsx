@@ -1,7 +1,5 @@
 import React, {useEffect, useState, Suspense} from 'react';
 
-// import AuthenticatedApp from "./AuthenticatedApp";
-// import SensorField from './pages/field/SensorField';
 import UnAuntenticatedApp from './UnauthenticatedApp';
 import {authStore} from './state/store';
 import LoadingSkeleton from './LoadingSkeleton';
@@ -21,11 +19,6 @@ function App() {
   }, []);
 
   console.log('authenticated => ', authenticated);
-  const sensorFieldPromise = import('./pages/field/SensorField');
-  const SensorField = React.lazy(() => sensorFieldPromise);
-
-  // TODO:
-  // 1. Added token expiration check
 
   if (!authenticated) {
     return (
@@ -48,12 +41,12 @@ function App() {
       )}
       onError={(error, componentStack) => {
         if (error.message.includes('Failed to fetch dynamically imported module')) {
-          window.location.reload(true);
+          // window.location.reload(true);
         }
       }}
     >
       <Suspense fallback={<LoadingSkeleton />}>
-        <Redirecter SensorField={SensorField} />
+        <Redirecter />
       </Suspense>
     </ErrorBoundary>
   );

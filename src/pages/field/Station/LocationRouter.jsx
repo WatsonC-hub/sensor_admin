@@ -7,65 +7,56 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Station from './Station';
-import {getStations} from 'src/pages/field/fieldAPI';
 import MinimalSelect from './MinimalSelect';
 import {useParams, useNavigate, useLocation} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
 import ErrorPage from './ErrorPage';
+import {apiClient} from 'src/apiClient';
+import {AppBarLayout} from 'src/NavBar';
 
 export default function LocationRouter() {
-  const [selectedItem, setSelectedItem] = useState('');
-
   const theme = useTheme();
   const params = useParams();
-  let location = useLocation();
   const navigate = useNavigate();
 
-  const {data} = useQuery(['stations', params.locid], () => getStations(params.locid), {
-    enabled: params.locid !== undefined,
-  });
-
-  useEffect(() => {
-    if (data) {
-      let statId = params.statid;
-      if (statId) {
-        setSelectedItem(statId);
-      } else {
-        statId = '';
-        if (data.length === 1) {
-          statId = data[0].ts_id;
-          navigate(`../location/${params.locid}/${statId}`, {
+  const {data} = useQuery(
+    ['stations', params.locid],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/metadata_location/${params.locid}`);
+      return data;
+    },
+    {
+      enabled: params.locid !== undefined,
+      onSuccess: (data) => {
+        if (data.length === 1 && params.statid === undefined) {
+          navigate(`../location/${params.locid}/${data[0].ts_id}`, {
             replace: true,
           });
         }
-        setSelectedItem(statId);
-      }
+      },
     }
-  }, [data]);
+  );
 
   return (
     <div>
       <CssBaseline />
-      <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            onClick={(e) => {
-              navigate(-1);
-            }}
-            size="large"
-          >
-            <KeyboardBackspaceIcon />
-          </IconButton>
-          <MinimalSelect
-            locid={params.locid}
-            stationList={data}
-            selectedStation={selectedItem}
-            setSelectedItem={setSelectedItem}
-          />
-        </Toolbar>
-      </AppBar>
+      {/* <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
+        <Toolbar> */}
+      <AppBarLayout style={{}}>
+        <IconButton
+          color="inherit"
+          onClick={(e) => {
+            navigate(-1);
+          }}
+          size="large"
+        >
+          <KeyboardBackspaceIcon />
+        </IconButton>
+        <MinimalSelect locid={params.locid} stationList={data} />
+      </AppBarLayout>
+      {/* </Toolbar>
+      </AppBar> */}
 
       <main
         style={{
@@ -74,7 +65,10 @@ export default function LocationRouter() {
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <Station stationId={params.statid ? params.statid : -1} />
+          <Station
+            stationId={params.statid ? params.statid : -1}
+            stamdata={data?.filter((elem) => elem.ts_id == params.statid)?.[0]}
+          />
         </ErrorBoundary>
       </main>
     </div>

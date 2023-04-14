@@ -5,15 +5,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) => {
-  // const [stationId, setStationId] = useState(selectedStation);
+const MinimalSelect = ({locid, stationList}) => {
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.statid ? false : true);
   const navigate = useNavigate();
 
   const handleChange = (event) => {
-    setSelectedItem(event.target.value);
     navigate(`../location/${locid}/${event.target.value}`, {
       replace: true,
     });
@@ -24,16 +22,11 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    if (selectedStation !== '') {
+    if (params.statid) {
       setIsOpen(false);
     }
-  }, [selectedStation]);
+  }, [params.statid]);
 
-  const iconComponent = (props) => {
-    return <ExpandMoreIcon />;
-  };
-
-  // moves the menu below the select input
   const menuProps = {
     anchorOrigin: {
       vertical: 'bottom',
@@ -46,11 +39,9 @@ const MinimalSelect = ({locid, stationList, selectedStation, setSelectedItem}) =
   };
 
   return (
-    // <FormControl>
     <Select
       MenuProps={menuProps}
-      //IconComponent={iconComponent}
-      value={selectedStation}
+      value={parseInt(params.statid)}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

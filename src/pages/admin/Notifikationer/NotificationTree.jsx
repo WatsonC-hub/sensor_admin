@@ -16,7 +16,7 @@ import moment from 'moment';
 const expandedAtom = atom([]);
 const typeAheadAtom = atom('');
 
-const NotificationTree = ({notifications, statusMutate}) => {
+const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
 
@@ -29,7 +29,7 @@ const NotificationTree = ({notifications, statusMutate}) => {
       });
     });
   }
-  const navigate = useNavigate();
+
   const locations = sortBy(uniqBy(rows, 'locid'), 'locname');
   const stations = sortBy(uniqBy(rows, 'stationid'), 'stationname');
 
@@ -119,13 +119,31 @@ const NotificationTree = ({notifications, statusMutate}) => {
                                     ts_id: notification.stationid,
                                     notification_id: notification.notification_id,
                                     status: 'POSTPONED',
-                                    enddate: moment
-                                      .utc()
-                                      .add(7, 'days')
-                                      .format('YYYY-MM-DDTHH:mm:ss'),
+                                    enddate: moment().add(7, 'days').format('YYYY-MM-DDTHH:mm:ss'),
                                   },
                                 ])
                               }
+                              onIgnore={(enddate) =>
+                                statusMutate.mutate([
+                                  {
+                                    ts_id: notification.stationid,
+                                    notification_id: notification.notification_id,
+                                    status: 'IGNORED',
+                                    enddate: enddate,
+                                  },
+                                ])
+                              }
+                              onSchedule={(description) => {
+                                trelloMutate.mutate([{...notification, description}]);
+                                statusMutate.mutate([
+                                  {
+                                    ts_id: notification.stationid,
+                                    notification_id: notification.notification_id,
+                                    status: 'SCHEDULED',
+                                    enddate: moment().format('YYYY-MM-DDTHH:mm:ss'),
+                                  },
+                                ]);
+                              }}
                             />
                           );
                         })}

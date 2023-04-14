@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
@@ -14,22 +14,61 @@ import {Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {useQuery, useMutation} from '@tanstack/react-query';
+import * as z from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm} from 'react-hook-form';
+import RegisterForm from './RegisterForm';
+
+const RegisterSchema = z.object({
+  firstName: z
+    .string({required_error: 'Fornavn er påkrævet'})
+    .min(2, 'Fornavn skal være længere end 2 tegn')
+    .max(50, 'Fornavn må ikke være længere end 50 tegn'),
+  lastName: z
+    .string({required_error: 'Efternavn er påkrævet'})
+    .min(2, 'Efternavn skal være længere end 2 tegn')
+    .max(50, 'Efternavn må ikke være længere end 50 tegn'),
+  email: z
+    .string({required_error: 'Email er påkrævet'})
+    .min(1, 'Email er påkrævet')
+    .email('Email er ugyldig'),
+  cvr: z
+    .string({required_error: 'CVR er påkrævet'})
+    .min(8, 'CVR skal være 8 tegn langt')
+    .max(8, 'CVR skal være 8 tegn langt'),
+  checkedTerms: z.literal(true, {
+    errorMap: () => ({message: 'Du skal acceptere betingelserne for at oprette en konto'}),
+  }),
+  checkedNews: z.boolean().optional().default(false),
+});
 
 export default function Register() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [emailErr, setEmailErr] = useState(false);
-  const [cvr, setCvr] = useState('');
-  const [checkedTerms, setCheckedTerms] = useState(false);
-  const [checkedNews, setCheckedNews] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openAwaitDialog, setOpenAwaitDialog] = useState(false);
 
-  const validateEmail = email => {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email);
-  };
+  const formMethods = useForm({
+    resolver: zodResolver(RegisterSchema),
+  });
+
+  const {
+    formState: {errors, isSubmitSuccessful, values},
+    reset,
+    getValues,
+    handleSubmit,
+  } = formMethods;
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({
+        firstName: '',
+        lastName: '',
+        email: '',
+        cvr: '',
+        checkedTerms: false,
+        checkedNews: false,
+      });
+    }
+  }, [isSubmitSuccessful]);
 
   const navigate = useNavigate();
   const routeChange = () => {
@@ -39,72 +78,58 @@ export default function Register() {
   const {
     data: cvrData,
     isSuccess,
-    isFetched,
-  } = useQuery(['cvr', cvr], () => getCvr(cvr), {
-    enabled: cvr.length === 8,
+    refetch,
+  } = useQuery(['cvr'], () => getCvr(getValues('cvr')), {
+    enabled: false,
     refetchOnWindowFocus: false,
-    select: data => {
+    select: (data) => {
       return {
         ...data.data.orgs[0],
         id: data.data.orgs[0].id !== null ? data.data.orgs[0].id : -1,
       };
     },
+    onError: (error) => {
+      toast.error('CVR ikke gyldigt');
+    },
   });
 
   const createUserMutation = useMutation(createUser, {
-    onSuccess: data => {
+    onSuccess: (data) => {
       toast.success('Bruger oprettet');
       setOpenAwaitDialog(true);
     },
-    onError: error => {
+    onError: (error) => {
       toast.error('Bruger kunne ikke oprettes');
     },
   });
 
-  const handleSubmit = e => {
+  const handleOpret = (e) => {
     e.preventDefault(); //To avoid refreshing page on button click
+    refetch();
     setOpenConfirmDialog(true);
   };
 
-  const handleConfirm = e => {
-    //konstruer payload objekt
+  const handleConfirm = (values) => {
+    setOpenConfirmDialog(false);
     const payload = {
       aux: {
         calypso: {
-          mail: checkedNews,
-          acceptterms: true,
+          mail: values.checkedNews,
+          acceptterms: values.checkedTerms,
           license: 'free',
         },
       },
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
+      email: values.email,
+      firstName: values.firstName,
+      lastName: values.lastName,
       id: -1,
       org: cvrData,
-      userName: email,
+      userName: values.email,
     };
 
     console.log(payload);
 
     createUserMutation.mutate(payload);
-  };
-
-  const handleChangeTerms = event => {
-    if (!checkedTerms)
-      setCheckedTerms({
-        ...checkedTerms,
-        [event.target.name]: event.target.checked,
-      });
-    else if (checkedTerms) setCheckedTerms(false);
-  };
-
-  const handleChangeNews = event => {
-    if (!checkedNews)
-      setCheckedNews({
-        ...checkedNews,
-        [event.target.name]: event.target.checked,
-      });
-    else if (checkedNews) setCheckedNews(false);
   };
 
   const handleClose = () => {
@@ -122,148 +147,49 @@ export default function Register() {
         <Typography variant="h4">Opret konto</Typography>
       </div>
 
-      <Container fixed maxWidth="sm">
-        <form onSubmit={handleSubmit} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="firstName"
-            label="Fornavn"
-            name="firstName"
-            autoComplete="firstName"
-            autoFocus
-            onChange={e => setFirstName(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="lastName"
-            label="Efternavn"
-            name="lastName"
-            autoComplete="lastName"
-            onChange={e => setLastName(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email"
-            name="email"
-            autoComplete="email"
-            onChange={e => setEmail(e.target.value)}
-            onBlur={e => setEmailErr(!validateEmail(email))}
-            error={emailErr}
-            helperText={emailErr ? 'Din email er ugyldig' : ''}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="cvr"
-            label="CVR"
-            name="cvr"
-            autoComplete="cvr"
-            error={isSuccess === false && isFetched === true}
-            helperText={isSuccess === false && isFetched === true ? 'CVR blev ikke fundet' : ''}
-            onChange={e => setCvr(e.target.value.trim())}
-          />
+      <RegisterForm onSubmitHandler={handleOpret} formMethods={formMethods} />
 
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={checkedTerms.checked}
-                onChange={handleChangeTerms}
-                name="checkedTerms"
-                color="primary"
-              />
-            }
-            label={
-              <label>
-                Jeg accepterer Calypsos{' '}
-                <a href="https://watsonc.dk/privatlivspolitik/" target="_blank">
-                  vilkår
-                </a>
-              </label>
-            }
-          />
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={checkedNews.checked}
-                onChange={handleChangeNews}
-                name="checkedNews"
-                color="primary"
-              />
-            }
-            label={<label>Jeg vil gerne modtage mails om nyheder i Calypso</label>}
-          />
-
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={
-              firstName === '' ||
-              lastName === '' ||
-              emailErr ||
-              cvr.length !== 8 ||
-              checkedTerms === false ||
-              (isSuccess === false && isFetched === true)
-            }
-          >
-            Opret konto
+      <Dialog
+        open={openConfirmDialog && isSuccess}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <Typography variant="h5">Bekræft virksomhed</Typography>
+        </DialogTitle>
+        <DialogContent>
+          <div>
+            <Typography>
+              {cvrData?.id === -1
+                ? 'Denne organisation er ikke oprettet. Du vil blive ejeren af den nedenstående organisation og skal fremad rettet godkende andre brugere der tilknytter sig denne organisation. Følg instruktionerne i din email for at fuldføre oprettelsen.'
+                : 'Virksomheden er allerede oprettet. Der vil blive sendt en anmodning til nedenstående virksomhed, om at du kan oprettes i denne. Hvorefter du vil modtage en bekræftigelsesmail.'}
+            </Typography>
+            <Typography>
+              {cvrData?.name}
+              <br></br>
+              {cvrData?.address}
+              <br></br>
+              {cvrData?.zip + ' ' + cvrData?.city}
+              <br></br>
+              {/* {cvr} */}
+            </Typography>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Annuller
           </Button>
-        </form>
-      </Container>
-
-      {isSuccess && (
-        <Dialog
-          open={openConfirmDialog}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            <Typography variant="h5">Bekræft virksomhed</Typography>
-          </DialogTitle>
-          <DialogContent>
-            <div>
-              <Typography>
-                {cvrData.id === -1
-                  ? 'Denne organisation er ikke oprettet. Du vil blive ejeren af den nedenstående organisation og skal fremad rettet godkende andre brugere der tilknytter sig denne organisation. Følg instruktionerne i din email for at fuldføre oprettelsen.'
-                  : 'Virksomheden er allerede oprettet. Der vil blive sendt en anmodning til nedenstående virksomhed, om at du kan oprettes i denne. Hvorefter du vil modtage en bekræftigelsesmail.'}
-              </Typography>
-              <Typography>
-                {cvrData.name}
-                <br></br>
-                {cvrData.address}
-                <br></br>
-                {cvrData.zip + ' ' + cvrData.city}
-                <br></br>
-                {cvr}
-              </Typography>
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Annuller
-            </Button>
-            <Button onClick={handleConfirm} variant="outlined" color="primary" autoFocus>
-              Bekræft
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+          <Button
+            onClick={handleSubmit(handleConfirm)}
+            variant="outlined"
+            color="primary"
+            autoFocus
+          >
+            Bekræft
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog
         open={openAwaitDialog}

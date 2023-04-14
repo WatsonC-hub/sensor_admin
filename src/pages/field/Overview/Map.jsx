@@ -11,6 +11,7 @@ import {authStore} from '../../../state/store';
 import {useNavigate} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
+import {mapboxToken} from 'src/consts';
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);
@@ -57,7 +58,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
     );
 
     const satelitemapbox = L.tileLayer(
-      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3ZxMDhmMGV3bDNzbHE1YTZneGFtMSJ9.-IVlITKrk0DjTghXVnlGiQ',
+      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={token}',
       {
         maxZoom: 20,
         attribution:
@@ -67,11 +68,12 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         id: 'mapbox/satellite-v9',
         tileSize: 512,
         zoomOffset: -1,
+        token: mapboxToken,
       }
     );
 
     const outdormapbox = L.tileLayer(
-      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3ZxMDhmMGV3bDNzbHE1YTZneGFtMSJ9.-IVlITKrk0DjTghXVnlGiQ',
+      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={token}',
       {
         maxZoom: 20,
         attribution:
@@ -81,6 +83,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         id: 'mapbox/outdoors-v11',
         tileSize: 512,
         zoomOffset: -1,
+        token: mapboxToken,
       }
     );
 
@@ -264,17 +267,26 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           });
 
           let popupContent = L.DomUtil.create('div', 'content');
-          popupContent.innerHTML =
-            '<center><b>' +
-            borehole.boreholeno +
-            '</b><br>Seneste kontrolmåling(er):<br>' +
-            content +
-            '</center>' +
-            '<a>Se graf</a>';
+          if (borehole.intakenos.reduce((a, b) => b == null || a, false)) {
+            popupContent.innerHTML =
+              '<center><b>' +
+              borehole.boreholeno +
+              '</b>' +
+              '<br>Der er ikke registreret et indtag på denne boring</br>' +
+              '</center>';
+          } else {
+            popupContent.innerHTML =
+              '<center><b>' +
+              borehole.boreholeno +
+              '</b><br>Seneste kontrolmåling(er):<br>' +
+              content +
+              '</center>' +
+              '<a>Se graf</a>';
+            L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(borehole));
+          }
 
           let popup = L.popup().setContent(popupContent);
           marker.bindPopup(popup);
-          L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(borehole));
 
           marker.on('add', function () {
             mapRef.current.flyTo(point, 12);

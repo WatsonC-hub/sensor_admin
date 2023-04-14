@@ -5,13 +5,17 @@ import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from 'react-router-dom';
 import {ThemeProvider, StyledEngineProvider} from '@mui/material';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import {QueryClientProvider} from '@tanstack/react-query';
+import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
 import {ToastContainer} from 'react-toastify';
 import {createRoot} from 'react-dom/client';
 import 'react-toastify/dist/ReactToastify.css';
 import theme from './theme';
 import * as Sentry from '@sentry/react';
 import {BrowserTracing} from '@sentry/tracing';
+import {registerSW} from 'virtual:pwa-register';
+import NetworkStatus from './components/NetworkStatus';
+import {queryClient, persister} from './queryClient';
 
 if (import.meta.env.PROD) {
   Sentry.init({
@@ -25,21 +29,17 @@ if (import.meta.env.PROD) {
   });
 }
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: (failureCount, error) => {
-        if (error.response.status === 401 || error.response.status === 404) {
-          return false;
-        }
-        if (failureCount < 3) {
-          return true;
-        }
-        return false;
-      },
+if ('serviceWorker' in navigator) {
+  // && !/localhost/.test(window.location)) {
+  registerSW({
+    onNeedRefresh() {
+      if (confirm('Opdatering tilgængelig. Vil du opdatere?')) {
+        updateSW(true);
+      }
     },
-  },
-});
+  });
+}
+
 const container = document.getElementById('root');
 const root = createRoot(container);
 
@@ -48,18 +48,22 @@ root.render(
     <React.StrictMode>
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
-          <QueryClientProvider client={queryClient}>
+          <PersistQueryClientProvider
+            client={queryClient}
+            persistOptions={{persister}}
+            onSuccess={() => {
+              queryClient.resumePausedMutations().then(() => {
+                queryClient.resetQueries();
+              });
+            }}
+          >
             <App />
             <ReactQueryDevtools initialIsOpen={false} />
             <ToastContainer />
-          </QueryClientProvider>
+            <NetworkStatus />
+          </PersistQueryClientProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </React.StrictMode>
   </BrowserRouter>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import BearingGraph from './BearingGraph';
+import BearingGraph from './newBearingGraph';
 import ActionArea from './ActionArea';
 import PejlingForm from '../../../components/PejlingForm';
-import {getStamdataByStation} from 'src/pages/field/fieldAPI';
 import EditStamdata from './EditStamdata';
 import PejlingMeasurements from './PejlingMeasurements';
 import MaalepunktForm from '../../../components/MaalepunktForm';
@@ -18,7 +17,7 @@ import {toast} from 'react-toastify';
 import useFormData from '../../../hooks/useFormData';
 import {apiClient} from 'src/apiClient';
 
-export default function Station({stationId}) {
+export default function Station({stationId, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
     timeofmeas: moment(),
@@ -64,28 +63,19 @@ export default function Station({stationId}) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    if (stamdata) {
+      store.setLocation(stamdata);
+      store.setTimeseries(stamdata);
+      store.setUnit(stamdata);
+    }
     return () => {
       store.resetLocation();
       store.resetTimeseries();
       store.resetUnit();
     };
-  }, []);
+  }, [stamdata]);
 
-  const {data: stamdata} = useQuery(
-    ['stamdata', stationId],
-    () => getStamdataByStation(stationId),
-    {
-      enabled: stationId !== -1 && stationId !== null,
-      onSuccess: (data) => {
-        store.setLocation(data);
-        store.setTimeseries(data);
-        store.setUnit(data);
-      },
-      refetchOnWindowFocus: false,
-    }
-  );
-
-  const isWaterlevel = stamdata ? stamdata?.tstype_id === 1 : false;
+  const isWaterlevel = stamdata ? stamdata?.tstype_id === 1 : true;
   const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;
   const isCalculated = stamdata ? stamdata?.calculated : false;
 
@@ -94,6 +84,7 @@ export default function Station({stationId}) {
     //() => getMP(stationId), {
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
+
       return data.map((m) => {
         return {
           ...m,
@@ -104,7 +95,7 @@ export default function Station({stationId}) {
     },
     {
       enabled: stationId !== -1 && stationId !== null,
-      placeholderData: [],
+      initialData: [],
     }
   );
 
@@ -113,13 +104,14 @@ export default function Station({stationId}) {
     ['measurements', stationId],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);
+
       return data.map((m) => {
         return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
     {
       enabled: stationId !== -1 && stationId !== null,
-      placeholderData: [],
+      initialData: [],
     }
   );
 
@@ -127,19 +119,20 @@ export default function Station({stationId}) {
     ['service', stationId],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${stationId}`);
+
       return data.map((m) => {
         return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
     {
       enabled: stationId !== -1 && stationId !== null,
-      placeholderData: [],
+      initialData: [],
     }
   );
 
   useEffect(() => {
-    if (watlevmp.length > 0) {
-      const elev = watlevmp.filter((e2) => {
+    if (watlevmp?.length > 0) {
+      const elev = watlevmp?.filter((e2) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
           moment(pejlingData.timeofmeas) < moment(e2.enddate)
@@ -158,9 +151,9 @@ export default function Station({stationId}) {
 
   useEffect(() => {
     var ctrls = [];
-    if (watlevmp.length > 0) {
-      ctrls = measurements.map((e) => {
-        const elev = watlevmp.filter((e2) => {
+    if (watlevmp?.length > 0) {
+      ctrls = measurements?.map((e) => {
+        const elev = watlevmp?.filter((e2) => {
           return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
         })[0]?.elevation;
         return {
@@ -169,7 +162,7 @@ export default function Station({stationId}) {
         };
       });
     } else {
-      ctrls = measurements.map((elem) => {
+      ctrls = measurements?.map((elem) => {
         return {...elem, waterlevel: elem.measurement};
       });
     }
@@ -185,21 +178,19 @@ export default function Station({stationId}) {
     setFormToShow('ADDMAALEPUNKT');
   };
 
-  const pejlingMutate = useMutation(async (data) => {
-    if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/station/measurements/${stationId}`, data);
-    } else {
-      await apiClient.put(`/sensor_field/station/measurements/${stationId}/${data.gid}`, data);
-    }
-  });
-
-  const handlePejlingSubmit = () => {
-    const payload = {
-      ...pejlingData,
-      isWaterlevel: isWaterlevel,
-    };
-    payload.timeofmeas = moment(payload.timeofmeas).toISOString();
-    pejlingMutate.mutate(payload, {
+  const pejlingMutate = useMutation(
+    (data) => {
+      if (data.gid === -1) {
+        return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);
+      } else {
+        return apiClient.put(
+          `/sensor_field/station/measurements/${data.stationid}/${data.gid}`,
+          data
+        );
+      }
+    },
+    {
+      mutationKey: 'pejling',
       onSuccess: (data) => {
         resetPejlingData();
         setFormToShow(null);
@@ -209,14 +200,24 @@ export default function Station({stationId}) {
       onError: (error) => {
         toast.error('Der skete en fejl');
       },
-    });
+    }
+  );
+
+  const handlePejlingSubmit = () => {
+    const payload = {
+      ...pejlingData,
+      isWaterlevel: isWaterlevel,
+      stationid: stationId,
+    };
+    payload.timeofmeas = moment(payload.timeofmeas).toISOString();
+    pejlingMutate.mutate(payload);
   };
 
-  const watlevmpMutate = useMutation(async (data) => {
+  const watlevmpMutate = useMutation((data) => {
     if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
+      return apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
     } else {
-      await apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
+      return apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
     }
   });
 
@@ -237,11 +238,11 @@ export default function Station({stationId}) {
     });
   };
 
-  const serviceMutate = useMutation(async (data) => {
+  const serviceMutate = useMutation((data) => {
     if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/station/service/${stationId}`, data);
+      return apiClient.post(`/sensor_field/station/service/${stationId}`, data);
     } else {
-      await apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
+      return apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
     }
   });
 
@@ -385,7 +386,10 @@ export default function Station({stationId}) {
             formData={serviceData}
             changeFormData={changeServiceData}
             handleSubmit={handleServiceSubmit}
-            resetFormData={resetServiceData}
+            cancel={() => {
+              resetServiceData();
+              setFormToShow(null);
+            }}
           />
           <TilsynTable
             services={services}

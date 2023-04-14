@@ -25,17 +25,6 @@ if (process.env.NODE_ENV === 'development') {
   searchEndpoint = `https://watsonc.admin.gc2.io/api/v2/elasticsearch/search/jupiter/chemicals/boreholes_time_series_without_chemicals_view`;
 }
 
-// const locHost = "http://localhost:8080";
-// const remoteHost = "https://watsonc.admin.gc2.io";
-// const endpoint = `https://watsonc.admin.gc2.io/api/v2/sql/watsonc/?q=`;
-// const testEndpoint = `https://watsonc.admin.gc2.io/api/v2/sql/magloire@watsonc?q=`;
-// const apiKey = "&key=2a528b3bc396ca7f544b7b6a4bc52bb7";
-// const localEndpoint = "http://localhost:8080/extensions/sensor_app/api";
-// const remoteEndpoint =
-//   "https://watsonc-test.admin.gc2.io/extensions/sensor_app/api";
-
-// const getData = (key) => axios.get(`${testEndpoint}${queries[key]}`);
-
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(',');
   const mime = arr[0].match(/:(.*?);/)[1];
@@ -79,9 +68,4 @@ const postElasticSearch = (search) => {
   return axios.post(`${searchEndpoint}`, search);
 };
 
-export {
-  postElasticSearch,
-  deleteImage,
-  dataURLtoFile,
-  postImage,
-};
+export {postElasticSearch, deleteImage, dataURLtoFile, postImage};

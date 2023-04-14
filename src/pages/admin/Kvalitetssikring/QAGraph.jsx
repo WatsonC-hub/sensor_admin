@@ -7,6 +7,9 @@ import {useQuery} from '@tanstack/react-query';
 import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/pages/field/fieldAPI';
 import React, {useEffect, useState} from 'react';
+import {Typography, Alert, Grid} from '@mui/material';
+import GraphForms from './GraphForms';
+import useFormData from '../../../hooks/useFormData';
 
 const selectorOptions = {
   buttons: [
@@ -237,28 +240,41 @@ const transformQAData = (data) => {
   return {shapelist, annotateList};
 };
 
-function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
-  const [selectedData, setSelectedData] = useState({x: [], y: [], colors: []});
+function PlotGraph({graphData, controlData, dynamicMeasurement, qaData, setPreviewData}) {
+  const [selectedData, setSelectedData] = useState([{x: [], y: []}]);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const [layout, setLayout] = useState(matches ? layout3 : layout1);
+  const selectedDataFix = {
+    x: [],
+    y: [],
+  };
 
   const handlePlotlySelected = (eventData) => {
-    const x = [];
-    const y = [];
-    const colors = [];
-    //for (let i = 0; i < N; i++) colors.push(color1Light);
-    console.log(eventData);
-    eventData.points.forEach((pt) => {
-      x.push(pt.x);
-      y.push(pt.y);
-      //colors[pt.pointNumber] = color1;
-    });
-    setSelectedData({x, y, colors});
+    setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
+    const dates = selectedData.map((pt) => moment(pt[0].x));
+    console.log('dates: ', dates);
+    if (dates.length > 0) {
+      const sortedDates = dates.sort((a, b) => moment(a) - moment(b));
+
+      console.log('OLDEST Date', sortedDates[0]);
+      const oldDate = sortedDates[0];
+      console.log('NEWEST Date', sortedDates[sortedDates.length - 1]);
+      const newDate = sortedDates[sortedDates.length - 1];
+
+      Object.values(selectedData).forEach((arr) => {
+        arr.forEach((obj) => {
+          selectedDataFix.x.push(moment(obj.x).format());
+          selectedDataFix.y.push(obj.y);
+        });
+      });
+
+      setPreviewData({oldDate, newDate, selectedDataFix});
+    }
   };
 
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
-  // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   var downloadButton = {
     name: 'Download data',
@@ -301,98 +317,73 @@ function PlotGraph({graphData, controlData, dynamicMeasurement, qaData}) {
   const {shapelist, annotateList} = transformQAData(qaData);
 
   return (
-    <Plot
-      onSelected={handlePlotlySelected}
-      id="graph"
-      data={[
-        {
-          x: graphData?.x,
-          y: graphData?.y,
-          name: graphData?.name,
-          type: 'scatter',
-          line: {width: 2},
-          mode: 'lines',
-          marker: {symbol: '100', size: '3', color: '#177FC1'},
-        },
-        {
-          x: xControl,
-          y: yControl,
-          name: 'Kontrolpejlinger',
-          type: 'scatter',
-          mode: 'markers',
-          marker: {
-            symbol: '200',
-            size: '8',
-            color: '#177FC1',
-            line: {color: 'rgb(0,0,0)', width: 1},
+    <div>
+      <Plot
+        onSelected={handlePlotlySelected}
+        //onRelayout={(e) => console.log('relayout', e)}
+        id="graph"
+        data={[
+          {
+            x: graphData?.x,
+            y: graphData?.y,
+            name: graphData?.name,
+            type: 'scatter',
+            line: {width: 2},
+            mode: 'lines+markers',
+            marker: {symbol: '100', size: '5', color: '#177FC1'},
           },
-        },
-        {
-          x: [dynamicMeasurement?.[0]],
-          y: [dynamicMeasurement?.[1]],
-          name: '',
-          type: 'scatter',
-          mode: 'markers',
-          showlegend: false,
-          marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
-        },
-      ]}
-      layout={
-        matches
-          ? {
-              ...layout3,
-              yaxis: {
-                ...layout3.yaxis,
-                // title: stationtype + ', ' + unit,
-              },
-            }
-          : {
-              ...layout1,
-              yaxis: {
-                ...layout1.yaxis,
-                // title: stationtype + ', ' + unit,
-              },
-              shapes: shapelist,
-              annotations: annotateList,
-            }
-      }
-      config={{
-        responsive: true,
-        buttons: [
-          [downloadButton, makeLinkButton],
-          ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
-        ],
+          {
+            x: xControl,
+            y: yControl,
+            name: 'Kontrolpejlinger',
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+              symbol: '200',
+              size: '8',
+              color: '#177FC1',
+              line: {color: 'rgb(0,0,0)', width: 1},
+            },
+          },
+          {
+            x: [dynamicMeasurement?.[0]],
+            y: [dynamicMeasurement?.[1]],
+            name: '',
+            type: 'scatter',
+            mode: 'markers',
+            showlegend: false,
+            marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
+          },
+        ]}
+        layout={layout}
+        config={{
+          responsive: true,
+          buttons: [
+            [downloadButton, makeLinkButton],
+            ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+          ],
 
-        displaylogo: false,
-        displayModeBar: true,
-      }}
-      useResizeHandler={true}
-      style={{width: '100%', height: '100%'}}
-      onClickAnnotation={(e) => {
-        console.log(e);
-      }}
-      onClick={(e) => {
-        console.log(e);
-      }}
-    />
+          displaylogo: false,
+          displayModeBar: true,
+        }}
+        useResizeHandler={true}
+        style={{width: '100%', height: '100%'}}
+        onClickAnnotation={(e) => {
+          console.log(e);
+        }}
+        onClick={(e) => {
+          console.log(e);
+        }}
+      />
+    </div>
   );
 }
 
-export default function QAGraph({stationId, measurements, dynamicMeasurement}) {
+export default function QAGraph({stationId, measurements}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
-  const {
-    data: qaData,
-    isLoading,
-    error,
-  } = useQuery(['qa_labels', stationId], async ({signal}) => {
-    const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
-      signal,
-    });
-    return data;
-  });
-
+  const [reviewData, setReviewData] = useState({x: [], y: []});
+  console.log('reviewData', reviewData);
   const {data: graphData} = useQuery(
     ['graphData', stationId],
     async ({signal}) => {
@@ -410,22 +401,67 @@ export default function QAGraph({stationId, measurements, dynamicMeasurement}) {
     }
   );
 
+  const [previewData, setPreviewData] = useState({oldDate: moment(), newDate: moment(), data: {}});
+
+  console.log('previewData', previewData);
+
+  const {
+    data: qaData,
+    isLoading,
+    error,
+  } = useQuery(['qa_labels', stationId], async ({signal}) => {
+    const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
+      signal,
+    });
+    return data;
+  });
+
   return (
-    <div
-      style={{
-        width: 'auto',
-        height: matches ? '300px' : '500px',
-        marginBottom: '10px',
-        marginTop: '-10px',
-        paddingTop: '5px',
-        border: '2px solid gray',
-        // position: "-webkit-sticky",
-        // position: "sticky",
-        // top: 20,
-        // zIndex: 100,
-      }}
-    >
-      <PlotGraph graphData={graphData} controlData={measurements} qaData={qaData} />
+    <div>
+      <div
+        style={{
+          width: 'auto',
+          height: matches ? '300px' : '500px',
+          marginBottom: '10px',
+          marginTop: '-10px',
+          paddingTop: '5px',
+          border: '2px solid gray',
+          // position: "-webkit-sticky",
+          // position: "sticky",
+          // top: 20,
+          // zIndex: 100,
+        }}
+      >
+        <PlotGraph
+          graphData={graphData}
+          controlData={measurements}
+          qaData={qaData}
+          setPreviewData={setPreviewData}
+        />
+      </div>
+      <GraphForms
+        graphData={graphData}
+        previewData={previewData}
+        setPreviewData={setPreviewData}
+        reviewData={reviewData}
+        setReviewData={setReviewData}
+      />
+      <div
+        style={{
+          width: 'auto',
+          height: matches ? '300px' : '500px',
+          marginBottom: '10px',
+          marginTop: '-70px',
+          //paddingTop: '5px',
+          border: '2px solid gray',
+          // position: "-webkit-sticky",
+          // position: "sticky",
+          // top: 20,
+          // zIndex: 100,
+        }}
+      >
+        <PlotGraph graphData={reviewData} controlData={measurements} qaData={qaData} />
+      </div>
     </div>
   );
 }
