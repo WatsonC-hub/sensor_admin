@@ -221,7 +221,7 @@ const transformQAData = (data) => {
         xanchor: 'left',
         yanchor: 'bottom',
         showarrow: false,
-        text: 'Hop',
+        text: d.name,
         y: 0.5,
       };
     } else {
@@ -232,7 +232,7 @@ const transformQAData = (data) => {
         xanchor: 'left',
         yanchor: 'bottom',
         showarrow: false,
-        text: 'Støj',
+        text: d.name,
         y: 0.5,
       };
     }
@@ -372,7 +372,7 @@ function PlotGraph({
             marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
           },
         ]}
-        layout={layout}
+        layout={{...layout, shapes: shapelist, annotations: annotateList}}
         config={{
           responsive: true,
           buttons: [
