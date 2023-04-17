@@ -6,7 +6,7 @@ import {
   PriorityHighOutlined,
   ErrorOutlineOutlined,
 } from '@mui/icons-material';
-import {Typography} from '@mui/material';
+import {Typography, Box, Button} from '@mui/material';
 
 const data = {
   id: 'root',
@@ -76,24 +76,40 @@ const data = {
 };
 
 export default function QAHistory() {
+  const [expanded, setExpanded] = React.useState([]);
+
   const renderTree = (nodes) => (
     <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
       {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
     </TreeItem>
   );
 
+  const handleToggle = (event, nodeIds) => {
+    setExpanded(nodeIds);
+  };
+
+  const handleCollapseClick = () => {
+    setExpanded((oldExpanded) => {
+      if (oldExpanded.length !== 0) oldExpanded = [];
+      return oldExpanded;
+    });
+  };
+
   return (
-    <div>
+    <Box sx={{height: 270, flexGrow: 1}}>
       <Typography variant="h5" component="h3">
         Ændringshistorik
       </Typography>
+      <Button onClick={handleCollapseClick}>{expanded.length === 0 ? '' : 'Collapse all'}</Button>
       <TreeView
         defaultCollapseIcon={<ExpandMoreIcon />}
         defaultExpanded={['root']}
         defaultExpandIcon={<ChevronRightIcon />}
+        expanded={expanded}
+        onNodeToggle={handleToggle}
       >
         {renderTree(data)}
       </TreeView>
-    </div>
+    </Box>
   );
 }
