@@ -7,6 +7,8 @@ import QAGraph from './QAGraph';
 import useFormData from '../../../hooks/useFormData';
 import GraphForms from './GraphForms';
 import moment from 'moment';
+import Algorithms from './Algorithms';
+import {Grid, Typography} from '@mui/material';
 
 const QualityAssurance = () => {
   let params = useParams();
@@ -24,6 +26,11 @@ const QualityAssurance = () => {
   return (
     <>
       <QAGraph stationId={params.ts_id} measurements={[]} />
+      <Grid container>
+        <Grid item xs={12} sm={6}>
+          <Algorithms />
+        </Grid>
+      </Grid>
     </>
   );
 };

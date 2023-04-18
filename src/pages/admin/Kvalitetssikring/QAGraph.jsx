@@ -462,13 +462,13 @@ export default function QAGraph({stationId, measurements}) {
       <Grid item xs={2} sm={2}>
         <QAHistory />
       </Grid>
-      <GraphForms
+      {/* <GraphForms
         graphData={graphData}
         previewData={previewData}
         setPreviewData={setPreviewData}
         reviewData={reviewData}
         setReviewData={setReviewData}
-      />
+      /> */}
     </Grid>
   );
 }
