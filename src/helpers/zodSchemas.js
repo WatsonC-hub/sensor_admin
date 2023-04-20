@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import moment from 'moment';
 
 const metadataBaseSchema = z.object({
   location: z.object({
@@ -22,7 +23,7 @@ const metadataBaseSchema = z.object({
   }),
   unit: z.object({
     unit_uuid: z.string().uuid(),
-    startdate: z.string(),
+    startdate: z.string().transform((value) => moment(value).toISOString()),
   }),
 });
 
@@ -42,7 +43,7 @@ const metadataSchema = metadataBaseSchema.extend({
 
 const metadataPutSchema = metadataBaseSchema.extend({
   unit: metadataBaseSchema.shape.unit.extend({
-    enddate: z.string(),
+    enddate: z.string().transform((value) => moment(value).toISOString()),
   }),
 });
 

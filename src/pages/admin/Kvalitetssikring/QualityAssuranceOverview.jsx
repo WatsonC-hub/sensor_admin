@@ -8,6 +8,24 @@ const QualityAssuranceOverview = () => {
     {name: 'tstype_name', title: 'Parameter'},
   ];
 
+  const {data: tabledata, isLoading} = useQuery(
+    ['station_list'],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station_list`);
+      return data;
+    },
+    {
+      select: (data) => {
+        return data.map((row) => {
+          return {
+            ...row,
+            navigateTo: row.ts_id.toString(),
+          };
+        });
+      },
+    }
+  );
+
   var data = [
     {
       calypso_id: 34,
@@ -47,12 +65,12 @@ const QualityAssuranceOverview = () => {
     },
   ];
 
-  data = data.map(row => {
-    return {
-      ...row,
-      navigateTo: row.ts_id.toString(),
-    };
-  });
+  // data = data.map((row) => {
+  //   return {
+  //     ...row,
+  //     navigateTo: row.ts_id.toString(),
+  //   };
+  // });
 
   return <TableComponent data={data} loading={false} columns={columns} />;
 };
