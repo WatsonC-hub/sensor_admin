@@ -1,5 +1,7 @@
 import React from 'react';
 import TableComponent from 'src/components/TableComponent';
+import {useQuery} from '@tanstack/react-query';
+import {apiClient} from 'src/apiClient';
 
 const QualityAssuranceOverview = () => {
   const columns = [
@@ -15,8 +17,8 @@ const QualityAssuranceOverview = () => {
       return data;
     },
     {
-      select: (data) => {
-        return data.map((row) => {
+      select: (tabledata) => {
+        return tabledata.map((row) => {
           return {
             ...row,
             navigateTo: row.ts_id.toString(),
@@ -72,7 +74,7 @@ const QualityAssuranceOverview = () => {
   //   };
   // });
 
-  return <TableComponent data={data} loading={false} columns={columns} />;
+  return <TableComponent data={tabledata} loading={false} columns={columns} />;
 };
 
 export default QualityAssuranceOverview;
