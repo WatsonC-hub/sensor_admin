@@ -11,6 +11,7 @@ import {Typography, Alert, Grid} from '@mui/material';
 import GraphForms from './GraphForms';
 import useFormData from '../../../hooks/useFormData';
 import QAHistory from './QAHistory';
+import AnnotationConfiguration from './AnnotationConfiguration';
 
 const selectorOptions = {
   buttons: [
@@ -258,6 +259,46 @@ function PlotGraph({
     y: [],
   };
 
+  const eventHandler = (evt) => {
+    var bb = evt.target.getBoundingClientRect();
+    const gd = document.getElementById('graph');
+    var x = gd._fullLayout.xaxis.p2d(evt.clientX - bb.left);
+    var y = gd._fullLayout.yaxis.p2d(evt.clientY - bb.top);
+
+    const closest = qaData
+      ?.map((d, index) => {
+        if (d.enddate == null) {
+          return [Math.abs(moment(x).diff(moment(d.startdate), 'minutes')) < 60 * 24, index];
+        } else {
+          return [
+            moment(x).isAfter(moment(d.startdate)) && moment(x).isBefore(moment(d.enddate))
+              ? Math.min(
+                  Math.abs(moment(x).diff(moment(d.startdate), 'minutes')),
+                  Math.abs(moment(x).diff(moment(d.enddate), 'minutes'))
+                )
+              : false,
+            index,
+          ];
+        }
+      })
+      .filter((d) => d[0] === true || typeof d[0] === 'number')
+      .sort((a, b) => a[0] - b[0]);
+    console.log('qaData: ', closest);
+    console.log(qaData[closest?.[0]?.[1]]);
+    console.log('x: ', x);
+    console.log('y: ', y);
+  };
+  // Add event listener for mouse click on plot
+  useEffect(() => {
+    const plot = document.getElementById('graph');
+    console.log('plot', plot);
+    plot?.addEventListener('mousedown', eventHandler);
+    return () => {
+      const plot = document.getElementById('graph');
+      plot?.removeEventListener('mousedown', eventHandler);
+    };
+  }, [qaData]);
+
   const handlePlotlySelected = (eventData) => {
     setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
     const dates = selectedData.map((pt) => moment(pt[0].x));
@@ -330,6 +371,7 @@ function PlotGraph({
         onSelected={handlePlotlySelected}
         //onRelayout={(e) => console.log('relayout', e)}
         id="graph"
+        divId="graph"
         data={[
           {
             x: reviewData?.x,
@@ -385,12 +427,16 @@ function PlotGraph({
         }}
         useResizeHandler={true}
         style={{width: '100%', height: '100%'}}
-        onClickAnnotation={(e) => {
-          console.log(e);
-        }}
-        onClick={(e) => {
-          console.log(e);
-        }}
+        // onClickAnnotation={(e) => {
+        //   console.log(e);
+        // }}
+        // onClick={(e) => {
+        //   console.log(e);
+        // }}
+        // onDoubleClick={(e) => {
+        //   console.log(e);
+        // }}
+        onInitialized={(figure) => {}}
       />
     </div>
   );
@@ -399,6 +445,12 @@ function PlotGraph({
 export default function QAGraph({stationId, measurements}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
+
+  const [annotationConfiguration, setAnnotationConfiguration] = useState({
+    active: false,
+    label: 0,
+  });
+
   const [reviewData, setReviewData] = useState({x: [], y: []});
   console.log('reviewData', reviewData);
   const {data: graphData} = useQuery(
@@ -456,11 +508,16 @@ export default function QAGraph({stationId, measurements}) {
             controlData={measurements}
             qaData={qaData}
             setPreviewData={setPreviewData}
+            annotationConfiguration={annotationConfiguration}
           />
         </div>
       </Grid>
       <Grid item xs={2} sm={2}>
         <QAHistory />
+        <AnnotationConfiguration
+          annotationConfiguration={annotationConfiguration}
+          setAnnotationConfiguration={setAnnotationConfiguration}
+        />
       </Grid>
       {/* <GraphForms
         graphData={graphData}
