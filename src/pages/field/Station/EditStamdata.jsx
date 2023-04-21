@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {
   Container,
   Grid,
@@ -144,11 +144,11 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
             let endDate =
               moment(new Date()) < moment(item.slutdato)
                 ? 'nu'
-                : moment(item.slutdato).format('YYYY-MM-DD HH:mm');
+                : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
 
             return (
               <MenuItem id={item.gid} key={item.gid} value={item.gid}>
-                {`${moment(item.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
+                {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
               </MenuItem>
             );
           })}
@@ -231,11 +231,29 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
       },
       unit: {
         ...metadata,
-        startdate: metadata.startdato,
-        enddate: metadata.slutdato,
+        startdate: metadata?.startdato,
+        enddate: metadata?.slutdato,
       },
     }).data,
   });
+
+  useEffect(() => {
+    formMethods.reset(
+      metadataPutSchema.safeParse({
+        location: {
+          ...metadata,
+        },
+        timeseries: {
+          ...metadata,
+        },
+        unit: {
+          ...metadata,
+          startdate: metadata?.startdato,
+          enddate: metadata?.slutdato,
+        },
+      }).data
+    );
+  }, [metadata]);
 
   useEffect(() => {
     window.scrollTo({top: 300, behavior: 'smooth'});
