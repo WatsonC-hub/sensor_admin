@@ -59,7 +59,6 @@ export default function LocationForm({mode, disable}) {
         <FormInput
           name="location.mainloc"
           label="Hoved lokation"
-          required
           fullWidth
           placeholder="f.eks. Aarhus Kommune"
           sx={{
@@ -112,7 +111,6 @@ export default function LocationForm({mode, disable}) {
           InputProps={{
             endAdornment: <InputAdornment position="start">m</InputAdornment>,
           }}
-          required
           fullWidth
           sx={{
             mb: 2,
@@ -125,7 +123,6 @@ export default function LocationForm({mode, disable}) {
           name="location.terrainqual"
           label="Type af terrænkote"
           select
-          required
           fullWidth
           sx={{
             mb: 2,
@@ -151,7 +148,6 @@ export default function LocationForm({mode, disable}) {
         <FormInput
           name="location.description"
           label="Beskrivelse"
-          required
           fullWidth
           sx={{
             mb: 2,

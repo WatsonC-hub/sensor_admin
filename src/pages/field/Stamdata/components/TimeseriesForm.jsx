@@ -62,7 +62,6 @@ export default function TimeseriesForm({mode}) {
             startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
           }}
           placeholder="f.eks. indtag 1"
-          required
           fullWidth
           sx={{
             mb: 2,

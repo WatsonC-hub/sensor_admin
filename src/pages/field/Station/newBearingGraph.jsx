@@ -397,8 +397,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     },
   };
 
-  console.log('terrainlevel', terrainlevel);
-
   // var addHorizontalLine = {
   //   name: 'Tilføj terrænkote',
   //   icon: rerunIcon,

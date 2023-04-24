@@ -304,7 +304,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
           setLocationDialogOpen={setLocationDialogOpen}
           formMethods={formMethods}
         />
-        <DevTool control={control} />
+        {/* <DevTool control={control} /> */}
       </FormProvider>
     </div>
   );
