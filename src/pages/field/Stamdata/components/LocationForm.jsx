@@ -18,7 +18,7 @@ export default function LocationForm({mode, disable}) {
     enabled: false,
     onSuccess: (data) => {
       if (data.HentKoterRespons.data[0].kote !== null) {
-        setValue('location.terrainlevel', data.HentKoterRespons.data[0].kote.toFixed(3));
+        setValue('location.terrainlevel', Number(data.HentKoterRespons.data[0].kote.toFixed(3)));
       }
     },
   });
