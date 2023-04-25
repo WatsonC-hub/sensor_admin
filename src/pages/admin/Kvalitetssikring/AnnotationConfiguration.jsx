@@ -1,8 +1,23 @@
 import React from 'react';
-import {Card, CardHeader, CardContent, TextField, CardActions, Button} from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  TextField,
+  CardActions,
+  Button,
+  Select,
+  MenuItem,
+  Checkbox,
+  FormControlLabel,
+} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 
-const AnnotationConfiguration = () => {
+const AnnotationConfiguration = ({
+  label_options,
+  annotationConfiguration,
+  setAnnotationConfiguration,
+}) => {
   return (
     <Card
       sx={{
@@ -23,9 +38,42 @@ const AnnotationConfiguration = () => {
         sx={{
           p: 1,
           m: 0,
+          flexDirection: 'column',
+          display: 'flex',
         }}
       >
-        Hejsa
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={annotationConfiguration.active}
+              onChange={(e) => {
+                setAnnotationConfiguration({
+                  ...annotationConfiguration,
+                  active: e.target.checked,
+                });
+              }}
+            />
+          }
+          label="Aktiver"
+        />
+        <TextField
+          value={annotationConfiguration.label}
+          name="label"
+          label="Label"
+          select
+          onChange={(e) => {
+            setAnnotationConfiguration({
+              ...annotationConfiguration,
+              label: e.target.value,
+            });
+          }}
+        >
+          {label_options?.map((elem) => (
+            <MenuItem key={elem.gid} value={elem.gid}>
+              {elem.name}
+            </MenuItem>
+          ))}
+        </TextField>
       </CardContent>
     </Card>
   );

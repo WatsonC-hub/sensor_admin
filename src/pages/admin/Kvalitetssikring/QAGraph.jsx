@@ -3,15 +3,15 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import Plot from 'react-plotly.js';
 import moment from 'moment';
 import axios from 'axios';
-import {useQuery} from '@tanstack/react-query';
-import {stamdataStore} from '../../../state/store';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/pages/field/fieldAPI';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {Typography, Alert, Grid} from '@mui/material';
 import GraphForms from './GraphForms';
-import useFormData from '../../../hooks/useFormData';
 import QAHistory from './QAHistory';
 import AnnotationConfiguration from './AnnotationConfiguration';
+import {toast} from 'react-toastify';
+import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
 
 const selectorOptions = {
   buttons: [
@@ -38,22 +38,6 @@ const selectorOptions = {
       label: 'Alt',
     },
   ],
-};
-
-var downloadIcon = {
-  width: 500,
-  // viewBox: "0 0 60 55",
-  path: 'M224 376V512H24C10.7 512 0 501.3 0 488v-464c0-13.3 10.7-24 24-24h336c13.3 0 24 10.7 24 24V352H248c-13.2 0-24 10.8-24 24zm76.45-211.36-96.42-95.7c-6.65-6.61-17.39-6.61-24.04 0l-96.42 95.7C73.42 174.71 80.54 192 94.82 192H160v80c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16v-80h65.18c14.28 0 21.4-17.29 11.27-27.36zM377 407 279.1 505c-4.5 4.5-10.6 7-17 7H256v-128h128v6.1c0 6.3-2.5 12.4-7 16.9z',
-  ascent: 500,
-  descent: -50,
-};
-
-var makeLinkIcon = {
-  width: 500,
-  // viewBox: "0 0 60 55",
-  path: 'M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z',
-  ascent: 500,
-  descent: -50,
 };
 
 function exportToCsv(filename, rows) {
@@ -249,6 +233,9 @@ function PlotGraph({
   dynamicMeasurement,
   qaData,
   setPreviewData,
+  ts_id,
+  annotationConfiguration,
+  labelMutation,
 }) {
   const [selectedData, setSelectedData] = useState([{x: [], y: []}]);
   const theme = useTheme();
@@ -259,9 +246,13 @@ function PlotGraph({
     y: [],
   };
 
+  const toastId = useRef(null);
+
+  const queryClient = useQueryClient();
+
   const eventHandler = (evt) => {
     var bb = evt.target.getBoundingClientRect();
-    const gd = document.getElementById('graph');
+    const gd = document.getElementById('qagraph');
     var x = gd._fullLayout.xaxis.p2d(evt.clientX - bb.left);
     var y = gd._fullLayout.yaxis.p2d(evt.clientY - bb.top);
 
@@ -283,21 +274,27 @@ function PlotGraph({
       })
       .filter((d) => d[0] === true || typeof d[0] === 'number')
       .sort((a, b) => a[0] - b[0]);
-    console.log('qaData: ', closest);
-    console.log(qaData[closest?.[0]?.[1]]);
-    console.log('x: ', x);
-    console.log('y: ', y);
+
+    if (closest?.[0]?.[1] != null && annotationConfiguration.active) {
+      const data = qaData[closest?.[0]?.[1]];
+      labelMutation.mutate({
+        algorithm: data.algorithm,
+        enddate: moment(data.enddate).toISOString(),
+        startdate: moment(data.startdate).toISOString(),
+        label_id: annotationConfiguration?.label,
+      });
+    }
   };
+
   // Add event listener for mouse click on plot
   useEffect(() => {
-    const plot = document.getElementById('graph');
-    console.log('plot', plot);
+    const plot = document.getElementById('qagraph');
     plot?.addEventListener('mousedown', eventHandler);
     return () => {
-      const plot = document.getElementById('graph');
+      const plot = document.getElementById('qagraph');
       plot?.removeEventListener('mousedown', eventHandler);
     };
-  }, [qaData]);
+  }, [qaData, annotationConfiguration]);
 
   const handlePlotlySelected = (eventData) => {
     setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
@@ -324,6 +321,62 @@ function PlotGraph({
 
   const xControl = controlData.map((d) => d.timeofmeas);
   const yControl = controlData.map((d) => d.waterlevel);
+
+  const {data: pollData, refetch} = useQuery(
+    ['pollData', ts_id],
+    async () => {
+      const {data, status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
+      return status;
+    },
+    {
+      enabled: true,
+      refetchInterval: (status) => {
+        return status === 204 ? 1000 : false;
+      },
+      onSuccess: (status) => {
+        if (status === 200) {
+          queryClient.removeQueries(['graphData', ts_id]);
+          toast.update(toastId.current, {
+            render: 'Genberegnet',
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
+            autoClose: 2000,
+            closeOnClick: true,
+            draggable: true,
+            progress: undefined,
+            hideProgressBar: false,
+          });
+        }
+      },
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    }
+  );
+
+  const correctMutation = useMutation(
+    async (data) => {
+      const {data: res} = await apiClient.post(`/sensor_field/station/correct/${ts_id}`, data);
+      return res;
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          refetch();
+        }, 5000);
+        //handleXRangeChange({'xaxis.range[0]': undefined});
+      },
+    }
+  );
+
+  var rerunButton = {
+    name: 'Genkør data',
+    icon: rerunIcon,
+    click: function (gd) {
+      toastId.current = toast.loading('Genberegner...');
+      correctMutation.mutate({});
+    },
+  };
 
   var downloadButton = {
     name: 'Download data',
@@ -370,8 +423,8 @@ function PlotGraph({
       <Plot
         onSelected={handlePlotlySelected}
         //onRelayout={(e) => console.log('relayout', e)}
-        id="graph"
-        divId="graph"
+        id="qagraph"
+        divId="qagraph"
         data={[
           {
             x: reviewData?.x,
@@ -383,8 +436,8 @@ function PlotGraph({
             marker: {symbol: '100', size: '5', color: '#00FF00'},
           },
           {
-            x: graphData?.x,
-            y: graphData?.y,
+            x: graphData?.timeofmeas,
+            y: graphData?.measurement,
             name: graphData?.name,
             type: 'scattergl',
             line: {width: 2},
@@ -417,8 +470,8 @@ function PlotGraph({
         layout={{...layout, shapes: shapelist, annotations: annotateList}}
         config={{
           responsive: true,
-          buttons: [
-            [downloadButton, makeLinkButton],
+          modeBarButtons: [
+            [downloadButton, makeLinkButton, rerunButton],
             ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
           ],
 
@@ -427,16 +480,6 @@ function PlotGraph({
         }}
         useResizeHandler={true}
         style={{width: '100%', height: '100%'}}
-        // onClickAnnotation={(e) => {
-        //   console.log(e);
-        // }}
-        // onClick={(e) => {
-        //   console.log(e);
-        // }}
-        // onDoubleClick={(e) => {
-        //   console.log(e);
-        // }}
-        onInitialized={(figure) => {}}
       />
     </div>
   );
@@ -448,11 +491,21 @@ export default function QAGraph({stationId, measurements}) {
 
   const [annotationConfiguration, setAnnotationConfiguration] = useState({
     active: false,
-    label: 0,
+    label: 1,
   });
 
   const [reviewData, setReviewData] = useState({x: [], y: []});
-  console.log('reviewData', reviewData);
+
+  const {data: label_options} = useQuery(['label_options'], async () => {
+    const {data} = await apiClient.get(`/sensor_admin/label_options`);
+    return data;
+  });
+
+  const labelMutation = useMutation(async (data) => {
+    const {data: res} = await apiClient.post(`/sensor_admin/qa_labels/${stationId}`, data);
+    return res;
+  });
+
   const {data: graphData} = useQuery(
     ['graphData', stationId],
     async ({signal}) => {
@@ -472,12 +525,11 @@ export default function QAGraph({stationId, measurements}) {
 
   const [previewData, setPreviewData] = useState({oldDate: moment(), newDate: moment(), data: {}});
 
-  console.log('previewData', previewData);
-
   const {
     data: qaData,
     isLoading,
     error,
+    refetch,
   } = useQuery(['qa_labels', stationId], async ({signal}) => {
     const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
       signal,
@@ -496,10 +548,6 @@ export default function QAGraph({stationId, measurements}) {
             marginTop: '-10px',
             paddingTop: '5px',
             border: '2px solid gray',
-            // position: "-webkit-sticky",
-            // position: "sticky",
-            // top: 20,
-            // zIndex: 100,
           }}
         >
           <PlotGraph
@@ -509,6 +557,8 @@ export default function QAGraph({stationId, measurements}) {
             qaData={qaData}
             setPreviewData={setPreviewData}
             annotationConfiguration={annotationConfiguration}
+            ts_id={stationId}
+            labelMutation={labelMutation}
           />
         </div>
       </Grid>
@@ -517,6 +567,7 @@ export default function QAGraph({stationId, measurements}) {
         <AnnotationConfiguration
           annotationConfiguration={annotationConfiguration}
           setAnnotationConfiguration={setAnnotationConfiguration}
+          label_options={label_options}
         />
       </Grid>
       {/* <GraphForms
