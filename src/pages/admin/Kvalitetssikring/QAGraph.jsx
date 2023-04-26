@@ -5,13 +5,15 @@ import moment from 'moment';
 import axios from 'axios';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/pages/field/fieldAPI';
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, memo} from 'react';
 import {Typography, Alert, Grid} from '@mui/material';
 import GraphForms from './GraphForms';
 import QAHistory from './QAHistory';
 import AnnotationConfiguration from './AnnotationConfiguration';
 import {toast} from 'react-toastify';
 import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
+import {useSetAtom} from 'jotai';
+import {qaSelection} from 'src/state/atoms';
 
 const selectorOptions = {
   buttons: [
@@ -162,6 +164,13 @@ const layout3 = {
   },
 };
 
+const LABEL_COLORS = {
+  null: '#666666',
+  1: '#00FF00',
+  2: '#0000FF',
+  3: '#FF0000',
+};
+
 const transformQAData = (data) => {
   var shapelist = data?.map((d) => {
     if (d.enddate == null) {
@@ -173,7 +182,7 @@ const transformQAData = (data) => {
         y1: 1,
         yref: 'paper',
         line: {
-          color: 'blue',
+          color: LABEL_COLORS[d.label_id],
           width: 1.5,
           dash: 'dot',
         },
@@ -187,7 +196,7 @@ const transformQAData = (data) => {
         y0: 0,
         y1: 1,
         yref: 'paper',
-        fillcolor: 'lightgray',
+        fillcolor: LABEL_COLORS[d.label_id],
         opacity: 0.6,
         line: {
           width: 0,
@@ -237,14 +246,14 @@ function PlotGraph({
   annotationConfiguration,
   labelMutation,
 }) {
-  const [selectedData, setSelectedData] = useState([{x: [], y: []}]);
+  const setSelection = useSetAtom(qaSelection);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
-  const selectedDataFix = {
-    x: [],
-    y: [],
-  };
+  // const selectedDataFix = {
+  //   x: [],
+  //   y: [],
+  // };
 
   const toastId = useRef(null);
 
@@ -259,7 +268,7 @@ function PlotGraph({
     const closest = qaData
       ?.map((d, index) => {
         if (d.enddate == null) {
-          return [Math.abs(moment(x).diff(moment(d.startdate), 'minutes')) < 60 * 24, index];
+          return [Math.abs(moment(x).diff(moment(d.startdate), 'minutes')), index];
         } else {
           return [
             moment(x).isAfter(moment(d.startdate)) && moment(x).isBefore(moment(d.enddate))
@@ -275,14 +284,20 @@ function PlotGraph({
       .filter((d) => d[0] === true || typeof d[0] === 'number')
       .sort((a, b) => a[0] - b[0]);
 
+    console.log('closest', closest);
     if (closest?.[0]?.[1] != null && annotationConfiguration.active) {
       const data = qaData[closest?.[0]?.[1]];
-      labelMutation.mutate({
-        algorithm: data.algorithm,
-        enddate: moment(data.enddate).toISOString(),
-        startdate: moment(data.startdate).toISOString(),
-        label_id: annotationConfiguration?.label,
-      });
+
+      labelMutation.mutate([
+        {
+          algorithm: data.algorithm,
+          enddate: data.enddate
+            ? moment(data.enddate).format('YYYY-MM-DDTHH:mm:ss')
+            : moment(data.startdate).format('YYYY-MM-DDTHH:mm:ss'),
+          startdate: moment(data.startdate).format('YYYY-MM-DDTHH:mm:ss'),
+          label_id: annotationConfiguration?.label,
+        },
+      ]);
     }
   };
 
@@ -297,26 +312,29 @@ function PlotGraph({
   }, [qaData, annotationConfiguration]);
 
   const handlePlotlySelected = (eventData) => {
-    setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
-    const dates = selectedData.map((pt) => moment(pt[0].x));
-    console.log('dates: ', dates);
-    if (dates.length > 0) {
-      const sortedDates = dates.sort((a, b) => moment(a) - moment(b));
+    console.log(eventData.points);
+    setSelection(eventData.points.map((pt) => pt.x));
 
-      console.log('OLDEST Date', sortedDates[0]);
-      const oldDate = sortedDates[0];
-      console.log('NEWEST Date', sortedDates[sortedDates.length - 1]);
-      const newDate = sortedDates[sortedDates.length - 1];
+    // setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
+    // const dates = selectedData.map((pt) => moment(pt[0].x));
+    // console.log('dates: ', dates);
+    // if (dates.length > 0) {
+    //   const sortedDates = dates.sort((a, b) => moment(a) - moment(b));
 
-      Object.values(selectedData).forEach((arr) => {
-        arr.forEach((obj) => {
-          selectedDataFix.x.push(moment(obj.x).format());
-          selectedDataFix.y.push(obj.y);
-        });
-      });
+    //   console.log('OLDEST Date', sortedDates[0]);
+    //   const oldDate = sortedDates[0];
+    //   console.log('NEWEST Date', sortedDates[sortedDates.length - 1]);
+    //   const newDate = sortedDates[sortedDates.length - 1];
 
-      setPreviewData({oldDate, newDate, selectedDataFix});
-    }
+    //   Object.values(selectedData).forEach((arr) => {
+    //     arr.forEach((obj) => {
+    //       selectedDataFix.x.push(moment(obj.x).format());
+    //       selectedDataFix.y.push(obj.y);
+    //     });
+    //   });
+
+    //   setPreviewData({oldDate, newDate, selectedDataFix});
+    // }
   };
 
   const xControl = controlData.map((d) => d.timeofmeas);
@@ -467,7 +485,7 @@ function PlotGraph({
             marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
           },
         ]}
-        layout={{...layout, shapes: shapelist, annotations: annotateList}}
+        layout={{...layout, shapes: shapelist, annotations: annotateList, uirevision: 'true'}}
         config={{
           responsive: true,
           modeBarButtons: [
@@ -492,6 +510,7 @@ export default function QAGraph({stationId, measurements}) {
   const [annotationConfiguration, setAnnotationConfiguration] = useState({
     active: false,
     label: 1,
+    annotateDateRange: true,
   });
 
   const [reviewData, setReviewData] = useState({x: [], y: []});
@@ -551,6 +570,7 @@ export default function QAGraph({stationId, measurements}) {
           }}
         >
           <PlotGraph
+            key={'plotgraph'}
             graphData={graphData}
             reviewData={reviewData}
             controlData={measurements}
@@ -568,6 +588,7 @@ export default function QAGraph({stationId, measurements}) {
           annotationConfiguration={annotationConfiguration}
           setAnnotationConfiguration={setAnnotationConfiguration}
           label_options={label_options}
+          labelMutation={labelMutation}
         />
       </Grid>
       {/* <GraphForms
