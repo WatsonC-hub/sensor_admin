@@ -454,8 +454,8 @@ function PlotGraph({
             marker: {symbol: '100', size: '5', color: '#00FF00'},
           },
           {
-            x: graphData?.timeofmeas,
-            y: graphData?.measurement,
+            x: graphData?.x,
+            y: graphData?.y,
             name: graphData?.name,
             type: 'scattergl',
             line: {width: 2},
