@@ -20,6 +20,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {metadataSchema} from 'src/helpers/zodSchemas';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm, FormProvider, useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
 
 const flex1 = {
   display: 'flex',
@@ -194,7 +195,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
   });
 
   const {
-    formState: {errors, isSubmitSuccessful, values},
+    formState: {errors, isSubmitSuccessful, values, isSubmitting},
     reset,
     watch,
     getValues,
@@ -235,8 +236,15 @@ export default function OpretStamdata({setAddStationDisabled}) {
         ...getValues()?.watlevmp,
       };
     }
-    // console.log(form);
-    stamdataNewMutation.mutate(form);
+
+    toast.promise(stamdataNewMutation.mutateAsync(form), {
+      loading: 'Opretter stamdata...',
+      success: (data) => {
+        navigate(`/field`);
+        return 'Stamdata oprettet!';
+      },
+      error: 'Noget gik galt!',
+    });
   };
 
   const watchtstype_id = watch('timeseries.tstype_id');
@@ -276,6 +284,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 variant="contained"
                 onClick={handleSubmit(handleOpret, handleDebug)}
                 startIcon={<SaveIcon />}
+                disabled={isSubmitting}
               >
                 Gem
               </Button>
