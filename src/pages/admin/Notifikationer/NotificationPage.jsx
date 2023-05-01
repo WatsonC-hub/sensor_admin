@@ -32,7 +32,7 @@ const getNavigation = (item) => {
 };
 
 const colors = ['Grøn', 'Gul', 'Orange', 'Rød'];
-const selectFiltersAtom = atom([0, 1, 2, 3]);
+const selectFiltersAtom = atom([]);
 const lassoFilterAtom = atom(new Set());
 
 const NotificationPage = () => {
@@ -73,13 +73,18 @@ const NotificationPage = () => {
       sortBy(
         data?.filter(
           (item) =>
-            selectFilters.includes(item.flag) && item.is_customer_service === isCustomerService
+            selectFilters.includes(item.color) && item.is_customer_service === isCustomerService
         ),
         [(item) => (item.status ? item.status : ''), (item) => item.flag]
       )
     );
     setMapdata(uniqBy(sorted, 'locid'));
   }, [selectFilters, isCustomerService, data]);
+
+  const colorsnew = uniqBy(data, 'color').map((item) => item.color);
+  useEffect(() => {
+    setSelectFilters(colorsnew);
+  }, [data]);
 
   const trelloMutate = useMutation(async (data) => {
     const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
@@ -110,10 +115,7 @@ const NotificationPage = () => {
     const {
       target: {value},
     } = event;
-    setSelectFilters(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
+    setSelectFilters(typeof value === 'string' ? value.split(',') : value);
   };
 
   return (
@@ -131,7 +133,8 @@ const NotificationPage = () => {
               {selected.map((value) => (
                 <Chip
                   key={value}
-                  label={colors[value]}
+                  // label={colors[value]}
+                  sx={{bgcolor: value}}
                   onMouseDown={(e) => e.stopPropagation()}
                   onDelete={() => setSelectFilters(selectFilters.filter((item) => item !== value))}
                 />
@@ -139,9 +142,19 @@ const NotificationPage = () => {
             </Box>
           )}
         >
-          {colors.map((name, index) => (
-            <MenuItem key={name} value={index}>
-              {name}
+          {colorsnew?.map((name, index) => (
+            <MenuItem
+              key={name}
+              value={name}
+              sx={{
+                // set background color of Mui MenuItem
+                bgcolor: name,
+                '&:hover': {bgcolor: name},
+                '&.Mui-selected': {bgcolor: name},
+                '&.Mui-selected:hover': {bgcolor: 'transparent'},
+              }}
+            >
+              Opgave
             </MenuItem>
           ))}
         </Select>

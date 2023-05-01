@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Grid, MenuItem, TextField} from '@mui/material';
 
 import {useQuery} from '@tanstack/react-query';
 import FormTextField from './FormTextField';
 import {apiClient} from 'src/apiClient';
+import FormInput from 'src/components/FormInput';
 
-export default function LocationTypeSelect({selectedLocationType, onChange, disabled}) {
+export default function LocationTypeSelect({disable}) {
   const {data} = useQuery(
     ['location_types'],
     async () => {
@@ -19,17 +20,17 @@ export default function LocationTypeSelect({selectedLocationType, onChange, disa
     }
   );
 
-  const handleSelection = (event) => {
-    onChange(event);
-  };
-
   return (
-    <FormTextField
-      disabled={disabled}
+    <FormInput
+      name="location.loctype_id"
+      label="Lokationstype"
       select
-      value={selectedLocationType}
-      onChange={handleSelection}
-      label="Lokation type"
+      required
+      fullWidth
+      sx={{
+        mb: 2,
+      }}
+      disabled={disable}
     >
       <MenuItem value={-1} key={-1}>
         Vælg type
@@ -39,6 +40,6 @@ export default function LocationTypeSelect({selectedLocationType, onChange, disa
           {item.loctypename}
         </MenuItem>
       ))}
-    </FormTextField>
+    </FormInput>
   );
 }

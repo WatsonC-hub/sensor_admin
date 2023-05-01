@@ -4,6 +4,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {Typography, Box} from '@mui/material';
 
 const MinimalSelect = ({locid, stationList}) => {
   const params = useParams();
@@ -55,9 +56,9 @@ const MinimalSelect = ({locid, stationList}) => {
         '& .MuiSelect-selectMenu': {
           backgroundColor: 'blue',
         },
-
         backgroundColor: 'transparent',
         boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.14)',
+        height: '35px',
       }}
     >
       {stationList &&
@@ -78,11 +79,10 @@ const MinimalSelect = ({locid, stationList}) => {
                 },
               }}
             >
-              {station.ts_name}
+              {(station.prefix ? station.prefix + ' - ' : '') + ' ' + station.tstype_name}
             </MenuItem>
           ))}
     </Select>
-    // </FormControl>
   );
 };
 

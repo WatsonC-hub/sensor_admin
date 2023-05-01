@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {
   Container,
   Grid,
@@ -11,9 +11,6 @@ import {
   DialogContent,
   DialogActions,
   Box,
-  AppBar,
-  Tab,
-  Tabs,
   CardContent,
   Card,
 } from '@mui/material';
@@ -21,53 +18,24 @@ import 'date-fns';
 import OwnDatePicker from '../../../components/OwnDatePicker';
 import {useTheme} from '@mui/material/styles';
 import LocationForm from '../Stamdata/components/LocationForm';
-import StationForm from '../Stamdata/components/StationForm';
-import UdstyrForm from '../Stamdata/components/UdstyrForm';
+import TimeseriesForm from '../Stamdata/components/TimeseriesForm';
+import UnitForm from '../Stamdata/components/UnitForm';
 import {updateStamdata, apiClient} from 'src/pages/field/fieldAPI';
-import AddUdstyrForm from '../Stamdata/AddUdstyrForm';
+import AddUnitForm from '../Stamdata/AddUnitForm';
 import SaveIcon from '@mui/icons-material/Save';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import {Swiper, SwiperSlide} from 'swiper/react';
-import 'swiper/css';
+import {SwiperSlide} from 'swiper/react';
+
 import {stamdataStore} from '../../../state/store';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
-import useBreakpoints from 'src/hooks/useBreakpoints';
+
 import useMediaQuery from '@mui/material/useMediaQuery';
-
-function TabPanel(props) {
-  const {children, value, index, ...other} = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
-  };
-}
+import {metadataPutSchema} from 'src/helpers/zodSchemas';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm, FormProvider, useFormContext} from 'react-hook-form';
+import SwiperInstance from './SwiperInstance';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
   const [date, setdate] = useState(new Date());
@@ -137,6 +105,8 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
     store.setUnit,
   ]);
 
+  const formMethods = useFormContext();
+
   const {data} = useQuery(
     ['udstyr', stationId],
     async () => {
@@ -151,14 +121,14 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
   );
 
   const handleChange = (event) => {
-    setUnit(data.filter((elem) => elem.gid === event.target.value)[0]);
+    const localUnit = data.filter((elem) => elem.gid === event.target.value)[0];
+    setUnit(localUnit);
     setselected(event.target.value);
-  };
-
-  const flex1 = {
-    display: 'flex',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
+    formMethods.setValue('unit', {
+      unit_uuid: localUnit.uuid,
+      startdate: localUnit.startdato,
+      enddate: localUnit.slutdato,
+    });
   };
 
   return (
@@ -174,11 +144,11 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
             let endDate =
               moment(new Date()) < moment(item.slutdato)
                 ? 'nu'
-                : moment(item.slutdato).format('YYYY-MM-DD HH:mm');
+                : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
 
             return (
               <MenuItem id={item.gid} key={item.gid} value={item.gid}>
-                {`${moment(item.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
+                {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
               </MenuItem>
             );
           })}
@@ -214,7 +184,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
         setUdstyrValue={setUnitValue}
         stationId={stationId}
       />
-      <AddUdstyrForm
+      <AddUnitForm
         udstyrDialogOpen={openAddUdstyr}
         setUdstyrDialogOpen={setOpenAddUdstyr}
         tstype_id={tstype_id}
@@ -224,7 +194,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
   );
 };
 
-export default function EditStamdata({setFormToShow, stationId}) {
+export default function EditStamdata({setFormToShow, ts_id, metadata}) {
   const [selectedUnit, setSelectedUnit] = useState('');
 
   const [location, timeseries, unit] = stamdataStore((store) => [
@@ -233,55 +203,69 @@ export default function EditStamdata({setFormToShow, stationId}) {
     store.unit,
   ]);
 
-  const {isTouch} = useBreakpoints();
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
-  const [value, setValue] = React.useState(0);
-  const [swiper, setSwiper] = useState(null);
+
+  const metadataEditMutation = useMutation(
+    async (data) => {
+      const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
+      return out;
+    },
+    {
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(['stations', metadata.loc_id.toString()]);
+        queryClient.invalidateQueries(['udstyr', ts_id]);
+      },
+    }
+  );
+
+  const formMethods = useForm({
+    resolver: zodResolver(metadataPutSchema),
+    defaultValues: metadataPutSchema.safeParse({
+      location: {
+        ...metadata,
+      },
+      timeseries: {
+        ...metadata,
+      },
+      unit: {
+        ...metadata,
+        startdate: metadata?.startdato,
+        enddate: metadata?.slutdato,
+      },
+    }).data,
+  });
+
+  useEffect(() => {
+    formMethods.reset(
+      metadataPutSchema.safeParse({
+        location: {
+          ...metadata,
+        },
+        timeseries: {
+          ...metadata,
+        },
+        unit: {
+          ...metadata,
+          startdate: metadata?.startdato,
+          enddate: metadata?.slutdato,
+        },
+      }).data
+    );
+  }, [metadata]);
 
   useEffect(() => {
     window.scrollTo({top: 300, behavior: 'smooth'});
   }, []);
 
-  const handleSubmit = () => {
-    console.log(unit);
-
-    updateStamdata({
-      location,
-      station: timeseries,
-      udstyr: {...unit, gid: selectedUnit == '' ? -1 : selectedUnit},
-    })
-      .then((res) => {
-        console.log(res);
-        toast.success('Stamdata er opdateret');
-        queryClient.invalidateQueries(['udstyr', stationId]);
-      })
-      .catch((error) => {
-        toast.error('Der skete en fejl');
-      });
+  const handleUpdate = (values) => {
+    toast.promise(() => metadataEditMutation.mutateAsync(values), {
+      pending: 'Opdaterer stamdata...',
+      success: 'Stamdata er opdateret',
+      error: 'Der skete en fejl',
+    });
   };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-    if (swiper && event) {
-      swiper.allowSlidePrev = true;
-      swiper.allowSlideNext = true;
-      swiper.slideTo(newValue);
-    }
-  };
-
-  useEffect(() => {
-    if (swiper) {
-      // swiper.slideTo(0, 0, false);
-      swiper.activeIndex = 0;
-    }
-  }, [swiper]);
-
-  if (swiper) {
-    swiper.allowSlidePrev = isTouch;
-    swiper.allowSlideNext = isTouch;
-  }
 
   return (
     <Card
@@ -296,81 +280,59 @@ export default function EditStamdata({setFormToShow, stationId}) {
     >
       <CardContent>
         <Container fixed>
-          <Typography variant="h5" component="h3" style={{marginBottom: matches ? '3%' : '1%'}}>
-            Stamdata
-          </Typography>
-          <AppBar position="static" color="default" style={{marginBottom: '1%'}}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-              aria-label="full width tabs example"
-            >
-              <Tab label="Udstyr" {...a11yProps(0)} />
-              <Tab label="Lokalitet" {...a11yProps(1)} />
-              <Tab label="Station" {...a11yProps(2)} />
-            </Tabs>
-          </AppBar>
-          <Swiper
-            initialSlide={2}
-            onSwiper={(swiper) => {
-              setSwiper((prev) => {
-                setValue(0);
-                swiper.slideTo(0, 0, false);
-                return swiper;
-              });
-            }}
-            onSlideChange={(swiper) => handleChange(null, swiper.activeIndex)}
-          >
-            <SwiperSlide>
-              <Box style={{marginTop: matches ? '2%' : ''}}>
-                <UdstyrReplace
-                  stationId={stationId}
-                  selected={selectedUnit}
-                  setselected={setSelectedUnit}
-                />
-                <UdstyrForm mode="edit" />
-              </Box>
-            </SwiperSlide>
-            <SwiperSlide>
-              <LocationForm mode="edit" />
-            </SwiperSlide>
-            <SwiperSlide>
-              <StationForm />
-            </SwiperSlide>
-          </Swiper>
+          <FormProvider {...formMethods}>
+            <Typography variant="h5" component="h3" style={{marginBottom: matches ? '3%' : '1%'}}>
+              Stamdata
+            </Typography>
+            <SwiperInstance>
+              <SwiperSlide>
+                <Box style={{marginTop: matches ? '2%' : ''}}>
+                  <UdstyrReplace
+                    stationId={ts_id}
+                    selected={selectedUnit}
+                    setselected={setSelectedUnit}
+                  />
+                  <UnitForm mode="edit" />
+                </Box>
+              </SwiperSlide>
+              <SwiperSlide>
+                <LocationForm mode="edit" />
+              </SwiperSlide>
+              <SwiperSlide>
+                <TimeseriesForm />
+              </SwiperSlide>
+            </SwiperInstance>
 
-          <Grid
-            container
-            alignItems="center"
-            justifyContent="center"
-            style={{marginTop: matches ? '4%' : ''}}
-          >
-            <Grid item xs={4} sm={4}>
-              <Button
-                autoFocus
-                color="secondary"
-                variant="contained"
-                startIcon={<SaveIcon />}
-                onClick={handleSubmit}
-              >
-                Gem
-              </Button>
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="center"
+              style={{marginTop: matches ? '4%' : ''}}
+            >
+              <Grid item xs={4} sm={4}>
+                <Button
+                  autoFocus
+                  color="secondary"
+                  variant="contained"
+                  startIcon={<SaveIcon />}
+                  onClick={formMethods.handleSubmit(handleUpdate, handleUpdate)}
+                >
+                  Gem
+                </Button>
+              </Grid>
+              <Grid item xs={4} sm={4}>
+                <Button
+                  color="grey"
+                  variant="contained"
+                  onClick={() => {
+                    setFormToShow(null);
+                  }}
+                >
+                  Annuller
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={4} sm={4}>
-              <Button
-                color="grey"
-                variant="contained"
-                onClick={() => {
-                  setFormToShow(null);
-                }}
-              >
-                Annuller
-              </Button>
-            </Grid>
-          </Grid>
+          </FormProvider>
         </Container>
       </CardContent>
     </Card>

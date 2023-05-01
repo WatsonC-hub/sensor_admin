@@ -352,7 +352,7 @@ export default function Station({stationId, stamdata}) {
         />
       )}
       {formToShow === 'RET_STAMDATA' && (
-        <EditStamdata setFormToShow={setFormToShow} stationId={stationId} />
+        <EditStamdata setFormToShow={setFormToShow} ts_id={stationId} metadata={stamdata} />
       )}
       {formToShow === 'ADDMAALEPUNKT' && (
         <>

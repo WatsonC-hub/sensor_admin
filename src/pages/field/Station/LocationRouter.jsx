@@ -1,6 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
-import clsx from 'clsx';
-import {useTheme} from '@mui/material';
+import React from 'react';
+import {useTheme, Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -41,8 +40,6 @@ export default function LocationRouter() {
   return (
     <div>
       <CssBaseline />
-      {/* <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
-        <Toolbar> */}
       <AppBarLayout style={{}}>
         <IconButton
           color="inherit"
@@ -53,10 +50,11 @@ export default function LocationRouter() {
         >
           <KeyboardBackspaceIcon />
         </IconButton>
-        <MinimalSelect locid={params.locid} stationList={data} />
+        <Box>
+          <Typography pl={1.7}>{data?.[0].loc_name}</Typography>
+          <MinimalSelect locid={params.locid} stationList={data} />
+        </Box>
       </AppBarLayout>
-      {/* </Toolbar>
-      </AppBar> */}
 
       <main
         style={{
