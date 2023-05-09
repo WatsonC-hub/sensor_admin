@@ -47,12 +47,10 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
   };
 
   const takeHomeMutation = useMutation(
-    async () => {
+    async (payload) => {
       const {data} = await apiClient.patch(
         `/sensor_field/stamdata/unit_history/${stationId}/${unit.gid}`,
-        {
-          enddate: moment(date).format('YYYY-MM-DD HH:mm'),
-        }
+        payload
       );
       return data;
     },
@@ -77,7 +75,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
             color="secondary"
             variant="contained"
             startIcon={<SaveIcon />}
-            onClick={takeHomeMutation.mutate}
+            onClick={() => takeHomeMutation.mutate({enddate: moment(date).toISOString()})}
           >
             Gem
           </Button>
@@ -116,7 +114,17 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
     {
       onSuccess: (data) => {
         setselected(data[0].gid);
+        formMethods.setValue('unit', {
+          unit_uuid: data[0].uuid,
+          startdate: data[0].startdato,
+          enddate: data[0].slutdato,
+        });
       },
+      refetchInterval: 10000,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchIntervalInBackground: false,
+      refetchOnReconnect: false,
     }
   );
 
