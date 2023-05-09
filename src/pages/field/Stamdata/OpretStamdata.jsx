@@ -215,7 +215,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
     console.log('error', error);
   };
 
-  const handleOpret = () => {
+  const handleOpret = async () => {
     setAddStationDisabled(false);
     let form = {
       location: {
@@ -237,14 +237,16 @@ export default function OpretStamdata({setAddStationDisabled}) {
       };
     }
 
-    toast.promise(stamdataNewMutation.mutateAsync(form), {
-      loading: 'Opretter stamdata...',
-      success: (data) => {
-        navigate(`/field`);
-        return 'Stamdata oprettet!';
-      },
-      error: 'Noget gik galt!',
-    });
+    try {
+      await toast.promise(() => stamdataNewMutation.mutateAsync(form), {
+        pending: 'Opretter stamdata...',
+        success: 'Stamdata oprettet!',
+        error: 'Noget gik galt!',
+      });
+      navigate(`/field`);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const watchtstype_id = watch('timeseries.tstype_id');
