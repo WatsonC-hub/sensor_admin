@@ -9,6 +9,7 @@ import FormInput from 'src/components/FormInput';
 import * as z from 'zod';
 import DeleteAlert from 'src/pages/field/Station/DeleteAlert';
 import {useEffect} from 'react';
+import {toast} from 'react-toastify';
 
 const AlgorithmCard = ({algorithm}) => {
   const params = useParams();
@@ -38,7 +39,11 @@ const AlgorithmCard = ({algorithm}) => {
       parameters: data,
     };
     console.log(payload);
-    submitData.mutate(payload);
+    toast.promise(() => submitData.mutateAsync(payload), {
+      pending: 'Gemmer indstillinger',
+      success: 'Indstillinger gemt',
+      error: 'Der skete en fejl',
+    });
   };
 
   const schema = useMemo(() => {

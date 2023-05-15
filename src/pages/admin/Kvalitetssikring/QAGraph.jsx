@@ -6,12 +6,18 @@ import axios from 'axios';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/pages/field/fieldAPI';
 import React, {useEffect, useState, useRef, memo} from 'react';
-import {Typography, Alert, Grid} from '@mui/material';
+import {Typography, Alert, Grid, Button} from '@mui/material';
 import GraphForms from './GraphForms';
 import QAHistory from './QAHistory';
 import AnnotationConfiguration from './AnnotationConfiguration';
 import {toast} from 'react-toastify';
-import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
+import {
+  downloadIcon,
+  rerunIcon,
+  rawDataIcon,
+  makeLinkIcon,
+  rerunQAIcon,
+} from 'src/helpers/plotlyIcons';
 import {useSetAtom} from 'jotai';
 import {qaSelection} from 'src/state/atoms';
 
@@ -235,17 +241,7 @@ const transformQAData = (data) => {
   return {shapelist, annotateList};
 };
 
-function PlotGraph({
-  graphData,
-  reviewData,
-  controlData,
-  dynamicMeasurement,
-  qaData,
-  setPreviewData,
-  ts_id,
-  annotationConfiguration,
-  labelMutation,
-}) {
+function PlotGraph({graphData, reviewData, controlData, dynamicMeasurement, qaData, ts_id}) {
   const setSelection = useSetAtom(qaSelection);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -259,82 +255,61 @@ function PlotGraph({
 
   const queryClient = useQueryClient();
 
-  const eventHandler = (evt) => {
-    var bb = evt.target.getBoundingClientRect();
-    const gd = document.getElementById('qagraph');
-    var x = gd._fullLayout.xaxis.p2d(evt.clientX - bb.left);
-    var y = gd._fullLayout.yaxis.p2d(evt.clientY - bb.top);
+  // const eventHandler = (evt) => {
+  //   var bb = evt.target.getBoundingClientRect();
+  //   const gd = document.getElementById('qagraph');
+  //   var x = gd._fullLayout.xaxis.p2d(evt.clientX - bb.left);
+  //   var y = gd._fullLayout.yaxis.p2d(evt.clientY - bb.top);
 
-    const closest = qaData
-      ?.map((d, index) => {
-        if (d.enddate == null) {
-          return [Math.abs(moment(x).diff(moment(d.startdate), 'minutes')), index];
-        } else {
-          return [
-            moment(x).isAfter(moment(d.startdate)) && moment(x).isBefore(moment(d.enddate))
-              ? Math.min(
-                  Math.abs(moment(x).diff(moment(d.startdate), 'minutes')),
-                  Math.abs(moment(x).diff(moment(d.enddate), 'minutes'))
-                )
-              : false,
-            index,
-          ];
-        }
-      })
-      .filter((d) => d[0] === true || typeof d[0] === 'number')
-      .sort((a, b) => a[0] - b[0]);
+  //   const closest = qaData
+  //     ?.map((d, index) => {
+  //       if (d.enddate == null) {
+  //         return [Math.abs(moment(x).diff(moment(d.startdate), 'minutes')), index];
+  //       } else {
+  //         return [
+  //           moment(x).isAfter(moment(d.startdate)) && moment(x).isBefore(moment(d.enddate))
+  //             ? Math.min(
+  //                 Math.abs(moment(x).diff(moment(d.startdate), 'minutes')),
+  //                 Math.abs(moment(x).diff(moment(d.enddate), 'minutes'))
+  //               )
+  //             : false,
+  //           index,
+  //         ];
+  //       }
+  //     })
+  //     .filter((d) => d[0] === true || typeof d[0] === 'number')
+  //     .sort((a, b) => a[0] - b[0]);
 
-    console.log('closest', closest);
-    if (closest?.[0]?.[1] != null && annotationConfiguration.active) {
-      const data = qaData[closest?.[0]?.[1]];
+  //   console.log('closest', closest);
+  //   if (closest?.[0]?.[1] != null && annotationConfiguration.active) {
+  //     const data = qaData[closest?.[0]?.[1]];
 
-      labelMutation.mutate([
-        {
-          algorithm: data.algorithm,
-          enddate: data.enddate
-            ? moment(data.enddate).format('YYYY-MM-DDTHH:mm:ss')
-            : moment(data.startdate).format('YYYY-MM-DDTHH:mm:ss'),
-          startdate: moment(data.startdate).format('YYYY-MM-DDTHH:mm:ss'),
-          label_id: annotationConfiguration?.label,
-        },
-      ]);
-    }
-  };
+  //     labelMutation.mutate([
+  //       {
+  //         algorithm: data.algorithm,
+  //         enddate: data.enddate
+  //           ? moment(data.enddate).format('YYYY-MM-DDTHH:mm:ss')
+  //           : moment(data.startdate).format('YYYY-MM-DDTHH:mm:ss'),
+  //         startdate: moment(data.startdate).format('YYYY-MM-DDTHH:mm:ss'),
+  //         label_id: annotationConfiguration?.label,
+  //       },
+  //     ]);
+  //   }
+  // };
 
-  // Add event listener for mouse click on plot
-  useEffect(() => {
-    const plot = document.getElementById('qagraph');
-    plot?.addEventListener('mousedown', eventHandler);
-    return () => {
-      const plot = document.getElementById('qagraph');
-      plot?.removeEventListener('mousedown', eventHandler);
-    };
-  }, [qaData, annotationConfiguration]);
+  // // Add event listener for mouse click on plot
+  // useEffect(() => {
+  //   const plot = document.getElementById('qagraph');
+  //   plot?.addEventListener('mousedown', eventHandler);
+  //   return () => {
+  //     const plot = document.getElementById('qagraph');
+  //     plot?.removeEventListener('mousedown', eventHandler);
+  //   };
+  // }, [qaData, annotationConfiguration]);
 
   const handlePlotlySelected = (eventData) => {
     console.log(eventData.points);
     setSelection(eventData.points.map((pt) => pt.x));
-
-    // setSelectedData(eventData.points.map((pt) => [{x: pt.x, y: pt.y}]));
-    // const dates = selectedData.map((pt) => moment(pt[0].x));
-    // console.log('dates: ', dates);
-    // if (dates.length > 0) {
-    //   const sortedDates = dates.sort((a, b) => moment(a) - moment(b));
-
-    //   console.log('OLDEST Date', sortedDates[0]);
-    //   const oldDate = sortedDates[0];
-    //   console.log('NEWEST Date', sortedDates[sortedDates.length - 1]);
-    //   const newDate = sortedDates[sortedDates.length - 1];
-
-    //   Object.values(selectedData).forEach((arr) => {
-    //     arr.forEach((obj) => {
-    //       selectedDataFix.x.push(moment(obj.x).format());
-    //       selectedDataFix.y.push(obj.y);
-    //     });
-    //   });
-
-    //   setPreviewData({oldDate, newDate, selectedDataFix});
-    // }
   };
 
   const xControl = controlData.map((d) => d.timeofmeas);
@@ -387,12 +362,68 @@ function PlotGraph({
     }
   );
 
+  const {data: qaPoll, refetch: refechQA} = useQuery(
+    ['pollData', ts_id],
+    async () => {
+      const {data, status} = await apiClient.get(`/sensor_admin/rerun_qa/poll/${ts_id}`);
+      return status;
+    },
+    {
+      enabled: true,
+      refetchInterval: (status) => {
+        return status === 204 ? 1000 : false;
+      },
+      onSuccess: (status) => {
+        if (status === 200) {
+          queryClient.invalidateQueries(['qa_labels']);
+          toast.update(toastId.current, {
+            render: 'Genkørt',
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
+            autoClose: 2000,
+            closeOnClick: true,
+            draggable: true,
+            progress: undefined,
+            hideProgressBar: false,
+          });
+        }
+      },
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    }
+  );
+
+  const rerunQAMutation = useMutation(
+    async (data) => {
+      const {data: res} = await apiClient.post(`/sensor_admin/rerun_qa/${ts_id}`, data);
+      return res;
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          refechQA();
+        }, 5000);
+        //handleXRangeChange({'xaxis.range[0]': undefined});
+      },
+    }
+  );
+
   var rerunButton = {
     name: 'Genkør data',
     icon: rerunIcon,
     click: function (gd) {
       toastId.current = toast.loading('Genberegner...');
       correctMutation.mutate({});
+    },
+  };
+
+  var rerunQAButton = {
+    name: 'Genkør QA',
+    icon: rerunQAIcon,
+    click: function (gd) {
+      toastId.current = toast.loading('Genkører kvalitetssikring...');
+      rerunQAMutation.mutate({});
     },
   };
 
@@ -445,15 +476,6 @@ function PlotGraph({
         divId="qagraph"
         data={[
           {
-            x: reviewData?.x,
-            y: reviewData?.y,
-            name: 'Preview',
-            type: 'scattergl',
-            line: {width: 2},
-            mode: 'lines+markers',
-            marker: {symbol: '100', size: '5', color: '#00FF00'},
-          },
-          {
             x: graphData?.x,
             y: graphData?.y,
             name: graphData?.name,
@@ -489,7 +511,7 @@ function PlotGraph({
         config={{
           responsive: true,
           modeBarButtons: [
-            [downloadButton, makeLinkButton, rerunButton],
+            [rerunQAButton, downloadButton, makeLinkButton, rerunButton],
             ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
           ],
 
@@ -513,8 +535,6 @@ export default function QAGraph({stationId, measurements}) {
     annotateDateRange: true,
   });
 
-  const [reviewData, setReviewData] = useState({x: [], y: []});
-
   const {data: label_options} = useQuery(['label_options'], async () => {
     const {data} = await apiClient.get(`/sensor_admin/label_options`);
     return data;
@@ -522,6 +542,11 @@ export default function QAGraph({stationId, measurements}) {
 
   const labelMutation = useMutation(async (data) => {
     const {data: res} = await apiClient.post(`/sensor_admin/qa_labels/${stationId}`, data);
+    return res;
+  });
+
+  const handledMutation = useMutation(async (data) => {
+    const {data: res} = await apiClient.post(`/sensor_admin/qa_handled/${stationId}`);
     return res;
   });
 
@@ -541,8 +566,6 @@ export default function QAGraph({stationId, measurements}) {
       refetchInterval: false,
     }
   );
-
-  const [previewData, setPreviewData] = useState({oldDate: moment(), newDate: moment(), data: {}});
 
   const {
     data: qaData,
@@ -572,10 +595,8 @@ export default function QAGraph({stationId, measurements}) {
           <PlotGraph
             key={'plotgraph'}
             graphData={graphData}
-            reviewData={reviewData}
             controlData={measurements}
             qaData={qaData}
-            setPreviewData={setPreviewData}
             annotationConfiguration={annotationConfiguration}
             ts_id={stationId}
             labelMutation={labelMutation}
@@ -583,7 +604,20 @@ export default function QAGraph({stationId, measurements}) {
         </div>
       </Grid>
       <Grid item xs={2} sm={2}>
-        <QAHistory />
+        <Button
+          ml={1}
+          color="secondary"
+          variant="contained"
+          onClick={async () => {
+            toast.promise(() => handledMutation.mutateAsync(), {
+              pending: 'Markerer som færdighåndteret',
+              success: 'Færdighåndteret',
+              error: 'Fejl',
+            });
+          }}
+        >
+          Færdighåndteret til nu
+        </Button>
         <AnnotationConfiguration
           annotationConfiguration={annotationConfiguration}
           setAnnotationConfiguration={setAnnotationConfiguration}

@@ -15,8 +15,9 @@ import {
   RadioGroup,
   FormControl,
   FormLabel,
+  Divider,
 } from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue} from 'jotai';
 import {qaSelection} from 'src/state/atoms';
 import moment from 'moment';
@@ -29,19 +30,28 @@ const AnnotationConfiguration = ({
 }) => {
   const selection = useAtomValue(qaSelection);
 
+  const queryClient = useQueryClient();
+
   const handleSelectionAnnotate = () => {
     if (annotationConfiguration.annotateDateRange) {
       // Annotate date range
       const moments = selection.map((d) => moment(d));
       const startdate = moment.min(moments).format('YYYY-MM-DD HH:mm:ss');
       const enddate = moment.max(moments).format('YYYY-MM-DD HH:mm:ss');
-      labelMutation.mutate([
+      labelMutation.mutate(
+        [
+          {
+            label_id: annotationConfiguration?.label,
+            startdate,
+            enddate,
+          },
+        ],
         {
-          label_id: annotationConfiguration?.label,
-          startdate,
-          enddate,
-        },
-      ]);
+          onSuccess: () => {
+            queryClient.invalidateQueries(['qa_labels']);
+          },
+        }
+      );
     } else {
       // Annotate point selection
       const payload = selection.map((d) => ({
@@ -71,11 +81,19 @@ const AnnotationConfiguration = ({
       <CardContent
         sx={{
           p: 1,
-          m: 0,
+          m: 1,
           flexDirection: 'column',
           display: 'flex',
         }}
       >
+        {/* <Typography
+          sx={{
+            flexDirection: 'column',
+            display: 'flex',
+          }}
+        >
+          Annoter tidsserien
+        </Typography> */}
         <TextField
           value={annotationConfiguration.label}
           name="label"
@@ -94,7 +112,8 @@ const AnnotationConfiguration = ({
             </MenuItem>
           ))}
         </TextField>
-        <Typography>Annoter algoritme output</Typography>
+
+        {/* <Typography>Annoter algoritme output</Typography>
         <FormControlLabel
           control={
             <Checkbox
@@ -108,9 +127,8 @@ const AnnotationConfiguration = ({
             />
           }
           label="Aktiver"
-        />
+        /> */}
 
-        <Typography>Annoter selektion</Typography>
         <FormControl>
           <RadioGroup
             aria-labelledby="demo-controlled-radio-buttons-group"
@@ -128,6 +146,7 @@ const AnnotationConfiguration = ({
           </RadioGroup>
         </FormControl>
         <Button
+          p={2}
           color="primary"
           variant="contained"
           onClick={() => {
