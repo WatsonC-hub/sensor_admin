@@ -13,10 +13,13 @@ import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
 import HeightIcon from '@mui/icons-material/Height';
 import {FixedSizeList} from 'react-window';
 import useWindowDimensions from '../../../hooks/useWindowDimensions';
+import {atom, useAtom} from 'jotai';
+
+const typeAheadAtom = atom('');
 
 export default function StationList({data}) {
   const navigate = useNavigate();
-  const [typeAhead, settypeAhead] = useState('');
+  const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
   const {height, width} = useWindowDimensions();
 
   const handleClick = (elem) => {
