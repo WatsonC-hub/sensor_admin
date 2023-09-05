@@ -44,7 +44,9 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
       return data;
     },
-    {enabled: iotAccess}
+    {enabled: iotAccess,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const {data: boreholetabledata, boreholeIsLoading} = useQuery(

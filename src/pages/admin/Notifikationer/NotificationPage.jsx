@@ -41,8 +41,9 @@ const NotificationPage = () => {
   const [selectFilters, setSelectFilters] = useAtom(selectFiltersAtom);
   const [isCustomerService, setIsCustomerService] = useState(false);
 
+
   const queryClient = useQueryClient();
-  const {data, isLoading, error} = useQuery(
+  const {data, isLoading, isPlaceholderData} = useQuery(
     ['overblik'],
     async ({signal}) => {
       const {data} = await apiClient.get(`/sensor_admin/overblik`, {
@@ -82,14 +83,15 @@ const NotificationPage = () => {
   }, [selectFilters, isCustomerService, data]);
 
   const colorsnew = uniqBy(data, 'color').map((item) => item.color);
+
   useEffect(() => {
     setSelectFilters(colorsnew);
-  }, [data]);
+  }, [isPlaceholderData]);
 
   const trelloMutate = useMutation(async (data) => {
-    const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
+    // const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
     const {data: out2} = await apiClient.post(`/sensor_admin/overblik/make_trello`, data);
-    return out;
+    return out2;
   });
 
   const notifications = data
@@ -154,7 +156,7 @@ const NotificationPage = () => {
                 '&.Mui-selected:hover': {bgcolor: 'transparent'},
               }}
             >
-              Opgave
+              {name}
             </MenuItem>
           ))}
         </Select>

@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import L from 'leaflet';
 import 'leaflet.locatecontrol';
+import 'leaflet-contextmenu'
+import 'leaflet-contextmenu/dist/leaflet.contextmenu.css'
 import {atom, useAtom} from 'jotai';
 import {postElasticSearch} from '../boreholeAPI';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -12,6 +14,10 @@ import {useNavigate} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import {mapboxToken} from 'src/consts';
+import {stamdataStore} from 'src/state/store';
+import utmObj from 'utm-latlng'
+
+const utm = new utmObj();
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);
@@ -36,6 +42,10 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
+
+  const [setLocationValue] = stamdataStore((store) => [
+    store.setLocationValue
+  ]);
 
   const onPopupClickHandler = (element) => () => {
     if (element.locid) navigate('location/' + element.locid);
@@ -92,6 +102,45 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
       zoom: 7,
       layers: [outdormapbox],
       tap: false,
+      contextmenu: true,
+      contextmenuWidth: 140,
+      contextmenuItems: [
+        {
+          text: "Opret ny lokation",
+          callback: function (e) {
+            const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
+            console.log(coords)
+            setLocationValue('x', coords.Easting.toFixed(2));
+            setLocationValue('y', coords.Northing.toFixed(2));
+            navigate('/field/stamdata');
+          }
+        },
+        {
+          text: "Link til Google Maps",
+          callback: function (e) {
+            window.open(`https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`, '_blank');
+          }
+        },
+        '-', // this is a separator
+        {
+          text: 'Zoom ind',
+          callback: function (e) {
+            map.zoomIn();
+          }
+        },
+        {
+          text: 'Zoom ud',
+          callback: function (e) {
+            map.zoomOut();
+          }
+        },
+        {
+          text: 'Centrer kort her',
+          callback: function (e) {
+            map.panTo(e.latlng);
+          }
+        }
+      ]
     });
 
     var baseMaps = {
