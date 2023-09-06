@@ -7,6 +7,8 @@ import {TextField} from '@mui/material';
 import useWindowDimensions from '../../../hooks/useWindowDimensions';
 import {atom, useAtom} from 'jotai';
 
+const typeAheadAtom = atom('');
+
 const Cell = (props) => {
   const navigate = useNavigate();
   const {column} = props;
