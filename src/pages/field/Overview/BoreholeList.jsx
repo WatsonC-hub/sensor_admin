@@ -9,6 +9,7 @@ import {FixedSizeList} from 'react-window';
 import useWindowDimensions from '../../../hooks/useWindowDimensions';
 import {atom, useAtom} from 'jotai';
 
+const typeAheadAtom = atom('');
 
 export default function BoreholeList({data}) {
   const navigate = useNavigate();
