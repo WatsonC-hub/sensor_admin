@@ -30,9 +30,11 @@ export default function StationList({data}) {
   if (!data) return <CircularProgress />;
 
   let rows = data.filter((elem) => {
+    const opgave = elem.opgave ? elem.opgave.toLowerCase() : '';
     return (
       elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
-      elem.calypso_id.toString().toLowerCase().includes(typeAhead.toLowerCase())
+      elem.calypso_id.toString().toLowerCase().includes(typeAhead.toLowerCase()) ||
+      opgave.includes(typeAhead.toLowerCase())
     );
   });
 
