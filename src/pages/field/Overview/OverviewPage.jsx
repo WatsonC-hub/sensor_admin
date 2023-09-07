@@ -44,8 +44,12 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
       return data;
     },
-    {enabled: iotAccess,
+    {
+      enabled: iotAccess,
+      // refetchInterval: 10000,
       refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
     }
   );
 
