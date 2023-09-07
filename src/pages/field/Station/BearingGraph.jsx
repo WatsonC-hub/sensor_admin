@@ -2,10 +2,12 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Plot from 'react-plotly.js';
 import moment from 'moment';
-import axios from 'axios';
-import {useQuery} from '@tanstack/react-query';
+import {useState, useEffect, useRef} from 'react';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/pages/field/fieldAPI';
+import {toast} from 'react-toastify';
+import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
 
 const selectorOptions = {
   buttons: [
@@ -33,22 +35,6 @@ const selectorOptions = {
       label: 'Alt',
     },
   ],
-};
-
-var downloadIcon = {
-  width: 500,
-  // viewBox: "0 0 60 55",
-  path: 'M224 376V512H24C10.7 512 0 501.3 0 488v-464c0-13.3 10.7-24 24-24h336c13.3 0 24 10.7 24 24V352H248c-13.2 0-24 10.8-24 24zm76.45-211.36-96.42-95.7c-6.65-6.61-17.39-6.61-24.04 0l-96.42 95.7C73.42 174.71 80.54 192 94.82 192H160v80c0 8.84 7.16 16 16 16h32c8.84 0 16-7.16 16-16v-80h65.18c14.28 0 21.4-17.29 11.27-27.36zM377 407 279.1 505c-4.5 4.5-10.6 7-17 7H256v-128h128v6.1c0 6.3-2.5 12.4-7 16.9z',
-  ascent: 500,
-  descent: -50,
-};
-
-var makeLinkIcon = {
-  width: 500,
-  // viewBox: "0 0 60 55",
-  path: 'M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z',
-  ascent: 500,
-  descent: -50,
 };
 
 function exportToCsv(filename, rows) {
@@ -92,24 +78,35 @@ function exportToCsv(filename, rows) {
   }
 }
 
-const layout1 = {
+const desktopLayout = {
   xaxis: {
     rangeselector: selectorOptions,
-    /*rangeslider: {},*/
     autorange: true,
     type: 'date',
-    //range:["2020-12-01T00:00:00", A],
-    //domain: [0, 0.97],
     showline: true,
+    domain: [0, 0.97],
   },
-
-  //xaxis: {domain: [0, 0.9]},
   yaxis: {
     title: {
       text: '',
       font: {size: 12},
     },
     showline: true,
+    autorange: true,
+  },
+  yaxis2: {
+    showgrid: false,
+    overlaying: 'y',
+    side: 'right',
+    position: 0.9,
+    anchor: 'x',
+    visible: false,
+    title: {
+      text: '',
+      font: {
+        size: 12,
+      },
+    },
   },
 
   showlegend: true,
@@ -131,7 +128,7 @@ const layout1 = {
   },
 };
 
-const layout3 = {
+const mobileLayout = {
   modebar: {
     orientation: 'v',
   },
@@ -143,14 +140,29 @@ const layout3 = {
     margin: {
       t: 0,
     },
+    domain: [0, 0.97],
   },
 
   yaxis: {
+    autorange: true,
     showline: true,
     y: 1,
     title: {
       text: '',
       font: {size: 12},
+    },
+  },
+  yaxis2: {
+    showgrid: false,
+    overlaying: 'y',
+    side: 'right',
+    position: 0.9,
+    anchor: 'x',
+    visible: false,
+    title: {
+      font: {
+        size: 12,
+      },
     },
   },
 
@@ -173,38 +185,228 @@ const layout3 = {
   },
 };
 
-function PlotGraph({graphData, controlData, dynamicMeasurement}) {
-  const [name, unit, stationtype] = stamdataStore((state) => [
-    state.timeseries.ts_name,
+const initRange = [
+  moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+  moment().format('YYYY-MM-DDTHH:mm'),
+];
+
+function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
+  const [name, unit, stationtype, terrainlevel] = stamdataStore((state) => [
+    state.location.loc_name + ' ' + state.timeseries.ts_name,
     state.timeseries.unit,
     state.timeseries.tstype_name,
+    state.location.terrainlevel,
   ]);
 
-  const xControl = controlData.map((d) => d.timeofmeas);
-  const yControl = controlData.map((d) => d.waterlevel);
-  // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
+  const toastId = useRef(null);
+
+  const queryClient = useQueryClient();
+
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const [xRange, setXRange] = useState(initRange);
+  const [layout, setLayout] = useState(
+    matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
+  );
+
+  // useEffect(() => {
+  //   setLayout((prev) => {
+  //     return matches ? layout3 : layout1;
+  //   });
+  // }, [matches]);
+
+  useEffect(() => {
+    refetchData([ts_id, initRange]);
+  }, [ts_id]);
+
+  const handleRelayout = (e) => {
+    console.log(e);
+    if (e['xaxis.autorange'] == true || e['autosize'] == true) {
+      setXRange(initRange);
+      return;
+    }
+
+    if (e['dragmode']) {
+      setLayout((prev) => {
+        return {
+          ...prev,
+          dragmode: e['dragmode'],
+        };
+      });
+    }
+
+    if (e['xaxis.range[0]'] !== undefined) {
+      let x0 = moment(e['xaxis.range[0]']);
+      let x1 = moment(e['xaxis.range[1]']);
+
+      const daysdiff = x1.diff(x0, 'days');
+
+      x0 = x0.subtract(daysdiff * 0.2, 'days');
+      x1 = x1.add(daysdiff * 0.2, 'days');
+
+      setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
+    }
+  };
+
+  const {data: graphData, refetch: refetchData} = useQuery(
+    ['graphData', ts_id, xRange],
+    async ({signal}) => {
+      const {data} = await apiClient.get(`/data/timeseriesV2/${ts_id}`, {
+        params: {
+          start: xRange[0],
+          stop: xRange[1],
+          limit: 4000,
+        },
+      });
+      if (data === null) {
+        return [];
+      }
+      return data;
+    },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+    }
+  );
+
+  const {data: rawData, refetch: fetchRaw} = useQuery(
+    ['rawdata', ts_id],
+    async ({signal}) => {
+      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
+      if (data === null) {
+        return [];
+      }
+      return data;
+    },
+    {
+      enabled: false,
+      placeholderData: [],
+    }
+  );
+
+  const {data: pollData, refetch} = useQuery(
+    ['pollData', ts_id],
+    async () => {
+      const {data, status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
+      return status;
+    },
+    {
+      enabled: true,
+      refetchInterval: (status) => {
+        return status === 204 ? 1000 : false;
+      },
+      onSuccess: (status) => {
+        if (status === 200) {
+          queryClient.removeQueries(['graphData', ts_id]);
+          toast.update(toastId.current, {
+            render: 'Genberegnet',
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
+            autoClose: 2000,
+            closeOnClick: true,
+            draggable: true,
+            progress: undefined,
+            hideProgressBar: false,
+          });
+        }
+      },
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    }
+  );
+
+  const correctMutation = useMutation(
+    async (data) => {
+      const {data: res} = await apiClient.post(`/sensor_field/station/correct/${ts_id}`, data);
+      return res;
+    },
+    {
+      onSuccess: () => {
+        setTimeout(() => {
+          refetch();
+        }, 5000);
+        //handleXRangeChange({'xaxis.range[0]': undefined});
+      },
+    }
+  );
+
+  const xControl = controlData?.map((d) => d.timeofmeas);
+  const yControl = controlData?.map((d) => d.waterlevel);
+  // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
   var downloadButton = {
     name: 'Download data',
     icon: downloadIcon,
     click: function (gd) {
-      console.log(gd.data);
-      var rows = gd.data[0].x.map((elem, idx) => [
-        moment(elem).format('YYYY-MM-DD HH:mm'),
-        gd.data[0].y[idx].toString().replace('.', ','),
-      ]);
+      console.log(gd);
+      // var rows = gd.data[0].x.map((elem, idx) => [
+      //   moment(elem).format('YYYY-MM-DD HH:mm'),
+      //   gd.data[0].y[idx].toString().replace('.', ','),
+      // ]);
 
-      exportToCsv('data.csv', rows);
+      // exportToCsv('data.csv', rows);
     },
   };
+
+  var rerunButton = {
+    name: 'Genkør data',
+    icon: rerunIcon,
+    click: function (gd) {
+      toastId.current = toast.loading('Genberegner...');
+      correctMutation.mutate({});
+    },
+  };
+
+  var getRawData = {
+    name: 'Hent rådata',
+    icon: rawDataIcon,
+    click: function (gd) {
+      fetchRaw();
+      gd.layout = {
+        ...gd.layout,
+        yaxis2: {
+          ...gd.layout.yaxis2,
+          visible: true,
+        },
+      };
+      setLayout(gd.layout);
+    },
+  };
+
+  // var addHorizontalLine = {
+  //   name: 'Tilføj terrænkote',
+  //   icon: rerunIcon,
+  //   click: function (gd) {
+  //     gd.layout = {
+  //       ...gd.layout,
+  //       shapes: [
+  //         {
+  //           type: 'line',
+  //           xref: 'paper',
+  //           yref: 'y',
+  //           x0: 0,
+  //           y0: terrainlevel,
+  //           x1: 1,
+  //           y1: terrainlevel,
+  //           line: {
+  //             color: 'rgb(55, 128, 191)',
+  //             width: 3,
+  //             dash: 'dot',
+  //           },
+  //         },
+  //       ],
+  //     };
+  //     setLayout(gd.layout);
+  //   },
+  // };
 
   var makeLinkButton = {
     name: 'Ekstern link',
     icon: makeLinkIcon,
     click: function (gd) {
-      var ts_id = window.location.href.split('/').at(-1);
+      var ts_id = window.location.href.split('/').at(-1).split('#').at(0);
 
       var link = document.createElement('a');
       if (link.download !== undefined) {
@@ -226,6 +428,8 @@ function PlotGraph({graphData, controlData, dynamicMeasurement}) {
 
   return (
     <Plot
+      key={ts_id}
+      divId={`graph_${ts_id}`}
       data={[
         {
           x: graphData?.x,
@@ -235,6 +439,16 @@ function PlotGraph({graphData, controlData, dynamicMeasurement}) {
           line: {width: 2},
           mode: 'lines',
           marker: {symbol: '100', size: '3', color: '#177FC1'},
+        },
+        {
+          x: rawData?.x,
+          y: rawData?.y,
+          name: 'Rådata',
+          type: 'scattergl',
+          yaxis: 'y2',
+          line: {width: 2},
+          mode: 'lines',
+          marker: {symbol: '100', size: '3'},
         },
         {
           x: xControl,
@@ -259,35 +473,27 @@ function PlotGraph({graphData, controlData, dynamicMeasurement}) {
           marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
         },
       ]}
-      layout={
-        matches
-          ? {
-              ...layout3,
-              yaxis: {
-                ...layout3.yaxis,
-                //title: stationtype + ', ' + unit,
-              },
-            }
-          : {
-              ...layout1,
-              yaxis: {
-                ...layout1.yaxis,
-                title: stationtype + ', ' + unit,
-              },
-            }
-      }
+      layout={{
+        ...layout,
+        yaxis: {
+          title: `${stationtype} [${unit}]`,
+        },
+      }}
       config={{
         responsive: true,
         modeBarButtons: [
-          [downloadButton, makeLinkButton],
+          [downloadButton, makeLinkButton, rerunButton, getRawData],
           ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
         ],
 
         displaylogo: false,
         displayModeBar: true,
+        doubleClick: 'reset',
       }}
       useResizeHandler={true}
       style={{width: '99%', height: '100%'}}
+      onRelayout={handleRelayout}
+      // onDoubleClick={() => setXRange(initRange)}
     />
   );
 }
@@ -295,23 +501,6 @@ function PlotGraph({graphData, controlData, dynamicMeasurement}) {
 export default function BearingGraph({stationId, measurements, dynamicMeasurement}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
-  const {data: graphData} = useQuery(
-    ['graphData', stationId],
-    async ({signal}) => {
-      const {data} = await apiClient.get(`/data/timeseries/${stationId}`, {
-        signal,
-      });
-      return data;
-    },
-    {
-      enabled: stationId !== -1 && stationId !== null,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-    }
-  );
 
   return (
     <div
@@ -324,7 +513,7 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
       }}
     >
       <PlotGraph
-        graphData={graphData}
+        ts_id={stationId}
         controlData={measurements}
         dynamicMeasurement={dynamicMeasurement}
       />

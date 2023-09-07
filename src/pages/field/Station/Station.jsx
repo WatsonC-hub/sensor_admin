@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import BearingGraph from './newBearingGraph';
+import BearingGraph from './BearingGraph';
 import ActionArea from './ActionArea';
 import PejlingForm from '../../../components/PejlingForm';
 import EditStamdata from './EditStamdata';
