@@ -6,7 +6,7 @@ import {
   PriorityHighOutlined,
   ErrorOutlineOutlined,
 } from '@mui/icons-material';
-import {sortBy, uniqBy} from 'lodash';
+import {sortBy, uniqBy, groupBy, map, maxBy} from 'lodash';
 import {Box, Button, TextField, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {atom, useAtom} from 'jotai';
@@ -23,10 +23,8 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   var rows = [];
   // filter data based on typeAhead and columns
   if (notifications) {
-    rows = notifications.filter((row) => {
-      return Object.keys(row).some((column) => {
-        return row[column].toString().toLowerCase().indexOf(typeAhead.toLowerCase()) > -1;
-      });
+    rows = map(groupBy(notifications, 'notification_id'), (group) => {
+      return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));
     });
   }
 
@@ -69,7 +67,7 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
       />
       <Box sx={{mb: 1}}>
         <Button onClick={handleExpandClick}>
-          {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
+          {expanded.length === 0 ? 'Fold ud' : 'Fold sammen'}
         </Button>
       </Box>
       <TreeView

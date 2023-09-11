@@ -14,6 +14,8 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import TableComponent from 'src/components/TableComponent';
 import NotificationTree from './NotificationTree';
@@ -117,43 +119,47 @@ const NotificationPage = () => {
   return (
     <Grid container>
       <Grid item xs={12} md={6}>
-        <Select
-          multiple
-          sx={{width: '40%', m: 1}}
-          value={selectFilters}
-          onChange={handleChange}
-          input={<OutlinedInput label="Filter" />}
-          label="Filter"
-          renderValue={(selected) => (
-            <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-              {selected.map((value) => (
-                <Chip
-                  key={value}
-                  // label={colors[value]}
-                  sx={{bgcolor: value}}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  onDelete={() => setSelectFilters(selectFilters.filter((item) => item !== value))}
-                />
-              ))}
-            </Box>
-          )}
-        >
-          {colors?.map((name, index) => (
-            <MenuItem
-              key={name}
-              value={name}
-              sx={{
-                // set background color of Mui MenuItem
-                bgcolor: name,
-                '&:hover': {bgcolor: name},
-                '&.Mui-selected': {bgcolor: name},
-                '&.Mui-selected:hover': {bgcolor: 'transparent'},
-              }}
-            >
-              {tasktype[index]}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl sx={{width: '40%', m: 1}}>
+          <InputLabel id="demo-simple-select-label">Filter</InputLabel>
+          <Select
+            multiple
+            value={selectFilters}
+            onChange={handleChange}
+            input={<OutlinedInput label="Filter" />}
+            label="Filter"
+            renderValue={(selected) => (
+              <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+                {selected.map((value) => (
+                  <Chip
+                    key={value}
+                    label={tasktype[colors.indexOf(value)]}
+                    sx={{bgcolor: value}}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onDelete={() =>
+                      setSelectFilters(selectFilters.filter((item) => item !== value))
+                    }
+                  />
+                ))}
+              </Box>
+            )}
+          >
+            {colors?.map((name, index) => (
+              <MenuItem
+                key={name}
+                value={name}
+                sx={{
+                  // set background color of Mui MenuItem
+                  bgcolor: name,
+                  '&:hover': {bgcolor: name},
+                  '&.Mui-selected': {bgcolor: name},
+                  '&.Mui-selected:hover': {bgcolor: 'transparent'},
+                }}
+              >
+                {tasktype[index]}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <FormControlLabel
           control={<Checkbox onChange={(e) => setIsCustomerService(e.target.checked)} />}
           label="Vis kundeservice"
