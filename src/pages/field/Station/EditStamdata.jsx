@@ -351,7 +351,6 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
           </FormProvider>
         </Container>
       </CardContent>
-      <DevTool control={formMethods.control} />
     </Card>
   );
 }
