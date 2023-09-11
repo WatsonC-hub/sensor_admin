@@ -35,6 +35,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {metadataPutSchema} from 'src/helpers/zodSchemas';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm, FormProvider, useFormContext} from 'react-hook-form';
+import {DevTool} from '@hookform/devtools';
 import SwiperInstance from './SwiperInstance';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
@@ -94,7 +95,8 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
   );
 };
 
-const UdstyrReplace = ({stationId, selected, setselected}) => {
+const UdstyrReplace = ({stationId}) => {
+  const [selected, setselected] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
@@ -112,15 +114,6 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
       return data;
     },
     {
-      onSuccess: (data) => {
-        setselected(data[0].gid);
-        formMethods.setValue('unit', {
-          unit_uuid: data[0].uuid,
-          startdate: data[0].startdato,
-          enddate: data[0].slutdato,
-        });
-      },
-      refetchInterval: 10000,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchIntervalInBackground: false,
@@ -128,15 +121,30 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
     }
   );
 
-  const handleChange = (event) => {
-    const localUnit = data.filter((elem) => elem.gid === event.target.value)[0];
+  useEffect(() => {
+    if (data && data.length > 0) {
+      onSelectionChange(data, selected === '' ? data[0].gid : selected);
+    }
+  }, [data]);
+
+  const onSelectionChange = (data, gid) => {
+    const localUnit = data.filter((elem) => elem.gid === gid)[0];
+    console.log('localunit', localUnit);
     setUnit(localUnit);
-    setselected(event.target.value);
-    formMethods.setValue('unit', {
-      unit_uuid: localUnit.uuid,
-      startdate: localUnit.startdato,
-      enddate: localUnit.slutdato,
-    });
+    formMethods.setValue(
+      'unit',
+      {
+        unit_uuid: localUnit.uuid,
+        startdate: moment(localUnit.startdato).format('YYYY-MM-DDTHH:mm'),
+        enddate: moment(localUnit.slutdato).format('YYYY-MM-DDTHH:mm'),
+      },
+      {shouldValidate: true, shouldDirty: true}
+    );
+    setselected(gid);
+  };
+
+  const handleChange = (event) => {
+    if (selected !== event.target.value) onSelectionChange(data, event.target.value);
   };
 
   return (
@@ -203,7 +211,7 @@ const UdstyrReplace = ({stationId, selected, setselected}) => {
 };
 
 export default function EditStamdata({setFormToShow, ts_id, metadata}) {
-  const [selectedUnit, setSelectedUnit] = useState('');
+  // const [selectedUnit, setSelectedUnit] = useState('');
 
   const [location, timeseries, unit] = stamdataStore((store) => [
     store.location,
@@ -297,8 +305,8 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
                 <Box style={{marginTop: matches ? '2%' : ''}}>
                   <UdstyrReplace
                     stationId={ts_id}
-                    selected={selectedUnit}
-                    setselected={setSelectedUnit}
+                    // selected={selectedUnit}
+                    // setselected={setSelectedUnit}
                   />
                   <UnitForm mode="edit" />
                 </Box>
@@ -343,6 +351,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
           </FormProvider>
         </Container>
       </CardContent>
+      <DevTool control={formMethods.control} />
     </Card>
   );
 }
