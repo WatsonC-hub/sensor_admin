@@ -299,6 +299,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       onSuccess: (status) => {
         if (status === 200) {
           queryClient.removeQueries(['graphData', ts_id]);
+          refetchData();
           toast.update(toastId.current, {
             render: 'Genberegnet',
             type: toast.TYPE.SUCCESS,
@@ -513,6 +514,7 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
       }}
     >
       <PlotGraph
+        key={stationId}
         ts_id={stationId}
         controlData={measurements}
         dynamicMeasurement={dynamicMeasurement}
