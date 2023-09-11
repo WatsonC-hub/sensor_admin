@@ -21,17 +21,18 @@ import {atom, useAtom} from 'jotai';
 import {useEffect} from 'react';
 
 const getNavigation = (item) => {
-  switch (item.opgave) {
-    case 'Niveau spring':
+  switch (item.color) {
+    case '#9F2B68':
       return `/admin/kvalitetssikring/${item.stationid}`;
-    case 'Abnormal hændelse':
+    case '#334FFF':
       return `/admin/kvalitetssikring/${item.stationid}`;
     default:
       return `/field/location/${item.locid}/${item.stationid}`;
   }
 };
 
-const colors = ['Grøn', 'Gul', 'Orange', 'Rød'];
+const colors = ['#FF0000', '#FF6C00', '#FFFF00', '#00FF00', '#9F2B68', '#334FFF'];
+const tasktype = ['Kritisk', 'Middel', 'Lav', 'OK', 'Kvalitetssikring', 'Plateau'];
 const selectFiltersAtom = atom([]);
 const lassoFilterAtom = atom(new Set());
 
@@ -41,9 +42,8 @@ const NotificationPage = () => {
   const [selectFilters, setSelectFilters] = useAtom(selectFiltersAtom);
   const [isCustomerService, setIsCustomerService] = useState(false);
 
-
   const queryClient = useQueryClient();
-  const {data, isLoading, isPlaceholderData} = useQuery(
+  const {data, isLoading} = useQuery(
     ['overblik'],
     async ({signal}) => {
       const {data} = await apiClient.get(`/sensor_admin/overblik`, {
@@ -81,12 +81,6 @@ const NotificationPage = () => {
     );
     setMapdata(uniqBy(sorted, 'locid'));
   }, [selectFilters, isCustomerService, data]);
-
-  const colorsnew = uniqBy(data, 'color').map((item) => item.color);
-
-  useEffect(() => {
-    setSelectFilters(colorsnew);
-  }, [isPlaceholderData]);
 
   const trelloMutate = useMutation(async (data) => {
     // const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
@@ -144,7 +138,7 @@ const NotificationPage = () => {
             </Box>
           )}
         >
-          {colorsnew?.map((name, index) => (
+          {colors?.map((name, index) => (
             <MenuItem
               key={name}
               value={name}
@@ -156,7 +150,7 @@ const NotificationPage = () => {
                 '&.Mui-selected:hover': {bgcolor: 'transparent'},
               }}
             >
-              {name}
+              {tasktype[index]}
             </MenuItem>
           ))}
         </Select>

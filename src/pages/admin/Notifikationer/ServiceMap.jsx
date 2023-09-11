@@ -3,8 +3,8 @@ import {useNavigate} from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet.locatecontrol';
 import 'leaflet-lasso';
-import 'leaflet-contextmenu'
-import 'leaflet-contextmenu/dist/leaflet.contextmenu.css'
+import 'leaflet-contextmenu';
+import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import {atom, useAtom} from 'jotai';
 import {mapboxToken} from 'src/consts';
 
@@ -107,30 +107,35 @@ function Map({data, isLoading, setLassoFilter}) {
       contextmenuWidth: 140,
       contextmenuItems: [
         {
+          text: 'Link til Google Maps',
+          callback: function (e) {
+            window.open(
+              `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+              '_blank'
+            );
+          },
+        },
+        '-',
+        {
           text: 'Zoom ind',
           callback: function (e) {
             map.zoomIn();
-          }
+          },
         },
         {
           text: 'Zoom ud',
           callback: function (e) {
             map.zoomOut();
-          }
+          },
         },
-        {
-          text: "Link til Google Maps",
-          callback: function (e) {
-            window.open(`https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`, '_blank');
-          }
-        },
+
         {
           text: 'Centrer kort her',
           callback: function (e) {
             map.panTo(e.latlng);
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     var baseMaps = {
