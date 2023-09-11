@@ -4,9 +4,11 @@ import {ErrorOutlineOutlined} from '@mui/icons-material';
 import {useNavigate} from 'react-router-dom';
 import moment from 'moment';
 import TrelloModal from './TrelloModal';
+import PostponeModal from './PostponeModal';
 
 const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
-  const [open, setOpen] = useState(false);
+  const [trelloOpen, setTrelloOpen] = useState(false);
+  const [postponeOpen, setPostponeOpen] = useState(false);
 
   const navigate = useNavigate();
   return (
@@ -38,14 +40,14 @@ const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
       </Box>
       <Box gap={2} display="inline-flex" height="40px" flexWrap="wrap">
         <Button
-          onClick={() => setOpen(true)}
+          onClick={() => setTrelloOpen(true)}
           variant="contained"
           color={notification.status === 'SCHEDULED' ? 'success' : 'warning'}
         >
           Skemalæg
         </Button>
         <Button
-          onClick={onPostpone}
+          onClick={() => setPostponeOpen(true)}
           variant="contained"
           color={notification.status === 'POSTPONED' ? 'success' : 'warning'}
         >
@@ -69,7 +71,8 @@ const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
           </Button>
         )}
       </Box>
-      <TrelloModal open={open} setOpen={setOpen} onSchedule={onSchedule} />
+      <TrelloModal open={trelloOpen} setOpen={setTrelloOpen} onSchedule={onSchedule} />
+      <PostponeModal open={postponeOpen} setOpen={setPostponeOpen} onPostpone={onPostpone} />
     </Box>
   );
 };

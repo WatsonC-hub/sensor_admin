@@ -111,13 +111,13 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
                             <NotificationRow
                               key={notification.id}
                               notification={notification}
-                              onPostpone={() =>
+                              onPostpone={(date) =>
                                 statusMutate.mutate([
                                   {
                                     ts_id: notification.stationid,
                                     notification_id: notification.notification_id,
                                     status: 'POSTPONED',
-                                    enddate: moment().add(7, 'days').format('YYYY-MM-DDTHH:mm:ss'),
+                                    enddate: moment(date).format('YYYY-MM-DDTHH:mm'),
                                   },
                                 ])
                               }
