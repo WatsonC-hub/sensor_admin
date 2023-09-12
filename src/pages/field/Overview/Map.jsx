@@ -365,7 +365,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
-        getOptionLabel={(option) => option.name}
+        getOptionLabel={(option) => (option?.name ? option.name : option)}
         groupBy={(option) => option.group}
         inputValue={typeAhead}
         renderInput={(params) => (
@@ -385,7 +385,6 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         }}
         onChange={handleChange}
         onInputChange={elasticSearch}
-        on
       />
       <div id="map" style={style}></div>
     </div>
