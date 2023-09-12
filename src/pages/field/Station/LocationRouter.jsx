@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Station from './Station';
 import MinimalSelect from './MinimalSelect';
-import {useParams, useNavigate, useLocation} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
 import ErrorPage from './ErrorPage';
