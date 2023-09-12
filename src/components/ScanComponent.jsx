@@ -18,12 +18,9 @@ export default function ScanComponent() {
   }
 
   if (isError) {
-    return <Navigate to="/field" />;
+    return <Navigate to="/field" replace={true} />;
   }
 
-  if (data?.length === 1) {
-    return <Navigate to={`/location/${data[0].loc_id}/${data[0].ts_id}`} />;
-  }
   var redirect = '/field';
   if (data.loc_id) {
     if (data.ts_id) {
@@ -43,5 +40,5 @@ export default function ScanComponent() {
     });
   }
 
-  return <Navigate to={redirect} />;
+  return <Navigate to={redirect} replace={true} />;
 }

@@ -38,15 +38,15 @@ export default function CaptureDialog({handleClose, open}) {
 
         if (resp.loc_id) {
           if (resp.ts_id) {
-            navigate(`/field/location/${resp.loc_id}/${resp.ts_id}`);
+            navigate(`/field/location/${resp.loc_id}/${resp.ts_id}`, {replace: true});
           } else {
-            navigate(`/field/location/${resp.loc_id}`);
+            navigate(`/field/location/${resp.loc_id}`, {replace: true});
           }
         } else if (resp.boreholeno) {
           if (resp.intakeno) {
-            navigate(`/field/borehole/${resp.boreholeno}/${resp.intakeno}`);
+            navigate(`/field/borehole/${resp.boreholeno}/${resp.intakeno}`, {replace: true});
           } else {
-            navigate(`/field/borehole/${resp.boreholeno}`);
+            navigate(`/field/borehole/${resp.boreholeno}`, {replace: true});
           }
         } else {
           toast.error('Ukendt fejl', {
