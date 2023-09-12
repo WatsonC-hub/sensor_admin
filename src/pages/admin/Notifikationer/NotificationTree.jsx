@@ -23,7 +23,13 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   var rows = [];
   // filter data based on typeAhead and columns
   if (notifications) {
-    rows = map(groupBy(notifications, 'notification_id'), (group) => {
+    console.log(notifications);
+    const grouped = groupBy(notifications, (item) => {
+      return [item['stationid'], item['notification_id']];
+    });
+
+    rows = map(grouped, (group) => {
+      console.log('group', group);
       return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));
     });
   }

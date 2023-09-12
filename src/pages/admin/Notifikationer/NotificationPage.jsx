@@ -35,7 +35,7 @@ const getNavigation = (item) => {
 
 const colors = ['#FF0000', '#FF6C00', '#FFFF00', '#00FF00', '#9F2B68', '#334FFF'];
 const tasktype = ['Kritisk', 'Middel', 'Lav', 'OK', 'Kvalitetssikring', 'Plateau'];
-const selectFiltersAtom = atom([]);
+const selectFiltersAtom = atom(colors);
 const lassoFilterAtom = atom(new Set());
 
 const NotificationPage = () => {
