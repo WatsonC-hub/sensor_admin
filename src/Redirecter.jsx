@@ -8,6 +8,7 @@ import {authStore} from './state/store';
 import LoadingSkeleton from './LoadingSkeleton';
 import NavBar from './NavBar';
 import Chooser from './Chooser';
+import ScanComponent from 'src/components/ScanComponent';
 
 const Redirecter = () => {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ const Redirecter = () => {
             </>
           }
         />
+        <Route path="/:labelid" element={<ScanComponent />} />
       </Routes>
     </>
   );
