@@ -140,11 +140,11 @@ export default function OverviewPage() {
           variant="fullWidth"
           aria-label="simple tabs example"
         >
-          <Tab icon={TableIcon} />
           <Tab icon={KortIcon} />
+          <Tab icon={TableIcon} />
         </Tabs>
       </Box>
-      <TabPanel value={tabValue} index={0}>
+      <TabPanel value={tabValue} index={1}>
         <>
           <AppBar position="static" color="default" style={{width: matches ? '100%' : '50%'}}>
             <Tabs
@@ -181,7 +181,7 @@ export default function OverviewPage() {
           )}
         </>
       </TabPanel>
-      <TabPanel value={tabValue} index={1}>
+      <TabPanel value={tabValue} index={0}>
         <Map
           sensorData={mapData}
           boreholeData={boreholetabledata}
