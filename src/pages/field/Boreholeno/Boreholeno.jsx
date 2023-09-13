@@ -21,6 +21,18 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   let navigate = useNavigate();
   const queryClient = useQueryClient();
   const [addMPOpen, setAddMPOpen] = useState(false);
+  const [canEdit, setCanEdit] = useState(false);
+
+  const {data: permissions} = useQuery(['borehole_permissions'], async () => {
+    const {data} = await apiClient.get(`/auth/me/permissions`);
+    return data;
+  });
+
+  useEffect(() => {
+    if (permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)) {
+      setCanEdit(true);
+    }
+  }, [permissions]);
 
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
@@ -52,7 +64,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const [control, setcontrol] = useState([]);
   const [dynamic, setDynamic] = useState([]);
-  const [canEdit] = useState(true);
 
   const {data: measurements} = useQuery(
     ['measurements', boreholeno, intakeno],
@@ -70,13 +81,11 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const {data: stamdata} = useQuery(
     ['borehole_stamdata', boreholeno, intakeno],
-    () => {
-      return {
-        local_number: 'Brabrand_1',
-        borehole_description: 'Aarhus Kommune',
-        borehole_type: 1,
-        intake_description: 'Brabrand_1',
-      };
+    async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`
+      );
+      return data;
     },
     {
       refetchOnWindowFocus: false,
@@ -290,7 +299,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
               handleSubmit={handleMpSubmit}
               resetFormData={resetMpData}
               handleCancel={handleMpCancel}
-              canEdit={canEdit}
+              canEdit={true}
             />
           )}
           <Box p={2}>
@@ -308,7 +317,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             watlevmp={watlevmp}
             handleEdit={handleEdit('watlevmp')}
             handleDelete={handleDelete('watlevmp')}
-            canEdit={canEdit}
+            canEdit={true}
           />
         </>
       )}
@@ -319,13 +328,18 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           measurements={measurements}
           handleEdit={handleEdit('pejling')}
           handleDelete={handleDelete('pejling')}
-          canEdit={canEdit}
+          canEdit={true}
         />
       )}
       {formToShow === 'CAMERA' && <BoreholeImages boreholeno={boreholeno} />}
-      {/* {formToShow === 'STAMDATA' && (
-        <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
-      )} */}
+      {formToShow === 'STAMDATA' && canEdit && (
+        <BoreholeStamdata
+          boreholeno={boreholeno}
+          intakeno={intakeno}
+          stamdata={stamdata}
+          setFormToShow={setFormToShow}
+        />
+      )}
       <ActionAreaBorehole
         open={open}
         boreholeno={boreholeno}
