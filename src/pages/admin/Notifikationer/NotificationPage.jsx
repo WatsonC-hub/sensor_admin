@@ -138,6 +138,14 @@ const NotificationPage = () => {
                     onDelete={() =>
                       setSelectFilters(selectFilters.filter((item) => item !== value))
                     }
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      if (selectFilters.length === 1) {
+                        setSelectFilters(colors);
+                      } else {
+                        setSelectFilters([value]);
+                      }
+                    }}
                   />
                 ))}
               </Box>
