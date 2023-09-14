@@ -5,7 +5,7 @@ import moment from 'moment';
 import {useState, useEffect, useRef} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {stamdataStore} from '../../../state/store';
-import {apiClient} from 'src/pages/field/fieldAPI';
+import {apiClient} from 'src/apiClient';
 import {toast} from 'react-toastify';
 import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
 

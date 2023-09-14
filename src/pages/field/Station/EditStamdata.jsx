@@ -20,7 +20,7 @@ import {useTheme} from '@mui/material/styles';
 import LocationForm from '../Stamdata/components/LocationForm';
 import TimeseriesForm from '../Stamdata/components/TimeseriesForm';
 import UnitForm from '../Stamdata/components/UnitForm';
-import {updateStamdata, apiClient} from 'src/pages/field/fieldAPI';
+import {apiClient} from 'src/apiClient';
 import AddUnitForm from '../Stamdata/AddUnitForm';
 import SaveIcon from '@mui/icons-material/Save';
 import moment from 'moment';

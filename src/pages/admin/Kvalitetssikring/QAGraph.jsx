@@ -4,7 +4,7 @@ import Plot from 'react-plotly.js';
 import moment from 'moment';
 import axios from 'axios';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {apiClient} from 'src/pages/field/fieldAPI';
+import {apiClient} from 'src/apiClient';
 import React, {useEffect, useState, useRef, memo} from 'react';
 import {Typography, Alert, Grid, Button} from '@mui/material';
 import GraphForms from './GraphForms';

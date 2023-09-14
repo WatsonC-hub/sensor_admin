@@ -1,11 +1,5 @@
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Plot from 'react-plotly.js';
-import moment from 'moment';
-import axios from 'axios';
-import {useQuery} from '@tanstack/react-query';
-import {stamdataStore} from '../../../state/store';
-import {apiClient} from 'src/pages/field/fieldAPI';
 import React, {useEffect, useState} from 'react';
 import {Grid, Typography, TextField, Button, Box, Alert} from '@mui/material';
 import OwnDatePicker from 'src/components/OwnDatePicker';

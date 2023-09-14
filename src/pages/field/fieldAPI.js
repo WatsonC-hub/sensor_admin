@@ -71,11 +71,6 @@ const updateImage = async (payload, gid) => {
   return resp;
 };
 
-const postStamdata = (data) => axios.post(`${extEndpoint}/stamdata`, data);
-
-const updateStamdata = (data) =>
-  axios.put(`${extEndpoint}/stamdata?session_id=${authStore.getState().sessionId}`, data);
-
 const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 
 const createUser = (payload) => axios.post(`${userEndpoint}calypso/user`, payload);
@@ -106,12 +101,10 @@ const loginAPI = async (username, password) => {
 };
 
 export {
-  postStamdata,
   getCvr,
   createUser,
   loginUser,
   resetPassword,
-  updateStamdata,
   getDTMQuota,
   postImage,
   deleteImage,

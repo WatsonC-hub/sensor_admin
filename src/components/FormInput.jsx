@@ -2,18 +2,23 @@ import {TextField} from '@mui/material';
 import {Controller, useFormContext, get} from 'react-hook-form';
 import moment from 'moment';
 
-const FormInput = ({name, warning, children, ...otherProps}) => {
+const FormInput = ({name, warning, children, rules, transform, ...otherProps}) => {
   const {
     control,
     formState: {errors},
     defaultValues,
   } = useFormContext();
 
+  if (!transform) {
+    transform = (e) => e;
+  }
+
   return (
     <Controller
       control={control}
       name={name}
       defaultvalue={get(defaultValues, name)}
+      rules={rules}
       render={({field: {value, onChange, onBlur, ref, name}, formState, fieldState}) => {
         if (otherProps.type === 'datetime-local' && value) {
           value = moment(value).format('YYYY-MM-DDTHH:mm');
@@ -45,9 +50,9 @@ const FormInput = ({name, warning, children, ...otherProps}) => {
             margin="dense"
             onChange={(e) => {
               if (otherProps.type === 'number' && e.target.value !== '') {
-                onChange(Number(e.target.value));
+                onChange(transform(Number(e.target.value)));
               } else {
-                onChange(e);
+                onChange(transform(e));
               }
             }}
             error={!!get(errors, name)}

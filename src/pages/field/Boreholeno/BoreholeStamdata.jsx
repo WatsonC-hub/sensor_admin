@@ -18,6 +18,8 @@ import {useForm, FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import CaptureDialog from 'src/components/CaptureDialog';
 import ConfirmCalypsoIDDialog from 'src/pages/field/Boreholeno/components/ConfirmCalypsoIDDialog';
+import * as z from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
 
 const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
   const [openCamera, setOpenCamera] = useState(false);
@@ -28,7 +30,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
 
   const changeStamdata = useMutation(
     async (data) => {
-      const {data: out} = await apiClient.post(
+      const {data: out} = await apiClient.put(
         `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`,
         data
       );
@@ -41,7 +43,16 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
     }
   );
 
+  const schema = z.object({
+    calypso_id: z.number().int().min(1).optional(),
+    num_controls_in_a_year: z
+      .number()
+      .int()
+      .min(0, {message: 'Antal kontroller skal være 0 eller større'}),
+  });
+
   const formMethods = useForm({
+    resolver: zodResolver(schema),
     defaultValues: stamdata,
   });
 
@@ -63,7 +74,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
       data?.text.includes('https://sensor.watsonc.dk/')
     ) {
       const split = data['text'].split('/');
-      setCalypso_id(split[split.length - 1]);
+      setCalypso_id(Number(split[split.length - 1]));
       setOpenCamera(false);
       setOpenDialog(true);
     } else {
@@ -88,7 +99,10 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
           open={openDialog}
           setOpen={setOpenDialog}
           onConfirm={() => {
-            formMethods.setValue('calypso_id', calypso_id);
+            formMethods.setValue('calypso_id', Number(calypso_id), {
+              shouldValidate: true,
+              shouldDirty: true,
+            });
           }}
           calypso_id={calypso_id}
         />
@@ -117,7 +131,14 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2}}>
-                  <FormInput name="calypso_id" label="Calypso ID" fullWidth disabled required />
+                  <FormInput
+                    name="calypso_id"
+                    label="Calypso ID"
+                    type="number"
+                    fullWidth
+                    disabled
+                    required
+                  />
                   <Button
                     sx={{
                       width: '80%',
@@ -141,8 +162,10 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   fullWidth
                   type="number"
                   required
+                  transform={(val) => parseInt(val)}
                   InputProps={{
                     endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
+                    inputProps: {min: 0},
                   }}
                 />
               </Grid>

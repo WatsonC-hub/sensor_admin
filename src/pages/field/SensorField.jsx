@@ -9,7 +9,7 @@ import {useAtom} from 'jotai';
 import {captureDialogAtom} from '../../state/atoms';
 import BoreholeRouter from './Boreholeno/BoreholeRouter';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/pages/field/fieldAPI';
+import {apiClient} from 'src/apiClient';
 
 function SensorField({}) {
   const [addStationDisabled, setAddStationDisabled] = useState(false);
