@@ -18,7 +18,7 @@ const typeAheadAtom = atom('');
 
 const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   const [expanded, setExpanded] = useAtom(expandedAtom);
-  const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
+  // const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
 
   var rows = [];
   // filter data based on typeAhead and columns
@@ -59,8 +59,8 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   }, [notifications]);
 
   return (
-    <Box sx={{height: '80vh', overflowY: 'auto'}} pt={2}>
-      <TextField
+    <Box sx={{height: '100%', overflowY: 'auto'}} pt={2}>
+      {/* <TextField
         variant="outlined"
         label={'Filtrer notifikationer'}
         InputLabelProps={{shrink: true}}
@@ -68,7 +68,7 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
         value={typeAhead}
         onChange={(event) => settypeAhead(event.target.value)}
         style={{marginBottom: 12}}
-      />
+      /> */}
       <Box sx={{mb: 1}}>
         <Button onClick={handleExpandClick}>
           {expanded.length === 0 ? 'Fold ud' : 'Fold sammen'}
@@ -90,7 +90,7 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
               nodeId={location.locid.toString()}
               label={location.locname}
               key={location.locid}
-              sx={{fontWeight: 'bold', '.MuiTreeItem-label': {fontWeight: 'bold'}}}
+              sx={{fontWeight: 'bold', width: '98%', '.MuiTreeItem-label': {fontWeight: 'bold'}}}
             >
               {stations
                 ?.filter((station) => station.locid === location.locid)

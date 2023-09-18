@@ -13,7 +13,7 @@ const panAtom = atom(null);
 
 const style = {
   width: '100%',
-  height: '80vh',
+  height: '75vh',
 };
 
 const postponeIcon = L.divIcon({
@@ -154,7 +154,7 @@ function Map({data, isLoading, setLassoFilter}) {
       })
       .addTo(map);
 
-    L.control.lasso().addTo(map);
+    // L.control.lasso().addTo(map);
 
     map.on('lasso.finished', (event) => {
       console.log(event.layers);

@@ -24,7 +24,7 @@ export default function TrelloModal({open, setOpen, onSchedule}) {
     <div>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Trello</DialogTitle>
-        <DialogContent sx={{width: '300px'}}>
+        <DialogContent sx={{maxWidth: '300px'}}>
           <DialogContentText>Ekstra beskrivelse til Trello</DialogContentText>
           <TextField
             autoFocus

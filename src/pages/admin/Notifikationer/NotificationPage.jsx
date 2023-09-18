@@ -21,6 +21,7 @@ import TableComponent from 'src/components/TableComponent';
 import NotificationTree from './NotificationTree';
 import {atom, useAtom} from 'jotai';
 import {useEffect} from 'react';
+import useBreakpoints from '../../../hooks/useBreakpoints';
 
 const getNavigation = (item) => {
   switch (item.color) {
@@ -37,12 +38,15 @@ const colors = ['#FF0000', '#FF6C00', '#FFFF00', '#00FF00', '#9F2B68', '#334FFF'
 const tasktype = ['Kritisk', 'Middel', 'Lav', 'OK', 'Kvalitetssikring', 'Plateau'];
 const selectFiltersAtom = atom(colors);
 const lassoFilterAtom = atom(new Set());
+const isCustomerServiceAtom = atom(false);
 
 const NotificationPage = () => {
   const [mapdata, setMapdata] = useState([]);
   const [lassoFilter, setLassoFilter] = useAtom(lassoFilterAtom);
   const [selectFilters, setSelectFilters] = useAtom(selectFiltersAtom);
-  const [isCustomerService, setIsCustomerService] = useState(false);
+  const [isCustomerService, setIsCustomerService] = useAtom(isCustomerServiceAtom);
+
+  const {isTouch} = useBreakpoints();
 
   const queryClient = useQueryClient();
   const {data, isLoading} = useQuery(
@@ -100,14 +104,14 @@ const NotificationPage = () => {
     })
     .filter((item) => (lassoFilter.size > 0 ? lassoFilter.has(item.locid) : data.length < 20));
 
-  const numNotifications = uniqBy(notifications, 'stationid')?.length;
-  const numBattery = notifications?.filter((item) => item.notification_id === 1).length;
-  const numLevel = notifications?.filter((item) => item.notification_id === 'Niveau spring').length;
-  const numAbnormal = notifications?.filter(
-    (item) => item.notification_id === 'Abnormal hændelse'
-  ).length;
-  const numTilsyn = notifications?.filter((item) => [7, 8].includes(item.notification_id)).length;
-  const numPejling = notifications?.filter((item) => [5, 6].includes(item.notification_id)).length;
+  // const numNotifications = uniqBy(notifications, 'stationid')?.length;
+  // const numBattery = notifications?.filter((item) => item.notification_id === 1).length;
+  // const numLevel = notifications?.filter((item) => item.notification_id === 'Niveau spring').length;
+  // const numAbnormal = notifications?.filter(
+  //   (item) => item.notification_id === 'Abnormal hændelse'
+  // ).length;
+  // const numTilsyn = notifications?.filter((item) => [7, 8].includes(item.notification_id)).length;
+  // const numPejling = notifications?.filter((item) => [5, 6].includes(item.notification_id)).length;
 
   const handleChange = (event) => {
     const {
@@ -119,77 +123,79 @@ const NotificationPage = () => {
   return (
     <Grid container>
       <Grid item xs={12} md={6}>
-        <FormControl sx={{width: '40%', m: 1}}>
-          <InputLabel id="demo-simple-select-label">Filter</InputLabel>
-          <Select
-            multiple
-            value={selectFilters}
-            onChange={handleChange}
-            input={<OutlinedInput label="Filter" />}
-            label="Filter"
-            renderValue={(selected) => (
-              <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                {selected.map((value) => (
-                  <Chip
-                    key={value}
-                    label={tasktype[colors.indexOf(value)]}
-                    sx={{bgcolor: value}}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onDelete={() =>
-                      setSelectFilters(selectFilters.filter((item) => item !== value))
-                    }
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      if (selectFilters.length === 1) {
-                        setSelectFilters(colors);
-                      } else {
-                        setSelectFilters([value]);
+        <Box sx={{display: 'flex', flexDirection: isTouch && 'column'}}>
+          <FormControl sx={{width: isTouch ? '100%' : '40%', m: 1}}>
+            <InputLabel id="demo-simple-select-label">Filter</InputLabel>
+            <Select
+              multiple
+              value={selectFilters}
+              onChange={handleChange}
+              input={<OutlinedInput label="Filter" />}
+              label="Filter"
+              renderValue={(selected) => (
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={tasktype[colors.indexOf(value)]}
+                      sx={{bgcolor: value}}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onDelete={() =>
+                        setSelectFilters(selectFilters.filter((item) => item !== value))
                       }
-                    }}
-                  />
-                ))}
-              </Box>
-            )}
-          >
-            {colors?.map((name, index) => (
-              <MenuItem
-                key={name}
-                value={name}
-                sx={{
-                  // set background color of Mui MenuItem
-                  bgcolor: name,
-                  '&:hover': {bgcolor: name},
-                  '&.Mui-selected': {bgcolor: name},
-                  '&.Mui-selected:hover': {bgcolor: 'transparent'},
-                }}
-              >
-                {tasktype[index]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControlLabel
-          control={<Checkbox onChange={(e) => setIsCustomerService(e.target.checked)} />}
-          label="Vis kundeservice"
-        />
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        if (selectFilters.length === 1) {
+                          setSelectFilters(colors);
+                        } else {
+                          setSelectFilters([value]);
+                        }
+                      }}
+                    />
+                  ))}
+                </Box>
+              )}
+            >
+              {colors?.map((name, index) => (
+                <MenuItem
+                  key={name}
+                  value={name}
+                  sx={{
+                    // set background color of Mui MenuItem
+                    bgcolor: name,
+                    '&:hover': {bgcolor: name},
+                    '&.Mui-selected': {bgcolor: name},
+                    '&.Mui-selected:hover': {bgcolor: 'transparent'},
+                  }}
+                >
+                  {tasktype[index]}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControlLabel
+            control={<Checkbox onChange={(e) => setIsCustomerService(e.target.checked)} />}
+            label="Vis kundeservice"
+          />
+        </Box>
         <ServiceMap data={mapdata} isLoading={isLoading} setLassoFilter={setLassoFilter} />
       </Grid>
-      <Grid item xs={12} md={6} p={2}>
-        <Typography variant="h6">
+      <Grid item xs={12} md={6}>
+        {/* <Typography variant="h6">
           Batteriskift: {numBattery} ud af {numNotifications}
-        </Typography>
+        </Typography> */}
         {/* <Typography variant="h6">
           Niveau spring: {numLevel} ud af {numNotifications}
         </Typography>
         <Typography variant="h6">
           Abnormal hændelse: {numAbnormal} ud af {numNotifications}
         </Typography> */}
-        <Typography variant="h6">
+        {/* <Typography variant="h6">
           Tilsyn: {numTilsyn} ud af {numNotifications}
         </Typography>
         <Typography variant="h6">
           Pejling: {numPejling} ud af {numNotifications}
-        </Typography>
+        </Typography> */}
         <NotificationTree
           notifications={notifications}
           statusMutate={statusMutate}
