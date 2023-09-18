@@ -48,7 +48,8 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
   const [setLocationValue] = stamdataStore((store) => [store.setLocationValue]);
 
   const onPopupClickHandler = (element) => () => {
-    if (element.locid) navigate('location/' + element.locid);
+    console.log(element);
+    if (element.locid !== undefined) navigate('location/' + element.locid);
     else navigate('borehole/' + element.boreholeno);
   };
 
@@ -110,8 +111,8 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           callback: function (e) {
             const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
             console.log(coords);
-            setLocationValue('x', coords.Easting.toFixed(2));
-            setLocationValue('y', coords.Northing.toFixed(2));
+            setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
+            setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
             navigate('/field/stamdata');
           },
         },
