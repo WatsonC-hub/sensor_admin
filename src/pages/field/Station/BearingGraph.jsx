@@ -8,6 +8,7 @@ import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/apiClient';
 import {toast} from 'react-toastify';
 import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
+import {useCorrectData} from '../../../hooks/useCorrectData';
 
 const selectorOptions = {
   buttons: [
@@ -198,7 +199,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     state.location.terrainlevel,
   ]);
 
-  const toastId = useRef(null);
+  // const toastId = useRef(null);
 
   const queryClient = useQueryClient();
 
@@ -208,12 +209,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const [layout, setLayout] = useState(
     matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
   );
-
-  // useEffect(() => {
-  //   setLayout((prev) => {
-  //     return matches ? layout3 : layout1;
-  //   });
-  // }, [matches]);
 
   useEffect(() => {
     refetchData([ts_id, initRange]);
@@ -285,53 +280,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     }
   );
 
-  const {data: pollData, refetch} = useQuery(
-    ['pollData', ts_id],
-    async () => {
-      const {data, status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
-      return status;
-    },
-    {
-      enabled: true,
-      refetchInterval: (status) => {
-        return status === 204 ? 1000 : false;
-      },
-      onSuccess: (status) => {
-        if (status === 200) {
-          queryClient.removeQueries(['graphData', ts_id]);
-          refetchData();
-          toast.update(toastId.current, {
-            render: 'Genberegnet',
-            type: toast.TYPE.SUCCESS,
-            isLoading: false,
-            autoClose: 2000,
-            closeOnClick: true,
-            draggable: true,
-            progress: undefined,
-            hideProgressBar: false,
-          });
-        }
-      },
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    }
-  );
-
-  const correctMutation = useMutation(
-    async (data) => {
-      const {data: res} = await apiClient.post(`/sensor_field/station/correct/${ts_id}`, data);
-      return res;
-    },
-    {
-      onSuccess: () => {
-        setTimeout(() => {
-          refetch();
-        }, 5000);
-        //handleXRangeChange({'xaxis.range[0]': undefined});
-      },
-    }
-  );
+  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.waterlevel);
@@ -355,7 +304,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     name: 'Genkør data',
     icon: rerunIcon,
     click: function (gd) {
-      toastId.current = toast.loading('Genberegner...');
+      // toastId.current = toast.loading('Genberegner...');
       correctMutation.mutate({});
     },
   };
@@ -375,33 +324,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       setLayout(gd.layout);
     },
   };
-
-  // var addHorizontalLine = {
-  //   name: 'Tilføj terrænkote',
-  //   icon: rerunIcon,
-  //   click: function (gd) {
-  //     gd.layout = {
-  //       ...gd.layout,
-  //       shapes: [
-  //         {
-  //           type: 'line',
-  //           xref: 'paper',
-  //           yref: 'y',
-  //           x0: 0,
-  //           y0: terrainlevel,
-  //           x1: 1,
-  //           y1: terrainlevel,
-  //           line: {
-  //             color: 'rgb(55, 128, 191)',
-  //             width: 3,
-  //             dash: 'dot',
-  //           },
-  //         },
-  //       ],
-  //     };
-  //     setLayout(gd.layout);
-  //   },
-  // };
 
   var makeLinkButton = {
     name: 'Ekstern link',
@@ -508,7 +430,7 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
       style={{
         width: 'auto',
         height: matches ? '300px' : '500px',
-        marginBottom: '10px',
+        // marginBottom: '10px',
         paddingTop: '5px',
         border: '2px solid gray',
       }}

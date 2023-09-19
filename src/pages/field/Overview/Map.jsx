@@ -374,7 +374,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
             {...params}
             size="small"
             variant="outlined"
-            placeholder="Søg efter boring"
+            placeholder="Søg efter lokation..."
             style={{marginTop: '-6px'}}
           />
         )}

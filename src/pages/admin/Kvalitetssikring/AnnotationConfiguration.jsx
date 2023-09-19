@@ -35,7 +35,7 @@ const AnnotationConfiguration = ({
   const handleSelectionAnnotate = () => {
     if (annotationConfiguration.annotateDateRange) {
       // Annotate date range
-      const moments = selection.map((d) => moment(d));
+      const moments = selection.map((d) => moment(d.x));
       const startdate = moment.min(moments).format('YYYY-MM-DD HH:mm:ss');
       const enddate = moment.max(moments).format('YYYY-MM-DD HH:mm:ss');
       labelMutation.mutate(
@@ -56,8 +56,8 @@ const AnnotationConfiguration = ({
       // Annotate point selection
       const payload = selection.map((d) => ({
         label_id: annotationConfiguration?.label,
-        startdate: moment(d).format('YYYY-MM-DD HH:mm:ss'),
-        enddate: moment(d).format('YYYY-MM-DD HH:mm:ss'),
+        startdate: moment(d.x).format('YYYY-MM-DD HH:mm:ss'),
+        enddate: moment(d.x).format('YYYY-MM-DD HH:mm:ss'),
       }));
       labelMutation.mutate(payload);
     }
@@ -74,7 +74,7 @@ const AnnotationConfiguration = ({
         // backgroundColor: 'primary.light',
         // color: 'primary.contrastText',
         // width: 300,
-        m: 1,
+        mt: 1,
       }}
     >
       <CardHeader title={'Annotering'} sx={{}} />
