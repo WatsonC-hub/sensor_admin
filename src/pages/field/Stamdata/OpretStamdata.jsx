@@ -170,13 +170,16 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const navigate = useNavigate();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
-  const [locationDialogOpen, setLocationDialogOpen] = React.useState(store.location.x ? true : false);
+  const [locationDialogOpen, setLocationDialogOpen] = React.useState(
+    store.location.x ? true : false
+  );
 
-  
   const queryClient = useQueryClient();
 
   useEffect(() => {
     return () => {
+      store.resetLocation();
+      store.resetTimeseries();
       store.resetUnit();
     };
   }, []);
