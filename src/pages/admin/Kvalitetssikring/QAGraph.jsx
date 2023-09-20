@@ -256,11 +256,10 @@ function PlotGraph({controlData, qaData, ts_id}) {
 
   const handlePlotlySelected = (eventData) => {
     console.log(eventData);
-    setSelection(
-      eventData.points.map((pt) => {
-        return {x: pt.x, y: pt.y};
-      })
-    );
+    const selection = eventData?.points?.map((pt) => {
+      return {x: pt.x, y: pt.y};
+    });
+    setSelection(selection || []);
   };
 
   const handleRelayout = (e) => {
@@ -415,7 +414,7 @@ function PlotGraph({controlData, qaData, ts_id}) {
         responsive: true,
         modeBarButtons: [
           [rerunQAButton, downloadButton, makeLinkButton, rerunButton],
-          ['lasso2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+          ['select2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
         ],
 
         displaylogo: false,
@@ -430,27 +429,6 @@ function PlotGraph({controlData, qaData, ts_id}) {
 export default function QAGraph({stationId, measurements}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
-  const [annotationConfiguration, setAnnotationConfiguration] = useState({
-    active: false,
-    label: 1,
-    annotateDateRange: true,
-  });
-
-  const {data: label_options} = useQuery(['label_options'], async () => {
-    const {data} = await apiClient.get(`/sensor_admin/label_options`);
-    return data;
-  });
-
-  const labelMutation = useMutation(async (data) => {
-    const {data: res} = await apiClient.post(`/sensor_admin/qa_labels/${stationId}`, data);
-    return res;
-  });
-
-  const handledMutation = useMutation(async (data) => {
-    const {data: res} = await apiClient.post(`/sensor_admin/qa_handled/${stationId}`);
-    return res;
-  });
 
   // const {data: graphData} = useQuery(
   //   ['graphData', stationId],
@@ -477,50 +455,26 @@ export default function QAGraph({stationId, measurements}) {
   });
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={10} sm={10}>
-        <div
-          style={{
-            width: 'auto',
-            height: matches ? '300px' : '500px',
-            // marginBottom: '10px',
-            // marginTop: '-10px',
-            paddingTop: '5px',
-            border: '2px solid gray',
-          }}
-        >
-          <PlotGraph
-            key={'plotgraph' + stationId}
-            // graphData={graphData}
-            controlData={measurements}
-            qaData={qaData}
-            ts_id={stationId}
-          />
-        </div>
-        <GraphActions />
-      </Grid>
-      <Grid item xs={2} sm={2} alignContent="center" alignItems="center">
-        <Button
-          ml={1}
-          color="secondary"
-          variant="contained"
-          onClick={async () => {
-            toast.promise(() => handledMutation.mutateAsync(), {
-              pending: 'Markerer som færdighåndteret',
-              success: 'Færdighåndteret',
-              error: 'Fejl',
-            });
-          }}
-        >
-          Færdighåndteret til nu
-        </Button>
-        <AnnotationConfiguration
-          annotationConfiguration={annotationConfiguration}
-          setAnnotationConfiguration={setAnnotationConfiguration}
-          label_options={label_options}
-          labelMutation={labelMutation}
+    <Box display="flex" flexDirection="column">
+      <div
+        style={{
+          width: 'auto',
+          height: matches ? '300px' : '500px',
+          // marginBottom: '10px',
+          // marginTop: '-10px',
+          paddingTop: '5px',
+          border: '2px solid gray',
+        }}
+      >
+        <PlotGraph
+          key={'plotgraph' + stationId}
+          // graphData={graphData}
+          controlData={measurements}
+          qaData={qaData}
+          ts_id={stationId}
         />
-      </Grid>
-    </Grid>
+      </div>
+      <GraphActions />
+    </Box>
   );
 }
