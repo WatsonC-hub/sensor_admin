@@ -11,17 +11,7 @@ import {
   CardHeader,
 } from '@mui/material';
 
-import {useNavigate} from 'react-router-dom';
-import {toast} from 'react-toastify';
-import {useQuery, useMutation} from '@tanstack/react-query';
-import * as z from 'zod';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {useForm} from 'react-hook-form';
-import FormInput from 'src/components/FormInput';
-
 const OptionsForm = ({name, options}) => {
-
-    
   return (
     <Card
       sx={{

@@ -3,6 +3,8 @@ import {useNavigate} from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet.locatecontrol';
 import 'leaflet-lasso';
+import 'leaflet-contextmenu';
+import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import {atom, useAtom} from 'jotai';
 import {mapboxToken} from 'src/consts';
 
@@ -11,7 +13,7 @@ const panAtom = atom(null);
 
 const style = {
   width: '100%',
-  height: '80vh',
+  height: '75vh',
 };
 
 const postponeIcon = L.divIcon({
@@ -101,6 +103,39 @@ function Map({data, isLoading, setLassoFilter}) {
       zoom: 7,
       layers: [outdormapbox],
       tap: false,
+      contextmenu: true,
+      contextmenuWidth: 140,
+      contextmenuItems: [
+        {
+          text: 'Link til Google Maps',
+          callback: function (e) {
+            window.open(
+              `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+              '_blank'
+            );
+          },
+        },
+        '-',
+        {
+          text: 'Zoom ind',
+          callback: function (e) {
+            map.zoomIn();
+          },
+        },
+        {
+          text: 'Zoom ud',
+          callback: function (e) {
+            map.zoomOut();
+          },
+        },
+
+        {
+          text: 'Centrer kort her',
+          callback: function (e) {
+            map.panTo(e.latlng);
+          },
+        },
+      ],
     });
 
     var baseMaps = {
@@ -119,7 +154,7 @@ function Map({data, isLoading, setLassoFilter}) {
       })
       .addTo(map);
 
-    L.control.lasso().addTo(map);
+    // L.control.lasso().addTo(map);
 
     map.on('lasso.finished', (event) => {
       console.log(event.layers);

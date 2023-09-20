@@ -6,61 +6,21 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import QrReader from 'react-qr-scanner';
-import {useNavigate} from 'react-router-dom';
 import {Typography} from '@mui/material';
-import {apiClient} from 'src/pages/field/fieldAPI';
-import {toast} from 'react-toastify';
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 var running = false;
 
-export default function CaptureDialog({handleClose, open}) {
-  async function getData(labelid) {
-    const {data} = await apiClient.get(`/sensor_field/calypso_id/${labelid}`);
-    return data;
-  }
-
-  const navigate = useNavigate();
-
+export default function CaptureDialog({handleClose, handleScan, open}) {
   const [showText, setShowText] = useState(true);
 
-  async function handleScan(data) {
+  async function handleScanning(data) {
     if (data !== null && !running) {
       running = true;
-      const calypso_id = data['text'].split('/')[3];
-      console.log(calypso_id);
 
-      try {
-        const resp = await getData(calypso_id);
-
-        if (resp.loc_id) {
-          if (resp.ts_id) {
-            navigate(`/field/location/${resp.loc_id}/${resp.ts_id}`, {replace: true});
-          } else {
-            navigate(`/field/location/${resp.loc_id}`, {replace: true});
-          }
-        } else if (resp.boreholeno) {
-          if (resp.intakeno) {
-            navigate(`/field/borehole/${resp.boreholeno}/${resp.intakeno}`, {replace: true});
-          } else {
-            navigate(`/field/borehole/${resp.boreholeno}`, {replace: true});
-          }
-        } else {
-          toast.error('Ukendt fejl', {
-            autoClose: 2000,
-          });
-        }
-        handleClose();
-      } catch (e) {
-        console.log(e);
-        handleClose();
-        toast.error(e.response?.data?.detail ? e.response?.data?.detail : 'Ukendt fejl', {
-          autoClose: 2000,
-        });
-      }
+      await handleScan(data);
 
       running = false;
 
@@ -103,7 +63,7 @@ export default function CaptureDialog({handleClose, open}) {
           delay={100}
           // style={previewStyle}
           onError={handleError}
-          onScan={handleScan}
+          onScan={handleScanning}
           onLoad={(e) => setShowText(false)}
           constraints={{
             video: {

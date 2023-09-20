@@ -6,7 +6,7 @@ import {
   PriorityHighOutlined,
   ErrorOutlineOutlined,
 } from '@mui/icons-material';
-import {sortBy, uniqBy} from 'lodash';
+import {sortBy, uniqBy, groupBy, map, maxBy} from 'lodash';
 import {Box, Button, TextField, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {atom, useAtom} from 'jotai';
@@ -18,15 +18,17 @@ const typeAheadAtom = atom('');
 
 const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   const [expanded, setExpanded] = useAtom(expandedAtom);
-  const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
+  // const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
 
   var rows = [];
   // filter data based on typeAhead and columns
   if (notifications) {
-    rows = notifications.filter((row) => {
-      return Object.keys(row).some((column) => {
-        return row[column].toString().toLowerCase().indexOf(typeAhead.toLowerCase()) > -1;
-      });
+    const grouped = groupBy(notifications, (item) => {
+      return [item['stationid'], item['notification_id']];
+    });
+
+    rows = map(grouped, (group) => {
+      return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));
     });
   }
 
@@ -57,8 +59,8 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   }, [notifications]);
 
   return (
-    <Box sx={{height: '80vh', overflowY: 'auto'}} pt={2}>
-      <TextField
+    <Box sx={{height: '100%', overflowY: 'auto'}} pt={2}>
+      {/* <TextField
         variant="outlined"
         label={'Filtrer notifikationer'}
         InputLabelProps={{shrink: true}}
@@ -66,10 +68,10 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
         value={typeAhead}
         onChange={(event) => settypeAhead(event.target.value)}
         style={{marginBottom: 12}}
-      />
+      /> */}
       <Box sx={{mb: 1}}>
         <Button onClick={handleExpandClick}>
-          {expanded.length === 0 ? 'Expand all' : 'Collapse all'}
+          {expanded.length === 0 ? 'Fold ud' : 'Fold sammen'}
         </Button>
       </Box>
       <TreeView
@@ -88,7 +90,7 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
               nodeId={location.locid.toString()}
               label={location.locname}
               key={location.locid}
-              sx={{fontWeight: 'bold', '.MuiTreeItem-label': {fontWeight: 'bold'}}}
+              sx={{fontWeight: 'bold', width: '98%', '.MuiTreeItem-label': {fontWeight: 'bold'}}}
             >
               {stations
                 ?.filter((station) => station.locid === location.locid)
@@ -113,13 +115,13 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
                             <NotificationRow
                               key={notification.id}
                               notification={notification}
-                              onPostpone={() =>
+                              onPostpone={(date) =>
                                 statusMutate.mutate([
                                   {
                                     ts_id: notification.stationid,
                                     notification_id: notification.notification_id,
                                     status: 'POSTPONED',
-                                    enddate: moment().add(7, 'days').format('YYYY-MM-DDTHH:mm:ss'),
+                                    enddate: moment(date).format('YYYY-MM-DDTHH:mm'),
                                   },
                                 ])
                               }

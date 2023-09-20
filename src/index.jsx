@@ -1,11 +1,9 @@
 import React from 'react';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from 'react-router-dom';
 import {ThemeProvider, StyledEngineProvider} from '@mui/material';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
-import {QueryClientProvider} from '@tanstack/react-query';
 import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
 import {ToastContainer} from 'react-toastify';
 import {createRoot} from 'react-dom/client';

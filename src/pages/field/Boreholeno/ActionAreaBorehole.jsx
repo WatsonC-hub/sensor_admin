@@ -36,7 +36,7 @@ function BottomNav({setFormToShow, canEdit}) {
     >
       <BottomNavigationAction
         sx={bottomNavStyle}
-        disabled={!canEdit}
+        // disabled={!canEdit}
         label="Indberet pejling"
         icon={<AddCircle />}
         onClick={() => {
@@ -45,7 +45,7 @@ function BottomNav({setFormToShow, canEdit}) {
       />
       <BottomNavigationAction
         sx={borderGrey}
-        disabled={!canEdit}
+        // disabled={!canEdit}
         label="Målepunkter"
         onClick={() => {
           setFormToShow('ADDMAALEPUNKT');
@@ -54,7 +54,7 @@ function BottomNav({setFormToShow, canEdit}) {
       />
       <BottomNavigationAction
         sx={borderGrey}
-        disabled={!canEdit}
+        // disabled={!canEdit}
         label="Billeder"
         showLabel={true}
         icon={<PhotoCameraRoundedIcon />}
@@ -62,16 +62,18 @@ function BottomNav({setFormToShow, canEdit}) {
           setFormToShow('CAMERA');
         }}
       />
-      {/* <BottomNavigationAction
-        sx={borderGrey}
-        disabled={!canEdit}
-        label="Stamdata"
-        showLabel={true}
-        icon={<EditRounded />}
-        onClick={() => {
-          setFormToShow('STAMDATA');
-        }}
-      /> */}
+      {canEdit && (
+        <BottomNavigationAction
+          sx={borderGrey}
+          // disabled={!canEdit}
+          label="Stamdata"
+          showLabel={true}
+          icon={<EditRounded />}
+          onClick={() => {
+            setFormToShow('STAMDATA');
+          }}
+        />
+      )}
     </BottomNavigation>
   );
 }

@@ -168,14 +168,18 @@ function Location({setLocationDialogOpen}) {
 
 export default function OpretStamdata({setAddStationDisabled}) {
   const navigate = useNavigate();
-  const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
-  const [locationDialogOpen, setLocationDialogOpen] = React.useState(false);
-
   const store = stamdataStore();
+  const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
+  const [locationDialogOpen, setLocationDialogOpen] = React.useState(
+    store.location.x ? true : false
+  );
+
   const queryClient = useQueryClient();
 
   useEffect(() => {
     return () => {
+      store.resetLocation();
+      store.resetTimeseries();
       store.resetUnit();
     };
   }, []);
@@ -187,6 +191,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
         loc_name: '',
         terrainqual: '',
         loctype_id: -1,
+        x: store.location.x,
+        y: store.location.y,
       },
       timeseries: {
         tstype_id: -1,

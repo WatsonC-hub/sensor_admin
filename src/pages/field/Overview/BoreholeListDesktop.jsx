@@ -5,6 +5,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import {Grid, VirtualTable, TableHeaderRow} from '@devexpress/dx-react-grid-material-ui';
 import {TextField} from '@mui/material';
 import useWindowDimensions from '../../../hooks/useWindowDimensions';
+import {atom, useAtom} from 'jotai';
+
+const typeAheadAtom = atom('');
 
 const Cell = (props) => {
   const navigate = useNavigate();
@@ -37,7 +40,7 @@ const columns = [
 ];
 
 export default function BoreholeListDesktop({data, loading}) {
-  const [typeAhead, settypeAhead] = useState('');
+  const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
   const {height, width} = useWindowDimensions();
 
   var rows = [];

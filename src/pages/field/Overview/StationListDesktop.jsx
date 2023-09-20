@@ -14,6 +14,9 @@ import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
 import HeightIcon from '@mui/icons-material/Height';
 import {useTheme} from '@mui/material/styles';
+import {atom, useAtom} from 'jotai';
+
+const typeAheadAtom = atom('');
 
 const RowDetail = ({row}) => (
   <List>
@@ -101,7 +104,7 @@ const columns = [
 ];
 
 export default function StationListDesktop({data, loading}) {
-  const [typeAhead, settypeAhead] = useState('');
+  const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
   const {height, width} = useWindowDimensions();
   const theme = useTheme();
   const [value, setValue] = React.useState(0);
@@ -129,9 +132,12 @@ export default function StationListDesktop({data, loading}) {
         };
       })
       .filter((elem) => {
+        const opgave = elem.opgave ? elem.opgave.toLowerCase() : '';
+
         return (
           elem.ts_name.toLowerCase().includes(typeAhead.toLowerCase()) ||
-          elem.calypso_id.toString().toLowerCase().includes(typeAhead.toLowerCase())
+          elem.calypso_id.toString().toLowerCase().includes(typeAhead.toLowerCase()) ||
+          opgave.includes(typeAhead.toLowerCase())
         );
       });
   }
