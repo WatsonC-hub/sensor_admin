@@ -31,7 +31,7 @@ const FormInput = ({name, warning, children, rules, transform, ...otherProps}) =
             value={value}
             onBlur={onBlur}
             ref={ref}
-            defaultValue={''}
+            // defaultValue={''}
             sx={{
               '& .MuiInputBase-input.Mui-disabled': {
                 WebkitTextFillColor: '#000000',

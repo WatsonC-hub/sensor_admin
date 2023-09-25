@@ -47,7 +47,7 @@ const AnnotationConfiguration = ({stationId}) => {
   const handleSelectionAnnotate = () => {
     if (annotationConfiguration.annotateDateRange) {
       // Annotate date range
-      const moments = selection.map((d) => moment(d.x));
+      const moments = selection.points.map((d) => moment(d.x));
       const startdate = moment.min(moments).format('YYYY-MM-DD HH:mm:ss');
       const enddate = moment.max(moments).format('YYYY-MM-DD HH:mm:ss');
       labelMutation.mutate(
@@ -60,18 +60,23 @@ const AnnotationConfiguration = ({stationId}) => {
         ],
         {
           onSuccess: () => {
+            toast.success('Annoteret', {autoClose: 1000});
             queryClient.invalidateQueries(['qa_labels']);
           },
         }
       );
     } else {
       // Annotate point selection
-      const payload = selection.map((d) => ({
+      const payload = selection.points.map((d) => ({
         label_id: annotationConfiguration?.label,
         startdate: moment(d.x).format('YYYY-MM-DD HH:mm:ss'),
         enddate: moment(d.x).format('YYYY-MM-DD HH:mm:ss'),
       }));
-      labelMutation.mutate(payload);
+      labelMutation.mutate(payload, {
+        onSuccess: () => {
+          toast.success('Annoteret', {autoClose: 1000});
+        },
+      });
     }
   };
   return (

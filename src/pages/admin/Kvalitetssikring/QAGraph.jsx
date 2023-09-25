@@ -5,7 +5,7 @@ import moment from 'moment';
 import axios from 'axios';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
-import React, {useEffect, useState, useRef, memo} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {Typography, Alert, Grid, Button, Box} from '@mui/material';
 import AnnotationConfiguration from './AnnotationConfiguration';
 import {toast} from 'react-toastify';
@@ -21,6 +21,7 @@ import {useCorrectData} from 'src/hooks/useCorrectData';
 import {qaSelection} from 'src/state/atoms';
 import {useRunQA} from 'src/hooks/useRunQA';
 import GraphActions from './GraphActions';
+import {MetadataContext} from 'src/state/contexts';
 
 const selectorOptions = {
   buttons: [
@@ -152,7 +153,7 @@ const layout3 = {
     },
   },
 
-  showlegend: false,
+  showlegend: true,
   legend: {
     x: 0,
     y: -0.15,
@@ -253,20 +254,34 @@ function PlotGraph({controlData, qaData, ts_id}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
+  const metadata = useContext(MetadataContext);
 
   const handlePlotlySelected = (eventData) => {
-    console.log(eventData);
-    const selection = eventData?.points?.map((pt) => {
-      return {x: pt.x, y: pt.y};
-    });
-    setSelection(selection || []);
+    if (eventData === undefined) {
+      return;
+    } else {
+      eventData.points = eventData?.points?.map((pt) => {
+        return {x: pt.x, y: pt.y};
+      });
+      setSelection(eventData);
+    }
   };
 
+  useEffect(() => {
+    return () => {
+      setSelection({});
+    };
+  }, []);
+
   const handleRelayout = (e) => {
-    console.log(e);
+    console.log('relayout', e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
+    }
+
+    if (e['selections'] && e['selections'].length === 0) {
+      setSelection({});
     }
 
     if (e['dragmode']) {
@@ -389,7 +404,7 @@ function PlotGraph({controlData, qaData, ts_id}) {
         {
           x: graphData?.x,
           y: graphData?.y,
-          name: graphData?.name,
+          name: metadata?.loc_name + ' ' + metadata?.ts_name,
           type: 'scattergl',
           line: {width: 2},
           mode: 'lines+markers',
@@ -409,11 +424,20 @@ function PlotGraph({controlData, qaData, ts_id}) {
           },
         },
       ]}
-      layout={{...layout, shapes: shapelist, annotations: annotateList, uirevision: 'true'}}
+      layout={{
+        ...layout,
+        shapes: shapelist,
+        annotations: annotateList,
+        uirevision: 'true',
+        yaxis: {
+          title: `${metadata?.tstype_name} [${metadata?.unit}]`,
+          font: {size: matches ? 6 : 12},
+        },
+      }}
       config={{
         responsive: true,
         modeBarButtons: [
-          [rerunQAButton, downloadButton, makeLinkButton, rerunButton],
+          [rerunQAButton, rerunButton],
           ['select2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
         ],
 
@@ -455,7 +479,7 @@ export default function QAGraph({stationId, measurements}) {
   });
 
   return (
-    <Box display="flex" flexDirection="column">
+    <Box display="flex" flexDirection="column" gap={1}>
       <div
         style={{
           width: 'auto',

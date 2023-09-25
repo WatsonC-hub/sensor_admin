@@ -38,7 +38,6 @@ const AlgorithmCard = ({algorithm}) => {
       algorithm: algorithm.algorithm,
       parameters: data,
     };
-    console.log(payload);
     toast.promise(() => submitData.mutateAsync(payload), {
       pending: 'Gemmer indstillinger',
       success: 'Indstillinger gemt',
@@ -50,7 +49,6 @@ const AlgorithmCard = ({algorithm}) => {
     const schema = z.object({});
 
     algorithm?.parameters?.forEach((option) => {
-      console.log(option);
       if (option.type === 'number') {
         schema.shape[option.name] = z
           .number()
