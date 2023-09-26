@@ -197,6 +197,13 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         });
 
         let popupContent = L.DomUtil.create('div', 'content');
+
+        // popupContent.style.backgroundColor = '#fff'; // Background color
+        // popupContent.style.padding = '10px'; // Padding
+        // popupContent.style.border = '1px solid #ccc'; // Border
+        // popupContent.style.borderRadius = '5px'; // Border radius
+        // popupContent.style.textAlign = 'center'; // Text alignment
+
         popupContent.innerHTML =
           '<center><b>' +
           element.boreholeno +
@@ -225,10 +232,26 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           title: element.locname,
         });
         let popupContent = L.DomUtil.create('div', 'content');
-        popupContent.innerHTML =
-          element.mouseover.split('<b style="color:#10ae8c;">-----------</b>')[0] +
-          '</p>' +
-          '<a>Se graf</a>';
+
+        // popupContent.style.backgroundColor = '#fff'; // Background color
+        // popupContent.style.padding = '10px'; // Padding
+        // popupContent.style.border = '1px solid #ccc'; // Border
+        // popupContent.style.borderRadius = '5px'; // Border radius
+        // popupContent.style.textAlign = 'center'; // Text alignment
+
+        if (
+          element.mouseover == null ||
+          element.mouseover == '' ||
+          element.mouseover == '<p></p>'
+        ) {
+          popupContent.innerHTML =
+            `<b style="color:#10ae8c;">${element.locname}</b>` + '</p>' + '<a>Se graf</a>';
+        } else {
+          popupContent.innerHTML =
+            element.mouseover.split('<b style="color:#10ae8c;">-----------</b>')[0] +
+            '</p>' +
+            '<a>Se graf</a>';
+        }
 
         let popup = L.popup().setContent(popupContent);
         marker.bindPopup(popup);
@@ -236,14 +259,15 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
 
         marker.addTo(layerRef.current);
       });
+      console.log(layerRef.current.getBounds());
       if (zoom !== null) {
         mapRef.current.setView(pan, zoom);
       } else {
         if (layerRef.current.getBounds().isValid()) {
           mapRef.current.fitBounds(layerRef.current.getBounds());
         }
-        setZoom(mapRef.current.getZoom());
-        setPan(mapRef.current.getCenter());
+        // setZoom(mapRef.current.getZoom());
+        // setPan(mapRef.current.getCenter());
       }
     }
     return () => {

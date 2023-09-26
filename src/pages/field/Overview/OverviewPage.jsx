@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {Suspense, useEffect} from 'react';
 import {useTheme} from '@mui/material/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -182,12 +182,14 @@ export default function OverviewPage() {
         </>
       </TabPanel>
       <TabPanel value={tabValue} index={0}>
-        <Map
-          sensorData={mapData}
-          boreholeData={boreholetabledata}
-          loading={mapLoading}
-          boreholeLoading={boreholeIsLoading}
-        />
+        {!mapLoading && !boreholeIsLoading && (
+          <Map
+            sensorData={mapData}
+            boreholeData={boreholetabledata}
+            loading={mapLoading}
+            boreholeLoading={boreholeIsLoading}
+          />
+        )}
       </TabPanel>
       {matches && <ScrollTop threshold={100} />}
     </>
