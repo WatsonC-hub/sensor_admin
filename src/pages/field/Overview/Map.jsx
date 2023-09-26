@@ -115,34 +115,42 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
             setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
             navigate('/field/stamdata');
           },
+          icon: 'leaflet-images/marker.png',
         },
         {
-          text: 'Link til Google Maps',
+          text: 'Google Maps',
           callback: function (e) {
+            const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
+            console.log(coords);
             window.open(
               `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
               '_blank'
             );
           },
+          icon: 'leaflet-images/map.png',
         },
         '-', // this is a separator
         {
           text: 'Zoom ind',
           callback: function (e) {
+            console.log(e);
             map.zoomIn();
           },
+          icon: 'leaflet-images/zoom-in.png',
         },
         {
           text: 'Zoom ud',
           callback: function (e) {
             map.zoomOut();
           },
+          icon: 'leaflet-images/zoom-out.png',
         },
         {
           text: 'Centrer kort her',
           callback: function (e) {
             map.panTo(e.latlng);
           },
+          icon: 'leaflet-images/center.png',
         },
       ],
     });
@@ -194,6 +202,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
         const marker = L.marker(point, {
           icon: boreholeIcon,
           title: element.boreholeno,
+          contextmenu: true,
         });
 
         let popupContent = L.DomUtil.create('div', 'content');
@@ -230,6 +239,7 @@ function Map({sensorData, boreholeData, loading, boreholeIsLoading}) {
           color: '#000000',
           fillColor: element.status ? '#3388ff' : '#C0C0C0',
           title: element.locname,
+          contextmenu: true,
         });
         let popupContent = L.DomUtil.create('div', 'content');
 
