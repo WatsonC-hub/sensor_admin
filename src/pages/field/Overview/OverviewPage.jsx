@@ -53,13 +53,26 @@ export default function OverviewPage() {
     }
   );
 
-  const {data: boreholetabledata, boreholeIsLoading} = useQuery(
+  const {data: boreholetabledata, isLoading: boreholeIsLoading} = useQuery(
     ['borehole_list'],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
       return data;
     },
-    {enabled: boreholeAccess}
+    {
+      enabled: boreholeAccess,
+    }
+  );
+
+  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery(
+    ['borehole_map'],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
+      return data;
+    },
+    {
+      enabled: boreholeAccess,
+    }
   );
 
   const {data: mapData, isLoading: mapLoading} = useQuery(
@@ -182,14 +195,12 @@ export default function OverviewPage() {
         </>
       </TabPanel>
       <TabPanel value={tabValue} index={0}>
-        {!mapLoading && !boreholeIsLoading && (
-          <Map
-            sensorData={mapData}
-            boreholeData={boreholetabledata}
-            loading={mapLoading}
-            boreholeLoading={boreholeIsLoading}
-          />
-        )}
+        <Map
+          sensorData={mapData}
+          boreholeData={boreholeMapdata}
+          loading={mapLoading}
+          boreholeLoading={boreholeMapIsLoading}
+        />
       </TabPanel>
       {matches && <ScrollTop threshold={100} />}
     </>
