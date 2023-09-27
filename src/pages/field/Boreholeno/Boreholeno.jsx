@@ -245,7 +245,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   return (
-    <div>
+    <>
       {formToShow !== 'CAMERA' && (
         <BearingGraph
           boreholeno={boreholeno}
@@ -347,7 +347,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         setFormToShow={setFormToShow}
         canEdit={canEdit}
       />
-    </div>
+    </>
   );
 };
 

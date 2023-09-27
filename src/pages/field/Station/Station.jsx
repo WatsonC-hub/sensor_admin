@@ -327,7 +327,7 @@ export default function Station({stationId, stamdata}) {
 
   return (
     // <>
-    <div>
+    <>
       <BearingGraph
         stationId={stationId}
         measurements={control}
@@ -408,6 +408,6 @@ export default function Station({stationId, stamdata}) {
         isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
       />
-    </div>
+    </>
   );
 }

@@ -37,7 +37,6 @@ function DesktopBottomNav({setFormToShow, canEdit, isCalculated, isWaterlevel}) 
         backgroundColor: 'primary.main',
         width: 'auto',
         height: 'auto',
-        margin: '5px',
         boxShadow: '0 3px 5px 2px rgba(115,115,115,255)',
         position: 'sticky',
         bottom: '0',
@@ -121,7 +120,7 @@ function MobileBottomNav({setFormToShow, canEdit, isCalculated, isWaterlevel}) {
       sx={{
         backgroundColor: 'primary.main',
         height: 'auto',
-        margin: '5px',
+        width: 'auto',
         boxShadow: '0 3px 5px 2px rgba(115,115,115,255)',
         position: 'sticky',
         bottom: '0',
