@@ -19,6 +19,7 @@ import Box from '@mui/material/Box';
 import BoreholeList from './BoreholeList';
 import BoreholeListDesktop from './BoreholeListDesktop';
 import {authStore} from 'src/state/store';
+import StationTable from './StationTable';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -121,7 +122,7 @@ export default function OverviewPage() {
         aria-labelledby={`full-width-tab-${index}`}
         {...other}
       >
-        {value === index && <Box p={2}>{children}</Box>}
+        {value === index && <Box p={1}>{children}</Box>}
       </div>
     );
   }
@@ -177,9 +178,11 @@ export default function OverviewPage() {
           {iotAccess && (
             <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
               {matches ? (
-                <StationList data={tabledata} loading={isLoading} />
+                // <StationList data={tabledata} loading={isLoading} />
+                <StationTable data={tabledata} isLoading={isLoading} />
               ) : (
-                <StationListDesktop data={tabledata} loading={isLoading} />
+                // <StationListDesktop data={tabledata} loading={isLoading} />
+                <StationTable data={tabledata} isLoading={isLoading} />
               )}
             </TabPanel>
           )}
