@@ -33,8 +33,9 @@ const ExcludeModal = ({open, onClose}) => {
   const queryClient = useQueryClient();
 
   const excludeMutation = useMutation(
-    async (data) => {
-      const {data: res} = await apiClient.post(`/sensor_admin/qa_exclude/${metadata?.ts_id}`, data);
+    async (mutation_data) => {
+      const {path, data} = mutation_data;
+      const {data: res} = await apiClient.post(`/sensor_admin/qa_exclude/${path}`, data);
       return res;
     },
     {
@@ -50,11 +51,14 @@ const ExcludeModal = ({open, onClose}) => {
 
   const onAccept = () => {
     excludeMutation.mutate({
-      startdate: minX,
-      enddate: maxX,
-      minvalue: Number(minY),
-      maxvalue: Number(maxY),
-      comment: comment,
+      path: `${metadata?.ts_id}`,
+      data: {
+        startdate: minX,
+        enddate: maxX,
+        min_value: Number(minY),
+        max_value: Number(maxY),
+        comment: comment,
+      },
     });
   };
 

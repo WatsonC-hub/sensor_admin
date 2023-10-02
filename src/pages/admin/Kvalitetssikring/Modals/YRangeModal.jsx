@@ -17,8 +17,8 @@ import {apiClient} from 'src/apiClient';
 
 const YRangeModal = ({open, onClose}) => {
   const selection = useAtomValue(qaSelection);
-  const [minY, setMinY] = useState(selection?.selections?.[0]?.y1?.toFixed(2));
-  const [maxY, setMaxY] = useState(selection?.selections?.[0]?.y0?.toFixed(2));
+  const [minY, setMinY] = useState(selection?.selections?.[0]?.y1?.toFixed(4));
+  const [maxY, setMaxY] = useState(selection?.selections?.[0]?.y0?.toFixed(4));
   const metadata = useContext(MetadataContext);
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,8 +32,9 @@ const YRangeModal = ({open, onClose}) => {
   const queryClient = useQueryClient();
 
   const yRangeMutation = useMutation(
-    async (data) => {
-      const {data: res} = await apiClient.post(`/sensor_admin/qa_yrange/${metadata?.ts_id}`, data);
+    async (mutation_data) => {
+      const {path, data} = mutation_data;
+      const {data: res} = await apiClient.post(`/sensor_admin/qa_minmax/${path}`, data);
       return res;
     },
     {
@@ -49,8 +50,8 @@ const YRangeModal = ({open, onClose}) => {
 
   const onAccept = () => {
     yRangeMutation.mutate({
-      minvalue: Number(minY),
-      maxvalue: Number(maxY),
+      path: `${metadata?.ts_id}`,
+      data: {mincutoff: Number(minY), maxcutoff: Number(maxY)},
     });
   };
 
@@ -65,6 +66,7 @@ const YRangeModal = ({open, onClose}) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'left',
+              gap: 0.5,
             }}
           >
             <TextField
@@ -86,6 +88,7 @@ const YRangeModal = ({open, onClose}) => {
               onChange={(e) => setMaxY(e.target.value)}
               sx={{maxWidth: '120px'}}
             />
+            <Typography gutterBottom> {metadata?.unit}</Typography>
           </Box>
           <Typography gutterBottom>
             <b>Obs:</b> Denne ændring vil gøre at alle punkter udenfor disse værdier vil blive

@@ -25,17 +25,15 @@ const LevelCorrectionModal = ({open, onClose}) => {
     onClose();
   };
 
-  const y = selection?.points?.[0]?.y?.toFixed(2);
+  const y = selection?.points?.[0]?.y?.toFixed(4);
   const x = moment(selection?.points?.[0]?.x).format('YYYY-MM-DD HH:mm');
 
   const queryClient = useQueryClient();
 
   const levelCorrectionMutation = useMutation(
-    async (data) => {
-      const {data: res} = await apiClient.post(
-        `/sensor_admin/qa_levelcorrection/${metadata?.ts_id}`,
-        data
-      );
+    async (mutation_data) => {
+      const {path, data} = mutation_data;
+      const {data: res} = await apiClient.post(`/sensor_admin/qa_levelcorrection/${path}`, data);
       return res;
     },
     {
@@ -44,15 +42,15 @@ const LevelCorrectionModal = ({open, onClose}) => {
       },
       onSuccess: () => {
         queryClient.invalidateQueries(['qa', metadata?.ts_id]);
-        toast.success('Valide værdier er gemt');
+        toast.success('Data er gemt');
       },
     }
   );
 
   const onAccept = () => {
     levelCorrectionMutation.mutate({
-      x: x,
-      comment: comment,
+      path: `${metadata?.ts_id}`,
+      data: {date: x, comment: comment},
     });
   };
 
@@ -62,7 +60,7 @@ const LevelCorrectionModal = ({open, onClose}) => {
         <DialogTitle>Niveau korrektion</DialogTitle>
         <DialogContent>
           <Typography gutterBottom>
-            Korrigerer grafen fremad ved at sætte det følgende punkt lig med det forrige punkt
+            Korrigerer grafen fremadrettet ved at sætte det følgende punkt lig med det forrige punkt
           </Typography>
           <Typography gutterBottom>
             <b>Tid:</b> {x}
