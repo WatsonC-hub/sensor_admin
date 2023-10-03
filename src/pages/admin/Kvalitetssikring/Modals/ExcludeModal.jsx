@@ -9,13 +9,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import moment from 'moment';
 import {useAtomValue} from 'jotai';
 import {qaSelection} from 'src/state/atoms';
-import {Typography} from '@mui/material';
+import {FormControl, FormControlLabel, Radio, RadioGroup, Typography} from '@mui/material';
 import {toast} from 'react-toastify';
 import {useQueryClient, useMutation} from '@tanstack/react-query';
 import {MetadataContext} from 'src/state/contexts';
 import {apiClient} from 'src/apiClient';
 
 const ExcludeModal = ({open, onClose}) => {
+  const [radio, setRadio] = useState('selected');
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
   const metadata = useContext(MetadataContext);
@@ -54,8 +55,8 @@ const ExcludeModal = ({open, onClose}) => {
       data: {
         startdate: minX,
         enddate: maxX,
-        min_value: Number(minY),
-        max_value: Number(maxY),
+        min_value: radio == 'selected' ? Number(minY) : null,
+        max_value: radio == 'selected' ? Number(maxY) : null,
         comment: comment,
       },
     });
@@ -74,7 +75,7 @@ const ExcludeModal = ({open, onClose}) => {
           <Typography gutterBottom>
             {minY} - {maxY}
           </Typography>
-          <Typography gutterBottom>Ekskluderer {selection.points.length} punkter</Typography>
+
           <TextField
             label="Kommentar"
             variant="outlined"
@@ -84,6 +85,27 @@ const ExcludeModal = ({open, onClose}) => {
             multiline
             rows={3}
           />
+          <Typography gutterBottom>
+            Vil du fjerne alt inden for de to tidsstempler, eller kun de valgte punkter?
+          </Typography>
+          <FormControl>
+            <RadioGroup
+              aria-label="exclude"
+              name="exclude"
+              value={radio}
+              onChange={(e) => setRadio(e.target.value)}
+            >
+              <FormControlLabel control={<Radio />} label="Valgte punkter" value="selected" />
+              <FormControlLabel
+                control={<Radio />}
+                label="Alt inden for tidsstempler"
+                value="all"
+              />
+            </RadioGroup>
+          </FormControl>
+          {radio == 'selected' && (
+            <Typography gutterBottom>Ekskluderer {selection.points.length} punkter</Typography>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Fortryd</Button>
