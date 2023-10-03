@@ -25,11 +25,10 @@ const ExcludeModal = ({open, onClose}) => {
     onClose();
   };
 
-  const minX = moment.min(selection.points.map((d) => moment(d.x))).format('YYYY-MM-DD HH:mm');
-  const maxX = moment.max(selection.points.map((d) => moment(d.x))).format('YYYY-MM-DD HH:mm');
-  const minY = Math.min(...selection.points.map((d) => d.y)).toFixed(4);
-  const maxY = Math.max(...selection.points.map((d) => d.y)).toFixed(4);
-
+  const minX = moment(selection?.selections?.[0]?.x0).format('YYYY-MM-DD HH:mm');
+  const maxX = moment(selection?.selections?.[0]?.x1).format('YYYY-MM-DD HH:mm');
+  const minY = selection?.selections?.[0]?.y1?.toFixed(4);
+  const maxY = selection?.selections?.[0]?.y0?.toFixed(4);
   const queryClient = useQueryClient();
 
   const excludeMutation = useMutation(
