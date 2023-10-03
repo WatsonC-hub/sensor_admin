@@ -22,29 +22,74 @@ import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-materia
 import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
 import HeightIcon from '@mui/icons-material/Height';
+import SpeedIcon from '@mui/icons-material/Speed';
+import StraightenIcon from '@mui/icons-material/Straighten';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
+import WarningIcon from '@mui/icons-material/WarningAmber';
 
-function statusIcon(color, active, task) {
+function typeIcon(type) {
+  console.log(type);
+  let icon;
+
+  if (type == 'Vandstand') {
+    icon = <StraightenIcon style={{color: 'grey', transform: 'rotate(90deg)'}} />;
+  } else if (type == 'Temperatur') {
+    icon = <ThermostatIcon style={{color: 'grey'}} />;
+  } else if (type == 'Nedbør') {
+    icon = <img width="25" height="25" style={{marginRight: '5px'}} src="/rainIcon.png" />;
+  } else if (type == 'Hastighed') {
+    icon = <SpeedIcon style={{color: 'grey'}} />;
+  } else if (type.toLowerCase().includes('ilt')) {
+    icon = <img width="20" height="20" style={{marginRight: '5px'}} src="/oxygenIcon.png" />;
+  } else if (type.toLowerCase().includes('vandføring')) {
+    icon = <img width="25" height="25" style={{marginRight: '5px'}} src="/waterFlowIcon.png" />;
+  } else if (type == 'Fugtighed') {
+    icon = <img width="25" height="25" style={{marginRight: '5px'}} src="/soilMoistureIcon.png" />;
+  } else {
+    icon = <span></span>;
+  }
+
+  return (
+    <Tooltip arrow title={type} enterTouchDelay={0}>
+      {icon}
+    </Tooltip>
+  );
+}
+
+function statusIcon(row) {
+  let icon;
+  const color = row.color;
+  const task = row.opgave;
+  const active = row.active;
   if (!active) {
-    return <CheckCircleIcon style={{color: 'grey'}} />;
+    icon = <CheckCircleIcon style={{color: 'grey'}} />;
+  } else {
+    if (task == 'Ok') {
+      icon = <CheckCircleIcon style={{color: 'mediumseagreen'}} />;
+    } else if (task == null) {
+      icon = <CheckCircleIcon style={{color: 'mediumseagreen'}} />;
+    } else if (task == 'Sender ikke' || task == 'Sender null') {
+      icon = (
+        <SignalCellularConnectedNoInternet0BarRoundedIcon
+          style={{color: color, strokeWidth: 0.5, stroke: '#aaaaaa'}}
+        />
+      );
+    } else if (task == 'Batterskift') {
+      icon = <BatteryAlertIcon style={{color: color, strokeWidth: 0.5, stroke: '#aaaaaa'}} />;
+    } else if (task.includes('Tilsyn')) {
+      icon = <BuildRoundedIcon style={{color: color, strokeWidth: 0.5, stroke: '#aaaaaa'}} />;
+    } else if (task.includes('Pejling')) {
+      icon = <HeightIcon style={{color: color, strokeWidth: 0.5, stroke: '#aaaaaa'}} />;
+    } else {
+      icon = <PriorityHighIcon style={{color: color, strokeWidth: 0.5, stroke: '#aaaaaa'}} />;
+    }
   }
 
-  switch (task) {
-    case 'Ok':
-      return <CheckCircleIcon style={{color: 'mediumseagreen'}} />;
-    case null:
-      return <CheckCircleIcon style={{color: 'mediumseagreen'}} />;
-    case 'Sender ikke':
-    case 'Sender null':
-      return <SignalCellularConnectedNoInternet0BarRoundedIcon style={{color: color}} />;
-    case 'Batterskift':
-      return <BatteryAlertIcon style={{color: color}} />;
-    case 'Tilsyn':
-      return <BuildRoundedIcon style={{color: color}} />;
-    case 'Pejling':
-      return <HeightIcon style={{color: color}} />;
-    default:
-      return <PriorityHighIcon style={{color: color}} />;
-  }
+  return (
+    <Tooltip arrow title={task} enterTouchDelay={0}>
+      {icon}
+    </Tooltip>
+  );
 }
 
 const StationTable = ({data, isLoading}) => {
@@ -55,11 +100,60 @@ const StationTable = ({data, isLoading}) => {
   const navigate = useNavigate();
 
   const stateChangeHandler = (stateName) => (state) => {
-    setTableState((prev) => ({
-      ...prev,
-      [stateName]: state instanceof Function ? state(prev[stateName]) : state,
-    }));
+    setTableState((prev) => {
+      console.log('state', state instanceof Function ? state(prev[stateName]) : state);
+      return {
+        ...prev,
+        [stateName]: state instanceof Function ? state(prev[stateName]) : state,
+      };
+    });
   };
+
+  const mobileColumns = useMemo(
+    () => [
+      {
+        header: 'Tidsserie ID',
+        accessorKey: 'ts_id',
+        enableHide: false,
+      },
+      {
+        header: '#',
+        accessorKey: 'calypso_id',
+        size: 5,
+        maxSize: 5,
+      },
+      {
+        header: 'Tidsserie',
+        accessorKey: 'ts_name',
+        Cell: ({row}) => {
+          return (
+            <Box display="flex">
+              {typeIcon(row.original.tstype_name)}
+              <Typography>{row.original.ts_name}</Typography>
+            </Box>
+          );
+        },
+      },
+      {
+        Header: ({column}) => <WarningIcon />,
+        header: 'Status',
+        accessorKey: 'opgave',
+        size: 20,
+        Cell: ({row}) => statusIcon(row.original),
+        sortingFn: (a, b) => {
+          // sort based on flag
+          if (a.original.flag === b.original.flag) {
+            return 0;
+          }
+          if (a.original.flag > b.original.flag) {
+            return 1;
+          }
+          return -1;
+        },
+      },
+    ],
+    []
+  );
 
   const columns = useMemo(
     () => [
@@ -69,7 +163,7 @@ const StationTable = ({data, isLoading}) => {
         enableHide: false,
       },
       {
-        header: 'Calypso ID',
+        header: isTouch ? '#' : 'Calypso ID',
         accessorKey: 'calypso_id',
       },
       {
@@ -80,15 +174,41 @@ const StationTable = ({data, isLoading}) => {
       {
         header: 'Parameter',
         accessorKey: 'tstype_name',
+        Cell: ({row}) => typeIcon(row.original.tstype_name),
       },
       {
         header: 'Status',
-        accessorKey: 'flag',
-        Cell: ({row}) => statusIcon(row.original.color, row.original.active, row.original.opgave),
+        accessorKey: 'opgave',
+        Cell: ({row}) => statusIcon(row.original),
+        sortingFn: (a, b) => {
+          // sort based on flag
+          if (a.original.flag === b.original.flag) {
+            return 0;
+          }
+          if (a.original.flag > b.original.flag) {
+            return 1;
+          }
+          return -1;
+        },
       },
     ],
     []
   );
+
+  const mobileProps = {
+    layoutMode: 'grid',
+    muiTableHeadCellProps: {
+      sx: {
+        flex: '0 0 auto',
+      },
+    },
+    muiTableBodyCellProps: {
+      sx: {
+        flex: '0 0 auto',
+      },
+    },
+    enableColumnActions: false,
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -97,26 +217,29 @@ const StationTable = ({data, isLoading}) => {
   return (
     <MaterialReactTable
       data={data}
-      columns={columns}
+      columns={isTouch ? mobileColumns : columns}
       // enableBottomToolbar={false}
       // enablePagination={false}
       // enableRowVirtualization
       muiTablePaperProps={{sx: {ml: -2, mr: -2}}}
-      muiTableContainerProps={{sx: {height: 'calc(100vh - 300px)'}}}
+      muiTableContainerProps={{sx: {height: 'calc(100dvh - 300px)'}}}
       muiTableHeadProps={{sx: {backgroundColor: 'primary.main'}}}
       localization={MRT_Localization_DA}
       positionGlobalFilter="left" //show the global filter on the left side of the top toolbar
       initialState={{
         showGlobalFilter: true, //show the global filter by default
       }}
-      muiTableBodyRowProps={({row}) => ({
-        onDoubleClick: (event) => {
-          navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
-        },
-        sx: {
-          cursor: 'pointer',
-        },
-      })}
+      muiTableBodyRowProps={
+        isTouch &&
+        (({row}) => ({
+          onClick: (event) => {
+            row.toggleExpanded();
+          },
+          sx: {
+            cursor: 'pointer',
+          },
+        }))
+      }
       globalFilterFn="fuzzy"
       enableGlobalFilterRankedResults={true}
       muiSearchTextFieldProps={{
@@ -134,6 +257,7 @@ const StationTable = ({data, isLoading}) => {
       onShowColumnFiltersChange={stateChangeHandler('showColumnFilters')}
       onShowGlobalFilterChange={stateChangeHandler('showGlobalFilter')}
       onSortingChange={stateChangeHandler('sorting')}
+      onPaginationChange={stateChangeHandler('pagination')}
       enableRowActions={true}
       renderRowActions={({row}) => (
         <Box>
@@ -143,12 +267,12 @@ const StationTable = ({data, isLoading}) => {
                 navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
               }}
             >
-              <QueryStatsIcon />
+              <QueryStatsIcon sx={{color: 'secondary.main'}} />
             </IconButton>
           </Tooltip>
           <Tooltip arrow title="Gå til kvalitetssikring">
             <IconButton onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}>
-              <AutoGraphIcon />
+              <AutoGraphIcon sx={{color: 'secondary.main'}} />
             </IconButton>
           </Tooltip>
         </Box>
@@ -164,7 +288,7 @@ const StationTable = ({data, isLoading}) => {
               width: '100%',
             }}
           >
-            <Typography>Address: {row.original.opgave}</Typography>
+            <Typography>{row.original.opgave}</Typography>
           </Box>
         ))
       }
@@ -180,19 +304,21 @@ const StationTable = ({data, isLoading}) => {
               </IconButton>
             </Tooltip>
             <MRT_ToggleFiltersButton table={table} />
-            <MRT_ShowHideColumnsButton table={table} />
+            {isTouch ? null : <MRT_ShowHideColumnsButton table={table} />}
           </Box>
         </Box>
       )}
       muiTablePaginationProps={{
         rowsPerPageOptions: [],
       }}
+      enableExpanding={false}
       displayColumnDefOptions={{
         'mrt-row-actions': {
           header: '', //change header text
-          size: 20, //change size
+          size: 10, //change size
         },
       }}
+      {...(isTouch ? mobileProps : {})}
     />
   );
 };
