@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useEffect} from 'react';
 import {Button, Box, Tooltip, IconButton, Typography} from '@mui/material';
 import {
   MaterialReactTable,
@@ -26,6 +26,7 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WarningIcon from '@mui/icons-material/WarningAmber';
+import InfoIcon from '@mui/icons-material/Info';
 
 function typeIcon(type) {
   let icon;
@@ -45,7 +46,7 @@ function typeIcon(type) {
   } else if (type == 'Fugtighed') {
     icon = <img width="25" height="25" style={{marginRight: '5px'}} src="/soilMoistureIcon.png" />;
   } else {
-    icon = <span></span>;
+    icon = <InfoIcon style={{color: 'grey'}} />;
   }
 
   return (
@@ -107,6 +108,24 @@ const StationTable = ({data, isLoading}) => {
     });
   };
 
+  useEffect(() => {
+    if (isMobile) {
+      setTableState((prev) => {
+        return {
+          ...prev,
+          density: 'compact',
+        };
+      });
+    } else {
+      setTableState((prev) => {
+        return {
+          ...prev,
+          density: 'comfortable',
+        };
+      });
+    }
+  }, [isMobile]);
+
   const mobileColumns = useMemo(
     () => [
       {
@@ -128,7 +147,7 @@ const StationTable = ({data, isLoading}) => {
           return (
             <Box display="flex">
               {typeIcon(row.original.tstype_name)}
-              <Typography>{row.original.ts_name}</Typography>
+              <Typography fontSize={'0.8rem'}>{row.original.ts_name}</Typography>
             </Box>
           );
         },
@@ -172,7 +191,14 @@ const StationTable = ({data, isLoading}) => {
       {
         header: 'Parameter',
         accessorKey: 'tstype_name',
-        Cell: ({row}) => typeIcon(row.original.tstype_name),
+        Cell: ({row}) => {
+          return (
+            <Box display="flex">
+              {typeIcon(row.original.tstype_name)}
+              <Typography>{row.original.tstype_name}</Typography>
+            </Box>
+          );
+        },
       },
       {
         header: 'Status',
@@ -194,18 +220,41 @@ const StationTable = ({data, isLoading}) => {
   );
 
   const mobileProps = {
-    layoutMode: 'grid',
+    renderDetailPanel: ({row}) => (
+      <Box
+        sx={{
+          display: 'grid',
+          margin: 'auto',
+          gridTemplateColumns: '1fr 1fr',
+          width: '100%',
+        }}
+      >
+        <Typography>Tidsserie id: {row.original.ts_id}</Typography>
+      </Box>
+    ),
     muiTableHeadCellProps: {
       sx: {
         flex: '0 0 auto',
+        fontSize: '0.8rem',
+        // minWidth: '15px',
       },
     },
     muiTableBodyCellProps: {
       sx: {
         flex: '0 0 auto',
+        fontSize: '0.8rem',
+        // minWidth: '15px',
       },
     },
     enableColumnActions: false,
+    muiTableBodyRowProps: ({row}) => ({
+      onClick: (event) => {
+        row.toggleExpanded();
+      },
+      sx: {
+        cursor: 'pointer',
+      },
+    }),
   };
 
   if (isLoading) {
@@ -214,30 +263,23 @@ const StationTable = ({data, isLoading}) => {
 
   return (
     <MaterialReactTable
+      // muiTableBodyCellProps={{sx: {fontSize: '0.8rem'}}}
       data={data}
       columns={isTouch ? mobileColumns : columns}
       // enableBottomToolbar={false}
       // enablePagination={false}
       // enableRowVirtualization
       muiTablePaperProps={{sx: {ml: -2, mr: -2}}}
-      muiTableContainerProps={{sx: {height: 'calc(100dvh - 300px)'}}}
+      muiTableContainerProps={{sx: {maxHeight: 'calc(100dvh - 300px)'}}}
       muiTableHeadProps={{sx: {backgroundColor: 'primary.main'}}}
       localization={MRT_Localization_DA}
       positionGlobalFilter="left" //show the global filter on the left side of the top toolbar
       initialState={{
         showGlobalFilter: true, //show the global filter by default
+        pagination: {
+          pageSize: isTouch ? 5 : 10,
+        },
       }}
-      muiTableBodyRowProps={
-        isTouch &&
-        (({row}) => ({
-          onClick: (event) => {
-            row.toggleExpanded();
-          },
-          sx: {
-            cursor: 'pointer',
-          },
-        }))
-      }
       globalFilterFn="fuzzy"
       enableGlobalFilterRankedResults={true}
       muiSearchTextFieldProps={{
@@ -247,6 +289,7 @@ const StationTable = ({data, isLoading}) => {
           maxWidth: '100%',
         },
       }}
+      enableStickyFooter
       state={tableState}
       onColumnFiltersChange={stateChangeHandler('columnFilters')}
       onColumnVisibilityChange={stateChangeHandler('columnVisibility')}
@@ -258,38 +301,29 @@ const StationTable = ({data, isLoading}) => {
       onPaginationChange={stateChangeHandler('pagination')}
       enableRowActions={true}
       renderRowActions={({row}) => (
-        <Box>
-          <Tooltip arrow title="Gå til tidsserie">
+        <Box gap={0.5}>
+          <Tooltip arrow title="Gå til tidsserie" enterTouchDelay={0}>
             <IconButton
+              size="small"
+              sx={{backgroundColor: 'secondary.main'}}
               onClick={() => {
                 navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
               }}
             >
-              <QueryStatsIcon sx={{color: 'secondary.main'}} />
+              <QueryStatsIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip arrow title="Gå til kvalitetssikring">
-            <IconButton onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}>
-              <AutoGraphIcon sx={{color: 'secondary.main'}} />
+          <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
+            <IconButton
+              size="small"
+              sx={{backgroundColor: 'secondary.main'}}
+              onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}
+            >
+              <AutoGraphIcon />
             </IconButton>
           </Tooltip>
         </Box>
       )}
-      renderDetailPanel={
-        isTouch &&
-        (({row}) => (
-          <Box
-            sx={{
-              display: 'grid',
-              margin: 'auto',
-              gridTemplateColumns: '1fr 1fr',
-              width: '100%',
-            }}
-          >
-            <Typography>{row.original.opgave}</Typography>
-          </Box>
-        ))
-      }
       renderTopToolbar={({table}) => (
         <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
           <Box maxWidth={'250px'}>
@@ -313,7 +347,7 @@ const StationTable = ({data, isLoading}) => {
       displayColumnDefOptions={{
         'mrt-row-actions': {
           header: '', //change header text
-          size: 10, //change size
+          // size: 20, //change size
         },
       }}
       {...(isTouch ? mobileProps : {})}
