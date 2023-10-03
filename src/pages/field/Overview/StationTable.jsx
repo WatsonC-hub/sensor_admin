@@ -28,7 +28,6 @@ import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WarningIcon from '@mui/icons-material/WarningAmber';
 
 function typeIcon(type) {
-  console.log(type);
   let icon;
 
   if (type == 'Vandstand') {
@@ -101,7 +100,6 @@ const StationTable = ({data, isLoading}) => {
 
   const stateChangeHandler = (stateName) => (state) => {
     setTableState((prev) => {
-      console.log('state', state instanceof Function ? state(prev[stateName]) : state);
       return {
         ...prev,
         [stateName]: state instanceof Function ? state(prev[stateName]) : state,
@@ -125,6 +123,7 @@ const StationTable = ({data, isLoading}) => {
       {
         header: 'Tidsserie',
         accessorKey: 'ts_name',
+        size: 150,
         Cell: ({row}) => {
           return (
             <Box display="flex">
@@ -135,7 +134,6 @@ const StationTable = ({data, isLoading}) => {
         },
       },
       {
-        Header: ({column}) => <WarningIcon />,
         header: 'Status',
         accessorKey: 'opgave',
         size: 20,
