@@ -158,7 +158,7 @@ export default function Station({stationId, stamdata}) {
         })[0]?.elevation;
         return {
           ...e,
-          waterlevel: e.measurement ? elev - e.measurement : null,
+          waterlevel: e.measurement != null ? elev - e.measurement : null,
         };
       });
     } else {
