@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import DeleteAlert from '../pages/field/Station/DeleteAlert';
+import DeleteAlert from 'src/components/DeleteAlert';
 import CircularProgress from '@mui/material/CircularProgress';
 import moment from 'moment';
 import {toast} from 'react-toastify';

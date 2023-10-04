@@ -14,6 +14,7 @@ import {toast} from 'react-toastify';
 import {useQueryClient, useMutation} from '@tanstack/react-query';
 import {MetadataContext} from 'src/state/contexts';
 import {apiClient} from 'src/apiClient';
+import {useYRangeMutations} from 'src/hooks/query/useYRangeMutations';
 
 const YRangeModal = ({open, onClose}) => {
   const selection = useAtomValue(qaSelection);
@@ -26,27 +27,7 @@ const YRangeModal = ({open, onClose}) => {
     onClose();
   };
 
-  //   const minY = selection.selections[0].y1.toFixed(2);
-  //   const maxY = selection.selections[0].y0.toFixed(2);
-
-  const queryClient = useQueryClient();
-
-  const yRangeMutation = useMutation(
-    async (mutation_data) => {
-      const {path, data} = mutation_data;
-      const {data: res} = await apiClient.post(`/sensor_admin/qa_minmax/${path}`, data);
-      return res;
-    },
-    {
-      onError: (error) => {
-        toast.error('Noget gik galt');
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(['qa', metadata?.ts_id]);
-        toast.success('Valide værdier er gemt');
-      },
-    }
-  );
+  const {post: yRangeMutation} = useYRangeMutations();
 
   const onAccept = () => {
     yRangeMutation.mutate({

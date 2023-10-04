@@ -7,7 +7,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from 'src/components/FormInput';
 import * as z from 'zod';
-import DeleteAlert from 'src/pages/field/Station/DeleteAlert';
+import DeleteAlert from 'src/components/DeleteAlert';
 import {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
@@ -111,7 +111,13 @@ const AlgorithmCard = ({algorithm}) => {
           <FormProvider {...formMethods}>
             {algorithm?.parameters?.map((option) => {
               return (
-                <FormInput fullWidth type={option.type} label={option.label} name={option.name} />
+                <FormInput
+                  key={option.name}
+                  fullWidth
+                  type={option.type}
+                  label={option.label}
+                  name={option.name}
+                />
               );
             })}
           </FormProvider>

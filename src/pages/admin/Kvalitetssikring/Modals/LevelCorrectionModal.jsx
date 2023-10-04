@@ -14,6 +14,7 @@ import {toast} from 'react-toastify';
 import {useQueryClient, useMutation} from '@tanstack/react-query';
 import {MetadataContext} from 'src/state/contexts';
 import {apiClient} from 'src/apiClient';
+import {useLevelCorrection} from 'src/hooks/query/useLevelCorrection';
 
 const LevelCorrectionModal = ({open, onClose}) => {
   const selection = useAtomValue(qaSelection);
@@ -28,24 +29,7 @@ const LevelCorrectionModal = ({open, onClose}) => {
   const y = selection?.points?.[0]?.y?.toFixed(4);
   const x = moment(selection?.points?.[0]?.x).format('YYYY-MM-DD HH:mm');
 
-  const queryClient = useQueryClient();
-
-  const levelCorrectionMutation = useMutation(
-    async (mutation_data) => {
-      const {path, data} = mutation_data;
-      const {data: res} = await apiClient.post(`/sensor_admin/qa_levelcorrection/${path}`, data);
-      return res;
-    },
-    {
-      onError: (error) => {
-        toast.error('Noget gik galt');
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(['qa', metadata?.ts_id]);
-        toast.success('Data er gemt');
-      },
-    }
-  );
+  const {post: levelCorrectionMutation} = useLevelCorrection();
 
   const onAccept = () => {
     levelCorrectionMutation.mutate({

@@ -14,6 +14,7 @@ import {toast} from 'react-toastify';
 import {useQueryClient, useMutation} from '@tanstack/react-query';
 import {MetadataContext} from 'src/state/contexts';
 import {apiClient} from 'src/apiClient';
+import {useExclude} from 'src/hooks/query/useExclude';
 
 const ExcludeModal = ({open, onClose}) => {
   const [radio, setRadio] = useState('selected');
@@ -32,22 +33,7 @@ const ExcludeModal = ({open, onClose}) => {
   const maxY = selection?.selections?.[0]?.y0?.toFixed(4);
   const queryClient = useQueryClient();
 
-  const excludeMutation = useMutation(
-    async (mutation_data) => {
-      const {path, data} = mutation_data;
-      const {data: res} = await apiClient.post(`/sensor_admin/qa_exclude/${path}`, data);
-      return res;
-    },
-    {
-      onError: (error) => {
-        toast.error('Noget gik galt');
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries(['qa', metadata?.ts_id]);
-        toast.success('Punkter ekskluderet');
-      },
-    }
-  );
+  const {post: excludeMutation} = useExclude();
 
   const onAccept = () => {
     excludeMutation.mutate({

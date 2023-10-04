@@ -71,7 +71,7 @@ const QualityAssurance = () => {
               <Grid item xs={12} sm={2} pl={1}>
                 <AnnotationConfiguration stationId={params.ts_id} />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} p={1}>
                 <QAHistory />
               </Grid>
               <Grid item xs={12} md={6}>
@@ -89,13 +89,17 @@ const QualityAssurance = () => {
               variant="fullWidth"
               aria-label="simple tabs example"
             >
+              <Tab label="Udbedringer" />
               <Tab label="Annotering" />
-              <Tab label="algoritmer" />
+              <Tab label="Algoritmer" />
             </Tabs>
             <TabPanel value={tabValue} index={0}>
-              <AnnotationConfiguration stationId={params.ts_id} />
+              <QAHistory />
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
+              <AnnotationConfiguration stationId={params.ts_id} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
               <Algorithms />
             </TabPanel>
           </>

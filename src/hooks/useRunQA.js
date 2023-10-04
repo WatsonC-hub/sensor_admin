@@ -22,7 +22,7 @@ export const useRunQA = (ts_id) => {
         if (status === 200) {
           queryClient.invalidateQueries(['qa_labels', ts_id]);
           toast.update(toastId.current, {
-            render: 'Genkørt',
+            render: 'Genberegnet',
             type: toast.TYPE.SUCCESS,
             isLoading: false,
             autoClose: 2000,
@@ -41,7 +41,7 @@ export const useRunQA = (ts_id) => {
 
   const rerunQAMutation = useMutation(
     async (data) => {
-      toastId.current = toast('Genkører QA...', {
+      toastId.current = toast('Genberegner QA...', {
         type: toast.TYPE.INFO,
         isLoading: true,
         autoClose: false,

@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteAlert from './DeleteAlert';
+import DeleteAlert from 'src/components/DeleteAlert';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import {Fragment} from 'react';
 import moment from 'moment';

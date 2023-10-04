@@ -22,6 +22,7 @@ import {qaSelection} from 'src/state/atoms';
 import {useRunQA} from 'src/hooks/useRunQA';
 import GraphActions from './GraphActions';
 import {MetadataContext} from 'src/state/contexts';
+import {useRerunData} from 'src/hooks/query/useRerunData';
 
 const selectorOptions = {
   buttons: [
@@ -256,6 +257,8 @@ function PlotGraph({controlData, qaData, ts_id}) {
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
   const metadata = useContext(MetadataContext);
 
+  const {data: rerun} = useRerunData();
+
   const handlePlotlySelected = (eventData) => {
     if (eventData === undefined) {
       return;
@@ -336,7 +339,7 @@ function PlotGraph({controlData, qaData, ts_id}) {
   const {mutation: rerunQAMutation} = useRunQA(ts_id);
 
   var rerunButton = {
-    name: 'Genkør data',
+    name: 'Genberegn data',
     icon: rerunIcon,
     click: function (gd) {
       correctMutation.mutate({});
@@ -344,7 +347,7 @@ function PlotGraph({controlData, qaData, ts_id}) {
   };
 
   var rerunQAButton = {
-    name: 'Genkør QA',
+    name: 'Genberegn QA',
     icon: rerunQAIcon,
     click: function (gd) {
       // toastId.current = toast.loading('Genkører kvalitetssikring...');
@@ -390,7 +393,23 @@ function PlotGraph({controlData, qaData, ts_id}) {
     },
   };
 
-  const {shapelist, annotateList} = transformQAData(qaData);
+  const {shapelist: qaShapes, annotateList: qaAnnotate} = transformQAData(qaData);
+
+  const rerunShapes = rerun?.levelcorrection?.map((d) => {
+    return {
+      type: 'line',
+      x0: d.date,
+      x1: d.date,
+      y0: 0,
+      y1: 1,
+      yref: 'paper',
+      line: {
+        color: '#FF0000',
+        width: 1.5,
+        dash: 'dot',
+      },
+    };
+  });
 
   return (
     <Plot
@@ -426,8 +445,8 @@ function PlotGraph({controlData, qaData, ts_id}) {
       ]}
       layout={{
         ...layout,
-        shapes: shapelist,
-        annotations: annotateList,
+        shapes: rerunShapes,
+        annotations: qaAnnotate,
         uirevision: 'true',
         yaxis: {
           title: `${metadata?.tstype_name} [${metadata?.unit}]`,

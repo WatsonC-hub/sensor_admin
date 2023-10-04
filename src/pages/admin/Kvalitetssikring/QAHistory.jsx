@@ -1,20 +1,38 @@
 import React, {useContext} from 'react';
-import {Typography, Box, Button} from '@mui/material';
+import {
+  Box,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Divider,
+  Button,
+  Skeleton,
+} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import {MetadataContext} from 'src/state/contexts';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SaveIcon from '@mui/icons-material/Save';
+import moment from 'moment';
+import ExcludeRow from './components/ExcludeRow';
+import LevelCorrectionRow from './components/LevelCorrectionRow';
+import YRangeRow from './components/YRangeRow';
+import {useAutoAnimate} from '@formkit/auto-animate/react';
+import QAAccordion from './components/QAAccordion';
+import BoxNumber from 'src/components/BoxNumber';
 
 export default function QAHistory() {
   const metadata = useContext(MetadataContext);
 
-  const {data} = useQuery(
+  const {data, isLoading} = useQuery(
     ['qa_all', metadata?.ts_id],
     async () => {
       const {data} = await apiClient.get(`/sensor_admin/qa_all/${metadata?.ts_id}`);
       return data;
     },
     {
-      enabled: metadata?.ts_id !== undefined,
+      enabled: typeof metadata?.ts_id == 'number',
       refetchInterval: null,
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: false,
@@ -22,5 +40,70 @@ export default function QAHistory() {
     }
   );
 
-  return <Box sx={{height: 270, flexGrow: 1}}>{JSON.stringify(data)}</Box>;
+  if (isLoading)
+    return (
+      <Box>
+        <Skeleton
+          sx={{
+            height: '40px',
+            width: '100%',
+            borderRadius: '5px',
+            marginBottom: '10px',
+          }}
+        />
+        <Skeleton
+          sx={{
+            height: '40px',
+            width: '100%',
+            borderRadius: '5px',
+            marginBottom: '10px',
+          }}
+        />
+        <Skeleton
+          sx={{
+            height: '40px',
+            width: '100%',
+            borderRadius: '5px',
+            marginBottom: '10px',
+          }}
+        />
+      </Box>
+    );
+
+  return (
+    <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+      <QAAccordion number={1} title="Fjernede tidsintervaller">
+        {data.dataexclude
+          .filter((elem) => (elem.min_value == null) & (elem.max_value == null))
+          .map((item, index) => (
+            <ExcludeRow key={item} data={item} index={index} />
+          ))}
+        {data.dataexclude.filter((elem) => (elem.min_value == null) & (elem.max_value == null))
+          .length == 0 && <Typography>Ingen fjernede tidsintervaller</Typography>}
+      </QAAccordion>
+
+      <QAAccordion number={2} title="Korriger spring">
+        {data.levelcorrection.map((item, index) => (
+          <LevelCorrectionRow key={item} data={item} index={index} />
+        ))}
+        {data.levelcorrection.length == 0 && <Typography>Ingen spring korrektioner</Typography>}
+      </QAAccordion>
+      <QAAccordion number={3} title="Kotesætning">
+        <Typography>Her fungerer kotesætning</Typography>
+      </QAAccordion>
+      <QAAccordion number={3} title="Fjernede datapunkter">
+        {data.dataexclude
+          .filter((elem) => (elem.min_value != null) | (elem.max_value != null))
+          .map((item, index) => (
+            <ExcludeRow key={item} data={item} index={index} isWithYValues />
+          ))}
+        {data.dataexclude.filter((elem) => (elem.min_value != null) | (elem.max_value != null))
+          .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}
+      </QAAccordion>
+      <QAAccordion number={4} title="Valide værdier">
+        <YRangeRow data={data.min_max_cutoff} />
+      </QAAccordion>
+      {/* <QAAccordion number={5} title="Spikes"></QAAccordion> */}
+    </Box>
+  );
 }
