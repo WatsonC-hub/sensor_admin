@@ -25,6 +25,7 @@ const TableComponent = ({
   if (isLoading) {
     return <div>Loading...</div>;
   }
+  console.log('TableComponent2', data, isLoading);
   const [tableState, setTableState] = useAtom(tableStateAtom);
   // const [tableState, setTableState] = React.useState({});
   const {isTouch, isMobile} = useBreakpoints();

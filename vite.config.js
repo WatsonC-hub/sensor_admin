@@ -71,7 +71,7 @@ export default defineConfig({
     svgrPlugin(),
     visualizer(),
     VitePWA(pwaOptions),
-    sentryVitePlugin(sentryOptions),
+    // sentryVitePlugin(sentryOptions),
   ],
   build: {
     sourcemap: true,

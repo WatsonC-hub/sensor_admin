@@ -178,12 +178,12 @@ export default function OverviewPage() {
           </AppBar>
           {iotAccess && (
             <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
-              <StationTableGeneric data={tabledata} loading={isLoading} />
+              <StationTableGeneric data={tabledata} isLoading={isLoading} />
             </TabPanel>
           )}
           {boreholeAccess && (
             <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0} dir={theme.direction}>
-              <BoreholeTableGeneric data={boreholetabledata} loading={boreholeIsLoading} />
+              <BoreholeTableGeneric data={boreholetabledata} isLoading={boreholeIsLoading} />
             </TabPanel>
           )}
         </>
