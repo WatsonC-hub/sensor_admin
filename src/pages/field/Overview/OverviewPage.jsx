@@ -19,7 +19,8 @@ import Box from '@mui/material/Box';
 import BoreholeList from './BoreholeList';
 import BoreholeListDesktop from './BoreholeListDesktop';
 import {authStore} from 'src/state/store';
-import StationTable from './StationTable';
+import StationTableGeneric from './components/StationTable';
+import BoreholeTableGeneric from './components/BoreholeTable';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -177,22 +178,12 @@ export default function OverviewPage() {
           </AppBar>
           {iotAccess && (
             <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
-              {matches ? (
-                // <StationList data={tabledata} loading={isLoading} />
-                <StationTable data={tabledata} isLoading={isLoading} />
-              ) : (
-                // <StationListDesktop data={tabledata} loading={isLoading} />
-                <StationTable data={tabledata} isLoading={isLoading} />
-              )}
+              <StationTableGeneric data={tabledata} loading={isLoading} />
             </TabPanel>
           )}
           {boreholeAccess && (
             <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0} dir={theme.direction}>
-              {matches ? (
-                <BoreholeList data={boreholetabledata} loading={boreholeIsLoading} />
-              ) : (
-                <BoreholeListDesktop data={boreholetabledata} loading={boreholeIsLoading} />
-              )}
+              <BoreholeTableGeneric data={boreholetabledata} loading={boreholeIsLoading} />
             </TabPanel>
           )}
         </>

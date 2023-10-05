@@ -15,4 +15,18 @@ export const stationTableAtom = atomWithStorage('StationTableState', {
     pageSize: 10,
     pageIndex: 0,
   },
+  density: 'compact',
+});
+
+export const boreholeTableAtom = atomWithStorage('BoreholeTableState', {
+  columnVisibility: {
+    num_controls_in_a_year: false,
+    'mrt-row-expand': false,
+  },
+  pagination: {
+    page: 0,
+    pageSize: 10,
+    pageIndex: 0,
+  },
+  density: 'compact',
 });

@@ -27,6 +27,7 @@ import StraightenIcon from '@mui/icons-material/Straighten';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WarningIcon from '@mui/icons-material/WarningAmber';
 import InfoIcon from '@mui/icons-material/Info';
+import TableComponent from './TableComponent';
 
 function typeIcon(type) {
   let icon;
@@ -93,39 +94,8 @@ function statusIcon(row) {
 }
 
 const StationTable = ({data, isLoading}) => {
-  const [tableState, setTableState] = useAtom(stationTableAtom);
-  // const [tableState, setTableState] = React.useState({});
-  const {isTouch, isMobile} = useBreakpoints();
-
+  const {isTouch} = useBreakpoints();
   const navigate = useNavigate();
-
-  const stateChangeHandler = (stateName) => (state) => {
-    setTableState((prev) => {
-      return {
-        ...prev,
-        [stateName]: state instanceof Function ? state(prev[stateName]) : state,
-      };
-    });
-  };
-
-  useEffect(() => {
-    if (isMobile) {
-      setTableState((prev) => {
-        return {
-          ...prev,
-          density: 'compact',
-        };
-      });
-    } else {
-      setTableState((prev) => {
-        return {
-          ...prev,
-          density: 'comfortable',
-        };
-      });
-    }
-  }, [isMobile]);
-
   const mobileColumns = useMemo(
     () => [
       {
@@ -142,7 +112,7 @@ const StationTable = ({data, isLoading}) => {
       {
         header: 'Tidsserie',
         accessorKey: 'ts_name',
-        size: 150,
+        size: 80,
         Cell: ({row}) => {
           return (
             <Box display="flex">
@@ -219,138 +189,52 @@ const StationTable = ({data, isLoading}) => {
     []
   );
 
-  const mobileProps = {
-    renderDetailPanel: ({row}) => (
-      <Box
-        sx={{
-          display: 'grid',
-          margin: 'auto',
-          gridTemplateColumns: '1fr 1fr',
-          width: '100%',
-        }}
-      >
-        <Typography>Tidsserie id: {row.original.ts_id}</Typography>
-      </Box>
-    ),
-    muiTableHeadCellProps: {
-      sx: {
-        flex: '0 0 auto',
-        fontSize: '0.8rem',
-        // minWidth: '15px',
-      },
-    },
-    muiTableBodyCellProps: {
-      sx: {
-        flex: '0 0 auto',
-        fontSize: '0.8rem',
-        // minWidth: '15px',
-      },
-    },
-    enableColumnActions: false,
-    muiTableBodyRowProps: ({row}) => ({
-      onClick: (event) => {
-        row.toggleExpanded();
-      },
-      sx: {
-        cursor: 'pointer',
-      },
-    }),
-  };
+  const renderDetailPanel = ({row}) => (
+    <Box
+      sx={{
+        display: 'grid',
+        margin: 'auto',
+        gridTemplateColumns: '1fr 1fr',
+        width: '100%',
+      }}
+    >
+      <Typography>Tidsserie id: {row.original.ts_id}</Typography>
+    </Box>
+  );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const rowActions = ({row}) => (
+    <Box gap={0.5}>
+      <Tooltip arrow title="Gå til tidsserie" enterTouchDelay={0}>
+        <IconButton
+          size="small"
+          sx={{backgroundColor: 'secondary.main'}}
+          onClick={() => {
+            navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
+          }}
+        >
+          <QueryStatsIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
+        <IconButton
+          size="small"
+          sx={{backgroundColor: 'secondary.main'}}
+          onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}
+        >
+          <AutoGraphIcon />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
 
   return (
-    <MaterialReactTable
-      // muiTableBodyCellProps={{sx: {fontSize: '0.8rem'}}}
+    <TableComponent
       data={data}
       columns={isTouch ? mobileColumns : columns}
-      // enableBottomToolbar={false}
-      // enablePagination={false}
-      // enableRowVirtualization
-      muiTablePaperProps={{sx: {ml: -2, mr: -2}}}
-      muiTableContainerProps={{sx: {maxHeight: 'calc(100dvh - 300px)'}}}
-      muiTableHeadProps={{sx: {backgroundColor: 'primary.main'}}}
-      localization={MRT_Localization_DA}
-      positionGlobalFilter="left" //show the global filter on the left side of the top toolbar
-      initialState={{
-        showGlobalFilter: true, //show the global filter by default
-        pagination: {
-          pageSize: isTouch ? 5 : 10,
-        },
-      }}
-      globalFilterFn="fuzzy"
-      enableGlobalFilterRankedResults={true}
-      muiSearchTextFieldProps={{
-        variant: 'outlined',
-        size: 'small',
-        sx: {
-          maxWidth: '100%',
-        },
-      }}
-      enableStickyFooter
-      state={tableState}
-      onColumnFiltersChange={stateChangeHandler('columnFilters')}
-      onColumnVisibilityChange={stateChangeHandler('columnVisibility')}
-      onDensityChange={stateChangeHandler('density')}
-      onGlobalFilterChange={stateChangeHandler('globalFilter')}
-      onShowColumnFiltersChange={stateChangeHandler('showColumnFilters')}
-      onShowGlobalFilterChange={stateChangeHandler('showGlobalFilter')}
-      onSortingChange={stateChangeHandler('sorting')}
-      onPaginationChange={stateChangeHandler('pagination')}
-      enableRowActions={true}
-      renderRowActions={({row}) => (
-        <Box gap={0.5}>
-          <Tooltip arrow title="Gå til tidsserie" enterTouchDelay={0}>
-            <IconButton
-              size="small"
-              sx={{backgroundColor: 'secondary.main'}}
-              onClick={() => {
-                navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
-              }}
-            >
-              <QueryStatsIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
-            <IconButton
-              size="small"
-              sx={{backgroundColor: 'secondary.main'}}
-              onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}
-            >
-              <AutoGraphIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      )}
-      renderTopToolbar={({table}) => (
-        <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-          <Box maxWidth={'250px'}>
-            <MRT_GlobalFilterTextField table={table} />
-          </Box>
-          <Box>
-            <Tooltip arrow title="Nulstil tabel">
-              <IconButton onClick={() => setTableState(RESET)}>
-                <RestartAltIcon />
-              </IconButton>
-            </Tooltip>
-            <MRT_ToggleFiltersButton table={table} />
-            {isTouch ? null : <MRT_ShowHideColumnsButton table={table} />}
-          </Box>
-        </Box>
-      )}
-      muiTablePaginationProps={{
-        rowsPerPageOptions: [],
-      }}
-      enableExpanding={false}
-      displayColumnDefOptions={{
-        'mrt-row-actions': {
-          header: '', //change header text
-          // size: 20, //change size
-        },
-      }}
-      {...(isTouch ? mobileProps : {})}
+      isLoading={isLoading}
+      renderDetailPanel={renderDetailPanel}
+      rowActions={rowActions}
+      tableStateAtom={stationTableAtom}
     />
   );
 };
