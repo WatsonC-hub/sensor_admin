@@ -71,39 +71,41 @@ export default function QAHistory() {
     );
 
   return (
-    <Box display={'flex'} flexDirection={'column'} gap={0.5}>
-      <QAAccordion number={1} title="Fjernede tidsintervaller">
-        {data.dataexclude
-          .filter((elem) => (elem.min_value == null) & (elem.max_value == null))
-          .map((item, index) => (
-            <ExcludeRow key={item} data={item} index={index} />
-          ))}
-        {data.dataexclude.filter((elem) => (elem.min_value == null) & (elem.max_value == null))
-          .length == 0 && <Typography>Ingen fjernede tidsintervaller</Typography>}
-      </QAAccordion>
+    <>
+      <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+        <QAAccordion number={1} title="Fjernede tidsintervaller">
+          {data.dataexclude
+            .filter((elem) => (elem.min_value == null) & (elem.max_value == null))
+            .map((item, index) => (
+              <ExcludeRow key={item} data={item} index={index} />
+            ))}
+          {data.dataexclude.filter((elem) => (elem.min_value == null) & (elem.max_value == null))
+            .length == 0 && <Typography>Ingen fjernede tidsintervaller</Typography>}
+        </QAAccordion>
 
-      <QAAccordion number={2} title="Korriger spring">
-        {data.levelcorrection.map((item, index) => (
-          <LevelCorrectionRow key={item} data={item} index={index} />
-        ))}
-        {data.levelcorrection.length == 0 && <Typography>Ingen spring korrektioner</Typography>}
-      </QAAccordion>
-      <QAAccordion number={3} title="Kotesætning">
-        <Typography>Her fungerer kotesætning</Typography>
-      </QAAccordion>
-      <QAAccordion number={3} title="Fjernede datapunkter">
-        {data.dataexclude
-          .filter((elem) => (elem.min_value != null) | (elem.max_value != null))
-          .map((item, index) => (
-            <ExcludeRow key={item} data={item} index={index} isWithYValues />
+        <QAAccordion number={2} title="Korriger spring">
+          {data.levelcorrection.map((item, index) => (
+            <LevelCorrectionRow key={item} data={item} index={index} />
           ))}
-        {data.dataexclude.filter((elem) => (elem.min_value != null) | (elem.max_value != null))
-          .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}
-      </QAAccordion>
-      <QAAccordion number={4} title="Valide værdier">
-        <YRangeRow data={data.min_max_cutoff} />
-      </QAAccordion>
-      {/* <QAAccordion number={5} title="Spikes"></QAAccordion> */}
-    </Box>
+          {data.levelcorrection.length == 0 && <Typography>Ingen spring korrektioner</Typography>}
+        </QAAccordion>
+        <QAAccordion number={3} title="Kotesætning">
+          <Typography>Her fungerer kotesætning</Typography>
+        </QAAccordion>
+        <QAAccordion number={3} title="Fjernede datapunkter">
+          {data.dataexclude
+            .filter((elem) => (elem.min_value != null) | (elem.max_value != null))
+            .map((item, index) => (
+              <ExcludeRow key={item} data={item} index={index} isWithYValues />
+            ))}
+          {data.dataexclude.filter((elem) => (elem.min_value != null) | (elem.max_value != null))
+            .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}
+        </QAAccordion>
+        <QAAccordion number={4} title="Valide værdier">
+          <YRangeRow data={data.min_max_cutoff} />
+        </QAAccordion>
+        {/* <QAAccordion number={5} title="Spikes"></QAAccordion> */}
+      </Box>
+    </>
   );
 }

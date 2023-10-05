@@ -97,7 +97,7 @@ const AlgorithmCard = ({algorithm}) => {
           // backgroundColor: 'primary.light',
           // color: 'primary.contrastText',
           minWidth: 200,
-          maxWidth: 300,
+          // maxWidth: 300,
           m: 1,
         }}
       >

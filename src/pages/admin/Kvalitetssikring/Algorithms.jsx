@@ -16,7 +16,6 @@ const Algorithms = () => {
 
   return (
     <>
-      <Typography variant="h6">Algoritmer</Typography>
       <Grid container sx={{borderRadius: 2, border: 2, borderColor: 'primary.main'}}>
         {data?.map((algorithm) => (
           <Grid key={algorithm.name} item xs={12} sm={6}>
