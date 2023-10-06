@@ -38,7 +38,7 @@ export default function LocationRouter() {
   );
 
   return (
-    <div>
+    <>
       <CssBaseline />
       <AppBarLayout style={{}}>
         <IconButton
@@ -59,7 +59,7 @@ export default function LocationRouter() {
       <main
         style={{
           flexGrow: 1,
-          padding: theme.spacing(0.5),
+          // padding: theme.spacing(0.5),
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
@@ -69,6 +69,6 @@ export default function LocationRouter() {
           />
         </ErrorBoundary>
       </main>
-    </div>
+    </>
   );
 }

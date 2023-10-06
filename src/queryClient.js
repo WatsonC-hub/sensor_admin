@@ -2,6 +2,7 @@ import {QueryClient, MutationCache} from '@tanstack/react-query';
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
+import {excludePostOptions, excludeDelOptions, excludePutOptions} from 'src/hooks/query/useExclude';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,10 @@ queryClient.setMutationDefaults('pejling', {
     }
   },
 });
+
+queryClient.setMutationDefaults(excludePostOptions.mutationKey, excludePostOptions);
+queryClient.setMutationDefaults(excludePutOptions.mutationKey, excludePutOptions);
+queryClient.setMutationDefaults(excludeDelOptions.mutationKey, excludeDelOptions);
 
 const persister = createSyncStoragePersister({
   storage: window.localStorage,

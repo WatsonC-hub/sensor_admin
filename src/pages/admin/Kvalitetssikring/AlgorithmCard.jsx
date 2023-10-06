@@ -7,7 +7,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm, FormProvider} from 'react-hook-form';
 import FormInput from 'src/components/FormInput';
 import * as z from 'zod';
-import DeleteAlert from 'src/pages/field/Station/DeleteAlert';
+import DeleteAlert from 'src/components/DeleteAlert';
 import {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
@@ -38,7 +38,6 @@ const AlgorithmCard = ({algorithm}) => {
       algorithm: algorithm.algorithm,
       parameters: data,
     };
-    console.log(payload);
     toast.promise(() => submitData.mutateAsync(payload), {
       pending: 'Gemmer indstillinger',
       success: 'Indstillinger gemt',
@@ -50,7 +49,6 @@ const AlgorithmCard = ({algorithm}) => {
     const schema = z.object({});
 
     algorithm?.parameters?.forEach((option) => {
-      console.log(option);
       if (option.type === 'number') {
         schema.shape[option.name] = z
           .number()
@@ -99,7 +97,7 @@ const AlgorithmCard = ({algorithm}) => {
           // backgroundColor: 'primary.light',
           // color: 'primary.contrastText',
           minWidth: 200,
-          maxWidth: 300,
+          // maxWidth: 300,
           m: 1,
         }}
       >
@@ -113,7 +111,13 @@ const AlgorithmCard = ({algorithm}) => {
           <FormProvider {...formMethods}>
             {algorithm?.parameters?.map((option) => {
               return (
-                <FormInput fullWidth type={option.type} label={option.label} name={option.name} />
+                <FormInput
+                  key={option.name}
+                  fullWidth
+                  type={option.type}
+                  label={option.label}
+                  name={option.name}
+                />
               );
             })}
           </FormProvider>

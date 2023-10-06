@@ -71,7 +71,7 @@ export default defineConfig({
     svgrPlugin(),
     visualizer(),
     VitePWA(pwaOptions),
-    sentryVitePlugin(sentryOptions),
+    // sentryVitePlugin(sentryOptions),
   ],
   build: {
     sourcemap: true,
@@ -79,6 +79,17 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: '[name].js',
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('plotly')) {
+              return 'vendor_plotly';
+            } else if (id.includes('@material-ui')) {
+              return 'vendor_mui';
+            }
+
+            return 'vendor'; // all other package goes here
+          }
+        },
       },
     },
   },

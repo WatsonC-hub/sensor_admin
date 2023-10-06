@@ -102,7 +102,7 @@ export default function Login({}) {
           Med denne applikation kan du indberette pejlinger, se grafer og flytte rundt på dit
           udstyr.
         </Typography>
-        {loginExpired && (
+        {/* {loginExpired && (
           <Typography
             style={{
               textAlign: 'center',
@@ -112,7 +112,7 @@ export default function Login({}) {
           >
             Din session er udløbet. Log venligst ind igen.
           </Typography>
-        )}
+        )} */}
         <form onSubmit={handleSubmit} noValidate>
           <TextField
             variant="outlined"

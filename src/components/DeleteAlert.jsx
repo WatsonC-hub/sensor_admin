@@ -1,17 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function DeleteAlert({measurementId, dialogOpen, onOkDelete, setDialogOpen}) {
+export default function DeleteAlert({measurementId, dialogOpen, onOkDelete, setDialogOpen, title}) {
   const handleClose = () => {
     setDialogOpen(false);
   };
 
   const handleOk = () => {
-    let statuscode = onOkDelete(measurementId);
-    console.log(statuscode);
+    onOkDelete(measurementId);
     setDialogOpen(false);
   };
 
@@ -23,10 +22,10 @@ export default function DeleteAlert({measurementId, dialogOpen, onOkDelete, setD
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{'Vil du slette den række?'}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{title ? title : 'Vil du slette rækken?'}</DialogTitle>
 
         <DialogActions>
-          <Button onClick={handleOk} color="primary" autoFocus>
+          <Button onClick={handleOk} color="primary">
             Ja
           </Button>
           <Button autoFocus onClick={handleClose} color="primary">

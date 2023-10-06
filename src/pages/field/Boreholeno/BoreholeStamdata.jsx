@@ -44,11 +44,12 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
   );
 
   const schema = z.object({
-    calypso_id: z.number().int().min(1).optional(),
+    calypso_id: z.number().int().min(1).optional().nullish(),
     num_controls_in_a_year: z
       .number()
       .int()
       .min(0, {message: 'Antal kontroller skal være 0 eller større'}),
+    description: z.string().nullish().optional(),
   });
 
   const formMethods = useForm({
@@ -65,6 +66,13 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
       pending: 'Opdaterer stamdata...',
       success: 'Stamdata er opdateret',
       error: 'Der skete en fejl',
+    });
+    formMethods.reset(values);
+  };
+
+  const handleErrors = (errors) => {
+    toast.error('Der skete en fejl', {
+      autoClose: 2000,
     });
   };
 
@@ -130,14 +138,29 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
           <FormProvider {...formMethods}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2}}>
+                <FormInput name="description" label="Beskrivelse" fullWidth />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormInput
+                  name="num_controls_in_a_year"
+                  label="Årlige kontroller"
+                  fullWidth
+                  type="number"
+                  transform={(val) => parseInt(val)}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
+                    inputProps: {min: 0},
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{display: 'flex', justifyContent: 'left', alignItems: 'center', gap: 2}}>
                   <FormInput
                     name="calypso_id"
                     label="Calypso ID"
                     type="number"
                     fullWidth
                     disabled
-                    required
                   />
                   <Button
                     sx={{
@@ -151,23 +174,15 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                     {stamdata?.calypso_id ? 'Skift ID' : 'Tilføj ID'}
                   </Button>
                 </Box>
-                <Typography variant="caption" display="block" gutterBottom>
-                  Calypso ID er et unikt nummer, der identificerer boringen
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormInput
-                  name="num_controls_in_a_year"
-                  label="Årlige kontroller"
-                  fullWidth
-                  type="number"
-                  required
-                  transform={(val) => parseInt(val)}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
-                    inputProps: {min: 0},
+                <Typography
+                  variant="caption"
+                  gutterBottom
+                  sx={{
+                    float: 'left',
                   }}
-                />
+                >
+                  Calypso ID er et unikt nummer, der identificerer boringen samt indtag
+                </Typography>
               </Grid>
             </Grid>
             <Grid container alignItems="center" justifyContent="center">
@@ -177,7 +192,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   color="secondary"
                   variant="contained"
                   startIcon={<Save />}
-                  onClick={formMethods.handleSubmit(handleUpdate, handleUpdate)}
+                  onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}
                   disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
                 >
                   Gem

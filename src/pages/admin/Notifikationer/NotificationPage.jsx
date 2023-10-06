@@ -17,7 +17,6 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import TableComponent from 'src/components/TableComponent';
 import NotificationTree from './NotificationTree';
 import {atom, useAtom} from 'jotai';
 import {useEffect} from 'react';

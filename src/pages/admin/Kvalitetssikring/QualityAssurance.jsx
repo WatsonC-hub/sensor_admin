@@ -3,9 +3,12 @@ import {useParams} from 'react-router-dom';
 import QAGraph from './QAGraph';
 import Algorithms from './Algorithms';
 import {Grid, Typography, Box, Button, Tab, Tabs} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import {apiClient} from 'src/apiClient';
 import QAHistory from './QAHistory';
 import AnnotationConfiguration from './AnnotationConfiguration';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import {MetadataContext} from 'src/state/contexts';
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;
@@ -31,58 +34,80 @@ function a11yProps(index) {
 }
 
 const QualityAssurance = () => {
+  let params = useParams();
+
+  const {isTouch} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
+
+  const {data} = useQuery(
+    ['metadata', params.ts_id],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/metadata/${params.ts_id}`);
+      return data;
+    },
+    {
+      enabled: params.ts_id !== undefined,
+      refetchInterval: null,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
 
   const handleChange = (_, newValue) => {
     setTabValue(newValue);
   };
 
-  let params = useParams();
-
-  const {isTouch} = useBreakpoints();
-
   return (
-    <Box m={1}>
-      <Grid container>
-        <Grid item xs={12} md={10}>
-          <QAGraph stationId={params.ts_id} measurements={[]} />
+    <MetadataContext.Provider value={data}>
+      <Box m={1}>
+        <Grid container>
+          <Grid item xs={12} md={10}>
+            <QAGraph stationId={params.ts_id} measurements={[]} />
+          </Grid>
+
+          {!isTouch && (
+            <>
+              <Grid item xs={12} sm={2} pl={1}>
+                <AnnotationConfiguration stationId={params.ts_id} />
+              </Grid>
+              <Grid item xs={12} sm={6} pr={1}>
+                <Typography variant="h6">Datajusteringer</Typography>
+                <QAHistory />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="h6">Detektionsalgoritmer</Typography>
+                <Algorithms />
+              </Grid>
+            </>
+          )}
         </Grid>
 
-        {!isTouch && (
+        {isTouch && (
           <>
-            <Grid item xs={12} sm={2} pl={1}>
-              <AnnotationConfiguration stationId={params.ts_id} />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            <Tabs
+              value={tabValue}
+              onChange={handleChange}
+              variant="fullWidth"
+              aria-label="simple tabs example"
+            >
+              <Tab label="Datajustering" />
+              <Tab label="Annotering" />
+              <Tab label="Detektion" />
+            </Tabs>
+            <TabPanel value={tabValue} index={0}>
               <QAHistory />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </TabPanel>
+            <TabPanel value={tabValue} index={1}>
+              <AnnotationConfiguration stationId={params.ts_id} />
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
               <Algorithms />
-            </Grid>
+            </TabPanel>
           </>
         )}
-      </Grid>
-
-      {isTouch && (
-        <>
-          <Tabs
-            value={tabValue}
-            onChange={handleChange}
-            variant="fullWidth"
-            aria-label="simple tabs example"
-          >
-            <Tab label="Annotering" />
-            <Tab label="algoritmer" />
-          </Tabs>
-          <TabPanel value={tabValue} index={0}>
-            <AnnotationConfiguration stationId={params.ts_id} />
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <Algorithms />
-          </TabPanel>
-        </>
-      )}
-    </Box>
+      </Box>
+    </MetadataContext.Provider>
   );
 };
 

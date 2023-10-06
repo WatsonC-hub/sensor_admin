@@ -58,6 +58,9 @@ export const AppBarLayout = ({children, style}) => {
                 justifyContent: 'space-between',
               }
         }
+        sx={{
+          height: 64,
+        }}
       >
         {children}
       </Toolbar>

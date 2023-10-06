@@ -54,7 +54,7 @@ export default function BoreholeRouter() {
   }, [data]);
 
   return (
-    <div>
+    <>
       <CssBaseline />
       <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
         <Toolbar>
@@ -79,12 +79,11 @@ export default function BoreholeRouter() {
       <main
         style={{
           flexGrow: 1,
-          padding: theme.spacing(0.5),
+          // padding: theme.spacing(0.5),
         }}
       >
-        <div />
         <Boreholeno boreholeno={params.boreholeno} intakeno={params.intakeno} />
       </main>
-    </div>
+    </>
   );
 }

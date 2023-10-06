@@ -10,7 +10,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import {Typography} from '@mui/material';
-import DeleteAlert from './DeleteAlert';
+import DeleteAlert from 'src/components/DeleteAlert';
 import {Fragment} from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';

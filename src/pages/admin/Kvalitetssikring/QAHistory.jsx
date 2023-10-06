@@ -1,115 +1,111 @@
-import React from 'react';
-import {TreeView, TreeItem} from '@mui/lab';
+import React, {useContext} from 'react';
 import {
-  ExpandMore as ExpandMoreIcon,
-  ChevronRight as ChevronRightIcon,
-  PriorityHighOutlined,
-  ErrorOutlineOutlined,
-} from '@mui/icons-material';
-import {Typography, Box, Button} from '@mui/material';
-
-const data = {
-  id: 'root',
-  name: 'Ændringer',
-  children: [
-    {
-      id: '1',
-      name: 'minmax-cutoff',
-      children: [
-        {
-          id: '2',
-          name: 'min -0.4, max 0.4',
-        },
-      ],
-    },
-    {
-      id: '3',
-      name: 'exclude-data',
-      children: [
-        {
-          id: '4',
-          name: '09/03/2021-13/06/2021',
-        },
-      ],
-    },
-    {
-      id: '5',
-      name: 'minmax-cutoff',
-      children: [
-        {
-          id: '6',
-          name: 'min -0.4, max 0.4',
-        },
-      ],
-    },
-    {
-      id: '7',
-      name: 'exclude-data',
-      children: [
-        {
-          id: '8',
-          name: '09/03/2021-13/06/2021',
-        },
-      ],
-    },
-    {
-      id: '9',
-      name: 'minmax-cutoff',
-      children: [
-        {
-          id: '10',
-          name: 'min -0.4, max 0.4',
-        },
-      ],
-    },
-    {
-      id: '11',
-      name: 'exclude-data',
-      children: [
-        {
-          id: '12',
-          name: '09/03/2021-13/06/2021',
-        },
-      ],
-    },
-  ],
-};
+  Box,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Divider,
+  Button,
+  Skeleton,
+} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import {apiClient} from 'src/apiClient';
+import {MetadataContext} from 'src/state/contexts';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SaveIcon from '@mui/icons-material/Save';
+import moment from 'moment';
+import ExcludeRow from './components/ExcludeRow';
+import LevelCorrectionRow from './components/LevelCorrectionRow';
+import YRangeRow from './components/YRangeRow';
+import {useAutoAnimate} from '@formkit/auto-animate/react';
+import QAAccordion from './components/QAAccordion';
+import BoxNumber from 'src/components/BoxNumber';
 
 export default function QAHistory() {
-  const [expanded, setExpanded] = React.useState([]);
+  const metadata = useContext(MetadataContext);
 
-  const renderTree = (nodes) => (
-    <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
-      {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
-    </TreeItem>
+  const {data, isLoading} = useQuery(
+    ['qa_all', metadata?.ts_id],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_admin/qa_all/${metadata?.ts_id}`);
+      return data;
+    },
+    {
+      enabled: typeof metadata?.ts_id == 'number',
+      refetchInterval: null,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
   );
 
-  const handleToggle = (event, nodeIds) => {
-    setExpanded(nodeIds);
-  };
-
-  const handleCollapseClick = () => {
-    setExpanded((oldExpanded) => {
-      if (oldExpanded.length !== 0) oldExpanded = [];
-      return oldExpanded;
-    });
-  };
+  if (isLoading)
+    return (
+      <Box>
+        <Skeleton
+          sx={{
+            height: '40px',
+            width: '100%',
+            borderRadius: '5px',
+            marginBottom: '10px',
+          }}
+        />
+        <Skeleton
+          sx={{
+            height: '40px',
+            width: '100%',
+            borderRadius: '5px',
+            marginBottom: '10px',
+          }}
+        />
+        <Skeleton
+          sx={{
+            height: '40px',
+            width: '100%',
+            borderRadius: '5px',
+            marginBottom: '10px',
+          }}
+        />
+      </Box>
+    );
 
   return (
-    <Box sx={{height: 270, flexGrow: 1}}>
-      <Typography variant="h5" component="h3">
-        Ændringshistorik
-      </Typography>
-      <Button onClick={handleCollapseClick}>{expanded.length === 0 ? '' : 'Collapse all'}</Button>
-      <TreeView
-        defaultCollapseIcon={<ExpandMoreIcon />}
-        defaultExpanded={['root']}
-        defaultExpandIcon={<ChevronRightIcon />}
-        expanded={expanded}
-        onNodeToggle={handleToggle}
-      >
-        {renderTree(data)}
-      </TreeView>
-    </Box>
+    <>
+      <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+        <QAAccordion number={1} title="Fjernede tidsintervaller">
+          {data.dataexclude
+            .filter((elem) => (elem.min_value == null) & (elem.max_value == null))
+            .map((item, index) => (
+              <ExcludeRow key={item} data={item} index={index} />
+            ))}
+          {data.dataexclude.filter((elem) => (elem.min_value == null) & (elem.max_value == null))
+            .length == 0 && <Typography>Ingen fjernede tidsintervaller</Typography>}
+        </QAAccordion>
+
+        <QAAccordion number={2} title="Korriger spring">
+          {data.levelcorrection.map((item, index) => (
+            <LevelCorrectionRow key={item} data={item} index={index} />
+          ))}
+          {data.levelcorrection.length == 0 && <Typography>Ingen spring korrektioner</Typography>}
+        </QAAccordion>
+        <QAAccordion number={3} title="Kotesætning">
+          <Typography>Her fungerer kotesætning</Typography>
+        </QAAccordion>
+        <QAAccordion number={3} title="Fjernede datapunkter">
+          {data.dataexclude
+            .filter((elem) => (elem.min_value != null) | (elem.max_value != null))
+            .map((item, index) => (
+              <ExcludeRow key={item} data={item} index={index} isWithYValues />
+            ))}
+          {data.dataexclude.filter((elem) => (elem.min_value != null) | (elem.max_value != null))
+            .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}
+        </QAAccordion>
+        <QAAccordion number={4} title="Valide værdier">
+          <YRangeRow data={data.min_max_cutoff} />
+        </QAAccordion>
+        {/* <QAAccordion number={5} title="Spikes"></QAAccordion> */}
+      </Box>
+    </>
   );
 }

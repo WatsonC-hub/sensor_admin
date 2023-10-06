@@ -158,7 +158,7 @@ export default function Station({stationId, stamdata}) {
         })[0]?.elevation;
         return {
           ...e,
-          waterlevel: e.measurement ? elev - e.measurement : null,
+          waterlevel: e.measurement != null ? elev - e.measurement : null,
         };
       });
     } else {
@@ -327,7 +327,7 @@ export default function Station({stationId, stamdata}) {
 
   return (
     // <>
-    <div>
+    <>
       <BearingGraph
         stationId={stationId}
         measurements={control}
@@ -408,6 +408,6 @@ export default function Station({stationId, stamdata}) {
         isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
       />
-    </div>
+    </>
   );
 }

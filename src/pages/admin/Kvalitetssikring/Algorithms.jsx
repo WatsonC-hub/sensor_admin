@@ -14,15 +14,12 @@ const Algorithms = () => {
     return data;
   });
 
-  console.log(data);
-
   return (
     <>
-      <Typography variant="h6">Algoritmer</Typography>
       <Grid container sx={{borderRadius: 2, border: 2, borderColor: 'primary.main'}}>
         {data?.map((algorithm) => (
-          <Grid item xs={12} sm={6}>
-            <AlgorithmCard algorithm={algorithm} />
+          <Grid key={algorithm.name} item xs={12} sm={6}>
+            <AlgorithmCard key={algorithm.name} algorithm={algorithm} />
           </Grid>
         ))}
       </Grid>

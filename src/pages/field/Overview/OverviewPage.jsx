@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {Suspense, useEffect} from 'react';
 import {useTheme} from '@mui/material/styles';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -19,6 +19,8 @@ import Box from '@mui/material/Box';
 import BoreholeList from './BoreholeList';
 import BoreholeListDesktop from './BoreholeListDesktop';
 import {authStore} from 'src/state/store';
+import StationTableGeneric from './components/StationTable';
+import BoreholeTableGeneric from './components/BoreholeTable';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -53,13 +55,26 @@ export default function OverviewPage() {
     }
   );
 
-  const {data: boreholetabledata, boreholeIsLoading} = useQuery(
+  const {data: boreholetabledata, isLoading: boreholeIsLoading} = useQuery(
     ['borehole_list'],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
       return data;
     },
-    {enabled: boreholeAccess}
+    {
+      enabled: boreholeAccess,
+    }
+  );
+
+  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery(
+    ['borehole_map'],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
+      return data;
+    },
+    {
+      enabled: boreholeAccess,
+    }
   );
 
   const {data: mapData, isLoading: mapLoading} = useQuery(
@@ -108,7 +123,7 @@ export default function OverviewPage() {
         aria-labelledby={`full-width-tab-${index}`}
         {...other}
       >
-        {value === index && <Box p={2}>{children}</Box>}
+        {value === index && <Box p={1}>{children}</Box>}
       </div>
     );
   }
@@ -163,20 +178,12 @@ export default function OverviewPage() {
           </AppBar>
           {iotAccess && (
             <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
-              {matches ? (
-                <StationList data={tabledata} loading={isLoading} />
-              ) : (
-                <StationListDesktop data={tabledata} loading={isLoading} />
-              )}
+              <StationTableGeneric data={tabledata} isLoading={isLoading} />
             </TabPanel>
           )}
           {boreholeAccess && (
             <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0} dir={theme.direction}>
-              {matches ? (
-                <BoreholeList data={boreholetabledata} loading={boreholeIsLoading} />
-              ) : (
-                <BoreholeListDesktop data={boreholetabledata} loading={boreholeIsLoading} />
-              )}
+              <BoreholeTableGeneric data={boreholetabledata} isLoading={boreholeIsLoading} />
             </TabPanel>
           )}
         </>
@@ -184,9 +191,9 @@ export default function OverviewPage() {
       <TabPanel value={tabValue} index={0}>
         <Map
           sensorData={mapData}
-          boreholeData={boreholetabledata}
+          boreholeData={boreholeMapdata}
           loading={mapLoading}
-          boreholeLoading={boreholeIsLoading}
+          boreholeLoading={boreholeMapIsLoading}
         />
       </TabPanel>
       {matches && <ScrollTop threshold={100} />}

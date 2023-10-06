@@ -301,7 +301,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   };
 
   var rerunButton = {
-    name: 'Genkør data',
+    name: 'Genberegn data',
     icon: rerunIcon,
     click: function (gd) {
       // toastId.current = toast.loading('Genberegner...');
