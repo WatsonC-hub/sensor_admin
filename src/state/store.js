@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
-import {devtools, persist} from 'zustand/middleware';
+import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 
 const authInitialState = {
   authenticated: false,
@@ -74,7 +74,7 @@ export const authStore = create(
     })),
     {
       name: 'auth-storage', // name of item in the storage (must be unique)
-      getStorage: () => localStorage, // (optional) by default the 'localStorage' is used
+      storage: createJSONStorage(() => localStorage), // (optional) by default the 'localStorage' is used
     }
   )
 );

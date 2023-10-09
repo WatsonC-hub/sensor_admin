@@ -188,7 +188,6 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                   <IconButton
                     edge="end"
                     onClick={() => {
-                      console.log(row);
                       handleEdit(row);
                       setTimeout(() => {
                         window.scrollTo({top: 300, behavior: 'smooth'});

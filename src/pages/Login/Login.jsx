@@ -47,14 +47,12 @@ export default function Login({}) {
       });
 
     loginAPI(userName.toLowerCase().trim(), password).then((res) => {
-      console.log(res.data);
       setProperties(res.data);
       setAuthenticated(true);
       setLoginExpired(false);
     });
   };
   const handlePassReset = (e) => {
-    console.log(passReset);
     resetPassword({email: passReset})
       .then((res) => {
         setPassResetErr(false);

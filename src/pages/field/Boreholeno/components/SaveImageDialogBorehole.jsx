@@ -29,12 +29,10 @@ function SaveImageDialogBorehole({
   const [disableAdd, setDisableAdd] = useState(false);
   const queryClient = useQueryClient();
   const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
-  //console.log(activeImage);
   const imageUrl = baseUrl + activeImage.imageurl + '.png';
 
   const saveImageMutation = useMutation(
     (data) => {
-      console.log(data);
       if (activeImage.gid !== -1) {
         return apiClient.put(`/sensor_field/borehole/image/${data.gid}`, data);
       } else {
@@ -57,7 +55,6 @@ function SaveImageDialogBorehole({
       public: activeImage.public.toString(),
       date: moment(activeImage.date).format('YYYY-MM-DD HH:mm'),
     };
-    console.log(payload);
 
     toast.promise(() => saveImageMutation.mutateAsync(payload), {
       pending: 'Gemmer billede',

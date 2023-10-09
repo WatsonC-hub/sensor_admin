@@ -123,8 +123,6 @@ export default function Register() {
       userName: values.email,
     };
 
-    console.log(payload);
-
     createUserMutation.mutate(payload);
   };
 

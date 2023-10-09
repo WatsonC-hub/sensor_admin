@@ -56,7 +56,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
   const [setLocationValue] = stamdataStore((store) => [store.setLocationValue]);
 
   const onPopupClickHandler = (element) => () => {
-    console.log(element);
     if (element.locid !== undefined) navigate('location/' + element.locid);
     else navigate('borehole/' + element.boreholeno);
   };
@@ -118,7 +117,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
           text: 'Opret ny lokation',
           callback: function (e) {
             const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
-            console.log(coords);
+
             setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
             setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
             navigate('/field/stamdata');
@@ -128,7 +127,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         {
           text: 'Google Maps',
           callback: function (e) {
-            console.log(e);
             if (e.relatedTarget) {
               window.open(
                 `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget._latlng.lat},${e.relatedTarget._latlng.lng}`,
@@ -147,7 +145,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         {
           text: 'Zoom ind',
           callback: function (e) {
-            console.log(e);
             map.zoomIn();
           },
           icon: '/leaflet-images/zoom-in.png',
@@ -301,7 +298,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
 
         marker.addTo(layerRef.current);
       });
-      console.log(layerRef.current.getBounds());
+
       if (zoom !== null) {
         mapRef.current.setView(pan, zoom);
       } else {

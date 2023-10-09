@@ -49,7 +49,6 @@ export const useExclude = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: ({context}) => {
-      console.log(context);
       queryClient.invalidateQueries(['qa_all']);
       toast.success('Ændringer gemt');
     },
@@ -61,7 +60,6 @@ export const useExclude = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: ({context}) => {
-      console.log(context);
       queryClient.invalidateQueries(['qa_all']);
       toast.success('Slettet');
     },

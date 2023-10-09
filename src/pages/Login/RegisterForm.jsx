@@ -21,8 +21,6 @@ const RegisterForm = ({onSubmitHandler, formMethods}) => {
     formState: {isSubmitSuccessful, errors},
   } = formMethods;
 
-  console.log(errors);
-
   return (
     <FormProvider {...formMethods}>
       <Container fixed maxWidth="sm">

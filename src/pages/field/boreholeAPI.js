@@ -40,7 +40,6 @@ const dataURLtoFile = (dataurl, filename) => {
 
 const postImage = (payload, uri) => {
   const boreholeno = payload.boreholeno;
-  console.log(payload);
   const url = `${extEndpoint}/borehole/image/${boreholeno}?session_id=${
     authStore.getState().sessionId
   }`;

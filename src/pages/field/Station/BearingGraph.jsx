@@ -172,7 +172,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   }, [ts_id]);
 
   const handleRelayout = (e) => {
-    console.log(e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;

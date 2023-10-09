@@ -191,7 +191,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const handleMpSubmit = () => {
     let payload = {...mpData};
-    console.log(payload);
     addOrEditWatlevmp.mutate(payload, {
       onSuccess: (data) => {
         resetMpData();
@@ -216,7 +215,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       };
     } else {
       return (data) => {
-        console.log(data);
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING'); // update to use state machine

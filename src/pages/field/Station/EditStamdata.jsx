@@ -127,7 +127,6 @@ const UdstyrReplace = ({stationId}) => {
 
   const onSelectionChange = (data, gid) => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
-    console.log('localunit', localUnit);
     setUnit(localUnit);
     formMethods.setValue(
       'unit',
@@ -280,8 +279,6 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
       error: 'Der skete en fejl',
     });
   };
-
-  console.log('formstate', formMethods.formState);
 
   return (
     <Card

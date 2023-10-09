@@ -251,7 +251,6 @@ function PlotGraph({qaData, ts_id}) {
   }, []);
 
   const handleRelayout = (e) => {
-    console.log('relayout', e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
@@ -352,9 +351,7 @@ function PlotGraph({qaData, ts_id}) {
 
   return (
     <Plot
-      // onSelecting={handlePlotlySelected}
       onSelected={handlePlotlySelected}
-      // onRelayout={(e) => console.log('relayout', e)}
       id="qagraph"
       divId="qagraph"
       onRelayout={handleRelayout}

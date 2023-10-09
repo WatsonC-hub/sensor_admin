@@ -157,8 +157,6 @@ function Map({data, isLoading, setLassoFilter}) {
     // L.control.lasso().addTo(map);
 
     map.on('lasso.finished', (event) => {
-      console.log(event.layers);
-      console.log(new Set(event.layers.map((layer) => layer.options.loc_id)));
       setLassoFilter(() => new Set(event.layers.map((layer) => layer.options.loc_id)));
     });
     map.on('moveend', function () {

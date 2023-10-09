@@ -73,7 +73,6 @@ export default function PejlingForm({
           return true;
         }
       });
-      console.log(mp);
       if (mp.length > 0) {
         setPejlingOutOfRange(false);
         setCurrentMP(mp[0]);
@@ -89,7 +88,6 @@ export default function PejlingForm({
 
   const handleDateChange = (date) => {
     if (isValid(date)) {
-      console.log('date is valid again: ', date);
       changeFormData('timeofmeas', date);
     }
 

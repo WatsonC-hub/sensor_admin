@@ -93,7 +93,6 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   };
 
   const handleDateChange = (date) => {
-    console.log(date);
     setUnitData({
       ...unitData,
       fra: date,

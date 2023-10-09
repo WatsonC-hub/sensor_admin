@@ -183,8 +183,6 @@ const AnnotationConfiguration = ({stationId}) => {
             color="primary"
             variant="contained"
             onClick={() => {
-              console.log(annotationConfiguration);
-              console.log(selection);
               handleSelectionAnnotate();
             }}
           >

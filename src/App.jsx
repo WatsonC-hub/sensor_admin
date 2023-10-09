@@ -13,9 +13,7 @@ function App() {
   const [authenticated] = authStore((state) => [state.authenticated]);
 
   useEffect(() => {
-    apiClient.get('/auth/me/secure').then((res) => {
-      console.log(res);
-    });
+    apiClient.get('/auth/me/secure').then((res) => {});
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {
       // fade out
@@ -26,8 +24,6 @@ function App() {
       }, 2000);
     }
   }, []);
-
-  console.log('authenticated => ', authenticated);
 
   if (!authenticated) {
     return (

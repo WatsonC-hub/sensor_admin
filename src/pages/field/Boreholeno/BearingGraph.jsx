@@ -124,7 +124,6 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
 
   useEffect(() => {
-    //console.log(dynamicMeasurement);
     if (dynamicMeasurement !== undefined) {
       setXDynamicMeasurement([dynamicMeasurement[0]]);
       setYDynamicMeasurement([dynamicMeasurement[1]]);

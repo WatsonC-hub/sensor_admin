@@ -16,7 +16,6 @@ function LocationCamera({open, handleClose, setDataURI}) {
   function handleTakePhoto(dataUri) {
     setDataURI(dataUri);
     handleClose();
-    console.log(dataUri);
   }
 
   return (
