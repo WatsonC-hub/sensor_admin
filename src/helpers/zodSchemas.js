@@ -1,5 +1,5 @@
-import * as z from 'zod';
 import moment from 'moment';
+import * as z from 'zod';
 
 const metadataBaseSchema = z.object({
   location: z.object({
@@ -85,4 +85,4 @@ const metadataPutSchema = metadataBaseSchema.extend({
 //     .optional(),
 // });
 
-export {metadataSchema, metadataPutSchema};
+export {metadataPutSchema, metadataSchema};

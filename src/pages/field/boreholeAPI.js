@@ -68,4 +68,4 @@ const postElasticSearch = (search) => {
   return axios.post(`${searchEndpoint}`, search);
 };
 
-export {postElasticSearch, deleteImage, dataURLtoFile, postImage};
+export {dataURLtoFile, deleteImage, postElasticSearch, postImage};

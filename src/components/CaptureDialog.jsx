@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
-import Dialog from '@mui/material/Dialog';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Slide from '@mui/material/Slide';
-import QrReader from 'react-qr-scanner';
 import {Typography} from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import Slide from '@mui/material/Slide';
+import Toolbar from '@mui/material/Toolbar';
+import React, {useState} from 'react';
+import QrReader from 'react-qr-scanner';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });

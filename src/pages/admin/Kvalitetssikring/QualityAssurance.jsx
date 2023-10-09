@@ -1,14 +1,14 @@
+import {Box, Grid, Tab, Tabs, Typography} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useParams} from 'react-router-dom';
-import QAGraph from './QAGraph';
-import Algorithms from './Algorithms';
-import {Grid, Typography, Box, Button, Tab, Tabs} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
-import QAHistory from './QAHistory';
-import AnnotationConfiguration from './AnnotationConfiguration';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {MetadataContext} from 'src/state/contexts';
+import Algorithms from './Algorithms';
+import AnnotationConfiguration from './AnnotationConfiguration';
+import QAGraph from './QAGraph';
+import QAHistory from './QAHistory';
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;

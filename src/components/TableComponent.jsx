@@ -1,17 +1,15 @@
-import React, {useMemo, useEffect} from 'react';
-import {Button, Box, Tooltip, IconButton, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ShowHideColumnsButton,
-  MRT_ToggleFiltersButton,
-  MRT_GlobalFilterTextField,
-  MRT_TablePagination,
-} from 'material-react-table';
-import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import {Box, IconButton, Tooltip} from '@mui/material';
 import {useAtom} from 'jotai';
 import {RESET} from 'jotai/utils';
-import {useNavigate} from 'react-router-dom';
+import {
+  MRT_GlobalFilterTextField,
+  MRT_ShowHideColumnsButton,
+  MRT_ToggleFiltersButton,
+  MaterialReactTable,
+} from 'material-react-table';
+import {MRT_Localization_DA} from 'material-react-table/locales/da';
+import React, {useEffect} from 'react';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 
 const TableComponent = ({

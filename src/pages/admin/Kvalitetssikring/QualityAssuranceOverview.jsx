@@ -1,12 +1,12 @@
-import React, {useMemo} from 'react';
-import TableComponent from 'src/components/TableComponent';
-import {useQuery} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
-import {atom} from 'jotai';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import {useNavigate} from 'react-router-dom';
-import {Box, IconButton, Tooltip} from '@mui/material';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import {Box, IconButton, Tooltip} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import {atom} from 'jotai';
+import React, {useMemo} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {apiClient} from 'src/apiClient';
+import TableComponent from 'src/components/TableComponent';
+import useBreakpoints from 'src/hooks/useBreakpoints';
 
 const tableStateAtom = atom({
   columnVisibility: {

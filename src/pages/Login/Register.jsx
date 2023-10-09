@@ -1,22 +1,18 @@
-import React, {useState, useEffect} from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Container from '@mui/material/Container';
+import React, {useEffect, useState} from 'react';
 
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import {getCvr, createUser} from 'src/pages/field/fieldAPI';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Typography} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import {Typography} from '@mui/material';
+import DialogTitle from '@mui/material/DialogTitle';
+import {useMutation, useQuery} from '@tanstack/react-query';
+import {useForm} from 'react-hook-form';
 import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {createUser, getCvr} from 'src/pages/field/fieldAPI';
 import * as z from 'zod';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {useForm} from 'react-hook-form';
 import RegisterForm from './RegisterForm';
 
 const RegisterSchema = z.object({

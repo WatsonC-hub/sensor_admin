@@ -1,26 +1,12 @@
-import React, {useContext} from 'react';
-import {
-  Box,
-  Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Divider,
-  Button,
-  Skeleton,
-} from '@mui/material';
+import {Box, Skeleton, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import React, {useContext} from 'react';
 import {apiClient} from 'src/apiClient';
 import {MetadataContext} from 'src/state/contexts';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SaveIcon from '@mui/icons-material/Save';
-import moment from 'moment';
 import ExcludeRow from './components/ExcludeRow';
 import LevelCorrectionRow from './components/LevelCorrectionRow';
-import YRangeRow from './components/YRangeRow';
-import {useAutoAnimate} from '@formkit/auto-animate/react';
 import QAAccordion from './components/QAAccordion';
-import BoxNumber from 'src/components/BoxNumber';
+import YRangeRow from './components/YRangeRow';
 
 export default function QAHistory() {
   const metadata = useContext(MetadataContext);

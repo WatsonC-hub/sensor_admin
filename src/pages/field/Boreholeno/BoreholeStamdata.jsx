@@ -1,25 +1,15 @@
-import {useState, useEffect} from 'react';
-import {
-  Grid,
-  MenuItem,
-  Typography,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Dialog,
-  InputAdornment,
-} from '@mui/material';
-import {EditRounded, Save, PhotoCameraRounded} from '@mui/icons-material';
-import FormInput from 'src/components/FormInput';
-import {useQueryClient, useMutation} from '@tanstack/react-query';
-import {apiClient} from '../../../apiClient';
-import {useForm, FormProvider} from 'react-hook-form';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {EditRounded, PhotoCameraRounded, Save} from '@mui/icons-material';
+import {Box, Button, Card, CardContent, Grid, InputAdornment, Typography} from '@mui/material';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useEffect, useState} from 'react';
+import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import CaptureDialog from 'src/components/CaptureDialog';
+import FormInput from 'src/components/FormInput';
 import ConfirmCalypsoIDDialog from 'src/pages/field/Boreholeno/components/ConfirmCalypsoIDDialog';
 import * as z from 'zod';
-import {zodResolver} from '@hookform/resolvers/zod';
+import {apiClient} from '../../../apiClient';
 
 const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
   const [openCamera, setOpenCamera] = useState(false);

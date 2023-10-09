@@ -1,35 +1,34 @@
-import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import LogoutIcon from '@mui/icons-material/Logout';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   AppBar,
-  Toolbar,
+  Badge,
+  Box,
   Button,
   IconButton,
-  Box,
-  Badge,
-  Typography,
-  Grid,
+  ListItemIcon,
   Menu,
   MenuItem,
-  ListItemIcon,
+  Toolbar,
+  Typography,
 } from '@mui/material';
-import {ReactComponent as LogoSvg} from './calypso.svg';
-import {ReactComponent as SmallLogo} from './logo.svg';
-import {authStore} from './state/store';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
-import BuildCircleIcon from '@mui/icons-material/BuildCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import LogoutIcon from '@mui/icons-material/Logout';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
-import {captureDialogAtom} from './state/atoms';
-import useWhatPage from './hooks/useWhatPage';
-import {useQueryClient, useQuery} from '@tanstack/react-query';
-import {apiClient} from './apiClient';
 import moment from 'moment';
+import React from 'react';
+import {useNavigate} from 'react-router-dom';
+import {apiClient} from './apiClient';
+import {ReactComponent as LogoSvg} from './calypso.svg';
+import useWhatPage from './hooks/useWhatPage';
+import {ReactComponent as SmallLogo} from './logo.svg';
+import {captureDialogAtom} from './state/atoms';
+import {authStore} from './state/store';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);

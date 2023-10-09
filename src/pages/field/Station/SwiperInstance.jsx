@@ -1,8 +1,8 @@
-import {useState, useEffect} from 'react';
 import {AppBar, Tab, Tabs} from '@mui/material';
-import {Swiper} from 'swiper/react';
-import 'swiper/css';
+import {useEffect, useState} from 'react';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import 'swiper/css';
+import {Swiper} from 'swiper/react';
 function a11yProps(index) {
   return {
     id: `full-width-tab-${index}`,

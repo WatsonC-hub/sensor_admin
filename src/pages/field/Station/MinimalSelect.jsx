@@ -1,10 +1,7 @@
-import {useState, useEffect} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {Typography, Box} from '@mui/material';
+import Select from '@mui/material/Select';
+import {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 
 const MinimalSelect = ({locid, stationList}) => {
   const params = useParams();

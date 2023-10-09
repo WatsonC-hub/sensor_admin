@@ -1,15 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 
-import {
-  TextField,
-  Button,
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardContent,
-  CardHeader,
-} from '@mui/material';
+import {Card, CardContent, CardHeader, TextField} from '@mui/material';
 
 const OptionsForm = ({name, options}) => {
   return (

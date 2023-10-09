@@ -1,11 +1,11 @@
-import {useState} from 'react';
-import {Box, Typography, Button} from '@mui/material';
 import {ErrorOutlineOutlined} from '@mui/icons-material';
-import {useNavigate} from 'react-router-dom';
+import {Box, Button, Typography} from '@mui/material';
 import moment from 'moment';
-import TrelloModal from './TrelloModal';
-import PostponeModal from './PostponeModal';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import PostponeModal from './PostponeModal';
+import TrelloModal from './TrelloModal';
 
 const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
   const [trelloOpen, setTrelloOpen] = useState(false);

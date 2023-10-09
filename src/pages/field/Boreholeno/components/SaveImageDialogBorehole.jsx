@@ -1,19 +1,19 @@
-import React, {useState} from 'react';
-import {postImage} from '../../boreholeAPI';
-import {TextField, Typography, Grid, Button, CircularProgress} from '@mui/material';
+import {Button, CircularProgress, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import moment from 'moment';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import OwnDatePicker from '../../../../components/OwnDatePicker';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import {useTheme} from '@mui/material/styles';
-import {useQueryClient, useMutation} from '@tanstack/react-query';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import moment from 'moment';
+import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
+import OwnDatePicker from '../../../../components/OwnDatePicker';
+import {postImage} from '../../boreholeAPI';
 
 function SaveImageDialogBorehole({
   activeImage,

@@ -1,30 +1,21 @@
+import {Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Plot from 'react-plotly.js';
+import {useQuery} from '@tanstack/react-query';
+import {useSetAtom} from 'jotai';
 import moment from 'moment';
-import axios from 'axios';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import React, {useContext, useEffect, useState} from 'react';
+import Plot from 'react-plotly.js';
 import {apiClient} from 'src/apiClient';
-import React, {useEffect, useState, useContext} from 'react';
-import {Typography, Alert, Grid, Button, Box} from '@mui/material';
-import AnnotationConfiguration from './AnnotationConfiguration';
-import {toast} from 'react-toastify';
-import {
-  downloadIcon,
-  rerunIcon,
-  rawDataIcon,
-  makeLinkIcon,
-  rerunQAIcon,
-} from 'src/helpers/plotlyIcons';
-import {useSetAtom, useAtom} from 'jotai';
-import {useCorrectData} from 'src/hooks/useCorrectData';
-import {qaSelection} from 'src/state/atoms';
-import {useRunQA} from 'src/hooks/useRunQA';
-import GraphActions from './GraphActions';
-import {MetadataContext} from 'src/state/contexts';
+import {rerunIcon, rerunQAIcon} from 'src/helpers/plotlyIcons';
 import {useAdjustmentData} from 'src/hooks/query/useAdjustmentData';
 import {useControlData} from 'src/hooks/query/useControlData';
 import {useGraphData} from 'src/hooks/query/useGraphData';
+import {useCorrectData} from 'src/hooks/useCorrectData';
+import {useRunQA} from 'src/hooks/useRunQA';
+import {qaSelection} from 'src/state/atoms';
+import {MetadataContext} from 'src/state/contexts';
+import GraphActions from './GraphActions';
 
 const selectorOptions = {
   buttons: [

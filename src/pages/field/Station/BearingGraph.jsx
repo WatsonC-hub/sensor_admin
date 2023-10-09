@@ -1,15 +1,14 @@
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Plot from 'react-plotly.js';
+import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import {useState, useEffect, useRef} from 'react';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {stamdataStore} from '../../../state/store';
+import {useEffect, useState} from 'react';
+import Plot from 'react-plotly.js';
 import {apiClient} from 'src/apiClient';
-import {toast} from 'react-toastify';
-import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
-import {useCorrectData} from 'src/hooks/useCorrectData';
+import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from 'src/helpers/plotlyIcons';
 import {useGraphData} from 'src/hooks/query/useGraphData';
+import {useCorrectData} from 'src/hooks/useCorrectData';
+import {stamdataStore} from '../../../state/store';
 
 const selectorOptions = {
   buttons: [

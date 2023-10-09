@@ -11,7 +11,7 @@ export default function useFormData(initialState) {
     setFormData(initialState);
   };
 
-  const setFormDataFromObject = obj => {
+  const setFormDataFromObject = (obj) => {
     setFormData(obj);
   };
 

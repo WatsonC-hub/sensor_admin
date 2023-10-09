@@ -1,12 +1,10 @@
-import React, {useEffect} from 'react';
-import {Grid, TextField, MenuItem, CircularProgress} from '@mui/material';
-import {InputAdornment} from '@mui/material';
-import {stamdataStore} from '../../../../state/store';
+import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import FormTextField from './FormTextField';
-import FormInput from 'src/components/FormInput';
-import {apiClient} from 'src/apiClient';
+import React, {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
+import {apiClient} from 'src/apiClient';
+import FormInput from 'src/components/FormInput';
+import FormTextField from './FormTextField';
 
 const TimeseriesTypeSelect = ({stationTypes}) => {
   let menuItems = stationTypes

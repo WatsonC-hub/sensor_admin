@@ -1,6 +1,5 @@
-import useOnlineStatus from 'src/hooks/useOnlineStatus';
 import {toast} from 'react-toastify';
-import WifiOffIcon from '@mui/icons-material/WifiOff';
+import useOnlineStatus from 'src/hooks/useOnlineStatus';
 
 let prevStatus = window.navigator.onLine;
 

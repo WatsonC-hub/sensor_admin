@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import {AddCircle, EditRounded, Straighten, PlaylistAddCheck} from '@mui/icons-material';
+import {AddCircle, EditRounded, PlaylistAddCheck, Straighten} from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/MoreVert';
+import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import MenuIcon from '@mui/icons-material/MoreVert';
-import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import React, {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 const bottomNavStyle = {

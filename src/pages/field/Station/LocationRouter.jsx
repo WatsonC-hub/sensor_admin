@@ -1,18 +1,16 @@
-import React from 'react';
-import {useTheme, Box, Typography} from '@mui/material';
-import CssBaseline from '@mui/material/CssBaseline';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import Station from './Station';
-import MinimalSelect from './MinimalSelect';
-import {useParams, useNavigate} from 'react-router-dom';
+import {Box, Typography, useTheme} from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import IconButton from '@mui/material/IconButton';
 import {useQuery} from '@tanstack/react-query';
+import React from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
-import ErrorPage from './ErrorPage';
-import {apiClient} from 'src/apiClient';
+import {useNavigate, useParams} from 'react-router-dom';
 import {AppBarLayout} from 'src/NavBar';
+import {apiClient} from 'src/apiClient';
+import ErrorPage from './ErrorPage';
+import MinimalSelect from './MinimalSelect';
+import Station from './Station';
 
 export default function LocationRouter() {
   const theme = useTheme();

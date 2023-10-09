@@ -1,8 +1,8 @@
-import React from 'react';
-import {AddCircle, Straighten, EditRounded} from '@mui/icons-material';
+import {AddCircle, EditRounded, Straighten} from '@mui/icons-material';
+import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
+import React from 'react';
 
 const bottomNavStyle = {
   borderRadius: 5,

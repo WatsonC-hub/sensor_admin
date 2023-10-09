@@ -1,26 +1,23 @@
-import React, {useState} from 'react';
-import ServiceMap from 'src/pages/admin/Notifikationer/ServiceMap';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
-import {reverse, sortBy, uniqBy, uniq} from 'lodash';
 import {
-  Grid,
-  Button,
-  Typography,
-  Select,
   Box,
-  Chip,
-  OutlinedInput,
-  MenuItem,
-  FormControlLabel,
   Checkbox,
+  Chip,
   FormControl,
+  FormControlLabel,
+  Grid,
   InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
 } from '@mui/material';
-import NotificationTree from './NotificationTree';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
-import {useEffect} from 'react';
+import {reverse, sortBy, uniqBy} from 'lodash';
+import React, {useEffect, useState} from 'react';
+import {apiClient} from 'src/apiClient';
+import ServiceMap from 'src/pages/admin/Notifikationer/ServiceMap';
 import useBreakpoints from '../../../hooks/useBreakpoints';
+import NotificationTree from './NotificationTree';
 
 const getNavigation = (item) => {
   switch (item.color) {

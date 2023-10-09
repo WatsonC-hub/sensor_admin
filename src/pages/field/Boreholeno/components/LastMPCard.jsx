@@ -1,5 +1,5 @@
+import {Card, CardContent, CardHeader} from '@mui/material';
 import React from 'react';
-import {Card, CardHeader, CardContent} from '@mui/material';
 
 const LastMPCard = ({title, children}) => {
   return (

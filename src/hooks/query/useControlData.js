@@ -1,6 +1,5 @@
+import {useQuery} from '@tanstack/react-query';
 import {useContext} from 'react';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
-import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
 import {MetadataContext} from 'src/state/contexts';
 

@@ -1,4 +1,4 @@
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 
 export const useGraphData = (ts_id, xRange) => {

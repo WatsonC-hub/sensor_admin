@@ -1,9 +1,6 @@
-import {useState, useEffect} from 'react';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
-import {Box} from '@mui/material';
-import OptionsForm from './OptionsForm';
-import TableComponent from 'src/components/TableComponent';
 
 const ConfigurationPage = () => {
   const {data, isLoading, error} = useQuery(['configuration_options'], async ({signal}) => {

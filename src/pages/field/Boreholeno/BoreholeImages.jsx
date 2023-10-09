@@ -1,14 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import LocationCamera from '../../../components/LocationCamera';
-import {Button} from '@mui/material';
-import ImageViewerBorehole from './components/ImageViewerBorehole';
 import {PhotoCameraRounded} from '@mui/icons-material';
-import {Grid} from '@mui/material';
-import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
-import {deleteImage} from 'src/pages/field/boreholeAPI';
+import {Button, Grid} from '@mui/material';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
+import React, {useState} from 'react';
 import {apiClient} from 'src/apiClient';
+import {deleteImage} from 'src/pages/field/boreholeAPI';
+import LocationCamera from '../../../components/LocationCamera';
+import ImageViewerBorehole from './components/ImageViewerBorehole';
+import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
 
 function BoreholeImages(props) {
   const [openCamera, setOpenCamera] = useState(false);

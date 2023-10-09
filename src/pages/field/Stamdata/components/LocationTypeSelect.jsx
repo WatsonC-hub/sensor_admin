@@ -1,8 +1,7 @@
-import React, {useState} from 'react';
-import {Grid, MenuItem, TextField} from '@mui/material';
+import {MenuItem} from '@mui/material';
+import React from 'react';
 
 import {useQuery} from '@tanstack/react-query';
-import FormTextField from './FormTextField';
 import {apiClient} from 'src/apiClient';
 import FormInput from 'src/components/FormInput';
 

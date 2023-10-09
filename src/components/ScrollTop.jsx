@@ -1,9 +1,9 @@
-import * as React from 'react';
-import useScrollTrigger from '@mui/material/useScrollTrigger';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Box from '@mui/material/Box';
 import Fab from '@mui/material/Fab';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Fade from '@mui/material/Fade';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import * as React from 'react';
 
 export default function ScrollTop({threshold}) {
   const trigger = useScrollTrigger({

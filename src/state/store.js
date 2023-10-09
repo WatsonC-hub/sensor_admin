@@ -1,6 +1,6 @@
+import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
 import {devtools, persist} from 'zustand/middleware';
-import * as Sentry from '@sentry/react';
 
 const authInitialState = {
   authenticated: false,

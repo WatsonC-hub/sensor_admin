@@ -1,15 +1,15 @@
-import React from 'react';
 import {
   Box,
+  Button,
   Checkbox,
+  Container,
   FormControlLabel,
   FormGroup,
   FormHelperText,
   Typography,
-  Button,
-  Container,
 } from '@mui/material';
-import {FormProvider, Controller} from 'react-hook-form';
+import React from 'react';
+import {Controller, FormProvider} from 'react-hook-form';
 import FormInput from 'src/components/FormInput';
 
 const RegisterForm = ({onSubmitHandler, formMethods}) => {

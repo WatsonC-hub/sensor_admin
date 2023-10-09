@@ -1,8 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Select from '@mui/material/Select';
+import React, {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 
 const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedItem}) => {
   const params = useParams();

@@ -1,21 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import {TextField} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {atom, useAtom} from 'jotai';
 import L from 'leaflet';
-import 'leaflet.locatecontrol';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import {atom, useAtom} from 'jotai';
-import {postElasticSearch} from '../boreholeAPI';
-import Autocomplete from '@mui/material/Autocomplete';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import {useTheme} from '@mui/material/styles';
-import {TextField} from '@mui/material';
-import {authStore} from '../../../state/store';
+import 'leaflet.locatecontrol';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import {mapboxToken} from 'src/consts';
 import {stamdataStore} from 'src/state/store';
 import utmObj from 'utm-latlng';
+import {authStore} from '../../../state/store';
+import {postElasticSearch} from '../boreholeAPI';
 
 const utm = new utmObj();
 

@@ -1,20 +1,15 @@
-import {useContext, useState} from 'react';
+import {Box, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import moment from 'moment';
+import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
-import {qaSelection} from 'src/state/atoms';
-import {Typography, Box} from '@mui/material';
-import {toast} from 'react-toastify';
-import {useQueryClient, useMutation} from '@tanstack/react-query';
-import {MetadataContext} from 'src/state/contexts';
-import {apiClient} from 'src/apiClient';
+import {useContext, useState} from 'react';
 import {useYRangeMutations} from 'src/hooks/query/useYRangeMutations';
+import {qaSelection} from 'src/state/atoms';
+import {MetadataContext} from 'src/state/contexts';
 
 const YRangeModal = ({open, onClose}) => {
   const selection = useAtomValue(qaSelection);

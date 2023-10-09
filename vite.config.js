@@ -1,9 +1,8 @@
-import {defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
-import svgrPlugin from 'vite-plugin-svgr';
 import {visualizer} from 'rollup-plugin-visualizer';
+import {defineConfig} from 'vite';
 import {VitePWA} from 'vite-plugin-pwa';
-import sentryVitePlugin from '@sentry/vite-plugin';
+import svgrPlugin from 'vite-plugin-svgr';
 
 const getCache = ({name, pattern, handler}) => ({
   urlPattern: pattern,

@@ -1,22 +1,22 @@
-import {useState} from 'react';
 import {
-  Card,
-  CardHeader,
-  CardContent,
-  TextField,
   Button,
-  MenuItem,
+  Card,
+  CardContent,
+  CardHeader,
+  FormControl,
   FormControlLabel,
+  MenuItem,
   Radio,
   RadioGroup,
-  FormControl,
+  TextField,
 } from '@mui/material';
-import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue} from 'jotai';
-import {qaSelection} from 'src/state/atoms';
 import moment from 'moment';
+import {useState} from 'react';
 import {toast} from 'react-toastify';
+import {apiClient} from 'src/apiClient';
+import {qaSelection} from 'src/state/atoms';
 
 const AnnotationConfiguration = ({stationId}) => {
   const selection = useAtomValue(qaSelection);

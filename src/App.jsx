@@ -1,13 +1,13 @@
-import React, {useEffect, useState, Suspense} from 'react';
+import React, {Suspense, useEffect} from 'react';
 
-import UnAuntenticatedApp from './UnauthenticatedApp';
-import {authStore} from './state/store';
-import LoadingSkeleton from './LoadingSkeleton';
-import {apiClient} from './apiClient';
-import Redirecter from './Redirecter';
-import NavBar from './NavBar';
-import {ErrorBoundary} from 'react-error-boundary';
 import {Typography} from '@mui/material';
+import {ErrorBoundary} from 'react-error-boundary';
+import LoadingSkeleton from './LoadingSkeleton';
+import NavBar from './NavBar';
+import Redirecter from './Redirecter';
+import UnAuntenticatedApp from './UnauthenticatedApp';
+import {apiClient} from './apiClient';
+import {authStore} from './state/store';
 
 function App() {
   const [authenticated] = authStore((state) => [state.authenticated]);

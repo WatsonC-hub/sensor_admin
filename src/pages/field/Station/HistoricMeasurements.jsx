@@ -1,20 +1,19 @@
-import React, {useState, useContext} from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import StraightenIcon from '@mui/icons-material/Straighten';
+import {IconButton, Typography} from '@mui/material';
+import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
-import {IconButton, Typography} from '@mui/material';
-import DeleteAlert from 'src/components/DeleteAlert';
-import {Fragment} from 'react';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import TableRow from '@mui/material/TableRow';
 import moment from 'moment';
+import React, {Fragment, useState} from 'react';
+import DeleteAlert from 'src/components/DeleteAlert';
 import {stamdataStore} from '../../../state/store';
-import Grid from '@mui/material/Grid';
-import StraightenIcon from '@mui/icons-material/Straighten';
 
 export default function HistoricMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -1,8 +1,8 @@
-import {QueryClient, MutationCache} from '@tanstack/react-query';
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
+import {MutationCache, QueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
-import {excludePostOptions, excludeDelOptions, excludePutOptions} from 'src/hooks/query/useExclude';
+import {excludeDelOptions, excludePostOptions, excludePutOptions} from 'src/hooks/query/useExclude';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,4 +60,4 @@ const persister = createSyncStoragePersister({
   storage: window.localStorage,
 });
 
-export {queryClient, persister};
+export {persister, queryClient};

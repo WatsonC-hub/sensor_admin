@@ -1,15 +1,15 @@
+import {useAtom} from 'jotai';
 import React, {useState} from 'react';
 import {Route, Routes, useNavigate} from 'react-router-dom';
-import OverviewPage from './Overview/OverviewPage';
-import LocationRouter from './Station/LocationRouter';
-import ScanComponent from '../../components/ScanComponent';
-import OpretStamdata from './Stamdata/OpretStamdata';
-import CaptureDialog from 'src/components/CaptureDialog';
-import {useAtom} from 'jotai';
-import {captureDialogAtom} from '../../state/atoms';
-import BoreholeRouter from './Boreholeno/BoreholeRouter';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
+import CaptureDialog from 'src/components/CaptureDialog';
+import ScanComponent from '../../components/ScanComponent';
+import {captureDialogAtom} from '../../state/atoms';
+import BoreholeRouter from './Boreholeno/BoreholeRouter';
+import OverviewPage from './Overview/OverviewPage';
+import OpretStamdata from './Stamdata/OpretStamdata';
+import LocationRouter from './Station/LocationRouter';
 
 function SensorField({}) {
   const [addStationDisabled, setAddStationDisabled] = useState(false);

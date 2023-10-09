@@ -1,12 +1,10 @@
-import React from 'react';
-import {Button, Grid, MenuItem, TextField} from '@mui/material';
-import {InputAdornment} from '@mui/material';
-import LocationTypeSelect from './LocationTypeSelect';
+import {Button, Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {getDTMQuota} from '../../fieldAPI';
-import {FormProvider, Controller} from 'react-hook-form';
-import FormInput from 'src/components/FormInput';
+import React from 'react';
 import {useFormContext} from 'react-hook-form';
+import FormInput from 'src/components/FormInput';
+import {getDTMQuota} from '../../fieldAPI';
+import LocationTypeSelect from './LocationTypeSelect';
 
 export default function LocationForm({mode, disable}) {
   const {

@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Plot from 'react-plotly.js';
 import {useQuery} from '@tanstack/react-query';
+import React, {useEffect, useState} from 'react';
+import Plot from 'react-plotly.js';
 import {apiClient} from 'src/apiClient';
 
 const selectorOptions = {

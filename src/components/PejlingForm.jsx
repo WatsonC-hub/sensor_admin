@@ -1,28 +1,27 @@
-import React, {useState, useEffect} from 'react';
+import SaveIcon from '@mui/icons-material/Save';
 import {
-  Grid,
-  Typography,
-  TextField,
+  Alert,
   Button,
   Card,
   CardContent,
+  Checkbox,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Grid,
+  InputAdornment,
+  Link,
   Radio,
   RadioGroup,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
-  Box,
-  Link,
-  Alert,
+  TextField,
+  Tooltip,
+  Typography,
 } from '@mui/material';
 import {isValid} from 'date-fns';
-import {InputAdornment} from '@mui/material';
 import moment from 'moment';
-import SaveIcon from '@mui/icons-material/Save';
-import OwnDatePicker from './OwnDatePicker';
-import {Checkbox} from '@mui/material';
-import {Tooltip} from '@mui/material';
+import React, {useEffect, useState} from 'react';
 import {stamdataStore} from '../state/store';
+import OwnDatePicker from './OwnDatePicker';
 
 // TODO
 // - Find ud af om textfield skal have grøn outline
