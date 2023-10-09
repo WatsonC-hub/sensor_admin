@@ -112,7 +112,7 @@ const NavBarNotifications = () => {
   );
 };
 
-const NavBarMenu = () => {
+const NavBarMenu = ({children}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   let navigate = useNavigate();
   const page = useWhatPage();
@@ -187,6 +187,29 @@ const NavBarMenu = () => {
   );
 };
 
+const Logo = () => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
+
+  return matches ? <SmallLogo /> : <LogoSvg />;
+};
+
+const GoBack = () => {
+  const navigate = useNavigate();
+
+  return (
+    <IconButton
+      color="inherit"
+      onClick={(e) => {
+        navigate(-1);
+      }}
+      size="large"
+    >
+      <KeyboardBackspaceIcon />
+    </IconButton>
+  );
+};
+
 const NavBar = ({children}) => {
   const [authenticated, iotAccess, adminAccess] = authStore((state) => [
     state.authenticated,
@@ -206,7 +229,7 @@ const NavBar = ({children}) => {
   if (!authenticated) {
     return (
       <AppBarLayout>
-        {matches ? <SmallLogo /> : <LogoSvg />}
+        <Logo />
         {/* <Typography variant="h4">Field</Typography> */}
         {location.pathname !== '/register' ? (
           <Button
@@ -250,15 +273,7 @@ const NavBar = ({children}) => {
             <LogoSvg />
           )
         ) : (
-          <IconButton
-            color="inherit"
-            onClick={
-              (e) => navigate('') //context.setLocationId(-1)
-            }
-            size="large"
-          >
-            <KeyboardBackspaceIcon />
-          </IconButton>
+          <GoBack />
         )}
 
         {!matches && <Typography variant="h4">Field</Typography>}
@@ -311,15 +326,7 @@ const NavBar = ({children}) => {
   if (location.pathname.includes('/admin/')) {
     return (
       <AppBarLayout>
-        <IconButton
-          color="inherit"
-          onClick={(e) => {
-            navigate(-1);
-          }}
-          size="large"
-        >
-          <KeyboardBackspaceIcon />
-        </IconButton>
+        <GoBack />
         <Typography variant="h4">Admin</Typography>
 
         {matches ? (
@@ -361,7 +368,7 @@ const NavBar = ({children}) => {
   if (location.pathname.includes('/admin')) {
     return (
       <AppBarLayout>
-        {matches ? <SmallLogo /> : <LogoSvg />}
+        <Logo />
 
         <Typography variant="h4">Admin</Typography>
 
@@ -403,7 +410,7 @@ const NavBar = ({children}) => {
 
   return (
     <AppBarLayout>
-      {matches ? <SmallLogo /> : <LogoSvg />}
+      <Logo />
 
       <Typography variant="h4"></Typography>
 
