@@ -29,13 +29,7 @@ if (import.meta.env.PROD) {
 
 if ('serviceWorker' in navigator) {
   // && !/localhost/.test(window.location)) {
-  registerSW({
-    onNeedRefresh() {
-      if (confirm('Opdatering tilgængelig. Vil du opdatere?')) {
-        updateSW(true);
-      }
-    },
-  });
+  registerSW({immediate: true});
 }
 
 const container = document.getElementById('root');
