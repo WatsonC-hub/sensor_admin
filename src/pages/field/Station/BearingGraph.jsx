@@ -161,10 +161,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     state.location.terrainlevel,
   ]);
 
-  // const toastId = useRef(null);
-
-  const queryClient = useQueryClient();
-
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [xRange, setXRange] = useState(initRange);
@@ -227,6 +223,26 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.waterlevel);
+  const textControl = controlData?.map((d) => {
+    switch (d.useforcorrection) {
+      case 0:
+        return 'Kontrol';
+      case 1:
+        return 'Korrektion fremadrettet';
+      case 2:
+        return 'Korrektion fremadrettet og bagudrettet';
+      case 3:
+        return 'Korrektion lineært til forrige pejling';
+      case 4:
+        return 'Korrektion tilbage til unit';
+      case 5:
+        return 'Korrektion tilbage til forrige niveaukorrektion';
+      case 6:
+        return 'Korrektion tilbage til forrige pejling';
+      default:
+        return 'Korrektion';
+    }
+  });
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
   var downloadButton = {
@@ -321,8 +337,9 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           x: xControl,
           y: yControl,
           name: 'Kontrolpejlinger',
-          type: 'scatter',
+          type: 'scattergl',
           mode: 'markers',
+          text: textControl,
           marker: {
             symbol: '200',
             size: '8',

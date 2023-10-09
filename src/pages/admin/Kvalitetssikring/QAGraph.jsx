@@ -297,6 +297,26 @@ function PlotGraph({qaData, ts_id}) {
 
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.measurement);
+  const textControl = controlData?.map((d) => {
+    switch (d.useforcorrection) {
+      case 0:
+        return 'Kontrol';
+      case 1:
+        return 'Korrektion fremadrettet';
+      case 2:
+        return 'Korrektion fremadrettet og bagudrettet';
+      case 3:
+        return 'Korrektion lineært til forrige pejling';
+      case 4:
+        return 'Korrektion tilbage til unit';
+      case 5:
+        return 'Korrektion tilbage til forrige niveaukorrektion';
+      case 6:
+        return 'Korrektion tilbage til forrige pejling';
+      default:
+        return 'Korrektion';
+    }
+  });
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
@@ -354,15 +374,16 @@ function PlotGraph({qaData, ts_id}) {
           name: metadata?.loc_name + ' ' + metadata?.ts_name,
           type: 'scattergl',
           line: {width: 2},
-          mode: 'lines+markers',
-          marker: {symbol: '100', size: '5', color: '#177FC1'},
+          mode: 'lines',
+          marker: {symbol: '100', size: '3', color: '#177FC1'},
         },
         {
           x: xControl,
           y: yControl,
           name: 'Kontrolpejlinger',
-          type: 'scatter',
+          type: 'scattergl',
           mode: 'markers',
+          text: textControl,
           marker: {
             symbol: '200',
             size: '8',
