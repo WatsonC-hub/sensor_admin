@@ -22,7 +22,7 @@ import {qaSelection} from 'src/state/atoms';
 import {useRunQA} from 'src/hooks/useRunQA';
 import GraphActions from './GraphActions';
 import {MetadataContext} from 'src/state/contexts';
-import {useRerunData} from 'src/hooks/query/useRerunData';
+import {useAdjustmentData} from 'src/hooks/query/useAdjustmentData';
 
 const selectorOptions = {
   buttons: [
@@ -241,7 +241,7 @@ const transformQAData = (data) => {
     }
   });
 
-  return {shapelist, annotateList};
+  return [shapelist, annotateList];
 };
 
 const initRange = [
@@ -257,7 +257,7 @@ function PlotGraph({controlData, qaData, ts_id}) {
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
   const metadata = useContext(MetadataContext);
 
-  const {data: rerun} = useRerunData();
+  const {data: adjustmentData} = useAdjustmentData();
 
   const handlePlotlySelected = (eventData) => {
     if (eventData === undefined) {
@@ -393,13 +393,13 @@ function PlotGraph({controlData, qaData, ts_id}) {
     },
   };
 
-  const {shapelist: qaShapes, annotateList: qaAnnotate} = transformQAData(qaData);
+  const [qaShapes, qaAnnotate] = transformQAData(qaData);
 
-  const rerunShapes = rerun?.levelcorrection?.map((d) => {
+  const levelCorrectionShapes = adjustmentData?.levelcorrection?.map((d) => {
     return {
       type: 'line',
-      x0: d.date,
-      x1: d.date,
+      x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
+      x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
       y0: 0,
       y1: 1,
       yref: 'paper',
@@ -410,6 +410,10 @@ function PlotGraph({controlData, qaData, ts_id}) {
       },
     };
   });
+
+  const shapes = [...(qaShapes ?? []), ...(levelCorrectionShapes ?? [])];
+
+  console.log({...levelCorrectionShapes?.[0]});
 
   return (
     <Plot
@@ -442,10 +446,13 @@ function PlotGraph({controlData, qaData, ts_id}) {
             line: {color: 'rgb(0,0,0)', width: 1},
           },
         },
+        {
+          ...levelCorrectionShapes?.[0],
+        },
       ]}
       layout={{
         ...layout,
-        shapes: rerunShapes,
+        shapes: shapes,
         annotations: qaAnnotate,
         uirevision: 'true',
         yaxis: {

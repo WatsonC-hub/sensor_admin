@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
 import {MetadataContext} from 'src/state/contexts';
 
-export const useRerunData = () => {
+export const useAdjustmentData = () => {
   const metadata = useContext(MetadataContext);
 
   const query = useQuery(
