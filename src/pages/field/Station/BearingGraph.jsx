@@ -8,7 +8,8 @@ import {stamdataStore} from '../../../state/store';
 import {apiClient} from 'src/apiClient';
 import {toast} from 'react-toastify';
 import {downloadIcon, rerunIcon, rawDataIcon, makeLinkIcon} from 'src/helpers/plotlyIcons';
-import {useCorrectData} from '../../../hooks/useCorrectData';
+import {useCorrectData} from 'src/hooks/useCorrectData';
+import {useGraphData} from 'src/hooks/query/useGraphData';
 
 const selectorOptions = {
   buttons: [
@@ -38,47 +39,6 @@ const selectorOptions = {
   ],
 };
 
-function exportToCsv(filename, rows) {
-  var processRow = function (row) {
-    var finalVal = '';
-    for (var j = 0; j < row.length; j++) {
-      var innerValue = row[j] === null ? '' : row[j].toString();
-      if (row[j] instanceof Date) {
-        innerValue = row[j].toLocaleString();
-      }
-      var result = innerValue.replace(/"/g, '""');
-      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
-      if (j > 0) finalVal += ';';
-      finalVal += result;
-    }
-    return finalVal + '\n';
-  };
-
-  var csvFile = '';
-  for (var i = 0; i < rows.length; i++) {
-    csvFile += processRow(rows[i]);
-  }
-
-  var blob = new Blob([csvFile], {type: 'text/csv;charset=utf-8;'});
-  if (navigator.msSaveBlob) {
-    // IE 10+
-    navigator.msSaveBlob(blob, filename);
-  } else {
-    var link = document.createElement('a');
-    if (link.download !== undefined) {
-      // feature detection
-      // Browsers that support HTML5 download attribute
-      var url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-}
-
 const desktopLayout = {
   xaxis: {
     rangeselector: selectorOptions,
@@ -93,7 +53,8 @@ const desktopLayout = {
       font: {size: 12},
     },
     showline: true,
-    autorange: true,
+    autorange: false,
+    autornage: false,
   },
   yaxis2: {
     showgrid: false,
@@ -145,7 +106,7 @@ const mobileLayout = {
   },
 
   yaxis: {
-    autorange: true,
+    autorange: false,
     showline: true,
     y: 1,
     title: {
@@ -154,6 +115,7 @@ const mobileLayout = {
     },
   },
   yaxis2: {
+    autorange: false,
     showgrid: false,
     overlaying: 'y',
     side: 'right',
@@ -199,10 +161,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     state.location.terrainlevel,
   ]);
 
-  // const toastId = useRef(null);
-
-  const queryClient = useQueryClient();
-
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [xRange, setXRange] = useState(initRange);
@@ -240,30 +198,11 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       x1 = x1.add(daysdiff * 0.2, 'days');
 
       setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
+      return;
     }
   };
 
-  const {data: graphData, refetch: refetchData} = useQuery(
-    ['graphData', ts_id, xRange],
-    async ({signal}) => {
-      const {data} = await apiClient.get(`/data/timeseriesV2/${ts_id}`, {
-        params: {
-          start: xRange[0],
-          stop: xRange[1],
-          limit: 4000,
-        },
-      });
-      if (data === null) {
-        return [];
-      }
-      return data;
-    },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-    }
-  );
+  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
 
   const {data: rawData, refetch: fetchRaw} = useQuery(
     ['rawdata', ts_id],
@@ -284,6 +223,26 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.waterlevel);
+  const textControl = controlData?.map((d) => {
+    switch (d.useforcorrection) {
+      case 0:
+        return 'Kontrol';
+      case 1:
+        return 'Korrektion fremadrettet';
+      case 2:
+        return 'Korrektion fremadrettet og bagudrettet';
+      case 3:
+        return 'Korrektion lineært til forrige pejling';
+      case 4:
+        return 'Korrektion tilbage til unit';
+      case 5:
+        return 'Korrektion tilbage til forrige niveaukorrektion';
+      case 6:
+        return 'Korrektion tilbage til forrige pejling';
+      default:
+        return 'Korrektion';
+    }
+  });
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
   var downloadButton = {
@@ -351,7 +310,8 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   return (
     <Plot
-      key={ts_id}
+      // key={ts_id}
+      id={`graph_${ts_id}`}
       divId={`graph_${ts_id}`}
       data={[
         {
@@ -377,8 +337,9 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           x: xControl,
           y: yControl,
           name: 'Kontrolpejlinger',
-          type: 'scatter',
+          type: 'scattergl',
           mode: 'markers',
+          text: textControl,
           marker: {
             symbol: '200',
             size: '8',
@@ -398,6 +359,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       ]}
       layout={{
         ...layout,
+        uirevision: 'true',
         yaxis: {
           title: `${stationtype} [${unit}]`,
         },
@@ -411,7 +373,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
         displaylogo: false,
         displayModeBar: true,
-        doubleClick: 'reset',
       }}
       useResizeHandler={true}
       style={{width: '99%', height: '100%'}}
