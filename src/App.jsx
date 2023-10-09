@@ -16,6 +16,15 @@ function App() {
     apiClient.get('/auth/me/secure').then((res) => {
       console.log(res);
     });
+    const ele = document.getElementById('ipl-progress-indicator');
+    if (ele) {
+      // fade out
+      ele.classList.add('available');
+      setTimeout(() => {
+        // remove from DOM
+        ele.outerHTML = '';
+      }, 2000);
+    }
   }, []);
 
   console.log('authenticated => ', authenticated);
