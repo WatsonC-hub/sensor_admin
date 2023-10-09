@@ -57,7 +57,7 @@ const layout1 = {
 
   //xaxis: {domain: [0, 0.9]},
   yaxis: {
-    autorange: false,
+    autorange: true,
     title: {
       text: '',
       font: {size: 12},
@@ -99,7 +99,7 @@ const layout3 = {
   },
 
   yaxis: {
-    autorange: false,
+    autorange: true,
     showline: true,
     y: 1,
     title: {

@@ -52,8 +52,6 @@ const desktopLayout = {
       font: {size: 12},
     },
     showline: true,
-    autorange: false,
-    autornage: false,
   },
   yaxis2: {
     showgrid: false,
@@ -105,7 +103,6 @@ const mobileLayout = {
   },
 
   yaxis: {
-    autorange: false,
     showline: true,
     y: 1,
     title: {
@@ -114,7 +111,6 @@ const mobileLayout = {
     },
   },
   yaxis2: {
-    autorange: false,
     showgrid: false,
     overlaying: 'y',
     side: 'right',
