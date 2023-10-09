@@ -81,7 +81,6 @@ export default function Station({stationId, stamdata}) {
 
   const {data: watlevmp} = useQuery(
     ['watlevmp', stationId],
-    //() => getMP(stationId), {
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
 
@@ -100,7 +99,6 @@ export default function Station({stationId, stamdata}) {
   );
 
   const {data: measurements} = useQuery(
-    //() => getMeasurements(stationId),
     ['measurements', stationId],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);

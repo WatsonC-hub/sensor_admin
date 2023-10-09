@@ -23,6 +23,8 @@ import {useRunQA} from 'src/hooks/useRunQA';
 import GraphActions from './GraphActions';
 import {MetadataContext} from 'src/state/contexts';
 import {useAdjustmentData} from 'src/hooks/query/useAdjustmentData';
+import {useControlData} from 'src/hooks/query/useControlData';
+import {useGraphData} from 'src/hooks/query/useGraphData';
 
 const selectorOptions = {
   buttons: [
@@ -51,47 +53,6 @@ const selectorOptions = {
   ],
 };
 
-function exportToCsv(filename, rows) {
-  var processRow = function (row) {
-    var finalVal = '';
-    for (var j = 0; j < row.length; j++) {
-      var innerValue = row[j] === null ? '' : row[j].toString();
-      if (row[j] instanceof Date) {
-        innerValue = row[j].toLocaleString();
-      }
-      var result = innerValue.replace(/"/g, '""');
-      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
-      if (j > 0) finalVal += ';';
-      finalVal += result;
-    }
-    return finalVal + '\n';
-  };
-
-  var csvFile = '';
-  for (var i = 0; i < rows.length; i++) {
-    csvFile += processRow(rows[i]);
-  }
-
-  var blob = new Blob([csvFile], {type: 'text/csv;charset=utf-8;'});
-  if (navigator.msSaveBlob) {
-    // IE 10+
-    navigator.msSaveBlob(blob, filename);
-  } else {
-    var link = document.createElement('a');
-    if (link.download !== undefined) {
-      // feature detection
-      // Browsers that support HTML5 download attribute
-      var url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-}
-
 const layout1 = {
   xaxis: {
     rangeselector: selectorOptions,
@@ -105,6 +66,7 @@ const layout1 = {
 
   //xaxis: {domain: [0, 0.9]},
   yaxis: {
+    autorange: false,
     title: {
       text: '',
       font: {size: 12},
@@ -146,6 +108,7 @@ const layout3 = {
   },
 
   yaxis: {
+    autorange: false,
     showline: true,
     y: 1,
     title: {
@@ -267,7 +230,7 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
-function PlotGraph({controlData, qaData, ts_id}) {
+function PlotGraph({qaData, ts_id}) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
   const theme = useTheme();
@@ -276,6 +239,8 @@ function PlotGraph({controlData, qaData, ts_id}) {
   const metadata = useContext(MetadataContext);
 
   const {data: adjustmentData} = useAdjustmentData();
+
+  const {data: controlData} = useControlData();
 
   const handlePlotlySelected = (eventData) => {
     if (eventData === undefined) {
@@ -324,33 +289,14 @@ function PlotGraph({controlData, qaData, ts_id}) {
       x1 = x1.add(daysdiff * 0.2, 'days');
 
       setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
+      return;
     }
   };
 
-  const {data: graphData, refetch: refetchData} = useQuery(
-    ['graphData', ts_id, xRange],
-    async ({signal}) => {
-      const {data} = await apiClient.get(`/data/timeseriesV2/${ts_id}`, {
-        params: {
-          start: xRange[0],
-          stop: xRange[1],
-          limit: 4000,
-        },
-      });
-      if (data === null) {
-        return [];
-      }
-      return data;
-    },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-    }
-  );
+  const {data: graphData} = useGraphData(ts_id, xRange);
 
-  const xControl = controlData.map((d) => d.timeofmeas);
-  const yControl = controlData.map((d) => d.waterlevel);
+  const xControl = controlData?.map((d) => d.timeofmeas);
+  const yControl = controlData?.map((d) => d.measurement);
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
