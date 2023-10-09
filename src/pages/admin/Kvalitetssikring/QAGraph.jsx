@@ -360,7 +360,7 @@ function PlotGraph({qaData, ts_id}) {
           x: graphData?.x,
           y: graphData?.y,
           name: metadata?.loc_name + ' ' + metadata?.ts_name,
-          type: 'scattergl',
+          type: 'scatter',
           line: {width: 2},
           mode: 'lines',
           marker: {symbol: '100', size: '3', color: '#177FC1'},
@@ -369,7 +369,7 @@ function PlotGraph({qaData, ts_id}) {
           x: xControl,
           y: yControl,
           name: 'Kontrolpejlinger',
-          type: 'scattergl',
+          type: 'scatter',
           mode: 'markers',
           text: textControl,
           marker: {
@@ -394,6 +394,7 @@ function PlotGraph({qaData, ts_id}) {
         },
       }}
       config={{
+        showTips: false,
         responsive: true,
         modeBarButtons: [
           [rerunQAButton, rerunButton],

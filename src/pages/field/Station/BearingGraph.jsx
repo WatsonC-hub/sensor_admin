@@ -316,7 +316,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           x: graphData?.x,
           y: graphData?.y,
           name: name,
-          type: 'scattergl',
+          type: 'scatter',
           line: {width: 2},
           mode: 'lines',
           marker: {symbol: '100', size: '3', color: '#177FC1'},
@@ -335,7 +335,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           x: xControl,
           y: yControl,
           name: 'Kontrolpejlinger',
-          type: 'scattergl',
+          type: 'scatter',
           mode: 'markers',
           text: textControl,
           marker: {
@@ -363,6 +363,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
         },
       }}
       config={{
+        showTips: false,
         responsive: true,
         modeBarButtons: [
           [downloadButton, makeLinkButton, rerunButton, getRawData],
