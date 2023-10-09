@@ -42,7 +42,8 @@ const ConfigurationPage = () => {
       {/* {data?.map((item) => {
         return <OptionsForm name={item.name} options={item.options} />;
       })} */}
-      <TableComponent data={configurableUnits} loading={unitLoading} columns={columns} />;
+      {/* <TableComponent data={configurableUnits} loading={unitLoading} columns={columns} />; */}
+      Under udvikling
     </Box>
   );
 };

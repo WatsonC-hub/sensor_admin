@@ -27,7 +27,7 @@ import StraightenIcon from '@mui/icons-material/Straighten';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import WarningIcon from '@mui/icons-material/WarningAmber';
 import InfoIcon from '@mui/icons-material/Info';
-import TableComponent from './TableComponent';
+import TableComponent from 'src/components/TableComponent';
 
 function typeIcon(type) {
   let icon;

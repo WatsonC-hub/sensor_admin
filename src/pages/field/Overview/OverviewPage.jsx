@@ -6,8 +6,6 @@ import Tooltip from '@mui/material/Tooltip';
 import MapIcon from '@mui/icons-material/Map';
 import TableChart from '@mui/icons-material/TableChart';
 import Map from './Map';
-import StationListDesktop from './StationListDesktop';
-import StationList from './StationList';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
@@ -16,11 +14,9 @@ import {apiClient} from 'src/apiClient';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import BoreholeList from './BoreholeList';
-import BoreholeListDesktop from './BoreholeListDesktop';
 import {authStore} from 'src/state/store';
-import StationTableGeneric from './components/StationTable';
-import BoreholeTableGeneric from './components/BoreholeTable';
+import StationTable from './components/StationTable';
+import BoreholeTable from './components/BoreholeTable';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -178,12 +174,12 @@ export default function OverviewPage() {
           </AppBar>
           {iotAccess && (
             <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
-              <StationTableGeneric data={tabledata} isLoading={isLoading} />
+              <StationTable data={tabledata} isLoading={isLoading} />
             </TabPanel>
           )}
           {boreholeAccess && (
             <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0} dir={theme.direction}>
-              <BoreholeTableGeneric data={boreholetabledata} isLoading={boreholeIsLoading} />
+              <BoreholeTable data={boreholetabledata} isLoading={boreholeIsLoading} />
             </TabPanel>
           )}
         </>
