@@ -283,6 +283,8 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
     });
   };
 
+  console.log('formstate', formMethods.formState);
+
   return (
     <Card
       style={{marginBottom: 25}}
@@ -332,6 +334,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
                   variant="contained"
                   startIcon={<SaveIcon />}
                   onClick={formMethods.handleSubmit(handleUpdate, handleUpdate)}
+                  disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
                 >
                   Gem
                 </Button>
