@@ -215,31 +215,49 @@ const transformQAData = (data) => {
     }
   });
 
-  var annotateList = data?.map((d) => {
-    if (d.enddate == null) {
-      return {
-        xref: 'x',
-        yref: 'paper',
-        x: d.startdate,
-        xanchor: 'left',
-        yanchor: 'bottom',
-        showarrow: false,
-        text: d.name,
-        y: 0.5,
-      };
-    } else {
-      return {
-        xref: 'x',
-        yref: 'paper',
-        x: d.startdate,
-        xanchor: 'left',
-        yanchor: 'bottom',
-        showarrow: false,
-        text: d.name,
-        y: 0.5,
-      };
-    }
-  });
+  var annotateList = data
+    ?.sort((a, b) => moment(a.startdate) - moment(b.startdate))
+    .map((d, index) => {
+      let y;
+      switch (index % 4) {
+        case 0:
+          y = 0.3;
+          break;
+        case 1:
+          y = 0.4;
+          break;
+        case 2:
+          y = 0.5;
+          break;
+        case 3:
+          y = 0.6;
+          break;
+      }
+
+      if (d.enddate == null) {
+        return {
+          xref: 'x',
+          yref: 'paper',
+          x: d.startdate,
+          xanchor: 'left',
+          yanchor: 'bottom',
+          showarrow: false,
+          text: d.name,
+          y: y,
+        };
+      } else {
+        return {
+          xref: 'x',
+          yref: 'paper',
+          x: d.startdate,
+          xanchor: 'left',
+          yanchor: 'bottom',
+          showarrow: false,
+          text: d.name,
+          y: y,
+        };
+      }
+    });
 
   return [shapelist, annotateList];
 };
@@ -412,8 +430,6 @@ function PlotGraph({controlData, qaData, ts_id}) {
   });
 
   const shapes = [...(qaShapes ?? []), ...(levelCorrectionShapes ?? [])];
-
-  console.log({...levelCorrectionShapes?.[0]});
 
   return (
     <Plot
