@@ -373,44 +373,6 @@ function PlotGraph({controlData, qaData, ts_id}) {
     },
   };
 
-  var downloadButton = {
-    name: 'Download data',
-    icon: downloadIcon,
-    click: function (gd) {
-      console.log(gd.data);
-      var rows = gd.data[0].x.map((elem, idx) => [
-        moment(elem).format('YYYY-MM-DD HH:mm'),
-        gd.data[0].y[idx].toString().replace('.', ','),
-      ]);
-
-      exportToCsv('data.csv', rows);
-    },
-  };
-
-  var makeLinkButton = {
-    name: 'Ekstern link',
-    icon: makeLinkIcon,
-    click: function (gd) {
-      var ts_id = window.location.href.split('/').at(-1);
-
-      var link = document.createElement('a');
-      if (link.download !== undefined) {
-        // feature detection
-        // Browsers that support HTML5 download attribute
-        var url =
-          'https://watsonc.dk/calypso/timeseries_plot.html?&ts_id=' + ts_id + '&pejling=true';
-        link.setAttribute('href', url);
-        link.setAttribute('target', '_blank');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      // exportToCsv("data.csv", rows);
-    },
-  };
-
   const [qaShapes, qaAnnotate] = transformQAData(qaData);
 
   const levelCorrectionShapes = adjustmentData?.levelcorrection?.map((d) => {
