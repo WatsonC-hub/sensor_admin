@@ -42,6 +42,9 @@ const metadataSchema = metadataBaseSchema.extend({
 });
 
 const metadataPutSchema = metadataBaseSchema.extend({
+  timeseries: metadataBaseSchema.shape.timeseries.extend({
+    tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
+  }),
   unit: metadataBaseSchema.shape.unit.extend({
     enddate: z.string().transform((value) => moment(value).toISOString()),
   }),
