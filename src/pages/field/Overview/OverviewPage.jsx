@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
 import PropTypes from 'prop-types';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {apiClient} from 'src/apiClient';
 import {authStore} from 'src/state/store';
 import ScrollTop from '../../../components/ScrollTop';
@@ -20,7 +20,6 @@ import StationTable from './components/StationTable';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
-let checked = false;
 
 export default function OverviewPage() {
   const theme = useTheme();
@@ -28,13 +27,6 @@ export default function OverviewPage() {
   const [tabValue, setTabValue] = useAtom(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
-
-  useEffect(() => {
-    if (!iotAccess && !checked) {
-      setTabValue(1);
-    }
-    checked = true;
-  }, [iotAccess]);
 
   const {data: tabledata, isLoading} = useQuery(
     ['station_list'],
@@ -155,6 +147,14 @@ export default function OverviewPage() {
           <Tab icon={TableIcon} />
         </Tabs>
       </Box>
+      <TabPanel value={tabValue} index={0}>
+        <Map
+          sensorData={mapData}
+          boreholeData={boreholeMapdata}
+          loading={mapLoading && iotAccess}
+          boreholeLoading={boreholeMapIsLoading && boreholeAccess}
+        />
+      </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <>
           <AppBar position="static" color="default" style={{width: matches ? '100%' : '50%'}}>
@@ -184,14 +184,7 @@ export default function OverviewPage() {
           )}
         </>
       </TabPanel>
-      <TabPanel value={tabValue} index={0}>
-        <Map
-          sensorData={mapData}
-          boreholeData={boreholeMapdata}
-          loading={mapLoading}
-          boreholeLoading={boreholeMapIsLoading}
-        />
-      </TabPanel>
+
       {matches && <ScrollTop threshold={100} />}
     </>
   );
