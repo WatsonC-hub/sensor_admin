@@ -362,7 +362,7 @@ function PlotGraph({qaData, ts_id}) {
           name: metadata?.loc_name + ' ' + metadata?.ts_name,
           type: 'scatter',
           line: {width: 2},
-          mode: 'lines',
+          mode: 'lines+markers',
           marker: {symbol: '100', size: '3', color: '#177FC1'},
         },
         {
