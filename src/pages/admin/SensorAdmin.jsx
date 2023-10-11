@@ -10,7 +10,6 @@ import AdminChooser from './Overview/AdminChooser';
 const SensorAdmin = () => {
   return (
     <>
-      <div style={{padding: '5px'}}></div>
       <Routes>
         <Route path="/" element={<AdminChooser />} />
         <Route path="/kvalitetssikring" element={<QualityAssuranceOverview />} />

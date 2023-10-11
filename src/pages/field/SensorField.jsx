@@ -52,6 +52,7 @@ function SensorField({}) {
       }
       handleClose();
     } catch (e) {
+      console.log(e);
       toast.error(e.response?.data?.detail ? e.response?.data?.detail : 'Ukendt fejl', {
         autoClose: 2000,
       });

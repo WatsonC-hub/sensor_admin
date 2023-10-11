@@ -1,6 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from 'src/apiClient';
+import NavBar from 'src/NavBar';
 
 const UserAdmin = () => {
   const {data, isLoading, error} = useQuery(['borehole_permission'], async ({signal}) => {
@@ -12,7 +13,12 @@ const UserAdmin = () => {
 
   console.log(data);
 
-  return <div>{JSON.stringify(data)}</div>;
+  return (
+    <>
+      <NavBar />
+      <div>{JSON.stringify(data)}</div>
+    </>
+  );
 };
 
 export default UserAdmin;

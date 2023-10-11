@@ -2,6 +2,7 @@ import {Box, Grid, Tab, Tabs, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useParams} from 'react-router-dom';
+import NavBar from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {MetadataContext} from 'src/state/contexts';
@@ -60,6 +61,7 @@ const QualityAssurance = () => {
 
   return (
     <MetadataContext.Provider value={data}>
+      <NavBar />
       <Box m={1}>
         <Grid container>
           <Grid item xs={12} md={10}>

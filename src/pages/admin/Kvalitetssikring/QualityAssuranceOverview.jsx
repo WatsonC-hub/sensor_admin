@@ -7,6 +7,7 @@ import {useNavigate} from 'react-router-dom';
 import {apiClient} from 'src/apiClient';
 import TableComponent from 'src/components/TableComponent';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import NavBar from 'src/NavBar';
 
 const tableStateAtom = atom({
   columnVisibility: {
@@ -108,16 +109,19 @@ const QualityAssuranceOverview = () => {
   );
 
   return (
-    <Box p={2}>
-      <TableComponent
-        data={tabledata}
-        columns={isTouch ? mobileColumns : columns}
-        isLoading={isLoading}
-        // renderDetailPanel={renderDetailPanel}
-        rowActions={rowActions}
-        tableStateAtom={tableStateAtom}
-      />
-    </Box>
+    <>
+      <NavBar />
+      <Box p={2}>
+        <TableComponent
+          data={tabledata}
+          columns={isTouch ? mobileColumns : columns}
+          isLoading={isLoading}
+          // renderDetailPanel={renderDetailPanel}
+          rowActions={rowActions}
+          tableStateAtom={tableStateAtom}
+        />
+      </Box>
+    </>
   );
 };
 

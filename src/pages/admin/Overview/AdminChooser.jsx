@@ -5,6 +5,7 @@ import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
+import NavBar from 'src/NavBar';
 import {authStore} from 'src/state/store';
 import ChoiseCard from '../../../components/ChoiseCard';
 
@@ -14,6 +15,7 @@ const AdminChooser = () => {
 
   return (
     <>
+      <NavBar />
       {!adminAccess && (
         <>
           <Typography variant="h4" sx={{textAlign: 'center', marginTop: 10}}>

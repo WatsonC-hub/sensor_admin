@@ -50,7 +50,6 @@ const Redirecter = () => {
           path="/field/*"
           element={
             <>
-              <NavBar />
               <SensorField />
             </>
           }
@@ -59,7 +58,6 @@ const Redirecter = () => {
           path="/admin/*"
           element={
             <>
-              <NavBar />
               <SensorAdmin />
             </>
           }

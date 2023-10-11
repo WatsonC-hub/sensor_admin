@@ -57,7 +57,6 @@ const layout1 = {
 
   //xaxis: {domain: [0, 0.9]},
   yaxis: {
-    autorange: true,
     title: {
       text: '',
       font: {size: 12},
@@ -99,7 +98,6 @@ const layout3 = {
   },
 
   yaxis: {
-    autorange: true,
     showline: true,
     y: 1,
     title: {
@@ -353,14 +351,14 @@ function PlotGraph({qaData, ts_id}) {
     <Plot
       onSelected={handlePlotlySelected}
       id="qagraph"
-      divId="qagraph"
+      divId="qagraphDiv"
       onRelayout={handleRelayout}
       data={[
         {
           x: graphData?.x,
           y: graphData?.y,
           name: metadata?.loc_name + ' ' + metadata?.ts_name,
-          type: 'scatter',
+          type: 'scattergl',
           line: {width: 2},
           mode: 'lines+markers',
           marker: {symbol: '100', size: '3', color: '#177FC1'},
@@ -369,7 +367,7 @@ function PlotGraph({qaData, ts_id}) {
           x: xControl,
           y: yControl,
           name: 'Kontrolpejlinger',
-          type: 'scatter',
+          type: 'scattergl',
           mode: 'markers',
           text: textControl,
           marker: {
@@ -378,9 +376,6 @@ function PlotGraph({qaData, ts_id}) {
             color: '#177FC1',
             line: {color: 'rgb(0,0,0)', width: 1},
           },
-        },
-        {
-          ...levelCorrectionShapes?.[0],
         },
       ]}
       layout={{
@@ -394,7 +389,7 @@ function PlotGraph({qaData, ts_id}) {
         },
       }}
       config={{
-        showTips: false,
+        // showTips: false,
         responsive: true,
         modeBarButtons: [
           [rerunQAButton, rerunButton],
