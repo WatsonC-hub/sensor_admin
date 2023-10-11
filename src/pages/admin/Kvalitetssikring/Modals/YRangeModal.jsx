@@ -13,8 +13,11 @@ import {MetadataContext} from 'src/state/contexts';
 
 const YRangeModal = ({open, onClose}) => {
   const selection = useAtomValue(qaSelection);
-  const [minY, setMinY] = useState(selection?.selections?.[0]?.y1?.toFixed(4));
-  const [maxY, setMaxY] = useState(selection?.selections?.[0]?.y0?.toFixed(4));
+  const y1 = selection?.selections?.[0]?.y1;
+  const y0 = selection?.selections?.[0]?.y0;
+
+  const [minY, setMinY] = useState(Math.min(y1, y0).toFixed(4));
+  const [maxY, setMaxY] = useState(Math.max(y1, y0).toFixed(4));
   const metadata = useContext(MetadataContext);
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -3,6 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Button, Divider, Grid, Typography} from '@mui/material';
+import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import DeleteAlert from 'src/components/DeleteAlert';
@@ -16,7 +17,10 @@ const LevelCorrectionRow = ({data, index}) => {
   const {put, del} = useLevelCorrection();
 
   const schema = z.object({
-    date: z.string().pipe(z.coerce.date()),
+    date: z
+      .string()
+      .min(1, {message: 'Dato ugyldig'})
+      .transform((value) => moment(value).toISOString()),
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
   });
 
@@ -30,7 +34,7 @@ const LevelCorrectionRow = ({data, index}) => {
   }, [data]);
 
   const handleSubmit = (values) => {
-    if (formMethods.formState.isDirty) {
+    if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
       put.mutate({
         path: `${data.ts_id}/${data.gid}`,
         data: {

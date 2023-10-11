@@ -88,7 +88,11 @@ export default function QAHistory() {
             .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}
         </QAAccordion>
         <QAAccordion number={4} title="Valide værdier">
-          <YRangeRow data={data.min_max_cutoff} />
+          {data?.min_max_cutoff ? (
+            <YRangeRow data={data.min_max_cutoff} />
+          ) : (
+            <Typography>Intet range defineret</Typography>
+          )}
         </QAAccordion>
         {/* <QAAccordion number={5} title="Spikes"></QAAccordion> */}
       </Box>

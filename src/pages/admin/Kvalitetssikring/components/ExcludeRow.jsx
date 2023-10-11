@@ -16,8 +16,14 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
   const {put, del} = useExclude();
 
   const schema = z.object({
-    startdate: z.string().pipe(z.coerce.date()),
-    enddate: z.string().pipe(z.coerce.date()),
+    startdate: z
+      .string()
+      .min(1, {message: 'Dato ugyldig'})
+      .transform((value) => moment(value).toISOString()),
+    enddate: z
+      .string()
+      .min(1, {message: 'Dato ugyldig'})
+      .transform((value) => moment(value).toISOString()),
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
   });
 
@@ -36,7 +42,7 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
   }, [data]);
 
   const handleSubmit = (values) => {
-    if (formMethods.formState.isDirty) {
+    if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
       put.mutate({
         path: `${data.ts_id}/${data.gid}`,
         data: {

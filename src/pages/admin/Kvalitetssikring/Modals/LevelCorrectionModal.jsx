@@ -23,14 +23,14 @@ const LevelCorrectionModal = ({open, onClose}) => {
   };
 
   const y = selection?.points?.[0]?.y?.toFixed(4);
-  const x = moment(selection?.points?.[0]?.x).format('YYYY-MM-DD HH:mm');
+  const x = moment(selection?.points?.[0]?.x);
 
   const {post: levelCorrectionMutation} = useLevelCorrection();
 
   const onAccept = () => {
     levelCorrectionMutation.mutate({
       path: `${metadata?.ts_id}`,
-      data: {date: x, comment: comment},
+      data: {date: x.toISOString(), comment: comment},
     });
   };
 
@@ -43,7 +43,7 @@ const LevelCorrectionModal = ({open, onClose}) => {
             Korrigerer grafen fremadrettet ved at sætte det følgende punkt lig med det forrige punkt
           </Typography>
           <Typography gutterBottom>
-            <b>Tid:</b> {x}
+            <b>Tid:</b> {x.format('YYYY-MM-DD HH:mm')}
           </Typography>
           <Typography gutterBottom>
             <b>Værdi:</b> {y} {metadata?.unit}

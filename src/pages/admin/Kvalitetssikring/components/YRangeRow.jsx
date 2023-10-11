@@ -30,7 +30,7 @@ const YRangeRow = ({data, index}) => {
   }, [data]);
 
   const handleSubmit = (values) => {
-    if (formMethods.formState.isDirty) {
+    if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
       post.mutate({
         path: `${data.ts_id}/${data.gid}`,
         data: {
