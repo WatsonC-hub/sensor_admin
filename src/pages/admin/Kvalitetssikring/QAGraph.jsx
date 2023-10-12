@@ -2,7 +2,7 @@ import {Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
-import {useSetAtom} from 'jotai';
+import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
 import React, {useContext, useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
@@ -13,7 +13,7 @@ import {useControlData} from 'src/hooks/query/useControlData';
 import {useGraphData} from 'src/hooks/query/useGraphData';
 import {useCorrectData} from 'src/hooks/useCorrectData';
 import {useRunQA} from 'src/hooks/useRunQA';
-import {qaSelection} from 'src/state/atoms';
+import {dataToShowAtom, qaSelection} from 'src/state/atoms';
 import {MetadataContext} from 'src/state/contexts';
 import GraphActions from './GraphActions';
 
@@ -226,10 +226,22 @@ function PlotGraph({qaData, ts_id}) {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
   const metadata = useContext(MetadataContext);
+  const dataToShow = useAtomValue(dataToShowAtom);
 
   const {data: adjustmentData} = useAdjustmentData();
 
   const {data: controlData} = useControlData();
+
+  const {data: removed_data} = useQuery(
+    ['removed_data', ts_id],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_admin/removed_data/${ts_id}`);
+      return data;
+    },
+    {
+      enabled: dataToShow['Fjernet data'],
+    }
+  );
 
   const handlePlotlySelected = (eventData) => {
     if (eventData === undefined) {
@@ -329,23 +341,115 @@ function PlotGraph({qaData, ts_id}) {
 
   const [qaShapes, qaAnnotate] = transformQAData(qaData);
 
-  const levelCorrectionShapes = adjustmentData?.levelcorrection?.map((d) => {
-    return {
-      type: 'line',
-      x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
-      x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
-      y0: 0,
-      y1: 1,
-      yref: 'paper',
-      line: {
-        color: '#FF0000',
-        width: 1.5,
-        dash: 'dot',
-      },
-    };
-  });
+  let shapes = [];
+  let annotations = [];
 
-  const shapes = [...(qaShapes ?? []), ...(levelCorrectionShapes ?? [])];
+  Object.keys(dataToShow).forEach((key) => {
+    if (dataToShow[key] === false) return;
+
+    switch (key) {
+      case 'Valide værdier':
+        shapes = [
+          ...shapes,
+          ...(adjustmentData?.min_max_cutoff
+            ? [
+                {
+                  type: 'line',
+                  x0: 0,
+                  x1: 1,
+                  y0: adjustmentData?.min_max_cutoff?.mincutoff,
+                  y1: adjustmentData?.min_max_cutoff?.mincutoff,
+                  xref: 'paper',
+                  line: {
+                    color: theme.palette.success.main,
+                    width: 1.5,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: 0,
+                  x1: 1,
+                  y0: adjustmentData?.min_max_cutoff?.maxcutoff,
+                  y1: adjustmentData?.min_max_cutoff?.maxcutoff,
+                  xref: 'paper',
+                  line: {
+                    color: theme.palette.success.main,
+                    width: 1.5,
+                  },
+                },
+              ]
+            : []),
+        ];
+        annotations = [
+          ...annotations,
+          ...(adjustmentData?.min_max_cutoff
+            ? [
+                {
+                  xref: 'paper',
+                  yref: 'y',
+                  x: 0,
+                  xanchor: 'left',
+                  yanchor: 'bottom',
+                  showarrow: false,
+                  text: 'Maksimal værdi',
+                  y: adjustmentData?.min_max_cutoff?.mincutoff,
+                },
+                {
+                  xref: 'paper',
+                  yref: 'y',
+                  x: 0,
+                  xanchor: 'left',
+                  yanchor: 'bottom',
+                  showarrow: false,
+                  text: 'Minimal værdi',
+                  y: adjustmentData?.min_max_cutoff?.maxcutoff,
+                },
+              ]
+            : []),
+        ];
+        break;
+      case 'Korrigerede spring':
+        shapes = [
+          ...shapes,
+          ...(adjustmentData?.levelcorrection?.map((d) => {
+            return {
+              type: 'line',
+              x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
+              x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+              y0: 0,
+              y1: 1,
+              yref: 'paper',
+              line: {
+                color: theme.palette.error.main,
+                width: 1.5,
+              },
+            };
+          }) ?? []),
+        ];
+        annotations = [
+          ...annotations,
+          ...(adjustmentData?.levelcorrection?.map((d, index) => {
+            return {
+              xref: 'x',
+              yref: 'paper',
+              x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+              xanchor: 'left',
+              yanchor: 'bottom',
+              showarrow: false,
+              text: 'Korrigeret spring',
+              y: 0.3 + (index % 4) * 0.1,
+            };
+          }) ?? []),
+        ];
+        break;
+      case 'QA':
+        shapes = [...shapes, ...(qaShapes ?? [])];
+        annotations = [...annotations, ...(qaAnnotate ?? [])];
+        break;
+      default:
+        break;
+    }
+  });
 
   return (
     <Plot
@@ -363,25 +467,43 @@ function PlotGraph({qaData, ts_id}) {
           mode: 'lines+markers',
           marker: {symbol: '100', size: '3', color: '#177FC1'},
         },
-        {
-          x: xControl,
-          y: yControl,
-          name: 'Kontrolpejlinger',
-          type: 'scattergl',
-          mode: 'markers',
-          text: textControl,
-          marker: {
-            symbol: '200',
-            size: '8',
-            color: '#177FC1',
-            line: {color: 'rgb(0,0,0)', width: 1},
-          },
-        },
+        ...(dataToShow?.Kontrolmålinger
+          ? [
+              {
+                x: xControl,
+                y: yControl,
+                name: 'Kontrolpejlinger',
+                type: 'scattergl',
+                mode: 'markers',
+                text: textControl,
+                marker: {
+                  symbol: '200',
+                  size: '8',
+                  color: '#177FC1',
+                  line: {color: 'rgb(0,0,0)', width: 1},
+                },
+              },
+            ]
+          : []),
+        ...(dataToShow?.['Fjernet data']
+          ? [
+              {
+                x: removed_data?.timeofmeas,
+                y: removed_data?.measurement,
+                text: removed_data?.label,
+                name: 'Fjernet data',
+                type: 'scattergl',
+                line: {width: 2},
+                mode: 'markers',
+                marker: {symbol: '100', size: '3', color: theme.palette.error.main},
+              },
+            ]
+          : []),
       ]}
       layout={{
         ...layout,
         shapes: shapes,
-        annotations: qaAnnotate,
+        annotations: annotations,
         uirevision: 'true',
         yaxis: {
           title: `${metadata?.tstype_name} [${metadata?.unit}]`,
@@ -405,26 +527,9 @@ function PlotGraph({qaData, ts_id}) {
   );
 }
 
-export default function QAGraph({stationId, measurements}) {
+export default function QAGraph({stationId}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
-  // const {data: graphData} = useQuery(
-  //   ['graphData', stationId],
-  //   async ({signal}) => {
-  //     const {data} = await apiClient.get(`/data/timeseries/${stationId}`, {
-  //       signal,
-  //     });
-  //     return data;
-  //   },
-  //   {
-  //     enabled: stationId !== -1 && stationId !== null,
-  //     refetchOnWindowFocus: false,
-  //     refetchOnMount: false,
-  //     refetchOnReconnect: false,
-  //     refetchInterval: false,
-  //   }
-  // );
 
   const {data: qaData} = useQuery(['qa_labels', stationId], async ({signal}) => {
     const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
@@ -445,13 +550,7 @@ export default function QAGraph({stationId, measurements}) {
           border: '2px solid gray',
         }}
       >
-        <PlotGraph
-          key={'plotgraph' + stationId}
-          // graphData={graphData}
-          controlData={measurements}
-          qaData={qaData}
-          ts_id={stationId}
-        />
+        <PlotGraph key={'plotgraph' + stationId} qaData={qaData} ts_id={stationId} />
       </div>
       <GraphActions />
     </Box>

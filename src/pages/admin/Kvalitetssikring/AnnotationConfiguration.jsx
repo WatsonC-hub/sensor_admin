@@ -23,11 +23,6 @@ const AnnotationConfiguration = ({stationId}) => {
 
   const queryClient = useQueryClient();
 
-  const handledMutation = useMutation(async (data) => {
-    const {data: res} = await apiClient.post(`/sensor_admin/qa_handled/${stationId}`);
-    return res;
-  });
-
   const [annotationConfiguration, setAnnotationConfiguration] = useState({
     active: false,
     label: 1,
@@ -81,21 +76,6 @@ const AnnotationConfiguration = ({stationId}) => {
   };
   return (
     <>
-      <Button
-        ml={1}
-        color="secondary"
-        variant="contained"
-        onClick={async () => {
-          toast.promise(() => handledMutation.mutateAsync(), {
-            pending: 'Markerer som færdighåndteret',
-            success: 'Færdighåndteret',
-            error: 'Fejl',
-          });
-        }}
-      >
-        Færdighåndteret til nu
-      </Button>
-
       <Card
         sx={{
           // textAlign: 'center',
