@@ -1,20 +1,20 @@
+import {Box, Button, Grid} from '@mui/material';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import moment from 'moment';
 import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {toast} from 'react-toastify';
+import {apiClient} from 'src/apiClient';
+import MaalepunktForm from '../../../components/MaalepunktForm';
+import useFormData from '../../../hooks/useFormData';
 import ActionAreaBorehole from './ActionAreaBorehole';
 import BearingGraph from './BearingGraph';
-import PejlingFormBorehole from './components/PejlingFormBorehole';
-import PejlingMeasurements from './PejlingMeasurements';
-import MaalepunktForm from '../../../components/MaalepunktForm';
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import MaalepunktTable from './MaalepunktTable';
-import moment from 'moment';
 import BoreholeImages from './BoreholeImages';
-import {toast} from 'react-toastify';
-import useFormData from '../../../hooks/useFormData';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {Button, Box, Grid} from '@mui/material';
-import LastJupiterMP from './components/LastJupiterMP';
-import {apiClient} from 'src/apiClient';
 import BoreholeStamdata from './BoreholeStamdata';
+import MaalepunktTable from './MaalepunktTable';
+import PejlingMeasurements from './PejlingMeasurements';
+import LastJupiterMP from './components/LastJupiterMP';
+import PejlingFormBorehole from './components/PejlingFormBorehole';
 
 const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
@@ -191,7 +191,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const handleMpSubmit = () => {
     let payload = {...mpData};
-    console.log(payload);
     addOrEditWatlevmp.mutate(payload, {
       onSuccess: (data) => {
         resetMpData();
@@ -216,7 +215,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       };
     } else {
       return (data) => {
-        console.log(data);
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING'); // update to use state machine

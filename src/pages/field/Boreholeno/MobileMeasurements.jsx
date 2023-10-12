@@ -1,18 +1,17 @@
-import React, {useState} from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import StraightenIcon from '@mui/icons-material/Straighten';
-import DeleteAlert from 'src/components/DeleteAlert';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import {Fragment} from 'react';
-import moment from 'moment';
-import TablePagination from '@mui/material/TablePagination';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import TablePagination from '@mui/material/TablePagination';
+import Typography from '@mui/material/Typography';
+import moment from 'moment';
+import React, {Fragment, useState} from 'react';
+import DeleteAlert from 'src/components/DeleteAlert';
 import {authStore} from 'src/state/store';
 
 export default function MobileMeasurements({measurements, handleEdit, handleDelete, canEdit}) {

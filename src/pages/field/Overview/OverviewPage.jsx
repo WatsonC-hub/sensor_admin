@@ -1,30 +1,26 @@
-import React, {Suspense, useEffect} from 'react';
-import {useTheme} from '@mui/material/styles';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Tooltip from '@mui/material/Tooltip';
 import MapIcon from '@mui/icons-material/Map';
 import TableChart from '@mui/icons-material/TableChart';
-import Map from './Map';
-import StationListDesktop from './StationListDesktop';
-import StationList from './StationList';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tooltip from '@mui/material/Tooltip';
+import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
-import ScrollTop from '../../../components/ScrollTop';
-import {apiClient} from 'src/apiClient';
 import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import BoreholeList from './BoreholeList';
-import BoreholeListDesktop from './BoreholeListDesktop';
+import React from 'react';
+import NavBar from 'src/NavBar';
+import {apiClient} from 'src/apiClient';
 import {authStore} from 'src/state/store';
-import StationTableGeneric from './components/StationTable';
-import BoreholeTableGeneric from './components/BoreholeTable';
+import ScrollTop from '../../../components/ScrollTop';
+import Map from './Map';
+import BoreholeTable from './components/BoreholeTable';
+import StationTable from './components/StationTable';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
-let checked = false;
 
 export default function OverviewPage() {
   const theme = useTheme();
@@ -32,13 +28,6 @@ export default function OverviewPage() {
   const [tabValue, setTabValue] = useAtom(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
-
-  useEffect(() => {
-    if (!iotAccess && !checked) {
-      setTabValue(1);
-    }
-    checked = true;
-  }, [iotAccess]);
 
   const {data: tabledata, isLoading} = useQuery(
     ['station_list'],
@@ -143,6 +132,7 @@ export default function OverviewPage() {
 
   return (
     <>
+      <NavBar />
       <Box
         sx={{
           borderBottom: 1,
@@ -159,6 +149,14 @@ export default function OverviewPage() {
           <Tab icon={TableIcon} />
         </Tabs>
       </Box>
+      <TabPanel value={tabValue} index={0}>
+        <Map
+          sensorData={mapData}
+          boreholeData={boreholeMapdata}
+          loading={mapLoading && iotAccess}
+          boreholeLoading={boreholeMapIsLoading && boreholeAccess}
+        />
+      </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <>
           <AppBar position="static" color="default" style={{width: matches ? '100%' : '50%'}}>
@@ -178,24 +176,17 @@ export default function OverviewPage() {
           </AppBar>
           {iotAccess && (
             <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
-              <StationTableGeneric data={tabledata} isLoading={isLoading} />
+              <StationTable data={tabledata} isLoading={isLoading} />
             </TabPanel>
           )}
           {boreholeAccess && (
             <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0} dir={theme.direction}>
-              <BoreholeTableGeneric data={boreholetabledata} isLoading={boreholeIsLoading} />
+              <BoreholeTable data={boreholetabledata} isLoading={boreholeIsLoading} />
             </TabPanel>
           )}
         </>
       </TabPanel>
-      <TabPanel value={tabValue} index={0}>
-        <Map
-          sensorData={mapData}
-          boreholeData={boreholeMapdata}
-          loading={mapLoading}
-          boreholeLoading={boreholeMapIsLoading}
-        />
-      </TabPanel>
+
       {matches && <ScrollTop threshold={100} />}
     </>
   );

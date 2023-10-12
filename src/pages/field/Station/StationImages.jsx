@@ -1,14 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import LocationCamera from '../../../components/LocationCamera';
-import {Button} from '@mui/material';
-import ImageViewer from '../../../components/ImageViewer';
 import {PhotoCameraRounded} from '@mui/icons-material';
-import {Grid} from '@mui/material';
-import SaveImageDialog from '../../../components/SaveImageDialog';
-import {deleteImage} from 'src/pages/field/fieldAPI';
+import {Button, Grid} from '@mui/material';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
+import React, {useState} from 'react';
 import {apiClient} from 'src/apiClient';
+import {deleteImage} from 'src/pages/field/fieldAPI';
+import ImageViewer from '../../../components/ImageViewer';
+import LocationCamera from '../../../components/LocationCamera';
+import SaveImageDialog from '../../../components/SaveImageDialog';
 
 function StationImages(props) {
   const [openCamera, setOpenCamera] = useState(false);

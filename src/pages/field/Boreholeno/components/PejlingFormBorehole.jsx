@@ -1,29 +1,25 @@
-import React, {useState, useEffect} from 'react';
+import SaveIcon from '@mui/icons-material/Save';
 import {
-  Grid,
-  Typography,
-  TextField,
+  Alert,
+  Box,
   Button,
   Card,
   CardContent,
-  FormControlLabel,
-  useTheme,
-  useMediaQuery,
-  Tooltip,
   Checkbox,
+  FormControl,
+  FormControlLabel,
+  Grid,
   InputAdornment,
-  Box,
   Link,
   Radio,
   RadioGroup,
-  FormControl,
-  FormLabel,
-  Alert,
-  Backdrop,
+  TextField,
+  Tooltip,
+  Typography,
 } from '@mui/material';
 import {isValid} from 'date-fns';
 import moment from 'moment';
-import SaveIcon from '@mui/icons-material/Save';
+import React, {useEffect, useState} from 'react';
 import OwnDatePicker from '../../../../components/OwnDatePicker';
 
 export default function PejlingFormBorehole({

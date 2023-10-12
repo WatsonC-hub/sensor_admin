@@ -1,41 +1,39 @@
-import React, {useEffect, useState, useMemo} from 'react';
+import SaveIcon from '@mui/icons-material/Save';
 import {
-  Container,
-  Grid,
-  Typography,
-  Button,
-  Select,
-  MenuItem,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Box,
-  CardContent,
+  Button,
   Card,
+  CardContent,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  MenuItem,
+  Select,
+  Typography,
 } from '@mui/material';
-import 'date-fns';
-import OwnDatePicker from '../../../components/OwnDatePicker';
 import {useTheme} from '@mui/material/styles';
+import 'date-fns';
+import moment from 'moment';
+import React, {useEffect, useState} from 'react';
+import {apiClient} from 'src/apiClient';
+import {SwiperSlide} from 'swiper/react';
+import OwnDatePicker from '../../../components/OwnDatePicker';
+import AddUnitForm from '../Stamdata/AddUnitForm';
 import LocationForm from '../Stamdata/components/LocationForm';
 import TimeseriesForm from '../Stamdata/components/TimeseriesForm';
 import UnitForm from '../Stamdata/components/UnitForm';
-import {apiClient} from 'src/apiClient';
-import AddUnitForm from '../Stamdata/AddUnitForm';
-import SaveIcon from '@mui/icons-material/Save';
-import moment from 'moment';
-import PropTypes from 'prop-types';
-import {SwiperSlide} from 'swiper/react';
 
-import {stamdataStore} from '../../../state/store';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
+import {stamdataStore} from '../../../state/store';
 
-import useMediaQuery from '@mui/material/useMediaQuery';
-import {metadataPutSchema} from 'src/helpers/zodSchemas';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {useForm, FormProvider, useFormContext} from 'react-hook-form';
-import {DevTool} from '@hookform/devtools';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {metadataPutSchema} from 'src/helpers/zodSchemas';
 import SwiperInstance from './SwiperInstance';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
@@ -129,7 +127,6 @@ const UdstyrReplace = ({stationId}) => {
 
   const onSelectionChange = (data, gid) => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
-    console.log('localunit', localUnit);
     setUnit(localUnit);
     formMethods.setValue(
       'unit',
@@ -332,6 +329,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
                   variant="contained"
                   startIcon={<SaveIcon />}
                   onClick={formMethods.handleSubmit(handleUpdate, handleUpdate)}
+                  disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
                 >
                   Gem
                 </Button>

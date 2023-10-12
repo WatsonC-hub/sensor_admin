@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import {Route, Routes, useNavigate, useLocation} from 'react-router-dom';
+import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 // const sensorAdminPromise = import('./pages/admin/SensorAdmin');
 // const SensorAdmin = React.lazy(() => sensorAdminPromise);
-import SensorField from './pages/field/SensorField';
-import SensorAdmin from './pages/admin/SensorAdmin';
-import {authStore} from './state/store';
+import ScanComponent from 'src/components/ScanComponent';
+import Chooser from './Chooser';
 import LoadingSkeleton from './LoadingSkeleton';
 import NavBar from './NavBar';
-import Chooser from './Chooser';
-import ScanComponent from 'src/components/ScanComponent';
+import SensorAdmin from './pages/admin/SensorAdmin';
+import SensorField from './pages/field/SensorField';
+import {authStore} from './state/store';
 
 const Redirecter = () => {
   const navigate = useNavigate();
@@ -50,7 +50,6 @@ const Redirecter = () => {
           path="/field/*"
           element={
             <>
-              <NavBar />
               <SensorField />
             </>
           }
@@ -59,7 +58,6 @@ const Redirecter = () => {
           path="/admin/*"
           element={
             <>
-              <NavBar />
               <SensorAdmin />
             </>
           }

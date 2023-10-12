@@ -1,14 +1,13 @@
-import React from 'react';
-import {Card, CardContent, CardHeader, Grid, Typography, Link} from '@mui/material';
-import BuildCircleIcon from '@mui/icons-material/BuildCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import RouterIcon from '@mui/icons-material/Router';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import ChoiseCard from '../../../components/ChoiseCard';
-import {authStore} from 'src/state/store';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import RouterIcon from '@mui/icons-material/Router';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import {Grid, Link, Typography} from '@mui/material';
+import React from 'react';
 import {useNavigate} from 'react-router-dom';
+import NavBar from 'src/NavBar';
+import {authStore} from 'src/state/store';
+import ChoiseCard from '../../../components/ChoiseCard';
 
 const AdminChooser = () => {
   const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
@@ -16,6 +15,7 @@ const AdminChooser = () => {
 
   return (
     <>
+      <NavBar />
       {!adminAccess && (
         <>
           <Typography variant="h4" sx={{textAlign: 'center', marginTop: 10}}>

@@ -1,18 +1,18 @@
-import React, {useState} from 'react';
-import {postImage, updateImage} from 'src/pages/field/fieldAPI';
-import {TextField, Typography, Grid, Button, CircularProgress} from '@mui/material';
+import {Button, CircularProgress, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import moment from 'moment';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import OwnDatePicker from './OwnDatePicker';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import {useTheme} from '@mui/material/styles';
-import {useQueryClient, useMutation} from '@tanstack/react-query';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import moment from 'moment';
+import React from 'react';
 import {toast} from 'react-toastify';
+import {postImage, updateImage} from 'src/pages/field/fieldAPI';
+import OwnDatePicker from './OwnDatePicker';
 
 function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, handleCloseSave}) {
   const theme = useTheme();
@@ -23,7 +23,7 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
   const imageUrl = baseUrl + activeImage.imageurl + '.png';
 
   const saveImageMutation = useMutation(
-    data => {
+    (data) => {
       if (activeImage.gid !== -1) {
         return updateImage(data, activeImage.gid);
       } else {
@@ -81,7 +81,7 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
               rows={4}
               InputLabelProps={{shrink: true}}
               fullWidth
-              onChange={event => changeData('comment', event.target.value)}
+              onChange={(event) => changeData('comment', event.target.value)}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -89,7 +89,7 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
               control={
                 <Checkbox
                   checked={activeImage.public}
-                  onChange={event => changeData('public', event.target.checked)}
+                  onChange={(event) => changeData('public', event.target.checked)}
                   name="checkedBattery"
                   color="primary"
                 />
@@ -99,7 +99,7 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
             <OwnDatePicker
               label={'Dato'}
               value={moment(activeImage.date)}
-              onChange={date => changeData('date', moment(date).format('YYYY-MM-DD HH:mm'))}
+              onChange={(date) => changeData('date', moment(date).format('YYYY-MM-DD HH:mm'))}
             />
           </Grid>
         </Grid>

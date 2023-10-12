@@ -101,14 +101,14 @@ const loginAPI = async (username, password) => {
 };
 
 export {
-  getCvr,
-  createUser,
-  loginUser,
-  resetPassword,
-  getDTMQuota,
-  postImage,
-  deleteImage,
-  updateImage,
-  loginAPI,
   apiClient,
+  createUser,
+  deleteImage,
+  getCvr,
+  getDTMQuota,
+  loginAPI,
+  loginUser,
+  postImage,
+  resetPassword,
+  updateImage,
 };

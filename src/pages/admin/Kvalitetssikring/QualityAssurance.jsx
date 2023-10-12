@@ -1,14 +1,16 @@
+import {Box, Grid, Tab, Tabs, Typography} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useParams} from 'react-router-dom';
-import QAGraph from './QAGraph';
-import Algorithms from './Algorithms';
-import {Grid, Typography, Box, Button, Tab, Tabs} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
+import NavBar from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
-import QAHistory from './QAHistory';
-import AnnotationConfiguration from './AnnotationConfiguration';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {MetadataContext} from 'src/state/contexts';
+import Algorithms from './Algorithms';
+import QAGraph from './QAGraph';
+import QAHistory from './QAHistory';
+import DataToShow from './components/DataToShow';
+import HandleNowButton from './components/HandleNowButton';
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;
@@ -24,13 +26,6 @@ function TabPanel(props) {
       {value === index && <Box p={2}>{children}</Box>}
     </div>
   );
-}
-
-function a11yProps(index) {
-  return {
-    id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
-  };
 }
 
 const QualityAssurance = () => {
@@ -60,16 +55,19 @@ const QualityAssurance = () => {
 
   return (
     <MetadataContext.Provider value={data}>
+      <NavBar />
       <Box m={1}>
         <Grid container>
           <Grid item xs={12} md={10}>
-            <QAGraph stationId={params.ts_id} measurements={[]} />
+            <QAGraph stationId={params.ts_id} />
           </Grid>
 
           {!isTouch && (
             <>
               <Grid item xs={12} sm={2} pl={1}>
-                <AnnotationConfiguration stationId={params.ts_id} />
+                <HandleNowButton />
+                {/* <AnnotationConfiguration stationId={params.ts_id} /> */}
+                <DataToShow />
               </Grid>
               <Grid item xs={12} sm={6} pr={1}>
                 <Typography variant="h6">Datajusteringer</Typography>
@@ -91,16 +89,18 @@ const QualityAssurance = () => {
               variant="fullWidth"
               aria-label="simple tabs example"
             >
+              <Tab label="Vis data" />
               <Tab label="Datajustering" />
-              <Tab label="Annotering" />
               <Tab label="Detektion" />
             </Tabs>
             <TabPanel value={tabValue} index={0}>
-              <QAHistory />
+              <HandleNowButton />
+              <DataToShow />
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
-              <AnnotationConfiguration stationId={params.ts_id} />
+              <QAHistory />
             </TabPanel>
+
             <TabPanel value={tabValue} index={2}>
               <Algorithms />
             </TabPanel>

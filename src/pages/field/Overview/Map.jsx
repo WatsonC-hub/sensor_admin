@@ -1,21 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import {TextField} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {atom, useAtom} from 'jotai';
 import L from 'leaflet';
-import 'leaflet.locatecontrol';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import {atom, useAtom} from 'jotai';
-import {postElasticSearch} from '../boreholeAPI';
-import Autocomplete from '@mui/material/Autocomplete';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import {useTheme} from '@mui/material/styles';
-import {TextField} from '@mui/material';
-import {authStore} from '../../../state/store';
+import 'leaflet.locatecontrol';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 import {mapboxToken} from 'src/consts';
 import {stamdataStore} from 'src/state/store';
 import utmObj from 'utm-latlng';
+import {authStore} from '../../../state/store';
+import {postElasticSearch} from '../boreholeAPI';
 
 const utm = new utmObj();
 
@@ -57,7 +56,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
   const [setLocationValue] = stamdataStore((store) => [store.setLocationValue]);
 
   const onPopupClickHandler = (element) => () => {
-    console.log(element);
     if (element.locid !== undefined) navigate('location/' + element.locid);
     else navigate('borehole/' + element.boreholeno);
   };
@@ -119,7 +117,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
           text: 'Opret ny lokation',
           callback: function (e) {
             const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
-            console.log(coords);
+
             setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
             setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
             navigate('/field/stamdata');
@@ -129,7 +127,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         {
           text: 'Google Maps',
           callback: function (e) {
-            console.log(e);
             if (e.relatedTarget) {
               window.open(
                 `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget._latlng.lat},${e.relatedTarget._latlng.lng}`,
@@ -148,7 +145,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         {
           text: 'Zoom ind',
           callback: function (e) {
-            console.log(e);
             map.zoomIn();
           },
           icon: '/leaflet-images/zoom-in.png',
@@ -302,7 +298,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
 
         marker.addTo(layerRef.current);
       });
-      console.log(layerRef.current.getBounds());
+
       if (zoom !== null) {
         mapRef.current.setView(pan, zoom);
       } else {

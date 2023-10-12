@@ -1,9 +1,7 @@
-import {useState, useEffect} from 'react';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
-import {Box} from '@mui/material';
-import OptionsForm from './OptionsForm';
-import TableComponent from 'src/components/TableComponent';
+import NavBar from 'src/NavBar';
 
 const ConfigurationPage = () => {
   const {data, isLoading, error} = useQuery(['configuration_options'], async ({signal}) => {
@@ -38,12 +36,16 @@ const ConfigurationPage = () => {
   ];
 
   return (
-    <Box>
-      {/* {data?.map((item) => {
+    <>
+      <NavBar />
+      <Box>
+        {/* {data?.map((item) => {
         return <OptionsForm name={item.name} options={item.options} />;
       })} */}
-      <TableComponent data={configurableUnits} loading={unitLoading} columns={columns} />;
-    </Box>
+        {/* <TableComponent data={configurableUnits} loading={unitLoading} columns={columns} />; */}
+        Under udvikling
+      </Box>
+    </>
   );
 };
 

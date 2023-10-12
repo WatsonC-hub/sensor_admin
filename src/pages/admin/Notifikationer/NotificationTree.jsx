@@ -1,17 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {TreeView, TreeItem} from '@mui/lab';
-import {
-  ExpandMore as ExpandMoreIcon,
-  ChevronRight as ChevronRightIcon,
-  PriorityHighOutlined,
-  ErrorOutlineOutlined,
-} from '@mui/icons-material';
-import {sortBy, uniqBy, groupBy, map, maxBy} from 'lodash';
-import {Box, Button, TextField, Typography} from '@mui/material';
-import {useNavigate} from 'react-router-dom';
+import {ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon} from '@mui/icons-material';
+import {TreeItem, TreeView} from '@mui/lab';
+import {Box, Button} from '@mui/material';
 import {atom, useAtom} from 'jotai';
-import NotificationRow from './NotificationRow';
+import {groupBy, map, maxBy, sortBy, uniqBy} from 'lodash';
 import moment from 'moment';
+import React, {useEffect} from 'react';
+import NotificationRow from './NotificationRow';
 
 const expandedAtom = atom([]);
 const typeAheadAtom = atom('');

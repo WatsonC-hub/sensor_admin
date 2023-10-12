@@ -1,12 +1,12 @@
-import React from 'react';
-import {Box, Button, Tooltip} from '@mui/material';
-import {useAtom} from 'jotai';
-import {qaSelection} from 'src/state/atoms';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
-import GraphButton from './GraphButton';
+import {Box, Tooltip} from '@mui/material';
+import {useAtom} from 'jotai';
+import React from 'react';
+import {qaSelection} from 'src/state/atoms';
 import GraphActionModal from './GraphActionModal';
+import GraphButton from './GraphButton';
 
 const GraphActions = () => {
   const [selectedData, setSelectedData] = useAtom(qaSelection);

@@ -1,14 +1,14 @@
-import React, {useState} from 'react';
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import DeleteAlert from 'src/components/DeleteAlert';
 import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import moment from 'moment';
+import React, {useState} from 'react';
 import {toast} from 'react-toastify';
+import DeleteAlert from 'src/components/DeleteAlert';
 import {authStore} from 'src/state/store';
 
 function ImageCardBorehole({image, deleteMutation, handleEdit}) {

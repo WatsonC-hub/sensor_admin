@@ -1,32 +1,30 @@
-import React, {useMemo, useEffect} from 'react';
-import {Button, Box, Tooltip, IconButton, Typography} from '@mui/material';
-import {
-  MaterialReactTable,
-  MRT_ShowHideColumnsButton,
-  MRT_ToggleFiltersButton,
-  MRT_GlobalFilterTextField,
-  MRT_TablePagination,
-} from 'material-react-table';
-import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import {stationTableAtom} from 'src/state/atoms';
-import {useAtom} from 'jotai';
-import {RESET} from 'jotai/utils';
-import {useNavigate} from 'react-router-dom';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded';
 import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HeightIcon from '@mui/icons-material/Height';
+import InfoIcon from '@mui/icons-material/Info';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded';
 import SpeedIcon from '@mui/icons-material/Speed';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
-import WarningIcon from '@mui/icons-material/WarningAmber';
-import InfoIcon from '@mui/icons-material/Info';
+import {Box, IconButton, Tooltip, Typography} from '@mui/material';
+import {useAtom} from 'jotai';
+import {RESET} from 'jotai/utils';
+import {
+  MRT_GlobalFilterTextField,
+  MRT_ShowHideColumnsButton,
+  MRT_ToggleFiltersButton,
+  MaterialReactTable,
+} from 'material-react-table';
+import {MRT_Localization_DA} from 'material-react-table/locales/da';
+import React, {useEffect, useMemo} from 'react';
+import {useNavigate} from 'react-router-dom';
+import useBreakpoints from 'src/hooks/useBreakpoints';
+import {stationTableAtom} from 'src/state/atoms';
 
 function typeIcon(type) {
   let icon;

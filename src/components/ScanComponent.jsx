@@ -1,9 +1,9 @@
-import React from 'react';
-import {useParams, Navigate} from 'react-router-dom';
-import {apiClient} from 'src/apiClient';
 import {CircularProgress} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import React from 'react';
+import {Navigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
+import {apiClient} from 'src/apiClient';
 
 export default function ScanComponent() {
   const params = useParams();

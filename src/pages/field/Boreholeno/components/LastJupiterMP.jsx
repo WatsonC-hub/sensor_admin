@@ -1,11 +1,10 @@
-import React from 'react';
-import {useQuery} from '@tanstack/react-query';
+import {Box, Button, CircularProgress, Typography} from '@mui/material';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import {Box, Typography, CircularProgress, Button} from '@mui/material';
+import React from 'react';
+import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
 import LastMPCard from './LastMPCard';
-import {toast} from 'react-toastify';
-import {useQueryClient} from '@tanstack/react-query';
 
 const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddMPOpen}) => {
   const queryClient = useQueryClient();

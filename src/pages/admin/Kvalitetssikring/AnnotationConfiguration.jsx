@@ -1,32 +1,27 @@
-import {useState} from 'react';
 import {
-  Card,
-  CardHeader,
-  CardContent,
-  TextField,
   Button,
-  MenuItem,
+  Card,
+  CardContent,
+  CardHeader,
+  FormControl,
   FormControlLabel,
+  MenuItem,
   Radio,
   RadioGroup,
-  FormControl,
+  TextField,
 } from '@mui/material';
-import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue} from 'jotai';
-import {qaSelection} from 'src/state/atoms';
 import moment from 'moment';
+import {useState} from 'react';
 import {toast} from 'react-toastify';
+import {apiClient} from 'src/apiClient';
+import {qaSelection} from 'src/state/atoms';
 
 const AnnotationConfiguration = ({stationId}) => {
   const selection = useAtomValue(qaSelection);
 
   const queryClient = useQueryClient();
-
-  const handledMutation = useMutation(async (data) => {
-    const {data: res} = await apiClient.post(`/sensor_admin/qa_handled/${stationId}`);
-    return res;
-  });
 
   const [annotationConfiguration, setAnnotationConfiguration] = useState({
     active: false,
@@ -81,21 +76,6 @@ const AnnotationConfiguration = ({stationId}) => {
   };
   return (
     <>
-      <Button
-        ml={1}
-        color="secondary"
-        variant="contained"
-        onClick={async () => {
-          toast.promise(() => handledMutation.mutateAsync(), {
-            pending: 'Markerer som færdighåndteret',
-            success: 'Færdighåndteret',
-            error: 'Fejl',
-          });
-        }}
-      >
-        Færdighåndteret til nu
-      </Button>
-
       <Card
         sx={{
           // textAlign: 'center',
@@ -183,8 +163,6 @@ const AnnotationConfiguration = ({stationId}) => {
             color="primary"
             variant="contained"
             onClick={() => {
-              console.log(annotationConfiguration);
-              console.log(selection);
               handleSelectionAnnotate();
             }}
           >

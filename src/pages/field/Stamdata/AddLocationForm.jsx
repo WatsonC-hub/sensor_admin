@@ -1,12 +1,11 @@
-import React, {useState, useEffect} from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import LocationForm from './components/LocationForm';
+import React from 'react';
 import {useFormContext} from 'react-hook-form';
+import LocationForm from './components/LocationForm';
 
 export default function AddLocationForm({locationDialogOpen, setLocationDialogOpen}) {
   const handleSave = async () => {

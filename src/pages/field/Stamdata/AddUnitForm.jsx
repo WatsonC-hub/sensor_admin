@@ -1,20 +1,19 @@
-import React, {useEffect, useState} from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import React, {useState} from 'react';
 
-import {CircularProgress, MenuItem, useTheme} from '@mui/material';
-import OwnDatePicker from '../../../components/OwnDatePicker';
-import {Typography} from '@mui/material';
-import {stamdataStore, initialState} from '../../../state/store';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
-import {toast} from 'react-toastify';
-import {useFormContext} from 'react-hook-form';
+import {CircularProgress, MenuItem, Typography} from '@mui/material';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
+import {useFormContext} from 'react-hook-form';
+import {toast} from 'react-toastify';
+import {apiClient} from 'src/apiClient';
+import OwnDatePicker from '../../../components/OwnDatePicker';
+import {stamdataStore} from '../../../state/store';
 
 export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
@@ -94,7 +93,6 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   };
 
   const handleDateChange = (date) => {
-    console.log(date);
     setUnitData({
       ...unitData,
       fra: date,

@@ -40,7 +40,6 @@ const dataURLtoFile = (dataurl, filename) => {
 
 const postImage = (payload, uri) => {
   const boreholeno = payload.boreholeno;
-  console.log(payload);
   const url = `${extEndpoint}/borehole/image/${boreholeno}?session_id=${
     authStore.getState().sessionId
   }`;
@@ -68,4 +67,4 @@ const postElasticSearch = (search) => {
   return axios.post(`${searchEndpoint}`, search);
 };
 
-export {postElasticSearch, deleteImage, dataURLtoFile, postImage};
+export {dataURLtoFile, deleteImage, postElasticSearch, postImage};

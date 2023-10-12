@@ -1,21 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import BearingGraph from './BearingGraph';
-import ActionArea from './ActionArea';
-import PejlingForm from '../../../components/PejlingForm';
-import EditStamdata from './EditStamdata';
-import PejlingMeasurements from './PejlingMeasurements';
-import MaalepunktForm from '../../../components/MaalepunktForm';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import MaalepunktTable from './MaalepunktTable';
+import React, {useEffect, useState} from 'react';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import {toast} from 'react-toastify';
+import {apiClient} from 'src/apiClient';
+import MaalepunktForm from '../../../components/MaalepunktForm';
+import PejlingForm from '../../../components/PejlingForm';
 import TilsynForm from '../../../components/TilsynForm';
 import TilsynTable from '../../../components/TilsynTable';
-import StationImages from './StationImages';
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import {stamdataStore} from '../../../state/store';
-import {toast} from 'react-toastify';
 import useFormData from '../../../hooks/useFormData';
-import {apiClient} from 'src/apiClient';
+import {stamdataStore} from '../../../state/store';
+import ActionArea from './ActionArea';
+import BearingGraph from './BearingGraph';
+import EditStamdata from './EditStamdata';
+import MaalepunktTable from './MaalepunktTable';
+import PejlingMeasurements from './PejlingMeasurements';
+import StationImages from './StationImages';
 
 export default function Station({stationId, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
@@ -81,7 +81,6 @@ export default function Station({stationId, stamdata}) {
 
   const {data: watlevmp} = useQuery(
     ['watlevmp', stationId],
-    //() => getMP(stationId), {
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
 
@@ -100,7 +99,6 @@ export default function Station({stationId, stamdata}) {
   );
 
   const {data: measurements} = useQuery(
-    //() => getMeasurements(stationId),
     ['measurements', stationId],
     async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);

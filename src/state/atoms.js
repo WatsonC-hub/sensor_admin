@@ -30,3 +30,12 @@ export const boreholeTableAtom = atomWithStorage('BoreholeTableState', {
   },
   density: 'compact',
 });
+
+export const dataToShowAtom = atom({
+  QA: true,
+  Kontrolmålinger: true,
+  Nedbør: false,
+  'Korrigerede spring': false,
+  'Valide værdier': false,
+  'Fjernet data': false,
+});

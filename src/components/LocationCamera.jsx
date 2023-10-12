@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
-import Camera, {FACING_MODES, IMAGE_TYPES} from 'react-html5-camera-photo';
-import Dialog from '@mui/material/Dialog';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import AppBar from '@mui/material/AppBar';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import Toolbar from '@mui/material/Toolbar';
+import React from 'react';
+import Camera, {FACING_MODES, IMAGE_TYPES} from 'react-html5-camera-photo';
 
 import 'react-html5-camera-photo/build/css/index.css';
 
@@ -16,7 +16,6 @@ function LocationCamera({open, handleClose, setDataURI}) {
   function handleTakePhoto(dataUri) {
     setDataURI(dataUri);
     handleClose();
-    console.log(dataUri);
   }
 
   return (
@@ -36,10 +35,10 @@ function LocationCamera({open, handleClose, setDataURI}) {
           </Toolbar>
         </AppBar>
         <Camera
-          onTakePhoto={dataUri => {
+          onTakePhoto={(dataUri) => {
             handleTakePhoto(dataUri);
           }}
-          onCameraError={error => {
+          onCameraError={(error) => {
             handleCameraError(error);
           }}
           idealFacingMode={FACING_MODES.ENVIRONMENT}

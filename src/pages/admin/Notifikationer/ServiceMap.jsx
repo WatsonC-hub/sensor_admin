@@ -1,11 +1,11 @@
-import React, {useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {atom, useAtom} from 'jotai';
 import L from 'leaflet';
-import 'leaflet.locatecontrol';
-import 'leaflet-lasso';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import {atom, useAtom} from 'jotai';
+import 'leaflet-lasso';
+import 'leaflet.locatecontrol';
+import React, {useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {mapboxToken} from 'src/consts';
 
 const zoomAtom = atom(null);
@@ -157,8 +157,6 @@ function Map({data, isLoading, setLassoFilter}) {
     // L.control.lasso().addTo(map);
 
     map.on('lasso.finished', (event) => {
-      console.log(event.layers);
-      console.log(new Set(event.layers.map((layer) => layer.options.loc_id)));
       setLassoFilter(() => new Set(event.layers.map((layer) => layer.options.loc_id)));
     });
     map.on('moveend', function () {

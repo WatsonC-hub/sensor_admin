@@ -1,7 +1,7 @@
 // Component to show when there is an error in the station page
 
+import {Box, Link, Typography} from '@mui/material';
 import React from 'react';
-import {Typography, Box, Link} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 
 const ErrorPage = ({error}) => {

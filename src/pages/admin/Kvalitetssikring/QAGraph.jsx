@@ -1,28 +1,21 @@
+import {Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import Plot from 'react-plotly.js';
+import {useQuery} from '@tanstack/react-query';
+import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
-import axios from 'axios';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import React, {useContext, useEffect, useState} from 'react';
+import Plot from 'react-plotly.js';
 import {apiClient} from 'src/apiClient';
-import React, {useEffect, useState, useContext} from 'react';
-import {Typography, Alert, Grid, Button, Box} from '@mui/material';
-import AnnotationConfiguration from './AnnotationConfiguration';
-import {toast} from 'react-toastify';
-import {
-  downloadIcon,
-  rerunIcon,
-  rawDataIcon,
-  makeLinkIcon,
-  rerunQAIcon,
-} from 'src/helpers/plotlyIcons';
-import {useSetAtom, useAtom} from 'jotai';
+import {rerunIcon, rerunQAIcon} from 'src/helpers/plotlyIcons';
+import {useAdjustmentData} from 'src/hooks/query/useAdjustmentData';
+import {useControlData} from 'src/hooks/query/useControlData';
+import {useGraphData} from 'src/hooks/query/useGraphData';
 import {useCorrectData} from 'src/hooks/useCorrectData';
-import {qaSelection} from 'src/state/atoms';
 import {useRunQA} from 'src/hooks/useRunQA';
-import GraphActions from './GraphActions';
+import {dataToShowAtom, qaSelection} from 'src/state/atoms';
 import {MetadataContext} from 'src/state/contexts';
-import {useRerunData} from 'src/hooks/query/useRerunData';
+import GraphActions from './GraphActions';
 
 const selectorOptions = {
   buttons: [
@@ -50,47 +43,6 @@ const selectorOptions = {
     },
   ],
 };
-
-function exportToCsv(filename, rows) {
-  var processRow = function (row) {
-    var finalVal = '';
-    for (var j = 0; j < row.length; j++) {
-      var innerValue = row[j] === null ? '' : row[j].toString();
-      if (row[j] instanceof Date) {
-        innerValue = row[j].toLocaleString();
-      }
-      var result = innerValue.replace(/"/g, '""');
-      if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
-      if (j > 0) finalVal += ';';
-      finalVal += result;
-    }
-    return finalVal + '\n';
-  };
-
-  var csvFile = '';
-  for (var i = 0; i < rows.length; i++) {
-    csvFile += processRow(rows[i]);
-  }
-
-  var blob = new Blob([csvFile], {type: 'text/csv;charset=utf-8;'});
-  if (navigator.msSaveBlob) {
-    // IE 10+
-    navigator.msSaveBlob(blob, filename);
-  } else {
-    var link = document.createElement('a');
-    if (link.download !== undefined) {
-      // feature detection
-      // Browsers that support HTML5 download attribute
-      var url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', filename);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }
-}
 
 const layout1 = {
   xaxis: {
@@ -215,33 +167,51 @@ const transformQAData = (data) => {
     }
   });
 
-  var annotateList = data?.map((d) => {
-    if (d.enddate == null) {
-      return {
-        xref: 'x',
-        yref: 'paper',
-        x: d.startdate,
-        xanchor: 'left',
-        yanchor: 'bottom',
-        showarrow: false,
-        text: d.name,
-        y: 0.5,
-      };
-    } else {
-      return {
-        xref: 'x',
-        yref: 'paper',
-        x: d.startdate,
-        xanchor: 'left',
-        yanchor: 'bottom',
-        showarrow: false,
-        text: d.name,
-        y: 0.5,
-      };
-    }
-  });
+  var annotateList = data
+    ?.sort((a, b) => moment(a.startdate) - moment(b.startdate))
+    .map((d, index) => {
+      let y;
+      switch (index % 4) {
+        case 0:
+          y = 0.3;
+          break;
+        case 1:
+          y = 0.4;
+          break;
+        case 2:
+          y = 0.5;
+          break;
+        case 3:
+          y = 0.6;
+          break;
+      }
 
-  return {shapelist, annotateList};
+      if (d.enddate == null) {
+        return {
+          xref: 'x',
+          yref: 'paper',
+          x: d.startdate,
+          xanchor: 'left',
+          yanchor: 'bottom',
+          showarrow: false,
+          text: d.name,
+          y: y,
+        };
+      } else {
+        return {
+          xref: 'x',
+          yref: 'paper',
+          x: d.startdate,
+          xanchor: 'left',
+          yanchor: 'bottom',
+          showarrow: false,
+          text: d.name,
+          y: y,
+        };
+      }
+    });
+
+  return [shapelist, annotateList];
 };
 
 const initRange = [
@@ -249,15 +219,29 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
-function PlotGraph({controlData, qaData, ts_id}) {
+function PlotGraph({qaData, ts_id}) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [layout, setLayout] = useState(matches ? layout3 : layout1);
   const metadata = useContext(MetadataContext);
+  const dataToShow = useAtomValue(dataToShowAtom);
 
-  const {data: rerun} = useRerunData();
+  const {data: adjustmentData} = useAdjustmentData();
+
+  const {data: controlData} = useControlData();
+
+  const {data: removed_data} = useQuery(
+    ['removed_data', ts_id],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_admin/removed_data/${ts_id}`);
+      return data;
+    },
+    {
+      enabled: dataToShow['Fjernet data'],
+    }
+  );
 
   const handlePlotlySelected = (eventData) => {
     if (eventData === undefined) {
@@ -277,7 +261,6 @@ function PlotGraph({controlData, qaData, ts_id}) {
   }, []);
 
   const handleRelayout = (e) => {
-    console.log('relayout', e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
@@ -306,33 +289,34 @@ function PlotGraph({controlData, qaData, ts_id}) {
       x1 = x1.add(daysdiff * 0.2, 'days');
 
       setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
+      return;
     }
   };
 
-  const {data: graphData, refetch: refetchData} = useQuery(
-    ['graphData', ts_id, xRange],
-    async ({signal}) => {
-      const {data} = await apiClient.get(`/data/timeseriesV2/${ts_id}`, {
-        params: {
-          start: xRange[0],
-          stop: xRange[1],
-          limit: 4000,
-        },
-      });
-      if (data === null) {
-        return [];
-      }
-      return data;
-    },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-    }
-  );
+  const {data: graphData} = useGraphData(ts_id, xRange);
 
-  const xControl = controlData.map((d) => d.timeofmeas);
-  const yControl = controlData.map((d) => d.waterlevel);
+  const xControl = controlData?.map((d) => d.timeofmeas);
+  const yControl = controlData?.map((d) => d.measurement);
+  const textControl = controlData?.map((d) => {
+    switch (d.useforcorrection) {
+      case 0:
+        return 'Kontrol';
+      case 1:
+        return 'Korrektion fremadrettet';
+      case 2:
+        return 'Korrektion fremadrettet og bagudrettet';
+      case 3:
+        return 'Korrektion lineært til forrige pejling';
+      case 4:
+        return 'Korrektion tilbage til unit';
+      case 5:
+        return 'Korrektion tilbage til forrige niveaukorrektion';
+      case 6:
+        return 'Korrektion tilbage til forrige pejling';
+      default:
+        return 'Korrektion';
+    }
+  });
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
@@ -355,69 +339,123 @@ function PlotGraph({controlData, qaData, ts_id}) {
     },
   };
 
-  var downloadButton = {
-    name: 'Download data',
-    icon: downloadIcon,
-    click: function (gd) {
-      console.log(gd.data);
-      var rows = gd.data[0].x.map((elem, idx) => [
-        moment(elem).format('YYYY-MM-DD HH:mm'),
-        gd.data[0].y[idx].toString().replace('.', ','),
-      ]);
+  const [qaShapes, qaAnnotate] = transformQAData(qaData);
 
-      exportToCsv('data.csv', rows);
-    },
-  };
+  let shapes = [];
+  let annotations = [];
 
-  var makeLinkButton = {
-    name: 'Ekstern link',
-    icon: makeLinkIcon,
-    click: function (gd) {
-      var ts_id = window.location.href.split('/').at(-1);
+  Object.keys(dataToShow).forEach((key) => {
+    if (dataToShow[key] === false) return;
 
-      var link = document.createElement('a');
-      if (link.download !== undefined) {
-        // feature detection
-        // Browsers that support HTML5 download attribute
-        var url =
-          'https://watsonc.dk/calypso/timeseries_plot.html?&ts_id=' + ts_id + '&pejling=true';
-        link.setAttribute('href', url);
-        link.setAttribute('target', '_blank');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      // exportToCsv("data.csv", rows);
-    },
-  };
-
-  const {shapelist: qaShapes, annotateList: qaAnnotate} = transformQAData(qaData);
-
-  const rerunShapes = rerun?.levelcorrection?.map((d) => {
-    return {
-      type: 'line',
-      x0: d.date,
-      x1: d.date,
-      y0: 0,
-      y1: 1,
-      yref: 'paper',
-      line: {
-        color: '#FF0000',
-        width: 1.5,
-        dash: 'dot',
-      },
-    };
+    switch (key) {
+      case 'Valide værdier':
+        shapes = [
+          ...shapes,
+          ...(adjustmentData?.min_max_cutoff
+            ? [
+                {
+                  type: 'line',
+                  x0: 0,
+                  x1: 1,
+                  y0: adjustmentData?.min_max_cutoff?.mincutoff,
+                  y1: adjustmentData?.min_max_cutoff?.mincutoff,
+                  xref: 'paper',
+                  line: {
+                    color: theme.palette.success.main,
+                    width: 1.5,
+                  },
+                },
+                {
+                  type: 'line',
+                  x0: 0,
+                  x1: 1,
+                  y0: adjustmentData?.min_max_cutoff?.maxcutoff,
+                  y1: adjustmentData?.min_max_cutoff?.maxcutoff,
+                  xref: 'paper',
+                  line: {
+                    color: theme.palette.success.main,
+                    width: 1.5,
+                  },
+                },
+              ]
+            : []),
+        ];
+        annotations = [
+          ...annotations,
+          ...(adjustmentData?.min_max_cutoff
+            ? [
+                {
+                  xref: 'paper',
+                  yref: 'y',
+                  x: 0,
+                  xanchor: 'left',
+                  yanchor: 'bottom',
+                  showarrow: false,
+                  text: 'Maksimal værdi',
+                  y: adjustmentData?.min_max_cutoff?.mincutoff,
+                },
+                {
+                  xref: 'paper',
+                  yref: 'y',
+                  x: 0,
+                  xanchor: 'left',
+                  yanchor: 'bottom',
+                  showarrow: false,
+                  text: 'Minimal værdi',
+                  y: adjustmentData?.min_max_cutoff?.maxcutoff,
+                },
+              ]
+            : []),
+        ];
+        break;
+      case 'Korrigerede spring':
+        shapes = [
+          ...shapes,
+          ...(adjustmentData?.levelcorrection?.map((d) => {
+            return {
+              type: 'line',
+              x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
+              x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+              y0: 0,
+              y1: 1,
+              yref: 'paper',
+              line: {
+                color: theme.palette.error.main,
+                width: 1.5,
+              },
+            };
+          }) ?? []),
+        ];
+        annotations = [
+          ...annotations,
+          ...(adjustmentData?.levelcorrection?.map((d, index) => {
+            return {
+              xref: 'x',
+              yref: 'paper',
+              x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+              xanchor: 'left',
+              yanchor: 'bottom',
+              showarrow: false,
+              text: 'Korrigeret spring',
+              y: 0.3 + (index % 4) * 0.1,
+            };
+          }) ?? []),
+        ];
+        break;
+      case 'QA':
+        shapes = [...shapes, ...(qaShapes ?? [])];
+        annotations = [...annotations, ...(qaAnnotate ?? [])];
+        break;
+      default:
+        break;
+    }
   });
 
   return (
     <Plot
-      // onSelecting={handlePlotlySelected}
       onSelected={handlePlotlySelected}
-      // onRelayout={(e) => console.log('relayout', e)}
       id="qagraph"
-      divId="qagraph"
+      divId="qagraphDiv"
       onRelayout={handleRelayout}
       data={[
         {
@@ -427,26 +465,45 @@ function PlotGraph({controlData, qaData, ts_id}) {
           type: 'scattergl',
           line: {width: 2},
           mode: 'lines+markers',
-          marker: {symbol: '100', size: '5', color: '#177FC1'},
+          marker: {symbol: '100', size: '3', color: '#177FC1'},
         },
-        {
-          x: xControl,
-          y: yControl,
-          name: 'Kontrolpejlinger',
-          type: 'scatter',
-          mode: 'markers',
-          marker: {
-            symbol: '200',
-            size: '8',
-            color: '#177FC1',
-            line: {color: 'rgb(0,0,0)', width: 1},
-          },
-        },
+        ...(dataToShow?.Kontrolmålinger
+          ? [
+              {
+                x: xControl,
+                y: yControl,
+                name: 'Kontrolpejlinger',
+                type: 'scattergl',
+                mode: 'markers',
+                text: textControl,
+                marker: {
+                  symbol: '200',
+                  size: '8',
+                  color: '#177FC1',
+                  line: {color: 'rgb(0,0,0)', width: 1},
+                },
+              },
+            ]
+          : []),
+        ...(dataToShow?.['Fjernet data']
+          ? [
+              {
+                x: removed_data?.timeofmeas,
+                y: removed_data?.measurement,
+                text: removed_data?.label,
+                name: 'Fjernet data',
+                type: 'scattergl',
+                line: {width: 2},
+                mode: 'markers',
+                marker: {symbol: '100', size: '3', color: theme.palette.error.main},
+              },
+            ]
+          : []),
       ]}
       layout={{
         ...layout,
-        shapes: rerunShapes,
-        annotations: qaAnnotate,
+        shapes: shapes,
+        annotations: annotations,
         uirevision: 'true',
         yaxis: {
           title: `${metadata?.tstype_name} [${metadata?.unit}]`,
@@ -454,6 +511,7 @@ function PlotGraph({controlData, qaData, ts_id}) {
         },
       }}
       config={{
+        // showTips: false,
         responsive: true,
         modeBarButtons: [
           [rerunQAButton, rerunButton],
@@ -469,26 +527,9 @@ function PlotGraph({controlData, qaData, ts_id}) {
   );
 }
 
-export default function QAGraph({stationId, measurements}) {
+export default function QAGraph({stationId}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-
-  // const {data: graphData} = useQuery(
-  //   ['graphData', stationId],
-  //   async ({signal}) => {
-  //     const {data} = await apiClient.get(`/data/timeseries/${stationId}`, {
-  //       signal,
-  //     });
-  //     return data;
-  //   },
-  //   {
-  //     enabled: stationId !== -1 && stationId !== null,
-  //     refetchOnWindowFocus: false,
-  //     refetchOnMount: false,
-  //     refetchOnReconnect: false,
-  //     refetchInterval: false,
-  //   }
-  // );
 
   const {data: qaData} = useQuery(['qa_labels', stationId], async ({signal}) => {
     const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
@@ -509,13 +550,7 @@ export default function QAGraph({stationId, measurements}) {
           border: '2px solid gray',
         }}
       >
-        <PlotGraph
-          key={'plotgraph' + stationId}
-          // graphData={graphData}
-          controlData={measurements}
-          qaData={qaData}
-          ts_id={stationId}
-        />
+        <PlotGraph key={'plotgraph' + stationId} qaData={qaData} ts_id={stationId} />
       </div>
       <GraphActions />
     </Box>

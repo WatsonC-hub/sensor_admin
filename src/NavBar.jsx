@@ -1,35 +1,36 @@
-import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import LogoutIcon from '@mui/icons-material/Logout';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   AppBar,
-  Toolbar,
+  Badge,
+  Box,
   Button,
   IconButton,
-  Box,
-  Badge,
-  Typography,
-  Grid,
+  ListItemIcon,
   Menu,
   MenuItem,
-  ListItemIcon,
+  Toolbar,
+  Typography,
 } from '@mui/material';
-import {ReactComponent as LogoSvg} from './calypso.svg';
-import {ReactComponent as SmallLogo} from './logo.svg';
-import {authStore} from './state/store';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
-import BuildCircleIcon from '@mui/icons-material/BuildCircle';
-import SettingsIcon from '@mui/icons-material/Settings';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import LogoutIcon from '@mui/icons-material/Logout';
+import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
-import {captureDialogAtom} from './state/atoms';
-import useWhatPage from './hooks/useWhatPage';
-import {useQueryClient, useQuery} from '@tanstack/react-query';
-import {apiClient} from './apiClient';
 import moment from 'moment';
+import React, {useContext} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
+import useBreakpoints from 'src/hooks/useBreakpoints';
+import {MetadataContext} from 'src/state/contexts';
+import {ReactComponent as LogoSvg} from './calypso.svg';
+import {ReactComponent as SmallLogo} from './logo.svg';
+import {captureDialogAtom} from './state/atoms';
+import {authStore} from './state/store';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);
@@ -71,12 +72,7 @@ export const AppBarLayout = ({children, style}) => {
 const NavBarNotifications = () => {
   const navigate = useNavigate();
 
-  const {data, isLoading, error} = useQuery(['overblik'], async ({signal}) => {
-    const {data} = await apiClient.get(`/sensor_admin/overblik`, {
-      signal,
-    });
-    return data;
-  });
+  const {data} = useNotificationOverview();
 
   return (
     <Badge
@@ -94,7 +90,7 @@ const NavBarNotifications = () => {
           navigate('/admin/notifikationer');
         }
       }}
-      sx={{cursor: 'pointer', '& .MuiBadge-badge': {fontSize: 10}}}
+      sx={{cursor: 'pointer', mr: 2, '& .MuiBadge-badge': {fontSize: 10}}}
     >
       <Badge
         badgeContent={
@@ -113,10 +109,8 @@ const NavBarNotifications = () => {
   );
 };
 
-const NavBarMenu = () => {
+export const NavBarMenu = ({highligtFirst, items}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  let navigate = useNavigate();
-  const page = useWhatPage();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -128,6 +122,16 @@ const NavBarMenu = () => {
 
   return (
     <>
+      {highligtFirst && (
+        <Button
+          color="grey"
+          variant="contained"
+          onClick={items?.[0].onClick}
+          startIcon={items?.[0].icon}
+        >
+          {items?.[0].title}
+        </Button>
+      )}
       <IconButton
         size="large"
         color="inherit"
@@ -145,31 +149,20 @@ const NavBarMenu = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {page == 'admin' ? (
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              navigate('/field');
-            }}
-          >
-            <ListItemIcon>
-              <BuildCircleIcon fontSize="medium" />
-            </ListItemIcon>
-            {'Field'}
-          </MenuItem>
-        ) : (
-          <MenuItem
-            onClick={() => {
-              handleClose();
-              navigate('/admin');
-            }}
-          >
-            <ListItemIcon>
-              <SettingsIcon fontSize="medium" />
-            </ListItemIcon>
-            {'Admin'}
-          </MenuItem>
-        )}
+        {items
+          ?.filter((item, index) => (highligtFirst ? !(index == 0) : true))
+          ?.map((item) => (
+            <MenuItem
+              key={item.title}
+              onClick={() => {
+                handleClose();
+                item.onClick();
+              }}
+            >
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              {item.title}
+            </MenuItem>
+          ))}
 
         <MenuItem onClick={handleClose}>
           <LogOut
@@ -188,6 +181,29 @@ const NavBarMenu = () => {
   );
 };
 
+const Logo = () => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
+
+  return matches ? <SmallLogo /> : <LogoSvg />;
+};
+
+const GoBack = () => {
+  const navigate = useNavigate();
+
+  return (
+    <IconButton
+      color="inherit"
+      onClick={(e) => {
+        navigate(-1);
+      }}
+      size="large"
+    >
+      <KeyboardBackspaceIcon />
+    </IconButton>
+  );
+};
+
 const NavBar = ({children}) => {
   const [authenticated, iotAccess, adminAccess] = authStore((state) => [
     state.authenticated,
@@ -196,18 +212,19 @@ const NavBar = ({children}) => {
   ]);
   const [open, setOpen] = useAtom(captureDialogAtom);
   const navigate = useNavigate();
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const {isMobile} = useBreakpoints();
+  const metadata = useContext(MetadataContext);
 
-  const LogOutButton = (
-    <Button color="grey" variant="contained" startIcon={<LogoutIcon />}>
-      Log ud
-    </Button>
-  );
+  let content;
+
+  if (location.pathname.includes('/location') || location.pathname.includes('/borehole')) {
+    return null;
+  }
+
   if (!authenticated) {
     return (
       <AppBarLayout>
-        {matches ? <SmallLogo /> : <LogoSvg />}
+        <Logo />
         {/* <Typography variant="h4">Field</Typography> */}
         {location.pathname !== '/register' ? (
           <Button
@@ -227,190 +244,153 @@ const NavBar = ({children}) => {
       </AppBarLayout>
     );
   }
-  if (location.pathname.includes('/location') || location.pathname.includes('/borehole')) {
-    return null;
+
+  if (location.pathname == '/') {
+    content = <Logo />;
   }
 
-  if (location.pathname.includes('/field')) {
-    return (
-      <AppBarLayout>
-        {!location.pathname.includes('/stamdata') ? (
-          iotAccess ? (
-            <Button
-              color="secondary"
-              variant="contained"
-              onClick={() => {
-                navigate('stamdata');
-                //setAddStationDisabled(true);
-              }}
-              size="small"
-            >
-              Opret station
-            </Button>
-          ) : (
-            <LogoSvg />
-          )
-        ) : (
-          <IconButton
-            color="inherit"
-            onClick={
-              (e) => navigate('') //context.setLocationId(-1)
-            }
-            size="large"
+  if (location.pathname == '/field') {
+    content = (
+      <>
+        {iotAccess ? (
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={() => {
+              navigate('stamdata');
+              //setAddStationDisabled(true);
+            }}
+            size="small"
           >
-            <KeyboardBackspaceIcon />
-          </IconButton>
+            Opret station
+          </Button>
+        ) : (
+          <LogoSvg />
         )}
-
-        {!matches && <Typography variant="h4">Field</Typography>}
-
-        {matches && (
-          <IconButton color="inherit" onClick={() => setOpen(true)} size="large">
-            <PhotoCameraRounded />
-          </IconButton>
+        {isMobile ? (
+          <>
+            <IconButton color="inherit" onClick={() => setOpen(true)} size="large">
+              <PhotoCameraRounded />
+            </IconButton>
+          </>
+        ) : (
+          <Typography variant="h4">Field</Typography>
         )}
-
-        {
-          //COMMENT THIS FOR TEMP PRODUCTION
-          matches ? (
-            <>
-              <Box>
-                <NavBarNotifications />
-                <NavBarMenu />
-              </Box>
-            </>
-          ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                maxWidth: 300,
-              }}
-            >
-              <Box sx={{p: 2}}>
-                <NavBarNotifications />
-              </Box>
-              <Button
-                color="grey"
-                variant="contained"
-                onClick={() => {
+        <Box>
+          <NavBarNotifications />
+          <NavBarMenu
+            highligtFirst={!isMobile}
+            items={[
+              {
+                title: 'Admin',
+                icon: <SettingsIcon fontSize="medium" />,
+                onClick: () => {
                   navigate('/admin');
-                }}
-                startIcon={<SettingsIcon />}
-              >
-                Admin
-              </Button>
-              <LogOut element={LogOutButton} />
-            </Box>
-          )
-        }
-      </AppBarLayout>
+                },
+              },
+            ]}
+          />
+        </Box>
+      </>
     );
   }
 
-  if (location.pathname.includes('/admin/')) {
-    return (
-      <AppBarLayout>
-        <IconButton
-          color="inherit"
-          onClick={(e) => {
-            navigate(-1);
-          }}
-          size="large"
-        >
-          <KeyboardBackspaceIcon />
-        </IconButton>
-        <Typography variant="h4">Admin</Typography>
-
-        {matches ? (
+  if (location.pathname == '/field/stamdata') {
+    content = (
+      <>
+        <GoBack />
+        {isMobile ? (
           <>
+            <IconButton color="inherit" onClick={() => setOpen(true)} size="large">
+              <PhotoCameraRounded />
+            </IconButton>
             <Box>
               <NavBarNotifications />
               <NavBarMenu />
             </Box>
           </>
         ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              maxWidth: 300,
-            }}
-          >
-            <Box sx={{p: 2}}>
+          <>
+            <Typography variant="h4">Field</Typography>
+            <Box>
               <NavBarNotifications />
+              <NavBarMenu
+                highligtFirst={!isMobile}
+                items={[
+                  {
+                    title: 'Admin',
+                    icon: <SettingsIcon fontSize="medium" />,
+                    onClick: () => {
+                      navigate('/admin');
+                    },
+                  },
+                ]}
+              />
             </Box>
-            <Button
-              color="grey"
-              variant="contained"
-              onClick={() => {
-                navigate('/field');
-              }}
-              startIcon={<BuildCircleIcon />}
-            >
-              Field
-            </Button>
-            <LogOut element={LogOutButton} />
-          </Box>
+          </>
         )}
-      </AppBarLayout>
+      </>
     );
   }
 
   if (location.pathname.includes('/admin')) {
-    return (
-      <AppBarLayout>
-        {matches ? <SmallLogo /> : <LogoSvg />}
-
+    content = (
+      <>
+        <GoBack />
         <Typography variant="h4">Admin</Typography>
 
-        {matches ? (
-          <>
-            <Box>
-              <NavBarNotifications />
-              <NavBarMenu />
-            </Box>
-          </>
-        ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              maxWidth: 300,
-            }}
-          >
-            <Box sx={{p: 2}}>
-              <NavBarNotifications />
-            </Box>
-            <Button
-              color="grey"
-              variant="contained"
-              onClick={() => {
-                navigate('/field');
-              }}
-              startIcon={<BuildCircleIcon />}
-            >
-              Field
-            </Button>
-            <LogOut element={LogOutButton} />
-          </Box>
-        )}
-      </AppBarLayout>
+        <Box>
+          <NavBarNotifications />
+          <NavBarMenu
+            highligtFirst={!isMobile}
+            items={[
+              {
+                title: 'Field',
+                icon: <BuildCircleIcon fontSize="medium" />,
+                onClick: () => {
+                  navigate('/field');
+                },
+              },
+            ]}
+          />
+        </Box>
+      </>
     );
   }
 
-  return (
-    <AppBarLayout>
-      {matches ? <SmallLogo /> : <LogoSvg />}
+  if (location.pathname.includes('/admin/kvalitetssikring/')) {
+    content = (
+      <>
+        <GoBack />
+        <Typography variant={isMobile ? 'h6' : 'h4'}>Kvalitetssikring</Typography>
 
-      <Typography variant="h4"></Typography>
+        <Box>
+          <NavBarNotifications />
+          <NavBarMenu
+            highligtFirst={!isMobile}
+            items={[
+              {
+                title: 'Til service',
+                icon: <QueryStatsIcon />,
+                onClick: () => {
+                  navigate(`/field/location/${metadata?.loc_id}/${metadata?.ts_id}`);
+                },
+              },
+              {
+                title: 'Field',
+                icon: <BuildCircleIcon fontSize="medium" />,
+                onClick: () => {
+                  navigate('/field');
+                },
+              },
+            ]}
+          />
+        </Box>
+      </>
+    );
+  }
 
-      <LogOut />
-    </AppBarLayout>
-  );
+  return <AppBarLayout>{content}</AppBarLayout>;
 };
 
 export default NavBar;

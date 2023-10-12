@@ -1,5 +1,5 @@
-import * as z from 'zod';
 import moment from 'moment';
+import * as z from 'zod';
 
 const metadataBaseSchema = z.object({
   location: z.object({
@@ -42,6 +42,9 @@ const metadataSchema = metadataBaseSchema.extend({
 });
 
 const metadataPutSchema = metadataBaseSchema.extend({
+  timeseries: metadataBaseSchema.shape.timeseries.extend({
+    tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
+  }),
   unit: metadataBaseSchema.shape.unit.extend({
     enddate: z.string().transform((value) => moment(value).toISOString()),
   }),
@@ -85,4 +88,4 @@ const metadataPutSchema = metadataBaseSchema.extend({
 //     .optional(),
 // });
 
-export {metadataSchema, metadataPutSchema};
+export {metadataPutSchema, metadataSchema};

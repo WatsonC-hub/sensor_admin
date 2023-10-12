@@ -1,9 +1,9 @@
-import React from 'react';
-import {MobileDateTimePicker, LocalizationProvider} from '@mui/x-date-pickers';
+import {TextField} from '@mui/material';
+import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import daLocale from 'date-fns/locale/da';
-import {TextField} from '@mui/material';
 import moment from 'moment/moment';
+import React from 'react';
 
 const OwnDatePicker = (props) => {
   return (

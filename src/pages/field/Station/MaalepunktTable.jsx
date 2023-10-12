@@ -1,27 +1,24 @@
-import React from 'react';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import {useTheme} from '@mui/material/styles';
-import {useState, useContext} from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import StraightenIcon from '@mui/icons-material/Straighten';
+import {Box, Typography} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
-import {Typography} from '@mui/material';
-import {Box} from '@mui/material';
-import DeleteAlert from 'src/components/DeleteAlert';
-import {Fragment} from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import TableRow from '@mui/material/TableRow';
+import {useTheme} from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import moment from 'moment';
-import Grid from '@mui/material/Grid';
-import StraightenIcon from '@mui/icons-material/Straighten';
+import React, {Fragment, useState} from 'react';
+import DeleteAlert from 'src/components/DeleteAlert';
 
 function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -191,7 +188,6 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                   <IconButton
                     edge="end"
                     onClick={() => {
-                      console.log(row);
                       handleEdit(row);
                       setTimeout(() => {
                         window.scrollTo({top: 300, behavior: 'smooth'});

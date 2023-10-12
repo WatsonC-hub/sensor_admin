@@ -1,20 +1,16 @@
-import {useContext, useState} from 'react';
+import {FormControl, FormControlLabel, Radio, RadioGroup, Typography} from '@mui/material';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import moment from 'moment';
+import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
-import {qaSelection} from 'src/state/atoms';
-import {FormControl, FormControlLabel, Radio, RadioGroup, Typography} from '@mui/material';
-import {toast} from 'react-toastify';
-import {useQueryClient, useMutation} from '@tanstack/react-query';
-import {MetadataContext} from 'src/state/contexts';
-import {apiClient} from 'src/apiClient';
+import moment from 'moment';
+import {useContext, useState} from 'react';
 import {useExclude} from 'src/hooks/query/useExclude';
+import {qaSelection} from 'src/state/atoms';
+import {MetadataContext} from 'src/state/contexts';
 
 const ExcludeModal = ({open, onClose}) => {
   const [radio, setRadio] = useState('selected');
@@ -27,11 +23,16 @@ const ExcludeModal = ({open, onClose}) => {
     onClose();
   };
 
-  const minX = moment(selection?.selections?.[0]?.x0).format('YYYY-MM-DD HH:mm');
-  const maxX = moment(selection?.selections?.[0]?.x1).format('YYYY-MM-DD HH:mm');
-  const minY = selection?.selections?.[0]?.y1?.toFixed(4);
-  const maxY = selection?.selections?.[0]?.y0?.toFixed(4);
-  const queryClient = useQueryClient();
+  const x0 = moment(selection?.selections?.[0]?.x0);
+  const x1 = moment(selection?.selections?.[0]?.x1);
+  const minX = moment.min(x0, x1);
+  const maxX = moment.max(x0, x1);
+
+  const y0 = selection?.selections?.[0]?.y0;
+  const y1 = selection?.selections?.[0]?.y1;
+
+  const minY = Math.min(y0, y1).toFixed(4);
+  const maxY = Math.max(y0, y1).toFixed(4);
 
   const {post: excludeMutation} = useExclude();
 
@@ -39,8 +40,8 @@ const ExcludeModal = ({open, onClose}) => {
     excludeMutation.mutate({
       path: `${metadata?.ts_id}`,
       data: {
-        startdate: minX,
-        enddate: maxX,
+        startdate: minX.toISOString(),
+        enddate: maxX.toISOString(),
         min_value: radio == 'selected' ? Number(minY) : null,
         max_value: radio == 'selected' ? Number(maxY) : null,
         comment: comment,
@@ -55,7 +56,7 @@ const ExcludeModal = ({open, onClose}) => {
         <DialogContent>
           <Typography variant="h6">Tid:</Typography>
           <Typography gutterBottom>
-            {minX} - {maxX}
+            {minX.format('YYYY-MM-DD HH:mm')} - {maxX.format('YYYY-MM-DD HH:mm')}
           </Typography>
           <Typography variant="h6">Værdi:</Typography>
           <Typography gutterBottom>

@@ -1,19 +1,19 @@
-import React from 'react';
-import './index.css';
-import App from './App';
-import {BrowserRouter} from 'react-router-dom';
-import {ThemeProvider, StyledEngineProvider} from '@mui/material';
-import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
-import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
-import {ToastContainer} from 'react-toastify';
-import {createRoot} from 'react-dom/client';
-import 'react-toastify/dist/ReactToastify.css';
-import theme from './theme';
+import {StyledEngineProvider, ThemeProvider} from '@mui/material';
 import * as Sentry from '@sentry/react';
 import {BrowserTracing} from '@sentry/tracing';
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
+import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {BrowserRouter} from 'react-router-dom';
+import {ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {registerSW} from 'virtual:pwa-register';
+import App from './App';
 import NetworkStatus from './components/NetworkStatus';
-import {queryClient, persister} from './queryClient';
+import './index.css';
+import {persister, queryClient} from './queryClient';
+import theme from './theme';
 
 if (import.meta.env.PROD) {
   Sentry.init({
@@ -29,13 +29,7 @@ if (import.meta.env.PROD) {
 
 if ('serviceWorker' in navigator) {
   // && !/localhost/.test(window.location)) {
-  registerSW({
-    onNeedRefresh() {
-      if (confirm('Opdatering tilgængelig. Vil du opdatere?')) {
-        updateSW(true);
-      }
-    },
-  });
+  registerSW({immediate: true});
 }
 
 const container = document.getElementById('root');

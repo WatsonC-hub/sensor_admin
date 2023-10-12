@@ -1,16 +1,7 @@
-import React from 'react';
-import {
-  Box,
-  Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Divider,
-  Button,
-  Skeleton,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useAutoAnimate} from '@formkit/auto-animate/react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {Accordion, AccordionDetails, AccordionSummary, Box, Typography} from '@mui/material';
+import React from 'react';
 import BoxNumber from 'src/components/BoxNumber';
 
 const QAAccordion = ({children, number, title, accordionProps}) => {

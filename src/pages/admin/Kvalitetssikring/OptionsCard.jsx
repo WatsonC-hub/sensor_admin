@@ -1,5 +1,5 @@
+import {Button, Card, CardContent, CardHeader, Grid} from '@mui/material';
 import React from 'react';
-import {Card, CardContent, CardHeader, Button, Grid} from '@mui/material';
 
 const OptionsCard = ({title, children, handleClick}) => {
   return (
