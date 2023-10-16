@@ -41,7 +41,7 @@ export default function LocationRouter() {
     }
   );
 
-  const notifications = notificationOverview.filter((elem) => elem.locid == params.locid);
+  const notifications = notificationOverview?.filter((elem) => elem.locid == params.locid);
 
   return (
     <>

@@ -9,14 +9,16 @@ import moment from 'moment';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 import DeleteAlert from 'src/components/DeleteAlert';
+import useBreakpoints from 'src/hooks/useBreakpoints';
 
 function ImageCard({image, deleteMutation, handleEdit}) {
-  const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/location_images/';
-  const imageUrl = baseUrl + image.imageurl + '.png';
+  const {isMobile} = useBreakpoints();
+
+  const imageUrl = `/assets/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}`;
   const [dialogOpen, setDialogOpen] = useState(false);
 
   function handleDelete() {
-    toast.promise(() => deleteMutation.mutateAsync(image.gid), {
+    toast.promise(() => deleteMutation.mutateAsync({path: `${image.loc_id}/${image.gid}`}), {
       pending: 'Sletter billedet',
       success: 'Billedet blev slettet',
       error: 'Der skete en fejl',
@@ -37,11 +39,12 @@ function ImageCard({image, deleteMutation, handleEdit}) {
         onOkDelete={handleDelete}
       />
       <CardMedia
+        component="img"
         image={imageUrl}
         sx={{
-          height: 640,
-          width: '100%',
-          objectFit: 'cover',
+          height: isMobile ? null : 640,
+          // width: '100%',
+          objectFit: 'contain',
         }}
       />
       <CardContent>

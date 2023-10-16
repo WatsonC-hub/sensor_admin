@@ -1,18 +1,31 @@
 import {PhotoCameraRounded} from '@mui/icons-material';
 import {Button, Grid} from '@mui/material';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {apiClient} from 'src/apiClient';
-import {deleteImage} from 'src/pages/field/fieldAPI';
+import {useImageUpload} from 'src/hooks/query/useImageUpload';
 import ImageViewer from '../../../components/ImageViewer';
-import LocationCamera from '../../../components/LocationCamera';
 import SaveImageDialog from '../../../components/SaveImageDialog';
+
+const convertBase64 = (file) => {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
 
 function StationImages(props) {
   const [openCamera, setOpenCamera] = useState(false);
   const [dataUri, setdataUri] = useState('');
   const [openSave, setOpenSave] = useState(false);
+
   const [activeImage, setActiveImage] = useState({
     gid: -1,
     loc_id: props.locationId,
@@ -31,24 +44,7 @@ function StationImages(props) {
     }
   );
 
-  const deleteImageMutation = useMutation((gid) => deleteImage(props.locationId, gid), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['images', props.locationId]);
-    },
-  });
-
-  const convertBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
-  };
+  const {del: deleteImage} = useImageUpload('station');
 
   const handleFileRead = async (event) => {
     const file = event.target.files[0];
@@ -82,11 +78,6 @@ function StationImages(props) {
 
   return (
     <div>
-      <LocationCamera
-        open={openCamera}
-        handleClose={() => setOpenCamera(false)}
-        setDataURI={handleSetDataURI}
-      />
       <SaveImageDialog
         activeImage={activeImage}
         changeData={changeActiveImageData}
@@ -120,7 +111,7 @@ function StationImages(props) {
         <Grid item xs={12} sm={12}>
           <ImageViewer
             // handleDelete={handleDelete}
-            deleteMutation={deleteImageMutation}
+            deleteMutation={deleteImage}
             handleEdit={handleEdit}
             images={images}
           />
