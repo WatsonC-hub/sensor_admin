@@ -5,7 +5,6 @@ import moment from 'moment';
 import React, {useState} from 'react';
 import {apiClient} from 'src/apiClient';
 import {deleteImage} from 'src/pages/field/boreholeAPI';
-import LocationCamera from '../../../components/LocationCamera';
 import ImageViewerBorehole from './components/ImageViewerBorehole';
 import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
 
@@ -78,11 +77,6 @@ function BoreholeImages(props) {
 
   return (
     <div>
-      <LocationCamera
-        open={openCamera}
-        handleClose={() => setOpenCamera(false)}
-        setDataURI={handleSetDataURI}
-      />
       <SaveImageDialogBorehole
         activeImage={activeImage}
         changeData={changeActiveImageData}
