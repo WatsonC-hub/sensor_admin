@@ -24,7 +24,7 @@ function SaveImageDialogBorehole({
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const imageUrl = `/assets/${activeImage.imageurl}?format=auto&width=${1024}`;
+  const imageUrl = `/static/images/${activeImage.imageurl}?format=auto&width=${1024}`;
 
   const {post: uploadImage, put: editImage} = useImageUpload('borehole');
 
