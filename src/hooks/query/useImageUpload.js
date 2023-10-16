@@ -14,66 +14,54 @@ const dataURLtoFile = (dataurl, filename) => {
   return new File([u8arr], filename, {type: mime});
 };
 
-export const imagePostOptions = {
-  mutationKey: 'image_post',
-  mutationFn: async (mutation_data) => {
-    const {path, data} = mutation_data;
-    const file = dataURLtoFile(data.uri);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('comment', data.comment);
-    formData.append('public', data.public);
-    formData.append('date', data.date);
-    const config = {
-      headers: {'Content-Type': 'multipart/form-data'},
-    };
-
-    const {data: res} = await apiClient.post(
-      `/sensor_field/station/image/${path}`,
-      formData,
-      config
-    );
-    return res;
-  },
-};
-
-export const imagePutOptions = {
-  mutationKey: 'image_put',
-  mutationFn: async (mutation_data) => {
-    const {path, data} = mutation_data;
-    const {data: res} = await apiClient.put(`/sensor_field/station/image/${path}`, data);
-    return res;
-  },
-};
-
-export const imageDelOptions = {
-  mutationKey: 'image_del',
-  mutationFn: async (mutation_data) => {
-    const {path} = mutation_data;
-    const {data: res} = await apiClient.delete(`/sensor_field/station/image/${path}`);
-    return res;
-  },
-};
-
-export const useImageUpload = () => {
+export const useImageUpload = (endpoint) => {
   const queryClient = useQueryClient();
 
   const post = useMutation({
-    ...imagePostOptions,
+    mutationKey: 'image_post',
+    mutationFn: async (mutation_data) => {
+      const {path, data} = mutation_data;
+      const file = dataURLtoFile(data.uri);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('comment', data.comment);
+      formData.append('public', data.public);
+      formData.append('date', data.date);
+      const config = {
+        headers: {'Content-Type': 'multipart/form-data'},
+      };
+
+      const {data: res} = await apiClient.post(
+        `/sensor_field/${endpoint}/image/${path}`,
+        formData,
+        config
+      );
+      return res;
+    },
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries(['images']);
     },
   });
 
   const put = useMutation({
-    ...imagePutOptions,
+    mutationKey: 'image_put',
+    mutationFn: async (mutation_data) => {
+      const {path, data} = mutation_data;
+      const {data: res} = await apiClient.put(`/sensor_field/${endpoint}/image/${path}`, data);
+      return res;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['images']);
     },
   });
 
   const del = useMutation({
-    ...imageDelOptions,
+    mutationKey: 'image_del',
+    mutationFn: async (mutation_data) => {
+      const {path} = mutation_data;
+      const {data: res} = await apiClient.delete(`/sensor_field/${endpoint}/image/${path}`);
+      return res;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['images']);
     },

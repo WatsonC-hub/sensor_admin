@@ -18,7 +18,6 @@ function ImageCard({image, deleteMutation, handleEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   function handleDelete() {
-    console.log({path: `${image.loc_id}/${image.gid}`});
     toast.promise(() => deleteMutation.mutateAsync({path: `${image.loc_id}/${image.gid}`}), {
       pending: 'Sletter billedet',
       success: 'Billedet blev slettet',

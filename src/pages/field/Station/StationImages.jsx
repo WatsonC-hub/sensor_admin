@@ -6,7 +6,6 @@ import React, {useState} from 'react';
 import {apiClient} from 'src/apiClient';
 import {useImageUpload} from 'src/hooks/query/useImageUpload';
 import ImageViewer from '../../../components/ImageViewer';
-import LocationCamera from '../../../components/LocationCamera';
 import SaveImageDialog from '../../../components/SaveImageDialog';
 
 const convertBase64 = (file) => {
@@ -45,7 +44,7 @@ function StationImages(props) {
     }
   );
 
-  const {del: deleteImage} = useImageUpload();
+  const {del: deleteImage} = useImageUpload('station');
 
   const handleFileRead = async (event) => {
     const file = event.target.files[0];
@@ -79,11 +78,6 @@ function StationImages(props) {
 
   return (
     <div>
-      <LocationCamera
-        open={openCamera}
-        handleClose={() => setOpenCamera(false)}
-        setDataURI={handleSetDataURI}
-      />
       <SaveImageDialog
         activeImage={activeImage}
         changeData={changeActiveImageData}

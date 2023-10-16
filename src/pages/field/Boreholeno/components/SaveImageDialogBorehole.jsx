@@ -7,13 +7,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {useMutation, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useState} from 'react';
+import React from 'react';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+import {useImageUpload} from 'src/hooks/query/useImageUpload';
 import OwnDatePicker from '../../../../components/OwnDatePicker';
-import {postImage} from '../../boreholeAPI';
 
 function SaveImageDialogBorehole({
   activeImage,
@@ -21,46 +19,58 @@ function SaveImageDialogBorehole({
   boreholeno,
   open,
   dataUri,
-  photoTrigger,
   handleCloseSave,
 }) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
-  const [disableAdd, setDisableAdd] = useState(false);
-  const queryClient = useQueryClient();
-  const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
-  const imageUrl = baseUrl + activeImage.imageurl + '.png';
 
-  const saveImageMutation = useMutation(
-    (data) => {
-      if (activeImage.gid !== -1) {
-        return apiClient.put(`/sensor_field/borehole/image/${data.gid}`, data);
-      } else {
-        return postImage(data, dataUri);
-      }
-    },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['images', boreholeno]);
-        handleCloseSave();
-      },
-    }
-  );
+  const imageUrl = `/assets/${activeImage.imageurl}?format=auto&width=${1024}`;
+
+  const {post: uploadImage, put: editImage} = useImageUpload('borehole');
 
   function saveImage() {
-    const payload = {
-      gid: activeImage.gid,
-      boreholeno: boreholeno,
-      comment: activeImage.comment,
-      public: activeImage.public.toString(),
-      date: moment(activeImage.date).format('YYYY-MM-DD HH:mm'),
-    };
+    if (activeImage.gid === -1) {
+      const payload = {
+        path: boreholeno,
+        data: {
+          comment: activeImage.comment,
+          public: activeImage.public.toString(),
+          date: moment(activeImage.date).toISOString(),
+          uri: dataUri,
+        },
+      };
 
-    toast.promise(() => saveImageMutation.mutateAsync(payload), {
-      pending: 'Gemmer billede',
-      success: 'Billede gemt',
-      error: 'Der skete en fejl',
-    });
+      toast.promise(() => uploadImage.mutateAsync(payload), {
+        pending: 'Gemmer billede',
+        success: {
+          render({data}) {
+            handleCloseSave();
+            return 'Billede gemt';
+          },
+        },
+        error: 'Der skete en fejl',
+      });
+    } else {
+      const payload = {
+        path: `${boreholeno}/${activeImage.gid}`,
+        data: {
+          comment: activeImage.comment,
+          public: activeImage.public.toString(),
+          date: moment(activeImage.date).toISOString(),
+        },
+      };
+
+      toast.promise(() => editImage.mutateAsync(payload), {
+        pending: 'Gemmer billede',
+        success: {
+          render({data}) {
+            handleCloseSave();
+            return 'Billede gemt';
+          },
+        },
+        error: 'Der skete en fejl',
+      });
+    }
   }
 
   return (
@@ -115,8 +125,19 @@ function SaveImageDialogBorehole({
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={saveImage} disabled={disableAdd} color="secondary" variant="contained">
-            {disableAdd ? <CircularProgress /> : 'Tilføj'}
+          <Button
+            onClick={saveImage}
+            disabled={uploadImage.isLoading}
+            color="secondary"
+            variant="contained"
+          >
+            {uploadImage.isLoading ? (
+              <CircularProgress />
+            ) : activeImage.gid == -1 ? (
+              'Tilføj'
+            ) : (
+              'Ændre'
+            )}
           </Button>
           <Button onClick={handleCloseSave} color="secondary" variant="contained">
             Annuller

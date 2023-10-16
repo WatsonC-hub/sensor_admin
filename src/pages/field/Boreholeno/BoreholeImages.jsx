@@ -1,10 +1,10 @@
 import {PhotoCameraRounded} from '@mui/icons-material';
 import {Button, Grid} from '@mui/material';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {apiClient} from 'src/apiClient';
-import {deleteImage} from 'src/pages/field/boreholeAPI';
+import {useImageUpload} from 'src/hooks/query/useImageUpload';
 import ImageViewerBorehole from './components/ImageViewerBorehole';
 import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
 
@@ -22,15 +22,11 @@ function BoreholeImages(props) {
   const queryClient = useQueryClient();
 
   const {data: images} = useQuery(['images', props.boreholeno], async () => {
-    const {data} = await apiClient.get(`/sensor_field/borehole/images/${props.boreholeno}`);
+    const {data} = await apiClient.get(`/sensor_field/borehole/image/${props.boreholeno}`);
     return data;
   });
 
-  const deleteImageMutation = useMutation((gid) => deleteImage(props.boreholeno, gid), {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['images', props.boreholeno]);
-    },
-  });
+  const {del: deleteImage} = useImageUpload('borehole');
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -110,7 +106,7 @@ function BoreholeImages(props) {
         </Grid>
         <Grid item xs={12} sm={12}>
           <ImageViewerBorehole
-            deleteMutation={deleteImageMutation}
+            deleteMutation={deleteImage}
             handleEdit={handleEdit}
             images={images}
           />

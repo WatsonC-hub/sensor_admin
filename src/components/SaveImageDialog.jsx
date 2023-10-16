@@ -19,7 +19,7 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
 
   const imageUrl = `/assets/${activeImage.imageurl}?format=auto&width=${1024}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload();
+  const {post: uploadImage, put: editImage} = useImageUpload('station');
 
   function saveImage() {
     if (activeImage.gid === -1) {

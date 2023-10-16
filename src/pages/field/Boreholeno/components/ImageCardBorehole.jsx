@@ -9,16 +9,22 @@ import moment from 'moment';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 import DeleteAlert from 'src/components/DeleteAlert';
+import useBreakpoints from 'src/hooks/useBreakpoints';
 import {authStore} from 'src/state/store';
 
 function ImageCardBorehole({image, deleteMutation, handleEdit}) {
-  const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
-  const imageUrl = baseUrl + image.imageurl + '.png';
+  // const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
+  // const imageUrl = baseUrl + image.imageurl + '.png';
+
+  const {isMobile} = useBreakpoints();
+
+  const imageUrl = `/assets/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}`;
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [org_id] = authStore((state) => [state.org_id]);
 
   function handleDelete() {
-    toast.promise(() => deleteMutation.mutateAsync(image.gid), {
+    toast.promise(() => deleteMutation.mutateAsync({path: `${image.boreholeno}/${image.gid}`}), {
       pending: 'Sletter billedet',
       success: 'Billedet blev slettet',
       error: 'Der skete en fejl',
@@ -39,11 +45,12 @@ function ImageCardBorehole({image, deleteMutation, handleEdit}) {
         onOkDelete={handleDelete}
       />
       <CardMedia
+        component="img"
         image={imageUrl}
         sx={{
-          height: 640,
-          width: '100%',
-          objectFit: 'cover',
+          height: isMobile ? null : 640,
+          // width: '100%',
+          objectFit: 'contain',
         }}
       />
       <CardContent>
