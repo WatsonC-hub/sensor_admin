@@ -100,11 +100,11 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-      '/assets': {
+      '/static/images': {
         target: 'https://dhmol4s2b971r.cloudfront.net',
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/assets/, ''),
+        rewrite: (path) => path.replace(/^\/static\/images/, ''),
       },
     },
   },

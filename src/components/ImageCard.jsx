@@ -14,7 +14,7 @@ import useBreakpoints from 'src/hooks/useBreakpoints';
 function ImageCard({image, deleteMutation, handleEdit}) {
   const {isMobile} = useBreakpoints();
 
-  const imageUrl = `/assets/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}`;
+  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}`;
   const [dialogOpen, setDialogOpen] = useState(false);
 
   function handleDelete() {

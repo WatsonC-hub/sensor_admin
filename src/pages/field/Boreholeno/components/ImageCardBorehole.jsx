@@ -18,7 +18,7 @@ function ImageCardBorehole({image, deleteMutation, handleEdit}) {
 
   const {isMobile} = useBreakpoints();
 
-  const imageUrl = `/assets/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}`;
+  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}`;
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [org_id] = authStore((state) => [state.org_id]);
