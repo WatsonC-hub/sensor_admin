@@ -8,7 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import {loginAPI, loginUser, resetPassword} from 'src/pages/field/fieldAPI';
+import {loginAPI, resetPassword} from 'src/pages/field/fieldAPI';
 import {authStore} from '../../state/store';
 
 export default function Login({}) {
@@ -32,26 +32,13 @@ export default function Login({}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    loginUser(userName, password)
-      .then((res) => {
-        if (res.data.success) {
-          // setUser(res.data.data.screen_name);
-          // setOrganisation(res.data.data.properties.organisation.id);
-          setSessionId(res.data.data.session_id);
-          setLoginError(false);
-          setLoginExpired(false);
-        }
-      })
-      .catch((r) => {
-        setLoginError(true);
-      });
-
     loginAPI(userName.toLowerCase().trim(), password).then((res) => {
       setProperties(res.data);
       setAuthenticated(true);
       setLoginExpired(false);
     });
   };
+
   const handlePassReset = (e) => {
     resetPassword({email: passReset})
       .then((res) => {
@@ -74,9 +61,6 @@ export default function Login({}) {
   const handleClose = () => {
     setOpen(false);
   };
-
-  if (emailSentMess) {
-  }
 
   return (
     <div>
