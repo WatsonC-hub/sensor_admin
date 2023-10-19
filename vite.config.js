@@ -20,14 +20,16 @@ const getCache = ({name, pattern, handler}) => ({
 });
 
 const pwaOptions = {
+  devOptions: {
+    enabled: true,
+    type: 'module',
+  },
+  strategies: 'injectManifest',
+  srcDir: 'src',
+  filename: 'sw.js',
   registerType: 'autoUpdate',
-  workbox: {
+  injectManifest: {
     globPatterns: ['**/*'],
-    maximumFileSizeToCacheInBytes: 100000000,
-    runtimeCaching: [
-      getCache({name: 'api', pattern: /\/api\/(?!data).*/, handler: 'NetworkFirst'}),
-      getCache({name: 'manual', pattern: /workbox-window/, handler: 'CacheFirst'}),
-    ],
   },
   includeAssets: ['**/*'],
   manifest: {
