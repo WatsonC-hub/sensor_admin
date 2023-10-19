@@ -28,7 +28,6 @@ import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {MetadataContext} from 'src/state/contexts';
 import {ReactComponent as LogoSvg} from './calypso.svg';
-import {askPermission, subscribeUserToPush, testNotification} from './helpers/push_notifications';
 import {ReactComponent as SmallLogo} from './logo.svg';
 import {captureDialogAtom} from './state/atoms';
 import {authStore} from './state/store';
@@ -279,29 +278,6 @@ const NavBar = ({children}) => {
         )}
         <Box>
           <NavBarNotifications />
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={() => {
-              askPermission().then((result) => {
-                console.log(result);
-                if (result === 'granted') {
-                  subscribeUserToPush();
-                }
-              });
-            }}
-          >
-            subscribe
-          </Button>
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={() => {
-              testNotification();
-            }}
-          >
-            send notification
-          </Button>
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
