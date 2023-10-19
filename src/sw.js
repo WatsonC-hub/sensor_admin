@@ -1,8 +1,8 @@
 import {CacheableResponsePlugin} from 'workbox-cacheable-response';
 import {clientsClaim} from 'workbox-core';
 import {ExpirationPlugin} from 'workbox-expiration';
-import {cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute} from 'workbox-precaching';
-import {NavigationRoute, registerRoute} from 'workbox-routing';
+import {cleanupOutdatedCaches, precacheAndRoute} from 'workbox-precaching';
+import {registerRoute} from 'workbox-routing';
 import {CacheFirst, NetworkFirst} from 'workbox-strategies';
 
 self.skipWaiting();
@@ -64,6 +64,7 @@ function receivePushNotification(event) {
       tag: 'notification-tag',
       renotify: true,
       ...data,
+      data: data,
     };
 
     return self.registration.showNotification(options.title, options);
@@ -74,27 +75,31 @@ function receivePushNotification(event) {
 self.addEventListener('notificationclick', onNotificationClick);
 
 function onNotificationClick(event) {
-  console.log('[Service Worker] Notification click Received.');
+  const reactToNotification = new Promise((resolve) => {
+    console.log('[Service Worker] Notification click Received.');
 
-  event.notification.close();
+    const maxVisibleActions = Notification.maxActions;
 
-  const maxVisibleActions = window.Notification?.maxActions;
+    console.log(maxVisibleActions);
 
-  if (maxVisibleActions) {
-    if (event.action === 'close') {
-      return;
+    if (maxVisibleActions) {
+      if (event.action === 'close') {
+        resolve();
+      }
+
+      if (event.action === 'open') {
+        resolve(openURL(event.notification.data.url));
+      }
+
+      if (event.action === 'ignore') {
+        resolve(alert('You clicked the "Ignore" button.'));
+      }
+    } else {
+      resolve(openURL(event.notification.data.url));
     }
+  });
 
-    if (event.action === 'open') {
-      return event.waitUntil(openURL(event.notification.data.url));
-    }
-
-    if (event.action === 'ignore') {
-      return alert('You clicked the "Ignore" button.');
-    }
-  } else {
-    return event.waitUntil(openURL(event.notification.data.url));
-  }
+  event.waitUntil(reactToNotification);
 }
 
 function isClientFocused() {
@@ -114,9 +119,13 @@ function findBestClient(clients) {
 
 async function openURL(url) {
   const clients = await self.clients.matchAll({type: 'window', includeUncontrolled: true});
-  const bestClient = findBestClient(clients);
-  await bestClient.navigate(url);
-  await bestClient.focus();
+
+  if (clients.length !== 0 && 'navigate' in clients[0]) {
+    const client = findBestClient(clients);
+    await client.navigate(url).then((client) => client?.focus());
+  }
+
+  await self.clients.openWindow(url);
 }
 
 // handle notification click
