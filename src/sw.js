@@ -55,16 +55,46 @@ function receivePushNotification(event) {
     //   return;
     // }
 
+    const data = JSON.parse(event.data.text());
+
+    console.log('[Service Worker] Push had this data: ', data);
+
     const options = {
-      body: event.data.text(),
       icon: 'calypso_logo.png',
       tag: 'notification-tag',
       renotify: true,
+      ...data,
     };
 
-    return self.registration.showNotification(event.data.text(), options);
+    return self.registration.showNotification(options.title, options);
   });
   event.waitUntil(promise);
+}
+
+self.addEventListener('notificationclick', onNotificationClick);
+
+function onNotificationClick(event) {
+  console.log('[Service Worker] Notification click Received.');
+
+  event.notification.close();
+
+  const maxVisibleActions = window.Notification?.maxActions;
+
+  if (maxVisibleActions) {
+    if (event.action === 'close') {
+      return;
+    }
+
+    if (event.action === 'open') {
+      return event.waitUntil(openURL(event.notification.data.url));
+    }
+
+    if (event.action === 'ignore') {
+      return alert('You clicked the "Ignore" button.');
+    }
+  } else {
+    return event.waitUntil(openURL(event.notification.data.url));
+  }
 }
 
 function isClientFocused() {

@@ -66,6 +66,6 @@ export async function unsubscribeUserFromPush() {
 }
 
 export async function testNotification() {
-  const response = await apiClient.post('/notifications/send');
+  const response = await apiClient.post('/notifications/send-test');
   return response.data;
 }
