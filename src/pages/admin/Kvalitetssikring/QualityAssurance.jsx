@@ -30,6 +30,7 @@ function TabPanel(props) {
 
 const QualityAssurance = () => {
   let params = useParams();
+  console.log(navigator.userAgent);
 
   const {isTouch} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
@@ -65,7 +66,6 @@ const QualityAssurance = () => {
           {!isTouch && (
             <>
               <Grid item xs={12} sm={2} pl={1}>
-                <HandleNowButton />
                 {/* <AnnotationConfiguration stationId={params.ts_id} /> */}
                 <DataToShow />
               </Grid>
@@ -74,7 +74,10 @@ const QualityAssurance = () => {
                 <QAHistory />
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="h6">Detektionsalgoritmer</Typography>
+                <Box display="flex" gap={1}>
+                  <Typography variant="h6">Detektionsalgoritmer</Typography>
+                  <HandleNowButton />
+                </Box>
                 <Algorithms />
               </Grid>
             </>
@@ -94,7 +97,6 @@ const QualityAssurance = () => {
               <Tab label="Detektion" />
             </Tabs>
             <TabPanel value={tabValue} index={0}>
-              <HandleNowButton />
               <DataToShow />
             </TabPanel>
             <TabPanel value={tabValue} index={1}>
@@ -102,6 +104,7 @@ const QualityAssurance = () => {
             </TabPanel>
 
             <TabPanel value={tabValue} index={2}>
+              <HandleNowButton />
               <Algorithms />
             </TabPanel>
           </>

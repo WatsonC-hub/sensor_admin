@@ -19,7 +19,7 @@ const Algorithms = () => {
       <Grid container sx={{borderRadius: 2, border: 2, borderColor: 'primary.main'}}>
         {data?.map((algorithm) => (
           <Grid key={algorithm.name} item xs={12} sm={6}>
-            <AlgorithmCard key={algorithm.name} algorithm={algorithm} />
+            <AlgorithmCard algorithm={algorithm} />
           </Grid>
         ))}
       </Grid>
