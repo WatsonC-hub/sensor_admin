@@ -51,7 +51,17 @@ root.render(
           >
             <App />
             <ReactQueryDevtools initialIsOpen={false} />
-            <ToastContainer />
+            <ToastContainer
+              draggablePercent={30}
+              closeOnClick
+              toastStyle={{
+                borderRadius: '0.5rem',
+                margin: '0.5rem',
+              }}
+              limit={3}
+              autoClose={2000}
+              closeButton={false}
+            />
             <NetworkStatus />
           </PersistQueryClientProvider>
         </ThemeProvider>
