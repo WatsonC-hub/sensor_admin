@@ -14,29 +14,31 @@ import {authStore} from '../../state/store';
 export default function Login({}) {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState(false);
+  const [loginError, setLoginError] = useState('');
   const [open, setOpen] = useState(false);
   const [passReset, setPassReset] = useState('');
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
 
-  const [setAuthenticated, setSessionId, loginExpired, setLoginExpired, setProperties] = authStore(
-    (state) => [
-      state.setAuthenticated,
-      state.setSessionId,
-      state.loginExpired,
-      state.setLoginExpired,
-      state.setProperties,
-    ]
-  );
+  const [setAuthenticated, setLoginExpired, setProperties] = authStore((state) => [
+    state.setAuthenticated,
+    state.setLoginExpired,
+    state.setProperties,
+  ]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    loginAPI(userName.toLowerCase().trim(), password).then((res) => {
-      setProperties(res.data);
-      setAuthenticated(true);
-      setLoginExpired(false);
-    });
+    loginAPI(userName.toLowerCase().trim(), password)
+      .then((res) => {
+        setLoginError('');
+        setProperties(res.data);
+        setAuthenticated(true);
+        setLoginExpired(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoginError(err.response.data.detail);
+      });
   };
 
   const handlePassReset = (e) => {
@@ -106,7 +108,7 @@ export default function Login({}) {
             autoComplete="email"
             autoFocus
             onChange={(e) => setUserName(e.target.value)}
-            error={loginError}
+            error={!!loginError}
           />
           <TextField
             variant="outlined"
@@ -119,8 +121,8 @@ export default function Login({}) {
             id="password"
             autoComplete="current-password"
             onChange={(e) => setPassword(e.target.value)}
-            error={loginError}
-            helperText={loginError ? 'brugernavn eller password er forkert.' : ''}
+            error={!!loginError}
+            helperText={!!loginError && loginError}
           />
           <Button
             type="submit"
