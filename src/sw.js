@@ -1,8 +1,8 @@
 import {CacheableResponsePlugin} from 'workbox-cacheable-response';
 import {clientsClaim} from 'workbox-core';
 import {ExpirationPlugin} from 'workbox-expiration';
-import {cleanupOutdatedCaches, precacheAndRoute} from 'workbox-precaching';
-import {NavigationRoute, createHandlerBoundToURL, registerRoute} from 'workbox-routing';
+import {cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute} from 'workbox-precaching';
+import {NavigationRoute, registerRoute} from 'workbox-routing';
 import {CacheFirst, NetworkFirst} from 'workbox-strategies';
 
 self.skipWaiting();
