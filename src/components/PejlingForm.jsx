@@ -259,7 +259,6 @@ export default function PejlingForm({
                             sx={{ml: 2}}
                           />
                           <FormControlLabel
-                            key={2323}
                             value="2"
                             control={<Radio />}
                             label="Tilbage til start af tidsserie"
