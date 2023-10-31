@@ -11,6 +11,7 @@ import {AppBarLayout, NavBarMenu} from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
 import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import {authStore} from 'src/state/store';
 import NotificationList from '../../../components/NotificationList';
 import ErrorPage from './ErrorPage';
 import MinimalSelect from './MinimalSelect';
@@ -19,6 +20,7 @@ import Station from './Station';
 export default function LocationRouter() {
   const params = useParams();
   const navigate = useNavigate();
+  const adminAccess = authStore((state) => state.adminAccess);
 
   const {isMobile} = useBreakpoints();
 
@@ -64,17 +66,21 @@ export default function LocationRouter() {
           </Box>
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center">
-          <NotificationList />
+          {adminAccess && <NotificationList />}
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
-              {
-                title: 'Til QA',
-                onClick: () => {
-                  navigate(`/admin/kvalitetssikring/${params.ts_id}`);
-                },
-                icon: <AutoGraphIcon />,
-              },
+              ...(adminAccess
+                ? [
+                    {
+                      title: 'Til QA',
+                      onClick: () => {
+                        navigate(`/admin/kvalitetssikring/${params.ts_id}`);
+                      },
+                      icon: <AutoGraphIcon />,
+                    },
+                  ]
+                : []),
             ]}
           />
         </Box>

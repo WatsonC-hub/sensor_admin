@@ -123,7 +123,7 @@ export const NavBarMenu = ({highligtFirst, items}) => {
 
   return (
     <>
-      {highligtFirst && (
+      {highligtFirst && items.length > 0 && (
         <Button
           color="grey"
           variant="contained"
@@ -280,7 +280,7 @@ const NavBar = ({children}) => {
           <Typography variant="h4">Field</Typography>
         )}
         <Box>
-          <NavBarNotifications />
+          {adminAccess && <NavBarNotifications />}
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
@@ -308,7 +308,7 @@ const NavBar = ({children}) => {
               <PhotoCameraRounded />
             </IconButton>
             <Box>
-              <NavBarNotifications />
+              {adminAccess && <NavBarNotifications />}
               <NavBarMenu />
             </Box>
           </>
@@ -316,7 +316,7 @@ const NavBar = ({children}) => {
           <>
             <Typography variant="h4">Field</Typography>
             <Box>
-              <NavBarNotifications />
+              {adminAccess && <NavBarNotifications />}
               <NavBarMenu
                 highligtFirst={!isMobile}
                 items={[
@@ -343,7 +343,7 @@ const NavBar = ({children}) => {
         <Typography variant="h4">Admin</Typography>
 
         <Box>
-          <NavBarNotifications />
+          {adminAccess && <NavBarNotifications />}
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
