@@ -6,7 +6,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 const MinimalSelect = ({locid, stationList}) => {
   const params = useParams();
 
-  const [isOpen, setIsOpen] = useState(params.statid ? false : true);
+  const [isOpen, setIsOpen] = useState(params.ts_id ? false : true);
   const navigate = useNavigate();
 
   const handleChange = (event) => {
@@ -20,10 +20,10 @@ const MinimalSelect = ({locid, stationList}) => {
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    if (params.statid) {
+    if (params.ts_id) {
       setIsOpen(false);
     }
-  }, [params.statid]);
+  }, [params.ts_id]);
 
   const menuProps = {
     anchorOrigin: {
@@ -39,7 +39,7 @@ const MinimalSelect = ({locid, stationList}) => {
   return (
     <Select
       MenuProps={menuProps}
-      value={parseInt(params.statid)}
+      value={parseInt(params.ts_id)}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

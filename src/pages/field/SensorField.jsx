@@ -65,7 +65,7 @@ function SensorField({}) {
       {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
       <Routes>
         <Route path="/" element={<OverviewPage />} />
-        <Route path="location/:locid/:statid" element={<LocationRouter />} />
+        <Route path="location/:locid/:ts_id" element={<LocationRouter />} />
         <Route path="location/:locid" element={<LocationRouter />} />
         <Route
           path="stamdata"

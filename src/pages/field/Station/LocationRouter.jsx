@@ -11,6 +11,7 @@ import {AppBarLayout, NavBarMenu} from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
 import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import NotificationList from '../../../components/NotificationList';
 import ErrorPage from './ErrorPage';
 import MinimalSelect from './MinimalSelect';
 import Station from './Station';
@@ -32,7 +33,7 @@ export default function LocationRouter() {
     {
       enabled: params.locid !== undefined,
       onSuccess: (data) => {
-        if (data.length === 1 && params.statid === undefined) {
+        if (data.length === 1 && params.ts_id === undefined) {
           navigate(`../location/${params.locid}/${data[0].ts_id}`, {
             replace: true,
           });
@@ -62,14 +63,15 @@ export default function LocationRouter() {
             <MinimalSelect locid={params.locid} stationList={data} />
           </Box>
         </Box>
-        <Box>
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <NotificationList />
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
               {
                 title: 'Til QA',
                 onClick: () => {
-                  navigate(`/admin/kvalitetssikring/${params.statid}`);
+                  navigate(`/admin/kvalitetssikring/${params.ts_id}`);
                 },
                 icon: <AutoGraphIcon />,
               },
@@ -86,8 +88,8 @@ export default function LocationRouter() {
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
           <Station
-            stationId={params.statid ? params.statid : -1}
-            stamdata={data?.filter((elem) => elem.ts_id == params.statid)?.[0]}
+            stationId={params.ts_id ? params.ts_id : -1}
+            stamdata={data?.filter((elem) => elem.ts_id == params.ts_id)?.[0]}
           />
         </ErrorBoundary>
       </main>
