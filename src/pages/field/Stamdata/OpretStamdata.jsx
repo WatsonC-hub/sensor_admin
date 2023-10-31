@@ -216,6 +216,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
     return out;
   });
 
+  const dguNewMutation = useMutation(async (data) => {
+    const {data: out} = await apiClient.post(`/sensor_field/stamdata/dgu`, data);
+    return out;
+  });
+
   const handleDebug = (error) => {
     console.log('values', getValues());
     console.log('error', error);
@@ -241,6 +246,26 @@ export default function OpretStamdata({setAddStationDisabled}) {
         startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
         ...getValues()?.watlevmp,
       };
+    }
+
+    if (form.location.loctype_id == 9) {
+      form.location = {
+        boreholeno: form.location.loc_name,
+        intakeno: form.timeseries.prefix,
+      };
+
+      try {
+        await toast.promise(() => dguNewMutation.mutateAsync(form), {
+          pending: 'Opretter DGU...',
+          success: 'DGU oprettet!',
+          error: 'Noget gik galt!',
+        });
+        navigate(`/field`);
+      } catch (e) {
+        console.log(e);
+      }
+
+      return;
     }
 
     try {

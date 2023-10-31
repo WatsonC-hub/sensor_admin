@@ -42,6 +42,7 @@ export default function TimeseriesForm({mode}) {
 
   const loc_name = formMethods.watch('location.loc_name');
   const tstype_id = formMethods.watch('timeseries.tstype_id');
+  const loctype_id = formMethods.watch('location.loctype_id');
 
   useEffect(() => {
     if (mode === 'add' && tstype_id !== 1) {
@@ -61,6 +62,7 @@ export default function TimeseriesForm({mode}) {
           }}
           placeholder="f.eks. indtag 1"
           fullWidth
+          disabled={loctype_id === 9}
           sx={{
             mb: 2,
           }}
