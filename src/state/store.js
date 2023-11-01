@@ -119,8 +119,9 @@ const initialState = {
 
 let stamdataStore = (set) => ({
   ...initialState,
-  resetLocation: () => set({location: initialState.location}),
-  resetTimeseries: () => set({timeseries: initialState.timeseries}),
+  isEmpty: true,
+  resetLocation: () => set({location: initialState.location, isEmpty: true}),
+  resetTimeseries: () => set({timeseries: initialState.timeseries, isEmpty: true}),
   resetUnit: () => set({unit: initialState.unit}),
   setLocation: (locationData) =>
     set(
@@ -138,6 +139,7 @@ let stamdataStore = (set) => ({
           description: locationData.description,
           loctype_id: locationData.loctype_id,
         },
+        isEmpty: false,
       },
       false,
       'setLocation'
@@ -155,6 +157,7 @@ let stamdataStore = (set) => ({
           sensor_depth_m: timeseriesdata.sensor_depth_m,
           unit: timeseriesdata.unit,
         },
+        isEmpty: false,
       },
       false,
       'setTimeseries'

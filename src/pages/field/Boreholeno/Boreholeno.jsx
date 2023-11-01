@@ -1,4 +1,4 @@
-import {Box, Button, Grid} from '@mui/material';
+import {Box, Button, Grid, Skeleton, Stack} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
@@ -6,9 +6,13 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
 import MaalepunktForm from '../../../components/MaalepunktForm';
+import TilsynPage from '../../../components/TilsynPage';
 import useFormData from '../../../hooks/useFormData';
+import {stamdataStore} from '../../../state/store';
+import BearingGraph from '../Station/BearingGraph';
+import EditStamdata from '../Station/EditStamdata';
 import ActionAreaBorehole from './ActionAreaBorehole';
-import BearingGraph from './BearingGraph';
+import BoreholeGraph from './BoreholeGraph';
 import BoreholeImages from './BoreholeImages';
 import BoreholeStamdata from './BoreholeStamdata';
 import MaalepunktTable from './MaalepunktTable';
@@ -20,6 +24,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
   let navigate = useNavigate();
   const queryClient = useQueryClient();
+  const store = stamdataStore();
   const [addMPOpen, setAddMPOpen] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
 
@@ -42,6 +47,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     service: false,
     comment: '',
     extrema: null,
+    useforcorrection: 0,
   });
 
   const formToShow = location.hash ? location.hash.replace('#', '') : null;
@@ -79,7 +85,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   );
 
-  const {data: stamdata} = useQuery(
+  const {data: stamdata, isLoading} = useQuery(
     ['borehole_stamdata', boreholeno, intakeno],
     async () => {
       const {data} = await apiClient.get(
@@ -93,6 +99,34 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       refetchInterval: false,
     }
   );
+
+  const {data: timeseries_metadata, isFetching: metadataLoading} = useQuery(
+    ['metadata', stamdata?.ts_id],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/metadata/${stamdata?.ts_id}`);
+      return data;
+    },
+    {
+      enabled: stamdata?.hasUnit ? true : false,
+      refetchInterval: null,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
+
+  useEffect(() => {
+    if (timeseries_metadata) {
+      store.setLocation(timeseries_metadata);
+      store.setTimeseries(timeseries_metadata);
+      store.setUnit(timeseries_metadata);
+    }
+    return () => {
+      store.resetLocation();
+      store.resetTimeseries();
+      store.resetUnit();
+    };
+  }, [timeseries_metadata]);
 
   const {data: watlevmp} = useQuery(
     ['watlevmp', boreholeno, intakeno],
@@ -242,12 +276,29 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   };
 
+  if (isLoading || metadataLoading) {
+    return (
+      <Stack spacing={1}>
+        <Skeleton variant="rounded" height={400} />
+        <Skeleton variant="rounded" height={100} />
+        <Skeleton variant="rounded" height={200} />
+      </Stack>
+    );
+  }
+
   return (
     <>
-      {formToShow !== 'CAMERA' && (
-        <BearingGraph
+      {formToShow !== 'CAMERA' && timeseries_metadata == undefined && (
+        <BoreholeGraph
           boreholeno={boreholeno}
           intakeno={intakeno}
+          measurements={control}
+          dynamicMeasurement={formToShow !== 'ADDPEJLING' ? undefined : dynamic}
+        />
+      )}
+      {formToShow !== 'CAMERA' && timeseries_metadata && (
+        <BearingGraph
+          stationId={timeseries_metadata.ts_id}
           measurements={control}
           dynamicMeasurement={formToShow !== 'ADDPEJLING' ? undefined : dynamic}
         />
@@ -267,6 +318,13 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           lastMeasurementPump={
             measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
           }
+        />
+      )}
+      {formToShow === 'ADDTILSYN' && (
+        <TilsynPage
+          ts_id={timeseries_metadata?.ts_id}
+          setFormToShow={setFormToShow}
+          canEdit={canEdit}
         />
       )}
       {formToShow === 'ADDMAALEPUNKT' && (
@@ -336,6 +394,13 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           intakeno={intakeno}
           stamdata={stamdata}
           setFormToShow={setFormToShow}
+        />
+      )}
+      {formToShow === 'UDSTYR_STAMDATA' && canEdit && (
+        <EditStamdata
+          setFormToShow={setFormToShow}
+          ts_id={timeseries_metadata.ts_id}
+          metadata={timeseries_metadata}
         />
       )}
       <ActionAreaBorehole

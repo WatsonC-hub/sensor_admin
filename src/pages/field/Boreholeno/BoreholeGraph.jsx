@@ -202,7 +202,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   );
 }
 
-export default function BearingGraph({boreholeno, intakeno, measurements, dynamicMeasurement}) {
+export default function BoreholeGraph({boreholeno, intakeno, measurements, dynamicMeasurement}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 

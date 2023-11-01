@@ -10,6 +10,7 @@ import {CircularProgress, MenuItem, Typography} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import {useFormContext} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
 import OwnDatePicker from '../../../components/OwnDatePicker';
@@ -18,6 +19,7 @@ import {stamdataStore} from '../../../state/store';
 export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
   const queryClient = useQueryClient();
+  const params = useParams();
 
   const {data: availableUnits, isLoading} = useQuery(['available_units'], async () => {
     const {data} = await apiClient.get(`/sensor_field/stamdata/available_units`);
@@ -35,6 +37,18 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
     {
       onSuccess: () => {
         queryClient.invalidateQueries('udstyr');
+      },
+    }
+  );
+
+  const dguNewMutation = useMutation(
+    async (data) => {
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/dgu`, data);
+      return out;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['borehole_stamdata', params.boreholeno, params.intakeno]);
       },
     }
   );
@@ -120,6 +134,35 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
       });
       setUdstyrDialogOpen(false);
     };
+  } else if (mode === 'borehole') {
+    console.log(params);
+    handleSave = () => {
+      let unit = availableUnits.find((x) => x.unit_uuid === unitData.uuid);
+
+      if (!unit) return;
+
+      const payload = {
+        location: {
+          boreholeno: params.boreholeno,
+          intakeno: params.intakeno,
+        },
+        timeseries: {
+          tstype_id: 1,
+        },
+        unit: {
+          unit_uuid: unit.unit_uuid,
+          startdate: unitData.fra,
+          enddate: '2099-01-01T12:00:00',
+        },
+      };
+
+      toast.promise(() => dguNewMutation.mutateAsync(payload), {
+        pending: 'Tilføjer udstyr...',
+        success: 'Udstyr tilføjet',
+        error: 'Der skete en fejl',
+      });
+      setUdstyrDialogOpen(false);
+    };
   } else {
     handleSave = () => {
       setUdstyrDialogOpen(false);
@@ -127,11 +170,13 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
 
       if (!unit) return;
 
-      formMethods.trigger('unit');
-      formMethods.setValue('unit', {
-        unit_uuid: unit.unit_uuid,
-        startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
-      });
+      if (formMethods) {
+        formMethods.trigger('unit');
+        formMethods.setValue('unit', {
+          unit_uuid: unit.unit_uuid,
+          startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
+        });
+      }
 
       setUnit({
         terminal_type: unit.type,

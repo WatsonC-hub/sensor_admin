@@ -197,6 +197,10 @@ const StationTable = ({data, isLoading}) => {
           size="small"
           sx={{backgroundColor: 'secondary.main'}}
           onClick={() => {
+            if (row.original.loctype_id == 9) {
+              navigate(`/field/borehole/${row.original.loc_name}/${row.original.prefix}`);
+              return;
+            }
             navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
           }}
         >

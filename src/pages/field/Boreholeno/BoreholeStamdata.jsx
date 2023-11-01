@@ -10,13 +10,18 @@ import FormInput from 'src/components/FormInput';
 import ConfirmCalypsoIDDialog from 'src/pages/field/Boreholeno/components/ConfirmCalypsoIDDialog';
 import * as z from 'zod';
 import {apiClient} from '../../../apiClient';
+import {stamdataStore} from '../../../state/store';
+import AddUnitForm from '../Stamdata/AddUnitForm';
 
 const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
   const [openCamera, setOpenCamera] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [calypso_id, setCalypso_id] = useState(stamdata?.calypso_id);
+  const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
 
   const queryClient = useQueryClient();
+
+  const [noUnit, unit] = stamdataStore((state) => [state.isEmpty, state.unit]);
 
   const changeStamdata = useMutation(
     async (data) => {
@@ -82,7 +87,6 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
     }
   };
 
-  const mode = 'edit';
   return (
     <>
       {openCamera && (
@@ -131,19 +135,6 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                 <FormInput name="description" label="Beskrivelse" fullWidth />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormInput
-                  name="num_controls_in_a_year"
-                  label="Årlige kontroller"
-                  fullWidth
-                  type="number"
-                  transform={(val) => parseInt(val)}
-                  InputProps={{
-                    endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
-                    inputProps: {min: 0},
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
                 <Box sx={{display: 'flex', justifyContent: 'left', alignItems: 'center', gap: 2}}>
                   <FormInput
                     name="calypso_id"
@@ -174,8 +165,41 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   Calypso ID er et unikt nummer, der identificerer boringen samt indtag
                 </Typography>
               </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormInput
+                  name="num_controls_in_a_year"
+                  label="Årlige kontroller"
+                  fullWidth
+                  type="number"
+                  transform={(val) => parseInt(val)}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
+                    inputProps: {min: 0},
+                  }}
+                />
+              </Grid>
+
+              {noUnit && (
+                <Grid
+                  item
+                  xs={12}
+                  sm={6}
+                  sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2}}
+                >
+                  <Button
+                    color="secondary"
+                    variant="contained"
+                    onClick={() => {
+                      setOpenAddUdstyr(true);
+                    }}
+                  >
+                    Tilføj udstyr
+                  </Button>
+                </Grid>
+              )}
             </Grid>
-            <Grid container alignItems="center" justifyContent="center">
+
+            <Grid container alignItems="center" justifyContent="center" mt={1}>
               <Grid item xs={4} sm={4}>
                 <Button
                   autoFocus
@@ -203,6 +227,12 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
           </FormProvider>
         </CardContent>
       </Card>
+      <AddUnitForm
+        udstyrDialogOpen={openAddUdstyr}
+        setUdstyrDialogOpen={setOpenAddUdstyr}
+        tstype_id={1}
+        mode="borehole"
+      />
     </>
   );
 };

@@ -109,7 +109,7 @@ export default function LocationForm({mode, disable}) {
   return (
     <Grid container spacing={2} alignItems="center">
       <Grid item xs={12} sm={gridsize}>
-        <LocationTypeSelect disable={disable} />
+        <LocationTypeSelect disable={disable || watchLoctype == 9} />
       </Grid>
       {watchLoctype == 9 && mode == 'modal' && (
         <>
@@ -158,7 +158,7 @@ export default function LocationForm({mode, disable}) {
               sx={{
                 mb: 2,
               }}
-              disabled={disable}
+              disabled={disable || watchLoctype == 9}
             />
           </Grid>
           <Grid item xs={12} sm={gridsize}>

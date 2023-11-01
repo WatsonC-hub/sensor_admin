@@ -97,10 +97,9 @@ function BoreholeImages(props) {
               color="secondary"
               variant="contained"
               component="span"
-              style={{marginTop: '5%'}}
               startIcon={<PhotoCameraRounded />}
             >
-              Upload billede
+              Tag billede / Upload fil
             </Button>
           </label>
         </Grid>

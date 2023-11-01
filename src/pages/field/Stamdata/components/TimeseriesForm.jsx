@@ -79,7 +79,7 @@ export default function TimeseriesForm({mode}) {
           />
         )}
       </Grid>
-      {mode === 'add' && tstype_id === 1 && (
+      {mode === 'add' && tstype_id === 1 && loctype_id != 9 && (
         <>
           <Grid item xs={12} sm={6} md={2}>
             <FormInput

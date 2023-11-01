@@ -6,8 +6,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
 import MaalepunktForm from '../../../components/MaalepunktForm';
 import PejlingForm from '../../../components/PejlingForm';
-import TilsynForm from '../../../components/TilsynForm';
-import TilsynTable from '../../../components/TilsynTable';
+import TilsynPage from '../../../components/TilsynPage';
 import useFormData from '../../../hooks/useFormData';
 import {stamdataStore} from '../../../state/store';
 import ActionArea from './ActionArea';
@@ -32,14 +31,6 @@ export default function Station({stationId, stamdata}) {
     enddate: moment('2099-01-01'),
     elevation: 0,
     mp_description: '',
-  });
-
-  const [serviceData, setServiceData, changeServiceData, resetServiceData] = useFormData({
-    gid: -1,
-    dato: moment(),
-    batteriskift: false,
-    tilsyn: false,
-    kommentar: '',
   });
 
   let location = useLocation();
@@ -105,21 +96,6 @@ export default function Station({stationId, stamdata}) {
 
       return data.map((m) => {
         return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
-      });
-    },
-    {
-      enabled: stationId !== -1 && stationId !== null,
-      initialData: [],
-    }
-  );
-
-  const {data: services} = useQuery(
-    ['service', stationId],
-    async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/service/${stationId}`);
-
-      return data.map((m) => {
-        return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
     {
@@ -236,54 +212,11 @@ export default function Station({stationId, stamdata}) {
     });
   };
 
-  const serviceMutate = useMutation((data) => {
-    if (data.gid === -1) {
-      return apiClient.post(`/sensor_field/station/service/${stationId}`, data);
-    } else {
-      return apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
-    }
-  });
-
-  const handleServiceSubmit = () => {
-    // setFormToShow("ADDTILSYN");
-    const userId = sessionStorage.getItem('user');
-    const payload = {
-      ...serviceData,
-      batteriskift: serviceData.batteriskift.toString(),
-      tilsyn: serviceData.tilsyn.toString(),
-      userid: userId,
-      stationid: stationId,
-    };
-
-    payload.dato = moment(payload.dato).toISOString();
-
-    serviceMutate.mutate(payload, {
-      onSuccess: (data) => {
-        resetServiceData();
-        toast.success('Tilsyn gemt');
-        queryClient.invalidateQueries(['service', stationId]);
-      },
-      onError: (error) => {
-        if (error.response.data.detail.includes('No unit')) {
-          toast.error('Der er ingen enhed tilknyttet på denne dato');
-        } else {
-          toast.error('Der skete en fejl');
-        }
-      },
-    });
-  };
-
   const handleEdit = (type) => {
     if (type === 'watlevmp') {
       return (data) => {
         setMpData(data); // Fill form data on Edit
         setFormToShow('ADDMAALEPUNKT');
-      };
-    } else if (type === 'service') {
-      return (data) => {
-        data.dato = data.dato.replace(' ', 'T').substr(0, 19);
-        setServiceData(data);
-        setFormToShow('ADDTILSYN');
       };
     } else {
       return (data) => {
@@ -302,14 +235,6 @@ export default function Station({stationId, stamdata}) {
           queryClient.invalidateQueries(['watlevmp', stationId]);
           resetMpData();
           toast.success('Målepunkt slettet');
-        });
-      };
-    } else if (type === 'service') {
-      return (gid) => {
-        apiClient.delete(`/sensor_field/station/service/${stationId}/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['service', stationId]);
-          resetServiceData();
-          toast.success('Tilsyn slettet');
         });
       };
     } else {
@@ -379,23 +304,7 @@ export default function Station({stationId, stamdata}) {
         />
       )}
       {formToShow === 'ADDTILSYN' && (
-        <>
-          <TilsynForm
-            formData={serviceData}
-            changeFormData={changeServiceData}
-            handleSubmit={handleServiceSubmit}
-            cancel={() => {
-              resetServiceData();
-              setFormToShow(null);
-            }}
-          />
-          <TilsynTable
-            services={services}
-            handleEdit={handleEdit('service')}
-            handleDelete={handleDelete('service')}
-            canEdit={canEdit}
-          />
-        </>
+        <TilsynPage ts_id={stationId} setFormToShow={setFormToShow} canEdit={canEdit} />
       )}
       {formToShow === 'CAMERA' && <StationImages locationId={params.locid} />}
       <ActionArea

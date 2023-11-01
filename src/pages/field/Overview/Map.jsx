@@ -56,8 +56,16 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
   const [setLocationValue] = stamdataStore((store) => [store.setLocationValue]);
 
   const onPopupClickHandler = (element) => () => {
-    if (element.locid !== undefined) navigate('location/' + element.locid);
-    else navigate('borehole/' + element.boreholeno);
+    if (element.locid !== undefined) {
+      if (element.loctype_id == 9) {
+        navigate(`borehole/${element.locname}`);
+        return;
+      }
+      navigate('location/' + element.locid);
+      return;
+    }
+    navigate('borehole/' + element.boreholeno);
+    return;
   };
 
   const renderMap = () => {
@@ -225,7 +233,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
           className: 'custom-div-icon',
           html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus]}),
           iconSize: [24, 24],
-          iconAnchor: [12, 24],
+          iconAnchor: [12, 12],
         });
 
         const marker = L.marker(point, {
@@ -271,12 +279,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
           contextmenu: true,
         });
         let popupContent = L.DomUtil.create('div', 'content');
-
-        // popupContent.style.backgroundColor = '#fff'; // Background color
-        // popupContent.style.padding = '10px'; // Padding
-        // popupContent.style.border = '1px solid #ccc'; // Border
-        // popupContent.style.borderRadius = '5px'; // Border radius
-        // popupContent.style.textAlign = 'center'; // Text alignment
 
         if (
           element.mouseover == null ||

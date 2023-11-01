@@ -9,7 +9,6 @@ import {ErrorBoundary} from 'react-error-boundary';
 import {useNavigate, useParams} from 'react-router-dom';
 import {AppBarLayout, NavBarMenu} from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
-import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {authStore} from 'src/state/store';
 import NotificationList from '../../../components/NotificationList';
@@ -23,8 +22,6 @@ export default function LocationRouter() {
   const adminAccess = authStore((state) => state.adminAccess);
 
   const {isMobile} = useBreakpoints();
-
-  const {data: notificationOverview} = useNotificationOverview();
 
   const {data} = useQuery(
     ['stations', params.locid],
@@ -43,8 +40,6 @@ export default function LocationRouter() {
       },
     }
   );
-
-  const notifications = notificationOverview?.filter((elem) => elem.locid == params.locid);
 
   return (
     <>

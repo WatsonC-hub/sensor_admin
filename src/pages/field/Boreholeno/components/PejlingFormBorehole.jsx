@@ -8,6 +8,7 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  FormLabel,
   Grid,
   InputAdornment,
   Link,
@@ -21,6 +22,7 @@ import {isValid} from 'date-fns';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import OwnDatePicker from '../../../../components/OwnDatePicker';
+import {stamdataStore} from '../../../../state/store';
 
 export default function PejlingFormBorehole({
   formData,
@@ -40,6 +42,7 @@ export default function PejlingFormBorehole({
   const [notPossible, setNotPossible] = useState(formData.disttowatertable_m == null);
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [isPump, setIsPump] = useState(lastMeasurementPump);
+  const hasUnit = stamdataStore((state) => !state.isEmpty);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -284,6 +287,29 @@ export default function PejlingFormBorehole({
                   </>
                 )}
               </Grid>
+              {hasUnit && (
+                <Grid item xs={12} sm={12}>
+                  <FormControl component="fieldset">
+                    <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
+                    <RadioGroup
+                      value={formData.useforcorrection + ''}
+                      onChange={(e) => changeFormData('useforcorrection', e.target.value)}
+                    >
+                      <FormControlLabel value="0" control={<Radio />} label="Kontrol" />
+                      <FormControlLabel
+                        value="1"
+                        control={<Radio />}
+                        label="Korrektion fremadrettet"
+                      />
+                      <FormControlLabel
+                        value="2"
+                        control={<Radio />}
+                        label="Korrektion bagud og fremadrettet"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+              )}
               <Grid item xs={12} sm={12}>
                 <TextField
                   sx={{

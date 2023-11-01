@@ -16,6 +16,7 @@ import moment from 'moment';
 import React, {Fragment, useState} from 'react';
 import DeleteAlert from 'src/components/DeleteAlert';
 import {authStore} from 'src/state/store';
+import {stamdataStore} from '../../../state/store';
 
 export default function HistoricMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -23,6 +24,8 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 5;
   const [org_id] = authStore((state) => [state.org_id]);
+
+  const hasUnit = stamdataStore((state) => !state.isEmpty);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -35,6 +38,12 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
 
   const deleteRow = (id) => {
     handleDelete(id);
+  };
+
+  const correction_map = {
+    0: 'Kontrol',
+    1: 'Korrektion fremadrettet',
+    2: 'Korrektion frem og tilbage',
   };
 
   return (
@@ -75,7 +84,7 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                 <TableCell align="center">Pejling (nedstik) [m]</TableCell>
                 <TableCell align="center">Organisation</TableCell>
                 <TableCell align="center">Uploaded til Jupiter</TableCell>
-                {/* <TableCell align="center">Driftpejling</TableCell> */}
+                {hasUnit && <TableCell align="center">Anvendelse</TableCell>}
                 <TableCell align="center">Kommentar</TableCell>
                 <TableCell align="center"></TableCell>
                 <TableCell align="center"></TableCell>
@@ -115,6 +124,13 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                         <CheckBoxOutlineBlankIcon color="action"></CheckBoxOutlineBlankIcon>
                       )}
                     </TableCell> */}
+                    {hasUnit && (
+                      <TableCell align="right">
+                        {correction_map[row.useforcorrection]
+                          ? correction_map[row.useforcorrection]
+                          : 'Kontrol'}
+                      </TableCell>
+                    )}
                     <TableCell align="center">{row.comment}</TableCell>
                     <TableCell align="right">
                       {row.organisationid == org_id && (
