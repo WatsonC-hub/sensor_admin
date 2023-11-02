@@ -16,10 +16,20 @@ const AlgorithmCard = ({algorithm}) => {
 
   const queryClient = useQueryClient();
 
-  const submitData = useMutation(async (data) => {
-    const {data: response} = await apiClient.put(`/sensor_admin/algorithms/${params.ts_id}`, data);
-    return response;
-  });
+  const submitData = useMutation(
+    async (data) => {
+      const {data: response} = await apiClient.put(
+        `/sensor_admin/algorithms/${params.ts_id}`,
+        data
+      );
+      return response;
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['algorithms', params.ts_id]);
+      },
+    }
+  );
 
   const revertToDefaults = useMutation(async (data) => {
     const {data: response} = await apiClient.delete(
@@ -42,6 +52,26 @@ const AlgorithmCard = ({algorithm}) => {
       success: 'Indstillinger gemt',
       error: 'Der skete en fejl',
     });
+  };
+
+  const handleOkDelete = () => {
+    toast.promise(
+      () =>
+        revertToDefaults.mutateAsync(
+          {algorithm: algorithm.algorithm},
+          {
+            onSuccess: () => {
+              console.log(['algorithms', params.ts_id]);
+              queryClient.invalidateQueries(['algorithms', params.ts_id]);
+            },
+          }
+        ),
+      {
+        pending: 'Nulstiller indstillinger',
+        success: 'Indstillinger nulstillet',
+        error: 'Der skete en fejl',
+      }
+    );
   };
 
   const schema = useMemo(() => {
@@ -78,12 +108,7 @@ const AlgorithmCard = ({algorithm}) => {
         title="Nulstil algoritme"
         dialogOpen={deleteDialogOpen}
         setDialogOpen={setDeleteDialogOpen}
-        onOkDelete={() =>
-          revertToDefaults.mutate(
-            {algorithm: algorithm.algorithm},
-            {onSuccess: () => queryClient.invalidateQueries(['algorithms', params.ts_id])}
-          )
-        }
+        onOkDelete={handleOkDelete}
       />
       <Card
         sx={{
@@ -124,12 +149,15 @@ const AlgorithmCard = ({algorithm}) => {
         <CardActions sx={{justifyContent: 'center', alignContent: 'center', p: 1, m: 0}}>
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             onClick={formMethods.handleSubmit(handleSubmit)}
+            disabled={
+              submitData.isLoading || revertToDefaults.isLoading || !formMethods.formState.isDirty
+            }
           >
             Gem
           </Button>
-          <Button variant="contained" color="primary" onClick={handleRevert}>
+          <Button variant="contained" color="grey" onClick={handleRevert}>
             Tilbage til standard
           </Button>
         </CardActions>

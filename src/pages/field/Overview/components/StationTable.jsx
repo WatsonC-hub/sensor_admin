@@ -16,6 +16,7 @@ import {useNavigate} from 'react-router-dom';
 import TableComponent from 'src/components/TableComponent';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {stationTableAtom} from 'src/state/atoms';
+import {authStore} from '../../../../state/store';
 
 function typeIcon(type) {
   let icon;
@@ -84,6 +85,7 @@ function statusIcon(row) {
 const StationTable = ({data, isLoading}) => {
   const {isTouch} = useBreakpoints();
   const navigate = useNavigate();
+  const adminAccess = authStore((state) => state.adminAccess);
   const mobileColumns = useMemo(
     () => [
       {
@@ -203,15 +205,17 @@ const StationTable = ({data, isLoading}) => {
           <QueryStatsIcon />
         </IconButton>
       </Tooltip>
-      <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
-        <IconButton
-          size="small"
-          sx={{backgroundColor: 'secondary.main'}}
-          onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}
-        >
-          <AutoGraphIcon />
-        </IconButton>
-      </Tooltip>
+      {adminAccess && (
+        <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
+          <IconButton
+            size="small"
+            sx={{backgroundColor: 'secondary.main'}}
+            onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}
+          >
+            <AutoGraphIcon />
+          </IconButton>
+        </Tooltip>
+      )}
     </Box>
   );
 

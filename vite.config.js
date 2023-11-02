@@ -20,37 +20,106 @@ const getCache = ({name, pattern, handler}) => ({
 });
 
 const pwaOptions = {
+  devOptions: {
+    enabled: true,
+    type: 'module',
+  },
+  strategies: 'injectManifest',
+  srcDir: 'src',
+  filename: 'sw.js',
   registerType: 'autoUpdate',
-  workbox: {
+  injectManifest: {
     globPatterns: ['**/*'],
-    maximumFileSizeToCacheInBytes: 100000000,
-    runtimeCaching: [
-      getCache({name: 'api', pattern: /\/api\/(?!data).*/, handler: 'NetworkFirst'}),
-      getCache({name: 'manual', pattern: /workbox-window/, handler: 'CacheFirst'}),
-    ],
   },
   includeAssets: ['**/*'],
   manifest: {
     name: 'Calypso @ Field',
-    short_name: 'Calypso @ Field',
+    short_name: 'Field',
     description: 'App til at se tidsserier, lave kontrol målinger, skifte udstyr mm.',
-    theme_color: '#ffffff',
+    theme_color: '#00786d',
+    background_color: '#00786d',
+    id: '/',
+    dir: 'ltr',
+    display: 'standalone',
+    display_override: ['window-controls-overlay'],
+    orientation: 'portrait',
+    start_url: '/',
+    lang: 'da-DK',
+    categories: ['utilities', 'productivity'],
+    screenshots: [
+      {
+        src: 'screenshot-map.png',
+        type: 'image/png',
+        sizes: '374x668',
+        form_factpr: 'narrow',
+        label: 'Kortvisning af målestationer',
+      },
+      {
+        src: 'screenshot-ts.png',
+        type: 'image/png',
+        sizes: '375x668',
+        form_factpr: 'narrow',
+        label: 'Tidsserie af måledata',
+      },
+      {
+        src: 'screenshot-ts-wide.png',
+        type: 'image/png',
+        sizes: '1855x827',
+        form_factpr: 'wide',
+        label: 'Tidsserie af måledata på desktop',
+      },
+    ],
+    shortcuts: [
+      {
+        name: 'Field',
+        url: '/field',
+        description: 'Åben Field',
+        icons: [
+          {
+            src: 'android-chrome-96x96.png',
+            sizes: '96x96',
+            type: 'image/png',
+          },
+        ],
+      },
+      {
+        name: 'Admin',
+        url: '/admin',
+        description: 'Åben Admin',
+        icons: [
+          {
+            src: 'android-chrome-96x96.png',
+            sizes: '96x96',
+            type: 'image/png',
+          },
+        ],
+      },
+    ],
+
     icons: [
       {
-        src: '/android-chrome-192x192.png',
+        src: 'manifest-icon-192.maskable.png',
         sizes: '192x192',
         type: 'image/png',
+        purpose: 'any',
       },
       {
-        src: '/android-chrome-512x512.png',
-        sizes: '512x512',
+        src: 'manifest-icon-192.maskable.png',
+        sizes: '192x192',
         type: 'image/png',
+        purpose: 'maskable',
       },
       {
-        src: '/android-chrome-512x512.png',
+        src: 'manifest-icon-512.maskable.png',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'any maskable',
+        purpose: 'any',
+      },
+      {
+        src: 'manifest-icon-512.maskable.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
   },

@@ -4,13 +4,13 @@ import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 
 const authInitialState = {
   authenticated: false,
-  user: null,
+  user_id: null,
   org_id: null,
-  sessionId: null,
   loginExpired: false,
   boreholeAccess: false,
   iotAccess: false,
   adminAccess: false,
+  superUser: false,
   properties: {},
   csrfToken: null,
 };
@@ -31,30 +31,23 @@ export const authStore = create(
           false,
           'setAuthenticated'
         ),
-      setProperties: (properties) => {
+      setAuthorization: (user) => {
         set(
           {
-            properties: properties,
-            boreholeAccess: properties.properties.boreholeAccess,
-            user: parseInt(properties.screenname),
-            org_id: properties.properties.organisation.id,
-            iotAccess: properties.properties.iotAccess,
-            csrfToken: properties.csrf_token,
-            adminAccess: properties.properties.adminAccess,
+            properties: user.properties,
+            boreholeAccess: user.boreholeAccess,
+            user_id: user.user_id,
+            org_id: user.org_id,
+            iotAccess: user.iotAccess,
+            csrfToken: user.csrf_token,
+            adminAccess: user.adminAccess,
+            superUser: user.superUser,
           },
           false,
-          'setProperties'
+          'setAuthorization'
         );
-        Sentry.setUser({id: properties.screenname});
+        Sentry.setUser({id: user.user_id});
       },
-      setSessionId: (sessionId) =>
-        set(
-          {
-            sessionId: sessionId,
-          },
-          false,
-          'setSessionId'
-        ),
       setLoginExpired: (loginexpired) =>
         set(
           {
@@ -63,14 +56,6 @@ export const authStore = create(
           false,
           'setLoginExpired'
         ),
-      // setBoreholeAccess: (boreholeAccess) =>
-      //   set(
-      //     {
-      //       boreholeAccess: boreholeAccess,
-      //     },
-      //     false,
-      //     'setBoreholeAccess'
-      //   ),
     })),
     {
       name: 'auth-storage', // name of item in the storage (must be unique)

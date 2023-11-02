@@ -28,6 +28,7 @@ import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {MetadataContext} from 'src/state/contexts';
 import {ReactComponent as LogoSvg} from './calypso.svg';
+import NotificationList from './components/NotificationList';
 import {ReactComponent as SmallLogo} from './logo.svg';
 import {captureDialogAtom} from './state/atoms';
 import {authStore} from './state/store';
@@ -122,7 +123,7 @@ export const NavBarMenu = ({highligtFirst, items}) => {
 
   return (
     <>
-      {highligtFirst && (
+      {highligtFirst && items.length > 0 && (
         <Button
           color="grey"
           variant="contained"
@@ -217,16 +218,14 @@ const NavBar = ({children}) => {
 
   let content;
 
-  if (location.pathname.includes('/location') || location.pathname.includes('/borehole')) {
-    return null;
-  }
+  const url = window.location.pathname.replace(/\/$/, '');
 
   if (!authenticated) {
     return (
       <AppBarLayout>
         <Logo />
         {/* <Typography variant="h4">Field</Typography> */}
-        {location.pathname !== '/register' ? (
+        {url !== '/register' ? (
           <Button
             color="secondary"
             variant="contained"
@@ -245,11 +244,15 @@ const NavBar = ({children}) => {
     );
   }
 
-  if (location.pathname == '/') {
+  if (url.includes('/location') || url.includes('/borehole')) {
+    return null;
+  }
+
+  if (url == '') {
     content = <Logo />;
   }
 
-  if (location.pathname == '/field') {
+  if (url == '/field') {
     content = (
       <>
         {iotAccess ? (
@@ -277,7 +280,7 @@ const NavBar = ({children}) => {
           <Typography variant="h4">Field</Typography>
         )}
         <Box>
-          <NavBarNotifications />
+          {adminAccess && <NavBarNotifications />}
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
@@ -295,7 +298,7 @@ const NavBar = ({children}) => {
     );
   }
 
-  if (location.pathname == '/field/stamdata') {
+  if (url == '/field/stamdata') {
     content = (
       <>
         <GoBack />
@@ -305,7 +308,7 @@ const NavBar = ({children}) => {
               <PhotoCameraRounded />
             </IconButton>
             <Box>
-              <NavBarNotifications />
+              {adminAccess && <NavBarNotifications />}
               <NavBarMenu />
             </Box>
           </>
@@ -313,7 +316,7 @@ const NavBar = ({children}) => {
           <>
             <Typography variant="h4">Field</Typography>
             <Box>
-              <NavBarNotifications />
+              {adminAccess && <NavBarNotifications />}
               <NavBarMenu
                 highligtFirst={!isMobile}
                 items={[
@@ -333,14 +336,14 @@ const NavBar = ({children}) => {
     );
   }
 
-  if (location.pathname.includes('/admin')) {
+  if (url.includes('/admin')) {
     content = (
       <>
         <GoBack />
         <Typography variant="h4">Admin</Typography>
 
         <Box>
-          <NavBarNotifications />
+          {adminAccess && <NavBarNotifications />}
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
@@ -358,14 +361,20 @@ const NavBar = ({children}) => {
     );
   }
 
-  if (location.pathname.includes('/admin/kvalitetssikring/')) {
+  if (url.includes('/admin/kvalitetssikring/')) {
     content = (
       <>
         <GoBack />
         <Typography variant={isMobile ? 'h6' : 'h4'}>Kvalitetssikring</Typography>
 
-        <Box>
-          <NavBarNotifications />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <NotificationList />
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[

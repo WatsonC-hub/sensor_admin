@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from 'src/apiClient';
 
-export const useNotificationOverview = (ts_id) => {
+export const useNotificationOverview = () => {
   const query = useQuery(
     ['overblik'],
     async ({signal}) => {
@@ -10,7 +10,6 @@ export const useNotificationOverview = (ts_id) => {
       });
       return data;
     },
-
     {
       staleTime: 1000 * 60 * 60 * 24,
     }

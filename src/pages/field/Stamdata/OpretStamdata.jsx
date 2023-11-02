@@ -19,6 +19,7 @@ import moment from 'moment';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {metadataSchema} from 'src/helpers/zodSchemas';
+import NavBar from '../../../NavBar';
 import {stamdataStore} from '../../../state/store';
 
 const flex1 = {
@@ -257,71 +258,74 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const watchtstype_id = watch('timeseries.tstype_id');
 
   return (
-    <div>
-      <FormProvider {...formMethods}>
-        <Container fixed>
-          <Typography variant="h6" component="h3">
-            Stamdata
-          </Typography>
+    <>
+      <NavBar />
+      <div>
+        <FormProvider {...formMethods}>
+          <Container fixed>
+            <Typography variant="h6" component="h3">
+              Stamdata
+            </Typography>
 
-          <Location setLocationDialogOpen={setLocationDialogOpen} />
-          <Typography>Tidsserie</Typography>
-          <TimeseriesForm mode="add" />
-          <div style={flex1}>
-            <Typography>Udstyr</Typography>
-            <Button
-              disabled={watchtstype_id === -1}
-              size="small"
-              style={{
-                textTransform: 'none',
-                marginLeft: '12px',
-              }}
-              color="secondary"
-              variant="contained"
-              onClick={() => setUdstyrDialogOpen(true)}
-            >
-              {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
-            </Button>
-          </div>
-          <UnitForm mode="add" />
-          <Grid container spacing={3}>
-            <Grid item xs={4} sm={2}>
+            <Location setLocationDialogOpen={setLocationDialogOpen} />
+            <Typography>Tidsserie</Typography>
+            <TimeseriesForm mode="add" />
+            <div style={flex1}>
+              <Typography>Udstyr</Typography>
               <Button
+                disabled={watchtstype_id === -1}
+                size="small"
+                style={{
+                  textTransform: 'none',
+                  marginLeft: '12px',
+                }}
                 color="secondary"
                 variant="contained"
-                onClick={handleSubmit(handleOpret, handleDebug)}
-                startIcon={<SaveIcon />}
-                disabled={isSubmitting}
+                onClick={() => setUdstyrDialogOpen(true)}
               >
-                Gem
+                {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
               </Button>
+            </div>
+            <UnitForm mode="add" />
+            <Grid container spacing={3}>
+              <Grid item xs={4} sm={2}>
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  onClick={handleSubmit(handleOpret, handleDebug)}
+                  startIcon={<SaveIcon />}
+                  disabled={isSubmitting}
+                >
+                  Gem
+                </Button>
+              </Grid>
+              <Grid item xs={4} sm={2}>
+                <Button
+                  color="grey"
+                  variant="contained"
+                  onClick={() => {
+                    navigate('/field');
+                    setAddStationDisabled(false);
+                  }}
+                >
+                  Annuller
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={4} sm={2}>
-              <Button
-                color="grey"
-                variant="contained"
-                onClick={() => {
-                  navigate('/field');
-                  setAddStationDisabled(false);
-                }}
-              >
-                Annuller
-              </Button>
-            </Grid>
-          </Grid>
-        </Container>
-        <AddUnitForm
-          udstyrDialogOpen={udstyrDialogOpen}
-          setUdstyrDialogOpen={setUdstyrDialogOpen}
-          tstype_id={watchtstype_id}
-        />
-        <AddLocationForm
-          locationDialogOpen={locationDialogOpen}
-          setLocationDialogOpen={setLocationDialogOpen}
-          formMethods={formMethods}
-        />
-        {/* <DevTool control={control} /> */}
-      </FormProvider>
-    </div>
+          </Container>
+          <AddUnitForm
+            udstyrDialogOpen={udstyrDialogOpen}
+            setUdstyrDialogOpen={setUdstyrDialogOpen}
+            tstype_id={watchtstype_id}
+          />
+          <AddLocationForm
+            locationDialogOpen={locationDialogOpen}
+            setLocationDialogOpen={setLocationDialogOpen}
+            formMethods={formMethods}
+          />
+          {/* <DevTool control={control} /> */}
+        </FormProvider>
+      </div>
+    </>
   );
 }
