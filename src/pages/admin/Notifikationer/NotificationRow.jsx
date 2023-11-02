@@ -4,12 +4,15 @@ import moment from 'moment';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import useBreakpoints from 'src/hooks/useBreakpoints';
+import {authStore} from '../../../state/store';
 import PostponeModal from './PostponeModal';
 import TrelloModal from './TrelloModal';
 
 const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
   const [trelloOpen, setTrelloOpen] = useState(false);
   const [postponeOpen, setPostponeOpen] = useState(false);
+
+  const superUser = authStore((state) => state.superUser);
 
   const {isTouch} = useBreakpoints();
 
@@ -43,13 +46,15 @@ const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
           </Typography>
         </Box>
         <Box gap={1} display="inline-flex" height="40px">
-          <Button
-            onClick={() => setTrelloOpen(true)}
-            variant="contained"
-            color={notification.status === 'SCHEDULED' ? 'success' : 'warning'}
-          >
-            Skemalæg
-          </Button>
+          {superUser && (
+            <Button
+              onClick={() => setTrelloOpen(true)}
+              variant="contained"
+              color={notification.status === 'SCHEDULED' ? 'success' : 'warning'}
+            >
+              Skemalæg
+            </Button>
+          )}
           <Button
             onClick={() => setPostponeOpen(true)}
             variant="contained"

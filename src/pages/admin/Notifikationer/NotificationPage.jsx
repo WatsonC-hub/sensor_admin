@@ -19,6 +19,7 @@ import {apiClient} from 'src/apiClient';
 import ServiceMap from 'src/pages/admin/Notifikationer/ServiceMap';
 import {useNotificationOverview} from '../../../hooks/query/useNotificationOverview';
 import useBreakpoints from '../../../hooks/useBreakpoints';
+import {authStore} from '../../../state/store';
 import NotificationTree from './NotificationTree';
 
 const getNavigation = (item) => {
@@ -37,12 +38,30 @@ const tasktype = ['Kritisk', 'Middel', 'Lav', 'OK', 'Kvalitetssikring', 'Plateau
 const selectFiltersAtom = atom(colors);
 const lassoFilterAtom = atom(new Set());
 const isCustomerServiceAtom = atom(false);
+const isWatsonCServiceAtom = atom(true);
+const isFirstLoadAtom = atom(true);
 
 const NotificationPage = () => {
   const [mapdata, setMapdata] = useState([]);
   const [lassoFilter, setLassoFilter] = useAtom(lassoFilterAtom);
   const [selectFilters, setSelectFilters] = useAtom(selectFiltersAtom);
   const [isCustomerService, setIsCustomerService] = useAtom(isCustomerServiceAtom);
+  const [isWatsonCService, setIsWatsonCService] = useAtom(isWatsonCServiceAtom);
+  const [isFirstLoad, setIsFirstLoad] = useAtom(isFirstLoadAtom);
+  const superUser = authStore((state) => state.superUser);
+
+  useEffect(() => {
+    if (isFirstLoad) {
+      if (superUser) {
+        setIsWatsonCService(true);
+        setIsCustomerService(false);
+      } else {
+        setIsWatsonCService(false);
+        setIsCustomerService(true);
+      }
+      setIsFirstLoad(false);
+    }
+  }, []);
 
   const {isTouch} = useBreakpoints();
 
@@ -66,13 +85,15 @@ const NotificationPage = () => {
       sortBy(
         data?.filter(
           (item) =>
-            selectFilters.includes(item.color) && item.is_customer_service === isCustomerService
+            selectFilters.includes(item.color) &&
+            ((item.is_customer_service === isCustomerService && isCustomerService) ||
+              (item.is_customer_service === !isWatsonCService && isWatsonCService))
         ),
         [(item) => (item.status ? item.status : ''), (item) => item.flag]
       )
     );
     setMapdata(uniqBy(sorted, 'locid'));
-  }, [selectFilters, isCustomerService, data]);
+  }, [selectFilters, isCustomerService, data, isWatsonCService]);
 
   const trelloMutate = useMutation(async (data) => {
     // const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
@@ -89,15 +110,6 @@ const NotificationPage = () => {
       };
     })
     .filter((item) => (lassoFilter.size > 0 ? lassoFilter.has(item.locid) : data.length < 20));
-
-  // const numNotifications = uniqBy(notifications, 'stationid')?.length;
-  // const numBattery = notifications?.filter((item) => item.notification_id === 1).length;
-  // const numLevel = notifications?.filter((item) => item.notification_id === 'Niveau spring').length;
-  // const numAbnormal = notifications?.filter(
-  //   (item) => item.notification_id === 'Abnormal hændelse'
-  // ).length;
-  // const numTilsyn = notifications?.filter((item) => [7, 8].includes(item.notification_id)).length;
-  // const numPejling = notifications?.filter((item) => [5, 6].includes(item.notification_id)).length;
 
   const handleChange = (event) => {
     const {
@@ -163,28 +175,27 @@ const NotificationPage = () => {
               </Select>
             </FormControl>
             <FormControlLabel
-              control={<Checkbox onChange={(e) => setIsCustomerService(e.target.checked)} />}
-              label="Vis kundeservice"
+              control={
+                <Checkbox
+                  checked={isWatsonCService}
+                  onChange={(e) => setIsWatsonCService(e.target.checked)}
+                />
+              }
+              label={'Vis WatsonC-service'}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isCustomerService}
+                  onChange={(e) => setIsCustomerService(e.target.checked)}
+                />
+              }
+              label={superUser ? 'Vis kundeservice' : 'Vis egen service'}
             />
           </Box>
           <ServiceMap data={mapdata} isLoading={isLoading} setLassoFilter={setLassoFilter} />
         </Grid>
         <Grid item xs={12} md={6}>
-          {/* <Typography variant="h6">
-          Batteriskift: {numBattery} ud af {numNotifications}
-        </Typography> */}
-          {/* <Typography variant="h6">
-          Niveau spring: {numLevel} ud af {numNotifications}
-        </Typography>
-        <Typography variant="h6">
-          Abnormal hændelse: {numAbnormal} ud af {numNotifications}
-        </Typography> */}
-          {/* <Typography variant="h6">
-          Tilsyn: {numTilsyn} ud af {numNotifications}
-        </Typography>
-        <Typography variant="h6">
-          Pejling: {numPejling} ud af {numNotifications}
-        </Typography> */}
           <NotificationTree
             notifications={notifications}
             statusMutate={statusMutate}

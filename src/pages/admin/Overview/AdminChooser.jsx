@@ -1,7 +1,5 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
-import RouterIcon from '@mui/icons-material/Router';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
@@ -36,7 +34,7 @@ const AdminChooser = () => {
           marginTop: 10,
         }}
       >
-        {iotAccess && (
+        {/* {iotAccess && (
           <Grid
             item
             xs={10}
@@ -53,7 +51,7 @@ const AdminChooser = () => {
               icon={RouterIcon}
             />
           </Grid>
-        )}
+        )} */}
         <Grid
           item
           xs={10}
@@ -86,7 +84,7 @@ const AdminChooser = () => {
             icon={NotificationsActiveIcon}
           />
         </Grid>
-        <Grid
+        {/* <Grid
           item
           xs={10}
           sm={5}
@@ -101,7 +99,7 @@ const AdminChooser = () => {
             text="Administrer brugere"
             icon={SupervisorAccountIcon}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );
