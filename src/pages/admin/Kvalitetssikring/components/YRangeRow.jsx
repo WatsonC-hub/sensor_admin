@@ -32,10 +32,10 @@ const YRangeRow = ({data, index}) => {
   const handleSubmit = (values) => {
     if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
       post.mutate({
-        path: `${data.ts_id}/${data.gid}`,
+        path: `${data.ts_id}`,
         data: {
-          mincuttoff: values.mincuttoff,
-          maxcuttoff: values.maxcuttoff,
+          mincutoff: values.mincutoff,
+          maxcutoff: values.maxcutoff,
         },
       });
     }
@@ -44,7 +44,7 @@ const YRangeRow = ({data, index}) => {
 
   const handleDelete = () => {
     del.mutate({
-      path: `${data.ts_id}/${data.gid}`,
+      path: `${data.ts_id}`,
     });
   };
 
