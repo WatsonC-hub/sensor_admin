@@ -20,10 +20,10 @@ export default function Login({}) {
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
 
-  const [setAuthenticated, setLoginExpired, setProperties] = authStore((state) => [
+  const [setAuthenticated, setLoginExpired, setAuthorization] = authStore((state) => [
     state.setAuthenticated,
     state.setLoginExpired,
-    state.setProperties,
+    state.setAuthorization,
   ]);
 
   const handleSubmit = (e) => {
@@ -31,7 +31,7 @@ export default function Login({}) {
     loginAPI(userName.toLowerCase().trim(), password)
       .then((res) => {
         setLoginError('');
-        setProperties(res.data);
+        setAuthorization(res.data);
         setAuthenticated(true);
         setLoginExpired(false);
       })
