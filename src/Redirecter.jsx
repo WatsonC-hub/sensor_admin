@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
 // const sensorAdminPromise = import('./pages/admin/SensorAdmin');
 // const SensorAdmin = React.lazy(() => sensorAdminPromise);
+import {useMediaQuery, useTheme} from '@mui/material';
 import ScanComponent from 'src/components/ScanComponent';
 import Chooser from './Chooser';
 import LoadingSkeleton from './LoadingSkeleton';
@@ -11,6 +12,8 @@ import SensorField from './pages/field/SensorField';
 import {authStore} from './state/store';
 
 const Redirecter = () => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const location = useLocation();
   const [authChecked, setAuthChecked] = useState(false);
@@ -23,10 +26,11 @@ const Redirecter = () => {
     setAuthChecked(true);
   }, [iotAccess]);
 
-  // USE THIS FOR TEMP PRODUCTION AND COMMENT OUT ALL OTHER THAN FIELD ROUTES
-  // useEffect(() => {
-  //   navigate('/field');
-  // }, []);
+  useEffect(() => {
+    if (matches && location.pathname == '/') {
+      navigate('/field');
+    }
+  }, [matches]);
 
   useEffect(() => {
     if (!adminAccess && location.pathname == '/') {

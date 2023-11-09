@@ -1,7 +1,7 @@
 import {Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {useQuery} from '@tanstack/react-query';
+import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
 import React, {useContext, useEffect, useState} from 'react';
@@ -44,7 +44,7 @@ const selectorOptions = {
   ],
 };
 
-const layout1 = {
+const desktopLayout = {
   xaxis: {
     rangeselector: selectorOptions,
     /*rangeslider: {},*/
@@ -62,6 +62,17 @@ const layout1 = {
       font: {size: 12},
     },
     showline: true,
+  },
+  yaxis2: {
+    title: {
+      text: 'Nedbør [mm]',
+      font: {size: 12},
+    },
+    showline: false,
+    showgrid: false,
+    overlaying: 'y',
+    side: 'right',
+    fixedrange: true,
   },
 
   showlegend: true,
@@ -83,7 +94,7 @@ const layout1 = {
   },
 };
 
-const layout3 = {
+const mobileLayout = {
   modebar: {
     orientation: 'v',
   },
@@ -224,9 +235,12 @@ function PlotGraph({qaData, ts_id}) {
   const [xRange, setXRange] = useState(initRange);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [layout, setLayout] = useState(matches ? layout3 : layout1);
+  const [layout, setLayout] = useState(matches ? mobileLayout : desktopLayout);
   const metadata = useContext(MetadataContext);
   const dataToShow = useAtomValue(dataToShowAtom);
+  const queryClient = useQueryClient();
+
+  const fullData = queryClient.getQueryData(['graphData', ts_id, initRange]);
 
   const {data: adjustmentData} = useAdjustmentData();
 
@@ -240,6 +254,27 @@ function PlotGraph({qaData, ts_id}) {
     },
     {
       enabled: dataToShow['Fjernet data'],
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  );
+
+  const {data: precipitation_data} = useQuery(
+    ['precipitation_data', ts_id],
+    async () => {
+      const starttime = moment(fullData?.x[0]).format('YYYY-MM-DDTHH:mm');
+      const stoptime = moment(fullData?.x[fullData?.x.length - 1]).format('YYYY-MM-DDTHH:mm');
+      const {data} = await apiClient.get(
+        `/data/timeseries/${ts_id}/precipitation/1?start=${starttime}&stop=${stoptime}`
+      );
+      return data;
+    },
+    {
+      enabled: dataToShow['Nedbør'] && fullData !== undefined,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     }
   );
 
@@ -496,6 +531,15 @@ function PlotGraph({qaData, ts_id}) {
                 line: {width: 2},
                 mode: 'markers',
                 marker: {symbol: '100', size: '3', color: theme.palette.error.main},
+              },
+            ]
+          : []),
+        ...(dataToShow?.['Nedbør']
+          ? [
+              {
+                ...precipitation_data?.trace,
+                ...precipitation_data?.data,
+                yaxis: 'y2',
               },
             ]
           : []),
