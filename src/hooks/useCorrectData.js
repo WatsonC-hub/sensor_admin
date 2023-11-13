@@ -1,11 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {useRef} from 'react';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
 
+const TOAST_ID = 'correct-toast';
+
 export const useCorrectData = (ts_id, queryKey) => {
   const queryClient = useQueryClient();
-  const toastId = useRef(null);
 
   const {data: pollData, refetch} = useQuery(
     ['pollData', ts_id],
@@ -21,7 +21,7 @@ export const useCorrectData = (ts_id, queryKey) => {
       onSuccess: (status) => {
         if (status === 200) {
           queryClient.invalidateQueries([queryKey, ts_id]);
-          toast.update(toastId.current, {
+          toast.update(TOAST_ID, {
             render: 'Genberegnet',
             type: toast.TYPE.SUCCESS,
             isLoading: false,
@@ -41,11 +41,12 @@ export const useCorrectData = (ts_id, queryKey) => {
 
   const correctMutation = useMutation(
     async (data) => {
-      toastId.current = toast('Genberegner...', {
+      toast('Genberegner...', {
+        toastId: TOAST_ID,
         type: toast.TYPE.INFO,
         isLoading: true,
         autoClose: false,
-        closeOnClick: false,
+        closeOnClick: true,
         draggable: false,
         progress: undefined,
         hideProgressBar: true,
