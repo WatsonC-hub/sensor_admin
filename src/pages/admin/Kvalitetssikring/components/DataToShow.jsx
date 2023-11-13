@@ -13,9 +13,10 @@ export default function DataToShow() {
   };
 
   return (
-    <FormGroup column>
+    <FormGroup>
       {Object.keys(dataToShow).map((key) => (
         <FormControlLabel
+          key={key}
           control={
             <Switch checked={dataToShow[key]} onChange={handleChange} name={key} color="primary" />
           }

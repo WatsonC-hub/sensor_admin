@@ -273,6 +273,9 @@ export default function Station({stationId, stamdata}) {
     });
   };
 
+  // Regex to find matches on systemx._13, systemx._144, systemx._1423 etc.
+  const systemxRegex = /systemx\._\d+/g;
+
   const handleEdit = (type) => {
     if (type === 'watlevmp') {
       return (data) => {
