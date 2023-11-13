@@ -1,12 +1,10 @@
 import {Box, Grid, Tab, Tabs, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {useAtom} from 'jotai';
 import React from 'react';
 import {useParams} from 'react-router-dom';
 import NavBar from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
 import useBreakpoints from 'src/hooks/useBreakpoints';
-import {nonRerunChangesAtom} from 'src/state/atoms';
 import {MetadataContext} from 'src/state/contexts';
 import Algorithms from './Algorithms';
 import QAGraph from './QAGraph';
@@ -35,7 +33,6 @@ const QualityAssurance = () => {
 
   const {isTouch} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
-  const [nonRerunChanges, setNonRerunChanges] = useAtom(nonRerunChangesAtom);
 
   const {data} = useQuery(
     ['metadata', params.ts_id],

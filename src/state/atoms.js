@@ -5,8 +5,6 @@ export const captureDialogAtom = atom(false);
 
 export const qaSelection = atom({});
 
-export const nonRerunChangesAtom = atom(false);
-
 export const stationTableAtom = atomWithStorage('StationTableState', {
   columnVisibility: {
     ts_id: false,
