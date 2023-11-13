@@ -1,4 +1,10 @@
-import {AddCircle, EditRounded, PlaylistAddCheck, Straighten} from '@mui/icons-material';
+import {
+  AddCircle,
+  Construction,
+  EditRounded,
+  PlaylistAddCheck,
+  Straighten,
+} from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/MoreVert';
 import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
 import {IconButton, Menu, MenuItem, useMediaQuery, useTheme} from '@mui/material';
@@ -118,8 +124,8 @@ function MobileBottomNav({setFormToShow, canEdit}) {
               sx={borderGrey}
               disabled={!canEdit}
               showLabel
-              label="Udstyr stamdata"
-              icon={<EditRounded />}
+              label="Udstyr"
+              icon={<Construction />}
               onClick={() => {
                 setFormToShow('UDSTYR_STAMDATA');
               }}
@@ -130,7 +136,7 @@ function MobileBottomNav({setFormToShow, canEdit}) {
               sx={borderGrey}
               disabled={!canEdit}
               showLabel
-              label="Borings stamdata"
+              label="Stamdata"
               icon={<EditRounded />}
               onClick={() => {
                 setFormToShow('STAMDATA');
@@ -200,6 +206,17 @@ function BottomNav({setFormToShow, canEdit}) {
           setFormToShow('CAMERA');
         }}
       />
+      {hasUnit && (
+        <BottomNavigationAction
+          sx={borderGrey}
+          disabled={!canEdit}
+          label="Udstyr"
+          icon={<Construction />}
+          onClick={() => {
+            setFormToShow('UDSTYR_STAMDATA');
+          }}
+        />
+      )}
       {canEdit && (
         <BottomNavigationAction
           sx={borderGrey}
@@ -209,17 +226,6 @@ function BottomNav({setFormToShow, canEdit}) {
           icon={<EditRounded />}
           onClick={() => {
             setFormToShow('STAMDATA');
-          }}
-        />
-      )}
-      {hasUnit && (
-        <BottomNavigationAction
-          sx={borderGrey}
-          disabled={!canEdit}
-          label="Udstyr stamdata"
-          icon={<EditRounded />}
-          onClick={() => {
-            setFormToShow('UDSTYR_STAMDATA');
           }}
         />
       )}
