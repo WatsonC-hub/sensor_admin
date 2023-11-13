@@ -1,7 +1,7 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
-import {rerunToast} from '../../helpers/toasts';
+import {rerunToast} from 'src/helpers/toasts';
 
 export const excludePostOptions = {
   mutationKey: 'exclude_post',

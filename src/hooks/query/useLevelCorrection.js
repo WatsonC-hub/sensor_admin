@@ -1,6 +1,7 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
+import {rerunToast} from 'src/helpers/toasts';
 
 export const levelCorrectionPostOptions = {
   mutationKey: 'level_correction_post',
@@ -39,7 +40,7 @@ export const useLevelCorrection = () => {
     },
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries(['qa_all', Number(variables.path)]);
-      toast.success('Punkter ekskluderet');
+      rerunToast();
     },
   });
 
@@ -50,7 +51,7 @@ export const useLevelCorrection = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['qa_all']);
-      toast.success('Ændringer gemt');
+      rerunToast();
     },
   });
 
@@ -61,7 +62,7 @@ export const useLevelCorrection = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['qa_all']);
-      toast.success('Slettet');
+      rerunToast();
     },
   });
 
