@@ -3,14 +3,14 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
 import FormInput from 'src/components/FormInput';
-import {apiClient} from '../../../../apiClient';
+import {useBoreholeData} from '../../../../hooks/query/useBoreholeData';
 import {postElasticSearch} from '../../boreholeAPI';
 import {getDTMQuota} from '../../fieldAPI';
 import LocationTypeSelect from './LocationTypeSelect';
 
 export default function LocationForm({mode, disable}) {
   const [locItems, setLocItems] = React.useState([]);
-  const [boreholeData, setBoreholeData] = React.useState([]);
+  const [boreholeno, setBoreholeno] = React.useState('');
   const [intake, setIntake] = React.useState('');
   const {
     data: DTMData,
@@ -25,6 +25,8 @@ export default function LocationForm({mode, disable}) {
       }
     },
   });
+
+  const {data: boreholeData} = useBoreholeData(boreholeno);
 
   const {
     reset,
@@ -91,19 +93,16 @@ export default function LocationForm({mode, disable}) {
       return;
     }
     console.log(value);
-    apiClient.get(`/sensor_field/stamdata/dgu/${value.name}`).then((res) => {
-      const data = res.data;
-      setIntake('');
-      setBoreholeData(data);
-    });
+    setBoreholeno(value.name);
+    setIntake('');
   };
+
+  const isEmptyIntake = boreholeData?.filter((elem) => (elem.intakeno ? true : false)).length === 0;
 
   const handleIntakeChange = (e) => {
     const value = e.target.value;
     setIntake(value);
-    const data = boreholeData.filter((elem) => elem.intakeno === value)[0];
-    console.log(boreholeData);
-    console.log(data);
+    const data = boreholeData?.filter((elem) => elem.intakeno === value)[0];
     reset({
       location: {
         loc_name: data.loc_name,
@@ -150,8 +149,17 @@ export default function LocationForm({mode, disable}) {
             />
           </Grid>
           <Grid item xs={12} sm={gridsize}>
-            <TextField value={intake} select fullWidth label="Indtag" onChange={handleIntakeChange}>
-              {boreholeData.map((elem) => (
+            <TextField
+              value={intake}
+              select
+              fullWidth
+              label="Indtag"
+              onChange={handleIntakeChange}
+              error={isEmptyIntake}
+              helperText={isEmptyIntake ? 'Ingen indtag fundet' : ''}
+              disabled={isEmptyIntake}
+            >
+              {boreholeData?.map((elem) => (
                 <MenuItem key={elem.intakeno} value={elem.intakeno}>
                   {elem.intakeno}
                 </MenuItem>

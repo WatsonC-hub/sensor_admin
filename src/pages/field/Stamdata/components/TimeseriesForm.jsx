@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 import {apiClient} from 'src/apiClient';
 import FormInput from 'src/components/FormInput';
+import {useBoreholeData} from '../../../../hooks/query/useBoreholeData';
 import FormTextField from './FormTextField';
 
 const TimeseriesTypeSelect = ({stationTypes}) => {
@@ -50,23 +51,45 @@ export default function TimeseriesForm({mode}) {
     }
   }, [tstype_id]);
 
+  const {data: boreholeData} = useBoreholeData(loc_name);
+
   return (
     // <FormProvider {...formMethods}>
     <Grid container spacing={2}>
       <Grid item xs={12} sm={6}>
-        <FormInput
-          name="timeseries.prefix"
-          label="Navn"
-          InputProps={{
-            startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
-          }}
-          placeholder="f.eks. indtag 1"
-          fullWidth
-          disabled={loctype_id === 9}
-          sx={{
-            mb: 2,
-          }}
-        />
+        {loctype_id !== 9 ? (
+          <FormInput
+            name="timeseries.prefix"
+            label="Navn"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
+            }}
+            placeholder="f.eks. indtag 1"
+            fullWidth
+            sx={{
+              mb: 2,
+            }}
+          />
+        ) : (
+          <FormInput
+            name="timeseries.prefix"
+            select
+            label="Navn"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
+            }}
+            fullWidth
+            sx={{
+              mb: 2,
+            }}
+          >
+            {boreholeData?.map((elem) => (
+              <MenuItem key={elem.intakeno} value={elem.intakeno}>
+                {elem.intakeno}
+              </MenuItem>
+            ))}
+          </FormInput>
+        )}
       </Grid>
       <Grid item xs={12} sm={6}>
         {mode === 'add' ? (

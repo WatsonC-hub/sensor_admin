@@ -10,6 +10,18 @@ const MinimalSelect = ({locid, stationList}) => {
   const navigate = useNavigate();
 
   const handleChange = (event) => {
+    const station = stationList.filter((t) => t.ts_id === parseInt(event.target.value))[0];
+    const navigateBorehole = station.loctype_id === 9 && station.tstype_id === 1;
+
+    console.log('navigateBorehole', navigateBorehole);
+    if (navigateBorehole) {
+      navigate(`../borehole/${station.boreholeno}/${station.intakeno}`, {
+        replace: true,
+      });
+      setIsOpen(false);
+      return;
+    }
+
     navigate(`../location/${locid}/${event.target.value}`, {
       replace: true,
     });

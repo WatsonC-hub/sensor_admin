@@ -32,7 +32,16 @@ export default function LocationRouter() {
     {
       enabled: params.locid !== undefined,
       onSuccess: (data) => {
-        if (data.length === 1 && params.ts_id === undefined) {
+        if (
+          data.length === 1 &&
+          params.ts_id === undefined &&
+          data[0].loctype_id === 9 &&
+          data[0].tstype_id === 1
+        ) {
+          navigate(`../borehole/${data[0].boreholeno}/${data[0].intakeno}`, {
+            replace: true,
+          });
+        } else if (data.length === 1 && params.ts_id === undefined) {
           navigate(`../location/${params.locid}/${data[0].ts_id}`, {
             replace: true,
           });

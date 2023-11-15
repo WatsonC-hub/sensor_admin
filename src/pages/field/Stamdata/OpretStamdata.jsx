@@ -252,7 +252,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
       form.location = {
         boreholeno: form.location.loc_name,
         intakeno: form.timeseries.prefix,
+        x: form.location.x,
+        y: form.location.y,
       };
+
+      delete form.watlevmp;
 
       try {
         await toast.promise(() => dguNewMutation.mutateAsync(form), {
