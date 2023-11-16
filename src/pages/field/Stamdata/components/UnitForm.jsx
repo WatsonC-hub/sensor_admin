@@ -1,15 +1,12 @@
 import {Grid} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
-import {useFormContext} from 'react-hook-form';
 import FormInput from 'src/components/FormInput';
 import {stamdataStore} from 'src/state/store';
 import FormTextField from './FormTextField';
 
 export default function UnitForm({mode}) {
   const editMode = mode === 'edit';
-
-  const formMethods = useFormContext();
 
   const [unit, setUnitValue] = stamdataStore((store) => [store.unit, store.setUnitValue]);
 

@@ -1,6 +1,7 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 import {apiClient} from 'src/apiClient';
+import {rerunToast} from 'src/helpers/toasts';
 
 export const yRangePostOptions = {
   mutationKey: 'y_range_post',
@@ -30,7 +31,7 @@ export const useYRangeMutations = () => {
     },
     onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries(['qa_all', Number(variables.path)]);
-      toast.success('Gemt');
+      rerunToast();
     },
   });
 
@@ -41,7 +42,7 @@ export const useYRangeMutations = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['qa_all']);
-      toast.success('Slettet');
+      rerunToast();
     },
   });
 

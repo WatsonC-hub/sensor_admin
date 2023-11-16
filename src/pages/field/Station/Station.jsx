@@ -273,6 +273,9 @@ export default function Station({stationId, stamdata}) {
     });
   };
 
+  // Regex to find matches on systemx._13, systemx._144, systemx._1423 etc.
+  const systemxRegex = /systemx\._\d+/g;
+
   const handleEdit = (type) => {
     if (type === 'watlevmp') {
       return (data) => {
@@ -289,6 +292,7 @@ export default function Station({stationId, stamdata}) {
       return (data) => {
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
         data.measurement = data.measurement;
+        data.useforcorrection = data.useforcorrection.toString();
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING');
       };

@@ -46,6 +46,7 @@ const metadataPutSchema = metadataBaseSchema.extend({
     tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
   }),
   unit: metadataBaseSchema.shape.unit.extend({
+    gid: z.number().optional(),
     enddate: z.string().transform((value) => moment(value).toISOString()),
   }),
 });

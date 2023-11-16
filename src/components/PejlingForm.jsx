@@ -246,10 +246,38 @@ export default function PejlingForm({
                         label="Korrektion fremadrettet"
                       />
                       <FormControlLabel
-                        value="2"
+                        value="-1"
                         control={<Radio />}
                         label="Korrektion bagud og fremadrettet"
                       />
+                      {['-1', '2', '4', '5', '6'].includes(formData.useforcorrection) && (
+                        <>
+                          <FormControlLabel
+                            value="4"
+                            control={<Radio />}
+                            label="Tilbage til start af udstyr"
+                            sx={{ml: 2}}
+                          />
+                          <FormControlLabel
+                            value="2"
+                            control={<Radio />}
+                            label="Tilbage til start af tidsserie"
+                            sx={{ml: 2}}
+                          />
+                          <FormControlLabel
+                            value="6"
+                            control={<Radio />}
+                            label="Tilbage til forrige pejling"
+                            sx={{ml: 2}}
+                          />
+                          <FormControlLabel
+                            value="5"
+                            control={<Radio />}
+                            label="Tilbage til forrige niveauspring"
+                            sx={{ml: 2}}
+                          />
+                        </>
+                      )}
                     </RadioGroup>
                   </FormControl>
                 </Grid>
@@ -289,7 +317,8 @@ export default function PejlingForm({
                   disabled={
                     pejlingOutOfRange ||
                     disableSubmit ||
-                    (isWaterlevel && currentMP.elevation === null)
+                    (isWaterlevel && currentMP.elevation === null) ||
+                    formData.useforcorrection == '-1'
                   }
                   startIcon={<SaveIcon />}
                 >

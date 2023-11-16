@@ -63,7 +63,7 @@ export default function QAHistory() {
           {data.dataexclude
             .filter((elem) => (elem.min_value == null) & (elem.max_value == null))
             .map((item, index) => (
-              <ExcludeRow key={item} data={item} index={index} />
+              <ExcludeRow key={item.gid} data={item} index={index} />
             ))}
           {data.dataexclude.filter((elem) => (elem.min_value == null) & (elem.max_value == null))
             .length == 0 && <Typography>Ingen fjernede tidsintervaller</Typography>}
@@ -71,7 +71,7 @@ export default function QAHistory() {
 
         <QAAccordion number={2} title="Korriger spring">
           {data.levelcorrection.map((item, index) => (
-            <LevelCorrectionRow key={item} data={item} index={index} />
+            <LevelCorrectionRow key={item.gid} data={item} index={index} />
           ))}
           {data.levelcorrection.length == 0 && <Typography>Ingen spring korrektioner</Typography>}
         </QAAccordion>
@@ -82,7 +82,7 @@ export default function QAHistory() {
           {data.dataexclude
             .filter((elem) => (elem.min_value != null) | (elem.max_value != null))
             .map((item, index) => (
-              <ExcludeRow key={item} data={item} index={index} isWithYValues />
+              <ExcludeRow key={item.gid} data={item} index={index} isWithYValues />
             ))}
           {data.dataexclude.filter((elem) => (elem.min_value != null) | (elem.max_value != null))
             .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}

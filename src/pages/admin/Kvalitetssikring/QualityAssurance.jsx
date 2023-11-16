@@ -30,7 +30,6 @@ function TabPanel(props) {
 
 const QualityAssurance = () => {
   let params = useParams();
-  console.log(navigator.userAgent);
 
   const {isTouch} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
