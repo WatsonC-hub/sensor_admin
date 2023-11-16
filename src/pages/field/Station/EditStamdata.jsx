@@ -131,11 +131,12 @@ const UdstyrReplace = ({stationId}) => {
     formMethods.setValue(
       'unit',
       {
+        gid: gid,
         unit_uuid: localUnit.uuid,
         startdate: moment(localUnit.startdato).format('YYYY-MM-DDTHH:mm'),
         enddate: moment(localUnit.slutdato).format('YYYY-MM-DDTHH:mm'),
       },
-      {shouldValidate: true, shouldDirty: true}
+      {shouldValidate: true, shouldDirty: false}
     );
     setselected(gid);
   };
@@ -244,6 +245,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
       },
       unit: {
         ...metadata,
+        gid: -1,
         startdate: metadata?.startdato,
         enddate: metadata?.slutdato,
       },
@@ -260,6 +262,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
           ...metadata,
         },
         unit: {
+          ...formMethods.getValues()?.unit,
           ...metadata,
           startdate: metadata?.startdato,
           enddate: metadata?.slutdato,
@@ -273,10 +276,28 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
   }, []);
 
   const handleUpdate = (values) => {
-    toast.promise(() => metadataEditMutation.mutateAsync(values), {
-      pending: 'Opdaterer stamdata...',
-      success: 'Stamdata er opdateret',
-      error: 'Der skete en fejl',
+    metadataEditMutation.mutate(values, {
+      onSuccess: (data) => {
+        toast.success('Stamdata er opdateret');
+      },
+      onError: (error) => {
+        if (error.response?.status !== 409) {
+          toast.error('Der skete en fejl');
+        } else {
+          toast.error(
+            <Box>
+              Enheden overlapper med følgende periode
+              <Box>
+                {moment(error.response.data.detail.overlap[0].startdate).format('YYYY-MM-DD HH:mm')}{' '}
+                -{moment(error.response.data.detail.overlap[0].enddate).format('YYYY-MM-DD HH:mm')}
+              </Box>
+            </Box>,
+            {
+              autoClose: false,
+            }
+          );
+        }
+      },
     });
   };
 
@@ -328,7 +349,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
                   color="secondary"
                   variant="contained"
                   startIcon={<SaveIcon />}
-                  onClick={formMethods.handleSubmit(handleUpdate, handleUpdate)}
+                  onClick={formMethods.handleSubmit(handleUpdate, (values) => console.log(values))}
                   disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
                 >
                   Gem

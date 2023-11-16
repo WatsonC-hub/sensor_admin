@@ -109,8 +109,8 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
 
       const payload = {
         unit_uuid: unit.unit_uuid,
-        startdate: unitData.fra,
-        enddate: '2099-01-01T12:00:00',
+        startdate: moment(unitData.fra).toISOString(),
+        enddate: moment('2099-01-01T12:00:00').toISOString(),
       };
 
       toast.promise(() => addUnit.mutateAsync(payload), {
