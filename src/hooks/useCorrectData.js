@@ -47,7 +47,7 @@ export const useCorrectData = (ts_id, queryKey) => {
         isLoading: true,
         autoClose: false,
         closeOnClick: true,
-        draggable: false,
+        draggable: true,
         progress: undefined,
         hideProgressBar: true,
       });
