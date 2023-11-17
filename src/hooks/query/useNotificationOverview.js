@@ -11,7 +11,9 @@ export const useNotificationOverview = () => {
       return data;
     },
     {
-      staleTime: 1000 * 60 * 60 * 24,
+      refetchOnReconnect: false,
+      refetchInterval: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
     }
   );
   return query;
