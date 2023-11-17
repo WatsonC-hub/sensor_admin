@@ -1,5 +1,5 @@
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import {useTheme} from '@mui/material';
+import {Box, Typography, useTheme} from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
@@ -12,12 +12,7 @@ import Boreholeno from './Boreholeno';
 import MinimalSelectBorehole from './MinimalSelectBorehole';
 
 export default function BoreholeRouter() {
-  const open = false;
-  const [formToShow, setFormToShow] = useState(null);
-  const [currIntake, setCurrIntake] = useState(null);
-  const [boreholenoList, setBoreholenoList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(-1);
-  const [boreholeno, setSelectedBoreholeno] = useState(-1);
 
   const theme = useTheme();
   const params = useParams();
@@ -67,12 +62,15 @@ export default function BoreholeRouter() {
           >
             <KeyboardBackspaceIcon />
           </IconButton>
-          <MinimalSelectBorehole
-            boreholeno={params.boreholeno}
-            boreholenoList={data}
-            selectedIntake={selectedItem}
-            setSelectedItem={setSelectedItem}
-          />
+          <Box>
+            <Typography pl={1.7}>{params.boreholeno}</Typography>
+            <MinimalSelectBorehole
+              boreholeno={params.boreholeno}
+              boreholenoList={data}
+              selectedIntake={params.intakeno}
+              setSelectedItem={setSelectedItem}
+            />
+          </Box>
         </Toolbar>
       </AppBar>
 

@@ -10,8 +10,24 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
   const navigate = useNavigate();
 
   const handleChange = (event) => {
-    setSelectedItem(event.target.value);
-    navigate(`../borehole/${boreholeno}/${event.target.value}`, {
+    let selected = boreholenoList.filter((t) => t.intakeno === parseInt(event.target.value))[0];
+
+    if (!selected) {
+      selected = boreholenoList.filter((t) => t.ts_id === parseInt(event.target.value))[0];
+    }
+
+    const navigateBorehole = selected.isjupiter;
+
+    if (navigateBorehole) {
+      setSelectedItem(selected.intakeno);
+      navigate(`../borehole/${boreholeno}/${selected.intakeno}`, {
+        replace: true,
+      });
+      setIsOpen(false);
+      return;
+    }
+
+    navigate(`../location/${selected.loc_id}/${selected.ts_id}`, {
       replace: true,
     });
     setIsOpen(false);
@@ -58,18 +74,18 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
         '& .MuiSelect-selectMenu': {
           backgroundColor: 'blue',
         },
-
         backgroundColor: 'transparent',
         boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.14)',
+        height: '35px',
       }}
     >
       {boreholenoList &&
         boreholenoList
           .filter((i) => i.intakeno !== null)
-          .map((intake) => (
+          .map((intake, index) => (
             <MenuItem
-              key={intake.intakeno}
-              value={intake.intakeno}
+              key={index}
+              value={intake.isjupiter ? intake.intakeno : intake.ts_id}
               sx={{
                 '&:hover': {
                   backgroundColor: 'primary.main',
@@ -81,7 +97,7 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
                 },
               }}
             >
-              {intake.boreholeno + ' - ' + intake.intakeno}
+              {intake.intakeno + ' - ' + intake.parameter}
             </MenuItem>
           ))}
     </Select>
