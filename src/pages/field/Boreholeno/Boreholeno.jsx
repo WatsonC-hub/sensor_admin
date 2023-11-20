@@ -170,7 +170,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
         return {
           ...e,
-          waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+          waterlevel: e.disttowatertable_m != null ? elev - e.disttowatertable_m : null,
         };
       });
     } else {
