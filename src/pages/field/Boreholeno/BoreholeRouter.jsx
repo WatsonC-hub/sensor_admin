@@ -1,18 +1,23 @@
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography, useTheme} from '@mui/material';
-import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
-import Toolbar from '@mui/material/Toolbar';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
+import {AppBarLayout, NavBarMenu} from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
+import useBreakpoints from 'src/hooks/useBreakpoints';
+import {authStore} from 'src/state/store';
+import NotificationList from '../../../components/NotificationList';
 import Boreholeno from './Boreholeno';
 import MinimalSelectBorehole from './MinimalSelectBorehole';
 
 export default function BoreholeRouter() {
   const [selectedItem, setSelectedItem] = useState(-1);
+  const {isMobile} = useBreakpoints();
+  const adminAccess = authStore((state) => state.adminAccess);
 
   const theme = useTheme();
   const params = useParams();
@@ -30,6 +35,23 @@ export default function BoreholeRouter() {
     }
   );
 
+  const {data: stamdata, isLoading} = useQuery(
+    ['borehole_stamdata', params.boreholeno, params.intakeno],
+    async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/stamdata/${params.boreholeno}/${params.intakeno}`
+      );
+      return data;
+    },
+    {
+      enabled: params.boreholeno !== undefined && params.intakeno !== undefined,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchInterval: false,
+      retry: false,
+    }
+  );
+
   useEffect(() => {
     if (data) {
       let intakeno = params.intakeno;
@@ -37,7 +59,6 @@ export default function BoreholeRouter() {
         setSelectedItem(parseInt(intakeno));
       } else {
         intakeno = -1;
-        console.log(data);
         if (data.length === 1) {
           intakeno = data[0].intakeno;
           navigate(`../borehole/${params.boreholeno}/${intakeno}`, {
@@ -49,13 +70,11 @@ export default function BoreholeRouter() {
     }
   }, [data]);
 
-  console.log(selectedItem);
-
   return (
     <>
       <CssBaseline />
-      <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
-        <Toolbar>
+      <AppBarLayout>
+        <Box display="flex">
           <IconButton
             color="inherit"
             onClick={(e) => {
@@ -74,8 +93,29 @@ export default function BoreholeRouter() {
               setSelectedItem={setSelectedItem}
             />
           </Box>
-        </Toolbar>
-      </AppBar>
+        </Box>
+        {stamdata?.hasUnit && (
+          <Box display="flex" justifyContent="center" alignItems="center">
+            {adminAccess && <NotificationList ts_id={stamdata?.ts_id} loc_id={stamdata?.loc_id} />}
+            <NavBarMenu
+              highligtFirst={!isMobile}
+              items={[
+                ...(adminAccess
+                  ? [
+                      {
+                        title: 'Til QA',
+                        onClick: () => {
+                          navigate(`/admin/kvalitetssikring/${stamdata?.ts_id}`);
+                        },
+                        icon: <AutoGraphIcon />,
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          </Box>
+        )}
+      </AppBarLayout>
 
       <main
         style={{
@@ -83,7 +123,13 @@ export default function BoreholeRouter() {
           // padding: theme.spacing(0.5),
         }}
       >
-        <Boreholeno boreholeno={params.boreholeno} intakeno={params.intakeno} />
+        {!isLoading && (
+          <Boreholeno
+            boreholeno={params.boreholeno}
+            intakeno={params.intakeno}
+            stamdata={stamdata}
+          />
+        )}
       </main>
     </>
   );

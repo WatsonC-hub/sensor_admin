@@ -21,20 +21,18 @@ import {
 } from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
-import {useParams} from 'react-router-dom';
 import {useNotificationOverview} from '../hooks/query/useNotificationOverview';
 import {useTaskMutation} from '../hooks/query/useTaskMutation';
 
 // Mock data for notifications
 const CHARACTERLIMIT = 60;
-const NotificationList = () => {
+const NotificationList = ({ts_id, loc_id}) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [urgency, setUrgency] = useState('');
   const [description, setDescription] = useState('');
 
   const {post: createTask, markAsDone} = useTaskMutation();
-  const params = useParams();
 
   const {data, isLoading} = useNotificationOverview();
 
@@ -67,7 +65,7 @@ const NotificationList = () => {
     console.log('Urgency:', urgency);
     console.log('Description:', description);
     createTask.mutate({
-      path: params.ts_id,
+      path: ts_id,
       data: {
         opgave: description,
         flag: Number(urgency),
@@ -78,19 +76,21 @@ const NotificationList = () => {
 
   const handleMarkAsDone = (notification) => {
     markAsDone.mutate({
-      path: params.ts_id,
+      path: ts_id,
       data: {
         opgave: notification.opgave,
       },
     });
   };
 
-  const onstation = data?.filter((elem) => elem.stationid == params.ts_id && elem.opgave != null);
+  const onstation = data?.filter((elem) => elem.stationid == ts_id && elem.opgave != null);
   const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
     onstation?.filter((elem) => elem.notification_id != 0),
     'notification_id'
   );
+
+  console.log(onstation);
 
   const mapped = map(grouped, (group) => {
     return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));

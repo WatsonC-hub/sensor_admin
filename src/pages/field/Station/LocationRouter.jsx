@@ -1,20 +1,14 @@
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import IconButton from '@mui/material/IconButton';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {useNavigate, useParams} from 'react-router-dom';
-import {AppBarLayout, NavBarMenu} from 'src/NavBar';
 import {apiClient} from 'src/apiClient';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {authStore} from 'src/state/store';
-import NotificationList from '../../../components/NotificationList';
 import ErrorPage from './ErrorPage';
-import MinimalSelect from './MinimalSelect';
 import Station from './Station';
+import StationNavBar from './StationNavBar';
 
 export default function LocationRouter() {
   const params = useParams();
@@ -53,7 +47,13 @@ export default function LocationRouter() {
   return (
     <>
       <CssBaseline />
-      <AppBarLayout>
+      <StationNavBar
+        loc_id={params.locid}
+        ts_id={params.ts_id}
+        loc_name={data?.[0].loc_name}
+        select_list={data}
+      />
+      {/* <AppBarLayout>
         <Box display="flex">
           <IconButton
             color="inherit"
@@ -88,7 +88,7 @@ export default function LocationRouter() {
             ]}
           />
         </Box>
-      </AppBarLayout>
+      </AppBarLayout> */}
 
       <main
         style={{

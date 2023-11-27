@@ -20,7 +20,7 @@ import PejlingMeasurements from './PejlingMeasurements';
 import LastJupiterMP from './components/LastJupiterMP';
 import PejlingFormBorehole from './components/PejlingFormBorehole';
 
-const Boreholeno = ({boreholeno, intakeno}) => {
+const Boreholeno = ({boreholeno, intakeno, stamdata}) => {
   let location = useLocation();
   let navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -82,23 +82,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     {
       enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
       placeholderData: [],
-    }
-  );
-
-  const {data: stamdata, isLoading} = useQuery(
-    ['borehole_stamdata', boreholeno, intakeno],
-    async () => {
-      const {data} = await apiClient.get(
-        `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`
-      );
-      return data;
-    },
-    {
-      enabled: boreholeno !== undefined && intakeno !== undefined,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-      retry: false,
     }
   );
 
@@ -313,11 +296,15 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       return data;
     },
     {
-      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+      enabled:
+        boreholeno !== -1 &&
+        boreholeno !== null &&
+        intakeno !== undefined &&
+        ts_starttime !== undefined,
     }
   );
 
-  if (isLoading || metadataLoading) {
+  if (metadataLoading) {
     return (
       <Stack spacing={1}>
         <Skeleton variant="rounded" height={400} />
