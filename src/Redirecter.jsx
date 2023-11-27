@@ -7,6 +7,7 @@ import ScanComponent from 'src/components/ScanComponent';
 import Chooser from './Chooser';
 import LoadingSkeleton from './LoadingSkeleton';
 import NavBar from './NavBar';
+import {RemoveTrailingSlash} from './RemoveTrailingSlash';
 import SensorAdmin from './pages/admin/SensorAdmin';
 import SensorField from './pages/field/SensorField';
 import {authStore} from './state/store';
@@ -40,6 +41,7 @@ const Redirecter = () => {
 
   return (
     <>
+      <RemoveTrailingSlash />
       <Routes>
         <Route
           path="/"
