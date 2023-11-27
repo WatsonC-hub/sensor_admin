@@ -225,7 +225,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
           className: 'custom-div-icon',
           html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus]}),
           iconSize: [24, 24],
-          iconAnchor: [12, 24],
+          iconAnchor: [12, 12],
         });
 
         const marker = L.marker(point, {
