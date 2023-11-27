@@ -283,6 +283,9 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     icon: makeLinkIcon,
     click: function (gd) {
       var ts_id = window.location.href.split('/').at(-1).split('#').at(0);
+      if (ts_id === '') {
+        ts_id = window.location.href.split('/').at(-2).split('#').at(0);
+      }
 
       var link = document.createElement('a');
       if (link.download !== undefined) {
