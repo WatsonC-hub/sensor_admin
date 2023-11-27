@@ -114,9 +114,8 @@ const layout3 = {
 };
 
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
-  const parsed = jupiterData ? jupiterData.data : null;
-  const xJupiterData = parsed?.x;
-  const yJupiterData = parsed?.y;
+  const xJupiterData = jupiterData?.map((d) => d.timeofmeas);
+  const yJupiterData = jupiterData?.map((d) => d.waterlevel);
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => d.waterlevel);
 

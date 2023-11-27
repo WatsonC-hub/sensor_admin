@@ -148,7 +148,7 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
-function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
+function PlotGraph({ts_id, controlData, dynamicMeasurement, traces}) {
   const [name, unit, stationtype, terrainlevel] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
     state.timeseries.unit,
@@ -234,7 +234,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       case 6:
         return 'Korrektion tilbage til forrige pejling';
       default:
-        return 'Korrektion';
+        return 'Kontrol';
     }
   });
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
@@ -350,6 +350,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           showlegend: false,
           marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
         },
+        ...(traces ?? []),
       ]}
       layout={{
         ...layout,
@@ -377,7 +378,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   );
 }
 
-export default function BearingGraph({stationId, measurements, dynamicMeasurement}) {
+export default function BearingGraph({stationId, measurements, dynamicMeasurement, traces}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -396,6 +397,7 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
         ts_id={stationId}
         controlData={measurements}
         dynamicMeasurement={dynamicMeasurement}
+        traces={traces}
       />
     </div>
   );

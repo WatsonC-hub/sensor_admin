@@ -36,7 +36,8 @@ export default function BoreholeRouter() {
       if (intakeno) {
         setSelectedItem(parseInt(intakeno));
       } else {
-        intakeno = '';
+        intakeno = -1;
+        console.log(data);
         if (data.length === 1) {
           intakeno = data[0].intakeno;
           navigate(`../borehole/${params.boreholeno}/${intakeno}`, {
@@ -47,6 +48,8 @@ export default function BoreholeRouter() {
       }
     }
   }, [data]);
+
+  console.log(selectedItem);
 
   return (
     <>
@@ -67,7 +70,7 @@ export default function BoreholeRouter() {
             <MinimalSelectBorehole
               boreholeno={params.boreholeno}
               boreholenoList={data}
-              selectedIntake={params.intakeno}
+              selectedIntake={selectedItem}
               setSelectedItem={setSelectedItem}
             />
           </Box>

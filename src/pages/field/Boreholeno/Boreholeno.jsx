@@ -94,9 +94,11 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       return data;
     },
     {
+      enabled: boreholeno !== undefined && intakeno !== undefined,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       refetchInterval: false,
+      retry: false,
     }
   );
 
@@ -112,6 +114,32 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
+    }
+  );
+
+  const {data: ts_starttime} = useQuery(
+    ['udstyr', stamdata?.ts_id],
+    async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${stamdata?.ts_id}`);
+      return data;
+    },
+    {
+      select: (data) => {
+        return data
+          .reduce((acc, curr) => {
+            let start = moment(curr.startdato);
+            if (start < acc) {
+              return start;
+            }
+            return acc;
+          }, moment('2099-01-01'))
+          .format('YYYY-MM-DDTHH:mm');
+      },
+      enabled: stamdata?.hasUnit ? true : false,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchIntervalInBackground: false,
+      refetchOnReconnect: false,
     }
   );
 
@@ -276,6 +304,19 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   };
 
+  const {data: jupiter_data} = useQuery(
+    ['jupiter_waterlevel', boreholeno, intakeno, ts_starttime],
+    async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}?enddate=${ts_starttime}`
+      );
+      return data;
+    },
+    {
+      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+    }
+  );
+
   if (isLoading || metadataLoading) {
     return (
       <Stack spacing={1}>
@@ -301,6 +342,17 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           stationId={timeseries_metadata.ts_id}
           measurements={control}
           dynamicMeasurement={formToShow !== 'ADDPEJLING' ? undefined : dynamic}
+          traces={[
+            {
+              x: jupiter_data?.map((e) => moment(e.timeofmeas).format('YYYY-MM-DD HH:mm')),
+              y: jupiter_data?.map((e) => e.waterlevel),
+              name: 'Jupiter data',
+              type: 'scatter',
+              line: {width: 2},
+              mode: 'lines+markers',
+              marker: {symbol: '100', size: '8', color: '#4caf50'},
+            },
+          ]}
         />
       )}
       {formToShow === 'ADDPEJLING' && (
