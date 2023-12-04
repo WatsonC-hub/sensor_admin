@@ -176,8 +176,12 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
 
     L.control
       .locate({
+        showPopup: false,
         strings: {
           title: 'Find mig',
+        },
+        circleStyle: {
+          interactive: false,
         },
       })
       .addTo(map);
