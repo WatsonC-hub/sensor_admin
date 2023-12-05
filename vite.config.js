@@ -30,6 +30,7 @@ const pwaOptions = {
   registerType: 'autoUpdate',
   injectManifest: {
     globPatterns: ['**/*'],
+    maximumFileSizeToCacheInBytes: 5000000,
   },
   includeAssets: ['**/*'],
   manifest: {
