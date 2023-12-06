@@ -4,9 +4,9 @@ import {daDK} from '@mui/material/locale';
 const theme = createTheme(
   {
     palette: {
-      // type: "light",
+      type: 'light',
       primary: {
-        main: 'rgb(0,120,109)',
+        main: '#00786D',
       },
       secondary: {
         main: '#FFA137',
