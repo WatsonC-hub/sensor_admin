@@ -4,7 +4,7 @@ import {daDK} from '@mui/material/locale';
 const theme = createTheme(
   {
     palette: {
-      type: 'light',
+      mode: 'light',
       primary: {
         main: '#00786D',
       },
