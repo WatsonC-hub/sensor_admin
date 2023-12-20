@@ -30,6 +30,7 @@ const pwaOptions = {
   registerType: 'autoUpdate',
   injectManifest: {
     globPatterns: ['**/*'],
+    maximumFileSizeToCacheInBytes: 5000000,
   },
   includeAssets: ['**/*'],
   manifest: {
@@ -76,7 +77,7 @@ const pwaOptions = {
         description: 'Åben Field',
         icons: [
           {
-            src: 'android-chrome-96x96.png',
+            src: 'android-launchericon-96-96.png',
             sizes: '96x96',
             type: 'image/png',
           },
@@ -88,7 +89,7 @@ const pwaOptions = {
         description: 'Åben Admin',
         icons: [
           {
-            src: 'android-chrome-96x96.png',
+            src: 'android-launchericon-96-96.png',
             sizes: '96x96',
             type: 'image/png',
           },

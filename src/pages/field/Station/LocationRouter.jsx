@@ -44,7 +44,7 @@ export default function LocationRouter() {
     }
   );
 
-  const notifications = notificationOverview?.filter((elem) => elem.locid == params.locid);
+  const stamdata = data?.filter((elem) => elem.ts_id == params.ts_id)?.[0];
 
   return (
     <>
@@ -70,7 +70,7 @@ export default function LocationRouter() {
           <NavBarMenu
             highligtFirst={!isMobile}
             items={[
-              ...(adminAccess
+              ...(adminAccess && !stamdata?.calculated
                 ? [
                     {
                       title: 'Til QA',
@@ -93,10 +93,7 @@ export default function LocationRouter() {
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <Station
-            stationId={params.ts_id ? params.ts_id : -1}
-            stamdata={data?.filter((elem) => elem.ts_id == params.ts_id)?.[0]}
-          />
+          <Station stationId={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />
         </ErrorBoundary>
       </main>
     </>

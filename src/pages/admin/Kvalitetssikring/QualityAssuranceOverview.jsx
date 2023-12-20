@@ -98,12 +98,14 @@ const QualityAssuranceOverview = () => {
     },
     {
       select: (tabledata) => {
-        return tabledata.map((row) => {
-          return {
-            ...row,
-            navigateTo: row.ts_id.toString(),
-          };
-        });
+        return tabledata
+          .filter((item) => !item.calculated)
+          .map((row) => {
+            return {
+              ...row,
+              navigateTo: row.ts_id.toString(),
+            };
+          });
       },
     }
   );

@@ -121,8 +121,8 @@ function MobileBottomNav({setFormToShow, canEdit, isCalculated, isWaterlevel}) {
         backgroundColor: 'primary.main',
         height: 'auto',
         width: 'auto',
-        boxShadow: '0 3px 5px 2px rgba(115,115,115,255)',
-        position: 'sticky',
+        // boxShadow: '0 3px 5px 2px rgba(115,115,115,255)',
+        position: 'fixed',
         bottom: '0',
         zIndex: 1,
       }}

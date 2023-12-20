@@ -49,7 +49,7 @@ const LogOut = ({element: Element}) => {
 
 export const AppBarLayout = ({children, style}) => {
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" enableColorOnDark>
       <Toolbar
         style={
           style
@@ -62,6 +62,8 @@ export const AppBarLayout = ({children, style}) => {
         }
         sx={{
           height: 64,
+          pl: 0.5,
+          pr: 0.5,
         }}
       >
         {children}

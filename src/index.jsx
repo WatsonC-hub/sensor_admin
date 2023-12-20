@@ -1,4 +1,4 @@
-import {StyledEngineProvider, ThemeProvider} from '@mui/material';
+import {CssBaseline, StyledEngineProvider, ThemeProvider} from '@mui/material';
 import * as Sentry from '@sentry/react';
 import {BrowserTracing} from '@sentry/tracing';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
@@ -49,6 +49,7 @@ root.render(
               });
             }}
           >
+            <CssBaseline />
             <App />
             <ReactQueryDevtools initialIsOpen={false} />
             <ToastContainer

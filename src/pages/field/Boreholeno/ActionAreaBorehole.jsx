@@ -26,7 +26,7 @@ function BottomNav({setFormToShow, canEdit}) {
         width: 'auto',
         height: 'auto',
         boxShadow: '0 3px 5px 2px rgba(115,115,115,255)',
-        position: 'sticky',
+        position: 'fixed',
         bottom: '0',
         zIndex: 1,
       }}
