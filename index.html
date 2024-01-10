@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="minimum-scale=1 width=device-width, initial-scale=1" />
-    <script defer data-domain="sensor.watsonc.dk" src="https://plausible.io/js/script.js"></script>
     <meta name="msapplication-TileColor" content="#00786d" />
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#00786d" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#00786d" />
@@ -341,6 +340,26 @@
         }
       }
     </style>
+
+    <script
+      defer
+      data-domain="sensor.watsonc.dk"
+      src="https://plausible.io/js/script.manual.js"
+    ></script>
+    <script>
+      window.plausible =
+        window.plausible ||
+        function () {
+          (window.plausible.q = window.plausible.q || []).push(arguments);
+        };
+    </script>
+    <script>
+      var url = window.location.href;
+      // Replace every all-numeric sequences located between two slashes by "_ID_"
+      var redactedUrl = url.replace(/\/\d+\//g, '/_ID_/');
+      // Send the pageview event to Plausible
+      plausible('pageview', {u: redactedUrl + window.location.search});
+    </script>
 
     <title>Calypso @ Field</title>
   </head>
