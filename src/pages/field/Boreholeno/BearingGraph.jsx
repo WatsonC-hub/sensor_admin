@@ -113,10 +113,19 @@ const layout3 = {
   },
 };
 
+const TRACE_NAMES = {
+  0: 'Jupiter - i ro',
+  1: 'Jupiter - i drift',
+  null: 'Jupiter - ukendt årsag',
+};
+
+const TRACE_COLORS = {
+  0: '#177FC1',
+  1: '#FF0000',
+  null: '#000000',
+};
+
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
-  const parsed = jupiterData ? jupiterData.data : null;
-  const xJupiterData = parsed?.x;
-  const yJupiterData = parsed?.y;
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => d.waterlevel);
 
@@ -133,21 +142,33 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
     }
   }, [dynamicMeasurement]);
 
+  const jupiterTraces = [null, 0, 1].map((i) => {
+    // get indexes where data.situation is 0, 1 or null
+    const indexes = jupiterData?.data?.situation
+      ?.map((situation, index) => situation === i && index)
+      .filter((d) => d !== false);
+
+    // get x and y values for each situation
+    const x = indexes?.map((index) => jupiterData.data.x[index]);
+    const y = indexes?.map((index) => jupiterData.data.y[index]);
+
+    return {
+      x,
+      y,
+      name: TRACE_NAMES[i],
+      type: 'scatter',
+      line: {width: 2},
+      mode: 'lines+markers',
+      marker: {symbol: '100', size: '8'},
+    };
+  });
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <Plot
       data={[
-        {
-          x: xJupiterData,
-          y: yJupiterData,
-          name: 'Jupiter data',
-          type: 'scatter',
-          line: {width: 2},
-          mode: 'lines+markers',
-          marker: {symbol: '100', size: '8', color: '#177FC1'},
-        },
+        ...jupiterTraces,
         {
           x: xOurData,
           y: yOurData,
