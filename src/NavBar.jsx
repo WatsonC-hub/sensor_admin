@@ -32,6 +32,7 @@ import NotificationList from './components/NotificationList';
 import {ReactComponent as SmallLogo} from './logo.svg';
 import {captureDialogAtom} from './state/atoms';
 import {authStore} from './state/store';
+import {apiClient} from 'src/apiClient';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);
@@ -41,6 +42,7 @@ const LogOut = ({element: Element}) => {
   const handleLogout = () => {
     resetState();
     navigate('/');
+    apiClient.get('/auth/logout/secure');
     queryClient.clear();
   };
 
