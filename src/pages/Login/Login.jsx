@@ -34,6 +34,7 @@ export default function Login({}) {
         setAuthorization(res.data);
         setAuthenticated(true);
         setLoginExpired(false);
+        window.localStorage.setItem('calypso_csrf_token', res.data.csrf_token);
       })
       .catch((err) => {
         console.log(err);

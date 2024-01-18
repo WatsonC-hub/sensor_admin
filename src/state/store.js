@@ -58,7 +58,7 @@ export const authStore = create(
         ),
     })),
     {
-      name: 'auth-storage', // name of item in the storage (must be unique)
+      name: 'calypso-auth-storage', // name of item in the storage (must be unique)
       storage: createJSONStorage(() => localStorage), // (optional) by default the 'localStorage' is used
     }
   )
