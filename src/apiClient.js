@@ -9,7 +9,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   function (config) {
     // Add csrf token to request header
-    config.headers['X-CSRF-TOKEN'] = authStore.getState().csrfToken;
+    config.headers['X-CSRF-TOKEN'] = window.localStorage.getItem('calypso_csrf_token');
     return config;
   },
   function (error) {
