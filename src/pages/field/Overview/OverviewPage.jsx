@@ -11,7 +11,7 @@ import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
 import PropTypes from 'prop-types';
 import React from 'react';
-import NavBar from 'src/NavBar';
+import NavBar from 'src/components/NavBar';
 import {apiClient} from 'src/apiClient';
 import {authStore} from 'src/state/store';
 import ScrollTop from '../../../components/ScrollTop';

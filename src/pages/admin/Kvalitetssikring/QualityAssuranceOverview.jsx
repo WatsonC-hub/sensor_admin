@@ -7,7 +7,7 @@ import {useNavigate} from 'react-router-dom';
 import {apiClient} from 'src/apiClient';
 import TableComponent from 'src/components/TableComponent';
 import useBreakpoints from 'src/hooks/useBreakpoints';
-import NavBar from 'src/NavBar';
+import NavBar from 'src/components/NavBar';
 
 const tableStateAtom = atom({
   columnVisibility: {

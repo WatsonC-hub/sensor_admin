@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from 'src/apiClient';
-import NavBar from 'src/NavBar';
+import NavBar from 'src/components/NavBar';
 
 const UserAdmin = () => {
   const {data, isLoading, error} = useQuery(['borehole_permission'], async ({signal}) => {

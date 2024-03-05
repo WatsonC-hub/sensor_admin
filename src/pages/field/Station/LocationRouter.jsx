@@ -7,7 +7,7 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {useNavigate, useParams} from 'react-router-dom';
-import {AppBarLayout, NavBarMenu} from 'src/NavBar';
+import {AppBarLayout, NavBarMenu} from 'src/components/NavBar';
 import {apiClient} from 'src/apiClient';
 import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
 import useBreakpoints from 'src/hooks/useBreakpoints';

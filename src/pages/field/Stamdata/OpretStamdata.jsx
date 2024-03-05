@@ -19,7 +19,7 @@ import moment from 'moment';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {metadataSchema} from 'src/helpers/zodSchemas';
-import NavBar from '../../../NavBar';
+import NavBar from 'src/components/NavBar';
 import {stamdataStore} from '../../../state/store';
 
 const flex1 = {

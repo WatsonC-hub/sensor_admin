@@ -2,7 +2,7 @@ import {Box, Grid, Tab, Tabs, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {useParams} from 'react-router-dom';
-import NavBar from 'src/NavBar';
+import NavBar from 'src/components/NavBar';
 import {apiClient} from 'src/apiClient';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {MetadataContext} from 'src/state/contexts';

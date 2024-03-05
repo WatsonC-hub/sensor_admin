@@ -14,7 +14,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
 import {reverse, sortBy, uniqBy} from 'lodash';
 import React, {useEffect, useState} from 'react';
-import NavBar from 'src/NavBar';
+import NavBar from 'src/components/NavBar';
 import {apiClient} from 'src/apiClient';
 import ServiceMap from 'src/pages/admin/Notifikationer/ServiceMap';
 import {useNotificationOverview} from '../../../hooks/query/useNotificationOverview';

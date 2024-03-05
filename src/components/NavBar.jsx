@@ -27,11 +27,11 @@ import {useNavigate} from 'react-router-dom';
 import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
 import useBreakpoints from 'src/hooks/useBreakpoints';
 import {MetadataContext} from 'src/state/contexts';
-import {ReactComponent as LogoSvg} from './calypso.svg';
-import NotificationList from './components/NotificationList';
-import {ReactComponent as SmallLogo} from './logo.svg';
-import {captureDialogAtom} from './state/atoms';
-import {authStore} from './state/store';
+import {ReactComponent as LogoSvg} from 'src/calypso.svg';
+import NotificationList from 'src/components/NotificationList';
+import {ReactComponent as SmallLogo} from 'src/logo.svg';
+import {captureDialogAtom} from 'src/state/atoms';
+import {authStore} from 'src/state/store';
 import {apiClient} from 'src/apiClient';
 
 const LogOut = ({element: Element}) => {

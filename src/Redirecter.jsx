@@ -6,7 +6,7 @@ import {useMediaQuery, useTheme} from '@mui/material';
 import ScanComponent from 'src/components/ScanComponent';
 import Chooser from './Chooser';
 import LoadingSkeleton from './LoadingSkeleton';
-import NavBar from './NavBar';
+import NavBar from 'src/components/NavBar';
 import {RemoveTrailingSlash} from './RemoveTrailingSlash';
 import SensorAdmin from './pages/admin/SensorAdmin';
 import SensorField from './pages/field/SensorField';
