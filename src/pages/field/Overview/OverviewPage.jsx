@@ -9,7 +9,6 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
-import PropTypes from 'prop-types';
 import React from 'react';
 import NavBar from 'src/components/NavBar';
 import {apiClient} from 'src/apiClient';
