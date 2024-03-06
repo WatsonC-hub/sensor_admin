@@ -1,13 +1,14 @@
 import {TextField} from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
-import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
-import daLocale from 'date-fns/locale/da';
+// import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import daLocale from 'dayjs/locale/da';
 import moment from 'moment/moment';
 import React from 'react';
 
 const OwnDatePicker = (props) => {
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={daLocale}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={daLocale}>
       <TextField
         id={typeof props.label == 'string' ? props.label : props.label.props.children}
         label={props.label}
