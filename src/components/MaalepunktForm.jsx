@@ -8,17 +8,11 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import {isValid} from 'date-fns';
+import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import OwnDatePicker from './OwnDatePicker';
 
-export default function MaalepunktForm({
-  formData,
-  changeFormData,
-  handleSubmit,
-  resetFormData,
-  handleCancel,
-}) {
+export default function MaalepunktForm({formData, changeFormData, handleSubmit, handleCancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
 
   useEffect(() => {
@@ -33,15 +27,13 @@ export default function MaalepunktForm({
   };
 
   const handleStartdateChange = (date) => {
-    if (isValid(date)) {
-      console.log('date is valid again: ', date);
+    if (moment(date).isValid()) {
       changeFormData('startdate', date);
     }
   };
 
   const handleEnddateChange = (date) => {
-    if (isValid(date)) {
-      console.log('date is valid again: ', date);
+    if (moment(date).isValid()) {
       changeFormData('enddate', date);
     }
   };

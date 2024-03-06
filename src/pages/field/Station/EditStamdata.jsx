@@ -15,7 +15,6 @@ import {
   Typography,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
-import 'date-fns';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {apiClient} from 'src/apiClient';

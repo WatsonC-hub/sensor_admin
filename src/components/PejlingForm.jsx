@@ -17,7 +17,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import {isValid} from 'date-fns';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {stamdataStore} from '../state/store';
@@ -87,7 +86,7 @@ export default function PejlingForm({
   }, [formData.gid, mpData]);
 
   const handleDateChange = (date) => {
-    if (isValid(date)) {
+    if (moment(date).isValid()) {
       changeFormData('timeofmeas', date);
     }
 
