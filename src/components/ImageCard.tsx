@@ -8,10 +8,18 @@ import Typography from '@mui/material/Typography';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
-import DeleteAlert from 'src/components/DeleteAlert';
-import useBreakpoints from 'src/hooks/useBreakpoints';
+import DeleteAlert from '~/components/DeleteAlert';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {Image} from '~/types';
+import type {Mutation} from '@tanstack/react-query';
 
-function ImageCard({image, deleteMutation, handleEdit}) {
+type ImageCardProps = {
+  image: Image;
+  deleteMutation: any;
+  handleEdit: (image: Image) => void;
+};
+
+function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
   const {isMobile} = useBreakpoints();
 
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}`;

@@ -1,25 +1,10 @@
 import react from '@vitejs/plugin-react';
-import {visualizer} from 'rollup-plugin-visualizer';
+import path from 'path';
 import {defineConfig} from 'vite';
-import {VitePWA} from 'vite-plugin-pwa';
+import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
 
-const getCache = ({name, pattern, handler}) => ({
-  urlPattern: pattern,
-  handler: handler,
-  options: {
-    cacheName: name,
-    expiration: {
-      maxEntries: 500,
-      maxAgeSeconds: 60 * 60 * 24, // 1 day
-    },
-    cacheableResponse: {
-      statuses: [200],
-    },
-  },
-});
-
-const pwaOptions = {
+const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {
     enabled: true,
     type: 'module',
@@ -52,21 +37,21 @@ const pwaOptions = {
         src: 'screenshot-map.png',
         type: 'image/png',
         sizes: '374x668',
-        form_factpr: 'narrow',
+        form_factor: 'narrow',
         label: 'Kortvisning af målestationer',
       },
       {
         src: 'screenshot-ts.png',
         type: 'image/png',
         sizes: '375x668',
-        form_factpr: 'narrow',
+        form_factor: 'narrow',
         label: 'Tidsserie af måledata',
       },
       {
         src: 'screenshot-ts-wide.png',
         type: 'image/png',
         sizes: '1855x827',
-        form_factpr: 'wide',
+        form_factor: 'wide',
         label: 'Tidsserie af måledata på desktop',
       },
     ],
@@ -138,7 +123,6 @@ export default defineConfig({
   plugins: [
     react(),
     svgrPlugin(),
-    visualizer(),
     VitePWA(pwaOptions),
     // sentryVitePlugin(sentryOptions),
   ],
@@ -180,7 +164,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: '/src',
+      src: path.resolve(__dirname, './src'),
+      '~': path.resolve(__dirname, './src'),
       public: '/public',
     },
   },

@@ -1,9 +1,26 @@
 import React from 'react';
-import ImageCard from './ImageCard';
-
+// @ts-ignore
+import ImageCard from '~/components/ImageCard';
 import {Grid} from '@mui/material';
 
-function ImageViewer({images, deleteMutation, handleEdit}) {
+type Image = {
+  gid: number;
+  loc_id: number;
+  title: string;
+  date: string;
+  public: boolean;
+  userid: number;
+  comment: string;
+  imageurl: string;
+};
+
+type ImageViewerProps = {
+  images: Array<Image>;
+  deleteMutation: any;
+  handleEdit: any;
+};
+
+function ImageViewer({images, deleteMutation, handleEdit}: ImageViewerProps) {
   return (
     <Grid container spacing={3} alignItems="center" justifyContent="center">
       {images?.map((elem) => {

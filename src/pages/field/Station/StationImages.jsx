@@ -3,10 +3,10 @@ import {Button, Grid} from '@mui/material';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useState} from 'react';
-import {apiClient} from 'src/apiClient';
-import {useImageUpload} from 'src/hooks/query/useImageUpload';
-import ImageViewer from '../../../components/ImageViewer';
-import SaveImageDialog from '../../../components/SaveImageDialog';
+import {apiClient} from '~/apiClient';
+import {useImageUpload} from '~/hooks/query/useImageUpload';
+import ImageViewer from '~/components/ImageViewer';
+import SaveImageDialog from '~/components/SaveImageDialog';
 
 const convertBase64 = (file) => {
   return new Promise((resolve, reject) => {

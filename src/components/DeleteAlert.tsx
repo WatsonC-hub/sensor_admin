@@ -2,9 +2,22 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
-import React from 'react';
 
-export default function DeleteAlert({measurementId, dialogOpen, onOkDelete, setDialogOpen, title}) {
+type DeleteAlertProps = {
+  measurementId?: number;
+  dialogOpen: boolean;
+  onOkDelete: (measurementId: number | undefined) => void;
+  setDialogOpen: (dialogOpen: boolean) => void;
+  title?: string;
+};
+
+export default function DeleteAlert({
+  measurementId,
+  dialogOpen,
+  onOkDelete,
+  setDialogOpen,
+  title,
+}: DeleteAlertProps) {
   const handleClose = () => {
     setDialogOpen(false);
   };
