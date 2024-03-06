@@ -202,7 +202,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
   });
 
   const {
-    formState: {isSubmitting},
+    formState: {isSubmitting, errors},
     reset,
     watch,
     getValues,
@@ -299,6 +299,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
               >
                 {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
               </Button>
+              {errors?.unit && (
+                <Typography variant="caption" color="error">
+                  Vælg udstyr først
+                </Typography>
+              )}
             </div>
             <UnitForm mode="add" />
             <Grid container spacing={3}>
