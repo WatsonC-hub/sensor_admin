@@ -15,7 +15,7 @@ export const useControlData = () => {
       return data;
     },
     enabled: typeof metadata?.ts_id == 'number',
-    refetchInterval: null,
+    refetchInterval: false,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
     refetchOnMount: true,

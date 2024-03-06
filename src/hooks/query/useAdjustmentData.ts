@@ -7,10 +7,6 @@ import {MetadataContext} from '~/state/contexts';
 export const useAdjustmentData = () => {
   const metadata = useContext(MetadataContext);
 
-  if (!metadata) {
-    return;
-  }
-
   const query = useQuery({
     queryKey: ['qa_all', metadata?.ts_id],
     queryFn: async () => {

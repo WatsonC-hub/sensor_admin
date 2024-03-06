@@ -1,20 +1,21 @@
 import {Button, Icon} from '@mui/material';
 import {useLocation} from 'react-router-dom';
 import {useCorrectData} from '~/hooks/useCorrectData';
-import {rerunIcon} from './plotlyIcons';
+import {rerunIcon} from '~/helpers/plotlyIcons';
+import type {CloseButtonProps} from 'react-toastify';
 
-const CloseButton = ({closeToast}) => {
+const CloseButton = ({closeToast}: CloseButtonProps) => {
   const location = useLocation();
   const split = location.pathname.split('/');
-  const ts_id = split[split.length - 1];
+  const ts_id = parseInt(split[split.length - 1]);
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
   return (
     <Button
-      onClick={() => {
-        correctMutation.mutate({});
-        closeToast();
+      onClick={(e) => {
+        correctMutation.mutate();
+        closeToast(e);
       }}
       size="small"
       sx={{

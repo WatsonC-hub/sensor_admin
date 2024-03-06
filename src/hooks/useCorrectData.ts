@@ -5,7 +5,7 @@ import {apiClient} from '~/apiClient';
 
 const TOAST_ID = 'correct-toast';
 
-export const useCorrectData = (ts_id, queryKey) => {
+export const useCorrectData = (ts_id: number, queryKey: string) => {
   const queryClient = useQueryClient();
 
   // TODO: Check me
@@ -26,7 +26,7 @@ export const useCorrectData = (ts_id, queryKey) => {
 
   useEffect(() => {
     if (pollData === 200) {
-      queryClient.invalidateQueries([queryKey, ts_id]);
+      queryClient.invalidateQueries({queryKey: [queryKey, ts_id]});
       toast.update(TOAST_ID, {
         render: 'Genberegnet',
         type: toast.TYPE.SUCCESS,
@@ -41,7 +41,7 @@ export const useCorrectData = (ts_id, queryKey) => {
   }, [pollData]);
 
   const correctMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async () => {
       toast('Genberegner...', {
         toastId: TOAST_ID,
         type: toast.TYPE.INFO,
@@ -52,7 +52,7 @@ export const useCorrectData = (ts_id, queryKey) => {
         progress: undefined,
         hideProgressBar: true,
       });
-      const {data: res} = await apiClient.post(`/sensor_field/station/correct/${ts_id}`, data);
+      const {data: res} = await apiClient.post(`/sensor_field/station/correct/${ts_id}`);
       return res;
     },
     onSuccess: () => {
