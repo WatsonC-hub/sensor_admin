@@ -8,9 +8,11 @@ import {MetadataContext} from 'src/state/contexts';
 const HandleNowButton = () => {
   const metadata = useContext(MetadataContext);
 
-  const handledMutation = useMutation(async (data) => {
-    const {data: res} = await apiClient.post(`/sensor_admin/qa_handled/${metadata?.ts_id}`);
-    return res;
+  const handledMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: res} = await apiClient.post(`/sensor_admin/qa_handled/${metadata?.ts_id}`);
+      return res;
+    },
   });
   return (
     <Button

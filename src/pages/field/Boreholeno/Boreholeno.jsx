@@ -23,9 +23,12 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const [addMPOpen, setAddMPOpen] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
 
-  const {data: permissions} = useQuery(['borehole_permissions'], async () => {
-    const {data} = await apiClient.get(`/auth/me/permissions`);
-    return data;
+  const {data: permissions} = useQuery({
+    queryKey: ['borehole_permissions'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/auth/me/permissions`);
+      return data;
+    },
   });
 
   useEffect(() => {
@@ -65,48 +68,42 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const [control, setcontrol] = useState([]);
   const [dynamic, setDynamic] = useState([]);
 
-  const {data: measurements} = useQuery(
-    ['measurements', boreholeno, intakeno],
-    async () => {
+  const {data: measurements} = useQuery({
+    queryKey: ['measurements', boreholeno, intakeno],
+    queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
       );
       return data;
     },
-    {
-      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
-      placeholderData: [],
-    }
-  );
+    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+    placeholderData: [],
+  });
 
-  const {data: stamdata} = useQuery(
-    ['borehole_stamdata', boreholeno, intakeno],
-    async () => {
+  const {data: stamdata} = useQuery({
+    queryKey: ['borehole_stamdata', boreholeno, intakeno],
+    queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`
       );
       return data;
     },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-    }
-  );
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+  });
 
-  const {data: watlevmp} = useQuery(
-    ['watlevmp', boreholeno, intakeno],
-    async () => {
+  const {data: watlevmp} = useQuery({
+    queryKey: ['watlevmp', boreholeno, intakeno],
+    queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
       );
       return data;
     },
-    {
-      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
-      placeholderData: [],
-    }
-  );
+    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+    placeholderData: [],
+  });
 
   useEffect(() => {
     if (watlevmp.length > 0) {
@@ -157,12 +154,14 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     setAddMPOpen(true);
   };
 
-  const addOrEditPejling = useMutation(async (data) => {
-    if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`, data);
-    } else {
-      await apiClient.put(`/sensor_field/borehole/measurements/${data.gid}`, data);
-    }
+  const addOrEditPejling = useMutation({
+    mutationFn: async (data) => {
+      if (data.gid === -1) {
+        await apiClient.post(`/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`, data);
+      } else {
+        await apiClient.put(`/sensor_field/borehole/measurements/${data.gid}`, data);
+      }
+    },
   });
 
   const handlePejlingSubmit = () => {
@@ -181,12 +180,14 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     });
   };
 
-  const addOrEditWatlevmp = useMutation(async (data) => {
-    if (data.gid === -1) {
-      await apiClient.post(`/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`, data);
-    } else {
-      await apiClient.put(`/sensor_field/borehole/watlevmp/${data.gid}`, data);
-    }
+  const addOrEditWatlevmp = useMutation({
+    mutationFn: async (data) => {
+      if (data.gid === -1) {
+        await apiClient.post(`/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`, data);
+      } else {
+        await apiClient.put(`/sensor_field/borehole/watlevmp/${data.gid}`, data);
+      }
+    },
   });
 
   const handleMpSubmit = () => {

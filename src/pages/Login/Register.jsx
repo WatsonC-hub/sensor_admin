@@ -75,7 +75,10 @@ export default function Register() {
     data: cvrData,
     isSuccess,
     refetch,
-  } = useQuery(['cvr'], () => getCvr(getValues('cvr')), {
+    error,
+  } = useQuery({
+    queryKey: ['cvr'],
+    queryFn: () => getCvr(getValues('cvr')),
     enabled: false,
     refetchOnWindowFocus: false,
     select: (data) => {
@@ -84,12 +87,14 @@ export default function Register() {
         id: data.data.orgs[0].id !== null ? data.data.orgs[0].id : -1,
       };
     },
-    onError: (error) => {
-      toast.error('CVR ikke gyldigt');
-    },
   });
 
-  const createUserMutation = useMutation(createUser, {
+  useEffect(() => {
+    toast.error('CVR ikke gyldigt');
+  }, [error]);
+
+  const createUserMutation = useMutation({
+    mutationFn: createUser,
     onSuccess: (data) => {
       toast.success('Bruger oprettet');
       setOpenAwaitDialog(true);

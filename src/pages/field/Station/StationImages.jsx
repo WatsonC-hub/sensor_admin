@@ -36,13 +36,13 @@ function StationImages(props) {
 
   const queryClient = useQueryClient();
 
-  const {data: images} = useQuery(
-    ['images', props.locationId], //() => getImage(props.locationId));
-    async () => {
+  const {data: images} = useQuery({
+    queryKey: ['images', props.locationId], //() => getImage(props.locationId));
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/images/${props.locationId}`);
       return data;
-    }
-  );
+    },
+  });
 
   const {del: deleteImage} = useImageUpload('station');
 

@@ -246,23 +246,21 @@ function PlotGraph({qaData, ts_id}) {
 
   const {data: controlData} = useControlData();
 
-  const {data: removed_data} = useQuery(
-    ['removed_data', ts_id],
-    async () => {
+  const {data: removed_data} = useQuery({
+    queryKey: ['removed_data', ts_id],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/removed_data/${ts_id}`);
       return data;
     },
-    {
-      enabled: dataToShow['Fjernet data'],
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
+    enabled: dataToShow['Fjernet data'],
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
-  const {data: precipitation_data} = useQuery(
-    ['precipitation_data', ts_id],
-    async () => {
+  const {data: precipitation_data} = useQuery({
+    queryKey: ['precipitation_data', ts_id],
+    queryFn: async () => {
       const starttime = moment(fullData?.x[0]).format('YYYY-MM-DDTHH:mm');
       const stoptime = moment(fullData?.x[fullData?.x.length - 1]).format('YYYY-MM-DDTHH:mm');
       const {data} = await apiClient.get(
@@ -270,13 +268,11 @@ function PlotGraph({qaData, ts_id}) {
       );
       return data;
     },
-    {
-      enabled: dataToShow['Nedbør'] && fullData !== undefined,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
+    enabled: dataToShow['Nedbør'] && fullData !== undefined,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
   const handlePlotlySelected = (eventData) => {
     if (eventData === undefined) {
@@ -575,11 +571,14 @@ export default function QAGraph({stationId}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const {data: qaData} = useQuery(['qa_labels', stationId], async ({signal}) => {
-    const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
-      signal,
-    });
-    return data;
+  const {data: qaData} = useQuery({
+    queryKey: ['qa_labels', stationId],
+    queryFn: async ({signal}) => {
+      const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
+        signal,
+      });
+      return data;
+    },
   });
 
   return (

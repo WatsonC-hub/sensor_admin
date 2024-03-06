@@ -79,9 +79,9 @@ export default function Station({stationId, stamdata}) {
   const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;
   const isCalculated = stamdata ? stamdata?.calculated : false;
 
-  const {data: watlevmp} = useQuery(
-    ['watlevmp', stationId],
-    async () => {
+  const {data: watlevmp} = useQuery({
+    queryKey: ['watlevmp', stationId],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
 
       return data.map((m) => {
@@ -92,41 +92,35 @@ export default function Station({stationId, stamdata}) {
         };
       });
     },
-    {
-      enabled: stationId !== -1 && stationId !== null,
-      initialData: [],
-    }
-  );
+    enabled: stationId !== -1 && stationId !== null,
+    initialData: [],
+  });
 
-  const {data: measurements} = useQuery(
-    ['measurements', stationId],
-    async () => {
+  const {data: measurements} = useQuery({
+    queryKey: ['measurements', stationId],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);
 
       return data.map((m) => {
         return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
-    {
-      enabled: stationId !== -1 && stationId !== null,
-      initialData: [],
-    }
-  );
+    enabled: stationId !== -1 && stationId !== null,
+    initialData: [],
+  });
 
-  const {data: services} = useQuery(
-    ['service', stationId],
-    async () => {
+  const {data: services} = useQuery({
+    queryKey: ['service', stationId],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${stationId}`);
 
       return data.map((m) => {
         return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
-    {
-      enabled: stationId !== -1 && stationId !== null,
-      initialData: [],
-    }
-  );
+    enabled: stationId !== -1 && stationId !== null,
+    initialData: [],
+  });
 
   useEffect(() => {
     if (watlevmp?.length > 0) {
@@ -176,8 +170,9 @@ export default function Station({stationId, stamdata}) {
     setFormToShow('ADDMAALEPUNKT');
   };
 
-  const pejlingMutate = useMutation(
-    (data) => {
+  const pejlingMutate = useMutation({
+    mutationKey: 'pejling',
+    mutationFn: (data) => {
       if (data.gid === -1) {
         return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);
       } else {
@@ -187,19 +182,16 @@ export default function Station({stationId, stamdata}) {
         );
       }
     },
-    {
-      mutationKey: 'pejling',
-      onSuccess: (data) => {
-        resetPejlingData();
-        setFormToShow(null);
-        toast.success('Kontrolmåling gemt');
-        queryClient.invalidateQueries(['measurements', stationId]);
-      },
-      onError: (error) => {
-        toast.error('Der skete en fejl');
-      },
-    }
-  );
+    onSuccess: (data) => {
+      resetPejlingData();
+      setFormToShow(null);
+      toast.success('Kontrolmåling gemt');
+      queryClient.invalidateQueries(['measurements', stationId]);
+    },
+    onError: (error) => {
+      toast.error('Der skete en fejl');
+    },
+  });
 
   const handlePejlingSubmit = () => {
     const payload = {
@@ -211,12 +203,14 @@ export default function Station({stationId, stamdata}) {
     pejlingMutate.mutate(payload);
   };
 
-  const watlevmpMutate = useMutation((data) => {
-    if (data.gid === -1) {
-      return apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
-    } else {
-      return apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
-    }
+  const watlevmpMutate = useMutation({
+    mutationFn: (data) => {
+      if (data.gid === -1) {
+        return apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
+      } else {
+        return apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
+      }
+    },
   });
 
   const handleMpSubmit = () => {
@@ -236,12 +230,14 @@ export default function Station({stationId, stamdata}) {
     });
   };
 
-  const serviceMutate = useMutation((data) => {
-    if (data.gid === -1) {
-      return apiClient.post(`/sensor_field/station/service/${stationId}`, data);
-    } else {
-      return apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
-    }
+  const serviceMutate = useMutation({
+    mutationFn: (data) => {
+      if (data.gid === -1) {
+        return apiClient.post(`/sensor_field/station/service/${stationId}`, data);
+      } else {
+        return apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
+      }
+    },
   });
 
   const handleServiceSubmit = () => {

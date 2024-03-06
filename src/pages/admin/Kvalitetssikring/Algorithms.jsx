@@ -9,9 +9,12 @@ import AlgorithmCard from './AlgorithmCard';
 const Algorithms = () => {
   let params = useParams();
 
-  const {data} = useQuery(['algorithms', params.ts_id], async () => {
-    const {data} = await apiClient.get(`/sensor_admin/algorithms/${params.ts_id}`);
-    return data;
+  const {data} = useQuery({
+    queryKey: ['algorithms', params.ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/algorithms/${params.ts_id}`);
+      return data;
+    },
   });
 
   return (

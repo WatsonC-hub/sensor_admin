@@ -68,17 +68,15 @@ const NotificationPage = () => {
   const queryClient = useQueryClient();
   const {data, isLoading} = useNotificationOverview();
 
-  const statusMutate = useMutation(
-    async (data) => {
+  const statusMutate = useMutation({
+    mutationFn: async (data) => {
       const {data: out} = await apiClient.post(`/sensor_admin/overblik/update_status`, data);
       return out;
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('overblik');
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries('overblik');
+    },
+  });
 
   useEffect(() => {
     const sorted = reverse(
@@ -95,10 +93,12 @@ const NotificationPage = () => {
     setMapdata(uniqBy(sorted, 'locid'));
   }, [selectFilters, isCustomerService, data, isWatsonCService]);
 
-  const trelloMutate = useMutation(async (data) => {
-    // const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
-    const {data: out2} = await apiClient.post(`/sensor_admin/overblik/make_trello`, data);
-    return out2;
+  const trelloMutate = useMutation({
+    mutationFn: async (data) => {
+      // const {data: out} = await apiClient.post(`/sensor_admin/overblik/make_jira`, data);
+      const {data: out2} = await apiClient.post(`/sensor_admin/overblik/make_trello`, data);
+      return out2;
+    },
   });
 
   const notifications = data

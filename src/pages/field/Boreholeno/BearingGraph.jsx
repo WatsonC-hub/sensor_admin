@@ -227,18 +227,16 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const {data} = useQuery(
-    ['jupiter_waterlevel', boreholeno, intakeno],
-    async () => {
+  const {data} = useQuery({
+    queryKey: ['jupiter_waterlevel', boreholeno, intakeno],
+    queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`
       );
       return data;
     },
-    {
-      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
-    }
-  );
+    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+  });
 
   return (
     <div

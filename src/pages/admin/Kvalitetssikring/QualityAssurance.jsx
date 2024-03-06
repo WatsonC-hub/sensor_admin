@@ -34,20 +34,18 @@ const QualityAssurance = () => {
   const {isTouch} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
 
-  const {data} = useQuery(
-    ['metadata', params.ts_id],
-    async () => {
+  const {data} = useQuery({
+    queryKey: ['metadata', params.ts_id],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata/${params.ts_id}`);
       return data;
     },
-    {
-      enabled: params.ts_id !== undefined,
-      refetchInterval: null,
-      refetchIntervalInBackground: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    }
-  );
+    enabled: params.ts_id !== undefined,
+    refetchInterval: null,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   const handleChange = (_, newValue) => {
     setTabValue(newValue);

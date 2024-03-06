@@ -33,9 +33,12 @@ const TimeseriesTypeSelect = ({stationTypes}) => {
 };
 
 export default function TimeseriesForm({mode}) {
-  const {data: timeseries_types} = useQuery(['timeseries_types'], async () => {
-    const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
-    return data;
+  const {data: timeseries_types} = useQuery({
+    queryKey: ['timeseries_types'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
+      return data;
+    },
   });
 
   const formMethods = useFormContext();

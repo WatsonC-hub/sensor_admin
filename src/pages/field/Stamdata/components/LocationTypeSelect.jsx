@@ -6,18 +6,16 @@ import {apiClient} from 'src/apiClient';
 import FormInput from 'src/components/FormInput';
 
 export default function LocationTypeSelect({disable}) {
-  const {data} = useQuery(
-    ['location_types'],
-    async () => {
+  const {data} = useQuery({
+    queryKey: ['location_types'],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
       return data;
     },
-    {
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
   return (
     <FormInput

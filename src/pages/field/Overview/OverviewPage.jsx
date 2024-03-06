@@ -28,57 +28,49 @@ export default function OverviewPage() {
   const [tabValueInner, setTabValueInner] = useAtom(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
-  const {data: tabledata, isLoading} = useQuery(
-    ['station_list'],
-    async () => {
+  const {data: tabledata, isLoading} = useQuery({
+    queryKey: ['station_list'],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
       return data;
     },
-    {
-      enabled: iotAccess,
-      // refetchInterval: 10000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    }
-  );
+    enabled: iotAccess,
+    // refetchInterval: 10000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
 
-  const {data: boreholetabledata, isLoading: boreholeIsLoading} = useQuery(
-    ['borehole_list'],
-    async () => {
+  const {data: boreholetabledata, isLoading: boreholeIsLoading} = useQuery({
+    queryKey: ['borehole_list'],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
       return data;
     },
-    {
-      enabled: boreholeAccess,
-    }
-  );
+    enabled: boreholeAccess,
+  });
 
-  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery(
-    ['borehole_map'],
-    async () => {
+  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery({
+    queryKey: ['borehole_map'],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);
       return data;
     },
-    {
-      enabled: boreholeAccess,
-    }
-  );
+    enabled: boreholeAccess,
+  });
 
-  const {data: mapData, isLoading: mapLoading} = useQuery(
-    ['map_data'],
-    async () => {
+  const {data: mapData, isLoading: mapLoading} = useQuery({
+    queryKey: ['map_data'],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/map_data`);
       return data;
     },
-    {
-      enabled: iotAccess,
-      refetchInterval: 10000,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-    }
-  );
+    enabled: iotAccess,
+    refetchInterval: 10000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
 
   const handleChange = (_, newValue) => {
     setTabValue(newValue);

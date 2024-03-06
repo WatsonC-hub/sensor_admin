@@ -21,9 +21,12 @@ function BoreholeImages(props) {
   });
   const queryClient = useQueryClient();
 
-  const {data: images} = useQuery(['images', props.boreholeno], async () => {
-    const {data} = await apiClient.get(`/sensor_field/borehole/image/${props.boreholeno}`);
-    return data;
+  const {data: images} = useQuery({
+    queryKey: ['images', props.boreholeno],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/borehole/image/${props.boreholeno}`);
+      return data;
+    },
   });
 
   const {del: deleteImage} = useImageUpload('borehole');

@@ -18,20 +18,18 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
 
   const queryClient = useQueryClient();
 
-  const changeStamdata = useMutation(
-    async (data) => {
+  const changeStamdata = useMutation({
+    mutationFn: async (data) => {
       const {data: out} = await apiClient.put(
         `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`,
         data
       );
       return out;
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('borehole_stamdata');
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries('borehole_stamdata');
+    },
+  });
 
   const schema = z.object({
     calypso_id: z.number().int().min(1).optional().nullish(),

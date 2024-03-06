@@ -74,9 +74,12 @@ function LocationChooser({setLocationDialogOpen}) {
     }
   };
 
-  const {data: locations} = useQuery(['locations'], async () => {
-    const {data} = await apiClient.get('/sensor_field/stamdata/locations');
-    return data;
+  const {data: locations} = useQuery({
+    queryKey: ['locations'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
+      return data;
+    },
   });
 
   const desktopChooser = (
@@ -174,8 +177,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
     store.location.x ? true : false
   );
 
-  const queryClient = useQueryClient();
-
   useEffect(() => {
     return () => {
       store.resetLocation();
@@ -201,20 +202,35 @@ export default function OpretStamdata({setAddStationDisabled}) {
   });
 
   const {
-    formState: {errors, isSubmitSuccessful, values, isSubmitting},
+    formState: {isSubmitting},
     reset,
     watch,
     getValues,
     handleSubmit,
-    control,
+    trigger,
   } = formMethods;
 
-  const [selectedStationType, setSelectedStationType] = useState(-1);
+  const watchtstype_id = watch('timeseries.tstype_id');
 
-  const stamdataNewMutation = useMutation(async (data) => {
-    const {data: out} = await apiClient.post(`/sensor_field/stamdata/`, data);
-    return out;
+  const stamdataNewMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/`, data);
+      return out;
+    },
   });
+
+  useEffect(() => {
+    store.resetUnit();
+    reset((formValues) => {
+      return {
+        ...formValues,
+        unit: {
+          startdate: '',
+          unit_uuid: '',
+        },
+      };
+    });
+  }, [watchtstype_id]);
 
   const handleDebug = (error) => {
     console.log('values', getValues());
@@ -254,8 +270,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
       console.log(e);
     }
   };
-
-  const watchtstype_id = watch('timeseries.tstype_id');
 
   return (
     <>

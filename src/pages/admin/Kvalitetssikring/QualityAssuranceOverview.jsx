@@ -90,25 +90,23 @@ const QualityAssuranceOverview = () => {
     []
   );
 
-  const {data: tabledata, isLoading} = useQuery(
-    ['station_list'],
-    async () => {
+  const {data: tabledata, isLoading} = useQuery({
+    queryKey: ['station_list'],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
       return data;
     },
-    {
-      select: (tabledata) => {
-        return tabledata
-          .filter((item) => !item.calculated)
-          .map((row) => {
-            return {
-              ...row,
-              navigateTo: row.ts_id.toString(),
-            };
-          });
-      },
-    }
-  );
+    select: (tabledata) => {
+      return tabledata
+        .filter((item) => !item.calculated)
+        .map((row) => {
+          return {
+            ...row,
+            navigateTo: row.ts_id.toString(),
+          };
+        });
+    },
+  });
 
   return (
     <>

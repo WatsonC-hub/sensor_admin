@@ -19,25 +19,26 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
   const queryClient = useQueryClient();
 
-  const {data: availableUnits, isLoading} = useQuery(['available_units'], async () => {
-    const {data} = await apiClient.get(`/sensor_field/stamdata/available_units`);
-    return data;
+  const {data: availableUnits, isLoading} = useQuery({
+    queryKey: ['available_units'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/available_units`);
+      return data;
+    },
   });
 
-  const addUnit = useMutation(
-    async (data) => {
+  const addUnit = useMutation({
+    mutationFn: async (data) => {
       const {data: out} = await apiClient.post(
         `/sensor_field/stamdata/unit_history/${timeseries.ts_id}`,
         data
       );
       return out;
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries('udstyr');
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries('udstyr');
+    },
+  });
 
   const formMethods = useFormContext();
 

@@ -23,17 +23,15 @@ export default function BoreholeRouter() {
   const params = useParams();
   const navigate = useNavigate();
 
-  const {data: data} = useQuery(
-    ['borehole', params.boreholeno],
-    async () => {
+  const {data: data} = useQuery({
+    queryKey: ['borehole', params.boreholeno],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole/jupiter/${params.boreholeno}`);
       return data;
     },
-    {
-      enabled: params.boreholeno !== undefined,
-      placeholderData: [],
-    }
-  );
+    enabled: params.boreholeno !== undefined,
+    placeholderData: [],
+  });
 
   useEffect(() => {
     if (data) {

@@ -11,20 +11,18 @@ import YRangeRow from './components/YRangeRow';
 export default function QAHistory() {
   const metadata = useContext(MetadataContext);
 
-  const {data, isLoading} = useQuery(
-    ['qa_all', metadata?.ts_id],
-    async () => {
+  const {data, isLoading} = useQuery({
+    queryKey: ['qa_all', metadata?.ts_id],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/qa_all/${metadata?.ts_id}`);
       return data;
     },
-    {
-      enabled: typeof metadata?.ts_id == 'number',
-      refetchInterval: null,
-      refetchIntervalInBackground: false,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    }
-  );
+    enabled: typeof metadata?.ts_id == 'number',
+    refetchInterval: null,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   if (isLoading)
     return (

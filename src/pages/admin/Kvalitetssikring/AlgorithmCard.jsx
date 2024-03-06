@@ -16,26 +16,26 @@ const AlgorithmCard = ({algorithm}) => {
 
   const queryClient = useQueryClient();
 
-  const submitData = useMutation(
-    async (data) => {
+  const submitData = useMutation({
+    mutationFn: async (data) => {
       const {data: response} = await apiClient.put(
         `/sensor_admin/algorithms/${params.ts_id}`,
         data
       );
       return response;
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['algorithms', params.ts_id]);
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries(['algorithms', params.ts_id]);
+    },
+  });
 
-  const revertToDefaults = useMutation(async (data) => {
-    const {data: response} = await apiClient.delete(
-      `/sensor_admin/algorithms/${params.ts_id}/${algorithm.algorithm}`
-    );
-    return response;
+  const revertToDefaults = useMutation({
+    mutationFn: async (data) => {
+      const {data: response} = await apiClient.delete(
+        `/sensor_admin/algorithms/${params.ts_id}/${algorithm.algorithm}`
+      );
+      return response;
+    },
   });
 
   const handleRevert = () => {

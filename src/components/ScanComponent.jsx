@@ -8,9 +8,12 @@ import {apiClient} from 'src/apiClient';
 export default function ScanComponent() {
   const params = useParams();
 
-  const {data, isLoading, isError} = useQuery(['labelid', params.labelid], async () => {
-    const {data} = await apiClient.get(`/sensor_field/calypso_id/${params.labelid}`);
-    return data;
+  const {data, isLoading, isError} = useQuery({
+    queryKey: ['labelid', params.labelid],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/calypso_id/${params.labelid}`);
+      return data;
+    },
   });
 
   if (isLoading) {

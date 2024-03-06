@@ -198,20 +198,18 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
 
-  const {data: rawData, refetch: fetchRaw} = useQuery(
-    ['rawdata', ts_id],
-    async ({signal}) => {
+  const {data: rawData, refetch: fetchRaw} = useQuery({
+    queryKey: ['rawdata', ts_id],
+    queryFn: async ({signal}) => {
       const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
       if (data === null) {
         return [];
       }
       return data;
     },
-    {
-      enabled: false,
-      placeholderData: [],
-    }
-  );
+    enabled: false,
+    placeholderData: [],
+  });
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 

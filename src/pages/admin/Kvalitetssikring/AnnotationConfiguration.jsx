@@ -29,14 +29,19 @@ const AnnotationConfiguration = ({stationId}) => {
     annotateDateRange: true,
   });
 
-  const {data: label_options} = useQuery(['label_options'], async () => {
-    const {data} = await apiClient.get(`/sensor_admin/label_options`);
-    return data;
+  const {data: label_options} = useQuery({
+    queryKey: ['label_options'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/label_options`);
+      return data;
+    },
   });
 
-  const labelMutation = useMutation(async (data) => {
-    const {data: res} = await apiClient.post(`/sensor_admin/qa_labels/${stationId}`, data);
-    return res;
+  const labelMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: res} = await apiClient.post(`/sensor_admin/qa_labels/${stationId}`, data);
+      return res;
+    },
   });
 
   const handleSelectionAnnotate = () => {

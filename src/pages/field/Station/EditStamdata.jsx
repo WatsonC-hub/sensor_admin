@@ -45,23 +45,21 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
     setdate(date);
   };
 
-  const takeHomeMutation = useMutation(
-    async (payload) => {
+  const takeHomeMutation = useMutation({
+    mutationFn: async (payload) => {
       const {data} = await apiClient.patch(
         `/sensor_field/stamdata/unit_history/${stationId}/${unit.gid}`,
         payload
       );
       return data;
     },
-    {
-      onSuccess: (data) => {
-        setOpenDialog(false);
-        setUdstyrValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'));
-        toast.success('Udstyret er hjemtaget');
-        queryClient.invalidateQueries(['udstyr', stationId]);
-      },
-    }
-  );
+    onSuccess: (data) => {
+      setOpenDialog(false);
+      setUdstyrValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'));
+      toast.success('Udstyret er hjemtaget');
+      queryClient.invalidateQueries(['udstyr', stationId]);
+    },
+  });
 
   return (
     <Dialog open={openDialog}>
@@ -105,19 +103,17 @@ const UdstyrReplace = ({stationId}) => {
 
   const formMethods = useFormContext();
 
-  const {data} = useQuery(
-    ['udstyr', stationId],
-    async () => {
+  const {data} = useQuery({
+    queryKey: ['udstyr', stationId],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${stationId}`);
       return data;
     },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchIntervalInBackground: false,
-      refetchOnReconnect: false,
-    }
-  );
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchIntervalInBackground: false,
+    refetchOnReconnect: false,
+  });
 
   useEffect(() => {
     if (data && data.length > 0) {
@@ -221,18 +217,16 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
 
-  const metadataEditMutation = useMutation(
-    async (data) => {
+  const metadataEditMutation = useMutation({
+    mutationFn: async (data) => {
       const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
       return out;
     },
-    {
-      onSuccess: (data) => {
-        queryClient.invalidateQueries(['stations', metadata.loc_id.toString()]);
-        queryClient.invalidateQueries(['udstyr', ts_id]);
-      },
-    }
-  );
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(['stations', metadata.loc_id.toString()]);
+      queryClient.invalidateQueries(['udstyr', ts_id]);
+    },
+  });
 
   const formMethods = useForm({
     resolver: zodResolver(metadataPutSchema),

@@ -8,18 +8,16 @@ import LastMPCard from './LastMPCard';
 
 const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddMPOpen}) => {
   const queryClient = useQueryClient();
-  const {data, isLoading, isError, isSuccess} = useQuery(
-    ['last_jupiter_mp', boreholeno, intakeno],
-    async () => {
+  const {data, isLoading, isError, isSuccess} = useQuery({
+    queryKey: ['last_jupiter_mp', boreholeno, intakeno],
+    queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
       );
       return data;
     },
-    {
-      enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
-    }
-  );
+    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+  });
 
   const showQuickAdd = data
     ? lastOurMP

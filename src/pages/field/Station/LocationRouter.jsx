@@ -4,7 +4,7 @@ import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
 import {useQuery} from '@tanstack/react-query';
-import React from 'react';
+import {useEffect} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {useNavigate, useParams} from 'react-router-dom';
 import {AppBarLayout, NavBarMenu} from 'src/components/NavBar';
@@ -26,23 +26,22 @@ export default function LocationRouter() {
 
   const {data: notificationOverview} = useNotificationOverview();
 
-  const {data} = useQuery(
-    ['stations', params.locid],
-    async () => {
+  const {data} = useQuery({
+    queryKey: ['stations', params.locid],
+    queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata_location/${params.locid}`);
       return data;
     },
-    {
-      enabled: params.locid !== undefined,
-      onSuccess: (data) => {
-        if (data.length === 1 && params.ts_id === undefined) {
-          navigate(`../location/${params.locid}/${data[0].ts_id}`, {
-            replace: true,
-          });
-        }
-      },
+    enabled: params.locid !== undefined,
+  });
+
+  useEffect(() => {
+    if (data && params.ts_id === undefined) {
+      navigate(`../location/${params.locid}/${data[0].ts_id}`, {
+        replace: true,
+      });
     }
-  );
+  }, [data]);
 
   const stamdata = data?.filter((elem) => elem.ts_id == params.ts_id)?.[0];
 

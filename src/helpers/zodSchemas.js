@@ -29,7 +29,9 @@ const metadataBaseSchema = z.object({
 
 const metadataSchema = metadataBaseSchema.extend({
   timeseries: metadataBaseSchema.shape.timeseries.extend({
-    tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
+    tstype_id: z.number({required_error: 'Vælg tidsserietype'}).gte(1, {
+      message: 'Vælg tidsserietype',
+    }),
   }),
   watlevmp: z
     .object({

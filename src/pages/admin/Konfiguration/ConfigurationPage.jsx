@@ -4,16 +4,19 @@ import {apiClient} from 'src/apiClient';
 import NavBar from 'src/components/NavBar';
 
 const ConfigurationPage = () => {
-  const {data, isLoading, error} = useQuery(['configuration_options'], async ({signal}) => {
-    const {data} = await apiClient.get(`/sensor_admin/configuration_options`, {
-      signal,
-    });
-    return data;
+  const {data, isLoading, error} = useQuery({
+    queryKey: ['configuration_options'],
+    queryFn: async ({signal}) => {
+      const {data} = await apiClient.get(`/sensor_admin/configuration_options`, {
+        signal,
+      });
+      return data;
+    },
   });
 
-  const {data: configurableUnits, isLoading: unitLoading} = useQuery(
-    ['configurable_units'],
-    async ({signal}) => {
+  const {data: configurableUnits, isLoading: unitLoading} = useQuery({
+    queryKey: ['configurable_units'],
+    queryFn: async ({signal}) => {
       const {data} = await apiClient.get(`/sensor_admin/configurable_units`, {
         signal,
       });
@@ -24,8 +27,8 @@ const ConfigurationPage = () => {
           navigateTo: row.ts_id.toString(),
         };
       });
-    }
-  );
+    },
+  });
 
   const columns = [
     {name: 'calypso_id', title: 'Calypso ID'},

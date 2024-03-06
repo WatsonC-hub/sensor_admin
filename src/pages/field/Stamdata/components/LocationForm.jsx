@@ -1,6 +1,6 @@
 import {Button, Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import React from 'react';
+import {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 import FormInput from 'src/components/FormInput';
 import {getDTMQuota} from '../../fieldAPI';
@@ -10,16 +10,20 @@ export default function LocationForm({mode, disable}) {
   const {
     data: DTMData,
     isFetching,
+    isSuccess,
     refetch: refetchDTM,
-  } = useQuery(['dtm'], () => getDTMQuota(getValues()?.location.x, getValues()?.location.y), {
+  } = useQuery({
+    queryKey: ['dtm'],
+    queryFn: () => getDTMQuota(getValues()?.location.x, getValues()?.location.y),
     refetchOnWindowFocus: false,
     enabled: false,
-    onSuccess: (data) => {
-      if (data.HentKoterRespons.data[0].kote !== null) {
-        setValue('location.terrainlevel', Number(data.HentKoterRespons.data[0].kote.toFixed(3)));
-      }
-    },
   });
+
+  useEffect(() => {
+    if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
+      setValue('location.terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
+    }
+  }, [isSuccess]);
 
   const {
     reset,
