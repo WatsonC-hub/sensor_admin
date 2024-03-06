@@ -5,9 +5,9 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import CaptureDialog from 'src/components/CaptureDialog';
-import FormInput from 'src/components/FormInput';
-import ConfirmCalypsoIDDialog from 'src/pages/field/Boreholeno/components/ConfirmCalypsoIDDialog';
+import CaptureDialog from '~/components/CaptureDialog';
+import FormInput from '~/components/FormInput';
+import ConfirmCalypsoIDDialog from '~/pages/field/Boreholeno/components/ConfirmCalypsoIDDialog';
 import * as z from 'zod';
 import {apiClient} from '../../../apiClient';
 

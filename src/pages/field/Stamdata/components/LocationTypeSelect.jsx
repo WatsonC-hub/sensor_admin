@@ -2,8 +2,8 @@ import {MenuItem} from '@mui/material';
 import React from 'react';
 
 import {useQuery} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
-import FormInput from 'src/components/FormInput';
+import {apiClient} from '~/apiClient';
+import FormInput from '~/components/FormInput';
 
 export default function LocationTypeSelect({disable}) {
   const {data} = useQuery({

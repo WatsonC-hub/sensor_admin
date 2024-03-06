@@ -6,7 +6,7 @@ import 'leaflet-lasso';
 import 'leaflet.locatecontrol';
 import React, {useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {mapboxToken} from 'src/consts';
+import {mapboxToken} from '~/consts';
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);

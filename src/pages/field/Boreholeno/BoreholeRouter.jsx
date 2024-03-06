@@ -7,7 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 import Boreholeno from './Boreholeno';
 import MinimalSelectBorehole from './MinimalSelectBorehole';
 

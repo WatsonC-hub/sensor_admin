@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import OwnDatePicker from './OwnDatePicker';
+import OwnDatePicker from '~/components/OwnDatePicker';
 
 export default function MaalepunktForm({formData, changeFormData, handleSubmit, handleCancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);

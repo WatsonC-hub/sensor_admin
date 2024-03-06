@@ -23,8 +23,8 @@ import {
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useEffect, useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import {stationTableAtom} from 'src/state/atoms';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {stationTableAtom} from '~/state/atoms';
 
 function typeIcon(type) {
   let icon;

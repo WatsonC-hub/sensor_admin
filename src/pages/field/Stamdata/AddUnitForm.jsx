@@ -11,7 +11,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import {useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 import OwnDatePicker from '../../../components/OwnDatePicker';
 import {stamdataStore} from '../../../state/store';
 

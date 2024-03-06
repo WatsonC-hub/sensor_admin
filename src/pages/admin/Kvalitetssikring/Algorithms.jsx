@@ -1,7 +1,7 @@
 import {Grid} from '@mui/material';
 import React from 'react';
 import {useParams} from 'react-router-dom';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 
 import {useQuery} from '@tanstack/react-query';
 import AlgorithmCard from './AlgorithmCard';

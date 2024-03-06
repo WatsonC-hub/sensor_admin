@@ -3,7 +3,7 @@ import {useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React from 'react';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 import LastMPCard from './LastMPCard';
 
 const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddMPOpen}) => {

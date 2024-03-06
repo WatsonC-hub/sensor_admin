@@ -11,7 +11,7 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import {useForm} from 'react-hook-form';
 import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {createUser, getCvr} from 'src/pages/field/fieldAPI';
+import {createUser, getCvr} from '~/pages/field/fieldAPI';
 import * as z from 'zod';
 import RegisterForm from './RegisterForm';
 

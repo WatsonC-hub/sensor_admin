@@ -8,9 +8,9 @@ import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {useContext, useState} from 'react';
-import {useLevelCorrection} from 'src/hooks/query/useLevelCorrection';
-import {qaSelection} from 'src/state/atoms';
-import {MetadataContext} from 'src/state/contexts';
+import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
+import {qaSelection} from '~/state/atoms';
+import {MetadataContext} from '~/state/contexts';
 
 const LevelCorrectionModal = ({open, onClose}) => {
   const selection = useAtomValue(qaSelection);

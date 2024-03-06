@@ -1,4 +1,4 @@
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 
 export async function askPermission() {
   return new Promise(function (resolve, reject) {

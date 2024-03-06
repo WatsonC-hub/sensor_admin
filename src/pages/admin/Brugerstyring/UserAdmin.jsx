@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
-import {apiClient} from 'src/apiClient';
-import NavBar from 'src/components/NavBar';
+import {apiClient} from '~/apiClient';
+import NavBar from '~/components/NavBar';
 
 const UserAdmin = () => {
   const {data, isLoading, error} = useQuery({

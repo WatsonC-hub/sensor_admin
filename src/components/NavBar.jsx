@@ -24,15 +24,15 @@ import {useAtom} from 'jotai';
 import moment from 'moment';
 import React, {useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useNotificationOverview} from 'src/hooks/query/useNotificationOverview';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import {MetadataContext} from 'src/state/contexts';
-import LogoSvg from 'src/calypso.svg?react';
-import NotificationList from 'src/components/NotificationList';
-import SmallLogo from 'src/logo.svg?react';
-import {captureDialogAtom} from 'src/state/atoms';
-import {authStore} from 'src/state/store';
-import {apiClient} from 'src/apiClient';
+import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {MetadataContext} from '~/state/contexts';
+import LogoSvg from '~/calypso.svg?react';
+import NotificationList from '~/components/NotificationList';
+import SmallLogo from '~/logo.svg?react';
+import {captureDialogAtom} from '~/state/atoms';
+import {authStore} from '~/state/store';
+import {apiClient} from '~/apiClient';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);

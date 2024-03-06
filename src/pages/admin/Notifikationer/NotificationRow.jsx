@@ -3,7 +3,7 @@ import {Box, Button, Typography} from '@mui/material';
 import moment from 'moment';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import useBreakpoints from 'src/hooks/useBreakpoints';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {authStore} from '../../../state/store';
 import PostponeModal from './PostponeModal';
 import TrelloModal from './TrelloModal';

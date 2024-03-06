@@ -1,8 +1,8 @@
 import {Box, Skeleton, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {useContext} from 'react';
-import {apiClient} from 'src/apiClient';
-import {MetadataContext} from 'src/state/contexts';
+import {apiClient} from '~/apiClient';
+import {MetadataContext} from '~/state/contexts';
 import ExcludeRow from './components/ExcludeRow';
 import LevelCorrectionRow from './components/LevelCorrectionRow';
 import QAAccordion from './components/QAAccordion';

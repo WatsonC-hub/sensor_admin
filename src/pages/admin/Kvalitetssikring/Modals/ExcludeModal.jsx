@@ -8,9 +8,9 @@ import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {useContext, useState} from 'react';
-import {useExclude} from 'src/hooks/query/useExclude';
-import {qaSelection} from 'src/state/atoms';
-import {MetadataContext} from 'src/state/contexts';
+import {useExclude} from '~/hooks/query/useExclude';
+import {qaSelection} from '~/state/atoms';
+import {MetadataContext} from '~/state/contexts';
 
 const ExcludeModal = ({open, onClose}) => {
   const [radio, setRadio] = useState('selected');

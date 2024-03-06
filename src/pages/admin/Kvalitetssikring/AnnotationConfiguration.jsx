@@ -15,8 +15,8 @@ import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {useState} from 'react';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
-import {qaSelection} from 'src/state/atoms';
+import {apiClient} from '~/apiClient';
+import {qaSelection} from '~/state/atoms';
 
 const AnnotationConfiguration = ({stationId}) => {
   const selection = useAtomValue(qaSelection);

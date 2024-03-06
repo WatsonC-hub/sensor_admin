@@ -3,7 +3,7 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 import MaalepunktForm from '../../../components/MaalepunktForm';
 import PejlingForm from '../../../components/PejlingForm';
 import TilsynForm from '../../../components/TilsynForm';

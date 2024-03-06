@@ -13,9 +13,9 @@ import ThermostatIcon from '@mui/icons-material/Thermostat';
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import React, {useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import TableComponent from 'src/components/TableComponent';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import {stationTableAtom} from 'src/state/atoms';
+import TableComponent from '~/components/TableComponent';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {stationTableAtom} from '~/state/atoms';
 import {authStore} from '../../../../state/store';
 
 function typeIcon(type) {

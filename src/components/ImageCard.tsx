@@ -11,11 +11,11 @@ import {toast} from 'react-toastify';
 import DeleteAlert from '~/components/DeleteAlert';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
-import type {Mutation} from '@tanstack/react-query';
+import type {UseMutationResult} from '@tanstack/react-query';
 
 type ImageCardProps = {
   image: Image;
-  deleteMutation: any;
+  deleteMutation: UseMutationResult;
   handleEdit: (image: Image) => void;
 };
 
@@ -65,15 +65,15 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       </CardContent>
       <CardActions>
         <Button
-          disabled={deleteMutation.isLoading}
+          disabled={deleteMutation.isPending}
           onClick={() => setDialogOpen(true)}
           size="small"
           color="primary"
         >
-          {deleteMutation.isLoading ? <CircularProgress /> : 'Slet'}
+          {deleteMutation.isPending ? <CircularProgress /> : 'Slet'}
         </Button>
         <Button
-          disabled={deleteMutation.isLoading}
+          disabled={deleteMutation.isPending}
           onClick={() => handleEdit(image)}
           size="small"
           color="primary"

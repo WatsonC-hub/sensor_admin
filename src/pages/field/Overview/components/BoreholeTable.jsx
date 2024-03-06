@@ -5,9 +5,9 @@ import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import TableComponent from 'src/components/TableComponent';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import {boreholeTableAtom} from 'src/state/atoms';
+import TableComponent from '~/components/TableComponent';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {boreholeTableAtom} from '~/state/atoms';
 
 const boreholeColors = {
   1: {

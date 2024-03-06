@@ -6,9 +6,9 @@ import {Box, Button, Divider, Grid, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
-import DeleteAlert from 'src/components/DeleteAlert';
-import FormInput from 'src/components/FormInput';
-import {useLevelCorrection} from 'src/hooks/query/useLevelCorrection';
+import DeleteAlert from '~/components/DeleteAlert';
+import FormInput from '~/components/FormInput';
+import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import * as z from 'zod';
 
 const LevelCorrectionRow = ({data, index}) => {

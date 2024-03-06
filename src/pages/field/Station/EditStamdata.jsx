@@ -17,7 +17,7 @@ import {
 import {useTheme} from '@mui/material/styles';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 import {SwiperSlide} from 'swiper/react';
 import OwnDatePicker from '../../../components/OwnDatePicker';
 import AddUnitForm from '../Stamdata/AddUnitForm';
@@ -32,7 +32,7 @@ import {stamdataStore} from '../../../state/store';
 import {zodResolver} from '@hookform/resolvers/zod';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
-import {metadataPutSchema} from 'src/helpers/zodSchemas';
+import {metadataPutSchema} from '~/helpers/zodSchemas';
 import SwiperInstance from './SwiperInstance';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {

@@ -2,7 +2,7 @@ import {Button, Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
-import FormInput from 'src/components/FormInput';
+import FormInput from '~/components/FormInput';
 import {getDTMQuota} from '../../fieldAPI';
 import LocationTypeSelect from './LocationTypeSelect';
 

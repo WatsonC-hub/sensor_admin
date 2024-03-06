@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useRef, useEffect} from 'react';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 
 export const useRunQA = (ts_id) => {
   const queryClient = useQueryClient();

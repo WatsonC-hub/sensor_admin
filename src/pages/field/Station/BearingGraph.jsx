@@ -4,10 +4,10 @@ import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
-import {apiClient} from 'src/apiClient';
-import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from 'src/helpers/plotlyIcons';
-import {useGraphData} from 'src/hooks/query/useGraphData';
-import {useCorrectData} from 'src/hooks/useCorrectData';
+import {apiClient} from '~/apiClient';
+import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
+import {useGraphData} from '~/hooks/query/useGraphData';
+import {useCorrectData} from '~/hooks/useCorrectData';
 import {stamdataStore} from '../../../state/store';
 
 const selectorOptions = {

@@ -4,7 +4,7 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 import MaalepunktForm from '../../../components/MaalepunktForm';
 import useFormData from '../../../hooks/useFormData';
 import ActionAreaBorehole from './ActionAreaBorehole';

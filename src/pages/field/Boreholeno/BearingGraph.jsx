@@ -3,7 +3,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 
 const selectorOptions = {
   buttons: [

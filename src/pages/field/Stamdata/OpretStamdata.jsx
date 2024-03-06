@@ -2,10 +2,9 @@ import {Button, Container, Grid, TextField, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import 'date-fns';
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 import AddLocationForm from './AddLocationForm';
 import AddUnitForm from './AddUnitForm';
 import LocationForm from './components/LocationForm';
@@ -18,8 +17,8 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {metadataSchema} from 'src/helpers/zodSchemas';
-import NavBar from 'src/components/NavBar';
+import {metadataSchema} from '~/helpers/zodSchemas';
+import NavBar from '~/components/NavBar';
 import {stamdataStore} from '../../../state/store';
 
 const flex1 = {

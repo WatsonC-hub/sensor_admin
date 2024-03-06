@@ -6,15 +6,15 @@ import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
 import React, {useContext, useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
-import {apiClient} from 'src/apiClient';
-import {rerunIcon, rerunQAIcon} from 'src/helpers/plotlyIcons';
-import {useAdjustmentData} from 'src/hooks/query/useAdjustmentData';
-import {useControlData} from 'src/hooks/query/useControlData';
-import {useGraphData} from 'src/hooks/query/useGraphData';
-import {useCorrectData} from 'src/hooks/useCorrectData';
-import {useRunQA} from 'src/hooks/useRunQA';
-import {dataToShowAtom, qaSelection} from 'src/state/atoms';
-import {MetadataContext} from 'src/state/contexts';
+import {apiClient} from '~/apiClient';
+import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
+import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
+import {useControlData} from '~/hooks/query/useControlData';
+import {useGraphData} from '~/hooks/query/useGraphData';
+import {useCorrectData} from '~/hooks/useCorrectData';
+import {useRunQA} from '~/hooks/useRunQA';
+import {dataToShowAtom, qaSelection} from '~/state/atoms';
+import {MetadataContext} from '~/state/contexts';
 import GraphActions from './GraphActions';
 
 const selectorOptions = {

@@ -1,7 +1,7 @@
 import {useQuery} from '@tanstack/react-query';
 import {useContext} from 'react';
-import {apiClient} from 'src/apiClient';
-import {MetadataContext} from 'src/state/contexts';
+import {apiClient} from '~/apiClient';
+import {MetadataContext} from '~/state/contexts';
 
 export const useControlData = () => {
   const metadata = useContext(MetadataContext);

@@ -5,9 +5,9 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
-import DeleteAlert from 'src/components/DeleteAlert';
-import FormInput from 'src/components/FormInput';
+import {apiClient} from '~/apiClient';
+import DeleteAlert from '~/components/DeleteAlert';
+import FormInput from '~/components/FormInput';
 import * as z from 'zod';
 
 const AlgorithmCard = ({algorithm}) => {

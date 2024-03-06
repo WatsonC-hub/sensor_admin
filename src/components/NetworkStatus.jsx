@@ -1,5 +1,5 @@
 import {toast} from 'react-toastify';
-import useOnlineStatus from 'src/hooks/useOnlineStatus';
+import useOnlineStatus from '~/hooks/useOnlineStatus';
 
 let prevStatus = window.navigator.onLine;
 

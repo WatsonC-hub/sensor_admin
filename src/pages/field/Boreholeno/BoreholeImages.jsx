@@ -3,8 +3,8 @@ import {Button, Grid} from '@mui/material';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useState} from 'react';
-import {apiClient} from 'src/apiClient';
-import {useImageUpload} from 'src/hooks/query/useImageUpload';
+import {apiClient} from '~/apiClient';
+import {useImageUpload} from '~/hooks/query/useImageUpload';
 import ImageViewerBorehole from './components/ImageViewerBorehole';
 import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
 

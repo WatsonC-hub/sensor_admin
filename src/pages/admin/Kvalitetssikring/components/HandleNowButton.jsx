@@ -2,8 +2,8 @@ import {Button} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import React, {useContext} from 'react';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
-import {MetadataContext} from 'src/state/contexts';
+import {apiClient} from '~/apiClient';
+import {MetadataContext} from '~/state/contexts';
 
 const HandleNowButton = () => {
   const metadata = useContext(MetadataContext);

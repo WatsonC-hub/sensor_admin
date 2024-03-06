@@ -1,10 +1,15 @@
 import {useQuery} from '@tanstack/react-query';
 import {useContext} from 'react';
-import {apiClient} from 'src/apiClient';
-import {MetadataContext} from 'src/state/contexts';
+import {apiClient} from '~/apiClient';
+// @ts-ignore
+import {MetadataContext} from '~/state/contexts';
 
 export const useAdjustmentData = () => {
   const metadata = useContext(MetadataContext);
+
+  if (!metadata) {
+    return;
+  }
 
   const query = useQuery({
     queryKey: ['qa_all', metadata?.ts_id],
@@ -13,7 +18,7 @@ export const useAdjustmentData = () => {
       return data;
     },
     enabled: typeof metadata?.ts_id == 'number',
-    refetchInterval: null,
+    refetchInterval: false,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

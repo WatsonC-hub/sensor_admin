@@ -7,9 +7,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import {useContext, useState} from 'react';
-import {useYRangeMutations} from 'src/hooks/query/useYRangeMutations';
-import {qaSelection} from 'src/state/atoms';
-import {MetadataContext} from 'src/state/contexts';
+import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
+import {qaSelection} from '~/state/atoms';
+import {MetadataContext} from '~/state/contexts';
 
 const YRangeModal = ({open, onClose}) => {
   const selection = useAtomValue(qaSelection);

@@ -1,5 +1,5 @@
 import {toast} from 'react-toastify';
-import CloseButton from 'src/helpers/CloseButton';
+import CloseButton from '~/helpers/CloseButton';
 
 export const rerunToastId = 'rerun-toast';
 

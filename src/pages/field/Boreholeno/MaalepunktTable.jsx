@@ -19,8 +19,8 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import moment from 'moment';
 import React, {Fragment, useState} from 'react';
-import DeleteAlert from 'src/components/DeleteAlert';
-import {authStore} from 'src/state/store';
+import DeleteAlert from '~/components/DeleteAlert';
+import {authStore} from '~/state/store';
 
 function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -14,8 +14,8 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import moment from 'moment';
 import React, {Fragment, useState} from 'react';
-import DeleteAlert from 'src/components/DeleteAlert';
-import {authStore} from 'src/state/store';
+import DeleteAlert from '~/components/DeleteAlert';
+import {authStore} from '~/state/store';
 
 export default function HistoricMeasurements({measurements, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);

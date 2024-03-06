@@ -12,7 +12,7 @@ import {registerSW} from 'virtual:pwa-register';
 import App from './App';
 import NetworkStatus from './components/NetworkStatus';
 import './index.css';
-import {persister, queryClient} from './queryClient';
+import {persister, queryClient} from '~/queryClient';
 import theme from './theme';
 
 if (import.meta.env.PROD) {
@@ -33,6 +33,9 @@ if ('serviceWorker' in navigator) {
 }
 
 const container = document.getElementById('root');
+if (!container) {
+  throw new Error('No root element found');
+}
 const root = createRoot(container);
 
 root.render(

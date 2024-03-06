@@ -3,11 +3,11 @@ import React, {Suspense, useEffect} from 'react';
 import {Typography} from '@mui/material';
 import {ErrorBoundary} from 'react-error-boundary';
 import LoadingSkeleton from './LoadingSkeleton';
-import NavBar from 'src/components/NavBar';
+import NavBar from '~/components/NavBar';
 import Redirecter from './Redirecter';
 import UnAuntenticatedApp from './UnauthenticatedApp';
-import {apiClient} from './apiClient';
-import {authStore} from './state/store';
+import {apiClient} from '~/apiClient';
+import {authStore} from '~/state/store';
 
 function App() {
   // const [authenticated] = authStore((state) => [state.authenticated]);

@@ -4,7 +4,7 @@ import ShowChartIcon from '@mui/icons-material/ShowChart';
 import {Box, Tooltip} from '@mui/material';
 import {useAtom} from 'jotai';
 import React from 'react';
-import {qaSelection} from 'src/state/atoms';
+import {qaSelection} from '~/state/atoms';
 import GraphActionModal from './GraphActionModal';
 import GraphButton from './GraphButton';
 

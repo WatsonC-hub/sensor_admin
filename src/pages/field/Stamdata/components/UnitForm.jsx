@@ -1,8 +1,8 @@
 import {Grid} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
-import FormInput from 'src/components/FormInput';
-import {stamdataStore} from 'src/state/store';
+import FormInput from '~/components/FormInput';
+import {stamdataStore} from '~/state/store';
 import FormTextField from './FormTextField';
 
 export default function UnitForm({mode}) {

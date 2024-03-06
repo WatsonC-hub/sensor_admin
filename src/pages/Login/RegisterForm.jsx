@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import {Controller, FormProvider} from 'react-hook-form';
-import FormInput from 'src/components/FormInput';
+import FormInput from '~/components/FormInput';
 
 const RegisterForm = ({onSubmitHandler, formMethods}) => {
   const {

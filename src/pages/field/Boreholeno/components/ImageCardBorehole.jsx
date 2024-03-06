@@ -8,9 +8,9 @@ import Typography from '@mui/material/Typography';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
-import DeleteAlert from 'src/components/DeleteAlert';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import {authStore} from 'src/state/store';
+import DeleteAlert from '~/components/DeleteAlert';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {authStore} from '~/state/store';
 
 function ImageCardBorehole({image, deleteMutation, handleEdit}) {
   // const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';

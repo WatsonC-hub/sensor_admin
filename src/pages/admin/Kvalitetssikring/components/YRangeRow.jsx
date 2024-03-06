@@ -5,9 +5,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import {Box, Button, Divider, Grid, Typography} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
-import DeleteAlert from 'src/components/DeleteAlert';
-import FormInput from 'src/components/FormInput';
-import {useYRangeMutations} from 'src/hooks/query/useYRangeMutations';
+import DeleteAlert from '~/components/DeleteAlert';
+import FormInput from '~/components/FormInput';
+import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import * as z from 'zod';
 
 const YRangeRow = ({data, index}) => {

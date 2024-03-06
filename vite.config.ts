@@ -168,5 +168,6 @@ export default defineConfig({
       '~': path.resolve(__dirname, './src'),
       public: '/public',
     },
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
   },
 });

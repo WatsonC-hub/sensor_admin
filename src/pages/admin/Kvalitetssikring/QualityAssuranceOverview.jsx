@@ -4,10 +4,10 @@ import {useQuery} from '@tanstack/react-query';
 import {atom} from 'jotai';
 import React, {useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {apiClient} from 'src/apiClient';
-import TableComponent from 'src/components/TableComponent';
-import useBreakpoints from 'src/hooks/useBreakpoints';
-import NavBar from 'src/components/NavBar';
+import {apiClient} from '~/apiClient';
+import TableComponent from '~/components/TableComponent';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import NavBar from '~/components/NavBar';
 
 const tableStateAtom = atom({
   columnVisibility: {

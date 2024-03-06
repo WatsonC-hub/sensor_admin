@@ -3,7 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {Navigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 
 export default function ScanComponent() {
   const params = useParams();

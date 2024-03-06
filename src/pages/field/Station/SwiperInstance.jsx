@@ -1,6 +1,6 @@
 import {AppBar, Tab, Tabs} from '@mui/material';
 import {useEffect, useState} from 'react';
-import useBreakpoints from 'src/hooks/useBreakpoints';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import 'swiper/css';
 import {Swiper} from 'swiper/react';
 function a11yProps(index) {

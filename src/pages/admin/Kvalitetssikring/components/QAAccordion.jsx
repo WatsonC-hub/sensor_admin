@@ -2,7 +2,7 @@ import {useAutoAnimate} from '@formkit/auto-animate/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {Accordion, AccordionDetails, AccordionSummary, Box, Typography} from '@mui/material';
 import React from 'react';
-import BoxNumber from 'src/components/BoxNumber';
+import BoxNumber from '~/components/BoxNumber';
 
 const QAAccordion = ({children, number, title, accordionProps}) => {
   const [parent] = useAutoAnimate();

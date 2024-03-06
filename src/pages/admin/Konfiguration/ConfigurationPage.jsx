@@ -1,7 +1,7 @@
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
-import NavBar from 'src/components/NavBar';
+import {apiClient} from '~/apiClient';
+import NavBar from '~/components/NavBar';
 
 const ConfigurationPage = () => {
   const {data, isLoading, error} = useQuery({

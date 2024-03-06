@@ -1,5 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(',');

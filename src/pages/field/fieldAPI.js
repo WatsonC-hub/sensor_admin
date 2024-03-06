@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {apiClient} from 'src/apiClient';
+import {apiClient} from '~/apiClient';
 
 const userEndpoint = 'https://backend.calypso.watsonc.dk/rest/';
 

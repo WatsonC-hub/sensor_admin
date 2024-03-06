@@ -1,6 +1,6 @@
 import {Button, Icon} from '@mui/material';
 import {useLocation} from 'react-router-dom';
-import {useCorrectData} from 'src/hooks/useCorrectData';
+import {useCorrectData} from '~/hooks/useCorrectData';
 import {rerunIcon} from './plotlyIcons';
 
 const CloseButton = ({closeToast}) => {

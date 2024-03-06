@@ -10,7 +10,7 @@ import TablePagination from '@mui/material/TablePagination';
 import Typography from '@mui/material/Typography';
 import moment from 'moment';
 import React, {Fragment, useState} from 'react';
-import DeleteAlert from 'src/components/DeleteAlert';
+import DeleteAlert from '~/components/DeleteAlert';
 import {stamdataStore} from '../../../state/store';
 
 export default function MobileMeasurements({measurements, handleEdit, handleDelete, canEdit}) {

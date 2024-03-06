@@ -2,8 +2,8 @@ import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
-import {apiClient} from 'src/apiClient';
-import FormInput from 'src/components/FormInput';
+import {apiClient} from '~/apiClient';
+import FormInput from '~/components/FormInput';
 import FormTextField from './FormTextField';
 
 const TimeseriesTypeSelect = ({stationTypes}) => {

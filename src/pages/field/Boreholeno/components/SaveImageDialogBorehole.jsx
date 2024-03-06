@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import moment from 'moment';
 import React from 'react';
 import {toast} from 'react-toastify';
-import {useImageUpload} from 'src/hooks/query/useImageUpload';
+import {useImageUpload} from '~/hooks/query/useImageUpload';
 import OwnDatePicker from '../../../../components/OwnDatePicker';
 
 function SaveImageDialogBorehole({

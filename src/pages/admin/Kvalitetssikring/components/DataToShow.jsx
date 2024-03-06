@@ -3,7 +3,7 @@
 import {FormControlLabel, FormGroup, Switch} from '@mui/material';
 import {useAtom} from 'jotai';
 import React from 'react';
-import {dataToShowAtom} from 'src/state/atoms';
+import {dataToShowAtom} from '~/state/atoms';
 
 export default function DataToShow() {
   const [dataToShow, setDataToShow] = useAtom(dataToShowAtom);

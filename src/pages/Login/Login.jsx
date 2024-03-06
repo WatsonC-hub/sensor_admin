@@ -8,7 +8,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import {loginAPI, resetPassword} from 'src/pages/field/fieldAPI';
+import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {authStore} from '../../state/store';
 
 export default function Login({}) {
