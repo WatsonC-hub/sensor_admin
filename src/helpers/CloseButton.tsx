@@ -2,7 +2,7 @@ import {Button, Icon} from '@mui/material';
 import {useLocation} from 'react-router-dom';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {rerunIcon} from '~/helpers/plotlyIcons';
-import type {CloseButtonProps} from 'react-toastify';
+import type {CloseButtonProps} from 'react-toastify/dist/components';
 
 const CloseButton = ({closeToast}: CloseButtonProps) => {
   const location = useLocation();

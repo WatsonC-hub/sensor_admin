@@ -29,7 +29,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
       queryClient.invalidateQueries({queryKey: [queryKey, ts_id]});
       toast.update(TOAST_ID, {
         render: 'Genberegnet',
-        type: toast.TYPE.SUCCESS,
+        type: 'success',
         isLoading: false,
         autoClose: 2000,
         closeOnClick: true,
@@ -44,7 +44,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
     mutationFn: async () => {
       toast('Genberegner...', {
         toastId: TOAST_ID,
-        type: toast.TYPE.INFO,
+        type: 'info',
         isLoading: true,
         autoClose: false,
         closeOnClick: true,

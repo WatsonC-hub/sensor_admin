@@ -6,7 +6,7 @@ export const rerunToastId = 'rerun-toast';
 export const rerunToast = () => {
   toast('Ændringer foretaget...', {
     toastId: rerunToastId,
-    type: toast.TYPE.INFO,
+    type: 'info',
     autoClose: false,
     closeOnClick: true,
     draggable: false,
