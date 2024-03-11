@@ -12,7 +12,6 @@ type AuthState = {
   adminAccess: boolean;
   superUser: boolean;
   properties: any;
-  csrfToken: string | null;
   resetState: () => void;
   setAuthenticated: (authenticated: boolean) => void;
   setAuthorization: (user: any) => void;
@@ -29,7 +28,6 @@ const authInitialState = {
   adminAccess: false,
   superUser: false,
   properties: {},
-  csrfToken: null,
 };
 
 export const authStore = create<AuthState>()(
@@ -56,7 +54,6 @@ export const authStore = create<AuthState>()(
             user_id: user.user_id,
             org_id: user.org_id,
             iotAccess: user.iotAccess,
-            csrfToken: user.csrf_token,
             adminAccess: user.adminAccess,
             superUser: user.superUser,
           },

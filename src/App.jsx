@@ -20,21 +20,13 @@ function App() {
     ]
   );
 
-  // Check if csrf token is in url params and set it in local storage and remove it from url
-
   const urlParams = new URLSearchParams(window.location.search);
-  const csrfToken = urlParams.get('csrf_token');
-  if (csrfToken) {
-    window.localStorage.setItem('calypso_csrf_token', csrfToken);
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
 
   useEffect(() => {
     apiClient.get('/auth/me/secure').then((res) => {
       setAuthorization(res.data);
       setAuthenticated(true);
       setLoginExpired(false);
-      window.localStorage.setItem('calypso_csrf_token', res.data.csrf_token);
     });
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {

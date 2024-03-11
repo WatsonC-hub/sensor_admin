@@ -94,8 +94,8 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                         ? moment(row.timeofmeas).diff(moment(row.pumpstop), 'hours') +
                           ' timer siden'
                         : row.service === true
-                        ? 'I drift'
-                        : '-'}
+                          ? 'I drift'
+                          : '-'}
                     </TableCell>
                     <TableCell align="center">{row.disttowatertable_m}</TableCell>
                     <TableCell align="center">
