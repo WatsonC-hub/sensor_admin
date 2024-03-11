@@ -1,0 +1,4592 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "REST API for WatsonC data",
+    "description": "\nWatsonC API for all our data. 🚀\n\n## Usage\nYou can query locations, timeseries and data.\n\n## Maintainer\n",
+    "contact": {
+      "name": "Mathias",
+      "email": "mb@watsonc.dk"
+    },
+    "version": "1.0"
+  },
+  "paths": {
+    "/location/": {
+      "get": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "Get Locations",
+        "operationId": "get_locations_location__get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Skip",
+              "type": "integer",
+              "default": 0
+            },
+            "name": "skip",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Limit",
+              "type": "integer"
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Locations Location  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/app__generic__models__LocationResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/location/{loc_id}/": {
+      "get": {
+        "tags": [
+          "Location"
+        ],
+        "summary": "Get Location",
+        "operationId": "get_location_location__loc_id___get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Loc Id",
+              "type": "integer"
+            },
+            "name": "loc_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationWithTimeseries"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeseries/": {
+      "get": {
+        "tags": [
+          "Timeseries"
+        ],
+        "summary": "Get Timeseries",
+        "operationId": "get_timeseries_timeseries__get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Skip",
+              "type": "integer",
+              "default": 0
+            },
+            "name": "skip",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Limit",
+              "type": "integer"
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Timeseries Timeseries  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TimeseriesResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeseries/{ts_id}/": {
+      "get": {
+        "tags": [
+          "Timeseries"
+        ],
+        "summary": "Get Timeseries",
+        "operationId": "get_timeseries_timeseries__ts_id___get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeseriesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeseries/location/{loc_id}/": {
+      "get": {
+        "tags": [
+          "Timeseries"
+        ],
+        "summary": "Get Timeseries",
+        "operationId": "get_timeseries_timeseries_location__loc_id___get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Loc Id",
+              "type": "integer"
+            },
+            "name": "loc_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Timeseries Timeseries Location  Loc Id   Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TimeseriesResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/timeseries/projectno/{projectno}/": {
+      "get": {
+        "tags": [
+          "Timeseries"
+        ],
+        "summary": "Get Timeseries Project",
+        "operationId": "get_timeseries_project_timeseries_projectno__projectno___get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Projectno",
+              "type": "string"
+            },
+            "name": "projectno",
+            "in": "path"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Return Ts Id List",
+              "type": "boolean",
+              "default": false
+            },
+            "name": "return_ts_id_list",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Timeseries Project Timeseries Projectno  Projectno   Get",
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TimeseriesResponse"
+                      }
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/data/timeseries/{ts_id}": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Get Data",
+        "operationId": "get_data_data_timeseries__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "description": "Download as csv file",
+            "required": false,
+            "schema": {
+              "title": "CSV",
+              "type": "boolean",
+              "description": "Download as csv file",
+              "default": false
+            },
+            "name": "csv",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the JSON data or CSV file",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SensordataTableJSONResponse"
+                }
+              },
+              "text/csv": {}
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/data/excel/": {
+      "get": {
+        "tags": [
+          "Data"
+        ],
+        "summary": "Get Excel Data",
+        "operationId": "get_excel_data_data_excel__get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/AggregateEnum"
+            },
+            "name": "aggregation",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Startdate",
+              "type": "string",
+              "format": "date-time",
+              "default": "1900-01-01T00:00:00+00:00"
+            },
+            "name": "startdate",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Enddate",
+              "type": "string",
+              "format": "date-time",
+              "default": "2099-01-01T00:00:00+00:00"
+            },
+            "name": "enddate",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Reduced Data",
+              "type": "boolean",
+              "default": true
+            },
+            "name": "reduced_data",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "One Sheet",
+              "type": "boolean",
+              "default": false
+            },
+            "name": "one_sheet",
+            "in": "query"
+          },
+          {
+            "description": "List of ts_ids to put in excel file. Formatted either as: <br>\n                                ts_ids=1,2,3,4 <br> or <br> ts_ids=1&ts_ids=2&ts_ids=3",
+            "required": false,
+            "schema": {
+              "title": "Ts Ids",
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of ts_ids to put in excel file. Formatted either as: <br>\n                                ts_ids=1,2,3,4 <br> or <br> ts_ids=1&ts_ids=2&ts_ids=3",
+              "default": []
+            },
+            "name": "ts_ids",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return excel file with timeseries.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "xlsx": {}
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/misc/qhrelation/{ts_id}/": {
+      "get": {
+        "tags": [
+          "Miscellaneous"
+        ],
+        "summary": "Get QH relation parameters",
+        "description": "Gets QH relation parameters to a given timestamp",
+        "operationId": "get_relation_misc_qhrelation__ts_id___get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "description": "QH relation parameters at timestamp",
+            "required": false,
+            "schema": {
+              "title": "Query string",
+              "type": "string",
+              "description": "QH relation parameters at timestamp",
+              "format": "date-time",
+              "default": "2024-03-11T13:31:39+01:00"
+            },
+            "name": "timestamp",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QHResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/misc/prognose/{ts_id}/": {
+      "get": {
+        "tags": [
+          "Miscellaneous"
+        ],
+        "summary": "Get latest pronosis data for timeseries",
+        "description": "Get latest pronosis data for timeseries with upper, best and lower being based on max, best and min precipitation prognosis respectively.",
+        "operationId": "get_prognose_misc_prognose__ts_id___get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrognoseReponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login User",
+        "operationId": "login_user_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_login_user_auth_login_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Token"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get User",
+        "operationId": "get_user_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/auth/oauth/redirect": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Oauth Redirect",
+        "operationId": "oauth_redirect_auth_oauth_redirect_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/auth/oauth/callback": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Oauth Callback",
+        "operationId": "oauth_callback_auth_oauth_callback_get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Code",
+              "type": "string"
+            },
+            "name": "code",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/stamdata/": {
+      "post": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Add New Metadata",
+        "operationId": "add_new_metadata_sensor_field_stamdata__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StamdataPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/stamdata/{ts_id}": {
+      "put": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Edit Metadata",
+        "operationId": "edit_metadata_sensor_field_stamdata__ts_id__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StamdataPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/stamdata/locations": {
+      "get": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Get Locations",
+        "operationId": "get_locations_sensor_field_stamdata_locations_get",
+        "parameters": [
+          {
+            "required": false,
+            "schema": {
+              "title": "Skip",
+              "type": "integer",
+              "default": 0
+            },
+            "name": "skip",
+            "in": "query"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Limit",
+              "type": "integer"
+            },
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Locations Sensor Field Stamdata Locations Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/app__sensor_field__stamdata__models__LocationResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/stamdata/location_types": {
+      "get": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Get Location Types",
+        "operationId": "get_location_types_sensor_field_stamdata_location_types_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/stamdata/available_units": {
+      "get": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Get Available Units",
+        "operationId": "get_available_units_sensor_field_stamdata_available_units_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/stamdata/unit_history/{ts_id}": {
+      "get": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Get Unit History",
+        "operationId": "get_unit_history_sensor_field_stamdata_unit_history__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Unit History Sensor Field Stamdata Unit History  Ts Id  Get",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnitHistoryData"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Add Unit History",
+        "operationId": "add_unit_history_sensor_field_stamdata_unit_history__ts_id__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnitTsHistoryPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/stamdata/unit_history/{ts_id}/{gid}": {
+      "patch": {
+        "tags": [
+          "Stamdata"
+        ],
+        "summary": "Patch Unit History",
+        "operationId": "patch_unit_history_sensor_field_stamdata_unit_history__ts_id___gid__patch",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnitTsHistoryUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/subscribe": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Add Subscription",
+        "operationId": "add_subscription_notifications_subscribe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebpushSubscriptionPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/unsubscribe": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Remove Subscription",
+        "operationId": "remove_subscription_notifications_unsubscribe_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/notifications/send-test": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Send Notification",
+        "operationId": "send_notification_notifications_send_test_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/station_list": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Get Tabledata",
+        "operationId": "get_tabledata_sensor_field_station_list_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/map_data": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Get Mapdata",
+        "operationId": "get_mapdata_sensor_field_map_data_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole_list": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Get Borehole Tabledata",
+        "operationId": "get_borehole_tabledata_sensor_field_borehole_list_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole_map": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Get Borehole Mapdata",
+        "operationId": "get_borehole_mapdata_sensor_field_borehole_map_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/jupiter/search/{boreholeno}": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Get Borehole Search",
+        "operationId": "get_borehole_search_sensor_field_jupiter_search__boreholeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/timeseries_types": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Get Timeseries Types",
+        "operationId": "get_timeseries_types_sensor_field_timeseries_types_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/sensor_field/calypso_id/{calypso_id}": {
+      "get": {
+        "tags": [
+          "Field"
+        ],
+        "summary": "Get Loc Id From Calypso Id",
+        "operationId": "get_loc_id_from_calypso_id_sensor_field_calypso_id__calypso_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Calypso Id",
+              "type": "integer"
+            },
+            "name": "calypso_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalypsoIdToLocID"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/jupiter/{boreholeno}": {
+      "get": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Get Borehole",
+        "operationId": "get_borehole_sensor_field_borehole_jupiter__boreholeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/measurements/{boreholeno}/{intakeno}": {
+      "get": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Get Our Waterlevel",
+        "operationId": "get_our_waterlevel_sensor_field_borehole_measurements__boreholeno___intakeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Add Waterlevel",
+        "operationId": "add_waterlevel_sensor_field_borehole_measurements__boreholeno___intakeno__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WaterlevelPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/measurements/{gid}": {
+      "put": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Edit Waterlevel",
+        "operationId": "edit_waterlevel_sensor_field_borehole_measurements__gid__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WaterlevelPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Delete Waterlevel",
+        "operationId": "delete_waterlevel_sensor_field_borehole_measurements__gid__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/jupiter/measurements/{boreholeno}/{intakeno}": {
+      "get": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Get Jupiter Waterlevel",
+        "operationId": "get_jupiter_waterlevel_sensor_field_borehole_jupiter_measurements__boreholeno___intakeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/watlevmp/{boreholeno}/{intakeno}": {
+      "get": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Get Our Watlevmp",
+        "operationId": "get_our_watlevmp_sensor_field_borehole_watlevmp__boreholeno___intakeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Add Watlevmp",
+        "operationId": "add_watlevmp_sensor_field_borehole_watlevmp__boreholeno___intakeno__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__sensor_field__borehole__models__WatlevmpPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/watlevmp/{gid}": {
+      "put": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Edit Watlevmp",
+        "operationId": "edit_watlevmp_sensor_field_borehole_watlevmp__gid__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__sensor_field__borehole__models__WatlevmpPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Delete Watlevmp",
+        "operationId": "delete_watlevmp_sensor_field_borehole_watlevmp__gid__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/last_mp/{boreholeno}/{intakeno}": {
+      "get": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Get Last Jupiter Measurement",
+        "operationId": "get_last_jupiter_measurement_sensor_field_borehole_last_mp__boreholeno___intakeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/stamdata/{boreholeno}/{intakeno}": {
+      "get": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Get Stamdata",
+        "operationId": "get_stamdata_sensor_field_borehole_stamdata__boreholeno___intakeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Metadata"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Add Stamdata",
+        "operationId": "add_stamdata_sensor_field_borehole_stamdata__boreholeno___intakeno__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Intakeno",
+              "type": "integer"
+            },
+            "name": "intakeno",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/metadata/{ts_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get Metadata",
+        "operationId": "get_metadata_sensor_field_station_metadata__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/metadata_location/{loc_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get Metadata",
+        "operationId": "get_metadata_sensor_field_station_metadata_location__loc_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Loc Id",
+              "type": "integer"
+            },
+            "name": "loc_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/measurements/{ts_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get Measurements",
+        "operationId": "get_measurements_sensor_field_station_measurements__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": false,
+            "schema": {
+              "title": "Usereference",
+              "type": "boolean",
+              "default": false
+            },
+            "name": "useReference",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Add Control",
+        "operationId": "add_control_sensor_field_station_measurements__ts_id__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeasurementPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/measurements/{ts_id}/{gid}": {
+      "put": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Edit Control",
+        "operationId": "edit_control_sensor_field_station_measurements__ts_id___gid__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeasurementPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Delete Waterlevel",
+        "operationId": "delete_waterlevel_sensor_field_station_measurements__ts_id___gid__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/watlevmp/{ts_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get Mp",
+        "operationId": "get_mp_sensor_field_station_watlevmp__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Add Watlevmp",
+        "operationId": "add_watlevmp_sensor_field_station_watlevmp__ts_id__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__sensor_field__station__models__WatlevmpPost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/watlevmp/{ts_id}/{gid}": {
+      "put": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Edit Watlevmp",
+        "operationId": "edit_watlevmp_sensor_field_station_watlevmp__ts_id___gid__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__sensor_field__station__models__WatlevmpPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Delete Watlevmp",
+        "operationId": "delete_watlevmp_sensor_field_station_watlevmp__ts_id___gid__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/service/{ts_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get Service",
+        "operationId": "get_service_sensor_field_station_service__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Add Service",
+        "operationId": "add_service_sensor_field_station_service__ts_id__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServicePost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/service/{ts_id}/{gid}": {
+      "put": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Edit Service",
+        "operationId": "edit_service_sensor_field_station_service__ts_id___gid__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServicePost"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Delete Service",
+        "operationId": "delete_service_sensor_field_station_service__ts_id___gid__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/images/{loc_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get Images",
+        "operationId": "get_images_sensor_field_station_images__loc_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Loc Id",
+              "type": "integer"
+            },
+            "name": "loc_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/correct/{ts_id}": {
+      "post": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Correct Timeseries",
+        "operationId": "correct_timeseries_sensor_field_station_correct__ts_id__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/correct/poll/{ts_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Poll Correction",
+        "operationId": "poll_correction_sensor_field_station_correct_poll__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/rawdata/{ts_id}": {
+      "get": {
+        "tags": [
+          "Station"
+        ],
+        "summary": "Get Raw Data",
+        "operationId": "get_raw_data_sensor_field_station_rawdata__ts_id__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Ts Id",
+              "type": "integer"
+            },
+            "name": "ts_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/image/{loc_id}": {
+      "post": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Post Image",
+        "operationId": "post_image_sensor_field_station_image__loc_id__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Loc Id",
+              "type": "integer"
+            },
+            "name": "loc_id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_image_sensor_field_station_image__loc_id__post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/station/image/{loc_id}/{gid}": {
+      "put": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Put Image",
+        "operationId": "put_image_sensor_field_station_image__loc_id___gid__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Loc Id",
+              "type": "integer"
+            },
+            "name": "loc_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__sensor_field__station__image__models__ImagePut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Delete Image",
+        "operationId": "delete_image_sensor_field_station_image__loc_id___gid__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Loc Id",
+              "type": "integer"
+            },
+            "name": "loc_id",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/image/{boreholeno}": {
+      "get": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Get Images",
+        "operationId": "get_images_sensor_field_borehole_image__boreholeno__get",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Post Image",
+        "operationId": "post_image_sensor_field_borehole_image__boreholeno__post",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_image_sensor_field_borehole_image__boreholeno__post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensor_field/borehole/image/{boreholeno}/{gid}": {
+      "put": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Put Image",
+        "operationId": "put_image_sensor_field_borehole_image__boreholeno___gid__put",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__sensor_field__borehole__image__models__ImagePut"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Delete Image",
+        "operationId": "delete_image_sensor_field_borehole_image__boreholeno___gid__delete",
+        "parameters": [
+          {
+            "required": true,
+            "schema": {
+              "title": "Boreholeno",
+              "type": "string"
+            },
+            "name": "boreholeno",
+            "in": "path"
+          },
+          {
+            "required": true,
+            "schema": {
+              "title": "Gid",
+              "type": "integer"
+            },
+            "name": "gid",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/landing-page/stats": {
+      "get": {
+        "tags": [
+          "Landing page"
+        ],
+        "summary": "Get Stats",
+        "operationId": "get_stats_landing_page_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Alive",
+        "operationId": "alive__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AggregateEnum": {
+        "title": "AggregateEnum",
+        "enum": [
+          "None",
+          "Hourly",
+          "Daily",
+          "Weekly",
+          "Monthly",
+          "Yearly"
+        ],
+        "type": "string",
+        "description": "An enumeration."
+      },
+      "Body_login_user_auth_login_post": {
+        "title": "Body_login_user_auth_login_post",
+        "required": [
+          "username",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        }
+      },
+      "Body_post_image_sensor_field_borehole_image__boreholeno__post": {
+        "title": "Body_post_image_sensor_field_borehole_image__boreholeno__post",
+        "required": [
+          "file",
+          "public",
+          "date"
+        ],
+        "type": "object",
+        "properties": {
+          "file": {
+            "title": "File",
+            "type": "string",
+            "format": "binary"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "public": {
+            "title": "Public",
+            "type": "boolean"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Body_post_image_sensor_field_station_image__loc_id__post": {
+        "title": "Body_post_image_sensor_field_station_image__loc_id__post",
+        "required": [
+          "file",
+          "public",
+          "date"
+        ],
+        "type": "object",
+        "properties": {
+          "file": {
+            "title": "File",
+            "type": "string",
+            "format": "binary"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "public": {
+            "title": "Public",
+            "type": "boolean"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CalypsoIdToLocID": {
+        "title": "CalypsoIdToLocID",
+        "type": "object",
+        "properties": {
+          "calypso_id": {
+            "title": "Calypso Id",
+            "type": "integer"
+          },
+          "ts_id": {
+            "title": "Ts Id",
+            "type": "integer"
+          },
+          "loc_id": {
+            "title": "Loc Id",
+            "type": "integer"
+          },
+          "boreholeno": {
+            "title": "Boreholeno",
+            "type": "string"
+          },
+          "intakeno": {
+            "title": "Intakeno",
+            "type": "integer"
+          }
+        }
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "LocationPost": {
+        "title": "LocationPost",
+        "required": [
+          "loc_name",
+          "x",
+          "y",
+          "loctype_id"
+        ],
+        "type": "object",
+        "properties": {
+          "loc_id": {
+            "title": "Loc Id",
+            "type": "integer"
+          },
+          "loc_name": {
+            "title": "Loc Name",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          },
+          "terrainlevel": {
+            "title": "Terrainlevel",
+            "type": "number"
+          },
+          "terrainqual": {
+            "title": "Terrainqual",
+            "type": "string",
+            "default": ""
+          },
+          "mainloc": {
+            "title": "Mainloc",
+            "type": "string",
+            "default": ""
+          },
+          "subloc": {
+            "title": "Subloc",
+            "type": "string",
+            "default": ""
+          },
+          "description": {
+            "title": "Description",
+            "type": "string",
+            "default": ""
+          },
+          "loctype_id": {
+            "title": "Loctype Id",
+            "type": "integer"
+          }
+        }
+      },
+      "LocationWithTimeseries": {
+        "title": "LocationWithTimeseries",
+        "required": [
+          "loc_name",
+          "x",
+          "y",
+          "loctypename"
+        ],
+        "type": "object",
+        "properties": {
+          "loc_id": {
+            "title": "Loc Id",
+            "type": "integer"
+          },
+          "loc_name": {
+            "title": "Loc Name",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          },
+          "terrainlevel": {
+            "title": "Terrainlevel",
+            "type": "number"
+          },
+          "mainloc": {
+            "title": "Mainloc",
+            "type": "string",
+            "default": ""
+          },
+          "subloc": {
+            "title": "Subloc",
+            "type": "string",
+            "default": ""
+          },
+          "description": {
+            "title": "Description",
+            "type": "string",
+            "default": ""
+          },
+          "loctypename": {
+            "title": "Loctypename",
+            "type": "string"
+          },
+          "timeseries": {
+            "title": "Timeseries",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeseriesResponseInLocation"
+            },
+            "default": []
+          }
+        }
+      },
+      "MeasurementPost": {
+        "title": "MeasurementPost",
+        "required": [
+          "timeofmeas"
+        ],
+        "type": "object",
+        "properties": {
+          "timeofmeas": {
+            "title": "Timeofmeas",
+            "type": "string",
+            "format": "date-time"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "useforcorrection": {
+            "title": "Useforcorrection",
+            "type": "integer"
+          },
+          "measurement": {
+            "title": "Measurement",
+            "type": "number"
+          }
+        }
+      },
+      "MeasurementPut": {
+        "title": "MeasurementPut",
+        "required": [
+          "timeofmeas",
+          "gid"
+        ],
+        "type": "object",
+        "properties": {
+          "timeofmeas": {
+            "title": "Timeofmeas",
+            "type": "string",
+            "format": "date-time"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "useforcorrection": {
+            "title": "Useforcorrection",
+            "type": "integer"
+          },
+          "measurement": {
+            "title": "Measurement",
+            "type": "number"
+          },
+          "gid": {
+            "title": "Gid",
+            "type": "integer"
+          }
+        }
+      },
+      "Metadata": {
+        "title": "Metadata",
+        "type": "object",
+        "properties": {
+          "boreholeno": {
+            "title": "Boreholeno",
+            "type": "string"
+          },
+          "intakeno": {
+            "title": "Intakeno",
+            "type": "integer"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string",
+            "default": ""
+          },
+          "calypso_id": {
+            "title": "Calypso Id",
+            "type": "integer"
+          },
+          "num_controls_in_a_year": {
+            "title": "Num Controls In A Year",
+            "type": "integer",
+            "default": 0
+          }
+        }
+      },
+      "MetadataPut": {
+        "title": "MetadataPut",
+        "type": "object",
+        "properties": {
+          "calypso_id": {
+            "title": "Calypso Id",
+            "type": "integer"
+          },
+          "num_controls_in_a_year": {
+            "title": "Num Controls In A Year",
+            "type": "integer",
+            "default": 0
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          }
+        }
+      },
+      "PrognoseReponse": {
+        "title": "PrognoseReponse",
+        "required": [
+          "x",
+          "upper",
+          "best",
+          "lower"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "title": "X",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "upper": {
+            "title": "Upper",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "best": {
+            "title": "Best",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "lower": {
+            "title": "Lower",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "QHResponse": {
+        "title": "QHResponse",
+        "required": [
+          "A",
+          "H_0",
+          "n"
+        ],
+        "type": "object",
+        "properties": {
+          "A": {
+            "title": "A",
+            "type": "number"
+          },
+          "H_0": {
+            "title": "H 0",
+            "type": "number"
+          },
+          "n": {
+            "title": "N",
+            "type": "number"
+          }
+        }
+      },
+      "SensordataTableJSONResponse": {
+        "title": "SensordataTableJSONResponse",
+        "required": [
+          "x",
+          "y"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "title": "X",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "y": {
+            "title": "Y",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "ServicePost": {
+        "title": "ServicePost",
+        "required": [
+          "dato",
+          "batteriskift",
+          "tilsyn",
+          "kommentar"
+        ],
+        "type": "object",
+        "properties": {
+          "dato": {
+            "title": "Dato",
+            "type": "string",
+            "format": "date-time"
+          },
+          "batteriskift": {
+            "title": "Batteriskift",
+            "type": "boolean"
+          },
+          "tilsyn": {
+            "title": "Tilsyn",
+            "type": "boolean"
+          },
+          "kommentar": {
+            "title": "Kommentar",
+            "type": "string"
+          }
+        }
+      },
+      "StamdataPost": {
+        "title": "StamdataPost",
+        "required": [
+          "location",
+          "timeseries",
+          "unit"
+        ],
+        "type": "object",
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/LocationPost"
+          },
+          "timeseries": {
+            "$ref": "#/components/schemas/TimeseriesPost"
+          },
+          "watlevmp": {
+            "$ref": "#/components/schemas/app__sensor_field__stamdata__models__WatlevmpPost"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/UnitTsHistoryPost"
+          }
+        }
+      },
+      "StamdataPut": {
+        "title": "StamdataPut",
+        "required": [
+          "location",
+          "timeseries",
+          "unit"
+        ],
+        "type": "object",
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/LocationPost"
+          },
+          "timeseries": {
+            "$ref": "#/components/schemas/TimeseriesPut"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/UnitTsHistoryPut"
+          }
+        }
+      },
+      "TimeseriesPost": {
+        "title": "TimeseriesPost",
+        "required": [
+          "tstype_id"
+        ],
+        "type": "object",
+        "properties": {
+          "prefix": {
+            "title": "Prefix",
+            "type": "string"
+          },
+          "tstype_id": {
+            "title": "Tstype Id",
+            "type": "integer"
+          },
+          "sensor_depth_m": {
+            "title": "Sensor Depth M",
+            "type": "number"
+          }
+        }
+      },
+      "TimeseriesPut": {
+        "title": "TimeseriesPut",
+        "type": "object",
+        "properties": {
+          "prefix": {
+            "title": "Prefix",
+            "type": "string"
+          },
+          "sensor_depth_m": {
+            "title": "Sensor Depth M",
+            "type": "number"
+          }
+        }
+      },
+      "TimeseriesResponse": {
+        "title": "TimeseriesResponse",
+        "required": [
+          "tstype_name"
+        ],
+        "type": "object",
+        "properties": {
+          "ts_id": {
+            "title": "Ts Id",
+            "type": "integer"
+          },
+          "ts_name": {
+            "title": "Ts Name",
+            "type": "string"
+          },
+          "parameter": {
+            "title": "Parameter",
+            "type": "string",
+            "default": ""
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string",
+            "default": ""
+          },
+          "prefix": {
+            "title": "Prefix",
+            "type": "string",
+            "default": ""
+          },
+          "sensor_depth_m": {
+            "title": "Sensor Depth M",
+            "type": "number"
+          },
+          "tstype_name": {
+            "title": "Tstype Name",
+            "type": "string"
+          },
+          "loc_id": {
+            "title": "Loc Id",
+            "type": "integer"
+          }
+        }
+      },
+      "TimeseriesResponseInLocation": {
+        "title": "TimeseriesResponseInLocation",
+        "required": [
+          "tstype_name"
+        ],
+        "type": "object",
+        "properties": {
+          "ts_id": {
+            "title": "Ts Id",
+            "type": "integer"
+          },
+          "ts_name": {
+            "title": "Ts Name",
+            "type": "string"
+          },
+          "parameter": {
+            "title": "Parameter",
+            "type": "string",
+            "default": ""
+          },
+          "unit": {
+            "title": "Unit",
+            "type": "string",
+            "default": ""
+          },
+          "prefix": {
+            "title": "Prefix",
+            "type": "string",
+            "default": ""
+          },
+          "sensor_depth_m": {
+            "title": "Sensor Depth M",
+            "type": "number"
+          },
+          "tstype_name": {
+            "title": "Tstype Name",
+            "type": "string"
+          }
+        }
+      },
+      "Token": {
+        "title": "Token",
+        "required": [
+          "access_token",
+          "token_type"
+        ],
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "token_type": {
+            "title": "Token Type",
+            "type": "string"
+          }
+        }
+      },
+      "UnitHistoryData": {
+        "title": "UnitHistoryData",
+        "required": [
+          "ts_id",
+          "uuid",
+          "calypso_id",
+          "startdato",
+          "slutdato",
+          "terminal_id",
+          "sensor_id",
+          "terminal_type"
+        ],
+        "type": "object",
+        "properties": {
+          "gid": {
+            "title": "Gid",
+            "type": "integer"
+          },
+          "ts_id": {
+            "title": "Ts Id",
+            "type": "integer"
+          },
+          "uuid": {
+            "title": "Uuid",
+            "type": "string",
+            "format": "uuid"
+          },
+          "calypso_id": {
+            "title": "Calypso Id",
+            "type": "integer"
+          },
+          "startdato": {
+            "title": "Startdato",
+            "type": "string"
+          },
+          "slutdato": {
+            "title": "Slutdato",
+            "type": "string"
+          },
+          "terminal_id": {
+            "title": "Terminal Id",
+            "type": "string"
+          },
+          "sensor_id": {
+            "title": "Sensor Id",
+            "type": "string"
+          },
+          "terminal_type": {
+            "title": "Terminal Type",
+            "type": "string"
+          },
+          "sensorinfo": {
+            "title": "Sensorinfo",
+            "type": "string"
+          }
+        }
+      },
+      "UnitTsHistoryPost": {
+        "title": "UnitTsHistoryPost",
+        "required": [
+          "unit_uuid",
+          "startdate"
+        ],
+        "type": "object",
+        "properties": {
+          "unit_uuid": {
+            "title": "Unit Uuid",
+            "type": "string",
+            "format": "uuid"
+          },
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time",
+            "default": "2099-01-01T00:00:00+00:00"
+          }
+        }
+      },
+      "UnitTsHistoryPut": {
+        "title": "UnitTsHistoryPut",
+        "required": [
+          "unit_uuid",
+          "startdate",
+          "gid"
+        ],
+        "type": "object",
+        "properties": {
+          "unit_uuid": {
+            "title": "Unit Uuid",
+            "type": "string",
+            "format": "uuid"
+          },
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time",
+            "default": "2099-01-01T00:00:00+00:00"
+          },
+          "gid": {
+            "title": "Gid",
+            "type": "integer"
+          }
+        }
+      },
+      "UnitTsHistoryUpdate": {
+        "title": "UnitTsHistoryUpdate",
+        "type": "object",
+        "properties": {
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      },
+      "WaterlevelPost": {
+        "title": "WaterlevelPost",
+        "required": [
+          "timeofmeas",
+          "comment",
+          "service"
+        ],
+        "type": "object",
+        "properties": {
+          "timeofmeas": {
+            "title": "Timeofmeas",
+            "type": "string",
+            "format": "date-time"
+          },
+          "disttowatertable_m": {
+            "title": "Disttowatertable M",
+            "type": "number"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "service": {
+            "title": "Service",
+            "type": "boolean"
+          },
+          "pumpstop": {
+            "title": "Pumpstop",
+            "type": "string",
+            "format": "date-time"
+          },
+          "extrema": {
+            "title": "Extrema",
+            "type": "string"
+          }
+        }
+      },
+      "WaterlevelPut": {
+        "title": "WaterlevelPut",
+        "required": [
+          "timeofmeas",
+          "comment",
+          "service",
+          "gid"
+        ],
+        "type": "object",
+        "properties": {
+          "timeofmeas": {
+            "title": "Timeofmeas",
+            "type": "string",
+            "format": "date-time"
+          },
+          "disttowatertable_m": {
+            "title": "Disttowatertable M",
+            "type": "number"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "service": {
+            "title": "Service",
+            "type": "boolean"
+          },
+          "pumpstop": {
+            "title": "Pumpstop",
+            "type": "string",
+            "format": "date-time"
+          },
+          "extrema": {
+            "title": "Extrema",
+            "type": "string"
+          },
+          "gid": {
+            "title": "Gid",
+            "type": "integer"
+          }
+        }
+      },
+      "WebpushSubscriptionPost": {
+        "title": "WebpushSubscriptionPost",
+        "required": [
+          "subscription"
+        ],
+        "type": "object",
+        "properties": {
+          "subscription": {
+            "title": "Subscription",
+            "type": "string"
+          }
+        }
+      },
+      "app__generic__models__LocationResponse": {
+        "title": "LocationResponse",
+        "required": [
+          "loc_name",
+          "x",
+          "y",
+          "loctypename"
+        ],
+        "type": "object",
+        "properties": {
+          "loc_id": {
+            "title": "Loc Id",
+            "type": "integer"
+          },
+          "loc_name": {
+            "title": "Loc Name",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          },
+          "terrainlevel": {
+            "title": "Terrainlevel",
+            "type": "number"
+          },
+          "mainloc": {
+            "title": "Mainloc",
+            "type": "string",
+            "default": ""
+          },
+          "subloc": {
+            "title": "Subloc",
+            "type": "string",
+            "default": ""
+          },
+          "description": {
+            "title": "Description",
+            "type": "string",
+            "default": ""
+          },
+          "loctypename": {
+            "title": "Loctypename",
+            "type": "string"
+          }
+        }
+      },
+      "app__sensor_field__borehole__image__models__ImagePut": {
+        "title": "ImagePut",
+        "required": [
+          "date",
+          "public"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "format": "date-time"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "public": {
+            "title": "Public",
+            "type": "boolean"
+          }
+        }
+      },
+      "app__sensor_field__borehole__models__WatlevmpPost": {
+        "title": "WatlevmpPost",
+        "required": [
+          "startdate",
+          "enddate",
+          "mp_description"
+        ],
+        "type": "object",
+        "properties": {
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "elevation": {
+            "title": "Elevation",
+            "type": "number"
+          },
+          "mp_description": {
+            "title": "Mp Description",
+            "type": "string"
+          }
+        }
+      },
+      "app__sensor_field__borehole__models__WatlevmpPut": {
+        "title": "WatlevmpPut",
+        "required": [
+          "startdate",
+          "enddate",
+          "mp_description",
+          "gid"
+        ],
+        "type": "object",
+        "properties": {
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "elevation": {
+            "title": "Elevation",
+            "type": "number"
+          },
+          "mp_description": {
+            "title": "Mp Description",
+            "type": "string"
+          },
+          "gid": {
+            "title": "Gid",
+            "type": "integer"
+          }
+        }
+      },
+      "app__sensor_field__stamdata__models__LocationResponse": {
+        "title": "LocationResponse",
+        "required": [
+          "loc_name",
+          "x",
+          "y",
+          "loctype_id"
+        ],
+        "type": "object",
+        "properties": {
+          "loc_id": {
+            "title": "Loc Id",
+            "type": "integer"
+          },
+          "loc_name": {
+            "title": "Loc Name",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          },
+          "terrainlevel": {
+            "title": "Terrainlevel",
+            "type": "number"
+          },
+          "terrainqual": {
+            "title": "Terrainqual",
+            "type": "string",
+            "default": ""
+          },
+          "mainloc": {
+            "title": "Mainloc",
+            "type": "string",
+            "default": ""
+          },
+          "subloc": {
+            "title": "Subloc",
+            "type": "string",
+            "default": ""
+          },
+          "description": {
+            "title": "Description",
+            "type": "string",
+            "default": ""
+          },
+          "loctype_id": {
+            "title": "Loctype Id",
+            "type": "integer"
+          }
+        }
+      },
+      "app__sensor_field__stamdata__models__WatlevmpPost": {
+        "title": "WatlevmpPost",
+        "required": [
+          "startdate",
+          "elevation",
+          "description"
+        ],
+        "type": "object",
+        "properties": {
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date"
+          },
+          "elevation": {
+            "title": "Elevation",
+            "type": "number"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time",
+            "default": "2099-01-01T00:00:00"
+          }
+        }
+      },
+      "app__sensor_field__station__image__models__ImagePut": {
+        "title": "ImagePut",
+        "required": [
+          "date",
+          "public"
+        ],
+        "type": "object",
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "format": "date-time"
+          },
+          "comment": {
+            "title": "Comment",
+            "type": "string"
+          },
+          "public": {
+            "title": "Public",
+            "type": "boolean"
+          }
+        }
+      },
+      "app__sensor_field__station__models__WatlevmpPost": {
+        "title": "WatlevmpPost",
+        "required": [
+          "startdate",
+          "enddate",
+          "mp_description"
+        ],
+        "type": "object",
+        "properties": {
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "elevation": {
+            "title": "Elevation",
+            "type": "number"
+          },
+          "mp_description": {
+            "title": "Mp Description",
+            "type": "string"
+          }
+        }
+      },
+      "app__sensor_field__station__models__WatlevmpPut": {
+        "title": "WatlevmpPut",
+        "required": [
+          "startdate",
+          "enddate",
+          "mp_description",
+          "gid"
+        ],
+        "type": "object",
+        "properties": {
+          "startdate": {
+            "title": "Startdate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "enddate": {
+            "title": "Enddate",
+            "type": "string",
+            "format": "date-time"
+          },
+          "elevation": {
+            "title": "Elevation",
+            "type": "number"
+          },
+          "mp_description": {
+            "title": "Mp Description",
+            "type": "string"
+          },
+          "gid": {
+            "title": "Gid",
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "auth/login/secure"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Location",
+      "description": "Operations for getting locations."
+    },
+    {
+      "name": "Timeseries",
+      "description": "Operations for getting timeseries."
+    },
+    {
+      "name": "Data",
+      "description": "Operations for getting data."
+    },
+    {
+      "name": "Miscellaneous",
+      "description": "Operations for getting other data"
+    }
+  ]
+}
