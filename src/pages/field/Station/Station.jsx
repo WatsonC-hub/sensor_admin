@@ -4,20 +4,21 @@ import React, {useEffect, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
-import MaalepunktForm from '../../../components/MaalepunktForm';
-import PejlingForm from '../../../components/PejlingForm';
-import TilsynForm from '../../../components/TilsynForm';
-import TilsynTable from '../../../components/TilsynTable';
-import useFormData from '../../../hooks/useFormData';
-import {stamdataStore} from '../../../state/store';
+import MaalepunktForm from '~/components/MaalepunktForm';
+import PejlingForm from '~/components/PejlingForm';
+import TilsynForm from '~/components/TilsynForm';
+import TilsynTable from '~/components/TilsynTable';
+import useFormData from '~/hooks/useFormData';
+import {stamdataStore} from '~/state/store';
 import ActionArea from './ActionArea';
 import BearingGraph from './BearingGraph';
 import EditStamdata from './EditStamdata';
 import MaalepunktTable from './MaalepunktTable';
 import PejlingMeasurements from './PejlingMeasurements';
 import StationImages from './StationImages';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 
-export default function Station({stationId, stamdata}) {
+export default function Station({stationId: ts_id, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
     timeofmeas: moment(),
@@ -45,6 +46,13 @@ export default function Station({stationId, stamdata}) {
   let location = useLocation();
   let navigate = useNavigate();
   let params = useParams();
+
+  const {
+    get: {data: watlevmp},
+    post: postWatlevmp,
+    put: putWatlevmp,
+    del: deleteWatlevmp,
+  } = useMaalepunkt();
 
   const formToShow = location.hash ? location.hash.replace('#', '') : null;
   const setFormToShow = (form) => {
@@ -79,46 +87,29 @@ export default function Station({stationId, stamdata}) {
   const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;
   const isCalculated = stamdata ? stamdata?.calculated : false;
 
-  const {data: watlevmp} = useQuery({
-    queryKey: ['watlevmp', stationId],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/watlevmp/${stationId}`);
-
-      return data.map((m) => {
-        return {
-          ...m,
-          startdate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
-          enddate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
-        };
-      });
-    },
-    enabled: stationId !== -1 && stationId !== null,
-    initialData: [],
-  });
-
   const {data: measurements} = useQuery({
-    queryKey: ['measurements', stationId],
+    queryKey: ['measurements', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/measurements/${stationId}`);
+      const {data} = await apiClient.get(`/sensor_field/station/measurements/${ts_id}`);
 
       return data.map((m) => {
         return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
-    enabled: stationId !== -1 && stationId !== null,
+    enabled: ts_id !== -1 && ts_id !== null,
     initialData: [],
   });
 
   const {data: services} = useQuery({
-    queryKey: ['service', stationId],
+    queryKey: ['service', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/service/${stationId}`);
+      const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
 
       return data.map((m) => {
         return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
       });
     },
-    enabled: stationId !== -1 && stationId !== null,
+    enabled: ts_id !== -1 && ts_id !== null,
     initialData: [],
   });
 
@@ -186,7 +177,7 @@ export default function Station({stationId, stamdata}) {
       resetPejlingData();
       setFormToShow(null);
       toast.success('Kontrolmåling gemt');
-      queryClient.invalidateQueries(['measurements', stationId]);
+      queryClient.invalidateQueries(['measurements', ts_id]);
     },
     onError: (error) => {
       toast.error('Der skete en fejl');
@@ -197,7 +188,7 @@ export default function Station({stationId, stamdata}) {
     const payload = {
       ...pejlingData,
       isWaterlevel: isWaterlevel,
-      stationid: stationId,
+      stationid: ts_id,
     };
     payload.timeofmeas = moment(payload.timeofmeas).toISOString();
     pejlingMutate.mutate(payload);
@@ -206,36 +197,58 @@ export default function Station({stationId, stamdata}) {
   const watlevmpMutate = useMutation({
     mutationFn: (data) => {
       if (data.gid === -1) {
-        return apiClient.post(`/sensor_field/station/watlevmp/${stationId}`, data);
+        return apiClient.post(`/sensor_field/station/watlevmp/${ts_id}`, data);
       } else {
-        return apiClient.put(`/sensor_field/station/watlevmp/${stationId}/${data.gid}`, data);
+        return apiClient.put(`/sensor_field/station/watlevmp/${ts_id}/${data.gid}`, data);
       }
     },
   });
 
-  const handleMpSubmit = () => {
-    const payload = {...mpData, stationid: stationId};
-    payload.startdate = moment(payload.startdate).toISOString();
-    payload.enddate = moment(payload.enddate).toISOString();
+  const handleMaalepunktSubmit = () => {
+    // const payload = mpData;
 
-    watlevmpMutate.mutate(payload, {
+    mpData.startdate = moment(mpData.startdate).toISOString();
+    mpData.enddate = moment(mpData.enddate).toISOString();
+
+    console.log('mpData', mpData);
+    const mutationOptions = {
       onSuccess: (data) => {
         resetMpData();
-        toast.success('Målepunkt gemt');
-        queryClient.invalidateQueries(['watlevmp', stationId]);
       },
-      onError: (error) => {
-        toast.error('Der skete en fejl');
-      },
-    });
+    };
+
+    if (mpData.gid === -1) {
+      const payload = {
+        data: mpData,
+        path: `${ts_id}`,
+      };
+      postWatlevmp.mutate(payload, mutationOptions);
+    } else {
+      const payload = {
+        data: mpData,
+        path: `${ts_id}/${mpData.gid}`,
+      };
+      putWatlevmp.mutate(payload, mutationOptions);
+    }
+  };
+
+  const handleDeleteMaalepunkt = (gid) => {
+    deleteWatlevmp.mutate(
+      {path: `${ts_id}/${gid}`},
+      {
+        onSuccess: (data) => {
+          resetMpData();
+        },
+      }
+    );
   };
 
   const serviceMutate = useMutation({
     mutationFn: (data) => {
       if (data.gid === -1) {
-        return apiClient.post(`/sensor_field/station/service/${stationId}`, data);
+        return apiClient.post(`/sensor_field/station/service/${ts_id}`, data);
       } else {
-        return apiClient.put(`/sensor_field/station/service/${stationId}/${data.gid}`, data);
+        return apiClient.put(`/sensor_field/station/service/${ts_id}/${data.gid}`, data);
       }
     },
   });
@@ -248,7 +261,7 @@ export default function Station({stationId, stamdata}) {
       batteriskift: serviceData.batteriskift.toString(),
       tilsyn: serviceData.tilsyn.toString(),
       userid: userId,
-      stationid: stationId,
+      stationid: ts_id,
     };
 
     payload.dato = moment(payload.dato).toISOString();
@@ -257,7 +270,7 @@ export default function Station({stationId, stamdata}) {
       onSuccess: (data) => {
         resetServiceData();
         toast.success('Tilsyn gemt');
-        queryClient.invalidateQueries(['service', stationId]);
+        queryClient.invalidateQueries(['service', ts_id]);
       },
       onError: (error) => {
         if (error.response.data.detail.includes('No unit')) {
@@ -298,24 +311,24 @@ export default function Station({stationId, stamdata}) {
   const handleDelete = (type) => {
     if (type === 'watlevmp') {
       return (gid) => {
-        apiClient.delete(`/sensor_field/station/watlevmp/${stationId}/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['watlevmp', stationId]);
+        apiClient.delete(`/sensor_field/station/watlevmp/${ts_id}/${gid}`).then((res) => {
+          queryClient.invalidateQueries(['watlevmp', ts_id]);
           resetMpData();
           toast.success('Målepunkt slettet');
         });
       };
     } else if (type === 'service') {
       return (gid) => {
-        apiClient.delete(`/sensor_field/station/service/${stationId}/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['service', stationId]);
+        apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then((res) => {
+          queryClient.invalidateQueries(['service', ts_id]);
           resetServiceData();
           toast.success('Tilsyn slettet');
         });
       };
     } else {
       return (gid) => {
-        apiClient.delete(`/sensor_field/station/measurements/${stationId}/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['measurements', stationId]);
+        apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then((res) => {
+          queryClient.invalidateQueries(['measurements', ts_id]);
           resetPejlingData();
           toast.success('Kontrolmåling slettet');
         });
@@ -327,14 +340,14 @@ export default function Station({stationId, stamdata}) {
     // <>
     <>
       <BearingGraph
-        stationId={stationId}
+        stationId={ts_id}
         measurements={control}
         dynamicMeasurement={formToShow === 'ADDPEJLING' ? dynamic : undefined}
       />
 
       {formToShow === 'ADDPEJLING' && (
         <PejlingForm
-          stationId={stationId}
+          stationId={ts_id}
           formData={pejlingData}
           changeFormData={changePejlingData}
           handleSubmit={handlePejlingSubmit}
@@ -350,14 +363,14 @@ export default function Station({stationId, stamdata}) {
         />
       )}
       {formToShow === 'RET_STAMDATA' && (
-        <EditStamdata setFormToShow={setFormToShow} ts_id={stationId} metadata={stamdata} />
+        <EditStamdata setFormToShow={setFormToShow} ts_id={ts_id} metadata={stamdata} />
       )}
       {formToShow === 'ADDMAALEPUNKT' && (
         <>
           <MaalepunktForm
             formData={mpData}
             changeFormData={changeMpData}
-            handleSubmit={handleMpSubmit}
+            handleSubmit={handleMaalepunktSubmit}
             resetFormData={resetMpData}
             handleCancel={handleMpCancel}
             canEdit={canEdit}
@@ -365,7 +378,7 @@ export default function Station({stationId, stamdata}) {
           <MaalepunktTable
             watlevmp={watlevmp}
             handleEdit={handleEdit('watlevmp')}
-            handleDelete={handleDelete('watlevmp')}
+            handleDelete={handleDeleteMaalepunkt}
             canEdit={canEdit}
           />
         </>
@@ -399,7 +412,7 @@ export default function Station({stationId, stamdata}) {
       )}
       {formToShow === 'CAMERA' && <StationImages locationId={params.locid} />}
       <ActionArea
-        stationId={stationId}
+        stationId={ts_id}
         formToShow={formToShow}
         setFormToShow={setFormToShow}
         canEdit={canEdit}

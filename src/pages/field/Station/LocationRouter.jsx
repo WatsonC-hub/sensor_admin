@@ -16,6 +16,8 @@ import NotificationList from '../../../components/NotificationList';
 import ErrorPage from './ErrorPage';
 import MinimalSelect from './MinimalSelect';
 import Station from './Station';
+import {useMetadata} from '~/hooks/query/useMetadata';
+import {MetadataContext} from '~/state/contexts';
 
 export default function LocationRouter() {
   const params = useParams();
@@ -43,10 +45,12 @@ export default function LocationRouter() {
     }
   }, [data]);
 
+  const {data: metadata} = useMetadata(params.ts_id);
+
   const stamdata = data?.filter((elem) => elem.ts_id == params.ts_id)?.[0];
 
   return (
-    <>
+    <MetadataContext.Provider value={metadata}>
       <CssBaseline />
       <AppBarLayout>
         <Box display="flex">
@@ -95,6 +99,6 @@ export default function LocationRouter() {
           <Station stationId={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />
         </ErrorBoundary>
       </main>
-    </>
+    </MetadataContext.Provider>
   );
 }

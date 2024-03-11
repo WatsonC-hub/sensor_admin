@@ -11,6 +11,7 @@ import QAGraph from './QAGraph';
 import QAHistory from './QAHistory';
 import DataToShow from './components/DataToShow';
 import HandleNowButton from './components/HandleNowButton';
+import {useMetadata} from '~/hooks/query/useMetadata';
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;
@@ -34,18 +35,7 @@ const QualityAssurance = () => {
   const {isTouch} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
 
-  const {data} = useQuery({
-    queryKey: ['metadata', params.ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/metadata/${params.ts_id}`);
-      return data;
-    },
-    enabled: params.ts_id !== undefined,
-    refetchInterval: null,
-    refetchIntervalInBackground: false,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  });
+  const {data} = useMetadata(params.ts_id);
 
   const handleChange = (_, newValue) => {
     setTabValue(newValue);

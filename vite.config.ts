@@ -164,8 +164,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      src: path.resolve(__dirname, './src'),
       '~': path.resolve(__dirname, './src'),
+      src: path.resolve(__dirname, './src'),
       public: '/public',
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
