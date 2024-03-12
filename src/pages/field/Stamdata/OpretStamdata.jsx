@@ -26,9 +26,7 @@ import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 
 function LocationChooser({setLocationDialogOpen}) {
   const location = stamdataStore((store) => store.location);
-  const [selectedLoc, setSelectedLoc] = useState(
-    location.loc_id ? location : {loc_id: '', loc_name: ''}
-  );
+  const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : {loc_name: ''});
   const formMethods = useFormContext();
 
   const theme = useTheme();
@@ -322,7 +320,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
             <Grid container spacing={3} justifyContent="flex-end">
               <Grid item xs={4} sm={2}>
                 <Button
-                  btType="secondary"
+                  btType="tertiary"
                   onClick={() => {
                     navigate('/field');
                     setAddStationDisabled(false);

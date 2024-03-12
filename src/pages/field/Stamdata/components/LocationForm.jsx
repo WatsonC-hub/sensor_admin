@@ -1,10 +1,12 @@
-import {Button, Grid, InputAdornment, MenuItem} from '@mui/material';
+import {Grid, InputAdornment, MenuItem} from '@mui/material';
+import Button from '~/components/Button';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import {getDTMQuota} from '../../fieldAPI';
 import LocationTypeSelect from './LocationTypeSelect';
+import DownloadIcon from '@mui/icons-material/Download';
 
 export default function LocationForm({mode, disable}) {
   const {
@@ -23,7 +25,7 @@ export default function LocationForm({mode, disable}) {
     if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
       setValue('location.terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
     }
-  }, [isSuccess]);
+  }, [DTMData]);
 
   const {
     reset,
@@ -84,6 +86,11 @@ export default function LocationForm({mode, disable}) {
           sx={{
             mb: 2,
           }}
+          onChangeCallback={(e) => {
+            if (watchTerrainqual === 'DTM') {
+              refetchDTM();
+            }
+          }}
           disabled={disable}
         />
       </Grid>
@@ -101,6 +108,11 @@ export default function LocationForm({mode, disable}) {
           }}
           sx={{
             mb: 2,
+          }}
+          onChangeCallback={(e) => {
+            if (watchTerrainqual === 'DTM') {
+              refetchDTM();
+            }
           }}
           disabled={disable}
         />
@@ -130,19 +142,24 @@ export default function LocationForm({mode, disable}) {
             mb: 2,
           }}
           disabled={disable}
+          onChangeCallback={(e) => {
+            if (e.target.value === 'DTM') {
+              refetchDTM();
+            }
+          }}
         >
           <MenuItem value=""> Vælg type </MenuItem>
           <MenuItem value="dGPS">dGPS</MenuItem>
           <MenuItem value="DTM">DTM</MenuItem>
         </FormInput>
       </Grid>
-      <Grid item xs={6} sm={gridsize / 2} md={gridsize / 4}>
+      {/* <Grid item xs={6} sm={gridsize / 2} md={gridsize / 4} ml="auto">
         {watchTerrainqual === 'DTM' && !disable ? (
-          <Button variant="contained" color="secondary" onClick={refetchDTM}>
+          <Button btType="primary" size="small" startIcon={<DownloadIcon />} onClick={refetchDTM}>
             Hent DTM
           </Button>
         ) : null}
-      </Grid>
+      </Grid> */}
       <Grid item xs={12} sm={gridsize}>
         <LocationTypeSelect disable={disable} />
       </Grid>

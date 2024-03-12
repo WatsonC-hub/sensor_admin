@@ -2,7 +2,15 @@ import {TextField} from '@mui/material';
 import moment from 'moment';
 import {Controller, get, useFormContext} from 'react-hook-form';
 
-const FormInput = ({name, warning, children, rules, transform, ...otherProps}) => {
+const FormInput = ({
+  name,
+  warning,
+  children,
+  rules,
+  transform,
+  onChangeCallback,
+  ...otherProps
+}) => {
   const {
     control,
     formState: {errors},
@@ -51,8 +59,10 @@ const FormInput = ({name, warning, children, rules, transform, ...otherProps}) =
             onChange={(e) => {
               if (otherProps.type === 'number' && e.target.value !== '') {
                 onChange(transform(Number(e.target.value)));
+                onChangeCallback && onChangeCallback(Number(e.target.value));
               } else {
                 onChange(transform(e));
+                onChangeCallback && onChangeCallback(e);
               }
             }}
             error={!!get(errors, name)}

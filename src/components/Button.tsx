@@ -3,7 +3,7 @@ import type {ButtonProps} from '@mui/material';
 import {merge} from 'lodash';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
-  btType: 'primary' | 'secondary';
+  btType: 'primary' | 'secondary' | 'tertiary';
 }
 
 const Button = (props: MyButtonProps) => {
@@ -24,7 +24,7 @@ const Button = (props: MyButtonProps) => {
     };
   }
 
-  if (props.btType === 'secondary') {
+  if (props.btType === 'tertiary') {
     sx = {
       my: 0.5,
       p: '0.5rem 1rem',
