@@ -1,4 +1,4 @@
-import Button from '@mui/material/Button';
+import Button from '~/components/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -41,11 +41,11 @@ export default function AddLocationForm({locationDialogOpen, setLocationDialogOp
         <LocationForm mode="modal" />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleSave} color="secondary" variant="contained">
-          Tilføj
-        </Button>
-        <Button onClick={handleClose} color="secondary" variant="contained">
+        <Button onClick={handleClose} btType="secondary">
           Annuller
+        </Button>
+        <Button onClick={handleSave} btType="primary">
+          Tilføj
         </Button>
       </DialogActions>
     </Dialog>

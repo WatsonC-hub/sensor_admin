@@ -330,36 +330,22 @@ const NavBar = ({children}) => {
     content = (
       <>
         <GoBack />
-        {isMobile ? (
-          <>
-            <IconButton color="inherit" onClick={() => setOpenQRScanner(true)} size="large">
-              <PhotoCameraRounded />
-            </IconButton>
-            <Box>
-              {adminAccess && <NavBarNotifications />}
-              <NavBarMenu />
-            </Box>
-          </>
-        ) : (
-          <>
-            <Typography variant="h4">Field</Typography>
-            <Box>
-              {adminAccess && <NavBarNotifications />}
-              <NavBarMenu
-                highligtFirst={!isMobile}
-                items={[
-                  {
-                    title: 'Admin',
-                    icon: <AdminPanelSettingsIcon fontSize="medium" />,
-                    onClick: () => {
-                      navigate('/admin');
-                    },
-                  },
-                ]}
-              />
-            </Box>
-          </>
-        )}
+
+        {/* <Typography
+          sx={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+          }}
+          variant="h4"
+        >
+          Opret station
+        </Typography> */}
+
+        <Box>
+          {/* {adminAccess && <NavBarNotifications />} */}
+          <NavBarMenu />
+        </Box>
       </>
     );
   }

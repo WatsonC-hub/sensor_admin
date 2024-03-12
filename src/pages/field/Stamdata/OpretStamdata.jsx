@@ -1,4 +1,5 @@
-import {Button, Container, Grid, TextField, Typography} from '@mui/material';
+import {Container, Grid, TextField, Typography, Box} from '@mui/material';
+import Button from '~/components/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -20,17 +21,14 @@ import {toast} from 'react-toastify';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import NavBar from '~/components/NavBar';
 import {stamdataStore} from '../../../state/store';
-import {set} from 'lodash';
 
-const flex1 = {
-  display: 'flex',
-  alignItems: 'baseline',
-  justifyContent: 'start',
-};
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 
 function LocationChooser({setLocationDialogOpen}) {
   const location = stamdataStore((store) => store.location);
-  const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : '');
+  const [selectedLoc, setSelectedLoc] = useState(
+    location.loc_id ? location : {loc_id: '', loc_name: ''}
+  );
   const formMethods = useFormContext();
 
   const theme = useTheme();
@@ -83,7 +81,13 @@ function LocationChooser({setLocationDialogOpen}) {
   const desktopChooser = (
     <>
       <Grid item xs={12} sm={6}>
-        <div style={flex1}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'baseline',
+            justifyContent: 'start',
+          }}
+        >
           <Typography>Lokation</Typography>
 
           <Autocomplete
@@ -107,17 +111,17 @@ function LocationChooser({setLocationDialogOpen}) {
 
           <Button
             size="small"
-            color="secondary"
+            color="primary"
             variant="contained"
-            style={{
+            sx={{
               textTransform: 'none',
-              marginLeft: '12px',
+              ml: '12px',
             }}
             onClick={() => setLocationDialogOpen(true)}
           >
             Tilføj ny lokation
           </Button>
-        </div>
+        </Box>
       </Grid>
       {/* <Grid item xs={12} sm={6}></Grid> */}
     </>
@@ -126,10 +130,16 @@ function LocationChooser({setLocationDialogOpen}) {
   const mobileChooser = (
     <>
       <Grid item xs={12}>
-        <div style={flex1}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'baseline',
+            justifyContent: 'start',
+          }}
+        >
           <Autocomplete
             value={selectedLoc}
-            options={locations}
+            options={locations ? locations : []}
             getOptionLabel={(option) => option.loc_name}
             renderInput={(params) => (
               <TextField
@@ -145,16 +155,17 @@ function LocationChooser({setLocationDialogOpen}) {
             onChange={(event, value) => populateFormData(value)}
           />
           <Button
-            color="secondary"
-            variant="contained"
-            style={{
-              textTransform: 'none',
+            btType="primary"
+            size="small"
+            sx={{
+              ml: 1,
             }}
+            startIcon={<AddLocationAltIcon />}
             onClick={() => setLocationDialogOpen(true)}
           >
             Tilføj lokation
           </Button>
-        </div>
+        </Box>
       </Grid>
     </>
   );
@@ -282,17 +293,21 @@ export default function OpretStamdata({setAddStationDisabled}) {
             <Location setLocationDialogOpen={setLocationDialogOpen} />
             <Typography>Tidsserie</Typography>
             <TimeseriesForm mode="add" />
-            <div style={flex1}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'baseline',
+                justifyContent: 'start',
+              }}
+            >
               <Typography>Udstyr</Typography>
               <Button
                 disabled={watchtstype_id === -1}
+                btType="primary"
                 size="small"
-                style={{
-                  textTransform: 'none',
-                  marginLeft: '12px',
+                sx={{
+                  ml: 1,
                 }}
-                color="secondary"
-                variant="contained"
                 onClick={() => setUdstyrDialogOpen(true)}
               >
                 {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
@@ -302,30 +317,28 @@ export default function OpretStamdata({setAddStationDisabled}) {
                   Vælg udstyr først
                 </Typography>
               )}
-            </div>
+            </Box>
             <UnitForm mode="add" />
-            <Grid container spacing={3}>
+            <Grid container spacing={3} justifyContent="flex-end">
               <Grid item xs={4} sm={2}>
                 <Button
-                  color="secondary"
-                  variant="contained"
-                  onClick={handleSubmit(handleOpret, handleDebug)}
-                  startIcon={<SaveIcon />}
-                  disabled={isSubmitting}
-                >
-                  Gem
-                </Button>
-              </Grid>
-              <Grid item xs={4} sm={2}>
-                <Button
-                  color="grey"
-                  variant="contained"
+                  btType="secondary"
                   onClick={() => {
                     navigate('/field');
                     setAddStationDisabled(false);
                   }}
                 >
                   Annuller
+                </Button>
+              </Grid>
+              <Grid item xs={4} sm={2}>
+                <Button
+                  btType="primary"
+                  onClick={handleSubmit(handleOpret, handleDebug)}
+                  startIcon={<SaveIcon />}
+                  disabled={isSubmitting}
+                >
+                  Gem
                 </Button>
               </Grid>
             </Grid>
