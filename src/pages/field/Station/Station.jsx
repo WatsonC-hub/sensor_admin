@@ -18,7 +18,7 @@ import PejlingMeasurements from './PejlingMeasurements';
 import StationImages from './StationImages';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 
-export default function Station({stationId: ts_id, stamdata}) {
+export default function Station({ts_id, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
     timeofmeas: moment(),
@@ -194,16 +194,6 @@ export default function Station({stationId: ts_id, stamdata}) {
     pejlingMutate.mutate(payload);
   };
 
-  const watlevmpMutate = useMutation({
-    mutationFn: (data) => {
-      if (data.gid === -1) {
-        return apiClient.post(`/sensor_field/station/watlevmp/${ts_id}`, data);
-      } else {
-        return apiClient.put(`/sensor_field/station/watlevmp/${ts_id}/${data.gid}`, data);
-      }
-    },
-  });
-
   const handleMaalepunktSubmit = () => {
     // const payload = mpData;
 
@@ -309,15 +299,7 @@ export default function Station({stationId: ts_id, stamdata}) {
   };
 
   const handleDelete = (type) => {
-    if (type === 'watlevmp') {
-      return (gid) => {
-        apiClient.delete(`/sensor_field/station/watlevmp/${ts_id}/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['watlevmp', ts_id]);
-          resetMpData();
-          toast.success('Målepunkt slettet');
-        });
-      };
-    } else if (type === 'service') {
+    if (type === 'service') {
       return (gid) => {
         apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then((res) => {
           queryClient.invalidateQueries(['service', ts_id]);
