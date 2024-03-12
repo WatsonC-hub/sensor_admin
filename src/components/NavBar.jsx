@@ -49,23 +49,17 @@ const LogOut = ({element: Element}) => {
   return <Box onClick={handleLogout}>{Element}</Box>;
 };
 
-export const AppBarLayout = ({children, style}) => {
+export const AppBarLayout = ({children}) => {
   return (
     <AppBar position="sticky" enableColorOnDark>
       <Toolbar
-        style={
-          style
-            ? style
-            : {
-                flexGrow: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }
-        }
         sx={{
           height: 64,
           pl: 0.5,
           pr: 0.5,
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
         }}
       >
         {children}

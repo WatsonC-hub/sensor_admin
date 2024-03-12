@@ -3,6 +3,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
@@ -15,7 +16,7 @@ import {authStore} from '~/state/store';
 import NotificationList from '../../../components/NotificationList';
 import ErrorPage from './ErrorPage';
 import MinimalSelect from './MinimalSelect';
-import Station from './Station';
+import Station from '~/pages/field/Station/Station';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {MetadataContext} from '~/state/contexts';
 
@@ -53,22 +54,25 @@ export default function LocationRouter() {
     <MetadataContext.Provider value={metadata}>
       <CssBaseline />
       <AppBarLayout>
-        <Box display="flex">
-          <IconButton
-            color="inherit"
-            onClick={(e) => {
-              navigate(-1);
-            }}
-            size="large"
-          >
-            <KeyboardBackspaceIcon />
-          </IconButton>
-          <Box>
-            <Typography pl={1.7}>{data?.[0].loc_name}</Typography>
-            <MinimalSelect locid={params.locid} stationList={data} />
-          </Box>
+        <IconButton
+          color="inherit"
+          onClick={(e) => {
+            navigate(-1);
+          }}
+          size="large"
+        >
+          <KeyboardBackspaceIcon />
+        </IconButton>
+
+        <Box display="block" flexGrow={1} overflow="hidden">
+          <Tooltip title={data?.[0].loc_name} arrow enterTouchDelay={0}>
+            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+              {data?.[0].loc_name}
+            </Typography>
+          </Tooltip>
+          <MinimalSelect locid={params.locid} stationList={data} />
         </Box>
-        <Box display="flex" justifyContent="center" alignItems="center">
+        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           {adminAccess && <NotificationList />}
           <NavBarMenu
             highligtFirst={!isMobile}
@@ -96,7 +100,7 @@ export default function LocationRouter() {
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <Station stationId={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />
+          <Station ts_id={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />
         </ErrorBoundary>
       </main>
     </MetadataContext.Provider>

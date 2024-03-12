@@ -26,6 +26,7 @@ const MinimalSelect = ({locid, stationList}) => {
   }, [params.ts_id]);
 
   const menuProps = {
+    getContentAnchorEl: () => null,
     anchorOrigin: {
       vertical: 'bottom',
       horizontal: 'left',
@@ -46,16 +47,17 @@ const MinimalSelect = ({locid, stationList}) => {
       onClose={handleClose}
       sx={{
         color: 'white',
-        paddingBottom: '2px',
         '& .MuiSelect-icon': {
           color: 'white',
         },
-        '& .MuiSelect-selectMenu': {
-          backgroundColor: 'blue',
+        '& .MuiSelect-select': {
+          p: '0px 14px',
         },
         backgroundColor: 'transparent',
         boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.14)',
         height: '35px',
+        mb: 0,
+        pb: 0,
       }}
     >
       {stationList &&
