@@ -39,7 +39,9 @@ export const useImageUpload = (endpoint) => {
       return res;
     },
     onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries(['images']);
+      queryClient.invalidateQueries({
+        queryKey: ['images'],
+      });
     },
   });
 
@@ -51,7 +53,9 @@ export const useImageUpload = (endpoint) => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['images']);
+      queryClient.invalidateQueries({
+        queryKey: ['images'],
+      });
     },
   });
 
@@ -63,7 +67,9 @@ export const useImageUpload = (endpoint) => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['images']);
+      queryClient.invalidateQueries({
+        queryKey: ['images'],
+      });
     },
   });
 

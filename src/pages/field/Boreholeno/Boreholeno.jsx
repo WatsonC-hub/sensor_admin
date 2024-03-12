@@ -172,7 +172,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         resetPejlingData();
         setFormToShow(null);
         toast.success('Kontrolmåling gemt');
-        queryClient.invalidateQueries(['measurements', boreholeno]);
+        queryClient.invalidateQueries({
+          queryKey: ['measurements', boreholeno],
+        });
       },
       onError: (error) => {
         toast.error('Kontrolmåling kunne ikke gemmes');
@@ -196,7 +198,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       onSuccess: (data) => {
         resetMpData();
         toast.success('Målepunkt gemt');
-        queryClient.invalidateQueries(['watlevmp', boreholeno]);
+        queryClient.invalidateQueries({
+          queryKey: ['watlevmp', boreholeno],
+        });
       },
       onError: (error) => {
         toast.error('Der skete en fejl');
@@ -227,7 +231,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     if (type === 'watlevmp') {
       return (gid) => {
         apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['watlevmp', boreholeno]);
+          queryClient.invalidateQueries({
+            queryKey: ['watlevmp', boreholeno],
+          });
           resetMpData();
           toast.success('Målepunkt slettet');
         });
@@ -235,7 +241,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     } else {
       return (gid) => {
         apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['measurements', boreholeno]);
+          queryClient.invalidateQueries({
+            queryKey: ['measurements', boreholeno],
+          });
           resetPejlingData();
           toast.success('Kontrolmåling slettet');
         });

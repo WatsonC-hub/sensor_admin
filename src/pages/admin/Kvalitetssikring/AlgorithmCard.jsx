@@ -25,7 +25,9 @@ const AlgorithmCard = ({algorithm}) => {
       return response;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['algorithms', params.ts_id]);
+      queryClient.invalidateQueries({
+        queryKey: ['algorithms', params.ts_id],
+      });
     },
   });
 
@@ -62,7 +64,9 @@ const AlgorithmCard = ({algorithm}) => {
           {
             onSuccess: () => {
               console.log(['algorithms', params.ts_id]);
-              queryClient.invalidateQueries(['algorithms', params.ts_id]);
+              queryClient.invalidateQueries({
+                queryKey: ['algorithms', params.ts_id],
+              });
             },
           }
         ),

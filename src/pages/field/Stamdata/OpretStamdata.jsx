@@ -1,4 +1,4 @@
-import {Container, Grid, TextField, Typography, Box} from '@mui/material';
+import {Container, Grid, TextField, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import Button from '~/components/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import {useTheme} from '@mui/material/styles';
@@ -11,6 +11,7 @@ import AddUnitForm from './AddUnitForm';
 import LocationForm from './components/LocationForm';
 import TimeseriesForm from './components/TimeseriesForm';
 import UnitForm from './components/UnitForm';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
@@ -42,6 +43,7 @@ function LocationChooser({setLocationDialogOpen}) {
           mainloc: locData.mainloc,
           subloc: locData.subloc,
           subsubloc: locData.subsubloc,
+          groups: locData.groups,
           x: locData.x,
           y: locData.y,
           terrainqual: locData.terrainqual,
@@ -59,6 +61,7 @@ function LocationChooser({setLocationDialogOpen}) {
           subsubloc: '',
           x: '',
           y: '',
+          groups: [],
           terrainqual: '',
           terrainlevel: '',
           description: '',
@@ -180,6 +183,22 @@ function Location({setLocationDialogOpen}) {
   );
 }
 
+function TabPanel(props) {
+  const {children, value, index, ...other} = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={1}>{children}</Box>}
+    </div>
+  );
+}
+
 export default function OpretStamdata({setAddStationDisabled}) {
   const navigate = useNavigate();
   const store = stamdataStore();
@@ -187,6 +206,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(
     store.location.x ? (store.location.loc_id ? false : true) : false
   );
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     return () => {
@@ -278,58 +298,111 @@ export default function OpretStamdata({setAddStationDisabled}) {
     }
   };
 
+  console.log('errors', errors);
+  console.log('values', getValues());
+
   return (
     <>
       <NavBar />
       <div>
         <FormProvider {...formMethods}>
-          <Container fixed>
-            <Typography variant="h6" component="h3">
+          <Tabs
+            value={tabValue}
+            onChange={(_, newValue) => setTabValue(newValue)}
+            variant="fullWidth"
+            aria-label="simple tabs example"
+            sx={{
+              '& .MuiTab-root': {
+                height: '48px',
+                minHeight: '48px',
+              },
+            }}
+          >
+            <Tab
+              label="Lokation"
+              iconPosition="start"
+              icon={errors?.location ? <ErrorOutlineIcon color="error" /> : null}
+            />
+            <Tab
+              iconPosition="start"
+              label="Tidsserie"
+              icon={
+                errors?.timeseries || errors?.watlevmp ? <ErrorOutlineIcon color="error" /> : null
+              }
+            />
+            <Tab label="Udstyr" icon={errors?.unit ? <ErrorOutlineIcon color="error" /> : null} />
+          </Tabs>
+          <Divider />
+          <Box
+            display="flex"
+            flexDirection="column"
+            sx={{
+              maxWidth: '1200px',
+              margin: 'auto',
+            }}
+          >
+            {/* <Typography variant="h6" component="h3">
               Stamdata
-            </Typography>
+            </Typography> */}
+            <TabPanel value={tabValue} index={0}>
+              <Location setLocationDialogOpen={setLocationDialogOpen} />
+            </TabPanel>
 
-            <Location setLocationDialogOpen={setLocationDialogOpen} />
-            <Typography>Tidsserie</Typography>
-            <TimeseriesForm mode="add" />
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'baseline',
-                justifyContent: 'start',
-              }}
-            >
-              <Typography>Udstyr</Typography>
-              <Button
-                disabled={watchtstype_id === -1}
-                btType="primary"
-                size="small"
+            <TabPanel value={tabValue} index={1}>
+              {/* <Typography>Tidsserie</Typography> */}
+              <TimeseriesForm mode="add" />
+            </TabPanel>
+            <TabPanel value={tabValue} index={2}>
+              {/* <Typography>Udstyr</Typography> */}
+              <Box
                 sx={{
-                  ml: 1,
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  justifyContent: 'start',
                 }}
-                onClick={() => setUdstyrDialogOpen(true)}
               >
-                {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
-              </Button>
-              {errors?.unit && (
-                <Typography variant="caption" color="error">
-                  Vælg udstyr først
-                </Typography>
-              )}
-            </Box>
-            <UnitForm mode="add" />
-            <Grid container spacing={3} justifyContent="flex-end">
-              <Grid item xs={4} sm={2}>
                 <Button
-                  btType="tertiary"
+                  disabled={watchtstype_id === -1}
+                  btType="primary"
+                  size="small"
+                  sx={{
+                    ml: 1,
+                  }}
+                  onClick={() => setUdstyrDialogOpen(true)}
+                >
+                  {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
+                </Button>
+                {errors?.unit && (
+                  <Typography variant="caption" color="error">
+                    Vælg udstyr først
+                  </Typography>
+                )}
+              </Box>
+              <UnitForm mode="add" />
+            </TabPanel>
+
+            <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+              <Button
+                btType="tertiary"
+                onClick={() => {
+                  navigate('/field');
+                  setAddStationDisabled(false);
+                }}
+              >
+                Annuller
+              </Button>
+
+              {tabValue < 2 && (
+                <Button
+                  btType="primary"
                   onClick={() => {
-                    navigate('/field');
-                    setAddStationDisabled(false);
+                    setTabValue((prev) => prev + 1);
                   }}
                 >
-                  Annuller
+                  Næste
                 </Button>
-              </Grid>
-              <Grid item xs={4} sm={2}>
+              )}
+              {tabValue == 2 && (
                 <Button
                   btType="primary"
                   onClick={handleSubmit(handleOpret, handleDebug)}
@@ -338,9 +411,9 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 >
                   Gem
                 </Button>
-              </Grid>
-            </Grid>
-          </Container>
+              )}
+            </Box>
+          </Box>
           <AddUnitForm
             udstyrDialogOpen={udstyrDialogOpen}
             setUdstyrDialogOpen={setUdstyrDialogOpen}

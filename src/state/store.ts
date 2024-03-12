@@ -87,6 +87,7 @@ type LocationState = {
     subsubloc: string;
     x: number;
     y: number;
+    groups: string[];
     terrainqual: string;
     terrainlevel: number;
     description: string;
@@ -134,6 +135,7 @@ const initialState = {
     subsubloc: '',
     x: 0,
     y: 0,
+    groups: [],
     terrainqual: '',
     terrainlevel: 0,
     description: '',
@@ -178,6 +180,7 @@ const stamdataStore = create<LocationState>()(
             mainloc: locationData.mainloc,
             subloc: locationData.subloc,
             subsubloc: locationData.subsubloc,
+            groups: locationData.groups,
             x: locationData.x,
             y: locationData.y,
             terrainqual: locationData.terrainqual,

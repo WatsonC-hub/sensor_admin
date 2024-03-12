@@ -10,6 +10,14 @@ const metadataBaseSchema = z.object({
     mainloc: z.string().nullish(),
     subloc: z.string().nullish(),
     subsubloc: z.string().nullish(),
+    groups: z
+      .array(
+        z.object({
+          id: z.string(),
+          group_name: z.string(),
+        })
+      )
+      .nullish(),
     x: z.number({required_error: 'X-koordinat skal udfyldes'}),
     y: z.number({required_error: 'Y-koordinat skal udfyldes'}),
     terrainqual: z.enum(['dGPS', 'DTM', '']).nullish(),
@@ -22,7 +30,7 @@ const metadataBaseSchema = z.object({
     sensor_depth_m: z.number().nullish(),
   }),
   unit: z.object({
-    unit_uuid: z.string().uuid(),
+    unit_uuid: z.string(),
     startdate: z.string().transform((value) => moment(value).toISOString()),
   }),
 });

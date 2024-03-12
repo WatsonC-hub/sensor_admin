@@ -29,7 +29,9 @@ export const useTaskMutation = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['overblik']);
+      queryClient.invalidateQueries({
+        queryKey: ['overblik'],
+      });
       //   toast.success('Registreret');
     },
   });
@@ -40,7 +42,9 @@ export const useTaskMutation = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['overblik']);
+      queryClient.invalidateQueries({
+        queryKey: ['overblik'],
+      });
       //   toast.success('Færdiggjort');
     },
   });

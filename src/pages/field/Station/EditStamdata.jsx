@@ -56,7 +56,9 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
       setOpenDialog(false);
       setUdstyrValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
-      queryClient.invalidateQueries(['udstyr', stationId]);
+      queryClient.invalidateQueries({
+        queryKey: ['udstyr', stationId],
+      });
     },
   });
 
@@ -222,8 +224,12 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
       return out;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries(['stations', metadata.loc_id.toString()]);
-      queryClient.invalidateQueries(['udstyr', ts_id]);
+      queryClient.invalidateQueries({
+        queryKey: ['stations', metadata.loc_id.toString()],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['udstyr', ts_id],
+      });
     },
   });
 
@@ -269,6 +275,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
   }, []);
 
   const handleUpdate = (values) => {
+    console.log('values', values);
     metadataEditMutation.mutate(values, {
       onSuccess: (data) => {
         toast.success('Stamdata er opdateret');

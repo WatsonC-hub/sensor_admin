@@ -25,7 +25,9 @@ export const useRunQA = (ts_id) => {
 
   useEffect(() => {
     if (qaPoll === 200) {
-      queryClient.invalidateQueries(['qa_labels', ts_id]);
+      queryClient.invalidateQueries({
+        queryKey: ['qa_labels', ts_id],
+      });
       toast.update(toastId.current, {
         render: 'Genberegnet',
         type: toast.TYPE.SUCCESS,

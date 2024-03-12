@@ -2,11 +2,12 @@ import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import Button from '~/components/Button';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
-import {useFormContext} from 'react-hook-form';
+import {useFormContext, Controller} from 'react-hook-form';
 import FormInput from '~/components/FormInput';
 import {getDTMQuota} from '../../fieldAPI';
 import LocationTypeSelect from './LocationTypeSelect';
 import DownloadIcon from '@mui/icons-material/Download';
+import LocationGroups from './LocationGroups';
 
 export default function LocationForm({mode, disable}) {
   const {
@@ -69,6 +70,15 @@ export default function LocationForm({mode, disable}) {
             mb: 2,
           }}
           disabled={disable}
+        />
+      </Grid>
+      <Grid item xs={12} sm={gridsize}>
+        <Controller
+          name="location.groups"
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <LocationGroups value={value} setValue={onChange} />
+          )}
         />
       </Grid>
       <Grid item xs={12} sm={gridsize}>
@@ -153,13 +163,6 @@ export default function LocationForm({mode, disable}) {
           <MenuItem value="DTM">DTM</MenuItem>
         </FormInput>
       </Grid>
-      {/* <Grid item xs={6} sm={gridsize / 2} md={gridsize / 4} ml="auto">
-        {watchTerrainqual === 'DTM' && !disable ? (
-          <Button btType="primary" size="small" startIcon={<DownloadIcon />} onClick={refetchDTM}>
-            Hent DTM
-          </Button>
-        ) : null}
-      </Grid> */}
       <Grid item xs={12} sm={gridsize}>
         <LocationTypeSelect disable={disable} />
       </Grid>

@@ -36,7 +36,9 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddM
     watlevmpMutate.mutate(payload, {
       onSuccess: (data) => {
         toast.success('Målepunkt gemt');
-        queryClient.invalidateQueries(['watlevmp', boreholeno]);
+        queryClient.invalidateQueries({
+          queryKey: ['watlevmp', boreholeno],
+        });
         setAddMPOpen(false);
       },
       onError: (error) => {

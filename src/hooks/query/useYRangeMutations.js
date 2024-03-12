@@ -30,7 +30,9 @@ export const useYRangeMutations = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries(['qa_all', Number(variables.path)]);
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all', Number(variables.path)],
+      });
       rerunToast();
     },
   });
@@ -41,7 +43,9 @@ export const useYRangeMutations = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['qa_all']);
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all'],
+      });
       rerunToast();
     },
   });

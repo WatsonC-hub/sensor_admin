@@ -177,7 +177,9 @@ export default function Station({ts_id, stamdata}) {
       resetPejlingData();
       setFormToShow(null);
       toast.success('Kontrolmåling gemt');
-      queryClient.invalidateQueries(['measurements', ts_id]);
+      queryClient.invalidateQueries({
+        queryKey: ['measurements', ts_id],
+      });
     },
     onError: (error) => {
       toast.error('Der skete en fejl');
@@ -260,7 +262,9 @@ export default function Station({ts_id, stamdata}) {
       onSuccess: (data) => {
         resetServiceData();
         toast.success('Tilsyn gemt');
-        queryClient.invalidateQueries(['service', ts_id]);
+        queryClient.invalidateQueries({
+          queryKey: ['service', ts_id],
+        });
       },
       onError: (error) => {
         if (error.response.data.detail.includes('No unit')) {
@@ -302,7 +306,9 @@ export default function Station({ts_id, stamdata}) {
     if (type === 'service') {
       return (gid) => {
         apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['service', ts_id]);
+          queryClient.invalidateQueries({
+            queryKey: ['service', ts_id],
+          });
           resetServiceData();
           toast.success('Tilsyn slettet');
         });
@@ -310,7 +316,9 @@ export default function Station({ts_id, stamdata}) {
     } else {
       return (gid) => {
         apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then((res) => {
-          queryClient.invalidateQueries(['measurements', ts_id]);
+          queryClient.invalidateQueries({
+            queryKey: ['measurements', ts_id],
+          });
           resetPejlingData();
           toast.success('Kontrolmåling slettet');
         });

@@ -61,7 +61,9 @@ const AnnotationConfiguration = ({stationId}) => {
         {
           onSuccess: () => {
             toast.success('Annoteret', {autoClose: 1000});
-            queryClient.invalidateQueries(['qa_labels']);
+            queryClient.invalidateQueries({
+              queryKey: ['qa_labels'],
+            });
           },
         }
       );
