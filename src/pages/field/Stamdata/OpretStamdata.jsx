@@ -20,6 +20,7 @@ import {toast} from 'react-toastify';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import NavBar from '~/components/NavBar';
 import {stamdataStore} from '../../../state/store';
+import {set} from 'lodash';
 
 const flex1 = {
   display: 'flex',
@@ -28,17 +29,15 @@ const flex1 = {
 };
 
 function LocationChooser({setLocationDialogOpen}) {
-  const [setLocation, resetLocation] = stamdataStore((store) => [
-    store.setLocation,
-    store.resetLocation,
-  ]);
-
+  const location = stamdataStore((store) => store.location);
+  const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : '');
   const formMethods = useFormContext();
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const populateFormData = (locData) => {
+    setSelectedLoc(locData);
     if (locData) {
       formMethods.reset({
         location: {
@@ -88,6 +87,7 @@ function LocationChooser({setLocationDialogOpen}) {
           <Typography>Lokation</Typography>
 
           <Autocomplete
+            value={selectedLoc}
             options={locations ? locations : []}
             getOptionLabel={(option) => option.loc_name}
             renderInput={(params) => (
@@ -100,7 +100,9 @@ function LocationChooser({setLocationDialogOpen}) {
               />
             )}
             style={{width: 200, marginLeft: '12px'}}
-            onChange={(event, value) => populateFormData(value)}
+            onChange={(event, value) => {
+              populateFormData(value);
+            }}
           />
 
           <Button
@@ -126,6 +128,7 @@ function LocationChooser({setLocationDialogOpen}) {
       <Grid item xs={12}>
         <div style={flex1}>
           <Autocomplete
+            value={selectedLoc}
             options={locations}
             getOptionLabel={(option) => option.loc_name}
             renderInput={(params) => (
@@ -173,7 +176,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(
-    store.location.x ? true : false
+    store.location.x ? (store.location.loc_id ? false : true) : false
   );
 
   useEffect(() => {
@@ -188,11 +191,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
     resolver: zodResolver(metadataSchema),
     defaultValues: {
       location: {
-        loc_name: '',
-        terrainqual: '',
-        loctype_id: -1,
-        x: store.location.x,
-        y: store.location.y,
+        ...store.location,
       },
       timeseries: {
         tstype_id: -1,

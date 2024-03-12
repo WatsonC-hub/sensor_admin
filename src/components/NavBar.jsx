@@ -1,10 +1,15 @@
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
+import HomeIcon from '@mui/icons-material/Home';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
   AppBar,
   Badge,
@@ -49,14 +54,30 @@ const LogOut = ({element: Element}) => {
   return <Box onClick={handleLogout}>{Element}</Box>;
 };
 
+export const HomeButton = () => {
+  const navigate = useNavigate();
+
+  return (
+    <IconButton
+      color="inherit"
+      onClick={(e) => {
+        navigate('/field');
+      }}
+      size="large"
+    >
+      <HomeIcon />
+    </IconButton>
+  );
+};
+
 export const AppBarLayout = ({children}) => {
   return (
     <AppBar position="sticky" enableColorOnDark>
       <Toolbar
         sx={{
           height: 64,
-          pl: 0.5,
-          pr: 0.5,
+          pl: 1,
+          pr: 1,
           width: '100%',
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -138,7 +159,7 @@ export const NavBarMenu = ({highligtFirst, items}) => {
         aria-haspopup="true"
         onClick={handleClick}
       >
-        <SettingsIcon />
+        <MoreVertIcon />
       </IconButton>
 
       <Menu
@@ -209,7 +230,7 @@ const NavBar = ({children}) => {
     state.iotAccess,
     state.adminAccess,
   ]);
-  const [open, setOpen] = useAtom(captureDialogAtom);
+  const [openQRScanner, setOpenQRScanner] = useAtom(captureDialogAtom);
   const navigate = useNavigate();
   const {isMobile} = useBreakpoints();
   const metadata = useContext(MetadataContext);
@@ -253,40 +274,49 @@ const NavBar = ({children}) => {
   if (url == '/field') {
     content = (
       <>
-        {iotAccess ? (
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={() => {
-              navigate('stamdata');
-              //setAddStationDisabled(true);
-            }}
-            size="small"
-          >
-            Opret station
-          </Button>
-        ) : (
-          <LogoSvg />
-        )}
+        <Logo />
         {isMobile ? (
-          <>
-            <IconButton color="inherit" onClick={() => setOpen(true)} size="large">
-              <PhotoCameraRounded />
-            </IconButton>
-          </>
+          <IconButton
+            sx={{
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+            color="inherit"
+            onClick={() => setOpenQRScanner(true)}
+            size="large"
+          >
+            <QrCodeScannerIcon />
+          </IconButton>
         ) : (
-          <Typography variant="h4">Field</Typography>
+          <Typography
+            sx={{
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+            }}
+            variant="h4"
+          >
+            Field
+          </Typography>
         )}
         <Box>
           {adminAccess && <NavBarNotifications />}
           <NavBarMenu
-            highligtFirst={!isMobile}
+            // highligtFirst={!isMobile}
             items={[
               {
                 title: 'Admin',
-                icon: <SettingsIcon fontSize="medium" />,
+                icon: <AdminPanelSettingsIcon fontSize="medium" />,
                 onClick: () => {
                   navigate('/admin');
+                },
+              },
+              iotAccess && {
+                title: 'Opret station',
+                icon: <AddLocationAltIcon fontSize="medium" />,
+                onClick: () => {
+                  navigate('/field/stamdata');
                 },
               },
             ]}
@@ -302,7 +332,7 @@ const NavBar = ({children}) => {
         <GoBack />
         {isMobile ? (
           <>
-            <IconButton color="inherit" onClick={() => setOpen(true)} size="large">
+            <IconButton color="inherit" onClick={() => setOpenQRScanner(true)} size="large">
               <PhotoCameraRounded />
             </IconButton>
             <Box>
@@ -320,7 +350,7 @@ const NavBar = ({children}) => {
                 items={[
                   {
                     title: 'Admin',
-                    icon: <SettingsIcon fontSize="medium" />,
+                    icon: <AdminPanelSettingsIcon fontSize="medium" />,
                     onClick: () => {
                       navigate('/admin');
                     },
@@ -343,7 +373,7 @@ const NavBar = ({children}) => {
         <Box>
           {adminAccess && <NavBarNotifications />}
           <NavBarMenu
-            highligtFirst={!isMobile}
+            // highligtFirst={!isMobile}
             items={[
               {
                 title: 'Field',
