@@ -1,5 +1,5 @@
 import MapIcon from '@mui/icons-material/Map';
-import TableChart from '@mui/icons-material/TableChart';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -88,7 +88,7 @@ export default function OverviewPage() {
 
   const TableIcon = (
     <Tooltip title="Tabel">
-      <TableChart />
+      <FormatListBulletedIcon />
     </Tooltip>
   );
 
@@ -129,9 +129,15 @@ export default function OverviewPage() {
           onChange={handleChange}
           variant="fullWidth"
           aria-label="simple tabs example"
+          sx={{
+            '& .MuiTab-root': {
+              height: '48px',
+              minHeight: '48px',
+            },
+          }}
         >
-          <Tab icon={KortIcon} />
-          <Tab icon={TableIcon} />
+          <Tab label="Kort" icon={KortIcon} iconPosition="start" />
+          <Tab icon={TableIcon} iconPosition="start" label="Liste" />
         </Tabs>
       </Box>
       <TabPanel value={tabValue} index={0}>

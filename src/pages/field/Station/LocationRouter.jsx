@@ -8,7 +8,7 @@ import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {useNavigate, useParams} from 'react-router-dom';
-import {AppBarLayout, NavBarMenu} from '~/components/NavBar';
+import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';
 import {apiClient} from '~/apiClient';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -19,6 +19,7 @@ import MinimalSelect from './MinimalSelect';
 import Station from '~/pages/field/Station/Station';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {MetadataContext} from '~/state/contexts';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 
 export default function LocationRouter() {
   const params = useParams();
@@ -73,9 +74,10 @@ export default function LocationRouter() {
           <MinimalSelect locid={params.locid} stationList={data} />
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          <HomeButton />
           {adminAccess && <NotificationList />}
           <NavBarMenu
-            highligtFirst={!isMobile}
+            highligtFirst={false}
             items={[
               ...(adminAccess && !stamdata?.calculated
                 ? [
@@ -88,6 +90,13 @@ export default function LocationRouter() {
                     },
                   ]
                 : []),
+              {
+                title: 'Opret station',
+                icon: <AddLocationAltIcon fontSize="medium" />,
+                onClick: () => {
+                  navigate('/field/stamdata');
+                },
+              },
             ]}
           />
         </Box>
