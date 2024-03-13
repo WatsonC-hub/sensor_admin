@@ -142,7 +142,7 @@ export default function LocationForm({mode, disable}) {
           disabled={disable}
         />
       </Grid>
-      <Grid item xs={6} sm={gridsize / 2} md={gridsize / 4}>
+      <Grid item xs={6} sm={gridsize / 2} md={gridsize / 2}>
         <FormInput
           name="location.terrainqual"
           label="Type af terrænkote"

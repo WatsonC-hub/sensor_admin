@@ -340,10 +340,24 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
             <Grid
               container
               alignItems="center"
-              justifyContent="center"
-              style={{marginTop: matches ? '4%' : ''}}
+              justifyContent="right"
+              sx={{
+                marginTop: 2,
+                pl: 2,
+              }}
             >
-              <Grid item xs={4} sm={4}>
+              <Grid item xs={2}>
+                <Button
+                  color="grey"
+                  variant="contained"
+                  onClick={() => {
+                    setFormToShow(null);
+                  }}
+                >
+                  Annuller
+                </Button>
+              </Grid>
+              <Grid item xs={2}>
                 <Button
                   autoFocus
                   color="secondary"
@@ -353,17 +367,6 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
                   disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
                 >
                   Gem
-                </Button>
-              </Grid>
-              <Grid item xs={4} sm={4}>
-                <Button
-                  color="grey"
-                  variant="contained"
-                  onClick={() => {
-                    setFormToShow(null);
-                  }}
-                >
-                  Annuller
                 </Button>
               </Grid>
             </Grid>
