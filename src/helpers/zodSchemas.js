@@ -4,9 +4,7 @@ import * as z from 'zod';
 const metadataBaseSchema = z.object({
   location: z.object({
     loc_id: z.number().optional(),
-    loc_name: z
-      .string({required_error: 'Lokationsnavn skal udfyldes'})
-      .min(6, {message: 'Lokationsnavn skal være mindst 6 tegn'}),
+    loc_name: z.string({required_error: 'Lokationsnavn skal udfyldes'}),
     mainloc: z.string().nullish(),
     subloc: z.string().nullish(),
     subsubloc: z.string().nullish(),
@@ -42,10 +40,6 @@ const metadataSchema = metadataBaseSchema.extend({
 });
 
 const metadataPutSchema = metadataBaseSchema.extend({
-  location: metadataBaseSchema.shape.location.merge({
-    loc_id: z.number(),
-    loc_name: z.string(),
-  }),
   timeseries: metadataBaseSchema.shape.timeseries.extend({
     tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
   }),
