@@ -4,9 +4,8 @@ import * as z from 'zod';
 const metadataBaseSchema = z.object({
   location: z.object({
     loc_id: z.number().optional(),
-    loc_name: z
-      .string({required_error: 'Lokationsnavn skal udfyldes'})
-      .min(6, {message: 'Lokationsnavn skal være mindst 6 tegn'}),
+    loc_name: z.string({required_error: 'Lokationsnavn skal udfyldes'}),
+    // .min(6, {message: 'Lokationsnavn skal være mindst 6 tegn'}),
     mainloc: z.string().nullish(),
     subloc: z.string().nullish(),
     subsubloc: z.string().nullish(),
