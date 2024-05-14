@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
@@ -17,6 +17,8 @@ import MaalepunktTable from './MaalepunktTable';
 import PejlingMeasurements from './PejlingMeasurements';
 import StationImages from './StationImages';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
+import { Box } from '@mui/material';
+import SaveImageDialog from '../../../components/SaveImageDialog';
 
 export default function Station({ts_id, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
@@ -63,9 +65,22 @@ export default function Station({ts_id, stamdata}) {
     }
   };
 
+  const [showData, setShowData] = useState('ADDPEJLING')
+
+
   const [dynamic, setDynamic] = useState([]);
   const [control, setcontrol] = useState([]);
   const [canEdit] = useState(true);
+  const fileInputRef = useRef(null);
+  const [dataUri, setdataUri] = useState('');
+  const [openSave, setOpenSave] = useState(false);
+  const [activeImage, setActiveImage] = useState({
+    gid: -1,
+    type: params.locid,
+    comment: '',
+    public: false,
+    date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+  });
 
   const store = stamdataStore();
   const queryClient = useQueryClient();
@@ -155,10 +170,13 @@ export default function Station({ts_id, stamdata}) {
   const handleMpCancel = () => {
     resetMpData();
     setFormToShow(null);
+    setShowData('ADDMAALEPUNKT')
+
   };
 
   const openAddMP = () => {
     setFormToShow('ADDMAALEPUNKT');
+    setShowData('')
   };
 
   const pejlingMutate = useMutation({
@@ -194,6 +212,7 @@ export default function Station({ts_id, stamdata}) {
     };
     payload.timeofmeas = moment(payload.timeofmeas).toISOString();
     pejlingMutate.mutate(payload);
+    setShowData('ADDPEJLING')
   };
 
   const handleMaalepunktSubmit = () => {
@@ -206,6 +225,8 @@ export default function Station({ts_id, stamdata}) {
     const mutationOptions = {
       onSuccess: (data) => {
         resetMpData();
+        setShowData('ADDMAALEPUNKT')
+        setFormToShow('')
       },
     };
 
@@ -261,6 +282,8 @@ export default function Station({ts_id, stamdata}) {
     serviceMutate.mutate(payload, {
       onSuccess: (data) => {
         resetServiceData();
+        setShowData('ADDTILSYN')
+            setFormToShow('');
         toast.success('Tilsyn gemt');
         queryClient.invalidateQueries({
           queryKey: ['service', ts_id],
@@ -284,12 +307,14 @@ export default function Station({ts_id, stamdata}) {
       return (data) => {
         setMpData(data); // Fill form data on Edit
         setFormToShow('ADDMAALEPUNKT');
+        setShowData('')
       };
     } else if (type === 'service') {
       return (data) => {
         data.dato = data.dato.replace(' ', 'T').substr(0, 19);
         setServiceData(data);
         setFormToShow('ADDTILSYN');
+        setShowData('')
       };
     } else {
       return (data) => {
@@ -298,6 +323,7 @@ export default function Station({ts_id, stamdata}) {
         data.useforcorrection = data.useforcorrection.toString();
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING');
+        setShowData('')
       };
     }
   };
@@ -326,88 +352,163 @@ export default function Station({ts_id, stamdata}) {
     }
   };
 
-  return (
-    // <>
-    <>
-      <BearingGraph
-        stationId={ts_id}
-        measurements={control}
-        dynamicMeasurement={formToShow === 'ADDPEJLING' ? dynamic : undefined}
-      />
+  const changeActiveImageData = (field, value) => {
+    setActiveImage({
+      ...activeImage,
+      [field]: value,
+    });
+  };
 
-      {formToShow === 'ADDPEJLING' && (
-        <PejlingForm
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
+  const handleSetDataURI = (datauri) => {
+    setdataUri(datauri);
+    setActiveImage({
+      gid: -1,
+      type: params.locid,
+      comment: '',
+      public: false,
+      date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+    });
+    setOpenSave(true);
+  };
+
+  const handleFileRead = async (event) => {
+    const file = event.target.files[0];
+    const base64 = await convertBase64(file);
+    handleSetDataURI(base64);
+  };
+
+  const handleFileInputClick = () => {
+    if(openSave !== true)
+      fileInputRef.current.value = null;
+  };
+
+  return (
+    <>
+      <Box sx={{ marginBottom: 5, marginTop: 5 }}>
+        <BearingGraph
           stationId={ts_id}
-          formData={pejlingData}
-          changeFormData={changePejlingData}
-          handleSubmit={handlePejlingSubmit}
-          openAddMP={openAddMP}
-          resetFormData={() => {
-            resetPejlingData();
-            setFormToShow(null);
-          }}
-          canEdit={canEdit}
-          mpData={watlevmp}
-          isWaterlevel={isWaterlevel}
-          isFlow={isFlow}
-        />
-      )}
-      {formToShow === 'RET_STAMDATA' && (
-        <EditStamdata setFormToShow={setFormToShow} ts_id={ts_id} metadata={stamdata} />
-      )}
-      {formToShow === 'ADDMAALEPUNKT' && (
-        <>
-          <MaalepunktForm
-            formData={mpData}
-            changeFormData={changeMpData}
-            handleSubmit={handleMaalepunktSubmit}
-            resetFormData={resetMpData}
-            handleCancel={handleMpCancel}
-            canEdit={canEdit}
-          />
-          <MaalepunktTable
-            watlevmp={watlevmp}
-            handleEdit={handleEdit('watlevmp')}
-            handleDelete={handleDeleteMaalepunkt}
-            canEdit={canEdit}
-          />
-        </>
-      )}
-      {(formToShow === null || formToShow === 'ADDPEJLING') && (
-        <PejlingMeasurements
-          measurements={measurements}
-          handleEdit={handleEdit('pejling')}
-          handleDelete={handleDelete('pejling')}
-          canEdit={canEdit}
-        />
-      )}
-      {formToShow === 'ADDTILSYN' && (
-        <>
-          <TilsynForm
-            formData={serviceData}
-            changeFormData={changeServiceData}
-            handleSubmit={handleServiceSubmit}
-            cancel={() => {
-              resetServiceData();
+          measurements={control}
+          dynamicMeasurement={showData === 'ADDPEJLING' ? dynamic : undefined}
+        />    
+      </Box>
+      <Box sx={{ marginBottom: 5, marginTop: 5, mr: 2, ml: 2 }}>
+        {formToShow === 'ADDPEJLING' && (
+          <PejlingForm
+            stationId={ts_id}
+            formData={pejlingData}
+            changeFormData={changePejlingData}
+            handleSubmit={handlePejlingSubmit}
+            openAddMP={openAddMP}
+            resetFormData={() => {
+              resetPejlingData();
               setFormToShow(null);
+              setShowData('ADDPEJLING')
             }}
+            canEdit={canEdit}
+            mpData={watlevmp}
+            isWaterlevel={isWaterlevel}
+            isFlow={isFlow}
           />
-          <TilsynTable
-            services={services}
-            handleEdit={handleEdit('service')}
-            handleDelete={handleDelete('service')}
+        )}
+        {showData === 'RET_STAMDATA' && (
+          <EditStamdata setFormToShow={setFormToShow} ts_id={ts_id} metadata={stamdata} />
+        )}
+        <>
+          {formToShow === 'ADDMAALEPUNKT' && 
+            <MaalepunktForm
+              formData={mpData}
+              changeFormData={changeMpData}
+              handleSubmit={handleMaalepunktSubmit}
+              resetFormData={resetMpData}
+              handleCancel={handleMpCancel}
+              canEdit={canEdit}
+            />
+          }
+          {showData === 'ADDMAALEPUNKT' &&
+            <MaalepunktTable
+              watlevmp={watlevmp}
+              handleEdit={handleEdit('watlevmp')}
+              handleDelete={handleDeleteMaalepunkt}
+              canEdit={canEdit}
+            />
+          }
+        </>
+        {(showData === null || showData === 'ADDPEJLING') && (
+          <PejlingMeasurements
+            measurements={measurements}
+            handleEdit={handleEdit('pejling')}
+            handleDelete={handleDelete('pejling')}
             canEdit={canEdit}
           />
+
+        )}
+        <>
+          {formToShow === 'ADDTILSYN' && 
+            <TilsynForm
+              formData={serviceData}
+              changeFormData={changeServiceData}
+              handleSubmit={handleServiceSubmit}
+              cancel={() => {
+                resetServiceData();
+                setFormToShow(null);
+                setShowData('ADDTILSYN')
+              }}
+            />
+          }
+          {showData === 'ADDTILSYN' &&
+            <TilsynTable
+              services={services}
+              handleEdit={handleEdit('service')}
+              handleDelete={handleDelete('service')}
+              canEdit={canEdit}
+            />
+          }
         </>
-      )}
-      {formToShow === 'CAMERA' && <StationImages locationId={params.locid} />}
+      </Box>
+      {showData === 'CAMERA' && <StationImages locationId={params.locid} setOpenSave={setOpenSave} setActiveImage={setActiveImage} setFormToShow={setFormToShow} /> }
+      {formToShow === 'CAMERA' && 
+        <div>
+          <SaveImageDialog
+            activeImage={activeImage}
+            changeData={changeActiveImageData}
+            id={params.locid}
+            type={'station'}
+            open={openSave}
+            dataUri={dataUri}
+            handleCloseSave={() => {
+              setOpenSave(false)
+              setdataUri('')
+            }}/>
+        </div>
+      }
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileRead}
+          onClick={handleFileInputClick}
+          />
       <ActionArea
-        stationId={ts_id}
+        setShowData={setShowData}
         formToShow={formToShow}
         setFormToShow={setFormToShow}
         canEdit={canEdit}
         isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
+        fileInputRef={fileInputRef}
       />
     </>
   );

@@ -306,31 +306,32 @@ export default function PejlingFormBorehole({
                   onChange={(e) => changeFormData('comment', e.target.value)}
                 />
               </Grid>
-              <Grid item xs={4} sm={2}>
-                <Button
-                  autoFocus
-                  color="secondary"
-                  variant="contained"
-                  onClick={() => {
-                    handleClickSubmit();
-                    handleSubmit();
-                  }}
-                  disabled={
-                    disableSubmit ||
-                    !currentMP.elevation ||
-                    pejlingOutOfRange ||
-                    !formData.timeofmeas ||
-                    (isPump && formData.pumpstop > formData.timeofmeas)
-                  }
-                  startIcon={<SaveIcon />}
-                >
-                  Gem
-                </Button>
-              </Grid>
-              <Grid item xs={4} sm={2}>
-                <Button autoFocus color="secondary" variant="contained" onClick={resetFormData}>
-                  Annuller
-                </Button>
+              <Grid item xs={12} sm={2}>
+              <Box display="flex" justifyContent="flex-end">
+                  <Button autoFocus color="grey" variant="contained" onClick={resetFormData} sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}>
+                    Annuller
+                  </Button>
+                  <Button
+                    autoFocus
+                    color="primary"
+                    variant="contained"
+                    onClick={() => {
+                      handleClickSubmit();
+                      handleSubmit();
+                    }}
+                    disabled={
+                      disableSubmit ||
+                      !currentMP.elevation ||
+                      pejlingOutOfRange ||
+                      !formData.timeofmeas ||
+                      (isPump && formData.pumpstop > formData.timeofmeas)
+                    }
+                    sx={{ textTransform: 'initial', borderRadius: 15}}
+                    startIcon={<SaveIcon />}
+                  >
+                    Gem kontrol
+                  </Button>
+                </Box>
               </Grid>
             </>
           )}

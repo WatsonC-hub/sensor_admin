@@ -385,8 +385,6 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
         width: 'auto',
         height: matches ? '300px' : '500px',
         // marginBottom: '10px',
-        paddingTop: '5px',
-        border: '2px solid gray',
       }}
     >
       <PlotGraph

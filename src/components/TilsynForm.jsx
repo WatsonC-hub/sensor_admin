@@ -1,5 +1,5 @@
 import SaveIcon from '@mui/icons-material/Save';
-import {Button, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
+import {Box, Button, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
@@ -99,27 +99,27 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
             />
           </Grid>
           <Grid item xs={2} sm={4}></Grid>
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              onClick={() => {
-                handleClickSubmit();
-                handleSubmit();
-              }}
-              disabled={disableSubmit}
-              startIcon={<SaveIcon />}
-              color="secondary"
-              variant="contained"
-            >
-              Gem
-            </Button>
+          <Grid item xs={12} sm={2}>
+            <Box display="flex" justifyContent="flex-end">
+              <Button onClick={cancel} color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}>
+                Annuller
+              </Button>
+              <Button
+                autoFocus
+                onClick={() => {
+                  handleClickSubmit();
+                  handleSubmit();
+                }}
+                disabled={disableSubmit}
+                startIcon={<SaveIcon />}
+                color="primary"
+                variant="contained"
+                sx={{ textTransform: 'initial', borderRadius: 15}}
+              >
+                Gem tilsyn
+              </Button>
+            </Box>
           </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button onClick={cancel} color="grey" variant="contained">
-              Annuller
-            </Button>
-          </Grid>
-          <Grid item xs={2} sm={4}></Grid>
         </Grid>
       </CardContent>
     </Card>

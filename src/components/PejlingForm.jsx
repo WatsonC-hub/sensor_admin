@@ -1,6 +1,7 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {
   Alert,
+  Box,
   Button,
   Card,
   CardContent,
@@ -303,31 +304,31 @@ export default function PejlingForm({
                   onChange={handleCommentChange}
                 />
               </Grid>
-
-              <Grid item xs={4} sm={2}>
-                <Button
-                  autoFocus
-                  color="secondary"
-                  variant="contained"
-                  onClick={() => {
-                    handleClickSubmit();
-                    handleSubmit();
-                  }}
-                  disabled={
-                    pejlingOutOfRange ||
-                    disableSubmit ||
-                    (isWaterlevel && currentMP.elevation === null) ||
-                    formData.useforcorrection == '-1'
-                  }
-                  startIcon={<SaveIcon />}
-                >
-                  Gem
-                </Button>
-              </Grid>
-              <Grid item xs={4} sm={2}>
-                <Button color="grey" variant="contained" onClick={resetFormData}>
-                  Annuller
-                </Button>
+              <Grid item xs={12} sm={2}>
+                <Box display="flex" justifyContent="flex-end">
+                  <Button color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }} onClick={resetFormData}>
+                    Annuller
+                  </Button>
+                  <Button
+                    autoFocus
+                    color="primary"
+                    variant="contained"
+                    sx={{ textTransform: 'initial', borderRadius: 15}}
+                    onClick={() => {
+                      handleClickSubmit();
+                      handleSubmit();
+                    }}
+                    disabled={
+                      pejlingOutOfRange ||
+                      disableSubmit ||
+                      (isWaterlevel && currentMP.elevation === null) ||
+                      formData.useforcorrection == '-1'
+                    }
+                    startIcon={<SaveIcon />}
+                  >
+                    Gem kontrol
+                  </Button>
+                </Box>
               </Grid>
             </>
           )}

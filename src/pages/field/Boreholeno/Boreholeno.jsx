@@ -1,7 +1,7 @@
 import {Box, Button, Grid} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
@@ -15,6 +15,7 @@ import MaalepunktTable from './MaalepunktTable';
 import PejlingMeasurements from './PejlingMeasurements';
 import LastJupiterMP from './components/LastJupiterMP';
 import PejlingFormBorehole from './components/PejlingFormBorehole';
+import SaveImageDialog from '../../../components/SaveImageDialog';
 
 const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
@@ -56,6 +57,19 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       navigate(-1);
     }
   };
+
+  const [showData, setShowData] = useState('ADDPEJLING')
+  const fileInputRef = useRef(null);
+  const [dataUri, setdataUri] = useState('');
+  const [openSave, setOpenSave] = useState(false);
+  const [activeImage, setActiveImage] = useState({
+    gid: -1,
+    type: boreholeno,
+    comment: '',
+    public: false,
+    date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+  });
+
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
@@ -147,6 +161,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleMpCancel = () => {
     resetMpData();
     setAddMPOpen(false);
+    setFormToShow('')
+    setShowData('ADDMAALEPUNKT')
   };
 
   const openAddMP = () => {
@@ -171,6 +187,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       onSuccess: (data) => {
         resetPejlingData();
         setFormToShow(null);
+        setShowData('ADDPEJLING')
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries({
           queryKey: ['measurements', boreholeno],
@@ -207,15 +224,20 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       },
     });
     setAddMPOpen(false);
+    setFormToShow('');
+    setShowData('ADDMAALEPUNKT');
+
   };
 
   const handleEdit = (type) => {
+    
     if (type === 'watlevmp') {
       return (data) => {
         data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
-        setFormToShow('ADDMAALEPUNKT'); // update to use state machine
+        setFormToShow('ADDMAALEPUNKT'); // update to use state machine¨
+        setShowData('')
         setAddMPOpen(true);
       };
     } else {
@@ -223,8 +245,10 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING'); // update to use state machine
+        setShowData('')
       };
     }
+    
   };
 
   const handleDelete = (type) => {
@@ -251,108 +275,181 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   };
 
+  const changeActiveImageData = (field, value) => {
+    setActiveImage({
+      ...activeImage,
+      [field]: value,
+    });
+  };
+
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
+  const handleSetDataURI = (datauri) => {
+    setdataUri(datauri);
+    setActiveImage({
+      gid: -1,
+      type: boreholeno,
+      comment: '',
+      public: false,
+      date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+    });
+    setOpenSave(true);
+  };
+
+  const handleFileRead = async (event) => {
+    const file = event.target.files[0];
+    const base64 = await convertBase64(file);
+    handleSetDataURI(base64);
+  };
+
+  const handleFileInputClick = () => {
+    // Reset the file input value to allow re-triggering the change event
+    fileInputRef.current.value = null;
+  };
+
   return (
     <>
-      {formToShow !== 'CAMERA' && (
-        <BearingGraph
-          boreholeno={boreholeno}
-          intakeno={intakeno}
-          measurements={control}
-          dynamicMeasurement={formToShow !== 'ADDPEJLING' ? undefined : dynamic}
-        />
-      )}
-      {formToShow === 'ADDPEJLING' && (
-        <PejlingFormBorehole
-          formData={pejlingData}
-          changeFormData={changePejlingData}
-          handleSubmit={handlePejlingSubmit}
-          openAddMP={openAddMP}
-          resetFormData={() => {
-            resetPejlingData();
-            setFormToShow(null);
-          }}
-          mpData={watlevmp}
-          stamdata={stamdata}
-          lastMeasurementPump={
-            measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
-          }
-        />
-      )}
-      {formToShow === 'ADDMAALEPUNKT' && (
-        <>
-          <Grid container spacing={2}>
-            <Grid
-              item
-              xs={12}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <LastJupiterMP
-                boreholeno={boreholeno}
-                intakeno={intakeno}
-                lastOurMP={watlevmp?.[0]}
-                watlevmpMutate={addOrEditWatlevmp}
-                setAddMPOpen={setAddMPOpen}
-              />
+      <Box sx={{ marginBottom: 5, marginTop: 5 }}>
+        {showData !== 'CAMERA' && (
+          <BearingGraph
+            boreholeno={boreholeno}
+            intakeno={intakeno}
+            measurements={control}
+            dynamicMeasurement={showData !== 'ADDPEJLING' ? undefined : dynamic}
+          />
+        )}
+      </Box>
+      <Box >
+
+        {formToShow === 'ADDPEJLING' && (
+          <PejlingFormBorehole
+            formData={pejlingData}
+            changeFormData={changePejlingData}
+            handleSubmit={handlePejlingSubmit}
+            openAddMP={openAddMP}
+            resetFormData={() => {
+              resetPejlingData();
+              setFormToShow(null);
+              setShowData('ADDPEJLING')
+            }}
+            mpData={watlevmp}
+            stamdata={stamdata}
+            lastMeasurementPump={
+              measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
+            }
+          />
+        )}
+        {formToShow === 'ADDMAALEPUNKT' && (
+          <>
+            <Grid container spacing={2}>
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <LastJupiterMP
+                  boreholeno={boreholeno}
+                  intakeno={intakeno}
+                  lastOurMP={watlevmp?.[0]}
+                  watlevmpMutate={addOrEditWatlevmp}
+                  setAddMPOpen={setAddMPOpen}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-          {addMPOpen && (
-            <MaalepunktForm
-              formData={mpData}
-              changeFormData={changeMpData}
-              handleSubmit={handleMpSubmit}
-              resetFormData={resetMpData}
-              handleCancel={handleMpCancel}
-              canEdit={true}
-            />
-          )}
-          <Box p={2}>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                setAddMPOpen(true);
-              }}
-            >
-              Indberet målepunkt
-            </Button>
-          </Box>
+            {addMPOpen && (
+              <MaalepunktForm
+                formData={mpData}
+                changeFormData={changeMpData}
+                handleSubmit={handleMpSubmit}
+                resetFormData={resetMpData}
+                handleCancel={handleMpCancel}
+                canEdit={true}
+              />
+            )}
+            <Box p={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  setAddMPOpen(true);
+                }}
+              >
+                Indberet målepunkt
+              </Button>
+            </Box>
+          </>
+        )}
+        {showData === 'ADDMAALEPUNKT' &&
           <MaalepunktTable
-            watlevmp={watlevmp}
-            handleEdit={handleEdit('watlevmp')}
-            handleDelete={handleDelete('watlevmp')}
+          watlevmp={watlevmp}
+          handleEdit={handleEdit('watlevmp')}
+          handleDelete={handleDelete('watlevmp')}
+          canEdit={true}
+          />
+        }
+        {(showData === null || showData === 'ADDPEJLING') && (
+          <PejlingMeasurements
+            boreholeno={boreholeno}
+            intakeno={intakeno}
+            measurements={measurements}
+            handleEdit={handleEdit('pejling')}
+            handleDelete={handleDelete('pejling')}
             canEdit={true}
           />
-        </>
-      )}
-      {(formToShow === null || formToShow === 'ADDPEJLING') && (
-        <PejlingMeasurements
-          boreholeno={boreholeno}
-          intakeno={intakeno}
-          measurements={measurements}
-          handleEdit={handleEdit('pejling')}
-          handleDelete={handleDelete('pejling')}
-          canEdit={true}
-        />
-      )}
-      {formToShow === 'CAMERA' && <BoreholeImages boreholeno={boreholeno} />}
-      {formToShow === 'STAMDATA' && canEdit && (
-        <BoreholeStamdata
-          boreholeno={boreholeno}
-          intakeno={intakeno}
-          stamdata={stamdata}
-          setFormToShow={setFormToShow}
-        />
-      )}
+        )}
+        {showData === 'CAMERA' && <BoreholeImages boreholeno={boreholeno} setOpenSave={setOpenSave} setActiveImage={setActiveImage} setFormToShow={setFormToShow} />}
+        {formToShow === 'CAMERA' && 
+        <div>
+          <SaveImageDialog
+            activeImage={activeImage}
+            changeData={changeActiveImageData}
+            id={boreholeno}
+            type={'borehole'}
+            open={openSave}
+            dataUri={dataUri}
+            handleCloseSave={() => {
+              setOpenSave(false)
+              setdataUri('')
+            }}/>
+        </div>
+      }
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileRead}
+          onClick={handleFileInputClick}
+          />
+        {formToShow === 'STAMDATA' && canEdit && (
+          <BoreholeStamdata
+            boreholeno={boreholeno}
+            intakeno={intakeno}
+            stamdata={stamdata}
+            setFormToShow={setFormToShow}
+          />
+        )}
+      </Box>
       <ActionAreaBorehole
-        open={open}
-        boreholeno={boreholeno}
+        setShowData={setShowData}
         formToShow={formToShow}
         setFormToShow={setFormToShow}
         canEdit={canEdit}
+        fileInputRef={fileInputRef}
       />
     </>
   );

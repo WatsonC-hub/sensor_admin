@@ -38,6 +38,11 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
       vertical: 'top',
       horizontal: 'left',
     },
+    PaperProps: {
+      sx: {
+        backgroundColor: 'primary.main',
+      },
+    },
   };
 
   return (
@@ -50,17 +55,20 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
       onOpen={handleOpen}
       onClose={handleClose}
       sx={{
+        outline: 'white',
         color: 'white',
-        paddingBottom: '2px',
         '& .MuiSelect-icon': {
           color: 'white',
         },
-        '& .MuiSelect-selectMenu': {
-          backgroundColor: 'blue',
+        '& .MuiSelect-select': {
+          p: '0px 10px',
+          mt: '1px'
         },
-
-        backgroundColor: 'transparent',
-        boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.14)',
+        boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.24)',
+        borderRadius: '15px',
+        height: '35px',
+        mb: 1,
+        pb: 0,
       }}
     >
       {boreholenoList &&
@@ -71,14 +79,7 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
               key={intake.intakeno}
               value={intake.intakeno}
               sx={{
-                '&:hover': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                },
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                },
+                color:'white'
               }}
             >
               {intake.boreholeno + ' - ' + intake.intakeno}

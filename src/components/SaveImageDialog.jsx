@@ -13,18 +13,21 @@ import {toast} from 'react-toastify';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 import OwnDatePicker from './OwnDatePicker';
 
-function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, handleCloseSave}) {
+function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const imageUrl = `/static/images/${activeImage.imageurl}?format=auto&width=${1024}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload('station');
+  const {post: uploadImage, put: editImage} = useImageUpload(type);
+
 
   function saveImage() {
+    console.log('Hit Once')
     if (activeImage.gid === -1) {
+      console.log('Hit Twice')
       const payload = {
-        path: locationId,
+        path: id,
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
@@ -43,9 +46,10 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
         },
         error: 'Der skete en fejl',
       });
+
     } else {
       const payload = {
-        path: `${locationId}/${activeImage.gid}`,
+        path: `${id}/${activeImage.gid}`,
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
@@ -117,11 +121,15 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
         </Grid>
       </DialogContent>
       <DialogActions>
+        <Button onClick={handleCloseSave} color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2}}>
+          Annuller
+        </Button>
         <Button
           onClick={saveImage}
           disabled={uploadImage.isLoading}
-          color="secondary"
+          color="primary"
           variant="contained"
+          sx={{ textTransform: 'initial', borderRadius: 15}}
         >
           {uploadImage.isLoading ? (
             <CircularProgress />
@@ -131,9 +139,7 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
             'Ændre'
           )}
         </Button>
-        <Button onClick={handleCloseSave} color="secondary" variant="contained">
-          Annuller
-        </Button>
+
       </DialogActions>
     </Dialog>
   );

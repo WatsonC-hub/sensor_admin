@@ -35,6 +35,11 @@ const MinimalSelect = ({locid, stationList}) => {
       vertical: 'top',
       horizontal: 'left',
     },
+    PaperProps: {
+      sx: {
+        backgroundColor: 'primary.main'
+      },
+    },
   };
 
   return (
@@ -46,17 +51,19 @@ const MinimalSelect = ({locid, stationList}) => {
       onOpen={handleOpen}
       onClose={handleClose}
       sx={{
+        outline: 'white',
         color: 'white',
         '& .MuiSelect-icon': {
           color: 'white',
         },
         '& .MuiSelect-select': {
-          p: '0px 14px',
+          p: '0px 10px',
+          mt: '1px'
         },
-        backgroundColor: 'transparent',
-        boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.14)',
+        boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.24)',
+        borderRadius: '15px',
         height: '35px',
-        mb: 0,
+        mb: 1,
         pb: 0,
       }}
     >
@@ -68,14 +75,7 @@ const MinimalSelect = ({locid, stationList}) => {
               key={station.ts_id}
               value={station.ts_id}
               sx={{
-                '&:hover': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                },
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                },
+                color:'white'
               }}
             >
               {(station.prefix ? station.prefix + ' - ' : '') + ' ' + station.tstype_name}

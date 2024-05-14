@@ -153,9 +153,11 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   <Button
                     sx={{
                       width: '80%',
+                      textTransform: 'initial',
+                      borderRadius: 15 
                     }}
                     variant="contained"
-                    color="secondary"
+                    color="primary"
                     startIcon={<PhotoCameraRounded />}
                     onClick={() => setOpenCamera(true)}
                   >
@@ -167,6 +169,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   gutterBottom
                   sx={{
                     float: 'left',
+                    textTransform: 'initial'
                   }}
                 >
                   Calypso ID er et unikt nummer, der identificerer boringen samt indtag
@@ -174,28 +177,30 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
               </Grid>
             </Grid>
             <Grid container alignItems="center" justifyContent="center">
-              <Grid item xs={4} sm={4}>
-                <Button
-                  autoFocus
-                  color="secondary"
-                  variant="contained"
-                  startIcon={<Save />}
-                  onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}
-                  disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
-                >
-                  Gem
-                </Button>
-              </Grid>
-              <Grid item xs={4} sm={4}>
-                <Button
-                  color="grey"
-                  variant="contained"
-                  onClick={() => {
-                    setFormToShow(null);
-                  }}
-                >
-                  Annuller
-                </Button>
+              <Grid item xs={12} sm={4}>
+                <Box>
+                  <Button
+                    color="grey"
+                    variant="contained"
+                    sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}
+                    onClick={() => {
+                      setFormToShow(null);
+                    }}
+                  >
+                    Annuller
+                  </Button>
+                  <Button
+                    autoFocus
+                    color="primary"
+                    variant="contained"
+                    startIcon={<Save />}
+                    sx={{ textTransform: 'initial', borderRadius: 15}}
+                    onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}
+                    disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
+                  >
+                    Gem stamdata
+                  </Button>
+                </Box>
               </Grid>
             </Grid>
           </FormProvider>

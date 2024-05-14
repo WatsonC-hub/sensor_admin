@@ -1,5 +1,6 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {
+  Box,
   Button,
   Card,
   CardContent,
@@ -115,29 +116,28 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
             />
           </Grid>
           <Grid item xs={2} sm={4}></Grid>
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              onClick={() => {
-                handleClickSubmit();
-                handleSubmit();
-              }}
-              disabled={disableSubmit}
-              startIcon={<SaveIcon />}
-              color="secondary"
-              variant="contained"
-            >
-              Gem
-            </Button>
+            <Grid item xs={12} sm={2}>
+              <Box display="flex" justifyContent="flex-end">
+                <Button onClick={handleCancel} color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}>
+                  Annuller
+                </Button>
+                <Button
+                  autoFocus
+                  onClick={() => {
+                    handleClickSubmit();
+                    handleSubmit();
+                  }}
+                  disabled={disableSubmit}
+                  startIcon={<SaveIcon />}
+                  color="primary"
+                  variant="contained"
+                  sx={{ textTransform: 'initial', borderRadius: 15}}
+                >
+                  Gem målepunkt
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button onClick={handleCancel} color="grey" variant="contained">
-              Annuller
-            </Button>
-          </Grid>
-          <Grid item xs={2} sm={4}></Grid>
-        </Grid>
-        <Grid item xs={2} sm={4}></Grid>
       </CardContent>
     </Card>
   );
