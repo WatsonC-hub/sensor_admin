@@ -2,7 +2,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   Checkbox,
@@ -22,6 +21,7 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {stamdataStore} from '../state/store';
 import OwnDatePicker from './OwnDatePicker';
+import Button from '~/components/Button';
 
 // TODO
 // - Find ud af om textfield skal have grøn outline
@@ -64,7 +64,7 @@ export default function PejlingForm({
   }, []);
 
   useEffect(() => {
-    if (mpData.length > 0) {
+    if (mpData !== undefined && mpData.length > 0) {
       var mp = mpData.filter((elem) => {
         if (
           moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
@@ -136,7 +136,7 @@ export default function PejlingForm({
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          {isWaterlevel && mpData.length < 1 ? (
+          {isWaterlevel && mpData !== undefined && mpData.length < 1 ? (
             <Grid item xs={12} sm={12} display="flex" justifyContent="center">
               <Alert
                 severity="error"
@@ -304,16 +304,14 @@ export default function PejlingForm({
                   onChange={handleCommentChange}
                 />
               </Grid>
-              <Grid item xs={12} sm={2}>
-                <Box display="flex" justifyContent="flex-end">
-                  <Button color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }} onClick={resetFormData}>
+              <Grid item xs={12} sm={4}>
+                <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
+                  <Button btType='tertiary' onClick={resetFormData}>
                     Annuller
                   </Button>
                   <Button
                     autoFocus
-                    color="primary"
-                    variant="contained"
-                    sx={{ textTransform: 'initial', borderRadius: 15}}
+                    btType='primary'
                     onClick={() => {
                       handleClickSubmit();
                       handleSubmit();

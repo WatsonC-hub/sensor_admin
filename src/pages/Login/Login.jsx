@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import React, {useState} from 'react';
 
@@ -10,6 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {authStore} from '../../state/store';
+import Button from '~/components/Button'
 
 export default function Login({}) {
   const [userName, setUserName] = useState('');
@@ -178,16 +178,16 @@ export default function Login({}) {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} btType="tertiary">
             Annuller
           </Button>
           {!emailSentMess && (
-            <Button onClick={handlePassReset} variant="outlined" color="primary" autoFocus>
+            <Button onClick={handlePassReset} btType="primary" autoFocus>
               Bekræft
             </Button>
           )}
           {emailSentMess && (
-            <Button onClick={handleClose} variant="outlined" color="primary" autoFocus>
+            <Button onClick={handleClose} btType="primary" autoFocus>
               Gå til log ind
             </Button>
           )}

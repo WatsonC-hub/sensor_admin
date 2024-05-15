@@ -6,7 +6,6 @@ import {
   Avatar,
   Badge,
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -24,6 +23,7 @@ import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {useNotificationOverview} from '../hooks/query/useNotificationOverview';
 import {useTaskMutation} from '../hooks/query/useTaskMutation';
+import Button from '~/components/Button';
 
 // Mock data for notifications
 const CHARACTERLIMIT = 60;
@@ -241,12 +241,12 @@ const NotificationList = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeModal} color="primary">
+          <Button onClick={closeModal} btType="tertiary">
             Annuller
           </Button>
           <Button
             onClick={handleRegisterNotification}
-            color="primary"
+            btType="primary"
             disabled={urgency == '' || description.length < 10}
           >
             Registrer

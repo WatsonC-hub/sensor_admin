@@ -1,7 +1,6 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
-  Button,
   Card,
   CardContent,
   Container,
@@ -25,6 +24,7 @@ import LocationForm from '../Stamdata/components/LocationForm';
 import TimeseriesForm from '../Stamdata/components/TimeseriesForm';
 import UnitForm from '../Stamdata/components/UnitForm';
 import { DevTool } from '@hookform/devtools';
+import Button from '~/components/Button'
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
@@ -70,23 +70,22 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
         <OwnDatePicker label="Fra" value={date} onChange={(date) => handleDateChange(date)} />
         <DialogActions item xs={4} sm={2}>
           <Button
-            autoFocus
-            color="secondary"
-            variant="contained"
-            startIcon={<SaveIcon />}
-            onClick={() => takeHomeMutation.mutate({enddate: moment(date).toISOString()})}
-          >
-            Gem
-          </Button>
-          <Button
-            color="secondary"
-            variant="contained"
+            btType="tertiary"
             onClick={() => {
               setOpenDialog(false);
             }}
           >
             Annuller
           </Button>
+          <Button
+            autoFocus
+            btType="primary"
+            startIcon={<SaveIcon />}
+            onClick={() => takeHomeMutation.mutate({enddate: moment(date).toISOString()})}
+          >
+            Gem
+          </Button>
+
         </DialogActions>
       </DialogContent>
     </Dialog>
@@ -169,8 +168,8 @@ const UdstyrReplace = ({stationId}) => {
       <Grid item xs={12} sm={6}>
         {moment(data?.[0].slutdato) > moment(new Date()) ? (
           <Button
+            btType="primary"
             color="secondary"
-            variant="contained"
             onClick={() => {
               setOpenDialog(true);
             }}
@@ -179,8 +178,7 @@ const UdstyrReplace = ({stationId}) => {
           </Button>
         ) : (
           <Button
-            color="secondary"
-            variant="contained"
+            btType="primary"
             onClick={() => {
               setOpenAddUdstyr(true);
             }}
@@ -348,8 +346,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
             >
               <Grid item xs={2}>
                 <Button
-                  color="grey"
-                  variant="contained"
+                  btType="tertiary"
                   onClick={() => {
                     setFormToShow(null);
                   }}
@@ -360,8 +357,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
               <Grid item xs={2}>
                 <Button
                   autoFocus
-                  color="secondary"
-                  variant="contained"
+                  tertiary="secondary"
                   startIcon={<SaveIcon />}
                   onClick={formMethods.handleSubmit(handleUpdate, (values) => console.log(values))}
                   disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}

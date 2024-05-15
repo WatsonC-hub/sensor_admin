@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {EditRounded, PhotoCameraRounded, Save} from '@mui/icons-material';
-import {Box, Button, Card, CardContent, Grid, InputAdornment, Typography} from '@mui/material';
+import {Box, Card, CardContent, Grid, InputAdornment, Typography} from '@mui/material';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
@@ -10,6 +10,7 @@ import FormInput from '~/components/FormInput';
 import ConfirmCalypsoIDDialog from '~/pages/field/Boreholeno/components/ConfirmCalypsoIDDialog';
 import * as z from 'zod';
 import {apiClient} from '../../../apiClient';
+import Button from '~/components/Button';
 
 const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
   const [openCamera, setOpenCamera] = useState(false);
@@ -178,11 +179,9 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
             </Grid>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item xs={12} sm={4}>
-                <Box>
+                <Box gap={1}>
                   <Button
-                    color="grey"
-                    variant="contained"
-                    sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}
+                    btType="tertiary"
                     onClick={() => {
                       setFormToShow(null);
                     }}
@@ -191,10 +190,8 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   </Button>
                   <Button
                     autoFocus
-                    color="primary"
-                    variant="contained"
+                    btType="primary"
                     startIcon={<Save />}
-                    sx={{ textTransform: 'initial', borderRadius: 15}}
                     onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}
                     disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
                   >

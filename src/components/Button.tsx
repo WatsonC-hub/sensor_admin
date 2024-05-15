@@ -10,6 +10,7 @@ const Button = (props: MyButtonProps) => {
   let sx = {};
   if (props.btType === 'primary') {
     sx = {
+      textTransform: 'initial',
       my: 0.5,
       p: '0.5rem 1rem',
       borderRadius: 9999,
@@ -26,9 +27,12 @@ const Button = (props: MyButtonProps) => {
 
   if (props.btType === 'tertiary') {
     sx = {
+      textTransform: 'initial', 
       my: 0.5,
       p: '0.5rem 1rem',
-      borderRadius: 9999,
+      borderRadius: 9999, 
+      backgroundColor: '#ffffff',
+      borderColor: '#cacaca',
     };
   }
 

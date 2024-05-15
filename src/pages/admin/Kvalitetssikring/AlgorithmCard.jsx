@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Button, Card, CardActions, CardContent, CardHeader} from '@mui/material';
+import {Card, CardActions, CardContent, CardHeader} from '@mui/material';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import React, {useEffect, useMemo, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
@@ -9,6 +9,7 @@ import {apiClient} from '~/apiClient';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import * as z from 'zod';
+import Button from '~/components/Button';
 
 const AlgorithmCard = ({algorithm}) => {
   const params = useParams();
@@ -151,18 +152,17 @@ const AlgorithmCard = ({algorithm}) => {
           </FormProvider>
         </CardContent>
         <CardActions sx={{justifyContent: 'center', alignContent: 'center', p: 1, m: 0}}>
+          <Button btType="tertiary" onClick={handleRevert}>
+            Tilbage til standard
+          </Button>
           <Button
-            variant="contained"
-            color="secondary"
+            btType="secondary"
             onClick={formMethods.handleSubmit(handleSubmit)}
             disabled={
               submitData.isLoading || revertToDefaults.isLoading || !formMethods.formState.isDirty
             }
           >
             Gem
-          </Button>
-          <Button variant="contained" color="grey" onClick={handleRevert}>
-            Tilbage til standard
           </Button>
         </CardActions>
       </Card>

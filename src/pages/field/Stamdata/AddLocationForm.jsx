@@ -41,7 +41,7 @@ export default function AddLocationForm({locationDialogOpen, setLocationDialogOp
         <LocationForm mode="modal" />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} btType="secondary">
+        <Button onClick={handleClose} btType="tertiary">
           Annuller
         </Button>
         <Button onClick={handleSave} btType="primary">

@@ -1,4 +1,4 @@
-import {Button, CircularProgress, Grid, TextField, Typography} from '@mui/material';
+import {CircularProgress, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -12,6 +12,7 @@ import React from 'react';
 import {toast} from 'react-toastify';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 import OwnDatePicker from '../../../../components/OwnDatePicker';
+import Button from '~/components/Button';
 
 function SaveImageDialogBorehole({
   activeImage,
@@ -125,11 +126,13 @@ function SaveImageDialogBorehole({
           </Grid>
         </DialogContent>
         <DialogActions>
+          <Button onClick={handleCloseSave} btType="tertiary">
+            Annuller
+          </Button>
           <Button
             onClick={saveImage}
             disabled={uploadImage.isLoading}
-            color="secondary"
-            variant="contained"
+            btType="primary"
           >
             {uploadImage.isLoading ? (
               <CircularProgress />
@@ -138,9 +141,6 @@ function SaveImageDialogBorehole({
             ) : (
               'Ændre'
             )}
-          </Button>
-          <Button onClick={handleCloseSave} color="secondary" variant="contained">
-            Annuller
           </Button>
         </DialogActions>
       </Dialog>

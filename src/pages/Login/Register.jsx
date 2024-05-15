@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import React, {useEffect, useState} from 'react';
 
 import {zodResolver} from '@hookform/resolvers/zod';
@@ -14,6 +13,7 @@ import {toast} from 'react-toastify';
 import {createUser, getCvr} from '~/pages/field/fieldAPI';
 import * as z from 'zod';
 import RegisterForm from './RegisterForm';
+import Button from '~/components/Button'
 
 const RegisterSchema = z.object({
   firstName: z
@@ -176,13 +176,12 @@ export default function Register() {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} btType="tertiary">
             Annuller
           </Button>
           <Button
             onClick={handleSubmit(handleConfirm)}
-            variant="outlined"
-            color="primary"
+            btType="primary"
             autoFocus
           >
             Bekræft

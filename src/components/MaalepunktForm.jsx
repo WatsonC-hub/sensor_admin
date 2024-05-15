@@ -1,7 +1,6 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
-  Button,
   Card,
   CardContent,
   Grid,
@@ -12,6 +11,7 @@ import {
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import OwnDatePicker from '~/components/OwnDatePicker';
+import Button from '~/components/Button';
 
 export default function MaalepunktForm({formData, changeFormData, handleSubmit, handleCancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -115,10 +115,9 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
-            <Grid item xs={12} sm={2}>
-              <Box display="flex" justifyContent="flex-end">
-                <Button onClick={handleCancel} color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}>
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
+                <Button onClick={handleCancel} btType='tertiary'>
                   Annuller
                 </Button>
                 <Button
@@ -129,9 +128,7 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
                   }}
                   disabled={disableSubmit}
                   startIcon={<SaveIcon />}
-                  color="primary"
-                  variant="contained"
-                  sx={{ textTransform: 'initial', borderRadius: 15}}
+                  btType='primary'
                 >
                   Gem målepunkt
                 </Button>

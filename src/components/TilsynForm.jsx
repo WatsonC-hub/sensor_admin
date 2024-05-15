@@ -1,13 +1,15 @@
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Button, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
+import {Box, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
 import OwnDatePicker from './OwnDatePicker';
+import Button from '~/components/Button';
+
 
 export default function TilsynForm({formData, changeFormData, handleSubmit, cancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
-
+  
   useEffect(() => {
     window.scrollTo({top: 300, behavior: 'smooth'});
   }, []);
@@ -98,23 +100,20 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
-          <Grid item xs={12} sm={2}>
-            <Box display="flex" justifyContent="flex-end">
-              <Button onClick={cancel} color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}>
+          <Grid item xs={12} sm={4}>
+          <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
+              <Button btType='tertiary' onClick={cancel}>
                 Annuller
               </Button>
               <Button
                 autoFocus
+                btType='primary'
                 onClick={() => {
                   handleClickSubmit();
                   handleSubmit();
                 }}
                 disabled={disableSubmit}
                 startIcon={<SaveIcon />}
-                color="primary"
-                variant="contained"
-                sx={{ textTransform: 'initial', borderRadius: 15}}
               >
                 Gem tilsyn
               </Button>

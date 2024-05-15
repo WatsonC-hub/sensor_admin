@@ -2,7 +2,6 @@ import SaveIcon from '@mui/icons-material/Save';
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   Checkbox,
@@ -20,6 +19,7 @@ import {
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import OwnDatePicker from '../../../../components/OwnDatePicker';
+import Button from '~/components/Button';
 
 export default function PejlingFormBorehole({
   formData,
@@ -307,14 +307,13 @@ export default function PejlingFormBorehole({
                 />
               </Grid>
               <Grid item xs={12} sm={2}>
-              <Box display="flex" justifyContent="flex-end">
-                  <Button autoFocus color="grey" variant="contained" onClick={resetFormData} sx={{ textTransform: 'initial', borderRadius: 15, mr: 2 }}>
+              <Box display="flex" gap={1} justifyContent="flex-end">
+                  <Button autoFocus btType="tertiary" onClick={resetFormData}>
                     Annuller
                   </Button>
                   <Button
                     autoFocus
-                    color="primary"
-                    variant="contained"
+                    btType="primary"
                     onClick={() => {
                       handleClickSubmit();
                       handleSubmit();
@@ -326,7 +325,6 @@ export default function PejlingFormBorehole({
                       !formData.timeofmeas ||
                       (isPump && formData.pumpstop > formData.timeofmeas)
                     }
-                    sx={{ textTransform: 'initial', borderRadius: 15}}
                     startIcon={<SaveIcon />}
                   >
                     Gem kontrol

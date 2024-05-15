@@ -1,4 +1,4 @@
-import {Button, CircularProgress, Grid, TextField, Typography} from '@mui/material';
+import {CircularProgress, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -12,6 +12,7 @@ import React from 'react';
 import {toast} from 'react-toastify';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 import OwnDatePicker from './OwnDatePicker';
+import Button from '~/components/Button'
 
 function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
   const theme = useTheme();
@@ -121,15 +122,13 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCloseSave} color="grey" variant="contained" sx={{ textTransform: 'initial', borderRadius: 15, mr: 2}}>
+        <Button onClick={handleCloseSave} btType='tertiary'>
           Annuller
         </Button>
         <Button
           onClick={saveImage}
           disabled={uploadImage.isLoading}
-          color="primary"
-          variant="contained"
-          sx={{ textTransform: 'initial', borderRadius: 15}}
+          btType="primary"
         >
           {uploadImage.isLoading ? (
             <CircularProgress />
