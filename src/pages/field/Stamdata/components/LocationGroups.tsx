@@ -28,8 +28,6 @@ interface LocationGroupsProps {
 }
 
 const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
-  //   const [value, setValue] = useState<Array<Group>>([]);
-
   const {data: options} = useQuery({
     queryKey: ['location_groups'],
     queryFn: async () => {
@@ -43,7 +41,7 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
       freeSolo
       forcePopupIcon={false}
       multiple
-      value={value}
+      value={value ?? []}
       onChange={(event, newValue) => {
         setValue(
           newValue.map((item) => {

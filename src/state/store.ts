@@ -94,7 +94,7 @@ type LocationState = {
     loctype_id: number;
   };
   timeseries: {
-    ts_id: string;
+    ts_id: number;
     ts_name: string;
     tstype_id: number;
     tstype_name: string;
@@ -142,7 +142,7 @@ const initialState = {
     loctype_id: -1,
   },
   timeseries: {
-    ts_id: '',
+    ts_id: 0,
     ts_name: '',
     tstype_id: 1,
     tstype_name: '',

@@ -24,6 +24,7 @@ import AddUnitForm from '../Stamdata/AddUnitForm';
 import LocationForm from '../Stamdata/components/LocationForm';
 import TimeseriesForm from '../Stamdata/components/TimeseriesForm';
 import UnitForm from '../Stamdata/components/UnitForm';
+import { DevTool } from '@hookform/devtools';
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
@@ -275,7 +276,6 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
   }, []);
 
   const handleUpdate = (values) => {
-    console.log('values', values);
     metadataEditMutation.mutate(values, {
       onSuccess: (data) => {
         toast.success('Stamdata er opdateret');
@@ -370,6 +370,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
                 </Button>
               </Grid>
             </Grid>
+            <DevTool control={formMethods.control}/>
           </FormProvider>
         </Container>
       </CardContent>

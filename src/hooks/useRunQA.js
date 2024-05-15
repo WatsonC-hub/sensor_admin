@@ -30,7 +30,7 @@ export const useRunQA = (ts_id) => {
       });
       toast.update(toastId.current, {
         render: 'Genberegnet',
-        type: toast.TYPE.SUCCESS,
+        type: 'success',
         isLoading: false,
         autoClose: 2000,
         closeOnClick: true,

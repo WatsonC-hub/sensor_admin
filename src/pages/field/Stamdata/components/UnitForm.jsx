@@ -8,7 +8,7 @@ import FormTextField from './FormTextField';
 export default function UnitForm({mode}) {
   const editMode = mode === 'edit';
 
-  const [unit, setUnitValue] = stamdataStore((store) => [store.unit, store.setUnitValue]);
+  const [unit] = stamdataStore((store) => [store.unit]);
 
   return (
     <Grid container spacing={2} alignItems="center" justifyContent="center">

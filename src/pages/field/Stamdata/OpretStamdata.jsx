@@ -226,6 +226,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
         tstype_id: -1,
       },
     },
+    mode: 'onTouched'
   });
 
   const {

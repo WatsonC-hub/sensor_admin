@@ -2,7 +2,7 @@ import {useQuery, useMutation} from '@tanstack/react-query';
 import {useContext} from 'react';
 import {apiClient} from '~/apiClient';
 // @ts-ignore
-import {MetadataContext} from '~/state/contexts';
+import {stamdataStore} from '~/state/store';
 import moment from 'moment';
 import {toast} from 'react-toastify';
 
@@ -63,13 +63,12 @@ export const maalepunktDelOptions = {
 };
 
 export const useMaalepunkt = () => {
-  const metadata = useContext(MetadataContext);
-
+  const ts_id = stamdataStore((store) => store.timeseries.ts_id)
   const get = useQuery({
-    queryKey: ['watlevmp', metadata?.ts_id],
+    queryKey: ['watlevmp', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Maalepunkt>>(
-        `/sensor_field/station/watlevmp/${metadata?.ts_id}`
+        `/sensor_field/station/watlevmp/${ts_id}`
       );
 
       return data.map((m) => {
@@ -80,7 +79,7 @@ export const useMaalepunkt = () => {
         };
       });
     },
-    enabled: metadata?.ts_id !== -1 && metadata?.ts_id !== null,
+    enabled: ts_id !== -1 && ts_id !== null,
   });
 
   const post = useMutation({
