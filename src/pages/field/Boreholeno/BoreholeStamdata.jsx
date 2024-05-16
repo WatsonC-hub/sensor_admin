@@ -83,7 +83,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
 
   const mode = 'edit';
   return (
-    <>
+    <Box sx={{mt: 2}}>
       {openCamera && (
         <CaptureDialog
           open={openCamera}
@@ -179,7 +179,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
             </Grid>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item xs={12} sm={4}>
-                <Box gap={1}>
+                <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
                   <Button
                     btType="tertiary"
                     onClick={() => {
@@ -203,7 +203,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
           </FormProvider>
         </CardContent>
       </Card>
-    </>
+    </Box>
   );
 };
 

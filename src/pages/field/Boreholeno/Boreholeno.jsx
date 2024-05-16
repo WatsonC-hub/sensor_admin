@@ -1,4 +1,4 @@
-import {Box, Button, Grid} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
@@ -16,6 +16,7 @@ import PejlingMeasurements from './PejlingMeasurements';
 import LastJupiterMP from './components/LastJupiterMP';
 import PejlingFormBorehole from './components/PejlingFormBorehole';
 import SaveImageDialog from '../../../components/SaveImageDialog';
+import Button from '~/components/Button'
 
 const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
@@ -320,18 +321,19 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   return (
     <>
-      <Box sx={{ marginBottom: 5, marginTop: 5 }}>
-        {showData !== 'CAMERA' && (
-          <BearingGraph
-            boreholeno={boreholeno}
-            intakeno={intakeno}
-            measurements={control}
-            dynamicMeasurement={showData !== 'ADDPEJLING' ? undefined : dynamic}
-          />
-        )}
-      </Box>
+      {showData === 'ADDPEJLING' &&
+        <Box sx={{ marginBottom: 5, marginTop: 5 }}>
+          {showData !== 'CAMERA' && (
+            <BearingGraph
+              boreholeno={boreholeno}
+              intakeno={intakeno}
+              measurements={control}
+              dynamicMeasurement={showData !== 'ADDPEJLING' ? undefined : dynamic}
+            />
+          )}
+        </Box>
+      }   
       <Box >
-
         {formToShow === 'ADDPEJLING' && (
           <PejlingFormBorehole
             formData={pejlingData}
@@ -383,8 +385,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             )}
             <Box p={2}>
               <Button
-                variant="contained"
-                color="primary"
+                btType="primary"
                 onClick={() => {
                   setAddMPOpen(true);
                 }}
@@ -435,7 +436,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           onChange={handleFileRead}
           onClick={handleFileInputClick}
           />
-        {formToShow === 'STAMDATA' && canEdit && (
+        {showData === 'STAMDATA' && canEdit && (
           <BoreholeStamdata
             boreholeno={boreholeno}
             intakeno={intakeno}

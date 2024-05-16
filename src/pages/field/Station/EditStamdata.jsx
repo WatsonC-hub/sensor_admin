@@ -8,9 +8,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Grid,
   MenuItem,
   Select,
+  Tab,
   Typography,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
@@ -23,8 +25,8 @@ import AddUnitForm from '../Stamdata/AddUnitForm';
 import LocationForm from '../Stamdata/components/LocationForm';
 import TimeseriesForm from '../Stamdata/components/TimeseriesForm';
 import UnitForm from '../Stamdata/components/UnitForm';
-import { DevTool } from '@hookform/devtools';
-import Button from '~/components/Button'
+import {DevTool} from '@hookform/devtools';
+import Button from '~/components/Button';
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
@@ -35,6 +37,12 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
 import SwiperInstance from './SwiperInstance';
+import {Tabs} from '@mui/material';
+import TabPanel from '../Overview/TabPanel';
+import FabWrapper from '~/components/FabWrapper';
+import {AddCircle} from '@mui/icons-material';
+import ReferenceForm from '../Stamdata/components/ReferenceForm';
+import KontaktForm from '../Stamdata/components/KontaktForm';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
   const [date, setdate] = useState(new Date());
@@ -85,7 +93,6 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
           >
             Gem
           </Button>
-
         </DialogActions>
       </DialogContent>
     </Dialog>
@@ -204,9 +211,9 @@ const UdstyrReplace = ({stationId}) => {
   );
 };
 
-export default function EditStamdata({setFormToShow, ts_id, metadata}) {
+export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) {
   // const [selectedUnit, setSelectedUnit] = useState('');
-
+  const [mode, setMode] = useState('view');
   const [location, timeseries, unit] = stamdataStore((store) => [
     store.location,
     store.timeseries,
@@ -216,6 +223,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
+  const [tabValue, setTabValue] = useState(0);
 
   const metadataEditMutation = useMutation({
     mutationFn: async (data) => {
@@ -300,76 +308,85 @@ export default function EditStamdata({setFormToShow, ts_id, metadata}) {
   };
 
   return (
-    <Card
-      style={{marginBottom: 25}}
-      sx={{
-        width: {xs: '100%', sm: '70%'},
-        marginLeft: {xs: '0%', sm: '15%'},
-        textAlign: 'center',
-        justifyContent: 'center',
-        alignContent: 'center',
-      }}
-    >
-      <CardContent>
-        <Container fixed>
-          <FormProvider {...formMethods}>
-            <Typography variant="h5" component="h3" style={{marginBottom: matches ? '3%' : '1%'}}>
-              Stamdata
-            </Typography>
-            <SwiperInstance>
-              <SwiperSlide>
-                <Box style={{marginTop: matches ? '2%' : ''}}>
-                  <UdstyrReplace
-                    stationId={ts_id}
-                    // selected={selectedUnit}
-                    // setselected={setSelectedUnit}
-                  />
-                  <UnitForm mode="edit" />
-                </Box>
-              </SwiperSlide>
-              <SwiperSlide>
-                <LocationForm mode="edit" />
-              </SwiperSlide>
-              <SwiperSlide>
-                <TimeseriesForm />
-              </SwiperSlide>
-            </SwiperInstance>
+    <FormProvider {...formMethods}>
+      <Tabs
+        value={tabValue}
+        onChange={(_, newValue) => setTabValue(newValue)}
+        variant={matches ? 'scrollable' : 'fullWidth'}
+        aria-label="simple tabs example"
+        sx={{
+          '& .MuiTab-root': {
+            height: '48px',
+            minHeight: '48px',
+          },
+        }}
+      >
+        <Tab label="Udstyr" />
+        <Tab label="Lokation" />
+        <Tab label="Tidsserie" />
+        <Tab label="Reference" />
+        <Tab label="Kontakt" />
+      </Tabs>
+      <Divider />
 
-            <Grid
-              container
-              alignItems="center"
-              justifyContent="right"
-              sx={{
-                marginTop: 2,
-                pl: 2,
+      <TabPanel value={tabValue} index={0}>
+        <UdstyrReplace stationId={ts_id} />
+        <UnitForm mode="edit" />
+      </TabPanel>
+      <TabPanel value={tabValue} index={1}>
+        <LocationForm mode="edit" />
+      </TabPanel>
+      <TabPanel value={tabValue} index={2}>
+        <TimeseriesForm />
+      </TabPanel>
+      <TabPanel value={tabValue} index={3}>
+        <FabWrapper
+          icon={<AddCircle />}
+          text="Tilføj målepunkt"
+          onClick={() => {
+            setMode('add');
+          }}
+        >
+          <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
+        </FabWrapper>
+      </TabPanel>
+      <TabPanel value={tabValue} index={4}>
+        Kontaktinformation
+      </TabPanel>
+
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="right"
+        sx={{
+          marginTop: 2,
+          pl: 2,
+          pr: 2,
+        }}
+      >
+        <Grid item xs={12} sm={2}>
+          <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+            <Button
+              btType="tertiary"
+              onClick={() => {
+                setFormToShow(null);
               }}
             >
-              <Grid item xs={2}>
-                <Button
-                  btType="tertiary"
-                  onClick={() => {
-                    setFormToShow(null);
-                  }}
-                >
-                  Annuller
-                </Button>
-              </Grid>
-              <Grid item xs={2}>
-                <Button
-                  autoFocus
-                  tertiary="secondary"
-                  startIcon={<SaveIcon />}
-                  onClick={formMethods.handleSubmit(handleUpdate, (values) => console.log(values))}
-                  disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
-                >
-                  Gem
-                </Button>
-              </Grid>
-            </Grid>
-            <DevTool control={formMethods.control}/>
-          </FormProvider>
-        </Container>
-      </CardContent>
-    </Card>
+              Annuller
+            </Button>
+            <Button
+              autoFocus
+              btType="primary"
+              startIcon={<SaveIcon />}
+              onClick={formMethods.handleSubmit(handleUpdate, (values) => console.log(values))}
+              disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
+            >
+              Gem
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
+      <DevTool control={formMethods.control} />
+    </FormProvider>
   );
 }

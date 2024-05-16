@@ -17,8 +17,10 @@ import MaalepunktTable from './MaalepunktTable';
 import PejlingMeasurements from './PejlingMeasurements';
 import StationImages from './StationImages';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import { Box } from '@mui/material';
+import {Box} from '@mui/material';
 import SaveImageDialog from '../../../components/SaveImageDialog';
+import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
+import FabWrapper from '~/components/FabWrapper';
 
 export default function Station({ts_id, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
@@ -27,14 +29,6 @@ export default function Station({ts_id, stamdata}) {
     measurement: 0,
     useforcorrection: 0,
     comment: '',
-  });
-
-  const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
-    gid: -1,
-    startdate: moment(),
-    enddate: moment('2099-01-01'),
-    elevation: 0,
-    mp_description: '',
   });
 
   const [serviceData, setServiceData, changeServiceData, resetServiceData] = useFormData({
@@ -51,9 +45,6 @@ export default function Station({ts_id, stamdata}) {
 
   const {
     get: {data: watlevmp},
-    post: postWatlevmp,
-    put: putWatlevmp,
-    del: deleteWatlevmp,
   } = useMaalepunkt();
 
   const formToShow = location.hash ? location.hash.replace('#', '') : null;
@@ -65,8 +56,7 @@ export default function Station({ts_id, stamdata}) {
     }
   };
 
-  const [showData, setShowData] = useState('ADDPEJLING')
-
+  const [showData, setShowData] = useState('ADDPEJLING');
 
   const [dynamic, setDynamic] = useState([]);
   const [control, setcontrol] = useState([]);
@@ -167,16 +157,9 @@ export default function Station({ts_id, stamdata}) {
     setcontrol(ctrls);
   }, [watlevmp, measurements]);
 
-  const handleMpCancel = () => {
-    resetMpData();
-    setFormToShow(null);
-    setShowData('ADDMAALEPUNKT')
-
-  };
-
   const openAddMP = () => {
     setFormToShow('ADDMAALEPUNKT');
-    setShowData('')
+    setShowData('');
   };
 
   const pejlingMutate = useMutation({
@@ -212,48 +195,7 @@ export default function Station({ts_id, stamdata}) {
     };
     payload.timeofmeas = moment(payload.timeofmeas).toISOString();
     pejlingMutate.mutate(payload);
-    setShowData('ADDPEJLING')
-  };
-
-  const handleMaalepunktSubmit = () => {
-    // const payload = mpData;
-
-    mpData.startdate = moment(mpData.startdate).toISOString();
-    mpData.enddate = moment(mpData.enddate).toISOString();
-
-    console.log('mpData', mpData);
-    const mutationOptions = {
-      onSuccess: (data) => {
-        resetMpData();
-        setShowData('ADDMAALEPUNKT')
-        setFormToShow('')
-      },
-    };
-
-    if (mpData.gid === -1) {
-      const payload = {
-        data: mpData,
-        path: `${ts_id}`,
-      };
-      postWatlevmp.mutate(payload, mutationOptions);
-    } else {
-      const payload = {
-        data: mpData,
-        path: `${ts_id}/${mpData.gid}`,
-      };
-      putWatlevmp.mutate(payload, mutationOptions);
-    }
-  };
-
-  const handleDeleteMaalepunkt = (gid) => {
-    deleteWatlevmp.mutate(
-      {path: `${ts_id}/${gid}`},
-      {
-        onSuccess: (data) => {
-          resetMpData();
-        },
-      }
-    );
+    setShowData('ADDPEJLING');
   };
 
   const serviceMutate = useMutation({
@@ -282,8 +224,8 @@ export default function Station({ts_id, stamdata}) {
     serviceMutate.mutate(payload, {
       onSuccess: (data) => {
         resetServiceData();
-        setShowData('ADDTILSYN')
-            setFormToShow('');
+        setShowData('ADDTILSYN');
+        setFormToShow('');
         toast.success('Tilsyn gemt');
         queryClient.invalidateQueries({
           queryKey: ['service', ts_id],
@@ -303,18 +245,12 @@ export default function Station({ts_id, stamdata}) {
   const systemxRegex = /systemx\._\d+/g;
 
   const handleEdit = (type) => {
-    if (type === 'watlevmp') {
-      return (data) => {
-        setMpData(data); // Fill form data on Edit
-        setFormToShow('ADDMAALEPUNKT');
-        setShowData('')
-      };
-    } else if (type === 'service') {
+    if (type === 'service') {
       return (data) => {
         data.dato = data.dato.replace(' ', 'T').substr(0, 19);
         setServiceData(data);
         setFormToShow('ADDTILSYN');
-        setShowData('')
+        setShowData('');
       };
     } else {
       return (data) => {
@@ -323,7 +259,7 @@ export default function Station({ts_id, stamdata}) {
         data.useforcorrection = data.useforcorrection.toString();
         setPejlingData(data); // Fill form data on Edit
         setFormToShow('ADDPEJLING');
-        setShowData('')
+        setShowData('');
       };
     }
   };
@@ -391,95 +327,114 @@ export default function Station({ts_id, stamdata}) {
   };
 
   const handleFileInputClick = () => {
-    if(openSave !== true)
-      fileInputRef.current.value = null;
+    if (openSave !== true) fileInputRef.current.value = null;
   };
 
   return (
     <>
-      <Box sx={{ marginBottom: 5, marginTop: 5 }}>
-        <BearingGraph
-          stationId={ts_id}
-          measurements={control}
-          dynamicMeasurement={showData === 'ADDPEJLING' ? dynamic : undefined}
-        />    
-      </Box>
-      <Box sx={{ marginBottom: 5, marginTop: 5, mr: 2, ml: 2 }}>
-        {formToShow === 'ADDPEJLING' && (
-          <PejlingForm
+      {(showData === 'ADDPEJLING' || showData === 'ADDTILSYN' || showData === null) && (
+        <Box sx={{marginBottom: 5, marginTop: 5}}>
+          <BearingGraph
             stationId={ts_id}
-            formData={pejlingData}
-            changeFormData={changePejlingData}
-            handleSubmit={handlePejlingSubmit}
-            openAddMP={openAddMP}
-            resetFormData={() => {
-              resetPejlingData();
-              setFormToShow(null);
-              setShowData('ADDPEJLING')
-            }}
-            canEdit={canEdit}
-            mpData={watlevmp}
-            isWaterlevel={isWaterlevel}
-            isFlow={isFlow}
+            measurements={control}
+            dynamicMeasurement={showData === 'ADDPEJLING' ? dynamic : undefined}
           />
-        )}
-        {showData === 'RET_STAMDATA' && (
-          <EditStamdata setFormToShow={setFormToShow} ts_id={ts_id} metadata={stamdata} />
-        )}
-        <>
-          {formToShow === 'ADDMAALEPUNKT' && 
-            <MaalepunktForm
-              formData={mpData}
-              changeFormData={changeMpData}
-              handleSubmit={handleMaalepunktSubmit}
-              resetFormData={resetMpData}
-              handleCancel={handleMpCancel}
-              canEdit={canEdit}
-            />
-          }
-          {showData === 'ADDMAALEPUNKT' &&
-            <MaalepunktTable
-              watlevmp={watlevmp}
-              handleEdit={handleEdit('watlevmp')}
-              handleDelete={handleDeleteMaalepunkt}
-              canEdit={canEdit}
-            />
-          }
-        </>
-        {(showData === null || showData === 'ADDPEJLING') && (
+        </Box>
+      )}
+      {formToShow === 'ADDPEJLING' && (
+        <PejlingForm
+          stationId={ts_id}
+          formData={pejlingData}
+          changeFormData={changePejlingData}
+          handleSubmit={handlePejlingSubmit}
+          openAddMP={openAddMP}
+          resetFormData={() => {
+            resetPejlingData();
+            setFormToShow(null);
+            setShowData('ADDPEJLING');
+          }}
+          canEdit={canEdit}
+          mpData={watlevmp}
+          isWaterlevel={isWaterlevel}
+          isFlow={isFlow}
+        />
+      )}
+      {showData === 'RET_STAMDATA' && (
+        <EditStamdata
+          setFormToShow={setFormToShow}
+          ts_id={ts_id}
+          metadata={stamdata}
+          canEdit={canEdit}
+        />
+      )}
+      {showData === 'ADDPEJLING' && (
+        <FabWrapper
+          icon={<AddCircle />}
+          text="Tilføj kontrol"
+          onClick={() => {
+            setFormToShow(showData);
+            setShowData(null);
+          }}
+        >
           <PejlingMeasurements
             measurements={measurements}
             handleEdit={handleEdit('pejling')}
             handleDelete={handleDelete('pejling')}
             canEdit={canEdit}
           />
-
+        </FabWrapper>
+      )}
+      <>
+        {formToShow === 'ADDTILSYN' && (
+          <TilsynForm
+            formData={serviceData}
+            changeFormData={changeServiceData}
+            handleSubmit={handleServiceSubmit}
+            cancel={() => {
+              resetServiceData();
+              setFormToShow(null);
+              setShowData('ADDTILSYN');
+            }}
+          />
         )}
-        <>
-          {formToShow === 'ADDTILSYN' && 
-            <TilsynForm
-              formData={serviceData}
-              changeFormData={changeServiceData}
-              handleSubmit={handleServiceSubmit}
-              cancel={() => {
-                resetServiceData();
-                setFormToShow(null);
-                setShowData('ADDTILSYN')
-              }}
-            />
-          }
-          {showData === 'ADDTILSYN' &&
+        {showData === 'ADDTILSYN' && (
+          <FabWrapper
+            icon={<PlaylistAddRounded />}
+            text="Tilføj tilsyn"
+            onClick={() => {
+              setFormToShow(showData);
+              setShowData(null);
+            }}
+          >
             <TilsynTable
               services={services}
               handleEdit={handleEdit('service')}
               handleDelete={handleDelete('service')}
               canEdit={canEdit}
             />
-          }
-        </>
-      </Box>
-      {showData === 'CAMERA' && <StationImages locationId={params.locid} setOpenSave={setOpenSave} setActiveImage={setActiveImage} setFormToShow={setFormToShow} /> }
-      {formToShow === 'CAMERA' && 
+          </FabWrapper>
+        )}
+      </>
+
+      {showData === 'CAMERA' && (
+        <FabWrapper
+          icon={<AddAPhotoRounded />}
+          text="Tilføj billede"
+          onClick={() => {
+            setFormToShow(showData);
+            setShowData('CAMERA');
+            fileInputRef.current.click();
+          }}
+        >
+          <StationImages
+            locationId={params.locid}
+            setOpenSave={setOpenSave}
+            setActiveImage={setActiveImage}
+            setFormToShow={setFormToShow}
+          />
+        </FabWrapper>
+      )}
+      {formToShow === 'CAMERA' && (
         <div>
           <SaveImageDialog
             activeImage={activeImage}
@@ -489,18 +444,19 @@ export default function Station({ts_id, stamdata}) {
             open={openSave}
             dataUri={dataUri}
             handleCloseSave={() => {
-              setOpenSave(false)
-              setdataUri('')
-            }}/>
-        </div>
-      }
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleFileRead}
-          onClick={handleFileInputClick}
+              setOpenSave(false);
+              setdataUri('');
+            }}
           />
+        </div>
+      )}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{display: 'none'}}
+        onChange={handleFileRead}
+        onClick={handleFileInputClick}
+      />
       <ActionArea
         setShowData={setShowData}
         formToShow={formToShow}
@@ -508,7 +464,6 @@ export default function Station({ts_id, stamdata}) {
         canEdit={canEdit}
         isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
-        fileInputRef={fileInputRef}
       />
     </>
   );
