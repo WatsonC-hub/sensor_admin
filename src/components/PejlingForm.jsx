@@ -60,10 +60,6 @@ export default function PejlingForm({
   };
 
   useEffect(() => {
-    window.scrollTo({top: 300, behavior: 'smooth'});
-  }, []);
-
-  useEffect(() => {
     if (mpData !== undefined && mpData.length > 0) {
       var mp = mpData.filter((elem) => {
         if (
@@ -305,13 +301,13 @@ export default function PejlingForm({
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
-                  <Button btType='tertiary' onClick={resetFormData}>
+                <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+                  <Button btType="tertiary" onClick={resetFormData}>
                     Annuller
                   </Button>
                   <Button
                     autoFocus
-                    btType='primary'
+                    btType="primary"
                     onClick={() => {
                       handleClickSubmit();
                       handleSubmit();

@@ -6,13 +6,8 @@ import React, {useEffect, useState} from 'react';
 import OwnDatePicker from './OwnDatePicker';
 import Button from '~/components/Button';
 
-
 export default function TilsynForm({formData, changeFormData, handleSubmit, cancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
-  
-  useEffect(() => {
-    window.scrollTo({top: 300, behavior: 'smooth'});
-  }, []);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -101,13 +96,13 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-          <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
-              <Button btType='tertiary' onClick={cancel}>
+            <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+              <Button btType="tertiary" onClick={cancel}>
                 Annuller
               </Button>
               <Button
                 autoFocus
-                btType='primary'
+                btType="primary"
                 onClick={() => {
                   handleClickSubmit();
                   handleSubmit();

@@ -105,9 +105,6 @@ export default function HistoricMeasurements({measurements, handleEdit, handleDe
                     <IconButton
                       onClick={() => {
                         handleEdit(row);
-                        setTimeout(() => {
-                          window.scrollTo({top: 300, behavior: 'smooth'});
-                        }, 200);
                       }}
                       disabled={!canEdit}
                       size="large"

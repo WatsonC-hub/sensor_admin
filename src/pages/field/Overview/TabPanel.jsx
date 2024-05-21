@@ -14,7 +14,7 @@ export default function TabPanel(props) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {ref.current.hasBeenMounted ? <Box p={3}>{children}</Box> : null}
+      {ref.current.hasBeenMounted ? <Box p={0.5}>{children}</Box> : null}
       {/* {children} */}
     </div>
   );

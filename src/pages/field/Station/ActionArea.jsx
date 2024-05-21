@@ -41,14 +41,6 @@ export default function ActionArea({setShowData, formToShow, setFormToShow, isCa
       icon: <PhotoLibraryRounded />,
       color: navIconStyle(value === 'CAMERA'),
     },
-    // {
-    //   text: 'Målepunkter',
-    //   value: 'ADDMAALEPUNKT',
-    //   icon: <StraightenRounded />,
-    //   color: navIconStyle(value === 'ADDMAALEPUNKT'),
-    //   isCalculated: isCalculated,
-    //   isWaterLevel: isWaterlevel,
-    // },
     {
       text: 'udstyr',
       value: 'RET_STAMDATA',

@@ -97,9 +97,6 @@ export default function MobileMeasurements({measurements, handleEdit, handleDele
                         edge="end"
                         onClick={() => {
                           handleEdit(row);
-                          setTimeout(() => {
-                            window.scrollTo({top: 300, behavior: 'smooth'});
-                          }, 200);
                         }}
                         disabled={!canEdit}
                         size="large"

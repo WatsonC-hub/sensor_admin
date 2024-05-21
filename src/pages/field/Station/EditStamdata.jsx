@@ -258,7 +258,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
     }).data,
   });
 
-  useEffect(() => {
+  const resetFormData = () => {
     formMethods.reset(
       metadataPutSchema.safeParse({
         location: {
@@ -275,11 +275,11 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
         },
       }).data
     );
-  }, [metadata]);
+  };
 
   useEffect(() => {
-    window.scrollTo({top: 300, behavior: 'smooth'});
-  }, []);
+    resetFormData();
+  }, [metadata]);
 
   const handleUpdate = (values) => {
     metadataEditMutation.mutate(values, {
@@ -309,84 +309,90 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
 
   return (
     <FormProvider {...formMethods}>
-      <Tabs
-        value={tabValue}
-        onChange={(_, newValue) => setTabValue(newValue)}
-        variant={matches ? 'scrollable' : 'fullWidth'}
-        aria-label="simple tabs example"
+      <Box
         sx={{
-          '& .MuiTab-root': {
-            height: '48px',
-            minHeight: '48px',
-          },
+          boxShadow: 2,
+          margin: 'auto',
+          maxWidth: '1080px',
+          height: '100%',
         }}
       >
-        <Tab label="Udstyr" />
-        <Tab label="Lokation" />
-        <Tab label="Tidsserie" />
-        <Tab label="Reference" />
-        <Tab label="Kontakt" />
-      </Tabs>
-      <Divider />
-
-      <TabPanel value={tabValue} index={0}>
-        <UdstyrReplace stationId={ts_id} />
-        <UnitForm mode="edit" />
-      </TabPanel>
-      <TabPanel value={tabValue} index={1}>
-        <LocationForm mode="edit" />
-      </TabPanel>
-      <TabPanel value={tabValue} index={2}>
-        <TimeseriesForm />
-      </TabPanel>
-      <TabPanel value={tabValue} index={3}>
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj målepunkt"
-          onClick={() => {
-            setMode('add');
+        <Tabs
+          value={tabValue}
+          onChange={(_, newValue) => setTabValue(newValue)}
+          variant={matches ? 'scrollable' : 'fullWidth'}
+          aria-label="simple tabs example"
+          sx={{
+            '& .MuiTab-root': {
+              height: '48px',
+              minHeight: '48px',
+            },
           }}
         >
-          <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
-        </FabWrapper>
-      </TabPanel>
-      <TabPanel value={tabValue} index={4}>
-        Kontaktinformation
-      </TabPanel>
+          <Tab label="Udstyr" />
+          <Tab label="Lokation" />
+          <Tab label="Tidsserie" />
+          <Tab label="Reference" />
+          <Tab label="Kontakt" />
+        </Tabs>
+        <Divider />
 
-      <Grid
-        container
-        alignItems="center"
-        justifyContent="right"
-        sx={{
-          marginTop: 2,
-          pl: 2,
-          pr: 2,
-        }}
-      >
-        <Grid item xs={12} sm={2}>
-          <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-            <Button
-              btType="tertiary"
-              onClick={() => {
-                setFormToShow(null);
-              }}
-            >
-              Annuller
-            </Button>
-            <Button
-              autoFocus
-              btType="primary"
-              startIcon={<SaveIcon />}
-              onClick={formMethods.handleSubmit(handleUpdate, (values) => console.log(values))}
-              disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
-            >
-              Gem
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
-      <DevTool control={formMethods.control} />
+        <TabPanel value={tabValue} index={0}>
+          <UdstyrReplace stationId={ts_id} />
+          <UnitForm mode="edit" />
+        </TabPanel>
+        <TabPanel value={tabValue} index={1}>
+          <LocationForm mode="edit" />
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
+          <TimeseriesForm />
+        </TabPanel>
+        <TabPanel value={tabValue} index={3}>
+          <FabWrapper
+            icon={<AddCircle />}
+            text="Tilføj målepunkt"
+            onClick={() => {
+              setMode('add');
+            }}
+            visible={mode === 'view' ? 'visible' : 'hidden'}
+          >
+            <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
+          </FabWrapper>
+        </TabPanel>
+        <TabPanel value={tabValue} index={4}>
+          Kontaktinformation
+        </TabPanel>
+        {mode !== 'edit' && (
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="right"
+            sx={{
+              marginTop: 2,
+              pl: 2,
+              pr: 2,
+            }}
+          >
+            <Grid item xs={12} sm={2}>
+              <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+                <Button btType="tertiary" onClick={resetFormData}>
+                  Annuller
+                </Button>
+                <Button
+                  autoFocus
+                  btType="primary"
+                  startIcon={<SaveIcon />}
+                  onClick={formMethods.handleSubmit(handleUpdate, (values) => console.log(values))}
+                  disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
+                >
+                  Gem
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        )}
+        <DevTool control={formMethods.control} />
+      </Box>
     </FormProvider>
   );
 }

@@ -207,9 +207,6 @@ function MobileMP({watlevmp, handleEdit, handleDelete, canEdit}) {
                         edge="end"
                         onClick={() => {
                           handleEdit(row);
-                          setTimeout(() => {
-                            window.scrollTo({top: 550, behavior: 'smooth'});
-                          }, 200);
                         }}
                         disabled={!canEdit}
                         size="large"

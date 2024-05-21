@@ -1,9 +1,10 @@
-import {useEffect, useState} from 'react';
 import MaalepunktForm from '~/components/MaalepunktForm';
-import MaalepunktTable from '../../Station/MaalepunktTable';
 import useFormData from '~/hooks/useFormData';
 import moment from 'moment';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
+import {Box, useMediaQuery, useTheme} from '@mui/material';
+import MaalepunktTableMobile from './tableComponents/MaalepunktTableMobile';
+import MaalepunktTableDesktop from './tableComponents/MaalepunktTableDesktop';
 
 interface Props {
   mode: string;
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: moment(),
@@ -33,7 +36,7 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
     mpData.enddate = moment(mpData.enddate).toISOString();
 
     const mutationOptions = {
-      onSuccess: (data: []) => {
+      onSuccess: (data: {}) => {
         resetMpData();
         setMode('view');
       },
@@ -59,7 +62,7 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
     setMode('view');
   };
 
-  const handleDeleteMaalepunkt = (gid: string) => {
+  const handleDeleteMaalepunkt = (gid: number | undefined) => {
     deleteWatlevmp.mutate(
       {path: `${ts_id}/${gid}`},
       {
@@ -71,16 +74,16 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
   };
 
   const handleEdit = (type: string) => {
-    if (type === 'watlevmp') {
-      return (data: any) => {
-        setMpData(data);
-        setMode('add');
-      };
-    }
+    return (data: {}) => {
+      console.log('does this work?');
+      setMpData(data);
+      setMode('edit');
+    };
   };
+
   return (
     <>
-      {mode === 'add' && canEdit && (
+      {mode !== 'view' && canEdit && (
         <MaalepunktForm
           formData={mpData}
           changeFormData={changeMpData}
@@ -88,14 +91,24 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
           handleCancel={handleMpCancel}
         />
       )}
-      {mode === 'view' && (
-        <MaalepunktTable
-          watlevmp={watlevmp}
-          handleEdit={handleEdit('watlevmp')}
-          handleDelete={handleDeleteMaalepunkt}
-          canEdit={canEdit}
-        />
-      )}
+      <Box display="flex" justifyContent={{sm: 'center'}}>
+        {mode === 'view' &&
+          (matches ? (
+            <MaalepunktTableMobile
+              data={watlevmp!}
+              handleEdit={handleEdit('watlevmp')}
+              handleDelete={handleDeleteMaalepunkt}
+              canEdit={canEdit}
+            />
+          ) : (
+            <MaalepunktTableDesktop
+              data={watlevmp!}
+              handleEdit={handleEdit('watlevmp')}
+              handleDelete={handleDeleteMaalepunkt}
+              canEdit={canEdit}
+            />
+          ))}
+      </Box>
     </>
   );
 }

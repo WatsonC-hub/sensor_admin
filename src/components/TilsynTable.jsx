@@ -119,9 +119,6 @@ function DesktopTilsyn({services, handleEdit, handleDelete, canEdit}) {
                     <IconButton
                       onClick={() => {
                         handleEdit(row);
-                        setTimeout(() => {
-                          window.scrollTo({top: 300, behavior: 'smooth'});
-                        }, 200);
                       }}
                       disabled={!canEdit}
                       size="large"
@@ -237,9 +234,6 @@ function MobileTilsyn({services, handleEdit, handleDelete, canEdit}) {
                   edge="end"
                   onClick={() => {
                     handleEdit(row);
-                    setTimeout(() => {
-                      window.scrollTo({top: 300, behavior: 'smooth'});
-                    }, 200);
                   }}
                   disabled={!canEdit}
                 >

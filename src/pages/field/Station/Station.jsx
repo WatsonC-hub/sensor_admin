@@ -341,122 +341,126 @@ export default function Station({ts_id, stamdata}) {
           />
         </Box>
       )}
-      {formToShow === 'ADDPEJLING' && (
-        <PejlingForm
-          stationId={ts_id}
-          formData={pejlingData}
-          changeFormData={changePejlingData}
-          handleSubmit={handlePejlingSubmit}
-          openAddMP={openAddMP}
-          resetFormData={() => {
-            resetPejlingData();
-            setFormToShow(null);
-            setShowData('ADDPEJLING');
-          }}
-          canEdit={canEdit}
-          mpData={watlevmp}
-          isWaterlevel={isWaterlevel}
-          isFlow={isFlow}
-        />
-      )}
-      {showData === 'RET_STAMDATA' && (
-        <EditStamdata
-          setFormToShow={setFormToShow}
-          ts_id={ts_id}
-          metadata={stamdata}
-          canEdit={canEdit}
-        />
-      )}
-      {showData === 'ADDPEJLING' && (
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj kontrol"
-          onClick={() => {
-            setFormToShow(showData);
-            setShowData(null);
-          }}
-        >
-          <PejlingMeasurements
-            measurements={measurements}
-            handleEdit={handleEdit('pejling')}
-            handleDelete={handleDelete('pejling')}
-            canEdit={canEdit}
-          />
-        </FabWrapper>
-      )}
-      <>
-        {formToShow === 'ADDTILSYN' && (
-          <TilsynForm
-            formData={serviceData}
-            changeFormData={changeServiceData}
-            handleSubmit={handleServiceSubmit}
-            cancel={() => {
-              resetServiceData();
+      <Box sx={{maxWidth: '1080px', margin: 'auto'}}>
+        {formToShow === 'ADDPEJLING' && (
+          <PejlingForm
+            stationId={ts_id}
+            formData={pejlingData}
+            changeFormData={changePejlingData}
+            handleSubmit={handlePejlingSubmit}
+            openAddMP={openAddMP}
+            resetFormData={() => {
+              resetPejlingData();
               setFormToShow(null);
-              setShowData('ADDTILSYN');
+              setShowData('ADDPEJLING');
             }}
+            canEdit={canEdit}
+            mpData={watlevmp}
+            isWaterlevel={isWaterlevel}
+            isFlow={isFlow}
           />
         )}
-        {showData === 'ADDTILSYN' && (
+        {showData === 'RET_STAMDATA' && (
+          <EditStamdata
+            setFormToShow={setFormToShow}
+            ts_id={ts_id}
+            metadata={stamdata}
+            canEdit={canEdit}
+          />
+        )}
+        {showData === 'ADDPEJLING' && (
           <FabWrapper
-            icon={<PlaylistAddRounded />}
-            text="Tilføj tilsyn"
+            icon={<AddCircle />}
+            text="Tilføj kontrol"
             onClick={() => {
               setFormToShow(showData);
               setShowData(null);
             }}
+            visible={formToShow !== 'ADDPEJLING' ? 'visible' : 'hidden'}
           >
-            <TilsynTable
-              services={services}
-              handleEdit={handleEdit('service')}
-              handleDelete={handleDelete('service')}
+            <PejlingMeasurements
+              measurements={measurements}
+              handleEdit={handleEdit('pejling')}
+              handleDelete={handleDelete('pejling')}
               canEdit={canEdit}
             />
           </FabWrapper>
         )}
-      </>
+        <>
+          {formToShow === 'ADDTILSYN' && (
+            <TilsynForm
+              formData={serviceData}
+              changeFormData={changeServiceData}
+              handleSubmit={handleServiceSubmit}
+              cancel={() => {
+                resetServiceData();
+                setFormToShow(null);
+                setShowData('ADDTILSYN');
+              }}
+            />
+          )}
+          {showData === 'ADDTILSYN' && (
+            <FabWrapper
+              icon={<PlaylistAddRounded />}
+              text="Tilføj tilsyn"
+              onClick={() => {
+                setFormToShow(showData);
+                setShowData(null);
+              }}
+              visible={formToShow !== 'ADDTILSYN' ? 'visible' : 'hidden'}
+            >
+              <TilsynTable
+                services={services}
+                handleEdit={handleEdit('service')}
+                handleDelete={handleDelete('service')}
+                canEdit={canEdit}
+              />
+            </FabWrapper>
+          )}
+        </>
 
-      {showData === 'CAMERA' && (
-        <FabWrapper
-          icon={<AddAPhotoRounded />}
-          text="Tilføj billede"
-          onClick={() => {
-            setFormToShow(showData);
-            setShowData('CAMERA');
-            fileInputRef.current.click();
-          }}
-        >
-          <StationImages
-            locationId={params.locid}
-            setOpenSave={setOpenSave}
-            setActiveImage={setActiveImage}
-            setFormToShow={setFormToShow}
-          />
-        </FabWrapper>
-      )}
-      {formToShow === 'CAMERA' && (
-        <div>
-          <SaveImageDialog
-            activeImage={activeImage}
-            changeData={changeActiveImageData}
-            id={params.locid}
-            type={'station'}
-            open={openSave}
-            dataUri={dataUri}
-            handleCloseSave={() => {
-              setOpenSave(false);
-              setdataUri('');
+        {showData === 'CAMERA' && (
+          <FabWrapper
+            icon={<AddAPhotoRounded />}
+            text="Tilføj billede"
+            onClick={() => {
+              setFormToShow(showData);
+              setShowData('CAMERA');
+              fileInputRef.current.click();
             }}
-          />
-        </div>
-      )}
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{display: 'none'}}
-        onChange={handleFileRead}
-        onClick={handleFileInputClick}
-      />
+          >
+            <StationImages
+              locationId={params.locid}
+              setOpenSave={setOpenSave}
+              setActiveImage={setActiveImage}
+              setFormToShow={setFormToShow}
+            />
+          </FabWrapper>
+        )}
+        {formToShow === 'CAMERA' && (
+          <div>
+            <SaveImageDialog
+              activeImage={activeImage}
+              changeData={changeActiveImageData}
+              id={params.locid}
+              type={'station'}
+              open={openSave}
+              dataUri={dataUri}
+              handleCloseSave={() => {
+                setOpenSave(false);
+                setdataUri('');
+              }}
+            />
+          </div>
+        )}
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{display: 'none'}}
+          onChange={handleFileRead}
+          onClick={handleFileInputClick}
+        />
+      </Box>
       <ActionArea
         setShowData={setShowData}
         formToShow={formToShow}

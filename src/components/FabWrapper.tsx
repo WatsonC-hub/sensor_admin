@@ -6,6 +6,7 @@ interface Props {
   text: string;
   icon: React.ReactElement<SvgIconProps>;
   onClick: () => void;
+  visible: string;
 }
 
 const fabTextStyle = {
@@ -13,7 +14,7 @@ const fabTextStyle = {
   textTransform: 'initial',
 };
 
-const FabWrapper = ({children, text, icon, onClick}: Props) => {
+const FabWrapper = ({children, text, icon, onClick, visible}: Props) => {
   return (
     <div>
       {children}
@@ -29,6 +30,7 @@ const FabWrapper = ({children, text, icon, onClick}: Props) => {
           height: 60,
           borderRadius: 4.5,
           color: 'white',
+          visibility: visible,
         }}
       >
         <>
