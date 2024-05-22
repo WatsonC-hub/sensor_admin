@@ -307,7 +307,7 @@ export default function PejlingFormBorehole({
                 />
               </Grid>
               <Grid item xs={12} sm={2}>
-              <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
+                <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
                   <Button autoFocus btType="tertiary" onClick={resetFormData}>
                     Annuller
                   </Button>
@@ -327,7 +327,7 @@ export default function PejlingFormBorehole({
                     }
                     startIcon={<SaveIcon />}
                   >
-                    Gem kontrol
+                    Gem
                   </Button>
                 </Box>
               </Grid>

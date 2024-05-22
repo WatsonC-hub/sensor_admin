@@ -155,7 +155,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                     sx={{
                       width: '80%',
                       textTransform: 'initial',
-                      borderRadius: 15 
+                      borderRadius: 15,
                     }}
                     variant="contained"
                     color="primary"
@@ -170,7 +170,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   gutterBottom
                   sx={{
                     float: 'left',
-                    textTransform: 'initial'
+                    textTransform: 'initial',
                   }}
                 >
                   Calypso ID er et unikt nummer, der identificerer boringen samt indtag
@@ -179,7 +179,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
             </Grid>
             <Grid container alignItems="center" justifyContent="center">
               <Grid item xs={12} sm={4}>
-                <Box display="flex" gap={1} justifyContent={{ xs: "flex-end", sm: 'center' }}>
+                <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
                   <Button
                     btType="tertiary"
                     onClick={() => {
@@ -195,7 +195,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                     onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}
                     disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
                   >
-                    Gem stamdata
+                    Gem
                   </Button>
                 </Box>
               </Grid>

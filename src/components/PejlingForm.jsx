@@ -320,7 +320,7 @@ export default function PejlingForm({
                     }
                     startIcon={<SaveIcon />}
                   >
-                    Gem kontrol
+                    Gem
                   </Button>
                 </Box>
               </Grid>

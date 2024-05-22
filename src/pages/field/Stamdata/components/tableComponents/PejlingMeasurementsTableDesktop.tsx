@@ -1,65 +1,73 @@
-import {Typography} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
 import {useMemo, useState} from 'react';
-import {convertDate, checkEndDateIsUnset} from '~/helpers/dateConverter';
 import FormTableComponent from '~/components/FormTableComponent';
 import RenderActions from '~/helpers/RowActions';
 import {MRT_ColumnDef} from 'material-react-table';
 import DeleteAlert from '~/components/DeleteAlert';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
-export type Maalepunkt = {
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  mp_description: string;
+export type Kontrol = {
+  comment: string;
   gid: number;
+  measurement: number;
+  timeofmeas: string;
   ts_id: number;
+  updated_at: string;
+  useforcorrection: number;
   userid: string;
 };
 
 interface Props {
-  data: Maalepunkt[];
+  data: Kontrol[];
   handleEdit: ({}) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
-export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, canEdit}: Props) {
-  const theme = useTheme();
+export default function PejlingMeasurementsTableDesktop({
+  data,
+  handleEdit,
+  handleDelete,
+  canEdit,
+}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
+
+  const correction_map: any = {
+    0: 'Kontrol',
+    1: 'Korrektion fremadrettet',
+    2: 'Korrektion frem og tilbage til start af tidsserie',
+    3: 'Lineær',
+    4: 'Korrektion frem og tilbage til udstyr',
+    5: 'Korrektion frem og tilbage til niveau spring',
+    6: 'Korrektion frem og tilbage til forrige spring',
+  };
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
+  const columns = useMemo<MRT_ColumnDef<Kontrol>[]>(
     () => [
       {
-        accessorFn: (row) => (
-          <Typography sx={{display: 'inline', justifySelf: 'flex-end'}}>
-            <b>Start: </b> {convertDate(row.startdate)}
-            <br />
-            <b>Slut: </b> {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
-          </Typography>
-          //     <Typography sx={{display: 'inline', justifySelf: 'flex-end'}}>
-          //     {convertDate(row.startdate)} -{' '}
-          //     {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
-          //   </Typography>
-        ),
-        id: 'startdate',
+        accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
+        id: 'timeofmeas',
         header: 'Dato',
-        enableHide: false,
       },
       {
-        accessorFn: (row) => row.elevation + ' m',
+        accessorFn: (row) => row.measurement + ' m',
         header: 'Pejling',
-        id: 'elevation',
+        id: 'measurement',
       },
       {
-        header: 'Beskrivelse',
-        accessorKey: 'mp_description',
+        accessorFn: (row) =>
+          correction_map[row.useforcorrection] ? correction_map[row.useforcorrection] : 'Kontrol',
+        header: 'Anvendelse',
+        id: 'useforcorrection',
+      },
+      {
+        accessorKey: 'comment',
+        header: 'Kommentar',
       },
     ],
     []

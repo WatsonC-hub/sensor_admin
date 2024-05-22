@@ -110,7 +110,7 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
                 disabled={disableSubmit}
                 startIcon={<SaveIcon />}
               >
-                Gem tilsyn
+                Gem
               </Button>
             </Box>
           </Grid>
