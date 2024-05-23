@@ -313,7 +313,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
         sx={{
           boxShadow: 2,
           margin: 'auto',
-          maxWidth: '1080px',
+          width: {xs: window.innerWidth, md: 1080},
           height: '100%',
         }}
       >
@@ -329,23 +329,23 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
             },
           }}
         >
-          <Tab label="Udstyr" />
           <Tab label="Lokation" />
           <Tab label="Tidsserie" />
+          <Tab label="Udstyr" />
           <Tab label="Reference" />
           <Tab label="Kontakt" />
         </Tabs>
         <Divider />
 
         <TabPanel value={tabValue} index={0}>
-          <UdstyrReplace stationId={ts_id} />
-          <UnitForm mode="edit" />
-        </TabPanel>
-        <TabPanel value={tabValue} index={1}>
           <LocationForm mode="edit" />
         </TabPanel>
-        <TabPanel value={tabValue} index={2}>
+        <TabPanel value={tabValue} index={1}>
           <TimeseriesForm />
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
+          <UdstyrReplace stationId={ts_id} />
+          <UnitForm mode="edit" />
         </TabPanel>
         <TabPanel value={tabValue} index={3}>
           <FabWrapper

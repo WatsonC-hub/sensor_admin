@@ -17,7 +17,7 @@ import MaalepunktTable from './MaalepunktTable';
 import PejlingMeasurements from './PejlingMeasurements';
 import StationImages from './StationImages';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import {Box} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import SaveImageDialog from '../../../components/SaveImageDialog';
 import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
 import FabWrapper from '~/components/FabWrapper';
@@ -331,14 +331,15 @@ export default function Station({ts_id, stamdata}) {
   };
 
   return (
-    <>
+    <Box display="grid">
       {(showData === 'ADDPEJLING' || showData === 'ADDTILSYN' || showData === null) && (
-        <Box sx={{marginBottom: 5, marginTop: 5}}>
+        <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
             stationId={ts_id}
             measurements={control}
             dynamicMeasurement={showData === 'ADDPEJLING' ? dynamic : undefined}
           />
+          <Divider />
         </Box>
       )}
       <Box sx={{maxWidth: '1080px', margin: 'auto'}}>
@@ -469,6 +470,6 @@ export default function Station({ts_id, stamdata}) {
         isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
       />
-    </>
+    </Box>
   );
 }
