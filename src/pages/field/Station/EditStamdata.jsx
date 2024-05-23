@@ -43,6 +43,7 @@ import FabWrapper from '~/components/FabWrapper';
 import {AddCircle} from '@mui/icons-material';
 import ReferenceForm from '../Stamdata/components/ReferenceForm';
 import KontaktForm from '../Stamdata/components/KontaktForm';
+import {useSearchParam} from '~/hooks/useSeachParam';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
   const [date, setdate] = useState(new Date());
@@ -223,7 +224,14 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const queryClient = useQueryClient();
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useSearchParam('tab');
+
+  useEffect(() => {
+    setTabValue('0');
+    return () => {
+      setTabValue(null);
+    };
+  }, []);
 
   const metadataEditMutation = useMutation({
     mutationFn: async (data) => {
@@ -329,25 +337,25 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
             },
           }}
         >
-          <Tab label="Udstyr" />
-          <Tab label="Lokation" />
-          <Tab label="Tidsserie" />
-          <Tab label="Reference" />
-          <Tab label="Kontakt" />
+          <Tab value="0" label="Udstyr" />
+          <Tab value="1" label="Lokation" />
+          <Tab value="2" label="Tidsserie" />
+          <Tab value="3" label="Reference" />
+          <Tab value="4" label="Kontakt" />
         </Tabs>
         <Divider />
 
-        <TabPanel value={tabValue} index={0}>
+        <TabPanel value={tabValue} index="0">
           <UdstyrReplace stationId={ts_id} />
           <UnitForm mode="edit" />
         </TabPanel>
-        <TabPanel value={tabValue} index={1}>
+        <TabPanel value={tabValue} index={'1'}>
           <LocationForm mode="edit" />
         </TabPanel>
-        <TabPanel value={tabValue} index={2}>
+        <TabPanel value={tabValue} index={'2'}>
           <TimeseriesForm />
         </TabPanel>
-        <TabPanel value={tabValue} index={3}>
+        <TabPanel value={tabValue} index={'3'}>
           <FabWrapper
             icon={<AddCircle />}
             text="Tilføj målepunkt"
@@ -359,7 +367,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
             <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
           </FabWrapper>
         </TabPanel>
-        <TabPanel value={tabValue} index={4}>
+        <TabPanel value={tabValue} index={'4'}>
           Kontaktinformation
         </TabPanel>
         {mode !== 'edit' && (

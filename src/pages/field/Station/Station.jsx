@@ -21,6 +21,7 @@ import {Box} from '@mui/material';
 import SaveImageDialog from '../../../components/SaveImageDialog';
 import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
 import FabWrapper from '~/components/FabWrapper';
+import {useSearchParam} from '~/hooks/useSeachParam';
 
 export default function Station({ts_id, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
@@ -47,16 +48,18 @@ export default function Station({ts_id, stamdata}) {
     get: {data: watlevmp},
   } = useMaalepunkt();
 
-  const formToShow = location.hash ? location.hash.replace('#', '') : null;
-  const setFormToShow = (form) => {
-    if (form) {
-      navigate('#' + form, {replace: !!location.hash});
-    } else {
-      navigate(-1);
-    }
-  };
+  // const formToShow = location.hash ? location.hash.replace('#', '') : null;
+  // const setFormToShow = (form) => {
+  //   if (form) {
+  //     navigate('#' + form, {replace: !!location.hash});
+  //   } else {
+  //     navigate(-1);
+  //   }
+  // };
 
-  const [showData, setShowData] = useState('ADDPEJLING');
+  const [formToShow, setFormToShow] = useSearchParam('showForm');
+
+  const [showData, setShowData] = useSearchParam('page');
 
   const [dynamic, setDynamic] = useState([]);
   const [control, setcontrol] = useState([]);
@@ -368,13 +371,13 @@ export default function Station({ts_id, stamdata}) {
             canEdit={canEdit}
           />
         )}
-        {showData === 'ADDPEJLING' && (
+        {showData === null && (
           <FabWrapper
             icon={<AddCircle />}
             text="Tilføj kontrol"
             onClick={() => {
               setFormToShow(showData);
-              setShowData(null);
+              // setShowData(null);
             }}
             visible={formToShow !== 'ADDPEJLING' ? 'visible' : 'hidden'}
           >
@@ -462,6 +465,7 @@ export default function Station({ts_id, stamdata}) {
         />
       </Box>
       <ActionArea
+        showData={showData}
         setShowData={setShowData}
         formToShow={formToShow}
         setFormToShow={setFormToShow}
