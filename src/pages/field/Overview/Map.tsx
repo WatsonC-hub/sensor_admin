@@ -1,5 +1,14 @@
-import {TextField} from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
+import {
+  TextField,
+  InputAdornment,
+  Box,
+  Autocomplete,
+  IconButton,
+  AutocompleteChangeReason,
+  AutocompleteInputChangeReason,
+} from '@mui/material';
+// import Autocomplete from '@mui/material/Autocomplete';
+// import Box from '@mui/material/Box';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {atom, useAtom} from 'jotai';
@@ -7,7 +16,7 @@ import L from 'leaflet';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
-import React, {useEffect, useState} from 'react';
+import {useRef, useEffect, useState, SyntheticEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
 import {mapboxToken} from '~/consts';
@@ -15,24 +24,17 @@ import {stamdataStore} from '~/state/store';
 import utmObj from 'utm-latlng';
 import {authStore} from '../../../state/store';
 import {postElasticSearch} from '../boreholeAPI';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 
 const utm = new utmObj();
 
-const zoomAtom = atom(null);
-const panAtom = atom(null);
-const typeAheadAtom = atom('');
-
-const style = {
-  width: '100%',
-  height: '80vh',
-};
+const zoomAtom = atom<number | null>(null);
+const panAtom = atom<L.LatLng | null>(null);
+const typeAheadAtom = atom<string>('');
+const mapFilterAtom = atom({});
 
 const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;
-
-var boreholeIcon = L.icon({
-  iconUrl: `<svg width="240" height="320" viewBox="4 4 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5 21a.975.975 0 0 1-.563-.313 5.416 5.416 0 0 1-.687-.787 8.247 8.247 0 0 1-1.12-2.045L15 15.833V17.3c-.055.374-.17.737-.339 1.075-.197.423-.428.83-.69 1.217a6.629 6.629 0 0 1-.8 1A1.16 1.16 0 0 1 12.5 21zM10 16.776v-1.5l5-2.076v1.5l-5 2.076zm0-2.635v-1.32l5-2.077v1.322l-5 2.075zm0-2.453V4h5v5.613l-5 2.075z" stroke="#000000" fill="#005A51" stroke-width="0.5" stroke-linejoin="round"/></svg>`,
-  iconSize: [32, 32], // size of the icon
-});
 
 const boreholeColors = {
   1: '#66bb6a',
@@ -41,22 +43,54 @@ const boreholeColors = {
   0: '#3388ff',
 };
 
-function Map({sensorData, boreholeData, loading, boreholeLoading}) {
+interface SensorData {
+  locname: string;
+  locid: number;
+  lat: number;
+  long: number;
+  status: number;
+  mouseover: string;
+}
+
+interface BoreholeData {
+  boreholeno: string;
+  latitude: number;
+  longitude: number;
+  intakeno: number[];
+  measurement: number[];
+  status: number[];
+}
+
+interface LocItems {
+  name: string;
+  sensor: boolean;
+  group: string;
+}
+
+interface MapProps {
+  sensorData: SensorData[];
+  boreholeData: BoreholeData[];
+  loading: boolean;
+  boreholeLoading: boolean;
+}
+
+function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
   const navigate = useNavigate();
-  const mapRef = React.useRef(null);
-  const layerRef = React.useRef(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const layerRef = useRef<L.FeatureGroup | null>(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
   const [typeAhead, setTypeAhead] = useAtom(typeAheadAtom);
-  const [locItems, setLocItems] = useState([]);
+  const [mapFilter, setMapFilter] = useAtom(mapFilterAtom);
+  const [locItems, setLocItems] = useState<LocItems[]>([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
-  const [setLocationValue] = stamdataStore((store) => [store.setLocationValue]);
+  const setLocationValue = stamdataStore((store) => store.setLocationValue);
 
-  const onPopupClickHandler = (element) => () => {
-    if (element.locid !== undefined) navigate('location/' + element.locid);
+  const onPopupClickHandler = (element: SensorData | BoreholeData) => () => {
+    if ('locid' in element) navigate('location/' + element.locid);
     else navigate('borehole/' + element.boreholeno);
   };
 
@@ -69,39 +103,31 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
       'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?&username=WXIJZOCTKQ&password=E7WfqcwH_',
       {
         layers: 'dtk_skaermkort_daempet',
-        transparent: 'FALSE',
+        transparent: false,
         format: 'image/png',
         attribution: myAttributionText,
       }
     );
 
     const satelitemapbox = L.tileLayer(
-      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={token}',
+      `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
       {
         maxZoom: 20,
-        attribution:
-          'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        attribution: `© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>`,
         id: 'mapbox/satellite-streets-v11',
         tileSize: 512,
         zoomOffset: -1,
-        token: mapboxToken,
       }
     );
 
     const outdormapbox = L.tileLayer(
-      'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={token}',
+      `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
       {
         maxZoom: 20,
-        attribution:
-          'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        attribution: `© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>`,
         id: 'mapbox/outdoors-v11',
         tileSize: 512,
         zoomOffset: -1,
-        token: mapboxToken,
       }
     );
 
@@ -110,23 +136,26 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
       zoom: 7,
       layers: [outdormapbox],
       tap: false,
+      // @ts-ignore
       contextmenu: true,
       contextmenuWidth: 140,
       contextmenuItems: [
         {
           text: 'Opret ny lokation',
-          callback: function (e) {
-            const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
+          callback: function (e: any) {
+            const coords = utm.ConvertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
-            setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
-            setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
-            navigate('/field/stamdata');
+            if (typeof coords == 'object') {
+              setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
+              setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
+              navigate('/field/stamdata');
+            }
           },
           icon: '/leaflet-images/marker.png',
         },
         {
           text: 'Google Maps',
-          callback: function (e) {
+          callback: function (e: any) {
             if (e.relatedTarget) {
               window.open(
                 `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget._latlng.lat},${e.relatedTarget._latlng.lng}`,
@@ -144,27 +173,29 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         '-', // this is a separator
         {
           text: 'Zoom ind',
-          callback: function (e) {
+          callback: function (e: any) {
             map.zoomIn();
           },
           icon: '/leaflet-images/zoom-in.png',
         },
         {
           text: 'Zoom ud',
-          callback: function (e) {
+          callback: function (e: any) {
             map.zoomOut();
           },
           icon: '/leaflet-images/zoom-out.png',
         },
         {
           text: 'Centrer kort her',
-          callback: function (e) {
+          callback: function (e: any) {
             map.panTo(e.latlng);
           },
           icon: '/leaflet-images/center.png',
         },
       ],
     });
+
+    map.attributionControl.setPrefix(false);
 
     var baseMaps = {
       OpenStreetMap: outdormapbox,
@@ -175,6 +206,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
     L.control.layers(baseMaps).addTo(map);
 
     L.control
+      // @ts-ignore
       .locate({
         showPopup: false,
         strings: {
@@ -190,6 +222,10 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
       setZoom(map.getZoom());
       setPan(map.getCenter());
     });
+    map.on('zoomend', function () {
+      setZoom(map.getZoom());
+      setPan(map.getCenter());
+    });
 
     return map;
   };
@@ -198,6 +234,14 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
     mapRef.current = renderMap();
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     layerRef.current.clearLayers();
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const dataBorehole = boreholeData;
     const data = sensorData;
     if (!loading || !boreholeLoading) {
@@ -276,12 +320,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         });
         let popupContent = L.DomUtil.create('div', 'content');
 
-        // popupContent.style.backgroundColor = '#fff'; // Background color
-        // popupContent.style.padding = '10px'; // Padding
-        // popupContent.style.border = '1px solid #ccc'; // Border
-        // popupContent.style.borderRadius = '5px'; // Border radius
-        // popupContent.style.textAlign = 'center'; // Text alignment
-
         if (
           element.mouseover == null ||
           element.mouseover == '' ||
@@ -303,7 +341,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         marker.addTo(layerRef.current);
       });
 
-      if (zoom !== null) {
+      if (zoom !== null || pan !== null) {
         mapRef.current.setView(pan, zoom);
       } else {
         if (layerRef.current.getBounds().isValid() && !loading && !boreholeLoading) {
@@ -311,14 +349,13 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         }
       }
     }
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-      }
-    };
   }, [sensorData, boreholeData]);
 
-  const elasticSearch = (e, value, reason) => {
+  const elasticSearch = (
+    e: SyntheticEvent,
+    value: string,
+    reason: AutocompleteInputChangeReason
+  ) => {
     const search_string = value;
     if (typeof search_string == 'string') {
       setTypeAhead(search_string);
@@ -327,18 +364,8 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
     if (reason == 'clear') {
       setTypeAhead('');
     }
-
+    console.log(locItems);
     if (search_string) {
-      let search = {
-        query: {
-          bool: {
-            must: {
-              query_string: {},
-            },
-          },
-        },
-      };
-
       const filteredSensor = sensorData
         ? sensorData
             .filter((elem) => elem.locname.toLowerCase().includes(search_string?.toLowerCase()))
@@ -348,11 +375,21 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
             .sort((a, b) => a.name.localeCompare(b.name))
         : [];
 
-      let filteredBorehole = [];
+      let filteredBorehole: LocItems[] = [];
       if (boreholeAccess) {
-        search.query.bool.must.query_string.query = search_string;
+        const search = {
+          query: {
+            bool: {
+              must: {
+                query_string: {
+                  query: search_string,
+                },
+              },
+            },
+          },
+        };
         postElasticSearch(search).then((res) => {
-          filteredBorehole = res.data.hits.hits.map((elem) => {
+          filteredBorehole = res.data.hits.hits.map((elem: any) => {
             return {name: elem._source.properties.boreholeno, group: 'Jupiter'};
           });
           setLocItems([...filteredSensor, ...filteredBorehole]);
@@ -363,10 +400,10 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
     }
   };
 
-  const handleChange = (e, value, map) => {
-    if (value !== null) {
+  const handleChange = (e: SyntheticEvent, value: string | LocItems | null) => {
+    if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current != null) {
       if (value.sensor) {
-        Object.values(layerRef.current._layers).forEach((layer) => {
+        layerRef.current.getLayers().forEach((layer) => {
           if (layer.options.title == value.name) {
             layer.openPopup();
             mapRef.current.flyTo(layer._latlng, 12);
@@ -435,12 +472,12 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
   };
 
   return (
-    <div>
+    <>
       <Autocomplete
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
-        getOptionLabel={(option) => (option?.name ? option.name : option)}
+        getOptionLabel={(option) => (typeof option == 'object' ? option.name : option)}
         groupBy={(option) => option.group}
         inputValue={typeAhead}
         renderInput={(params) => (
@@ -448,8 +485,39 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
             {...params}
             size="small"
             variant="outlined"
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <InputAdornment
+                  sx={{
+                    pl: 1,
+                  }}
+                  position="start"
+                >
+                  <SearchRoundedIcon />
+                </InputAdornment>
+              ),
+              endAdornment: params.InputProps.endAdornment ? (
+                params.InputProps.endAdornment
+              ) : (
+                <InputAdornment
+                  sx={{
+                    pr: 1,
+                  }}
+                  position="end"
+                >
+                  <IconButton edge="end" onClick={() => console.log('yay')}>
+                    <TuneRoundedIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
             placeholder="Søg efter lokation..."
-            style={{marginTop: '-6px'}}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '9999px',
+              },
+            }}
           />
         )}
         style={{
@@ -461,8 +529,16 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
         onChange={handleChange}
         onInputChange={elasticSearch}
       />
-      <div id="map" style={style}></div>
-    </div>
+      <Box
+        id="map"
+        sx={{
+          width: '100%',
+          minHeight: '300px',
+          flexGrow: 1,
+          //'@media (min-width:1280px)': {height: '90vh', }
+        }}
+      ></Box>
+    </>
   );
 }
 

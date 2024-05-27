@@ -2,6 +2,7 @@ import MapIcon from '@mui/icons-material/Map';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import type {BoxProps} from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Tooltip from '@mui/material/Tooltip';
@@ -9,7 +10,7 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
-import React from 'react';
+import React, {SyntheticEvent} from 'react';
 import NavBar from '~/components/NavBar';
 import {apiClient} from '~/apiClient';
 import {authStore} from '~/state/store';
@@ -24,8 +25,8 @@ const tabAtomInner = atom(0);
 export default function OverviewPage() {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
-  const [tabValue, setTabValue] = useAtom(tabAtom);
-  const [tabValueInner, setTabValueInner] = useAtom(tabAtomInner);
+  const [tabValue, setTabValue] = useAtom<number>(tabAtom);
+  const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
   const {data: tabledata, isLoading} = useQuery({
@@ -72,43 +73,39 @@ export default function OverviewPage() {
     refetchOnReconnect: false,
   });
 
-  const handleChange = (_, newValue) => {
+  const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const handleChangeInner = (_, newValue) => {
+  const handleChangeInner = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValueInner(newValue);
   };
 
-  const KortIcon = (
-    <Tooltip title="Kort">
-      <MapIcon />
-    </Tooltip>
-  );
-
-  const TableIcon = (
-    <Tooltip title="Tabel">
-      <FormatListBulletedIcon />
-    </Tooltip>
-  );
-
-  function TabPanel(props) {
+  function TabPanel(props: {
+    children?: React.ReactNode;
+    index: number;
+    value: number;
+    other?: BoxProps;
+  }) {
     const {children, value, index, ...other} = props;
 
     return (
-      <div
+      <Box
+        display={value === index ? 'flex' : 'none'}
+        flexDirection="column"
+        flexGrow={1}
         role="tabpanel"
         hidden={value !== index}
         id={`full-width-tabpanel-${index}`}
         aria-labelledby={`full-width-tab-${index}`}
         {...other}
       >
-        {value === index && <Box p={1}>{children}</Box>}
-      </div>
+        {value === index && <>{children}</>}
+      </Box>
     );
   }
 
-  function a11yProps(index) {
+  function a11yProps(index: number) {
     return {
       id: `full-width-tab-${index}`,
       'aria-controls': `full-width-tabpanel-${index}`,
@@ -116,30 +113,24 @@ export default function OverviewPage() {
   }
 
   return (
-    <>
+    <Box display="flex" flexDirection="column" minHeight="100vh">
       <NavBar />
-      <Box
+      <Tabs
+        value={tabValue}
+        onChange={handleChange}
+        variant="fullWidth"
+        aria-label="simple tabs example"
         sx={{
-          borderBottom: 1,
-          borderColor: 'divider',
+          '& .MuiTab-root': {
+            // height: '48px',
+            minHeight: '48px',
+            borderBottom: '1px solid #e0e0e0',
+          },
         }}
       >
-        <Tabs
-          value={tabValue}
-          onChange={handleChange}
-          variant="fullWidth"
-          aria-label="simple tabs example"
-          sx={{
-            '& .MuiTab-root': {
-              height: '48px',
-              minHeight: '48px',
-            },
-          }}
-        >
-          <Tab label="Kort" icon={KortIcon} iconPosition="start" />
-          <Tab icon={TableIcon} iconPosition="start" label="Liste" />
-        </Tabs>
-      </Box>
+        <Tab label="Kort" icon={<MapIcon />} iconPosition="start" />
+        <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Liste" />
+      </Tabs>
       <TabPanel value={tabValue} index={0}>
         <Map
           sensorData={mapData}
@@ -149,36 +140,38 @@ export default function OverviewPage() {
         />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
-        <>
-          <AppBar position="static" color="default" style={{width: matches ? '100%' : '50%'}}>
-            <Tabs
-              value={tabValueInner}
-              onChange={handleChangeInner}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-              aria-label="full width tabs example"
-            >
-              {iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
-              {boreholeAccess && (
-                <Tab label="Mine DGU boringer" {...a11yProps(iotAccess ? 1 : 0)} />
-              )}
-            </Tabs>
-          </AppBar>
-          {iotAccess && (
-            <TabPanel value={tabValueInner} index={0} dir={theme.direction}>
-              <StationTable data={tabledata} isLoading={isLoading} />
-            </TabPanel>
-          )}
-          {boreholeAccess && (
-            <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0} dir={theme.direction}>
-              <BoreholeTable data={boreholetabledata} isLoading={boreholeIsLoading} />
-            </TabPanel>
-          )}
-        </>
+        <Tabs
+          value={tabValueInner}
+          onChange={handleChangeInner}
+          indicatorColor="primary"
+          textColor="primary"
+          sx={{
+            margin: matches ? '0' : 'auto',
+            '& .MuiTab-root': {
+              // height: '48px',
+              minHeight: '48px',
+            },
+          }}
+          variant={matches ? 'fullWidth' : 'standard'}
+          aria-label="full width tabs example"
+        >
+          {iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
+          {boreholeAccess && <Tab label="Mine DGU boringer" {...a11yProps(iotAccess ? 1 : 0)} />}
+        </Tabs>
+
+        {iotAccess && (
+          <TabPanel value={tabValueInner} index={0}>
+            <StationTable data={tabledata} isLoading={isLoading} />
+          </TabPanel>
+        )}
+        {boreholeAccess && (
+          <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0}>
+            <BoreholeTable data={boreholetabledata} isLoading={boreholeIsLoading} />
+          </TabPanel>
+        )}
       </TabPanel>
 
       {matches && <ScrollTop threshold={100} />}
-    </>
+    </Box>
   );
 }
