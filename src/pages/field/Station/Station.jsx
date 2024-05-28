@@ -20,6 +20,7 @@ import SaveImageDialog from '../../../components/SaveImageDialog';
 import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
 import FabWrapper from '~/components/FabWrapper';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import Images from '~/components/Images';
 
 export default function Station({ts_id, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
@@ -422,8 +423,9 @@ export default function Station({ts_id, stamdata}) {
                 fileInputRef.current.click();
               }}
             >
-              <StationImages
-                locationId={params.locid}
+              <Images
+                type={'station'}
+                typeId={params.locid}
                 setOpenSave={setOpenSave}
                 setActiveImage={setActiveImage}
                 setShowForm={setShowForm}

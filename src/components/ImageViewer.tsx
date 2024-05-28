@@ -5,13 +5,15 @@ import {Grid} from '@mui/material';
 
 type Image = {
   gid: number;
-  loc_id: number;
+  loc_id?: number;
+  boreholeno: number;
   title: string;
   date: string;
   public: boolean;
   userid: number;
   comment: string;
   imageurl: string;
+  organisationid?: number;
 };
 
 type ImageViewerProps = {

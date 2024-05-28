@@ -20,6 +20,7 @@ import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import Images from '~/components/Images';
 
 const Boreholeno = ({boreholeno, intakeno}) => {
   let location = useLocation();
@@ -427,8 +428,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
               fileInputRef.current.click();
             }}
           >
-            <BoreholeImages
-              boreholeno={boreholeno}
+            <Images
+              type={'borehole'}
+              typeId={boreholeno}
               setOpenSave={setOpenSave}
               setActiveImage={setActiveImage}
               setShowForm={setShowForm}

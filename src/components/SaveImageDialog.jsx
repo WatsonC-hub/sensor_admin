@@ -13,6 +13,7 @@ import {toast} from 'react-toastify';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 import OwnDatePicker from './OwnDatePicker';
 import Button from '~/components/Button';
+import {Edit, Save} from '@mui/icons-material';
 
 function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
   const theme = useTheme();
@@ -139,9 +140,19 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
           {uploadImage.isLoading ? (
             <CircularProgress />
           ) : activeImage.gid == -1 ? (
-            'Tilføj'
+            <Box display={'flex'} gap={1} alignItems={'center'}>
+              <Save />
+              <Typography variant="body2" fontSize={14}>
+                Gem
+              </Typography>
+            </Box>
           ) : (
-            'Ændre'
+            <Box display="flex" alignItems="center" gap={1}>
+              <Edit />
+              <Typography variant="body2" fontSize={14}>
+                Rediger
+              </Typography>
+            </Box>
           )}
         </Button>
       </DialogActions>
