@@ -417,7 +417,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
         <TabPanel value={tabValue} index={'4'}>
           Kontaktinformation
         </TabPanel>
-        {mode !== 'edit' && (
+        {mode !== 'edit' && tabValue !== '3' && (
           <Grid
             container
             alignItems="center"
