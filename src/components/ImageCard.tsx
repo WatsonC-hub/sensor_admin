@@ -32,14 +32,14 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
 
   const isBorehole =
     image.boreholeno !== undefined &&
-    image.organisationid !== null &&
+    image.organisationid !== undefined &&
     image.organisationid === org_id;
 
   function handleDelete() {
     toast.promise(
       () =>
         deleteMutation.mutateAsync({
-          path: `${image.loc_id !== null ? image.loc_id : image.boreholeno}/${image.gid}`,
+          path: `${image.loc_id !== undefined ? image.loc_id : image.boreholeno}/${image.gid}`,
         }),
       {
         pending: 'Sletter billedet',
