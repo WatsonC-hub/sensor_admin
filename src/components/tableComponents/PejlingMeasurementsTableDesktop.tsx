@@ -1,19 +1,18 @@
 import {useMemo, useState} from 'react';
 import FormTableComponent from '~/components/FormTableComponent';
 import RenderActions from '~/helpers/RowActions';
-import {MRT_ColumnDef} from 'material-react-table';
+import {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import DeleteAlert from '~/components/DeleteAlert';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import React from 'react';
+import {stamdataStore} from '~/state/store';
 
 export type Kontrol = {
   comment: string;
   gid: number;
   measurement: number;
   timeofmeas: string;
-  ts_id: number;
-  updated_at: string;
   useforcorrection: number;
-  userid: string;
 };
 
 interface Props {
@@ -21,6 +20,7 @@ interface Props {
   handleEdit: ({}) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
+  correction_map: Record<number, string>;
 }
 
 export default function PejlingMeasurementsTableDesktop({
@@ -28,19 +28,13 @@ export default function PejlingMeasurementsTableDesktop({
   handleEdit,
   handleDelete,
   canEdit,
+  correction_map,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
+  const [timeseries] = stamdataStore((state) => [state.timeseries]);
 
-  const correction_map: any = {
-    0: 'Kontrol',
-    1: 'Korrektion fremadrettet',
-    2: 'Korrektion frem og tilbage til start af tidsserie',
-    3: 'Lineær',
-    4: 'Korrektion frem og tilbage til udstyr',
-    5: 'Korrektion frem og tilbage til niveau spring',
-    6: 'Korrektion frem og tilbage til forrige spring',
-  };
+  const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -55,8 +49,8 @@ export default function PejlingMeasurementsTableDesktop({
         header: 'Dato',
       },
       {
-        accessorFn: (row) => row.measurement + ' m',
-        header: 'Pejling',
+        accessorFn: (row) => limitDecimalNumbers(row.measurement),
+        header: unit,
         id: 'measurement',
       },
       {
@@ -70,36 +64,21 @@ export default function PejlingMeasurementsTableDesktop({
         header: 'Kommentar',
       },
     ],
-    []
+    [unit]
   );
 
-  const options = {
-    renderRowActions: ({row, table}: any) =>
-      RenderActions({handleEdit, onDeleteBtnClick, canEdit}, {row, table}),
-    muiTablePaperProps: {
-      sx: {
-        boxShadow: '1',
-        p: 0,
-        margin: 'auto',
-      },
-    },
-    muiTableBodyRowProps: {
-      sx: {
-        '&:hover': {
-          td: {
-            '&:after': {
-              backgroundColor: 'transparent',
-            },
-          },
-        },
-      },
-    },
-    muiPaginationProps: {
-      showRowsPerPage: false,
-    },
-    initialState: {
-      density: 'comfortable',
-    },
+  const options: Partial<MRT_TableOptions<Kontrol>> = {
+    renderRowActions: ({row}) => (
+      <RenderActions
+        handleEdit={() => {
+          handleEdit(row.original);
+        }}
+        onDeleteBtnClick={() => {
+          onDeleteBtnClick(row.original.gid);
+        }}
+        canEdit={canEdit}
+      />
+    ),
   };
 
   return (
@@ -110,7 +89,7 @@ export default function PejlingMeasurementsTableDesktop({
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <FormTableComponent columns={columns} data={data} options={options} />
+      <FormTableComponent columns={columns} data={data} {...options} />
     </>
   );
 }

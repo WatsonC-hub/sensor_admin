@@ -3,8 +3,9 @@ import useFormData from '~/hooks/useFormData';
 import moment from 'moment';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {Box, useMediaQuery, useTheme} from '@mui/material';
-import MaalepunktTableMobile from './tableComponents/MaalepunktTableMobile';
-import MaalepunktTableDesktop from './tableComponents/MaalepunktTableDesktop';
+import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
+import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
+import React from 'react';
 
 interface Props {
   mode: string;
@@ -75,7 +76,6 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
 
   const handleEdit = (type: string) => {
     return (data: {}) => {
-      console.log('does this work?');
       setMpData(data);
       setMode('edit');
     };
@@ -92,22 +92,21 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
         />
       )}
       <Box display="flex" justifyContent={{sm: 'center'}}>
-        {mode === 'view' &&
-          (matches ? (
-            <MaalepunktTableMobile
-              data={watlevmp!}
-              handleEdit={handleEdit('watlevmp')}
-              handleDelete={handleDeleteMaalepunkt}
-              canEdit={canEdit}
-            />
-          ) : (
-            <MaalepunktTableDesktop
-              data={watlevmp!}
-              handleEdit={handleEdit('watlevmp')}
-              handleDelete={handleDeleteMaalepunkt}
-              canEdit={canEdit}
-            />
-          ))}
+        {matches ? (
+          <MaalepunktTableMobile
+            data={watlevmp!}
+            handleEdit={handleEdit('watlevmp')}
+            handleDelete={handleDeleteMaalepunkt}
+            canEdit={canEdit}
+          />
+        ) : (
+          <MaalepunktTableDesktop
+            data={watlevmp!}
+            handleEdit={handleEdit('watlevmp')}
+            handleDelete={handleDeleteMaalepunkt}
+            canEdit={canEdit}
+          />
+        )}
       </Box>
     </>
   );

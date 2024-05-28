@@ -1,12 +1,9 @@
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
-import HomeIcon from '@mui/icons-material/Home';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import PhotoCameraRounded from '@mui/icons-material/PhotoCameraRounded';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import SettingsIcon from '@mui/icons-material/Settings';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -38,6 +35,7 @@ import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
 import {authStore} from '~/state/store';
 import {apiClient} from '~/apiClient';
+import {MapRounded} from '@mui/icons-material';
 
 const LogOut = ({element: Element}) => {
   const [resetState] = authStore((state) => [state.resetState]);
@@ -65,7 +63,7 @@ export const HomeButton = () => {
       }}
       size="large"
     >
-      <HomeIcon />
+      <MapRounded />
     </IconButton>
   );
 };

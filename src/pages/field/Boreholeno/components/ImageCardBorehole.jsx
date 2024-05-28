@@ -1,4 +1,5 @@
-import Button from '@mui/material/Button';
+import {Delete, Edit} from '@mui/icons-material';
+import {Box} from '@mui/material';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -11,6 +12,7 @@ import {toast} from 'react-toastify';
 import DeleteAlert from '~/components/DeleteAlert';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {authStore} from '~/state/store';
+import Button from '~/components/Button';
 
 function ImageCardBorehole({image, deleteMutation, handleEdit}) {
   // const baseUrl = 'https://calypsoimages.s3.eu-north-1.amazonaws.com/borehole_images/';
@@ -62,22 +64,36 @@ function ImageCardBorehole({image, deleteMutation, handleEdit}) {
         </Typography>
       </CardContent>
       {image.organisationid == org_id && (
-        <CardActions>
+        <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
           <Button
             disabled={deleteMutation.isLoading}
             onClick={() => setDialogOpen(true)}
             size="small"
-            color="primary"
+            btType="tertiary"
           >
-            {deleteMutation.isLoading ? <CircularProgress /> : 'Slet'}
+            {deleteMutation.isLoading ? (
+              <CircularProgress />
+            ) : (
+              <Box display="flex" alignItems="center" gap={1}>
+                <Delete />
+                <Typography variant="body2" fontSize={14}>
+                  Slet
+                </Typography>
+              </Box>
+            )}
           </Button>
           <Button
             disabled={deleteMutation.isLoading}
             onClick={() => handleEdit(image)}
             size="small"
-            color="primary"
+            btType="primary"
           >
-            Rediger
+            <Box display="flex" alignItems="center" gap={1}>
+              <Edit />
+              <Typography variant="body2" fontSize={14}>
+                Rediger
+              </Typography>
+            </Box>
           </Button>
         </CardActions>
       )}

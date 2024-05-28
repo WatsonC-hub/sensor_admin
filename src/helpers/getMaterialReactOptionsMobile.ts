@@ -1,3 +1,4 @@
+import zIndex from '@mui/material/styles/zIndex';
 import {type MRT_RowData, type MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 
@@ -15,4 +16,51 @@ export const getDefaultMRTOptionsMobile = <TData extends MRT_RowData>(): Partial
   enableTableFooter: false,
   enableStickyFooter: true,
   paginationDisplayMode: 'pages',
+  enableTableHead: false,
+  enableExpanding: true,
+  muiTableBodyCellProps: {
+    sx: {
+      borderRadius: 9999,
+      border: 'none',
+      backgroundColor: 'grey.300',
+      alignContent: 'space-between',
+    },
+  },
+  muiTablePaperProps: {
+    sx: {
+      boxShadow: 'none',
+      p: 0,
+    },
+  },
+  muiTableFooterProps: {
+    sx: {
+      boxShadow: 'none',
+    },
+  },
+  muiTableBodyRowProps: {
+    sx: {
+      '&:hover': {
+        td: {
+          '&:after': {
+            backgroundColor: 'transparent',
+          },
+        },
+      },
+    },
+  },
+  muiTableProps: {
+    sx: {
+      borderSpacing: 5,
+      border: 'none',
+    },
+  },
+  muiPaginationProps: {
+    showRowsPerPage: false,
+  },
+  initialState: {
+    density: 'compact',
+    columnVisibility: {
+      'mrt-row-expand': false,
+    },
+  },
 });

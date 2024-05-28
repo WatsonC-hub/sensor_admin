@@ -23,7 +23,7 @@ interface NavigationItem {
 }
 
 interface CustomBottomNavigationProps {
-  showData: string;
+  pageToShow: string;
   onChange: (event: React.ChangeEvent<{}>, newValue: string) => void;
   items: NavigationItem[];
   canEdit?: boolean;
@@ -38,7 +38,7 @@ const bottomNavStyle = {
 };
 
 const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
-  showData,
+  pageToShow,
   onChange,
   items,
   canEdit,
@@ -64,7 +64,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   };
 
   return (
-    <Box sx={{mt: 17}}>
+    <Box sx={{mt: 15, position: 'sticky', zIndex: 3}}>
       {isMobile && hiddenItems.length > 0 && (
         <Menu
           anchorEl={anchorEl}
@@ -107,7 +107,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
       )}
       <Paper sx={{position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={3}>
         <BottomNavigation
-          value={showData}
+          value={pageToShow}
           showLabels
           onChange={(event, newValue) => {
             onChange(event, newValue);

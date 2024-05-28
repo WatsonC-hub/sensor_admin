@@ -12,6 +12,7 @@ import LocationForm from './components/LocationForm';
 import TimeseriesForm from './components/TimeseriesForm';
 import UnitForm from './components/UnitForm';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
@@ -24,6 +25,15 @@ import NavBar from '~/components/NavBar';
 import {stamdataStore} from '../../../state/store';
 
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import KontaktForm from './components/KontaktForm';
+import {useSearchParam} from '~/hooks/useSeachParam';
+import {
+  AddLocationAlt,
+  BuildRounded,
+  LocationOnRounded,
+  SettingsPhoneRounded,
+  ShowChartRounded,
+} from '@mui/icons-material';
 
 function LocationChooser({setLocationDialogOpen}) {
   const location = stamdataStore((store) => store.location);
@@ -134,7 +144,8 @@ function LocationChooser({setLocationDialogOpen}) {
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'baseline',
+            flexDirection: 'column',
+            alignItems: 'end',
             justifyContent: 'start',
           }}
         >
@@ -152,7 +163,7 @@ function LocationChooser({setLocationDialogOpen}) {
               />
             )}
             disableClearable
-            style={{width: 200}}
+            style={{width: '100%', margin: '0 auto'}}
             onChange={(event, value) => populateFormData(value)}
           />
           <Button
@@ -164,7 +175,7 @@ function LocationChooser({setLocationDialogOpen}) {
             startIcon={<AddLocationAltIcon />}
             onClick={() => setLocationDialogOpen(true)}
           >
-            Tilføj lokation
+            Opret lokalitet
           </Button>
         </Box>
       </Grid>
@@ -206,7 +217,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(
     store.location.x ? (store.location.loc_id ? false : true) : false
   );
-  const [tabValue, setTabValue] = useState(0);
+  // const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     return () => {
@@ -215,6 +226,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
       store.resetUnit();
     };
   }, []);
+
+  const [tabValue, setTabValue] = useSearchParam('tab');
 
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
@@ -226,7 +239,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
         tstype_id: -1,
       },
     },
-    mode: 'onTouched'
+    mode: 'onTouched',
   });
 
   const {
@@ -299,6 +312,13 @@ export default function OpretStamdata({setAddStationDisabled}) {
     }
   };
 
+  useEffect(() => {
+    setTabValue('0');
+    return () => {
+      setTabValue(null);
+    };
+  }, []);
+
   console.log('errors', errors);
   console.log('values', getValues());
 
@@ -316,22 +336,54 @@ export default function OpretStamdata({setAddStationDisabled}) {
               '& .MuiTab-root': {
                 height: '48px',
                 minHeight: '48px',
+                marginTop: 1,
               },
             }}
           >
             <Tab
-              label="Lokation"
+              value="0"
+              label={
+                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                  <LocationOnRounded />
+                  <Typography textTransform={'capitalize'}>Lokalitet</Typography>
+                </Box>
+              }
               iconPosition="start"
               icon={errors?.location ? <ErrorOutlineIcon color="error" /> : null}
             />
             <Tab
+              value="1"
+              label={
+                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                  <SettingsPhoneRounded />
+                  <Typography textTransform={'capitalize'}>Kontakt</Typography>
+                </Box>
+              }
               iconPosition="start"
-              label="Tidsserie"
+            />
+            <Tab
+              value="2"
+              iconPosition="start"
+              label={
+                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                  <ShowChartRounded />
+                  <Typography textTransform={'capitalize'}>Tidsserie</Typography>
+                </Box>
+              }
               icon={
                 errors?.timeseries || errors?.watlevmp ? <ErrorOutlineIcon color="error" /> : null
               }
             />
-            <Tab label="Udstyr" icon={errors?.unit ? <ErrorOutlineIcon color="error" /> : null} />
+            <Tab
+              value="3"
+              label={
+                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                  <BuildRounded />
+                  <Typography textTransform={'capitalize'}>Udstyr</Typography>
+                </Box>
+              }
+              icon={errors?.unit ? <ErrorOutlineIcon color="error" /> : null}
+            />
           </Tabs>
           <Divider />
           <Box
@@ -345,15 +397,17 @@ export default function OpretStamdata({setAddStationDisabled}) {
             {/* <Typography variant="h6" component="h3">
               Stamdata
             </Typography> */}
-            <TabPanel value={tabValue} index={0}>
+            <TabPanel value={tabValue} index={'0'}>
               <Location setLocationDialogOpen={setLocationDialogOpen} />
             </TabPanel>
-
-            <TabPanel value={tabValue} index={1}>
+            <TabPanel value={tabValue} index={'1'}>
+              <KontaktForm />
+            </TabPanel>
+            <TabPanel value={tabValue} index={'2'}>
               {/* <Typography>Tidsserie</Typography> */}
               <TimeseriesForm mode="add" />
             </TabPanel>
-            <TabPanel value={tabValue} index={2}>
+            <TabPanel value={tabValue} index={'3'}>
               {/* <Typography>Udstyr</Typography> */}
               <Box
                 sx={{
@@ -393,21 +447,26 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 Annuller
               </Button>
 
-              {tabValue < 2 && (
+              {tabValue < 3 && (
                 <Button
                   btType="primary"
+                  sx={{marginRight: 1}}
+                  endIcon={<ArrowForwardIcon fontSize="small" />}
                   onClick={() => {
-                    setTabValue((prev) => prev + 1);
+                    setTabValue((parseInt(tabValue) + 1).toString());
                   }}
                 >
-                  Næste
+                  <Box display="flex" alignItems="center">
+                    Videre
+                  </Box>
                 </Button>
               )}
-              {tabValue == 2 && (
+              {tabValue == 3 && (
                 <Button
                   btType="primary"
                   onClick={handleSubmit(handleOpret, handleDebug)}
                   startIcon={<SaveIcon />}
+                  sx={{marginRight: 1}}
                   disabled={isSubmitting}
                 >
                   Gem

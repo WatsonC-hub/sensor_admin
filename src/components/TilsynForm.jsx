@@ -5,6 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
 import OwnDatePicker from './OwnDatePicker';
 import Button from '~/components/Button';
+import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 
 export default function TilsynForm({formData, changeFormData, handleSubmit, cancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -65,8 +66,14 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
                   color="primary"
                 />
               }
-              label={<label>Batteriskift</label>}
+              label={
+                <Box display="flex">
+                  <BatteryAlertRounded sx={{color: 'grey.700'}} />
+                  <Typography alignSelf="center">Batteriskift</Typography>
+                </Box>
+              }
             />
+
             <FormControlLabel
               control={
                 <Checkbox
@@ -76,7 +83,12 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
                   color="primary"
                 />
               }
-              label={<label>Tilsyn</label>}
+              label={
+                <Box display="flex" gap={1}>
+                  <RemoveRedEyeRounded sx={{color: 'grey.700'}} />
+                  <Typography alignSelf="center">Tilsyn</Typography>
+                </Box>
+              }
             />
           </Grid>
           <Grid item xs={12} sm={10}>

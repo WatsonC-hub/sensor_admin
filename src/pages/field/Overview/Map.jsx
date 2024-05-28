@@ -1,4 +1,4 @@
-import {TextField} from '@mui/material';
+import {IconButton, InputAdornment, TextField} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -15,6 +15,7 @@ import {stamdataStore} from '~/state/store';
 import utmObj from 'utm-latlng';
 import {authStore} from '../../../state/store';
 import {postElasticSearch} from '../boreholeAPI';
+import {TuneRounded} from '@mui/icons-material';
 
 const utm = new utmObj();
 
@@ -363,6 +364,10 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
     }
   };
 
+  const handleFilter = (event) => {
+    console.log('I have been clicked...');
+  };
+
   const handleChange = (e, value, map) => {
     if (value !== null) {
       if (value.sensor) {
@@ -450,6 +455,16 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}) {
             variant="outlined"
             placeholder="Søg efter lokation..."
             style={{marginTop: '-6px'}}
+            InputProps={{
+              ...params.inputProps,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleFilter}>
+                    <TuneRounded />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
         )}
         style={{

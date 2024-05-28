@@ -1,4 +1,4 @@
-import {CircularProgress, Grid, TextField, Typography} from '@mui/material';
+import {CircularProgress, Grid, TextField, Typography, Box} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -12,21 +12,20 @@ import React from 'react';
 import {toast} from 'react-toastify';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 import OwnDatePicker from './OwnDatePicker';
-import Button from '~/components/Button'
+import Button from '~/components/Button';
 
 function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const imageUrl = `/static/images/${activeImage.imageurl}?format=auto&width=${1024}`;
+  const imageUrl = `/static/images/${activeImage.imageurl}`;
 
   const {post: uploadImage, put: editImage} = useImageUpload(type);
 
-
   function saveImage() {
-    console.log('Hit Once')
+    console.log('Hit Once');
     if (activeImage.gid === -1) {
-      console.log('Hit Twice')
+      console.log('Hit Twice');
       const payload = {
         path: id,
         data: {
@@ -47,7 +46,6 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         },
         error: 'Der skete en fejl',
       });
-
     } else {
       const payload = {
         path: `${id}/${activeImage.gid}`,
@@ -81,9 +79,21 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
     >
       <DialogTitle id="form-dialog-title">Gem billede</DialogTitle>
       <DialogContent>
-        <Grid container spacing={3} style={{width: '100%'}}>
-          <Grid item xs={12} sm={12} style={{width: '100%'}}>
-            <img src={activeImage.gid === -1 ? dataUri : imageUrl} style={{width: '100%'}} />
+        <Grid container spacing={3}>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            sx={{
+              display: 'flex',
+            }}
+          >
+            <img
+              src={activeImage.gid === -1 ? dataUri : imageUrl}
+              height="800px"
+              style={{maxWidth: '800px', objectFit: 'cover', margin: 'auto'}}
+              loading="lazy"
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -122,14 +132,10 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCloseSave} btType='tertiary'>
+        <Button onClick={handleCloseSave} btType="tertiary">
           Annuller
         </Button>
-        <Button
-          onClick={saveImage}
-          disabled={uploadImage.isLoading}
-          btType="primary"
-        >
+        <Button onClick={saveImage} disabled={uploadImage.isLoading} btType="primary">
           {uploadImage.isLoading ? (
             <CircularProgress />
           ) : activeImage.gid == -1 ? (
@@ -138,7 +144,6 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
             'Ændre'
           )}
         </Button>
-
       </DialogActions>
     </Dialog>
   );

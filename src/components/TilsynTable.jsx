@@ -19,6 +19,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import moment from 'moment';
 import React, {Fragment, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
+import TilsynTableDesktop from '~/components/tableComponents/TilsynTableDesktop';
+import TilsynTableMobile from './tableComponents/TilsynTableMobile';
 
 function DesktopTilsyn({services, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -259,5 +261,19 @@ export default function TilsynTable(props) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  return matches ? <MobileTilsyn {...props} /> : <DesktopTilsyn {...props} />;
+  return matches ? (
+    <TilsynTableMobile
+      data={props.services}
+      handleEdit={props.handleEdit}
+      handleDelete={props.handleDelete}
+      canEdit={props.canEdit}
+    />
+  ) : (
+    <TilsynTableDesktop
+      data={props.services}
+      handleEdit={props.handleEdit}
+      handleDelete={props.handleDelete}
+      canEdit={props.canEdit}
+    />
+  );
 }

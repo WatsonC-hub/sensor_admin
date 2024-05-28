@@ -13,19 +13,19 @@ const navIconStyle = (isSelected) => {
 };
 
 export default function ActionArea({
-  showData,
-  setShowData,
-  formToShow,
-  setFormToShow,
+  pageToShow,
+  setPageToShow,
+  showForm,
+  setShowForm,
   isCalculated,
 }) {
   // const [value, setValue] = useSearchParam('page');
 
   const handleChange = (event, newValue) => {
     // setValue(newValue);
-    setShowData(newValue);
-    if (formToShow !== null) {
-      setFormToShow('');
+    setPageToShow(newValue);
+    if (showForm !== null) {
+      setShowForm('');
     }
   };
   const navigationItems = [
@@ -33,31 +33,35 @@ export default function ActionArea({
       text: 'pejling',
       value: null,
       icon: <AddCircle />,
-      color: navIconStyle(showData === null),
+      color: navIconStyle(pageToShow === null),
     },
     {
       text: 'tilsyn',
-      value: 'ADDTILSYN',
+      value: 'TILSYN',
       icon: <PlaylistAddCheck />,
-      color: navIconStyle(showData === 'ADDTILSYN'),
+      color: navIconStyle(pageToShow === 'TILSYN'),
       isCalculated: isCalculated,
     },
     {
       text: 'Billeder',
-      value: 'CAMERA',
+      value: 'billeder',
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(showData === 'CAMERA'),
+      color: navIconStyle(pageToShow === 'billeder'),
     },
     {
       text: 'udstyr',
-      value: 'RET_STAMDATA',
+      value: 'STAMDATA',
       icon: <ConstructionRounded />,
-      color: navIconStyle(showData === 'RET_STAMDATA'),
+      color: navIconStyle(pageToShow === 'STAMDATA'),
       isCalculated: isCalculated,
     },
   ];
 
   return (
-    <CustomBottomNavigation showData={showData} onChange={handleChange} items={navigationItems} />
+    <CustomBottomNavigation
+      pageToShow={pageToShow}
+      onChange={handleChange}
+      items={navigationItems}
+    />
   );
 }

@@ -19,9 +19,46 @@ export const getDefaultMRTOptionsDesktop = <TData extends MRT_RowData>(): Partia
   displayColumnDefOptions: {
     'mrt-row-actions': {
       size: 180, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
-      grow: false,
+      grow: true,
     },
+  },
+  muiTableProps: {
+    size: 'small',
   },
   positionActionsColumn: 'last',
   paginationDisplayMode: 'pages',
+  muiTablePaperProps: {
+    sx: {
+      width: '100%',
+      boxShadow: '1',
+      p: 0,
+      margin: 'auto',
+    },
+  },
+  muiTableBodyRowProps: {
+    sx: {
+      '&:hover': {
+        td: {
+          '&:after': {
+            backgroundColor: 'transparent',
+          },
+        },
+      },
+    },
+  },
+  muiPaginationProps: {
+    showRowsPerPage: false,
+  },
+  initialState: {
+    density: 'comfortable',
+  },
+  muiTableHeadCellProps: {
+    size: 'small',
+    align: 'center',
+  },
+  muiTableBodyCellProps: {
+    size: 'small',
+
+    align: 'center',
+  },
 });

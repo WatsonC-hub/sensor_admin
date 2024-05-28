@@ -21,6 +21,8 @@ import moment from 'moment';
 import React, {Fragment, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {authStore} from '~/state/store';
+import MaalepunktTableDesktop from './components/tableComponents/MaalepunktTableDesktop';
+import MaalepunktTableMobile from './components/tableComponents/MaalepunktTableMobile';
 
 function DesktopMP({watlevmp, handleEdit, handleDelete, canEdit}) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -238,5 +240,19 @@ export default function MaalepunktTable(props) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  return matches ? <MobileMP {...props} /> : <DesktopMP {...props} />;
+  console.log(props.watlevmp);
+
+  return matches ? (
+    <MaalepunktTableMobile
+      data={props.watlevmp}
+      handleEdit={props.handleEdit}
+      handleDelete={props.handleDelete}
+    />
+  ) : (
+    <MaalepunktTableDesktop
+      data={props.watlevmp}
+      handleEdit={props.handleEdit}
+      handleDelete={props.handleDelete}
+    />
+  );
 }

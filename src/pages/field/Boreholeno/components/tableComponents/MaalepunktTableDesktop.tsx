@@ -1,16 +1,19 @@
 import {Typography} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
 import {useMemo, useState} from 'react';
-import {convertDate, checkEndDateIsUnset} from '~/helpers/dateConverter';
+import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
 import FormTableComponent from '~/components/FormTableComponent';
 import RenderActions from '~/helpers/RowActions';
-import {MRT_ColumnDef} from 'material-react-table';
+import {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import DeleteAlert from '~/components/DeleteAlert';
+import React from 'react';
+import {authStore, stamdataStore} from '~/state/store';
 
 export type Maalepunkt = {
   startdate: string;
   enddate: string;
   elevation: number;
+  organisationid: number;
+  organisationname: string;
   mp_description: string;
   gid: number;
   ts_id: number;
@@ -21,18 +24,20 @@ interface Props {
   data: Maalepunkt[];
   handleEdit: ({}) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
 }
 
-export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, canEdit}: Props) {
-  const theme = useTheme();
+export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
+  const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const org_id = authStore((store) => store.org_id);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
+
+  //   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 
   const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
     () => [
@@ -43,55 +48,46 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
             <br />
             <b>Slut: </b> {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
           </Typography>
-          //     <Typography sx={{display: 'inline', justifySelf: 'flex-end'}}>
-          //     {convertDate(row.startdate)} -{' '}
-          //     {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
-          //   </Typography>
         ),
-        id: 'startdate',
+        id: 'date',
         header: 'Dato',
         enableHide: false,
       },
       {
-        accessorFn: (row) => row.elevation + ' m',
-        header: 'Pejling',
+        accessorFn: (row) => limitDecimalNumbers(row.elevation),
+        header: 'Målepunktskote [m]',
         id: 'elevation',
+      },
+      {
+        accessorKey: 'organisationname',
+        header: 'Organisation',
+        Cell: ({row}) => (
+          <Typography>
+            {row.original.organisationid === org_id ? row.original.organisationname : '-'}
+          </Typography>
+        ),
       },
       {
         header: 'Beskrivelse',
         accessorKey: 'mp_description',
+        Cell: ({row}) => <Typography>{row.getValue('mp_description')}</Typography>,
       },
     ],
     []
   );
 
-  const options = {
-    renderRowActions: ({row, table}: any) =>
-      RenderActions({handleEdit, onDeleteBtnClick, canEdit}, {row, table}),
-    muiTablePaperProps: {
-      sx: {
-        boxShadow: '1',
-        p: 0,
-        margin: 'auto',
-      },
-    },
-    muiTableBodyRowProps: {
-      sx: {
-        '&:hover': {
-          td: {
-            '&:after': {
-              backgroundColor: 'transparent',
-            },
-          },
-        },
-      },
-    },
-    muiPaginationProps: {
-      showRowsPerPage: false,
-    },
-    initialState: {
-      density: 'comfortable',
-    },
+  const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+    renderRowActions: ({row}) => (
+      <RenderActions
+        handleEdit={() => {
+          handleEdit(row.original);
+        }}
+        onDeleteBtnClick={() => {
+          onDeleteBtnClick(row.original.gid);
+        }}
+        canEdit={row.original.organisationid == org_id}
+      />
+    ),
   };
 
   return (
@@ -102,7 +98,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <FormTableComponent columns={columns} data={data} options={options} />
+      <FormTableComponent columns={columns} data={data} {...options} />
     </>
   );
 }

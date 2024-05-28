@@ -1,4 +1,4 @@
-import {Grid} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useState} from 'react';
@@ -20,18 +20,6 @@ import ImageViewer from '~/components/ImageViewer';
 // };
 
 function StationImages(props) {
-  // const [openCamera, setOpenCamera] = useState(false);
-  // const [dataUri, setdataUri] = useState('');
-  // const [openSave, setOpenSave] = useState(false);
-
-  // const [activeImage, setActiveImage] = useState({
-  //   gid: -1,
-  //   loc_id: props.locationId,
-  //   comment: '',
-  //   public: false,
-  //   date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
-  // });
-
   const queryClient = useQueryClient();
 
   const {data: images} = useQuery({
@@ -44,81 +32,20 @@ function StationImages(props) {
 
   const {del: deleteImage} = useImageUpload('station');
 
-  // const handleFileRead = async (event) => {
-  //   const file = event.target.files[0];
-  //   const base64 = await convertBase64(file);
-  //   handleSetDataURI(base64);
-  // };
-
-  // const handleSetDataURI = (datauri) => {
-  //   setdataUri(datauri);
-  //   setActiveImage({
-  //     gid: -1,
-  //     loc_id: props.locationId,
-  //     comment: '',
-  //     public: false,
-  //     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
-  //   });
-  //   setOpenSave(true);
-  // };
-
-  // const changeActiveImageData = (field, value) => {
-  //   setActiveImage({
-  //     ...activeImage,
-  //     [field]: value,
-  //   });
-  // };
-
   const handleEdit = (image) => {
     props.setActiveImage(image);
     props.setOpenSave(true);
-    props.setFormToShow('CAMERA')
+    props.setShowForm(true);
   };
 
   return (
-    <div>
-      {/* <SaveImageDialog
-        activeImage={activeImage}
-        changeData={changeActiveImageData}
-        id={props.locationId}
-        type={'station'}
-        open={openSave}
-        dataUri={dataUri}
-        handleCloseSave={() => setOpenSave(false)}
-      /> */}
+    <Box sx={{marginBottom: 1, marginTop: 1}}>
       <Grid container spacing={3} justifyContent="center">
-        {/* <Grid item>
-          <label htmlFor="btn-upload">
-            <input
-              id="btn-upload"
-              name="btn-upload"
-              style={{
-                display: 'none',
-              }}
-              type="file"
-              onChange={(event) => handleFileRead(event)}
-            />
-            <Button
-              color="primary"
-              variant="contained"
-              component="span"
-              startIcon={<PhotoCameraRounded />}
-            >
-              Tag billede / Upload fil
-            </Button>
-          </label>
-        </Grid> */}
         <Grid item xs={12} sm={12}>
-          <ImageViewer
-            // handleDelete={handleDelete}
-            deleteMutation={deleteImage}
-            handleEdit={handleEdit}
-            images={images}
-          />
-
+          <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />
         </Grid>
       </Grid>
-    </div>
+    </Box>
   );
 }
 

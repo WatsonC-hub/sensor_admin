@@ -40,7 +40,14 @@ import SwiperInstance from './SwiperInstance';
 import {Tabs} from '@mui/material';
 import TabPanel from '../Overview/TabPanel';
 import FabWrapper from '~/components/FabWrapper';
-import {AddCircle} from '@mui/icons-material';
+import {
+  AddCircle,
+  BuildRounded,
+  LocationOnRounded,
+  SettingsPhoneRounded,
+  ShowChartRounded,
+  StraightenRounded,
+} from '@mui/icons-material';
 import ReferenceForm from '../Stamdata/components/ReferenceForm';
 import KontaktForm from '../Stamdata/components/KontaktForm';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -172,12 +179,11 @@ const UdstyrReplace = ({stationId}) => {
             );
           })}
         </Select>
-      </Grid>
-      <Grid item xs={12} sm={6}>
         {moment(data?.[0].slutdato) > moment(new Date()) ? (
           <Button
             btType="primary"
             color="secondary"
+            sx={{marginLeft: 1}}
             onClick={() => {
               setOpenDialog(true);
             }}
@@ -222,7 +228,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
   ]);
 
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
   const [tabValue, setTabValue] = useSearchParam('tab');
 
@@ -334,26 +340,67 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
             '& .MuiTab-root': {
               height: '48px',
               minHeight: '48px',
+              marginTop: 1,
             },
           }}
         >
-          <Tab value="0" label="Udstyr" />
-          <Tab value="1" label="Lokation" />
-          <Tab value="2" label="Tidsserie" />
-          <Tab value="3" label="Reference" />
-          <Tab value="4" label="Kontakt" />
+          <Tab
+            value="0"
+            label={
+              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                <LocationOnRounded />
+                <Typography textTransform={'capitalize'}>Lokalitet</Typography>
+              </Box>
+            }
+          />
+          <Tab
+            value="1"
+            label={
+              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                <ShowChartRounded />
+                <Typography textTransform={'capitalize'}>Tidsserie</Typography>
+              </Box>
+            }
+          />
+          <Tab
+            value="2"
+            label={
+              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                <BuildRounded />
+                <Typography textTransform={'capitalize'}>Udstyr</Typography>
+              </Box>
+            }
+          />
+          <Tab
+            value="3"
+            label={
+              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                <StraightenRounded sx={{transform: 'rotate(90deg)'}} />
+                <Typography textTransform={'capitalize'}>Reference</Typography>
+              </Box>
+            }
+          />
+          <Tab
+            value="4"
+            label={
+              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
+                <SettingsPhoneRounded />
+                <Typography textTransform={'capitalize'}>Kontakt</Typography>
+              </Box>
+            }
+          />
         </Tabs>
         <Divider />
 
-        <TabPanel value={tabValue} index="0">
-          <UdstyrReplace stationId={ts_id} />
-          <UnitForm mode="edit" />
-        </TabPanel>
-        <TabPanel value={tabValue} index={'1'}>
+        <TabPanel value={tabValue} index={'0'}>
           <LocationForm mode="edit" />
         </TabPanel>
-        <TabPanel value={tabValue} index={'2'}>
+        <TabPanel value={tabValue} index={'1'}>
           <TimeseriesForm />
+        </TabPanel>
+        <TabPanel value={tabValue} index="2">
+          <UdstyrReplace stationId={ts_id} />
+          <UnitForm mode="edit" />
         </TabPanel>
         <TabPanel value={tabValue} index={'3'}>
           <FabWrapper
