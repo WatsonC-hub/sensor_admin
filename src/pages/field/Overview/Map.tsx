@@ -6,6 +6,7 @@ import {
   IconButton,
   AutocompleteChangeReason,
   AutocompleteInputChangeReason,
+  SwipeableDrawer,
 } from '@mui/material';
 // import Autocomplete from '@mui/material/Autocomplete';
 // import Box from '@mui/material/Box';
@@ -26,6 +27,10 @@ import {authStore} from '../../../state/store';
 import {postElasticSearch} from '../boreholeAPI';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
+import DrawerComponent from './components/DrawerComponent';
+import SensorContent from './components/SensorContent';
+import LegendContent from './components/LegendContent';
+import BoreholeContent from './components/BoreholeContent';
 
 const utm = new utmObj();
 
@@ -36,7 +41,7 @@ const mapFilterAtom = atom({});
 
 const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;
 
-const boreholeColors = {
+const boreholeColors: Record<number, string> = {
   1: '#66bb6a',
   2: '#FFFF00',
   3: '#FF6C00',
@@ -61,6 +66,34 @@ interface BoreholeData {
   status: number[];
 }
 
+declare module 'leaflet' {
+  interface CircleMarkerOptions {
+    contextmenu?: boolean;
+    title?: string;
+    data?: SensorData;
+  }
+
+  interface MarkerOptions {
+    contextmenu?: boolean;
+    title?: string;
+    data?: BoreholeData;
+  }
+
+  interface MapOptions {
+    contextmenu?: boolean;
+    contextmenuItems?: any[];
+    contextmenuWidth?: number;
+  }
+
+  interface Popup {
+    _source: Marker | CircleMarker;
+  }
+
+  interface LeafletMouseEvent {
+    sourceTarget: Marker | CircleMarker;
+  }
+}
+
 interface LocItems {
   name: string;
   sensor: boolean;
@@ -82,6 +115,9 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
   const [pan, setPan] = useAtom(panAtom);
   const [typeAhead, setTypeAhead] = useAtom(typeAheadAtom);
   const [mapFilter, setMapFilter] = useAtom(mapFilterAtom);
+  const [selectedMarker, setSelectedMarker] = useState<
+    SensorData | BoreholeData | null | undefined
+  >(null);
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -136,7 +172,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
       zoom: 7,
       layers: [outdormapbox],
       tap: false,
-      // @ts-ignore
       contextmenu: true,
       contextmenuWidth: 140,
       contextmenuItems: [
@@ -227,13 +262,32 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
       setPan(map.getCenter());
     });
 
+    map.on('click', function (e) {
+      console.log('Map click', e.latlng);
+      setSelectedMarker(null);
+    });
+
+    // map.on('popupopen', function (e) {
+    //   console.log('Popup open', e.popup._source.options.data);
+    // });
+
+    // map.on('popupclose', function (e) {
+    //   console.log('Popup close', e.popup._source.options.data);
+    // });
+
     return map;
   };
 
   useEffect(() => {
     mapRef.current = renderMap();
     layerRef.current = L.featureGroup().addTo(mapRef.current);
-    layerRef.current.clearLayers();
+
+    layerRef.current.on('click', function (e) {
+      L.DomEvent.stopPropagation(e);
+      console.log('Layer click', e);
+      setSelectedMarker(e.sourceTarget.options.data);
+    });
+
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
@@ -265,7 +319,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           }
         });
 
-        const point = [element.latitude, element.longitude];
+        const point: L.LatLngExpression = [element.latitude, element.longitude];
 
         const maxStatus = Math.max(...element.status);
 
@@ -278,37 +332,46 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
 
         const marker = L.marker(point, {
           icon: icon,
+          interactive: true,
           title: element.boreholeno,
+          data: element,
           contextmenu: true,
         });
 
-        let popupContent = L.DomUtil.create('div', 'content');
+        marker.on('click', function (e) {
+          setSelectedMarker(e.target.options.data);
+        });
 
-        // popupContent.style.backgroundColor = '#fff'; // Background color
-        // popupContent.style.padding = '10px'; // Padding
-        // popupContent.style.border = '1px solid #ccc'; // Border
-        // popupContent.style.borderRadius = '5px'; // Border radius
-        // popupContent.style.textAlign = 'center'; // Text alignment
+        // let popupContent = L.DomUtil.create('div', 'content');
 
-        popupContent.innerHTML =
-          '<center><b>' +
-          `<b style="color:#10ae8c;">${element.boreholeno}</b>` +
-          '</b><br>Seneste kontrolmåling(er):<br>' +
-          content +
-          '<a>Se graf</a>' +
-          '</center>';
+        // // popupContent.style.backgroundColor = '#fff'; // Background color
+        // // popupContent.style.padding = '10px'; // Padding
+        // // popupContent.style.border = '1px solid #ccc'; // Border
+        // // popupContent.style.borderRadius = '5px'; // Border radius
+        // // popupContent.style.textAlign = 'center'; // Text alignment
 
-        let popup = L.popup().setContent(popupContent);
-        marker.bindPopup(popup);
-        L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
+        // popupContent.innerHTML =
+        //   '<center><b>' +
+        //   `<b style="color:#10ae8c;">${element.boreholeno}</b>` +
+        //   '</b><br>Seneste kontrolmåling(er):<br>' +
+        //   content +
+        //   '<a>Se graf</a>' +
+        //   '</center>';
 
-        marker.addTo(layerRef.current);
+        // let popup = L.popup().setContent(popupContent);
+        // marker.bindPopup(popup);
+        // L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
+
+        if (layerRef.current) {
+          marker.addTo(layerRef.current);
+        }
       });
 
       data?.forEach((element) => {
-        const point = [element.lat, element.long];
+        const point: L.LatLngExpression = [element.lat, element.long];
         const marker = L.circleMarker(point, {
           // icon: element.status ? stationIcon : inactiveIcon,
+          interactive: true,
           radius: 8,
           weight: 1,
           fillOpacity: 0.8,
@@ -316,36 +379,43 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           color: '#000000',
           fillColor: element.status ? '#3388ff' : '#C0C0C0',
           title: element.locname,
+          data: element,
           contextmenu: true,
         });
-        let popupContent = L.DomUtil.create('div', 'content');
 
-        if (
-          element.mouseover == null ||
-          element.mouseover == '' ||
-          element.mouseover == '<p></p>'
-        ) {
-          popupContent.innerHTML =
-            `<b style="color:#10ae8c;">${element.locname}</b>` + '</p>' + '<a>Se graf</a>';
-        } else {
-          popupContent.innerHTML =
-            element.mouseover.split('<b style="color:#10ae8c;">-----------</b>')[0] +
-            '</p>' +
-            '<a>Se graf</a>';
+        marker.on('click', function (e) {
+          setSelectedMarker(e.target.options.data);
+        });
+
+        // let popupContent = L.DomUtil.create('div', 'content');
+        // if (
+        //   element.mouseover == null ||
+        //   element.mouseover == '' ||
+        //   element.mouseover == '<p></p>'
+        // ) {
+        //   popupContent.innerHTML =
+        //     `<b style="color:#10ae8c;">${element.locname}</b>` + '</p>' + '<a>Se graf</a>';
+        // } else {
+        //   popupContent.innerHTML =
+        //     element.mouseover.split('<b style="color:#10ae8c;">-----------</b>')[0] +
+        //     '</p>' +
+        //     '<a>Se graf</a>';
+        // }
+
+        // let popup = L.popup().setContent(popupContent);
+        // marker.bindPopup(popup);
+        // L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
+
+        if (layerRef.current) {
+          marker.addTo(layerRef.current);
         }
-
-        let popup = L.popup().setContent(popupContent);
-        marker.bindPopup(popup);
-        L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
-
-        marker.addTo(layerRef.current);
       });
 
-      if (zoom !== null || pan !== null) {
-        mapRef.current.setView(pan, zoom);
+      if (zoom !== null && pan !== null) {
+        mapRef.current?.setView(pan, zoom);
       } else {
-        if (layerRef.current.getBounds().isValid() && !loading && !boreholeLoading) {
-          mapRef.current.fitBounds(layerRef.current.getBounds());
+        if (layerRef.current?.getBounds().isValid() && !loading && !boreholeLoading) {
+          mapRef.current?.fitBounds(layerRef.current.getBounds());
         }
       }
     }
@@ -364,7 +434,6 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
     if (reason == 'clear') {
       setTypeAhead('');
     }
-    console.log(locItems);
     if (search_string) {
       const filteredSensor = sensorData
         ? sensorData
@@ -401,72 +470,88 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
   };
 
   const handleChange = (e: SyntheticEvent, value: string | LocItems | null) => {
-    if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current != null) {
+    if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
       if (value.sensor) {
-        layerRef.current.getLayers().forEach((layer) => {
-          if (layer.options.title == value.name) {
-            layer.openPopup();
-            mapRef.current.flyTo(layer._latlng, 12);
+        // @ts-ignore
+        const markers: L.Marker[] = layerRef.current.getLayers();
+
+        for (let i = 0; i < markers.length; i++) {
+          if (markers[i].options.title == value.name) {
+            markers[i].openPopup();
+            mapRef.current?.flyTo(markers[i].getLatLng(), 12);
+            break;
           }
-        });
+        }
       } else {
-        apiClient.get(`/sensor_field/jupiter/search/${value.name}`).then((res) => {
-          const element = res.data;
-          let content = '';
-          element.intakeno.forEach((intake, index) => {
-            content += `Indtag ${intake} : ${
-              element.measurement[index]
-                ? element.measurement[index] + ' m (DVR 90)<br>'
-                : 'Ingen måling<br>'
-            }`;
-          });
+        apiClient
+          .get<{
+            boreholeno: string;
+            latitude: number;
+            longitude: number;
+            intakeno: number[];
+            measurement: number[];
+            status: number[];
+          }>(`/sensor_field/jupiter/search/${value.name}`)
+          .then((res) => {
+            const element = res.data;
+            let content = '';
+            element.intakeno.forEach((intake, index) => {
+              content += `Indtag ${intake} : ${
+                element.measurement[index]
+                  ? element.measurement[index] + ' m (DVR 90)<br>'
+                  : 'Ingen måling<br>'
+              }`;
+            });
 
-          element.status.forEach((status, index) => {
-            if (status == 2) {
-              content += `<b>Obs</b> Indtag ${element.intakeno[index]} skal snart pejles.<br>`;
+            element.status.forEach((status, index) => {
+              if (status == 2) {
+                content += `<b>Obs</b> Indtag ${element.intakeno[index]} skal snart pejles.<br>`;
+              }
+              if (status == 3) {
+                content += `<b>Obs pejling er overskredet for Indtag ${element.intakeno[index]}!</b><br>`;
+              }
+            });
+
+            const point: L.LatLngExpression = [element.latitude, element.longitude];
+
+            const maxStatus = Math.max(...element.status);
+
+            const icon = L.divIcon({
+              className: 'custom-div-icon',
+              html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus]}),
+              iconSize: [24, 24],
+              iconAnchor: [12, 24],
+            });
+
+            const marker = L.marker(point, {
+              icon: icon,
+              title: element.boreholeno,
+              // @ts-ignore
+              contextmenu: true,
+            });
+
+            let popupContent = L.DomUtil.create('div', 'content');
+
+            popupContent.innerHTML =
+              '<center><b>' +
+              `<b style="color:#10ae8c;">${element.boreholeno}</b>` +
+              '</b><br>Seneste kontrolmåling(er):<br>' +
+              content +
+              '<a>Se graf</a>' +
+              '</center>';
+
+            let popup = L.popup().setContent(popupContent);
+            marker.bindPopup(popup);
+            L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
+
+            marker.on('add', function () {
+              mapRef.current?.flyTo(point, 12);
+              marker.openPopup();
+            });
+            if (layerRef.current) {
+              marker.addTo(layerRef.current);
             }
-            if (status == 3) {
-              content += `<b>Obs pejling er overskredet for Indtag ${element.intakeno[index]}!</b><br>`;
-            }
           });
-
-          const point = [element.latitude, element.longitude];
-
-          const maxStatus = Math.max(...element.status);
-
-          const icon = L.divIcon({
-            className: 'custom-div-icon',
-            html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus]}),
-            iconSize: [24, 24],
-            iconAnchor: [12, 24],
-          });
-
-          const marker = L.marker(point, {
-            icon: icon,
-            title: element.boreholeno,
-            contextmenu: true,
-          });
-
-          let popupContent = L.DomUtil.create('div', 'content');
-
-          popupContent.innerHTML =
-            '<center><b>' +
-            `<b style="color:#10ae8c;">${element.boreholeno}</b>` +
-            '</b><br>Seneste kontrolmåling(er):<br>' +
-            content +
-            '<a>Se graf</a>' +
-            '</center>';
-
-          let popup = L.popup().setContent(popupContent);
-          marker.bindPopup(popup);
-          L.DomEvent.addListener(popupContent, 'click', onPopupClickHandler(element));
-
-          marker.on('add', function () {
-            mapRef.current.flyTo(point, 12);
-            marker.openPopup();
-          });
-          marker.addTo(layerRef.current);
-        });
       }
     }
   };
@@ -538,6 +623,18 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           //'@media (min-width:1280px)': {height: '90vh', }
         }}
       ></Box>
+      <DrawerComponent
+        // open={selectedMarker !== null}
+        // setOpen={}
+        enableFull={true}
+        triggerCloseDrawer={selectedMarker === null}
+        triggerOpenDrawer={selectedMarker !== null}
+        header={selectedMarker?.locname || selectedMarker?.boreholeno || 'Signaturforklaring'}
+      >
+        {selectedMarker && 'locid' in selectedMarker && <SensorContent />}
+        {selectedMarker == null && <LegendContent />}
+        {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && <BoreholeContent />}
+      </DrawerComponent>
     </>
   );
 }
