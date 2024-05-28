@@ -338,114 +338,123 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
           aria-label="simple tabs example"
           sx={{
             '& .MuiTab-root': {
-              height: '48px',
-              minHeight: '48px',
-              marginTop: 1,
+              height: '50px',
+              minHeight: '50px',
             },
+            marginTop: 1,
           }}
         >
           <Tab
             value="0"
+            icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
-              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                <LocationOnRounded />
-                <Typography textTransform={'capitalize'}>Lokalitet</Typography>
-              </Box>
+              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+                Lokalitet
+              </Typography>
             }
           />
           <Tab
             value="1"
+            icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
-              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                <ShowChartRounded />
-                <Typography textTransform={'capitalize'}>Tidsserie</Typography>
-              </Box>
+              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+                Tidsserie
+              </Typography>
             }
           />
           <Tab
             value="2"
+            icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
-              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                <BuildRounded />
-                <Typography textTransform={'capitalize'}>Udstyr</Typography>
-              </Box>
+              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+                Udstyr
+              </Typography>
             }
           />
           <Tab
             value="3"
+            icon={
+              <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
+            }
             label={
-              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                <StraightenRounded sx={{transform: 'rotate(90deg)'}} />
-                <Typography textTransform={'capitalize'}>Reference</Typography>
-              </Box>
+              <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
+                Reference
+              </Typography>
             }
           />
           <Tab
             value="4"
+            icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
-              <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                <SettingsPhoneRounded />
-                <Typography textTransform={'capitalize'}>Kontakt</Typography>
-              </Box>
+              <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
+                Kontakt
+              </Typography>
             }
           />
         </Tabs>
         <Divider />
-
-        <TabPanel value={tabValue} index={'0'}>
-          <LocationForm mode="edit" />
-        </TabPanel>
-        <TabPanel value={tabValue} index={'1'}>
-          <TimeseriesForm />
-        </TabPanel>
-        <TabPanel value={tabValue} index="2">
-          <UdstyrReplace stationId={ts_id} />
-          <UnitForm mode="edit" />
-        </TabPanel>
-        <TabPanel value={tabValue} index={'3'}>
-          <FabWrapper
-            icon={<AddCircle />}
-            text="Tilføj målepunkt"
-            onClick={() => {
-              setMode('add');
-            }}
-            visible={mode === 'view' ? 'visible' : 'hidden'}
-          >
-            <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
-          </FabWrapper>
-        </TabPanel>
-        <TabPanel value={tabValue} index={'4'}>
-          Kontaktinformation
-        </TabPanel>
-        {mode !== 'edit' && tabValue !== '3' && (
-          <Grid
-            container
-            alignItems="center"
-            justifyContent="right"
-            sx={{
-              marginTop: 2,
-              pl: 2,
-              pr: 2,
-            }}
-          >
-            <Grid item xs={12} sm={2}>
-              <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-                <Button btType="tertiary" onClick={resetFormData}>
-                  Annuller
-                </Button>
-                <Button
-                  autoFocus
-                  btType="primary"
-                  startIcon={<SaveIcon />}
-                  onClick={formMethods.handleSubmit(handleUpdate, (values) => console.log(values))}
-                  disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}
-                >
-                  Gem
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        )}
+        <Box>
+          <TabPanel value={tabValue} index={'0'}>
+            <LocationForm mode="edit" />
+          </TabPanel>
+          <TabPanel value={tabValue} index={'1'}>
+            <TimeseriesForm />
+          </TabPanel>
+          <TabPanel value={tabValue} index="2">
+            <UdstyrReplace stationId={ts_id} />
+            <UnitForm mode="edit" />
+          </TabPanel>
+          <TabPanel value={tabValue} index={'3'}>
+            <FabWrapper
+              icon={<AddCircle />}
+              text="Tilføj målepunkt"
+              onClick={() => {
+                setMode('add');
+              }}
+              visible={mode === 'view' ? 'visible' : 'hidden'}
+            >
+              <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
+            </FabWrapper>
+          </TabPanel>
+          <TabPanel value={tabValue} index={'4'}>
+            Kontaktinformation
+          </TabPanel>
+          {mode !== 'edit' && tabValue !== '3' && (
+            <footer style={{position: 'sticky', bottom: 60, float: 'right'}}>
+              <Grid
+                container
+                alignItems="center"
+                justifyContent="right"
+                sx={{
+                  marginTop: 2,
+                  pl: 2,
+                  pr: 2,
+                }}
+              >
+                <Grid item xs={12} sm={12}>
+                  <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+                    <Button btType="tertiary" onClick={resetFormData}>
+                      Annuller
+                    </Button>
+                    <Button
+                      autoFocus
+                      btType="primary"
+                      startIcon={<SaveIcon />}
+                      onClick={formMethods.handleSubmit(handleUpdate, (values) =>
+                        console.log(values)
+                      )}
+                      disabled={
+                        formMethods.formState.isSubmitting || !formMethods.formState.isDirty
+                      }
+                    >
+                      Gem
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            </footer>
+          )}
+        </Box>
         <DevTool control={formMethods.control} />
       </Box>
     </FormProvider>
