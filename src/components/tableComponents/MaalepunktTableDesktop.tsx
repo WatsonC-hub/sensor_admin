@@ -42,9 +42,8 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
       {
         accessorFn: (row) => (
           <Typography sx={{display: 'inline', justifySelf: 'flex-end'}}>
-            <b>Start: </b> {convertDate(row.startdate)}
-            <br />
-            <b>Slut: </b> {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
+            {convertDate(row.startdate)} {' - '}
+            {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
           </Typography>
         ),
         id: 'startdate',
