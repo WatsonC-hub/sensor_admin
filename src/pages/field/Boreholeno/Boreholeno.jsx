@@ -1,4 +1,4 @@
-import {Box, Grid} from '@mui/material';
+import {Box, Divider, Grid} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
@@ -322,6 +322,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             measurements={control}
             dynamicMeasurement={pageToShow === null ? undefined : dynamic}
           />
+          <Divider />
         </Box>
       )}
       <Box sx={{maxWidth: '1380px', margin: 'auto'}}>

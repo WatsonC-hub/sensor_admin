@@ -30,13 +30,13 @@ export default function ActionArea({
   };
   const navigationItems = [
     {
-      text: 'pejling',
+      text: 'Pejling',
       value: null,
       icon: <AddCircle />,
       color: navIconStyle(pageToShow === null),
     },
     {
-      text: 'tilsyn',
+      text: 'Tilsyn',
       value: 'TILSYN',
       icon: <PlaylistAddCheck />,
       color: navIconStyle(pageToShow === 'TILSYN'),
@@ -49,7 +49,7 @@ export default function ActionArea({
       color: navIconStyle(pageToShow === 'billeder'),
     },
     {
-      text: 'udstyr',
+      text: 'Udstyr',
       value: 'STAMDATA',
       icon: <ConstructionRounded />,
       color: navIconStyle(pageToShow === 'STAMDATA'),
