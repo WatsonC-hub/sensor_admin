@@ -1,28 +1,8 @@
-import {useQuery} from '@tanstack/react-query';
+import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
+import {reverse, sortBy, uniqBy} from 'lodash';
 
-const exampleNotification = {
-  locname: 'Robert Andersen ',
-  locid: 9475,
-  stationname: 'Robert Andersen  -  Vandstand',
-  stationid: 12195,
-  x: 500518,
-  y: 6090724,
-  longitude: 9.008090378521734,
-  latitude: 54.963448062160616,
-  terminalid: 'NB1020',
-  opgave: 'Plateau',
-  dato: '2024-05-23T08:15:04+02:00',
-  color: '#334FFF',
-  flag: 0,
-  notification_id: 12,
-  status: null,
-  enddate: null,
-  projectno: '23.0042',
-  is_customer_service: true,
-};
-
-interface Notification {
+export interface Notification {
   locname: string;
   locid: number;
   stationname: string;
@@ -41,9 +21,21 @@ interface Notification {
   enddate: string | null;
   projectno: string;
   is_customer_service: boolean;
+  active: boolean;
 }
 
-export const useNotificationOverview = () => {
+export interface NotificationMap extends Notification {
+  otherNotifications: Notification[];
+}
+
+type NotificationOverviewOptions = Partial<
+  Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
+>;
+
+export const useNotificationOverview = (
+  options?: NotificationOverviewOptions,
+  returnMapData?: boolean
+) => {
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async ({signal}) => {
@@ -55,6 +47,33 @@ export const useNotificationOverview = () => {
     refetchOnReconnect: false,
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
+    ...options,
   });
   return query;
+};
+
+export const useNotificationOverviewMap = (
+  options?: NotificationOverviewOptions
+): UseQueryResult<NotificationMap[], Error> => {
+  // @ts-ignore
+  return useNotificationOverview({
+    ...options,
+    select: (data) => {
+      const sorted = reverse(
+        sortBy(data, [(item) => (item.status ? item.status : ''), (item) => item.flag])
+      );
+
+      const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
+        const existing = acc.find((accItem) => accItem.stationid === item.stationid);
+        if (existing) {
+          existing.otherNotifications.push(item);
+        } else {
+          acc.push({...item, otherNotifications: []});
+        }
+        return acc;
+      }, []);
+
+      return grouped;
+    },
+  });
 };

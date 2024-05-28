@@ -1,4 +1,4 @@
-import React from 'react';
+import {useContext} from 'react';
 
 const LegendContent = () => {
   return <div>LegendContent</div>;

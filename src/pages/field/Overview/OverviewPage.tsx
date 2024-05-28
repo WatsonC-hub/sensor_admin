@@ -18,6 +18,10 @@ import ScrollTop from '../../../components/ScrollTop';
 import Map from './Map';
 import BoreholeTable from './components/BoreholeTable';
 import StationTable from './components/StationTable';
+import {
+  useNotificationOverview,
+  useNotificationOverviewMap,
+} from '~/hooks/query/useNotificationOverview';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -60,17 +64,8 @@ export default function OverviewPage() {
     enabled: boreholeAccess,
   });
 
-  const {data: mapData, isLoading: mapLoading} = useQuery({
-    queryKey: ['map_data'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/map_data`);
-      return data;
-    },
+  const {data: mapData, isLoading: mapLoading} = useNotificationOverviewMap({
     enabled: iotAccess,
-    refetchInterval: 10000,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
   });
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {

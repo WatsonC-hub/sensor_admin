@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, createContext} from 'react';
 import {Typography, Box, Drawer, IconButton} from '@mui/material';
 import {Global} from '@emotion/react';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
-
+import {DrawerContext} from '~/state/contexts';
 import CssBaseline from '@mui/material/CssBaseline';
 
 const drawerBleeding = 56;
@@ -54,7 +54,8 @@ const DrawerComponent = ({
           '.MuiDrawer-root > .MuiPaper-root': {
             height: `calc(${open == 'full' ? '100%' : '30%'} - ${drawerBleeding}px)`,
             overflow: 'visible',
-            transition: 'height 0.3s',
+            // transition that opens the drawer
+            transition: 'height 0.2s ease-in-out',
           },
         }}
       />
@@ -80,12 +81,14 @@ const DrawerComponent = ({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
+            height: drawerBleeding,
+            pl: 2,
           }}
         >
-          <Typography variant="body1" sx={{p: 2}}>
+          <Typography variant="body1" sx={{p: 0}}>
             {header}
           </Typography>
-          <Box>
+          <Box display="flex">
             <IconButton
               onClick={() => setOpen((prev) => (prev === 'closed' ? 'half' : 'closed'))}
               color="primary"
@@ -106,11 +109,9 @@ const DrawerComponent = ({
           sx={{
             px: 2,
             pb: 2,
-            height: '100%',
-            overflow: 'auto',
           }}
         >
-          {children}
+          <DrawerContext.Provider value={open}>{children}</DrawerContext.Provider>
         </Box>
       </Drawer>
     </>

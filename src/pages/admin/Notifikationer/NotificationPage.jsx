@@ -33,7 +33,7 @@ const getNavigation = (item) => {
   }
 };
 
-const colors = ['#FF0000', '#FF6C00', '#FFFF00', '#00FF00', '#9F2B68', '#334FFF'];
+const colors = ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF'];
 const tasktype = ['Kritisk', 'Middel', 'Lav', 'OK', 'Kvalitetssikring', 'Plateau'];
 const selectFiltersAtom = atom(colors);
 const lassoFilterAtom = atom(new Set());
@@ -66,7 +66,9 @@ const NotificationPage = () => {
   const {isTouch} = useBreakpoints();
 
   const queryClient = useQueryClient();
-  const {data, isLoading} = useNotificationOverview();
+  const {data, isLoading} = useNotificationOverview({
+    select: (data) => data.filter((item) => item.active === true),
+  });
 
   const statusMutate = useMutation({
     mutationFn: async (data) => {

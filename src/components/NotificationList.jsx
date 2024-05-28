@@ -200,7 +200,7 @@ const NotificationList = () => {
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                 <ErrorOutlineOutlined
                   sx={{
-                    color: '#FF0000',
+                    color: '#d32f2f',
                   }}
                 />
                 Kritisk
@@ -220,7 +220,7 @@ const NotificationList = () => {
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                 <ErrorOutlineOutlined
                   sx={{
-                    color: '#FFFF00',
+                    color: '#ffb13f',
                   }}
                 />
                 Lav
