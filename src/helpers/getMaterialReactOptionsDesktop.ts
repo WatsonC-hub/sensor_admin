@@ -18,8 +18,8 @@ export const getDefaultMRTOptionsDesktop = <TData extends MRT_RowData>(): Partia
   layoutMode: 'grid',
   displayColumnDefOptions: {
     'mrt-row-actions': {
-      size: 180, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
-      grow: true,
+      size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
+      grow: false,
     },
   },
   muiTableProps: {
@@ -54,11 +54,10 @@ export const getDefaultMRTOptionsDesktop = <TData extends MRT_RowData>(): Partia
   },
   muiTableHeadCellProps: {
     size: 'small',
-    align: 'center',
+    align: 'left',
   },
   muiTableBodyCellProps: {
     size: 'small',
-
-    align: 'center',
+    align: 'left',
   },
 });
