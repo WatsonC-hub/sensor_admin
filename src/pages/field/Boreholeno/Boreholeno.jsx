@@ -334,7 +334,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             resetFormData={() => {
               resetPejlingData();
               setShowForm(null);
-              // setPageToShow('ADDPEJLING');
             }}
             mpData={watlevmp}
             stamdata={stamdata}
@@ -343,7 +342,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             }
           />
         )}
-        {pageToShow === 'MAALEPUNKT' && showForm === true && (
+        {pageToShow === 'MAALEPUNKT' && (
           <>
             <Grid container spacing={2}>
               <Grid
@@ -353,6 +352,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  marginBottom: 1,
                 }}
               >
                 <LastJupiterMP
@@ -364,7 +364,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
                 />
               </Grid>
             </Grid>
-            {addMPOpen && (
+
+            {addMPOpen && showForm === true && (
               <MaalepunktForm
                 formData={mpData}
                 changeFormData={changeMpData}
@@ -374,16 +375,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
                 canEdit={true}
               />
             )}
-            <Box p={2}>
-              <Button
-                btType="primary"
-                onClick={() => {
-                  setAddMPOpen(true);
-                }}
-              >
-                Indberet målepunkt
-              </Button>
-            </Box>
           </>
         )}
         {pageToShow === 'MAALEPUNKT' && (
@@ -392,6 +383,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             text="Tilføj Maalepunkt"
             onClick={() => {
               setShowForm(true);
+              setAddMPOpen(true);
               // setPageToShow(null);
             }}
             visible={showForm !== 'MAALEPUNKT' ? 'visible' : 'hidden'}
