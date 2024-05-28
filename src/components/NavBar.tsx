@@ -24,7 +24,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQueryClient} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
 import moment from 'moment';
-import React, {useContext} from 'react';
+import {useState, ReactNode, useContext, MouseEventHandler} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -37,7 +37,7 @@ import {authStore} from '~/state/store';
 import {apiClient} from '~/apiClient';
 import {MapRounded} from '@mui/icons-material';
 
-const LogOut = ({element: Element}) => {
+const LogOut = ({children}: {children?: ReactNode}) => {
   const [resetState] = authStore((state) => [state.resetState]);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -49,7 +49,18 @@ const LogOut = ({element: Element}) => {
     queryClient.clear();
   };
 
-  return <Box onClick={handleLogout}>{Element}</Box>;
+  return (
+    <Box
+      onClick={handleLogout}
+      sx={{
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      {children}
+    </Box>
+  );
 };
 
 export const HomeButton = () => {
@@ -68,7 +79,7 @@ export const HomeButton = () => {
   );
 };
 
-export const AppBarLayout = ({children}) => {
+export const AppBarLayout = ({children}: {children?: ReactNode}) => {
   return (
     <AppBar position="sticky" enableColorOnDark>
       <Toolbar
@@ -127,11 +138,21 @@ const NavBarNotifications = () => {
   );
 };
 
-export const NavBarMenu = ({highligtFirst, items}) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+export const NavBarMenu = ({
+  highligtFirst,
+  items,
+}: {
+  highligtFirst?: boolean;
+  items?: {
+    title: string;
+    icon: ReactNode;
+    onClick: () => void;
+  }[];
+}) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+    if (event.currentTarget instanceof HTMLElement) setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
@@ -140,9 +161,9 @@ export const NavBarMenu = ({highligtFirst, items}) => {
 
   return (
     <>
-      {highligtFirst && items.length > 0 && (
+      {highligtFirst && items != undefined && items.length > 0 && (
         <Button
-          color="grey"
+          // color="grey"
           variant="contained"
           onClick={items?.[0].onClick}
           startIcon={items?.[0].icon}
@@ -183,16 +204,12 @@ export const NavBarMenu = ({highligtFirst, items}) => {
           ))}
 
         <MenuItem onClick={handleClose}>
-          <LogOut
-            element={
-              <>
-                <ListItemIcon>
-                  <LogoutIcon fontSize="medium" />
-                </ListItemIcon>
-                {'Logout'}
-              </>
-            }
-          />
+          <LogOut>
+            <ListItemIcon>
+              <LogoutIcon fontSize="medium" />
+            </ListItemIcon>
+            {'Logout'}
+          </LogOut>
         </MenuItem>
       </Menu>
     </>
@@ -222,7 +239,7 @@ const GoBack = () => {
   );
 };
 
-const NavBar = ({children}) => {
+const NavBar = ({children}: {children?: ReactNode}) => {
   const [authenticated, iotAccess, adminAccess] = authStore((state) => [
     state.authenticated,
     state.iotAccess,
@@ -310,13 +327,17 @@ const NavBar = ({children}) => {
                   navigate('/admin');
                 },
               },
-              iotAccess && {
-                title: 'Opret station',
-                icon: <AddLocationAltIcon fontSize="medium" />,
-                onClick: () => {
-                  navigate('/field/stamdata');
-                },
-              },
+              ...(iotAccess
+                ? [
+                    {
+                      title: 'Opret station',
+                      icon: <AddLocationAltIcon fontSize="medium" />,
+                      onClick: () => {
+                        navigate('/field/stamdata');
+                      },
+                    },
+                  ]
+                : []),
             ]}
           />
         </Box>
