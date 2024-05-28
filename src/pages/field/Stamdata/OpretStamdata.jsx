@@ -342,47 +342,40 @@ export default function OpretStamdata({setAddStationDisabled}) {
           >
             <Tab
               value="0"
+              icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
-                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                  <LocationOnRounded />
-                  <Typography textTransform={'capitalize'}>Lokalitet</Typography>
-                </Box>
+                <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+                  Lokalitet
+                </Typography>
               }
-              iconPosition="start"
-              icon={errors?.location ? <ErrorOutlineIcon color="error" /> : null}
             />
+
             <Tab
               value="1"
+              icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
-                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                  <SettingsPhoneRounded />
-                  <Typography textTransform={'capitalize'}>Kontakt</Typography>
-                </Box>
+                <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
+                  Kontakt
+                </Typography>
               }
-              iconPosition="start"
             />
             <Tab
               value="2"
-              iconPosition="start"
+              icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
-                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                  <ShowChartRounded />
-                  <Typography textTransform={'capitalize'}>Tidsserie</Typography>
-                </Box>
-              }
-              icon={
-                errors?.timeseries || errors?.watlevmp ? <ErrorOutlineIcon color="error" /> : null
+                <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+                  Tidsserie
+                </Typography>
               }
             />
             <Tab
               value="3"
+              icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
-                <Box display="flex" flexDirection={'column'} alignItems={'center'}>
-                  <BuildRounded />
-                  <Typography textTransform={'capitalize'}>Udstyr</Typography>
-                </Box>
+                <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+                  Udstyr
+                </Typography>
               }
-              icon={errors?.unit ? <ErrorOutlineIcon color="error" /> : null}
             />
           </Tabs>
           <Divider />
@@ -435,45 +428,47 @@ export default function OpretStamdata({setAddStationDisabled}) {
               </Box>
               <UnitForm mode="add" />
             </TabPanel>
-
-            <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-              <Button
-                btType="tertiary"
-                onClick={() => {
-                  navigate('/field');
-                  setAddStationDisabled(false);
-                }}
-              >
-                Annuller
-              </Button>
-
-              {tabValue < 3 && (
+            <footer style={{position: 'sticky', bottom: 0, float: 'right'}}>
+              <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
                 <Button
-                  btType="primary"
-                  sx={{marginRight: 1}}
-                  endIcon={<ArrowForwardIcon fontSize="small" />}
+                  btType="tertiary"
                   onClick={() => {
-                    setTabValue((parseInt(tabValue) + 1).toString());
+                    navigate('/field');
+                    setAddStationDisabled(false);
                   }}
                 >
-                  <Box display="flex" alignItems="center">
-                    Videre
-                  </Box>
+                  Annuller
                 </Button>
-              )}
-              {tabValue == 3 && (
-                <Button
-                  btType="primary"
-                  onClick={handleSubmit(handleOpret, handleDebug)}
-                  startIcon={<SaveIcon />}
-                  sx={{marginRight: 1}}
-                  disabled={isSubmitting}
-                >
-                  Gem
-                </Button>
-              )}
-            </Box>
+
+                {tabValue < 3 && (
+                  <Button
+                    btType="primary"
+                    sx={{marginRight: 1}}
+                    endIcon={<ArrowForwardIcon fontSize="small" />}
+                    onClick={() => {
+                      setTabValue((parseInt(tabValue) + 1).toString());
+                    }}
+                  >
+                    <Box display="flex" alignItems="center">
+                      Videre
+                    </Box>
+                  </Button>
+                )}
+                {tabValue == 3 && (
+                  <Button
+                    btType="primary"
+                    onClick={handleSubmit(handleOpret, handleDebug)}
+                    startIcon={<SaveIcon />}
+                    sx={{marginRight: 1}}
+                    disabled={isSubmitting}
+                  >
+                    Gem
+                  </Button>
+                )}
+              </Box>
+            </footer>
           </Box>
+
           <AddUnitForm
             udstyrDialogOpen={udstyrDialogOpen}
             setUdstyrDialogOpen={setUdstyrDialogOpen}
