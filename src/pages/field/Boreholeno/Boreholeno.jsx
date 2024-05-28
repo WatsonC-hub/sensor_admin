@@ -315,7 +315,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   return (
     <>
       {pageToShow !== 'billeder' && pageToShow !== 'STAMDATA' && (
-        <Box sx={{marginBottom: 5, marginTop: 5}}>
+        <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
             boreholeno={boreholeno}
             intakeno={intakeno}
