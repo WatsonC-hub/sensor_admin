@@ -15,6 +15,7 @@ import Button from '~/components/Button';
 import Delete from '@mui/icons-material/Delete';
 import {Box} from '@mui/material';
 import {Edit} from '@mui/icons-material';
+import {authStore} from '~/state/store';
 
 type ImageCardProps = {
   image: Image;
@@ -27,13 +28,25 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
 
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}&height=${isMobile ? 300 : 640}`;
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [org_id] = authStore((state) => [state.org_id]);
+
+  const isBorehole =
+    image.boreholeno !== undefined &&
+    image.organisationid !== null &&
+    image.organisationid === org_id;
 
   function handleDelete() {
-    toast.promise(() => deleteMutation.mutateAsync({path: `${image.loc_id}/${image.gid}`}), {
-      pending: 'Sletter billedet',
-      success: 'Billedet blev slettet',
-      error: 'Der skete en fejl',
-    });
+    toast.promise(
+      () =>
+        deleteMutation.mutateAsync({
+          path: `${image.loc_id !== null ? image.loc_id : image.boreholeno}/${image.gid}`,
+        }),
+      {
+        pending: 'Sletter billedet',
+        success: 'Billedet blev slettet',
+        error: 'Der skete en fejl',
+      }
+    );
   }
 
   return (
@@ -42,6 +55,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         margin: 'auto',
         display: 'flex',
         flexDirection: 'column ',
+        borderRadius: 5,
       }}
     >
       <DeleteAlert
@@ -79,38 +93,40 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
           {image.comment}
         </Typography>
       </CardContent>
-      <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
-        <Button
-          disabled={deleteMutation.isPending}
-          onClick={() => setDialogOpen(true)}
-          size="small"
-          btType="tertiary"
-        >
-          {deleteMutation.isPending ? (
-            <CircularProgress />
-          ) : (
+      {(image.loc_id !== undefined || isBorehole) && (
+        <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
+          <Button
+            disabled={deleteMutation.isPending}
+            onClick={() => setDialogOpen(true)}
+            size="small"
+            btType="tertiary"
+          >
+            {deleteMutation.isPending ? (
+              <CircularProgress />
+            ) : (
+              <Box display="flex" alignItems="center" gap={1}>
+                <Delete></Delete>
+                <Typography variant="body2" fontSize={14}>
+                  Slet
+                </Typography>
+              </Box>
+            )}
+          </Button>
+          <Button
+            disabled={deleteMutation.isPending}
+            onClick={() => handleEdit(image)}
+            size="small"
+            btType="primary"
+          >
             <Box display="flex" alignItems="center" gap={1}>
-              <Delete></Delete>
+              <Edit />
               <Typography variant="body2" fontSize={14}>
-                Slet
+                Rediger
               </Typography>
             </Box>
-          )}
-        </Button>
-        <Button
-          disabled={deleteMutation.isPending}
-          onClick={() => handleEdit(image)}
-          size="small"
-          btType="primary"
-        >
-          <Box display="flex" alignItems="center" gap={1}>
-            <Edit />
-            <Typography variant="body2" fontSize={14}>
-              Rediger
-            </Typography>
-          </Box>
-        </Button>
-      </CardActions>
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 }
