@@ -17,6 +17,7 @@ import L from 'leaflet';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
+import '~/css/leaflet.css';
 import {useRef, useEffect, useState, SyntheticEvent} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
@@ -35,6 +36,13 @@ import {set} from 'lodash';
 import {Notification, NotificationMap} from '~/hooks/query/useNotificationOverview';
 
 const utm = new utmObj();
+
+let hightlightedMarker: L.CircleMarker | null = null;
+
+const defaultRadius = 8;
+const highlightRadius = 14;
+const zoomThreshold = 14;
+const markerNumThreshold = 10;
 
 const zoomAtom = atom<number | null>(null);
 const panAtom = atom<L.LatLng | null>(null);
@@ -113,6 +121,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
   const navigate = useNavigate();
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.FeatureGroup | null>(null);
+  const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
   const [typeAhead, setTypeAhead] = useAtom(typeAheadAtom);
@@ -250,31 +259,83 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
       })
       .addTo(map);
 
-    map.on('moveend', function () {
-      setZoom(map.getZoom());
-      setPan(map.getCenter());
-    });
-    map.on('zoomend', function () {
-      setZoom(map.getZoom());
-      setPan(map.getCenter());
-    });
+    map.on('moveend', mapEvent);
+    map.on('zoomend', mapEvent);
 
     map.on('click', function (e) {
-      console.log('Map click', e.latlng);
       setSelectedMarker(null);
+      if (hightlightedMarker) {
+        hightlightedMarker.setStyle({stroke: false, radius: defaultRadius});
+        hightlightedMarker = null;
+      }
     });
 
     return map;
   };
 
+  const mapEvent: L.LeafletEventHandlerFn = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    const zoom = map.getZoom();
+    setZoom(zoom);
+    setPan(map.getCenter());
+    const layer = layerRef.current;
+    if (!layer) return;
+    const tooltipLayer = tooltipRef.current;
+    if (!tooltipLayer) return;
+
+    const bounds = map.getBounds();
+
+    let markersInViewport: (L.Marker | L.CircleMarker)[] = [];
+    layer?.eachLayer(function (layer) {
+      if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+        if (bounds.contains(layer.getLatLng())) {
+          markersInViewport.push(layer);
+        }
+      }
+    });
+
+    if (zoom > zoomThreshold || markersInViewport.length < markerNumThreshold) {
+      tooltipLayer.clearLayers();
+
+      markersInViewport.forEach(function (layer) {
+        const tooltip = L.tooltip({
+          opacity: 0.7,
+          className: 'custom-tooltip',
+          permanent: true,
+        })
+          .setLatLng(layer.getLatLng())
+          .setContent(layer.options.title?.toString() || '');
+
+        tooltip.addTo(tooltipLayer);
+      });
+
+      tooltipLayer.addTo(map);
+    } else {
+      map.removeLayer(tooltipLayer);
+    }
+  };
+
   useEffect(() => {
     mapRef.current = renderMap();
     layerRef.current = L.featureGroup().addTo(mapRef.current);
+    tooltipRef.current = L.featureGroup();
 
     layerRef.current.on('click', function (e) {
       L.DomEvent.stopPropagation(e);
-      console.log('Layer click', e);
       setSelectedMarker(e.sourceTarget.options.data);
+      if (hightlightedMarker) {
+        hightlightedMarker.setStyle({stroke: false, radius: 8});
+      }
+      if ('setStyle' in e.sourceTarget) {
+        e.sourceTarget.setStyle({
+          stroke: true,
+          color: 'rgba(10, 100, 200, 1)',
+          weight: (highlightRadius - defaultRadius) / 1,
+          radius: highlightRadius,
+        });
+        hightlightedMarker = e.sourceTarget;
+      }
     });
 
     return () => {
@@ -322,31 +383,31 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
         const marker = L.marker(point, {
           icon: icon,
           interactive: true,
+          riseOnHover: true,
           title: element.boreholeno,
           data: element,
           contextmenu: true,
         });
 
-        marker.on('click', function (e) {
-          setSelectedMarker(e.target.options.data);
+        // const tooltip = L.tooltip({
+        //   opacity: 0.9,
+        // })
+        //   .setLatLng(point)
+        //   .setContent(element.boreholeno);
+
+        marker.bindTooltip(element.boreholeno, {
+          direction: 'top',
+          offset: [0, -10],
         });
+
+        // if (tooltipRef.current) {
+        //   tooltip.addTo(tooltipRef.current);
+        // }
 
         if (layerRef.current) {
           marker.addTo(layerRef.current);
         }
       });
-
-      const groupedData = data?.reduce(
-        (acc, cur) => {
-          if (acc[cur.locname]) {
-            acc[cur.locname].push(cur);
-          } else {
-            acc[cur.locname] = [cur];
-          }
-          return acc;
-        },
-        {} as Record<string, Notification[]>
-      );
 
       data?.forEach((element) => {
         const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
@@ -355,7 +416,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
         const marker = L.circleMarker(point, {
           // icon: element.status ? stationIcon : inactiveIcon,
           interactive: true,
-          radius: 8,
+          radius: defaultRadius,
           weight: 1,
           fillOpacity: 0.8,
           opacity: 0.8,
@@ -366,9 +427,20 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           contextmenu: true,
         });
 
-        marker.on('click', function (e) {
-          setSelectedMarker(e.target.options.data);
+        marker.bindTooltip(element.locname, {
+          direction: 'top',
+          offset: [0, -10],
         });
+
+        // const tooltip = L.tooltip({
+        //   opacity: 0.9,
+        // })
+        //   .setLatLng(point)
+        //   .setContent(element.locname);
+
+        // if (tooltipRef.current) {
+        //   tooltip.addTo(tooltipRef.current);
+        // }
 
         if (layerRef.current) {
           marker.addTo(layerRef.current);

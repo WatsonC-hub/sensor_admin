@@ -1,0 +1,27 @@
+.custom-tooltip {
+  padding: 0;
+  margin-top: auto;
+  /* background-color: transparent;
+  border: 0px;
+  box-shadow: none;
+  font-weight: bold; */
+  /* font-size: 14px;
+  -webkit-text-stroke: 0.2px white;
+  text-shadow: 0 0 5px #ffffff; */
+}
+
+.leaflet-tooltip-top:before {
+  border: none;
+}
+
+.leaflet-tooltip-bottom:before {
+  border: none;
+}
+
+.leaflet-tooltip-left:before {
+  border: none;
+}
+
+.leaflet-tooltip-right:before {
+  border: none;
+}

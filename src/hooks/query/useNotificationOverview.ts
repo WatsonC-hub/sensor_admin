@@ -47,6 +47,7 @@ export const useNotificationOverview = (
     refetchOnReconnect: false,
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
+    staleTime: 10,
     ...options,
   });
   return query;
@@ -59,12 +60,13 @@ export const useNotificationOverviewMap = (
   return useNotificationOverview({
     ...options,
     select: (data) => {
+      console.log('len data', data.length);
       const sorted = reverse(
         sortBy(data, [(item) => (item.status ? item.status : ''), (item) => item.flag])
       );
 
       const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
-        const existing = acc.find((accItem) => accItem.stationid === item.stationid);
+        const existing = acc.find((accItem) => accItem.locid === item.locid);
         if (existing) {
           existing.otherNotifications.push(item);
         } else {
@@ -73,6 +75,7 @@ export const useNotificationOverviewMap = (
         return acc;
       }, []);
 
+      console.log('len grouped', grouped.length);
       return grouped;
     },
   });

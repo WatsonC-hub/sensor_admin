@@ -7,6 +7,7 @@ import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import {DrawerContext} from '~/state/contexts';
 import CssBaseline from '@mui/material/CssBaseline';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const drawerBleeding = 56;
 
@@ -28,6 +29,7 @@ const DrawerComponent = ({
   enableFull,
 }: DrawerComponentProps) => {
   const [open, setOpen] = useState<'closed' | 'half' | 'full'>('closed');
+  const {isTouch} = useBreakpoints();
 
   useEffect(() => {
     if (openDrawerOnHeaderChange) {
@@ -52,10 +54,13 @@ const DrawerComponent = ({
       <Global
         styles={{
           '.MuiDrawer-root > .MuiPaper-root': {
-            height: `calc(${open == 'full' ? '100%' : '30%'} - ${drawerBleeding}px)`,
+            maxHeight: `calc(${open == 'full' ? '100% - 64px' : '30%'} - ${drawerBleeding}px)`,
+            minHeight: `${drawerBleeding}px`,
             overflow: 'visible',
             // transition that opens the drawer
             transition: 'height 0.2s ease-in-out',
+            width: isTouch ? '100%' : '50%',
+            margin: 'auto',
           },
         }}
       />
