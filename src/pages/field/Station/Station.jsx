@@ -13,7 +13,6 @@ import ActionArea from './ActionArea';
 import BearingGraph from './BearingGraph';
 import EditStamdata from './EditStamdata';
 import PejlingMeasurements from './PejlingMeasurements';
-import StationImages from './StationImages';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {Box, Divider, Input} from '@mui/material';
 import SaveImageDialog from '../../../components/SaveImageDialog';

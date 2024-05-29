@@ -9,22 +9,18 @@ import MaalepunktForm from '../../../components/MaalepunktForm';
 import useFormData from '../../../hooks/useFormData';
 import ActionAreaBorehole from './ActionAreaBorehole';
 import BearingGraph from './BearingGraph';
-import BoreholeImages from './BoreholeImages';
 import BoreholeStamdata from './BoreholeStamdata';
 import MaalepunktTable from './MaalepunktTable';
 import PejlingMeasurements from './PejlingMeasurements';
 import LastJupiterMP from './components/LastJupiterMP';
 import PejlingFormBorehole from './components/PejlingFormBorehole';
 import SaveImageDialog from '../../../components/SaveImageDialog';
-import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import Images from '~/components/Images';
 
 const Boreholeno = ({boreholeno, intakeno}) => {
-  let location = useLocation();
-  let navigate = useNavigate();
   const queryClient = useQueryClient();
   const [addMPOpen, setAddMPOpen] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
