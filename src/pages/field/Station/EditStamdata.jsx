@@ -233,7 +233,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
   const [tabValue, setTabValue] = useSearchParam('tab');
 
   useEffect(() => {
-    setTabValue('0');
+    setTabValue(tabValue);
     return () => {
       setTabValue(null);
     };

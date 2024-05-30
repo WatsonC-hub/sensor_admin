@@ -84,12 +84,19 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
   return (
     <>
       {mode !== 'view' && canEdit && (
-        <MaalepunktForm
-          formData={mpData}
-          changeFormData={changeMpData}
-          handleSubmit={handleMaalepunktSubmit}
-          handleCancel={handleMpCancel}
-        />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <MaalepunktForm
+            formData={mpData}
+            changeFormData={changeMpData}
+            handleSubmit={handleMaalepunktSubmit}
+            handleCancel={handleMpCancel}
+          />
+        </Box>
       )}
       <Box display="flex" justifyContent={{sm: 'center'}}>
         {matches ? (

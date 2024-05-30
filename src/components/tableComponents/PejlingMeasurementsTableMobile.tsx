@@ -78,16 +78,17 @@ export default function PejlingMeasurementsTableMobile({
                 ? correction_map[row.original.useforcorrection]
                 : 'Korrektion'}
             </Typography>
-
-            <RenderActions
-              handleEdit={() => {
-                handleEdit(row.original);
-              }}
-              onDeleteBtnClick={() => {
-                onDeleteBtnClick(row.original.gid);
-              }}
-              canEdit={canEdit}
-            />
+            <Box marginLeft={'auto'}>
+              <RenderActions
+                handleEdit={() => {
+                  handleEdit(row.original);
+                }}
+                onDeleteBtnClick={() => {
+                  onDeleteBtnClick(row.original.gid);
+                }}
+                canEdit={canEdit}
+              />
+            </Box>
           </Box>
         ),
       },
@@ -97,7 +98,21 @@ export default function PejlingMeasurementsTableMobile({
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
     renderDetailPanel: ({row}) => (
-      <Box sx={{border: 'none'}}>
+      <Box
+        sx={{
+          border: 'none',
+          backgroundColor: 'grey.300',
+          mt: -7.7,
+          pt: 7,
+          px: 2,
+          mx: -2,
+          transition: 'transform 0.2s',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          borderBottomLeftRadius: '15px',
+          borderBottomRightRadius: '15px',
+        }}
+      >
         {row.original.comment && (
           <Typography>
             <b>Kommentar: </b> {row.original.comment}
@@ -110,7 +125,7 @@ export default function PejlingMeasurementsTableMobile({
             : 'Kontrol'}
         </Typography>
         <Typography>
-          <b>Start dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
+          <b>Dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
         </Typography>
       </Box>
     ),

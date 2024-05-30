@@ -17,7 +17,7 @@ export const getDefaultMRTOptionsMobile = <TData extends MRT_RowData>(): Partial
   enableStickyFooter: true,
   paginationDisplayMode: 'pages',
   enableTableHead: false,
-  enableExpanding: true,
+  enableExpandAll: false,
   muiTableBodyCellProps: {
     sx: {
       borderRadius: 9999,
@@ -39,6 +39,18 @@ export const getDefaultMRTOptionsMobile = <TData extends MRT_RowData>(): Partial
   },
   muiTableBodyRowProps: {
     sx: {
+      display: 'table-row !important',
+      border: 'none',
+      backgroundColor: 'grey.300',
+      background: 'grey.300',
+      mt: -7.7,
+      px: 2,
+      mx: -2,
+      transition: 'transform 0.2s',
+      borderTopLeftRadius: '20px',
+      borderTopRightRadius: '20px',
+      borderBottomLeftRadius: '15px',
+      borderBottomRightRadius: '15px',
       '&:hover': {
         td: {
           '&:after': {
@@ -55,12 +67,33 @@ export const getDefaultMRTOptionsMobile = <TData extends MRT_RowData>(): Partial
     },
   },
   muiPaginationProps: {
+    size: 'small',
     showRowsPerPage: false,
+    color: 'primary',
+    shape: 'rounded',
+    variant: 'outlined',
   },
   initialState: {
     density: 'compact',
+    pagination: {
+      pageIndex: 0,
+      pageSize: 10,
+    },
     columnVisibility: {
       'mrt-row-expand': false,
     },
   },
+  muiDetailPanelProps: {
+    sx: {
+      border: 'none',
+      borderBottomLeftRadius: '15px',
+      borderBottomRightRadius: '15px',
+    },
+  },
+  muiExpandButtonProps: ({row, table}) => ({
+    sx: {
+      transform: row.getIsExpanded() ? 'rotate(180deg)' : 'rotate(-90deg)',
+      transition: 'transform 0.2s',
+    },
+  }),
 });

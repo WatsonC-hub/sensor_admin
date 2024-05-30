@@ -79,13 +79,17 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
 
   return (
     <>
-      <DeleteAlert
-        measurementId={mpId}
-        dialogOpen={dialogOpen}
-        setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
-      />
-      <FormTableComponent columns={columns} data={data} {...options} />
+      {data && (
+        <>
+          <DeleteAlert
+            measurementId={mpId}
+            dialogOpen={dialogOpen}
+            setDialogOpen={setDialogOpen}
+            onOkDelete={handleDelete}
+          />
+          <FormTableComponent columns={columns} data={data} {...options} />
+        </>
+      )}
     </>
   );
 }

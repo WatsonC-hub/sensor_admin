@@ -95,7 +95,7 @@ export default function PejlingFormBorehole({
       style={{marginBottom: 25}}
       sx={{
         width: {xs: '100%', sm: '60%'},
-        ml: {xs: '0%', sm: '20%'},
+        ml: {xs: '0%'},
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',

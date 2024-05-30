@@ -41,6 +41,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
         accessorFn: (row) => row,
         id: 'batteriskift',
         header: 'Tilsyn',
+        size: 200,
         Cell: ({row, table}) => (
           <Box display="flex" gap={1}>
             <Box alignSelf="center">
@@ -70,6 +71,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
       {
         accessorKey: 'kommentar',
         header: 'Kommentar',
+        size: 300,
       },
     ],
     []

@@ -121,7 +121,7 @@ export default function PejlingForm({
       style={{marginBottom: 25}}
       sx={{
         width: {xs: '100%', sm: '60%'},
-        marginLeft: {xs: '0%', sm: '20%'},
+        marginLeft: {xs: '0%'},
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',

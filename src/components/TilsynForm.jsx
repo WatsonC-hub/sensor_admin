@@ -38,7 +38,6 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
       style={{marginBottom: 25}}
       sx={{
         width: {xs: '100%', sm: '60%'},
-        marginLeft: {xs: '0%', sm: '20%'},
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',

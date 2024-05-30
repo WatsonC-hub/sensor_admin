@@ -44,11 +44,14 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
         enableHide: false,
         Cell: ({row, staticRowIndex, table}) => (
           <Box
-            display="flex"
-            height={26}
-            justifyContent="space-between"
-            alignItems="center"
+            style={{
+              display: 'flex',
+              width: '100%',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
             gap={1}
+            height={26}
           >
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
 
@@ -81,15 +84,17 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
                 </Typography>
               </Box>
             </Box>
-            <RenderActions
-              handleEdit={() => {
-                handleEdit(row.original);
-              }}
-              onDeleteBtnClick={() => {
-                onDeleteBtnClick(row.original.gid);
-              }}
-              canEdit={canEdit}
-            />
+            <Box marginLeft={'auto'}>
+              <RenderActions
+                handleEdit={() => {
+                  handleEdit(row.original);
+                }}
+                onDeleteBtnClick={() => {
+                  onDeleteBtnClick(row.original.gid);
+                }}
+                canEdit={canEdit}
+              />
+            </Box>
           </Box>
         ),
       },
@@ -99,9 +104,23 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
 
   const options: Partial<MRT_TableOptions<Tilsyn>> = {
     renderDetailPanel: ({row}) => (
-      <Box sx={{border: 'none'}}>
+      <Box
+        sx={{
+          border: 'none',
+          backgroundColor: 'grey.300',
+          mt: -7.7,
+          pt: 7,
+          px: 2,
+          mx: -2,
+          transition: 'transform 0.2s',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          borderBottomLeftRadius: '15px',
+          borderBottomRightRadius: '15px',
+        }}
+      >
         <Typography>
-          <b>Start dato: </b> {convertDateWithTimeStamp(row.original.dato)}
+          <b>Dato: </b> {convertDateWithTimeStamp(row.original.dato)}
         </Typography>
         {row.original.kommentar && (
           <Typography>

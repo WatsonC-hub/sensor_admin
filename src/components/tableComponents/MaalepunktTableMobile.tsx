@@ -75,16 +75,17 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
               <b>Slut: </b>
               {checkEndDateIsUnset(row.original.enddate) ? 'Nu' : convertDate(row.original.enddate)}
             </Typography>
-
-            <RenderActions
-              handleEdit={() => {
-                handleEdit(row.original);
-              }}
-              onDeleteBtnClick={() => {
-                onDeleteBtnClick(row.original.gid);
-              }}
-              canEdit={canEdit}
-            />
+            <Box marginLeft={'auto'}>
+              <RenderActions
+                handleEdit={() => {
+                  handleEdit(row.original);
+                }}
+                onDeleteBtnClick={() => {
+                  onDeleteBtnClick(row.original.gid);
+                }}
+                canEdit={canEdit}
+              />
+            </Box>
           </Box>
         ),
       },
@@ -94,7 +95,21 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
     renderDetailPanel: ({row}) => (
-      <Box sx={{border: 'none'}}>
+      <Box
+        sx={{
+          border: 'none',
+          backgroundColor: 'grey.300',
+          mt: -7.7,
+          pt: 7,
+          px: 2,
+          mx: -2,
+          transition: 'transform 0.2s',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          borderBottomLeftRadius: '15px',
+          borderBottomRightRadius: '15px',
+        }}
+      >
         <Typography>
           <b>Start dato: </b> {convertDateWithTimeStamp(row.original.startdate)}
         </Typography>

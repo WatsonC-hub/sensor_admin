@@ -54,6 +54,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       sx={{
         margin: 'auto',
         display: 'flex',
+        justifyContent: 'center',
         flexDirection: 'column ',
         borderRadius: 5,
       }}
@@ -69,6 +70,9 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         image={imageUrl}
         sx={{
           objectFit: 'cover',
+          maxWidth: 640,
+          maxHeight: 640,
+          alignSelf: 'center',
         }}
       />
       <CardContent

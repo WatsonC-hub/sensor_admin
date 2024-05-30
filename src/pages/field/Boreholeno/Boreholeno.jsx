@@ -322,7 +322,16 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           <Divider />
         </Box>
       )}
-      <Box sx={{maxWidth: '1380px', margin: 'auto'}}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'wrap',
+          alignContent: 'center',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         {pageToShow === null && showForm === true && (
           <PejlingFormBorehole
             formData={pejlingData}
@@ -341,27 +350,24 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           />
         )}
         {pageToShow === 'MAALEPUNKT' && (
-          <>
-            <Grid container spacing={2}>
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 1,
-                }}
-              >
-                <LastJupiterMP
-                  boreholeno={boreholeno}
-                  intakeno={intakeno}
-                  lastOurMP={watlevmp?.[0]}
-                  watlevmpMutate={addOrEditWatlevmp}
-                  setAddMPOpen={setAddMPOpen}
-                />
-              </Grid>
-            </Grid>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flexWrap: 'wrap',
+              alignContent: 'center',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            gap={1}
+          >
+            <LastJupiterMP
+              boreholeno={boreholeno}
+              intakeno={intakeno}
+              lastOurMP={watlevmp?.[0]}
+              watlevmpMutate={addOrEditWatlevmp}
+              setAddMPOpen={setAddMPOpen}
+            />
 
             {addMPOpen && showForm === true && (
               <MaalepunktForm
@@ -373,7 +379,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
                 canEdit={true}
               />
             )}
-          </>
+          </Box>
         )}
         {pageToShow === 'MAALEPUNKT' && (
           <FabWrapper
