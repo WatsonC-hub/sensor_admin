@@ -5,8 +5,8 @@ import CircleIcon from '@mui/icons-material/Circle';
 import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import Button from '~/components/Button';
-import {useNavigations} from '~/hooks/useNavigations';
 import TaskIcon from '~/pages/field/Overview/components/TaskIcon';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 interface SensorContentProps {
   data: NotificationMap;
@@ -14,7 +14,7 @@ interface SensorContentProps {
 
 const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
-  const {location} = useNavigations();
+  const {location} = useNavigationFunctions();
 
   return (
     <>
@@ -43,7 +43,7 @@ const SensorContent = ({data}: SensorContentProps) => {
       )}
       <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
-          btType="tertiary"
+          bttype="tertiary"
           color="primary"
           onClick={() => {
             window.open(
@@ -56,7 +56,7 @@ const SensorContent = ({data}: SensorContentProps) => {
           Google Maps
         </Button>
         <Button
-          btType="primary"
+          bttype="primary"
           color="primary"
           onClick={() => {
             location(data.locid);

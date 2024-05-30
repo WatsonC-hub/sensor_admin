@@ -4,9 +4,7 @@ import {
   Box,
   Autocomplete,
   IconButton,
-  AutocompleteChangeReason,
   AutocompleteInputChangeReason,
-  SwipeableDrawer,
 } from '@mui/material';
 // import Autocomplete from '@mui/material/Autocomplete';
 // import Box from '@mui/material/Box';
@@ -19,7 +17,6 @@ import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import {useRef, useEffect, useState, SyntheticEvent} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
 import {mapboxToken} from '~/consts';
 import {stamdataStore} from '~/state/store';
@@ -37,6 +34,7 @@ import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import type {BoreholeData} from './OverviewPage';
 import {boreholeColors} from '~/consts';
 import TaskIcon from './components/TaskIcon';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const utm = new utmObj();
 
@@ -104,7 +102,7 @@ interface MapProps {
 }
 
 function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
-  const navigate = useNavigate();
+  const {createStamdata} = useNavigationFunctions();
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
@@ -175,7 +173,8 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
             if (typeof coords == 'object') {
               setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
               setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
-              navigate('/field/stamdata');
+              // navigate('/field/stamdata');
+              createStamdata();
             }
           },
           icon: '/leaflet-images/marker.png',

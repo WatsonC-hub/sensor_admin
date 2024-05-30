@@ -34,6 +34,7 @@ import {
   SettingsPhoneRounded,
   ShowChartRounded,
 } from '@mui/icons-material';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 function LocationChooser({setLocationDialogOpen}) {
   const location = stamdataStore((store) => store.location);
@@ -212,6 +213,7 @@ function TabPanel(props) {
 
 export default function OpretStamdata({setAddStationDisabled}) {
   const navigate = useNavigate();
+  const {field} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(
@@ -306,7 +308,9 @@ export default function OpretStamdata({setAddStationDisabled}) {
         success: 'Stamdata oprettet!',
         error: 'Noget gik galt!',
       });
-      navigate(`/field`);
+
+      // navigate('/field');
+      field();
     } catch (e) {
       console.log(e);
     }
@@ -433,7 +437,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 <Button
                   bttype="tertiary"
                   onClick={() => {
-                    navigate('/field');
+                    // navigate('/field');
+                    field();
                     setAddStationDisabled(false);
                   }}
                 >

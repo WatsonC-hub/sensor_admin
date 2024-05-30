@@ -20,10 +20,12 @@ import Station from '~/pages/field/Station/Station';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {MetadataContext} from '~/state/contexts';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 export default function LocationRouter() {
   const params = useParams();
   const navigate = useNavigate();
+  const {station, createStamdata, adminKvalitetssikring} = useNavigationFunctions();
   const adminAccess = authStore((state) => state.adminAccess);
 
   const {isMobile} = useBreakpoints();
@@ -41,9 +43,10 @@ export default function LocationRouter() {
 
   useEffect(() => {
     if (data && params.ts_id === undefined) {
-      navigate(`../location/${params.locid}/${data[0].ts_id}`, {
-        replace: true,
-      });
+      station(params.locid, data[0].ts_id, {replace: true});
+      // navigate(`../location/${params.locid}/${data[0].ts_id}`, {
+      //   replace: true,
+      // });
     }
   }, [data]);
 
@@ -84,7 +87,8 @@ export default function LocationRouter() {
                     {
                       title: 'Til QA',
                       onClick: () => {
-                        navigate(`/admin/kvalitetssikring/${params.ts_id}`);
+                        adminKvalitetssikring(params.ts_id);
+                        // navigate(`/admin/kvalitetssikring/${params.ts_id}`);
                       },
                       icon: <AutoGraphIcon />,
                     },
@@ -94,7 +98,8 @@ export default function LocationRouter() {
                 title: 'Opret station',
                 icon: <AddLocationAltIcon fontSize="medium" />,
                 onClick: () => {
-                  navigate('/field/stamdata');
+                  createStamdata();
+                  // navigate('/field/stamdata');
                 },
               },
             ]}

@@ -2,17 +2,20 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const MinimalSelect = ({locid, stationList}) => {
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.ts_id ? false : true);
   const navigate = useNavigate();
+  const {station} = useNavigationFunctions();
 
   const handleChange = (event) => {
-    navigate(`../location/${locid}/${event.target.value}`, {
-      replace: true,
-    });
+    station(locid, event.target.value, {replace: true});
+    // navigate(`../location/${locid}/${event.target.value}`, {
+    //   replace: true,
+    // });
     setIsOpen(false);
   };
 
@@ -37,7 +40,7 @@ const MinimalSelect = ({locid, stationList}) => {
     },
     PaperProps: {
       sx: {
-        backgroundColor: 'primary.main'
+        backgroundColor: 'primary.main',
       },
     },
   };
@@ -58,7 +61,7 @@ const MinimalSelect = ({locid, stationList}) => {
         },
         '& .MuiSelect-select': {
           p: '0px 10px',
-          mt: '1px'
+          mt: '1px',
         },
         boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.24)',
         borderRadius: '15px',
@@ -75,7 +78,7 @@ const MinimalSelect = ({locid, stationList}) => {
               key={station.ts_id}
               value={station.ts_id}
               sx={{
-                color:'white'
+                color: 'white',
               }}
             >
               {(station.prefix ? station.prefix + ' - ' : '') + ' ' + station.tstype_name}

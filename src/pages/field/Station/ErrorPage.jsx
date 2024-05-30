@@ -3,9 +3,11 @@
 import {Box, Link, Typography} from '@mui/material';
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const ErrorPage = ({error}) => {
   const navigate = useNavigate();
+  const {field} = useNavigationFunctions();
   return (
     <Box
       sx={{
@@ -21,7 +23,14 @@ const ErrorPage = ({error}) => {
       </Typography>
       <Typography variant="body1" gutterBottom>
         Der er sket en fejl på siden.{' '}
-        <Link component="button" variant="body2" onClick={() => navigate('/field')}>
+        <Link
+          component="button"
+          variant="body2"
+          onClick={
+            () => field()
+            // navigate('/field')
+          }
+        >
           Gå til forside
         </Link>
       </Typography>

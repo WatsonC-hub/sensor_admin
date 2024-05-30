@@ -10,18 +10,15 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
 import Boreholeno from './Boreholeno';
 import MinimalSelectBorehole from './MinimalSelectBorehole';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 export default function BoreholeRouter() {
-  const open = false;
-  const [formToShow, setFormToShow] = useState(null);
-  const [currIntake, setCurrIntake] = useState(null);
-  const [boreholenoList, setBoreholenoList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(-1);
-  const [boreholeno, setSelectedBoreholeno] = useState(-1);
 
   const theme = useTheme();
   const params = useParams();
   const navigate = useNavigate();
+  const {boreholeIntake} = useNavigationFunctions();
 
   const {data: data} = useQuery({
     queryKey: ['borehole', params.boreholeno],
@@ -42,9 +39,10 @@ export default function BoreholeRouter() {
         intakeno = '';
         if (data.length === 1) {
           intakeno = data[0].intakeno;
-          navigate(`../borehole/${params.boreholeno}/${intakeno}`, {
-            replace: true,
-          });
+          // navigate(`../borehole/${params.boreholeno}/${intakeno}`, {
+          //   replace: true,
+          // });
+          boreholeIntake(params.boreholeno, intakeno, {replace: true});
         }
         setSelectedItem(intakeno);
       }

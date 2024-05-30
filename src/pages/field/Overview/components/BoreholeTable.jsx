@@ -7,6 +7,7 @@ import React, {useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
 import TableComponent from '~/components/TableComponent';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {boreholeTableAtom} from '~/state/atoms';
 
 const boreholeColors = {
@@ -52,6 +53,7 @@ function statusIcon(row) {
 const BoreholeTable = ({data, isLoading}) => {
   const {isTouch} = useBreakpoints();
   const navigate = useNavigate();
+  const {boreholeIntake} = useNavigationFunctions();
   const mobileColumns = useMemo(
     () => [
       {
@@ -132,7 +134,8 @@ const BoreholeTable = ({data, isLoading}) => {
           size="small"
           sx={{backgroundColor: 'secondary.main'}}
           onClick={() => {
-            navigate(`/field/borehole/${row.original.boreholeno}/${row.original.intakeno}`);
+            boreholeIntake(row.original.boreholeno, row.original.intakeno);
+            // navigate(`/field/borehole/${row.original.boreholeno}/${row.original.intakeno}`);
           }}
         >
           <QueryStatsIcon />
