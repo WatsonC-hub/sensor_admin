@@ -41,10 +41,10 @@ export default function AddLocationForm({locationDialogOpen, setLocationDialogOp
         <LocationForm mode="modal" />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} btType="tertiary">
+        <Button onClick={handleClose} bttype="tertiary">
           Annuller
         </Button>
-        <Button onClick={handleSave} btType="primary">
+        <Button onClick={handleSave} bttype="primary">
           Tilføj
         </Button>
       </DialogActions>

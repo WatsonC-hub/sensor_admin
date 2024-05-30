@@ -4,13 +4,13 @@ import {merge} from 'lodash';
 import {ReactElement} from 'react';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
-  btType: 'primary' | 'secondary' | 'tertiary';
+  bttype: 'primary' | 'secondary' | 'tertiary';
   children: ReactElement | string;
 }
 
-const Button = ({btType, children, ...props}: MyButtonProps) => {
+const Button = ({bttype, children, ...props}: MyButtonProps) => {
   let sx = {};
-  if (btType === 'primary') {
+  if (bttype === 'primary') {
     sx = {
       textTransform: 'initial',
       my: 0.5,
@@ -27,7 +27,7 @@ const Button = ({btType, children, ...props}: MyButtonProps) => {
     };
   }
 
-  if (btType === 'tertiary') {
+  if (bttype === 'tertiary') {
     sx = {
       textTransform: 'initial',
       my: 0.5,

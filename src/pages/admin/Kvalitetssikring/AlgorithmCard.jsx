@@ -152,11 +152,11 @@ const AlgorithmCard = ({algorithm}) => {
           </FormProvider>
         </CardContent>
         <CardActions sx={{justifyContent: 'center', alignContent: 'center', p: 1, m: 0}}>
-          <Button btType="tertiary" onClick={handleRevert}>
+          <Button bttype="tertiary" onClick={handleRevert}>
             Tilbage til standard
           </Button>
           <Button
-            btType="secondary"
+            bttype="secondary"
             onClick={formMethods.handleSubmit(handleSubmit)}
             disabled={
               submitData.isLoading || revertToDefaults.isLoading || !formMethods.formState.isDirty

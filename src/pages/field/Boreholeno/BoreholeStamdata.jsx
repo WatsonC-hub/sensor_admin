@@ -181,7 +181,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
               <Grid item xs={12} sm={4}>
                 <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
                   <Button
-                    btType="tertiary"
+                    bttype="tertiary"
                     onClick={() => {
                       setFormToShow(null);
                     }}
@@ -190,7 +190,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   </Button>
                   <Button
                     autoFocus
-                    btType="primary"
+                    bttype="primary"
                     startIcon={<Save />}
                     onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}
                     disabled={formMethods.formState.isSubmitting || !formMethods.formState.isDirty}

@@ -19,7 +19,7 @@ const FormTextField = (props) => {
       disabled={disabled}
       variant="outlined"
       id={label}
-      value={value}
+      value={value ?? ''}
       onChange={onChange}
       label={label}
       InputLabelProps={{shrink: true}}

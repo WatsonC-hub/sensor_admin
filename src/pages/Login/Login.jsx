@@ -9,7 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {authStore} from '../../state/store';
-import Button from '~/components/Button'
+import Button from '~/components/Button';
 
 export default function Login({}) {
   const [userName, setUserName] = useState('');
@@ -128,7 +128,7 @@ export default function Login({}) {
             type="submit"
             fullWidth
             variant="contained"
-            color="primary"
+            bttype="primary"
             disabled={userName === '' || password === ''}
             style={{marginTop: '1%'}}
           >
@@ -137,7 +137,7 @@ export default function Login({}) {
         </form>
         <Button
           variant="outlined"
-          color="primary"
+          bttype="tertiary"
           onClick={handleClickOpen}
           style={{marginTop: '1.5%'}}
         >
@@ -178,16 +178,16 @@ export default function Login({}) {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} btType="tertiary">
+          <Button onClick={handleClose} bttype="tertiary">
             Annuller
           </Button>
           {!emailSentMess && (
-            <Button onClick={handlePassReset} btType="primary" autoFocus>
+            <Button onClick={handlePassReset} bttype="primary" autoFocus>
               Bekræft
             </Button>
           )}
           {emailSentMess && (
-            <Button onClick={handleClose} btType="primary" autoFocus>
+            <Button onClick={handleClose} bttype="primary" autoFocus>
               Gå til log ind
             </Button>
           )}

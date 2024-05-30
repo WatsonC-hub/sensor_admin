@@ -105,7 +105,7 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
           </Grid>
           <Grid item xs={12} sm={4}>
             <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-              <Button onClick={handleCancel} btType="tertiary">
+              <Button onClick={handleCancel} bttype="tertiary">
                 Annuller
               </Button>
               <Button
@@ -116,7 +116,7 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
                 }}
                 disabled={disableSubmit}
                 startIcon={<SaveIcon />}
-                btType="primary"
+                bttype="primary"
               >
                 Gem
               </Button>

@@ -1,4 +1,5 @@
-import Button from '@mui/material/Button';
+import {Typography} from '@mui/material';
+import Button from './Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -39,11 +40,11 @@ export default function DeleteAlert({
         <DialogTitle id="alert-dialog-title">{title ? title : 'Vil du slette rækken?'}</DialogTitle>
 
         <DialogActions>
-          <Button onClick={handleOk} color="primary">
-            Ja
+          <Button autoFocus onClick={handleClose} bttype="tertiary">
+            <Typography>Nej</Typography>
           </Button>
-          <Button autoFocus onClick={handleClose} color="primary">
-            Nej
+          <Button onClick={handleOk} bttype="primary">
+            <Typography>Ja</Typography>
           </Button>
         </DialogActions>
       </Dialog>

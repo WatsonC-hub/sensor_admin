@@ -25,7 +25,7 @@ const FormInput = ({
     <Controller
       control={control}
       name={name}
-      defaultvalue={get(defaultValues, name)}
+      defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
       rules={rules}
       render={({field: {value, onChange, onBlur, ref, name}, formState, fieldState}) => {
         if (otherProps.type === 'datetime-local' && value) {
@@ -36,10 +36,9 @@ const FormInput = ({
           <TextField
             {...otherProps}
             name={name}
-            value={value}
+            value={value ?? ''}
             onBlur={onBlur}
             ref={ref}
-            // defaultValue={''}
             sx={{
               '& .MuiInputBase-input.Mui-disabled': {
                 WebkitTextFillColor: '#000000',

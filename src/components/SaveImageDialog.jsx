@@ -133,10 +133,10 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCloseSave} btType="tertiary">
+        <Button onClick={handleCloseSave} bttype="tertiary">
           Annuller
         </Button>
-        <Button onClick={saveImage} disabled={uploadImage.isLoading} btType="primary">
+        <Button onClick={saveImage} disabled={uploadImage.isLoading} bttype="primary">
           {uploadImage.isLoading ? (
             <CircularProgress />
           ) : activeImage.gid == -1 ? (

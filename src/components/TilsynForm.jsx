@@ -108,12 +108,12 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
           </Grid>
           <Grid item xs={12} sm={4}>
             <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-              <Button btType="tertiary" onClick={cancel}>
+              <Button bttype="tertiary" onClick={cancel}>
                 Annuller
               </Button>
               <Button
                 autoFocus
-                btType="primary"
+                bttype="primary"
                 onClick={() => {
                   handleClickSubmit();
                   handleSubmit();
