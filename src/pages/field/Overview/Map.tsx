@@ -497,6 +497,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           if (markers[i].options.title == value.name) {
             markers[i].openPopup();
             mapRef.current?.flyTo(markers[i].getLatLng(), 12);
+            setSelectedMarker(markers[i].options.data);
             break;
           }
         }

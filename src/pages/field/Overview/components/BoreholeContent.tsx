@@ -3,7 +3,7 @@ import type {BoreholeData} from '../OverviewPage';
 import {useDrawerContext} from '~/state/contexts';
 import {Box, Divider, Typography} from '@mui/material';
 import Button from '~/components/Button';
-import {useNavigations} from '~/hooks/useNavigations';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -17,7 +17,7 @@ interface BoreholeContentProps {
 
 const BoreholeContent = ({data}: BoreholeContentProps) => {
   const drawerContext = useDrawerContext();
-  const {borehole} = useNavigations();
+  const {borehole} = useNavigationFunctions();
   const maxStatus = Math.max(...data.status);
   console.log(data);
   return (
@@ -54,7 +54,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
       )}
       <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
-          btType="tertiary"
+          bttype="tertiary"
           color="primary"
           onClick={() => {
             window.open(
@@ -67,7 +67,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
           Google Maps
         </Button>
         <Button
-          btType="primary"
+          bttype="primary"
           color="primary"
           onClick={() => {
             borehole(data.boreholeno);
