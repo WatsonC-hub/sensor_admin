@@ -95,9 +95,23 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
     renderDetailPanel: ({row}) => (
-      <Box sx={{border: 'none'}}>
+      <Box
+        sx={{
+          border: 'none',
+          backgroundColor: 'grey.300',
+          mt: -7.7,
+          pt: 7,
+          px: 2,
+          mx: -2,
+          transition: 'transform 0.2s',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          borderBottomLeftRadius: '15px',
+          borderBottomRightRadius: '15px',
+        }}
+      >
         <Typography>
-          <b>Start dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
+          <b>Dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
         </Typography>
         <Typography>
           <b>Uploaded til Jupiter: </b>{' '}

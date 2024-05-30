@@ -6,16 +6,16 @@ export const getDefaultMRTOptionsDesktop = <TData extends MRT_RowData>(): Partia
 > => ({
   localization: MRT_Localization_DA,
   enableGlobalFilter: false,
-  enableTableFooter: false,
   enableColumnActions: false,
   enableColumnFilters: false,
   enablePagination: true,
   enableSorting: false,
   enableTopToolbar: false,
+  enableTableFooter: true,
   enableStickyFooter: true,
+  enableStickyHeader: true,
   enableRowActions: true,
   enableTableHead: true,
-  layoutMode: 'grid',
   displayColumnDefOptions: {
     'mrt-row-actions': {
       size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
@@ -48,6 +48,9 @@ export const getDefaultMRTOptionsDesktop = <TData extends MRT_RowData>(): Partia
   },
   muiPaginationProps: {
     showRowsPerPage: false,
+    color: 'primary',
+    shape: 'rounded',
+    variant: 'outlined',
   },
   initialState: {
     density: 'comfortable',
@@ -59,5 +62,14 @@ export const getDefaultMRTOptionsDesktop = <TData extends MRT_RowData>(): Partia
   muiTableBodyCellProps: {
     size: 'small',
     align: 'left',
+  },
+  muiTableContainerProps: {
+    sx: {
+      height: {
+        tablet: 'calc(100vh - 30vh)',
+        laptop: 'calc(100vh - 56vh)',
+        desktop: 'calc(100vh - 47vh)',
+      },
+    },
   },
 });

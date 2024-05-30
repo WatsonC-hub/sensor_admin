@@ -322,7 +322,7 @@ export default function Station({ts_id, stamdata}) {
   };
 
   return (
-    <>
+    <Box>
       {pageToShow !== 'billeder' && pageToShow !== 'STAMDATA' && (
         <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
@@ -333,7 +333,14 @@ export default function Station({ts_id, stamdata}) {
           <Divider />
         </Box>
       )}
-      <Box sx={{maxWidth: '1080px', margin: 'auto'}}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: {xs: 'normal', sm: 'center'},
+          justifyContent: 'center',
+        }}
+      >
         {pageToShow === null && showForm === true && (
           <PejlingForm
             stationId={ts_id}
@@ -344,7 +351,6 @@ export default function Station({ts_id, stamdata}) {
             resetFormData={() => {
               resetPejlingData();
               setShowForm(null);
-              // setPageToShow('ADDPEJLING');
             }}
             canEdit={canEdit}
             mpData={watlevmp}
@@ -366,7 +372,6 @@ export default function Station({ts_id, stamdata}) {
             text="Tilføj kontrol"
             onClick={() => {
               setShowForm(true);
-              // setShowData(null);
             }}
             visible={pageToShow === null && showForm === null ? 'visible' : 'hidden'}
           >
@@ -387,7 +392,6 @@ export default function Station({ts_id, stamdata}) {
               cancel={() => {
                 resetServiceData();
                 setShowForm(null);
-                // setPageToShow('ADDTILSYN');
               }}
             />
           )}
@@ -397,7 +401,6 @@ export default function Station({ts_id, stamdata}) {
               text="Tilføj tilsyn"
               onClick={() => {
                 setShowForm(true);
-                // setPageToShow(null);
               }}
               visible={pageToShow === 'TILSYN' && showForm === null ? 'visible' : 'hidden'}
             >
@@ -417,8 +420,6 @@ export default function Station({ts_id, stamdata}) {
               icon={<AddAPhotoRounded />}
               text="Tilføj billede"
               onClick={() => {
-                // setShowForm(true);
-                // setPageToShow('CAMERA');
                 fileInputRef.current.click();
               }}
             >
@@ -462,6 +463,6 @@ export default function Station({ts_id, stamdata}) {
         isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
       />
-    </>
+    </Box>
   );
 }
