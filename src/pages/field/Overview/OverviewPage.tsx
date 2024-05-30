@@ -26,6 +26,21 @@ import {
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
 
+export interface BoreholeData {
+  boreholeno: string;
+  latitude: number;
+  longitude: number;
+  intakeno: number[];
+  plantname: string;
+  plantid: number;
+  drilldepth: number[];
+  measurement: number[];
+  status: number[];
+  timeofmeas: string[];
+  calypso_id: number[];
+  num_controls_in_a_year: number[];
+}
+
 export default function OverviewPage() {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
@@ -55,7 +70,7 @@ export default function OverviewPage() {
     enabled: boreholeAccess,
   });
 
-  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery({
+  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery<BoreholeData[]>({
     queryKey: ['borehole_map'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);

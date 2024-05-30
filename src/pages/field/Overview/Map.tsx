@@ -33,7 +33,10 @@ import SensorContent from './components/SensorContent';
 import LegendContent from './components/LegendContent';
 import BoreholeContent from './components/BoreholeContent';
 import {set} from 'lodash';
-import {Notification, NotificationMap} from '~/hooks/query/useNotificationOverview';
+import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import type {BoreholeData} from './OverviewPage';
+import {boreholeColors} from '~/consts';
+import TaskIcon from './components/TaskIcon';
 
 const utm = new utmObj();
 
@@ -58,31 +61,6 @@ const typeAheadAtom = atom<string>('');
 const mapFilterAtom = atom({});
 
 const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;
-
-const boreholeColors: Record<number, string> = {
-  1: '#66bb6a',
-  2: '#FFFF00',
-  3: '#FF6C00',
-  0: '#3388ff',
-};
-
-interface SensorData {
-  locname: string;
-  locid: number;
-  lat: number;
-  long: number;
-  status: number;
-  mouseover: string;
-}
-
-interface BoreholeData {
-  boreholeno: string;
-  latitude: number;
-  longitude: number;
-  intakeno: number[];
-  measurement: number[];
-  status: number[];
-}
 
 declare module 'leaflet' {
   interface CircleMarkerOptions {
@@ -384,7 +362,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
 
         const icon = L.divIcon({
           className: 'custom-div-icon',
-          html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus]}),
+          html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
           iconSize: [24, 24],
           iconAnchor: [12, 12],
         });
@@ -524,62 +502,53 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           }
         }
       } else {
-        apiClient
-          .get<{
-            boreholeno: string;
-            latitude: number;
-            longitude: number;
-            intakeno: number[];
-            measurement: number[];
-            status: number[];
-          }>(`/sensor_field/jupiter/search/${value.name}`)
-          .then((res) => {
-            const element = res.data;
-            let content = '';
-            element.intakeno.forEach((intake, index) => {
-              content += `Indtag ${intake} : ${
-                element.measurement[index]
-                  ? element.measurement[index] + ' m (DVR 90)<br>'
-                  : 'Ingen måling<br>'
-              }`;
-            });
+        apiClient.get<BoreholeData>(`/sensor_field/jupiter/search/${value.name}`).then((res) => {
+          const element = res.data;
+          let content = '';
+          element.intakeno.forEach((intake, index) => {
+            content += `Indtag ${intake} : ${
+              element.measurement[index]
+                ? element.measurement[index] + ' m (DVR 90)<br>'
+                : 'Ingen måling<br>'
+            }`;
+          });
 
-            element.status.forEach((status, index) => {
-              if (status == 2) {
-                content += `<b>Obs</b> Indtag ${element.intakeno[index]} skal snart pejles.<br>`;
-              }
-              if (status == 3) {
-                content += `<b>Obs pejling er overskredet for Indtag ${element.intakeno[index]}!</b><br>`;
-              }
-            });
-
-            const point: L.LatLngExpression = [element.latitude, element.longitude];
-
-            const maxStatus = Math.max(...element.status);
-
-            const icon = L.divIcon({
-              className: 'custom-div-icon',
-              html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus]}),
-              iconSize: [24, 24],
-              iconAnchor: [12, 24],
-            });
-
-            const marker = L.marker(point, {
-              icon: icon,
-              title: element.boreholeno,
-              data: element,
-              // @ts-ignore
-              contextmenu: true,
-            });
-
-            marker.on('add', function () {
-              mapRef.current?.flyTo(point, 12);
-              setSelectedMarker(element);
-            });
-            if (layerRef.current) {
-              marker.addTo(layerRef.current);
+          element.status.forEach((status, index) => {
+            if (status == 2) {
+              content += `<b>Obs</b> Indtag ${element.intakeno[index]} skal snart pejles.<br>`;
+            }
+            if (status == 3) {
+              content += `<b>Obs pejling er overskredet for Indtag ${element.intakeno[index]}!</b><br>`;
             }
           });
+
+          const point: L.LatLngExpression = [element.latitude, element.longitude];
+
+          const maxStatus = Math.max(...element.status);
+
+          const icon = L.divIcon({
+            className: 'custom-div-icon',
+            html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
+            iconSize: [24, 24],
+            iconAnchor: [12, 24],
+          });
+
+          const marker = L.marker(point, {
+            icon: icon,
+            title: element.boreholeno,
+            data: element,
+            // @ts-ignore
+            contextmenu: true,
+          });
+
+          marker.on('add', function () {
+            mapRef.current?.flyTo(point, 12);
+            setSelectedMarker(element);
+          });
+          if (layerRef.current) {
+            marker.addTo(layerRef.current);
+          }
+        });
       }
     }
   };
@@ -668,7 +637,9 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
       >
         {selectedMarker && 'locid' in selectedMarker && <SensorContent data={selectedMarker} />}
         {selectedMarker == null && <LegendContent />}
-        {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && <BoreholeContent />}
+        {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
+          <BoreholeContent data={selectedMarker} />
+        )}
       </DrawerComponent>
     </>
   );
