@@ -1,9 +1,6 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
-  Card,
-  CardContent,
-  Container,
   Dialog,
   DialogActions,
   DialogContent,
@@ -19,7 +16,6 @@ import {useTheme} from '@mui/material/styles';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {apiClient} from '~/apiClient';
-import {SwiperSlide} from 'swiper/react';
 import OwnDatePicker from '../../../components/OwnDatePicker';
 import AddUnitForm from '../Stamdata/AddUnitForm';
 import LocationForm from '../Stamdata/components/LocationForm';
@@ -36,7 +32,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
-import SwiperInstance from './SwiperInstance';
 import {Tabs} from '@mui/material';
 import TabPanel from '../Overview/TabPanel';
 import FabWrapper from '~/components/FabWrapper';
@@ -86,7 +81,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
         <OwnDatePicker label="Fra" value={date} onChange={(date) => handleDateChange(date)} />
         <DialogActions item xs={4} sm={2}>
           <Button
-            btType="tertiary"
+            bttype="tertiary"
             onClick={() => {
               setOpenDialog(false);
             }}
@@ -95,7 +90,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
           </Button>
           <Button
             autoFocus
-            btType="primary"
+            bttype="primary"
             startIcon={<SaveIcon />}
             onClick={() => takeHomeMutation.mutate({enddate: moment(date).toISOString()})}
           >
@@ -181,8 +176,7 @@ const UdstyrReplace = ({stationId}) => {
         </Select>
         {moment(data?.[0].slutdato) > moment(new Date()) ? (
           <Button
-            btType="primary"
-            color="secondary"
+            bttype="primary"
             sx={{marginLeft: 1}}
             onClick={() => {
               setOpenDialog(true);
@@ -192,7 +186,7 @@ const UdstyrReplace = ({stationId}) => {
           </Button>
         ) : (
           <Button
-            btType="primary"
+            bttype="primary"
             onClick={() => {
               setOpenAddUdstyr(true);
             }}
@@ -233,7 +227,9 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
   const [tabValue, setTabValue] = useSearchParam('tab');
 
   useEffect(() => {
-    setTabValue(tabValue);
+    console.log(tabValue);
+    if (tabValue === null) setTabValue('0');
+    else setTabValue(tabValue);
     return () => {
       setTabValue(null);
     };
@@ -433,12 +429,12 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
               >
                 <Grid item xs={12} sm={12}>
                   <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-                    <Button btType="tertiary" onClick={resetFormData}>
+                    <Button bttype="tertiary" onClick={resetFormData}>
                       Annuller
                     </Button>
                     <Button
                       autoFocus
-                      btType="primary"
+                      bttype="primary"
                       startIcon={<SaveIcon />}
                       onClick={formMethods.handleSubmit(handleUpdate, (values) =>
                         console.log(values)

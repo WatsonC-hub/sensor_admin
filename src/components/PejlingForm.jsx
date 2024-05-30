@@ -302,12 +302,12 @@ export default function PejlingForm({
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-                  <Button btType="tertiary" onClick={resetFormData}>
+                  <Button bttype="tertiary" onClick={resetFormData}>
                     Annuller
                   </Button>
                   <Button
                     autoFocus
-                    btType="primary"
+                    bttype="primary"
                     onClick={() => {
                       handleClickSubmit();
                       handleSubmit();

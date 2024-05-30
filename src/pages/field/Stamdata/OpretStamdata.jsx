@@ -167,7 +167,7 @@ function LocationChooser({setLocationDialogOpen}) {
             onChange={(event, value) => populateFormData(value)}
           />
           <Button
-            btType="primary"
+            bttype="primary"
             size="small"
             sx={{
               ml: 1,
@@ -411,7 +411,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               >
                 <Button
                   disabled={watchtstype_id === -1}
-                  btType="primary"
+                  bttype="primary"
                   size="small"
                   sx={{
                     ml: 1,
@@ -431,7 +431,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
             <footer style={{position: 'sticky', bottom: 0, float: 'right'}}>
               <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
                 <Button
-                  btType="tertiary"
+                  bttype="tertiary"
                   onClick={() => {
                     navigate('/field');
                     setAddStationDisabled(false);
@@ -442,7 +442,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
                 {tabValue < 3 && (
                   <Button
-                    btType="primary"
+                    bttype="primary"
                     sx={{marginRight: 1}}
                     endIcon={<ArrowForwardIcon fontSize="small" />}
                     onClick={() => {
@@ -456,7 +456,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 )}
                 {tabValue == 3 && (
                   <Button
-                    btType="primary"
+                    bttype="primary"
                     onClick={handleSubmit(handleOpret, handleDebug)}
                     startIcon={<SaveIcon />}
                     sx={{marginRight: 1}}

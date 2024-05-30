@@ -241,12 +241,12 @@ const NotificationList = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeModal} btType="tertiary">
+          <Button onClick={closeModal} bttype="tertiary">
             Annuller
           </Button>
           <Button
             onClick={handleRegisterNotification}
-            btType="primary"
+            bttype="primary"
             disabled={urgency == '' || description.length < 10}
           >
             Registrer

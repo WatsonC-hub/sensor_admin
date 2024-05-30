@@ -13,7 +13,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import OwnDatePicker from '../../../components/OwnDatePicker';
 import {stamdataStore} from '../../../state/store';
-import Button from '~/components/Button'
+import Button from '~/components/Button';
 
 export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
@@ -213,12 +213,12 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} btType="tertiary" >
+              <Button onClick={handleClose} bttype="tertiary">
                 Annuller
               </Button>
               <Button
                 onClick={handleSave}
-                btType="primary"
+                bttype="primary"
                 disabled={unitData.calypso_id === -1 || unitData.uuid === ''}
               >
                 Tilføj

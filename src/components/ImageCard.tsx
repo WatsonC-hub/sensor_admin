@@ -103,7 +103,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
             disabled={deleteMutation.isPending}
             onClick={() => setDialogOpen(true)}
             size="small"
-            btType="tertiary"
+            bttype="tertiary"
           >
             {deleteMutation.isPending ? (
               <CircularProgress />
@@ -120,7 +120,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
             disabled={deleteMutation.isPending}
             onClick={() => handleEdit(image)}
             size="small"
-            btType="primary"
+            bttype="primary"
           >
             <Box display="flex" alignItems="center" gap={1}>
               <Edit />
