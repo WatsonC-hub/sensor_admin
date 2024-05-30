@@ -328,7 +328,7 @@ export default function Station({ts_id, stamdata}) {
           <BearingGraph
             stationId={ts_id}
             measurements={control}
-            dynamicMeasurement={pageToShow === null ? dynamic : undefined}
+            dynamicMeasurement={pageToShow === null && showForm === true ? dynamic : undefined}
           />
           <Divider />
         </Box>
