@@ -14,6 +14,7 @@ import {createUser, getCvr} from '~/pages/field/fieldAPI';
 import * as z from 'zod';
 import RegisterForm from './RegisterForm';
 import Button from '~/components/Button';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const RegisterSchema = z.object({
   firstName: z
@@ -67,8 +68,10 @@ export default function Register() {
   }, [isSubmitSuccessful]);
 
   const navigate = useNavigate();
+  const {home} = useNavigationFunctions();
   const routeChange = () => {
-    navigate(`/`);
+    // navigate(`/`);
+    home();
   };
 
   const {

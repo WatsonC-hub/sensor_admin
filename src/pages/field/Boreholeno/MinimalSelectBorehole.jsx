@@ -1,19 +1,21 @@
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedItem}) => {
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.intakeno ? false : true);
-  const navigate = useNavigate();
+  const {boreholeIntake} = useNavigationFunctions();
 
   const handleChange = (event) => {
     setSelectedItem(event.target.value);
-    navigate(`../borehole/${boreholeno}/${event.target.value}`, {
-      replace: true,
-    });
+    // navigate(`../borehole/${boreholeno}/${event.target.value}`, {
+    //   replace: true,
+    // });
+    boreholeIntake(boreholeno, event.target.value, {replace: true});
     setIsOpen(false);
   };
 
@@ -62,7 +64,7 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
         },
         '& .MuiSelect-select': {
           p: '0px 10px',
-          mt: '1px'
+          mt: '1px',
         },
         boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.24)',
         borderRadius: '15px',
@@ -79,7 +81,7 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
               key={intake.intakeno}
               value={intake.intakeno}
               sx={{
-                color:'white'
+                color: 'white',
               }}
             >
               {intake.boreholeno + ' - ' + intake.intakeno}

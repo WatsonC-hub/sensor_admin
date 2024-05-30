@@ -11,31 +11,35 @@ import {RemoveTrailingSlash} from './RemoveTrailingSlash';
 import SensorAdmin from './pages/admin/SensorAdmin';
 import SensorField from './pages/field/SensorField';
 import {authStore} from './state/store';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 
 const Redirecter = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const navigate = useNavigate();
+  const {field} = useNavigationFunctions();
   const location = useLocation();
   const [authChecked, setAuthChecked] = useState(false);
   const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
 
   useEffect(() => {
     if (!iotAccess && location.pathname == '/') {
-      navigate('/field');
+      // navigate('/field');
+      field();
     }
     setAuthChecked(true);
   }, [iotAccess]);
 
   useEffect(() => {
     if (matches && location.pathname == '/') {
-      navigate('/field');
+      // navigate('/field');
+      field();
     }
   }, [matches]);
 
   useEffect(() => {
     if (!adminAccess && location.pathname == '/') {
-      navigate('/field');
+      // navigate('/field');
+      field();
     }
   }, [adminAccess]);
 

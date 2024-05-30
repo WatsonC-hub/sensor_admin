@@ -5,8 +5,8 @@ import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet-lasso';
 import 'leaflet.locatecontrol';
 import React, {useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {mapboxToken} from '~/consts';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const zoomAtom = atom(null);
 const panAtom = atom(null);
@@ -36,7 +36,7 @@ const scheduledIcon = L.divIcon({
 });
 
 function Map({data, isLoading, setLassoFilter}) {
-  const navigate = useNavigate();
+  const {location} = useNavigationFunctions();
   const mapRef = React.useRef(null);
   const layerRef = React.useRef(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
@@ -47,7 +47,8 @@ function Map({data, isLoading, setLassoFilter}) {
     setLassoFilter(new Set([element.locid]));
     if (_popup && _popup.length > 0) {
       L.DomEvent.on(_popup[0], 'click', () => {
-        navigate('/field/location/' + element.locid);
+        // navigate('/field/location/' + element.locid);
+        location(element.locid);
       });
     }
   };

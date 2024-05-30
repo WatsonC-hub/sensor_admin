@@ -2,14 +2,14 @@ import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
 import NavBar from '~/components/NavBar';
 import {authStore} from '~/state/store';
 import ChoiseCard from '../../../components/ChoiseCard';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const AdminChooser = () => {
   const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
-  const navigate = useNavigate();
+  const {field} = useNavigationFunctions();
 
   return (
     <>
@@ -21,7 +21,14 @@ const AdminChooser = () => {
           </Typography>
           <Typography variant="h4" sx={{textAlign: 'center'}}>
             Her er en oversigt over de forskellige funktioner, som snart kommer...{' '}
-            <Link onClick={() => navigate('/field')}>Gå tilbage til forsiden</Link>
+            <Link
+              onClick={() =>
+                // navigate('/field')
+                field()
+              }
+            >
+              Gå tilbage til forsiden
+            </Link>
           </Typography>
         </>
       )}

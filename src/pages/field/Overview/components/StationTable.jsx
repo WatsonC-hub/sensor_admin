@@ -17,6 +17,7 @@ import TableComponent from '~/components/TableComponent';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {stationTableAtom} from '~/state/atoms';
 import {authStore} from '../../../../state/store';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 function typeIcon(type) {
   let icon;
@@ -85,6 +86,7 @@ function statusIcon(row) {
 const StationTable = ({data, isLoading}) => {
   const {isTouch} = useBreakpoints();
   const navigate = useNavigate();
+  const {station, adminKvalitetssikring} = useNavigationFunctions();
   const adminAccess = authStore((state) => state.adminAccess);
   const mobileColumns = useMemo(
     () => [
@@ -199,7 +201,8 @@ const StationTable = ({data, isLoading}) => {
           size="small"
           sx={{backgroundColor: 'secondary.main'}}
           onClick={() => {
-            navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
+            station(row.original.loc_id, row.original.ts_id);
+            // navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
           }}
         >
           <QueryStatsIcon />
@@ -210,7 +213,10 @@ const StationTable = ({data, isLoading}) => {
           <IconButton
             size="small"
             sx={{backgroundColor: 'secondary.main'}}
-            onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}
+            onClick={
+              () => adminKvalitetssikring(row.original.ts_id)
+              // navigate(`/admin/kvalitetssikring/${row.original.ts_id}`
+            }
           >
             <AutoGraphIcon />
           </IconButton>

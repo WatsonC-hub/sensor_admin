@@ -3,11 +3,11 @@ import {Box, IconButton, Tooltip} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {atom} from 'jotai';
 import React, {useMemo} from 'react';
-import {useNavigate} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
 import TableComponent from '~/components/TableComponent';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import NavBar from '~/components/NavBar';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const tableStateAtom = atom({
   columnVisibility: {
@@ -27,8 +27,7 @@ const QualityAssuranceOverview = () => {
   //   {name: 'ts_name', title: 'Stationsnavn'},
   //   {name: 'tstype_name', title: 'Parameter'},
   // ];
-
-  const navigate = useNavigate();
+  const {adminKvalitetssikring} = useNavigationFunctions();
 
   const rowActions = ({row}) => (
     <Box>
@@ -36,7 +35,10 @@ const QualityAssuranceOverview = () => {
         <IconButton
           size="small"
           sx={{backgroundColor: 'secondary.main'}}
-          onClick={() => navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)}
+          onClick={() =>
+            // navigate(`/admin/kvalitetssikring/${row.original.ts_id}`)
+            adminKvalitetssikring(row.original.ts_id)
+          }
         >
           <AutoGraphIcon />
         </IconButton>

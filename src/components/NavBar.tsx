@@ -36,15 +36,17 @@ import {captureDialogAtom} from '~/state/atoms';
 import {authStore} from '~/state/store';
 import {apiClient} from '~/apiClient';
 import {MapRounded} from '@mui/icons-material';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const [resetState] = authStore((state) => [state.resetState]);
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const {home} = useNavigationFunctions();
 
   const handleLogout = () => {
     resetState();
-    navigate('/');
+    // navigate('/');
+    home();
     apiClient.get('/auth/logout/secure');
     queryClient.clear();
   };
@@ -64,13 +66,14 @@ const LogOut = ({children}: {children?: ReactNode}) => {
 };
 
 export const HomeButton = () => {
-  const navigate = useNavigate();
+  const {field} = useNavigationFunctions();
 
   return (
     <IconButton
       color="inherit"
       onClick={(e) => {
-        navigate('/field');
+        // navigate('/field');
+        field();
       }}
       size="large"
     >
@@ -99,7 +102,7 @@ export const AppBarLayout = ({children}: {children?: ReactNode}) => {
 };
 
 const NavBarNotifications = () => {
-  const navigate = useNavigate();
+  const {adminNotifikationer} = useNavigationFunctions();
 
   const {data} = useNotificationOverview();
 
@@ -116,7 +119,8 @@ const NavBarNotifications = () => {
       color="error"
       onClick={() => {
         if (!window.location.pathname.includes('/notifikationer')) {
-          navigate('/admin/notifikationer');
+          // navigate('/admin/notifikationer');
+          adminNotifikationer();
         }
       }}
       sx={{cursor: 'pointer', mr: 2, '& .MuiBadge-badge': {fontSize: 10}}}
@@ -246,7 +250,7 @@ const NavBar = ({children}: {children?: ReactNode}) => {
     state.adminAccess,
   ]);
   const [openQRScanner, setOpenQRScanner] = useAtom(captureDialogAtom);
-  const navigate = useNavigate();
+  const {register, home, admin, createStamdata, field, station} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const metadata = useContext(MetadataContext);
 
@@ -264,13 +268,14 @@ const NavBar = ({children}: {children?: ReactNode}) => {
             color="secondary"
             variant="contained"
             onClick={() => {
-              navigate('/register');
+              // navigate('/register');
+              register();
             }}
           >
             Opret konto
           </Button>
         ) : (
-          <Button color="secondary" variant="contained" onClick={(e) => navigate('/')}>
+          <Button color="secondary" variant="contained" onClick={(e) => home()}>
             Log ind
           </Button>
         )}
@@ -324,7 +329,8 @@ const NavBar = ({children}: {children?: ReactNode}) => {
                 title: 'Admin',
                 icon: <AdminPanelSettingsIcon fontSize="medium" />,
                 onClick: () => {
-                  navigate('/admin');
+                  // navigate('/admin');
+                  admin();
                 },
               },
               ...(iotAccess
@@ -333,7 +339,8 @@ const NavBar = ({children}: {children?: ReactNode}) => {
                       title: 'Opret station',
                       icon: <AddLocationAltIcon fontSize="medium" />,
                       onClick: () => {
-                        navigate('/field/stamdata');
+                        // navigate('/field/stamdata');
+                        createStamdata();
                       },
                     },
                   ]
@@ -384,7 +391,8 @@ const NavBar = ({children}: {children?: ReactNode}) => {
                 title: 'Field',
                 icon: <BuildCircleIcon fontSize="medium" />,
                 onClick: () => {
-                  navigate('/field');
+                  // navigate('/field');
+                  field();
                 },
               },
             ]}
@@ -415,14 +423,16 @@ const NavBar = ({children}: {children?: ReactNode}) => {
                 title: 'Til service',
                 icon: <QueryStatsIcon />,
                 onClick: () => {
-                  navigate(`/field/location/${metadata?.loc_id}/${metadata?.ts_id}`);
+                  // navigate(`/field/location/${metadata?.loc_id}/${metadata?.ts_id}`);
+                  station(metadata?.loc_id, metadata?.ts_id);
                 },
               },
               {
                 title: 'Field',
                 icon: <BuildCircleIcon fontSize="medium" />,
                 onClick: () => {
-                  navigate('/field');
+                  // navigate('/field');
+                  field();
                 },
               },
             ]}
