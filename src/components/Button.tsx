@@ -5,7 +5,7 @@ import {ReactElement} from 'react';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
   btType: 'primary' | 'secondary' | 'tertiary';
-  children: ReactElement;
+  children: ReactElement | string;
 }
 
 const Button = (props: MyButtonProps) => {

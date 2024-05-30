@@ -1,6 +1,6 @@
 import React from 'react';
 
-const BoreholeContent = () => {
+const BoreholeContent = ({data}) => {
   return <div>BoreholeContent</div>;
 };
 

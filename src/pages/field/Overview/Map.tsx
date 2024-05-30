@@ -44,6 +44,14 @@ const highlightRadius = 14;
 const zoomThreshold = 14;
 const markerNumThreshold = 10;
 
+const defaultCircleMarkerStyle = {
+  radius: defaultRadius,
+  weight: 1,
+  fillOpacity: 0.8,
+  opacity: 0.8,
+  color: '#000000',
+};
+
 const zoomAtom = atom<number | null>(null);
 const panAtom = atom<L.LatLng | null>(null);
 const typeAheadAtom = atom<string>('');
@@ -303,6 +311,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           opacity: 0.7,
           className: 'custom-tooltip',
           permanent: true,
+          offset: [5, -10],
         })
           .setLatLng(layer.getLatLng())
           .setContent(layer.options.title?.toString() || '');
@@ -325,7 +334,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
       L.DomEvent.stopPropagation(e);
       setSelectedMarker(e.sourceTarget.options.data);
       if (hightlightedMarker) {
-        hightlightedMarker.setStyle({stroke: false, radius: 8});
+        hightlightedMarker.setStyle(defaultCircleMarkerStyle);
       }
       if ('setStyle' in e.sourceTarget) {
         e.sourceTarget.setStyle({
@@ -415,12 +424,8 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
         const point: L.LatLngExpression = [coords.lat, coords.lng];
         const marker = L.circleMarker(point, {
           // icon: element.status ? stationIcon : inactiveIcon,
+          ...defaultCircleMarkerStyle,
           interactive: true,
-          radius: defaultRadius,
-          weight: 1,
-          fillOpacity: 0.8,
-          opacity: 0.8,
-          color: '#000000',
           fillColor: element.active ? element.color : '#C0C0C0',
           title: element.locname,
           data: element,

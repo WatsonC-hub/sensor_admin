@@ -90,7 +90,7 @@ const DrawerComponent = ({
             pl: 2,
           }}
         >
-          <Typography variant="body1" sx={{p: 0}}>
+          <Typography variant={isTouch ? 'body1' : 'h6'} sx={{p: 0}}>
             {header}
           </Typography>
           <Box display="flex">
@@ -111,6 +111,8 @@ const DrawerComponent = ({
           </Box>
         </Box>
         <Box
+          display="flex"
+          flexDirection="column"
           sx={{
             px: 2,
             pb: 2,
