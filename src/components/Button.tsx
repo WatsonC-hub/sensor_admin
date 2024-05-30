@@ -8,9 +8,9 @@ interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
   children: ReactElement | string;
 }
 
-const Button = (props: MyButtonProps) => {
+const Button = ({btType, children, ...props}: MyButtonProps) => {
   let sx = {};
-  if (props.btType === 'primary') {
+  if (btType === 'primary') {
     sx = {
       textTransform: 'initial',
       my: 0.5,
@@ -27,7 +27,7 @@ const Button = (props: MyButtonProps) => {
     };
   }
 
-  if (props.btType === 'tertiary') {
+  if (btType === 'tertiary') {
     sx = {
       textTransform: 'initial',
       my: 0.5,
@@ -42,7 +42,7 @@ const Button = (props: MyButtonProps) => {
 
   return (
     <MuiButton {...props} variant="outlined" sx={sx}>
-      {props.children}
+      {children}
     </MuiButton>
   );
 };
