@@ -5,6 +5,7 @@ import {
   Autocomplete,
   IconButton,
   AutocompleteInputChangeReason,
+  Menu,
 } from '@mui/material';
 // import Autocomplete from '@mui/material/Autocomplete';
 // import Box from '@mui/material/Box';
@@ -16,7 +17,7 @@ import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
-import {useRef, useEffect, useState, SyntheticEvent} from 'react';
+import {useRef, useEffect, useState, SyntheticEvent, MouseEventHandler} from 'react';
 import {apiClient} from '~/apiClient';
 import {mapboxToken} from '~/consts';
 import {stamdataStore} from '~/state/store';
@@ -35,6 +36,7 @@ import type {BoreholeData} from './OverviewPage';
 import {boreholeColors} from '~/consts';
 import TaskIcon from './components/TaskIcon';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import FilterOptions from './components/FilterOptions';
 
 const utm = new utmObj();
 
@@ -106,10 +108,13 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
+  const searchRef = useRef<HTMLElement | null>(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
   const [typeAhead, setTypeAhead] = useAtom(typeAheadAtom);
   const [mapFilter, setMapFilter] = useAtom(mapFilterAtom);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
   const [selectedMarker, setSelectedMarker] = useState<
     NotificationMap | BoreholeData | null | undefined
   >(null);
@@ -496,7 +501,10 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
         for (let i = 0; i < markers.length; i++) {
           if (markers[i].options.title == value.name) {
             markers[i].openPopup();
-            mapRef.current?.flyTo(markers[i].getLatLng(), 12);
+            mapRef.current?.flyTo(markers[i].getLatLng(), 14, {
+              animate: false,
+            });
+            markers[i].fire('click');
             setSelectedMarker(markers[i].options.data);
             break;
           }
@@ -542,7 +550,10 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
           });
 
           marker.on('add', function () {
-            mapRef.current?.flyTo(point, 12);
+            mapRef.current?.flyTo(point, 16, {
+              animate: false,
+            });
+            marker.fire('click');
             setSelectedMarker(element);
           });
           if (layerRef.current) {
@@ -551,6 +562,14 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
         });
       }
     }
+  };
+
+  const handleOpenFilter: MouseEventHandler<HTMLButtonElement> = (event) => {
+    setAnchorEl(searchRef.current);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const getDrawerHeader = () => {
@@ -563,6 +582,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
   return (
     <>
       <Autocomplete
+        ref={searchRef}
         freeSolo={true}
         forcePopupIcon={false}
         options={locItems}
@@ -595,8 +615,10 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
                   }}
                   position="end"
                 >
-                  <IconButton edge="end" onClick={() => console.log('yay')}>
-                    <TuneRoundedIcon />
+                  <IconButton edge="end" onClick={handleOpenFilter}>
+                    <TuneRoundedIcon
+                      color={Object.entries(mapFilter).keys.length > 0 ? 'primary' : undefined}
+                    />
                   </IconButton>
                 </InputAdornment>
               ),
@@ -609,7 +631,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
             }}
           />
         )}
-        style={{
+        sx={{
           width: matches ? '90%' : 300,
           marginLeft: '5%',
           marginBottom: '12px',
@@ -618,6 +640,20 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
         onChange={handleChange}
         onInputChange={elasticSearch}
       />
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        sx={{
+          '& .MuiPaper-root': {
+            width: matches ? '90%' : 300,
+          },
+        }}
+      >
+        <FilterOptions filters={mapFilter} setFilters={setMapFilter} />
+      </Menu>
       <Box
         id="map"
         sx={{
