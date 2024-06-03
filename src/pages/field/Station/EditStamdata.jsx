@@ -331,6 +331,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
           onChange={(_, newValue) => setTabValue(newValue)}
           variant={matches ? 'scrollable' : 'fullWidth'}
           aria-label="simple tabs example"
+          scrollButtons="auto"
           sx={{
             '& .MuiTab-root': {
               height: '50px',

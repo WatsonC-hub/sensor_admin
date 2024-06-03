@@ -101,14 +101,14 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
       <Box display="flex" justifyContent={{sm: 'center'}}>
         {matches ? (
           <MaalepunktTableMobile
-            data={watlevmp!}
+            data={watlevmp}
             handleEdit={handleEdit('watlevmp')}
             handleDelete={handleDeleteMaalepunkt}
             canEdit={canEdit}
           />
         ) : (
           <MaalepunktTableDesktop
-            data={watlevmp!}
+            data={watlevmp}
             handleEdit={handleEdit('watlevmp')}
             handleDelete={handleDeleteMaalepunkt}
             canEdit={canEdit}

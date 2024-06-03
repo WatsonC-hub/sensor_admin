@@ -33,7 +33,8 @@ const getNavigation = (item) => {
   }
 };
 
-const colors = ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF'];
+// const colors = ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF'];
+const colors = ['#FF0000', '#FF6C00', '#FFFF00', '#00FF00', '#9F2B68', '#334FFF'];
 const tasktype = ['Kritisk', 'Middel', 'Lav', 'OK', 'Kvalitetssikring', 'Plateau'];
 const selectFiltersAtom = atom(colors);
 const lassoFilterAtom = atom(new Set());

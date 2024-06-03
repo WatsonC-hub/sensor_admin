@@ -29,7 +29,10 @@ export const FormTableComponent = <TData extends MRT_RowData>({
 
   const table = useMaterialReactTable({
     columns,
-    data,
+    data: data ?? [],
+    state: {
+      isLoading: data === undefined,
+    },
     ...getOptions,
     ...rest, //accept props to override default table options
   });
