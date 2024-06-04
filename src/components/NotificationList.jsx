@@ -6,7 +6,6 @@ import {
   Avatar,
   Badge,
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -22,6 +21,9 @@ import {
 import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
+
+import Button from '~/components/Button';
+
 import {useNotificationOverview} from '../hooks/query/useNotificationOverview';
 import {useTaskMutation} from '../hooks/query/useTaskMutation';
 
@@ -200,7 +202,7 @@ const NotificationList = () => {
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                 <ErrorOutlineOutlined
                   sx={{
-                    color: '#FF0000',
+                    color: '#d32f2f',
                   }}
                 />
                 Kritisk
@@ -220,7 +222,7 @@ const NotificationList = () => {
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                 <ErrorOutlineOutlined
                   sx={{
-                    color: '#FFFF00',
+                    color: '#ffb13f',
                   }}
                 />
                 Lav
@@ -241,12 +243,12 @@ const NotificationList = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeModal} color="primary">
+          <Button onClick={closeModal} bttype="tertiary">
             Annuller
           </Button>
           <Button
             onClick={handleRegisterNotification}
-            color="primary"
+            bttype="primary"
             disabled={urgency == '' || description.length < 10}
           >
             Registrer

@@ -1,4 +1,5 @@
-import {Button, CircularProgress, Grid, TextField, Typography} from '@mui/material';
+import {Edit, Save} from '@mui/icons-material';
+import {CircularProgress, Grid, TextField, Typography, Box} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,21 +11,26 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import moment from 'moment';
 import React from 'react';
 import {toast} from 'react-toastify';
+
+import Button from '~/components/Button';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
+
 import OwnDatePicker from './OwnDatePicker';
 
-function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, handleCloseSave}) {
+function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const imageUrl = `/static/images/${activeImage.imageurl}?format=auto&width=${1024}`;
+  const imageUrl = `/static/images/${activeImage.imageurl}`;
 
-  const {post: uploadImage, put: editImage} = useImageUpload('station');
+  const {post: uploadImage, put: editImage} = useImageUpload(type);
 
   function saveImage() {
+    console.log('Hit Once');
     if (activeImage.gid === -1) {
+      console.log('Hit Twice');
       const payload = {
-        path: locationId,
+        path: id,
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
@@ -45,7 +51,7 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
       });
     } else {
       const payload = {
-        path: `${locationId}/${activeImage.gid}`,
+        path: `${id}/${activeImage.gid}`,
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
@@ -76,9 +82,21 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
     >
       <DialogTitle id="form-dialog-title">Gem billede</DialogTitle>
       <DialogContent>
-        <Grid container spacing={3} style={{width: '100%'}}>
-          <Grid item xs={12} sm={12} style={{width: '100%'}}>
-            <img src={activeImage.gid === -1 ? dataUri : imageUrl} style={{width: '100%'}} />
+        <Grid container spacing={3}>
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            sx={{
+              display: 'flex',
+            }}
+          >
+            <img
+              src={activeImage.gid === -1 ? dataUri : imageUrl}
+              height="800px"
+              style={{maxWidth: '800px', objectFit: 'cover', margin: 'auto'}}
+              loading="lazy"
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -117,22 +135,27 @@ function SaveImageDialog({activeImage, changeData, locationId, open, dataUri, ha
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={saveImage}
-          disabled={uploadImage.isLoading}
-          color="secondary"
-          variant="contained"
-        >
+        <Button onClick={handleCloseSave} bttype="tertiary">
+          Annuller
+        </Button>
+        <Button onClick={saveImage} disabled={uploadImage.isLoading} bttype="primary">
           {uploadImage.isLoading ? (
             <CircularProgress />
           ) : activeImage.gid == -1 ? (
-            'Tilføj'
+            <Box display={'flex'} gap={1} alignItems={'center'}>
+              <Save />
+              <Typography variant="body2" fontSize={14}>
+                Gem
+              </Typography>
+            </Box>
           ) : (
-            'Ændre'
+            <Box display="flex" alignItems="center" gap={1}>
+              <Edit />
+              <Typography variant="body2" fontSize={14}>
+                Rediger
+              </Typography>
+            </Box>
           )}
-        </Button>
-        <Button onClick={handleCloseSave} color="secondary" variant="contained">
-          Annuller
         </Button>
       </DialogActions>
     </Dialog>

@@ -1,15 +1,18 @@
-import MuiButton from '@mui/material/Button';
 import type {ButtonProps} from '@mui/material';
+import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
+import {ReactElement} from 'react';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
-  btType: 'primary' | 'secondary' | 'tertiary';
+  bttype: 'primary' | 'secondary' | 'tertiary';
+  children: ReactElement | string;
 }
 
-const Button = (props: MyButtonProps) => {
+const Button = ({bttype, children, ...props}: MyButtonProps) => {
   let sx = {};
-  if (props.btType === 'primary') {
+  if (bttype === 'primary') {
     sx = {
+      textTransform: 'initial',
       my: 0.5,
       p: '0.5rem 1rem',
       borderRadius: 9999,
@@ -24,17 +27,24 @@ const Button = (props: MyButtonProps) => {
     };
   }
 
-  if (props.btType === 'tertiary') {
+  if (bttype === 'tertiary') {
     sx = {
+      textTransform: 'initial',
       my: 0.5,
       p: '0.5rem 1rem',
       borderRadius: 9999,
+      backgroundColor: '#ffffff',
+      borderColor: '#cacaca',
     };
   }
 
   sx = merge(sx, props.sx);
 
-  return <MuiButton {...props} variant="outlined" sx={sx} />;
+  return (
+    <MuiButton {...props} variant="outlined" sx={sx}>
+      {children}
+    </MuiButton>
+  );
 };
 
 export default Button;

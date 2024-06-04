@@ -10,6 +10,7 @@ import {
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useEffect} from 'react';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const TableComponent = ({
@@ -85,8 +86,8 @@ const TableComponent = ({
     <MaterialReactTable
       data={data}
       columns={columns}
-      muiTablePaperProps={{sx: {ml: -2, mr: -2}}}
-      muiTableContainerProps={{sx: {maxHeight: 'calc(100dvh - 300px)', maxWidth: '100%'}}}
+      // muiTablePaperProps={{sx: {ml: -2, mr: -2}}}
+      muiTableContainerProps={{sx: {maxWidth: '100%'}}}
       muiTableHeadProps={{sx: {backgroundColor: 'primary.main'}}}
       localization={MRT_Localization_DA}
       positionGlobalFilter="left" //show the global filter on the left side of the top toolbar

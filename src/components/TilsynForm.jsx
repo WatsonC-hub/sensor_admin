@@ -1,16 +1,16 @@
+import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
-import {Button, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
+import {Box, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
+
+import Button from '~/components/Button';
+
 import OwnDatePicker from './OwnDatePicker';
 
 export default function TilsynForm({formData, changeFormData, handleSubmit, cancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
-
-  useEffect(() => {
-    window.scrollTo({top: 300, behavior: 'smooth'});
-  }, []);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -40,7 +40,6 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
       style={{marginBottom: 25}}
       sx={{
         width: {xs: '100%', sm: '60%'},
-        marginLeft: {xs: '0%', sm: '20%'},
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
@@ -68,8 +67,14 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
                   color="primary"
                 />
               }
-              label={<label>Batteriskift</label>}
+              label={
+                <Box display="flex">
+                  <BatteryAlertRounded sx={{color: 'grey.700'}} />
+                  <Typography alignSelf="center">Batteriskift</Typography>
+                </Box>
+              }
             />
+
             <FormControlLabel
               control={
                 <Checkbox
@@ -79,7 +84,12 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
                   color="primary"
                 />
               }
-              label={<label>Tilsyn</label>}
+              label={
+                <Box display="flex" gap={1}>
+                  <RemoveRedEyeRounded sx={{color: 'grey.700'}} />
+                  <Typography alignSelf="center">Tilsyn</Typography>
+                </Box>
+              }
             />
           </Grid>
           <Grid item xs={12} sm={10}>
@@ -98,28 +108,25 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              onClick={() => {
-                handleClickSubmit();
-                handleSubmit();
-              }}
-              disabled={disableSubmit}
-              startIcon={<SaveIcon />}
-              color="secondary"
-              variant="contained"
-            >
-              Gem
-            </Button>
+          <Grid item xs={12} sm={4}>
+            <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+              <Button bttype="tertiary" onClick={cancel}>
+                Annuller
+              </Button>
+              <Button
+                autoFocus
+                bttype="primary"
+                onClick={() => {
+                  handleClickSubmit();
+                  handleSubmit();
+                }}
+                disabled={disableSubmit}
+                startIcon={<SaveIcon />}
+              >
+                Gem
+              </Button>
+            </Box>
           </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button onClick={cancel} color="grey" variant="contained">
-              Annuller
-            </Button>
-          </Grid>
-          <Grid item xs={2} sm={4}></Grid>
         </Grid>
       </CardContent>
     </Card>

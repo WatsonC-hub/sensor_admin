@@ -1,17 +1,20 @@
+import {Grid} from '@mui/material';
 import React from 'react';
+
 // @ts-ignore
 import ImageCard from '~/components/ImageCard';
-import {Grid} from '@mui/material';
 
 type Image = {
   gid: number;
-  loc_id: number;
+  loc_id?: number;
+  boreholeno: number;
   title: string;
   date: string;
   public: boolean;
   userid: number;
   comment: string;
   imageurl: string;
+  organisationid?: number;
 };
 
 type ImageViewerProps = {

@@ -1,6 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useRef, useEffect} from 'react';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
 
 export const useRunQA = (ts_id) => {
@@ -30,7 +31,7 @@ export const useRunQA = (ts_id) => {
       });
       toast.update(toastId.current, {
         render: 'Genberegnet',
-        type: toast.TYPE.SUCCESS,
+        type: 'success',
         isLoading: false,
         autoClose: 2000,
         closeOnClick: true,

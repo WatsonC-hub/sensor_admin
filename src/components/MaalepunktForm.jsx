@@ -1,23 +1,13 @@
 import SaveIcon from '@mui/icons-material/Save';
-import {
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  InputAdornment,
-  TextField,
-  Typography,
-} from '@mui/material';
+import {Box, Card, CardContent, Grid, InputAdornment, TextField, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
+
+import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 
 export default function MaalepunktForm({formData, changeFormData, handleSubmit, handleCancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);
-
-  useEffect(() => {
-    window.scrollTo({top: 300, behavior: 'smooth'});
-  }, []);
 
   const handleClickSubmit = () => {
     setDisableSubmit(true);
@@ -51,7 +41,7 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
       style={{marginBottom: 25}}
       sx={{
         width: {xs: '100%', sm: '60%'},
-        marginLeft: {xs: '0%', sm: '20%'},
+        marginLeft: {xs: '0%'},
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
@@ -114,30 +104,26 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
               onChange={handleCommentChange}
             />
           </Grid>
-          <Grid item xs={2} sm={4}></Grid>
-          <Grid item xs={4} sm={2}>
-            <Button
-              autoFocus
-              onClick={() => {
-                handleClickSubmit();
-                handleSubmit();
-              }}
-              disabled={disableSubmit}
-              startIcon={<SaveIcon />}
-              color="secondary"
-              variant="contained"
-            >
-              Gem
-            </Button>
+          <Grid item xs={12} sm={4}>
+            <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+              <Button onClick={handleCancel} bttype="tertiary">
+                Annuller
+              </Button>
+              <Button
+                autoFocus
+                onClick={() => {
+                  handleClickSubmit();
+                  handleSubmit();
+                }}
+                disabled={disableSubmit}
+                startIcon={<SaveIcon />}
+                bttype="primary"
+              >
+                Gem
+              </Button>
+            </Box>
           </Grid>
-          <Grid item xs={4} sm={2}>
-            <Button onClick={handleCancel} color="grey" variant="contained">
-              Annuller
-            </Button>
-          </Grid>
-          <Grid item xs={2} sm={4}></Grid>
         </Grid>
-        <Grid item xs={2} sm={4}></Grid>
       </CardContent>
     </Card>
   );

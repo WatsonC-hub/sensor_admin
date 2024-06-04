@@ -3,6 +3,7 @@ import path from 'path';
 import {defineConfig} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
+import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {
@@ -124,6 +125,7 @@ export default defineConfig({
     react(),
     svgrPlugin(),
     VitePWA(pwaOptions),
+    viteTsconfigPaths(),
     // sentryVitePlugin(sentryOptions),
   ],
   build: {
@@ -161,13 +163,5 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/static\/images/, ''),
       },
     },
-  },
-  resolve: {
-    alias: {
-      '~': path.resolve(__dirname, './src'),
-      src: path.resolve(__dirname, './src'),
-      public: '/public',
-    },
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
   },
 });

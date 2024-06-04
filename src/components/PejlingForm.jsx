@@ -1,7 +1,7 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {
   Alert,
-  Button,
+  Box,
   Card,
   CardContent,
   Checkbox,
@@ -19,7 +19,11 @@ import {
 } from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
+
+import Button from '~/components/Button';
+
 import {stamdataStore} from '../state/store';
+
 import OwnDatePicker from './OwnDatePicker';
 
 // TODO
@@ -59,11 +63,7 @@ export default function PejlingForm({
   };
 
   useEffect(() => {
-    window.scrollTo({top: 300, behavior: 'smooth'});
-  }, []);
-
-  useEffect(() => {
-    if (mpData.length > 0) {
+    if (mpData !== undefined && mpData.length > 0) {
       var mp = mpData.filter((elem) => {
         if (
           moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
@@ -124,7 +124,7 @@ export default function PejlingForm({
       style={{marginBottom: 25}}
       sx={{
         width: {xs: '100%', sm: '60%'},
-        marginLeft: {xs: '0%', sm: '20%'},
+        marginLeft: {xs: '0%'},
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
@@ -135,7 +135,7 @@ export default function PejlingForm({
           {formData.gid !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
-          {isWaterlevel && mpData.length < 1 ? (
+          {isWaterlevel && mpData !== undefined && mpData.length < 1 ? (
             <Grid item xs={12} sm={12} display="flex" justifyContent="center">
               <Alert
                 severity="error"
@@ -303,31 +303,29 @@ export default function PejlingForm({
                   onChange={handleCommentChange}
                 />
               </Grid>
-
-              <Grid item xs={4} sm={2}>
-                <Button
-                  autoFocus
-                  color="secondary"
-                  variant="contained"
-                  onClick={() => {
-                    handleClickSubmit();
-                    handleSubmit();
-                  }}
-                  disabled={
-                    pejlingOutOfRange ||
-                    disableSubmit ||
-                    (isWaterlevel && currentMP.elevation === null) ||
-                    formData.useforcorrection == '-1'
-                  }
-                  startIcon={<SaveIcon />}
-                >
-                  Gem
-                </Button>
-              </Grid>
-              <Grid item xs={4} sm={2}>
-                <Button color="grey" variant="contained" onClick={resetFormData}>
-                  Annuller
-                </Button>
+              <Grid item xs={12} sm={4}>
+                <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+                  <Button bttype="tertiary" onClick={resetFormData}>
+                    Annuller
+                  </Button>
+                  <Button
+                    autoFocus
+                    bttype="primary"
+                    onClick={() => {
+                      handleClickSubmit();
+                      handleSubmit();
+                    }}
+                    disabled={
+                      pejlingOutOfRange ||
+                      disableSubmit ||
+                      (isWaterlevel && currentMP.elevation === null) ||
+                      formData.useforcorrection == '-1'
+                    }
+                    startIcon={<SaveIcon />}
+                  >
+                    Gem
+                  </Button>
+                </Box>
               </Grid>
             </>
           )}

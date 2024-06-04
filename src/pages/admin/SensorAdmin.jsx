@@ -1,11 +1,13 @@
 import React from 'react';
 import {Route, Routes} from 'react-router-dom';
-import UserAdmin from '~/pages/admin/Brugerstyring/UserAdmin';
-import ConfigurationPage from '~/pages/admin/Konfiguration/ConfigurationPage';
-import NotificationPage from '~/pages/admin/Notifikationer/NotificationPage';
-import QualityAssurance from './Kvalitetssikring/QualityAssurance';
-import QualityAssuranceOverview from './Kvalitetssikring/QualityAssuranceOverview';
-import AdminChooser from './Overview/AdminChooser';
+
+import UserAdmin from '~/pages/admin/brugerstyring/UserAdmin';
+import ConfigurationPage from '~/pages/admin/konfiguration/ConfigurationPage';
+import NotificationPage from '~/pages/admin/notifikationer/NotificationPage';
+
+import QualityAssurance from './kvalitetssikring/QualityAssurance';
+import QualityAssuranceOverview from './kvalitetssikring/QualityAssuranceOverview';
+import AdminChooser from './overview/AdminChooser';
 
 const SensorAdmin = () => {
   return (

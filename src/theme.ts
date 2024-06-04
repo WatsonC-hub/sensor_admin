@@ -1,5 +1,4 @@
 import {createTheme} from '@mui/material';
-import {BreakpointOverrides} from '@mui/material';
 import {daDK} from '@mui/material/locale';
 
 declare module '@mui/material' {
