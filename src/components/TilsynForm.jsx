@@ -1,11 +1,13 @@
+import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
-import OwnDatePicker from './OwnDatePicker';
+
 import Button from '~/components/Button';
-import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
+
+import OwnDatePicker from './OwnDatePicker';
 
 export default function TilsynForm({formData, changeFormData, handleSubmit, cancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);

@@ -1,6 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
 
 const TOAST_ID = 'correct-toast';
@@ -38,7 +39,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
         hideProgressBar: false,
       });
     }
-  }, [pollData]);
+  }, [pollData, queryKey, queryClient, ts_id]);
 
   const correctMutation = useMutation({
     mutationFn: async () => {

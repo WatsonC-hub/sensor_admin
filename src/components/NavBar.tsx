@@ -1,12 +1,13 @@
+import {MapRounded} from '@mui/icons-material';
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
-import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
   AppBar,
   Badge,
@@ -26,17 +27,17 @@ import {useAtom} from 'jotai';
 import moment from 'moment';
 import {useState, ReactNode, useContext, MouseEventHandler} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {MetadataContext} from '~/state/contexts';
+
+import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import NotificationList from '~/components/NotificationList';
+import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
+import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
-import {apiClient} from '~/apiClient';
-import {MapRounded} from '@mui/icons-material';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const [resetState] = authStore((state) => [state.resetState]);

@@ -1,11 +1,11 @@
-import {useMemo, useState} from 'react';
-import RenderActions from '~/helpers/RowActions';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import React, {useMemo, useState} from 'react';
+
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import React from 'react';
-import {stamdataStore} from '~/state/store';
+import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
+import {stamdataStore} from '~/state/store';
 
 export type Kontrol = {
   comment: string;

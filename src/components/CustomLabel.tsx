@@ -1,5 +1,5 @@
-import React from 'react';
 import {Typography, SvgIcon, TypographyProps, SvgIconProps} from '@mui/material';
+import React from 'react';
 
 interface CustomLabelProps {
   value: string;

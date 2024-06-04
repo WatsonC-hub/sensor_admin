@@ -1,10 +1,11 @@
 import {useQuery, useMutation} from '@tanstack/react-query';
+import moment from 'moment';
 import {useContext} from 'react';
+import {toast} from 'react-toastify';
+
 import {apiClient} from '~/apiClient';
 // @ts-ignore
 import {stamdataStore} from '~/state/store';
-import moment from 'moment';
-import {toast} from 'react-toastify';
 
 interface Maalepunkt {
   gid: number;
@@ -63,7 +64,7 @@ export const maalepunktDelOptions = {
 };
 
 export const useMaalepunkt = () => {
-  const ts_id = stamdataStore((store) => store.timeseries.ts_id)
+  const ts_id = stamdataStore((store) => store.timeseries.ts_id);
   const get = useQuery({
     queryKey: ['watlevmp', ts_id],
     queryFn: async () => {

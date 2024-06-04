@@ -6,13 +6,13 @@ import {
   MRT_ExpandButton,
   MaterialReactTable,
 } from 'material-react-table';
-import {useMemo, useState} from 'react';
-import RenderActions from '~/helpers/RowActions';
+import React, {useMemo, useState} from 'react';
+
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {stamdataStore} from '~/state/store';
-import React from 'react';
+import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
+import {stamdataStore} from '~/state/store';
 
 export type Kontrol = {
   comment: string;

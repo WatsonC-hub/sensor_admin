@@ -19,9 +19,12 @@ import {
 } from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {stamdataStore} from '../state/store';
-import OwnDatePicker from './OwnDatePicker';
+
 import Button from '~/components/Button';
+
+import {stamdataStore} from '../state/store';
+
+import OwnDatePicker from './OwnDatePicker';
 
 // TODO
 // - Find ud af om textfield skal have grøn outline

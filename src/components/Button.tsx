@@ -1,5 +1,5 @@
-import MuiButton from '@mui/material/Button';
 import type {ButtonProps} from '@mui/material';
+import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
 import {ReactElement} from 'react';
 

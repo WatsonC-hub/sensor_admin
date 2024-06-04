@@ -21,9 +21,11 @@ import {
 import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
+
+import Button from '~/components/Button';
+
 import {useNotificationOverview} from '../hooks/query/useNotificationOverview';
 import {useTaskMutation} from '../hooks/query/useTaskMutation';
-import Button from '~/components/Button';
 
 // Mock data for notifications
 const CHARACTERLIMIT = 60;

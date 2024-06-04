@@ -2,8 +2,9 @@ import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, InputAdornment, TextField, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import OwnDatePicker from '~/components/OwnDatePicker';
+
 import Button from '~/components/Button';
+import OwnDatePicker from '~/components/OwnDatePicker';
 
 export default function MaalepunktForm({formData, changeFormData, handleSubmit, handleCancel}) {
   const [disableSubmit, setDisableSubmit] = useState(false);

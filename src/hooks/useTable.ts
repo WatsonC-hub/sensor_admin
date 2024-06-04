@@ -1,4 +1,5 @@
 // A hook that returns whether the current screen size is mobile, tablet or desktop.
+import {merge} from 'lodash';
 import {
   type MRT_RowData,
   type MRT_TableOptions,
@@ -7,9 +8,9 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import useBreakpoints from './useBreakpoints';
 import {useMemo} from 'react';
-import {merge} from 'lodash';
+
+import useBreakpoints from './useBreakpoints';
 
 const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean}) => {
   const globalOptions: Partial<MRT_TableOptions<TData>> = {

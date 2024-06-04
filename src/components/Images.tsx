@@ -1,8 +1,9 @@
 import {Box, Grid} from '@mui/material';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
+
 import {apiClient} from '~/apiClient';
-import {useImageUpload} from '~/hooks/query/useImageUpload';
 import ImageViewer from '~/components/ImageViewer';
+import {useImageUpload} from '~/hooks/query/useImageUpload';
 import {Image} from '~/types';
 
 interface Props {

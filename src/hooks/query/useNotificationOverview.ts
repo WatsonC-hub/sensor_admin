@@ -1,6 +1,7 @@
 import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {apiClient} from '~/apiClient';
 import {reverse, sortBy, uniqBy} from 'lodash';
+
+import {apiClient} from '~/apiClient';
 
 export interface Notification {
   locname: string;

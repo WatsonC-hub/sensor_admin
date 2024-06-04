@@ -1,3 +1,4 @@
+import MenuIcon from '@mui/icons-material/MoreVert';
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -9,10 +10,10 @@ import {
   Menu,
   IconButton,
 } from '@mui/material';
-import CustomBottomNavigationActionLabel from './CustomLabel';
 import {useTheme} from '@mui/material/styles';
 import React from 'react';
-import MenuIcon from '@mui/icons-material/MoreVert';
+
+import CustomBottomNavigationActionLabel from './CustomLabel';
 
 interface NavigationItem {
   text: string;

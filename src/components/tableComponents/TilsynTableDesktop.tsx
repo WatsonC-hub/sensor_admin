@@ -1,11 +1,11 @@
-import {useMemo, useState} from 'react';
-import RenderActions from '~/helpers/RowActions';
+import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
+import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import React, {useMemo, useState} from 'react';
+
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {Box} from '@mui/material';
-import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
-import React from 'react';
+import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 
 export type Tilsyn = {

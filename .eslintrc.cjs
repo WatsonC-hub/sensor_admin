@@ -11,7 +11,7 @@ module.exports = {
   plugins: ['check-file'],
   overrides: [
     {
-      files: ['**/*.ts', '**/*.tsx'],
+      files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
       parser: '@typescript-eslint/parser',
       settings: {
         react: {version: 'detect'},
@@ -36,7 +36,6 @@ module.exports = {
         'plugin:prettier/recommended',
         'plugin:testing-library/react',
         'plugin:jest-dom/recommended',
-        'plugin:tailwindcss/recommended',
         'plugin:vitest/legacy-recommended',
       ],
       rules: {
@@ -117,7 +116,8 @@ module.exports = {
         'check-file/filename-naming-convention': [
           'error',
           {
-            '**/*.{ts,tsx}': 'KEBAB_CASE',
+            '**/*.{tsx}': 'PASCAL_CASE',
+            '**/*.{ts}': 'CAMEL_CASE',
           },
           {
             ignoreMiddleExtensions: true,
@@ -132,7 +132,7 @@ module.exports = {
         'check-file/folder-naming-convention': [
           'error',
           {
-            '**/*': 'KEBAB_CASE',
+            '**/*': 'CAMEL_CASE',
           },
         ],
       },

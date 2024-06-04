@@ -10,6 +10,7 @@ import {
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useEffect} from 'react';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const TableComponent = ({

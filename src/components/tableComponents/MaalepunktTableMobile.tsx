@@ -5,7 +5,8 @@ import {
   MRT_TableOptions,
   MaterialReactTable,
 } from 'material-react-table';
-import {useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
+
 import DeleteAlert from '~/components/DeleteAlert';
 import {
   convertDate,
@@ -13,10 +14,9 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import React from 'react';
-import {stamdataStore} from '~/state/store';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
+import {stamdataStore} from '~/state/store';
 
 export type Maalepunkt = {
   startdate: string;
