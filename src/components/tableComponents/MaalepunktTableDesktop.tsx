@@ -20,7 +20,7 @@ export type Maalepunkt = {
 
 interface Props {
   data: Maalepunkt[] | undefined;
-  handleEdit: ({}) => void;
+  handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -64,7 +64,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   );
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
-    renderRowActions: ({row, table}) => (
+    renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
           handleEdit(row.original);

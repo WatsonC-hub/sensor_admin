@@ -1,39 +1,19 @@
 import {
   AddCircle,
-  EditRounded,
-  Straighten,
-  PlaylistAddCheck,
   StraightenRounded,
   PhotoLibraryRounded,
   AddAPhotoRounded,
   ConstructionRounded,
 } from '@mui/icons-material';
-import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import React, {useState} from 'react';
 
 import CustomBottomNavigation from '../../../components/BottomNavigation';
-
-const bottomNavStyle = {
-  borderRadius: 5,
-  margin: '7px',
-  boxShadow: '3px 3px 3px grey',
-  backgroundColor: 'secondary.main',
-  width: '100px',
-  height: '58px',
-};
-
-const borderGrey = {
-  ...bottomNavStyle,
-  backgroundColor: '#9E9E9E',
-};
 
 const navIconStyle = (isSelected) => {
   return isSelected ? 'secondary.main' : 'inherit';
 };
 
-export default function ActionArea({setPageToShow, showForm, setShowForm, canEdit, fileInputRef}) {
+export default function ActionArea({setPageToShow, showForm, setShowForm, canEdit}) {
   const [value, setValue] = useState(null);
 
   const handleChange = (event, newValue) => {

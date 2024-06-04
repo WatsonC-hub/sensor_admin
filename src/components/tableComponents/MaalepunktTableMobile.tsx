@@ -30,7 +30,7 @@ export type Maalepunkt = {
 
 interface Props {
   data: Maalepunkt[] | undefined;
-  handleEdit: ({}) => void;
+  handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }

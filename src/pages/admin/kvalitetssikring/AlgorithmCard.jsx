@@ -34,7 +34,7 @@ const AlgorithmCard = ({algorithm}) => {
   });
 
   const revertToDefaults = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async () => {
       const {data: response} = await apiClient.delete(
         `/sensor_admin/algorithms/${params.ts_id}/${algorithm.algorithm}`
       );
@@ -118,16 +118,12 @@ const AlgorithmCard = ({algorithm}) => {
       />
       <Card
         sx={{
-          // textAlign: 'center',
           justifyContent: 'center',
           alignContent: 'center',
           borderRadius: 2,
           border: 2,
           borderColor: 'secondary.main',
-          // backgroundColor: 'primary.light',
-          // color: 'primary.contrastText',
           minWidth: 200,
-          // maxWidth: 300,
           m: 1,
         }}
       >

@@ -1,4 +1,3 @@
-import {Theme} from '@mui/material/styles';
 import * as React from 'react';
 
 export interface SaveImageDialogProps {

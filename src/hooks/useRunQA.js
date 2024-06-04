@@ -12,7 +12,7 @@ export const useRunQA = (ts_id) => {
   const {data: qaPoll, refetch} = useQuery({
     queryKey: ['pollQA', ts_id],
     queryFn: async () => {
-      const {data, status} = await apiClient.get(`/sensor_admin/rerun_qa/poll/${ts_id}`);
+      const {status} = await apiClient.get(`/sensor_admin/rerun_qa/poll/${ts_id}`);
       return status;
     },
     enabled: true,

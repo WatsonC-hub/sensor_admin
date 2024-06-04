@@ -86,15 +86,11 @@ const AnnotationConfiguration = ({stationId}) => {
     <>
       <Card
         sx={{
-          // textAlign: 'center',
           justifyContent: 'center',
           alignContent: 'center',
           borderRadius: 2,
           border: 2,
           borderColor: 'secondary.main',
-          // backgroundColor: 'primary.light',
-          // color: 'primary.contrastText',
-          // width: 300,
           mt: 1,
         }}
       >

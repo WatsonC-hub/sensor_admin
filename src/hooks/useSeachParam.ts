@@ -26,7 +26,6 @@ export const useSearchParam = (param: string) => {
     console.log({param, value, searchParams: searchParams.toString()});
 
     const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
-    // window.history.replaceState({}, '', newUrl);
     navigate(newUrl, {replace: true});
   };
 

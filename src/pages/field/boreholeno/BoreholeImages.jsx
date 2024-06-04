@@ -1,19 +1,12 @@
-import {PhotoCameraRounded} from '@mui/icons-material';
-import {Box, Button, Grid} from '@mui/material';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import {Box, Grid} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
+import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import ImageViewer from '~/components/ImageViewer';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 
-import ImageViewerBorehole from './components/ImageViewerBorehole';
-import SaveImageDialogBorehole from './components/SaveImageDialogBorehole';
-
 function BoreholeImages(props) {
-  const queryClient = useQueryClient();
-
   const {data: images} = useQuery({
     queryKey: ['images', props.boreholeno],
     queryFn: async () => {

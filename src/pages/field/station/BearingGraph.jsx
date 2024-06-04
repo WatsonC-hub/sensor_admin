@@ -151,11 +151,10 @@ const initRange = [
 ];
 
 function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
-  const [name, unit, stationtype, terrainlevel] = stamdataStore((state) => [
+  const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
     state.timeseries.unit,
     state.timeseries.tstype_name,
-    state.location.terrainlevel,
   ]);
 
   const theme = useTheme();
@@ -165,15 +164,54 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
   );
 
+  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
+  const {data: rawData, refetch: fetchRaw} = useQuery({
+    queryKey: ['rawdata', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
+      if (data === null) {
+        return [];
+      }
+      return data;
+    },
+    enabled: false,
+    placeholderData: [],
+  });
+
   useEffect(() => {
-    refetchData([ts_id, initRange]);
-  }, [ts_id]);
+    graphData !== undefined && refetchData([ts_id, xRange]);
+    console.log(xRange);
+  }, [graphData, refetchData, ts_id, xRange]);
+
+  // const handleResize = (e) => {
+  //   console.log(firstRender);
+  //   if (xRange !== initRange) {
+  //     e.layout.xaxis.range = xRange;
+  //     setLayout(() => {
+  //       return [e.layout];
+  //     });
+  //   }
+  //   console.log(e.layout.xaxis.range);
+  // };
 
   const handleRelayout = (e) => {
+    console.log(e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
     }
+
+    // if (e['autosize'] && !firstRender) {
+    //   setXRange([
+    //     moment(graphData.x[graphData.x.length - 10]).format('YYYY-MM-DDTHH:mm'),
+    //     moment(graphData.x[graphData.x.length]).format('YYYY-MM-DDTHH:mm'),
+    //   ]);
+    //   console.log(graphData);
+    //   console.log(xRange);
+    //   setFirstRender(true);
+
+    //   return;
+    // }
 
     if (e['dragmode']) {
       setLayout((prev) => {
@@ -182,9 +220,11 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           dragmode: e['dragmode'],
         };
       });
+      console.log('drag');
     }
 
     if (e['xaxis.range[0]'] !== undefined) {
+      console.log('I dont know');
       let x0 = moment(e['xaxis.range[0]']);
       let x1 = moment(e['xaxis.range[1]']);
 
@@ -197,21 +237,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
       return;
     }
   };
-
-  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
-
-  const {data: rawData, refetch: fetchRaw} = useQuery({
-    queryKey: ['rawdata', ts_id],
-    queryFn: async ({signal}) => {
-      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
-      if (data === null) {
-        return [];
-      }
-      return data;
-    },
-    enabled: false,
-    placeholderData: [],
-  });
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
@@ -256,7 +281,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   var rerunButton = {
     name: 'Genberegn data',
     icon: rerunIcon,
-    click: function (gd) {
+    click: function () {
       // toastId.current = toast.loading('Genberegner...');
       correctMutation.mutate({});
     },
@@ -281,7 +306,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   var makeLinkButton = {
     name: 'Ekstern link',
     icon: makeLinkIcon,
-    click: function (gd) {
+    click: function () {
       var ts_id = window.location.href.split('/').at(-1).split('#').at(0);
 
       var link = document.createElement('a');
@@ -303,77 +328,82 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   };
 
   return (
-    <Plot
-      // key={ts_id}
-      id={`graph_${ts_id}`}
-      divId={`graph_${ts_id}`}
-      data={[
-        {
-          x: graphData?.x,
-          y: graphData?.y,
-          name: name,
-          type: 'scatter',
-          line: {width: 2},
-          mode: 'lines',
-          marker: {symbol: '100', size: '3', color: '#177FC1'},
-        },
-        {
-          x: rawData?.x,
-          y: rawData?.y,
-          name: 'Rådata',
-          type: 'scattergl',
-          yaxis: 'y2',
-          line: {width: 2},
-          mode: 'lines',
-          marker: {symbol: '100', size: '3'},
-        },
-        {
-          x: xControl,
-          y: yControl,
-          name: 'Kontrolpejlinger',
-          type: 'scatter',
-          mode: 'markers',
-          text: textControl,
-          marker: {
-            symbol: '200',
-            size: '8',
-            color: '#177FC1',
-            line: {color: 'rgb(0,0,0)', width: 1},
-          },
-        },
-        {
-          x: [dynamicMeasurement?.[0]],
-          y: [dynamicMeasurement?.[1]],
-          name: '',
-          type: 'scatter',
-          mode: 'markers',
-          showlegend: false,
-          marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
-        },
-      ]}
-      layout={{
-        ...layout,
-        uirevision: 'true',
-        yaxis: {
-          title: `${stationtype} [${unit}]`,
-        },
-      }}
-      config={{
-        showTips: false,
-        responsive: true,
-        modeBarButtons: [
-          [downloadButton, makeLinkButton, rerunButton, getRawData],
-          ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
-        ],
+    <>
+      {graphData !== undefined && (
+        <Plot
+          // key={ts_id}
+          id={`graph_${ts_id}`}
+          divId={`graph_${ts_id}`}
+          data={[
+            {
+              x: graphData?.x,
+              y: graphData?.y,
+              name: name,
+              type: 'scatter',
+              line: {width: 2},
+              mode: 'lines',
+              marker: {symbol: '100', size: '3', color: '#177FC1'},
+            },
+            {
+              x: rawData?.x,
+              y: rawData?.y,
+              name: 'Rådata',
+              type: 'scattergl',
+              yaxis: 'y2',
+              line: {width: 2},
+              mode: 'lines',
+              marker: {symbol: '100', size: '3'},
+            },
+            {
+              x: xControl,
+              y: yControl,
+              name: 'Kontrolpejlinger',
+              type: 'scatter',
+              mode: 'markers',
+              text: textControl,
+              marker: {
+                symbol: '200',
+                size: '8',
+                color: '#177FC1',
+                line: {color: 'rgb(0,0,0)', width: 1},
+              },
+            },
+            {
+              x: [dynamicMeasurement?.[0]],
+              y: [dynamicMeasurement?.[1]],
+              name: '',
+              type: 'scatter',
+              mode: 'markers',
+              showlegend: false,
+              marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
+            },
+          ]}
+          layout={{
+            ...layout,
+            uirevision: 'true',
+            yaxis: {
+              title: `${stationtype} [${unit}]`,
+            },
+          }}
+          config={{
+            showTips: false,
+            responsive: true,
+            modeBarButtons: [
+              [downloadButton, makeLinkButton, rerunButton, getRawData],
+              ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+            ],
 
-        displaylogo: false,
-        displayModeBar: true,
-      }}
-      useResizeHandler={true}
-      style={{width: '99%', height: '100%'}}
-      onRelayout={handleRelayout}
-      // onDoubleClick={() => setXRange(initRange)}
-    />
+            displaylogo: false,
+            displayModeBar: true,
+          }}
+          useResizeHandler={true}
+          style={{width: '99%', height: '100%'}}
+          onRelayout={handleRelayout}
+          // onInitialized={handleResize}
+          // onDoubleClick={() => setXRange(initRange)}
+        />
+      )}
+    </>
   );
 }
 

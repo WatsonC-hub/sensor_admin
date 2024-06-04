@@ -29,7 +29,6 @@ import OwnDatePicker from './OwnDatePicker';
 // TODO
 // - Find ud af om textfield skal have grøn outline
 export default function PejlingForm({
-  stationId,
   formData,
   changeFormData,
   handleSubmit,
@@ -114,7 +113,7 @@ export default function PejlingForm({
     changeFormData('measurement', e.target.value);
   };
 
-  const handleNotPossibleChange = (e) => {
+  const handleNotPossibleChange = () => {
     setNotPossible(!notPossible);
     changeFormData('measurement', null);
   };
@@ -309,7 +308,6 @@ export default function PejlingForm({
                     Annuller
                   </Button>
                   <Button
-                    autoFocus
                     bttype="primary"
                     onClick={() => {
                       handleClickSubmit();

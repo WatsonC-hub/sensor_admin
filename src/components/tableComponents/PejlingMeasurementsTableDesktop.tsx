@@ -17,7 +17,7 @@ export type Kontrol = {
 
 interface Props {
   data: Kontrol[];
-  handleEdit: ({}) => void;
+  handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
   correction_map: Record<number, string>;

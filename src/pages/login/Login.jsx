@@ -42,13 +42,13 @@ export default function Login({}) {
       });
   };
 
-  const handlePassReset = (e) => {
+  const handlePassReset = () => {
     resetPassword({email: passReset})
-      .then((res) => {
+      .then(() => {
         setPassResetErr(false);
         handleEmailSent();
       })
-      .catch((r) => {
+      .catch(() => {
         setPassResetErr(true);
       });
   };
@@ -107,7 +107,6 @@ export default function Login({}) {
             label="Email"
             name="email"
             autoComplete="email"
-            autoFocus
             onChange={(e) => setUserName(e.target.value)}
             error={!!loginError}
           />
@@ -163,7 +162,6 @@ export default function Login({}) {
                 <div>
                   <Typography>Nulstil dit kodeord ved at indtaste din E-mail adresse</Typography>
                   <TextField
-                    autoFocus
                     margin="dense"
                     id="passReset"
                     label="E-mail addresse"
@@ -183,12 +181,12 @@ export default function Login({}) {
             Annuller
           </Button>
           {!emailSentMess && (
-            <Button onClick={handlePassReset} bttype="primary" autoFocus>
+            <Button onClick={handlePassReset} bttype="primary">
               Bekræft
             </Button>
           )}
           {emailSentMess && (
-            <Button onClick={handleClose} bttype="primary" autoFocus>
+            <Button onClick={handleClose} bttype="primary">
               Gå til log ind
             </Button>
           )}

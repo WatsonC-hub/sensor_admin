@@ -27,7 +27,7 @@ const FormInput = ({
       name={name}
       defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
       rules={rules}
-      render={({field: {value, onChange, onBlur, ref, name}, formState, fieldState}) => {
+      render={({field: {value, onChange, onBlur, ref, name}}) => {
         if (otherProps.type === 'datetime-local' && value) {
           value = moment(value).format('YYYY-MM-DDTHH:mm');
         }

@@ -120,12 +120,6 @@ const TRACE_NAMES = {
   null: 'Jupiter - ukendt årsag',
 };
 
-const TRACE_COLORS = {
-  0: '#177FC1',
-  1: '#FF0000',
-  null: '#000000',
-};
-
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => d.waterlevel);

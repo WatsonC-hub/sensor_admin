@@ -62,10 +62,10 @@ export const useExclude = () => {
 
   const post = useMutation({
     ...excludePostOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({queryKey: ['qa_all', Number(variables.path)]});
       rerunToast();
     },
@@ -73,10 +73,10 @@ export const useExclude = () => {
 
   const put = useMutation({
     ...excludePutOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: ({context}) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['qa_all']});
       rerunToast();
     },
@@ -84,10 +84,10 @@ export const useExclude = () => {
 
   const del = useMutation({
     ...excludeDelOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: ({context}) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['qa_all']});
       rerunToast();
     },

@@ -2,7 +2,7 @@ import BackspaceIcon from '@mui/icons-material/Backspace';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import {Box, Tooltip} from '@mui/material';
-import {useAtom} from 'jotai';
+import {useAtomValue} from 'jotai';
 import React from 'react';
 
 import {qaSelection} from '~/state/atoms';
@@ -11,7 +11,7 @@ import GraphActionModal from './GraphActionModal';
 import GraphButton from './GraphButton';
 
 const GraphActions = () => {
-  const [selectedData, setSelectedData] = useAtom(qaSelection);
+  const selectedData = useAtomValue(qaSelection);
   const [openModal, setOpenModal] = React.useState('');
 
   const isDisabled = Object.keys(selectedData).length === 0 || selectedData.points.length === 0;

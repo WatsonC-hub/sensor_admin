@@ -46,7 +46,7 @@ function SaveImageDialogBorehole({
       toast.promise(() => uploadImage.mutateAsync(payload), {
         pending: 'Gemmer billede',
         success: {
-          render({data}) {
+          render() {
             handleCloseSave();
             return 'Billede gemt';
           },
@@ -66,7 +66,7 @@ function SaveImageDialogBorehole({
       toast.promise(() => editImage.mutateAsync(payload), {
         pending: 'Gemmer billede',
         success: {
-          render({data}) {
+          render() {
             handleCloseSave();
             return 'Billede gemt';
           },
@@ -89,7 +89,7 @@ function SaveImageDialogBorehole({
         <DialogContent>
           <Grid container spacing={3} style={{width: '100%'}}>
             <Grid item xs={12} sm={12} style={{width: '100%'}}>
-              <img src={activeImage.gid === -1 ? dataUri : imageUrl} />
+              <img alt="" src={activeImage.gid === -1 ? dataUri : imageUrl} />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -117,7 +117,7 @@ function SaveImageDialogBorehole({
                     color="primary"
                   />
                 }
-                label={<label>Offentliggør på Calypso</label>}
+                label={'Offentliggør på Calypso'}
               />
               <OwnDatePicker
                 label={'Dato'}

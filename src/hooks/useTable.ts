@@ -8,7 +8,6 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import {useMemo} from 'react';
 
 import useBreakpoints from './useBreakpoints';
 
@@ -102,7 +101,7 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         borderBottomRightRadius: '15px',
       },
     },
-    muiExpandButtonProps: ({row, table}) => ({
+    muiExpandButtonProps: ({row}) => ({
       sx: {
         transform: row.getIsExpanded() ? 'rotate(180deg)' : 'rotate(-90deg)',
         transition: 'transform 0.2s',

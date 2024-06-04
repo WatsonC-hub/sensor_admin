@@ -10,7 +10,7 @@ import {authStore} from '~/state/store';
 import ChoiseCard from '../../../components/ChoiseCard';
 
 const AdminChooser = () => {
-  const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
+  const adminAccess = authStore((state) => state.adminAccess);
   const {field} = useNavigationFunctions();
 
   return (

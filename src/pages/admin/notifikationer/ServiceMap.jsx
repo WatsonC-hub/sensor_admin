@@ -57,7 +57,6 @@ function Map({data, isLoading, setLassoFilter}) {
   const renderMap = () => {
     const myAttributionText =
       '&copy; <a target="_blank" href="https://download.kortforsyningen.dk/content/vilk%C3%A5r-og-betingelser">Styrelsen for Dataforsyning og Effektivisering</a>';
-    const kftoken = 'd12107f70a3ee93153f313c7c502169a';
 
     const toposkaermkortwmts = L.tileLayer.wms(
       'https://services.datafordeler.dk/Dkskaermkort/topo_skaermkort/1.0.0/wms?&username=WXIJZOCTKQ&password=E7WfqcwH_',
@@ -120,13 +119,13 @@ function Map({data, isLoading, setLassoFilter}) {
         '-',
         {
           text: 'Zoom ind',
-          callback: function (e) {
+          callback: function () {
             map.zoomIn();
           },
         },
         {
           text: 'Zoom ud',
-          callback: function (e) {
+          callback: function () {
             map.zoomOut();
           },
         },

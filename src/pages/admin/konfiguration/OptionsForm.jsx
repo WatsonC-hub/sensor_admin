@@ -20,9 +20,10 @@ const OptionsForm = ({name, options}) => {
           m: 0,
         }}
       >
-        {options.map((option) => {
+        {options.map((option, index) => {
           return (
             <TextField
+              key={index}
               fullWidth
               type={option.type}
               label={option.name}

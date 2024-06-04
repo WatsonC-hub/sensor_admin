@@ -4,9 +4,6 @@ import {
   PhotoLibraryRounded,
   PlaylistAddCheck,
 } from '@mui/icons-material';
-import {useState} from 'react';
-
-import {useSearchParam} from '~/hooks/useSeachParam';
 
 import CustomBottomNavigation from '../../../components/BottomNavigation';
 

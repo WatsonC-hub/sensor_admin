@@ -5,7 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import {Typography, Box, Drawer, IconButton} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import React, {useEffect, useState, createContext} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {DrawerContext} from '~/state/contexts';

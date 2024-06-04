@@ -1,7 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
-// @ts-ignore
 
 export const useAdjustmentData = (ts_id: number) => {
   const query = useQuery({

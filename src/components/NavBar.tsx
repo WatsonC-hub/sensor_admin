@@ -23,7 +23,7 @@ import {
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQueryClient} from '@tanstack/react-query';
-import {useAtom} from 'jotai';
+import {useSetAtom} from 'jotai';
 import moment from 'moment';
 import {useState, ReactNode, useContext, MouseEventHandler} from 'react';
 import {useNavigate} from 'react-router-dom';
@@ -72,8 +72,7 @@ export const HomeButton = () => {
   return (
     <IconButton
       color="inherit"
-      onClick={(e) => {
-        // navigate('/field');
+      onClick={() => {
         field();
       }}
       size="large"
@@ -120,7 +119,6 @@ const NavBarNotifications = () => {
       color="error"
       onClick={() => {
         if (!window.location.pathname.includes('/notifikationer')) {
-          // navigate('/admin/notifikationer');
           adminNotifikationer();
         }
       }}
@@ -167,12 +165,7 @@ export const NavBarMenu = ({
   return (
     <>
       {highligtFirst && items != undefined && items.length > 0 && (
-        <Button
-          // color="grey"
-          variant="contained"
-          onClick={items?.[0].onClick}
-          startIcon={items?.[0].icon}
-        >
+        <Button variant="contained" onClick={items?.[0].onClick} startIcon={items?.[0].icon}>
           {items?.[0].title}
         </Button>
       )}
@@ -234,7 +227,7 @@ const GoBack = () => {
   return (
     <IconButton
       color="inherit"
-      onClick={(e) => {
+      onClick={() => {
         navigate(-1);
       }}
       size="large"
@@ -244,13 +237,13 @@ const GoBack = () => {
   );
 };
 
-const NavBar = ({children}: {children?: ReactNode}) => {
+const NavBar = () => {
   const [authenticated, iotAccess, adminAccess] = authStore((state) => [
     state.authenticated,
     state.iotAccess,
     state.adminAccess,
   ]);
-  const [openQRScanner, setOpenQRScanner] = useAtom(captureDialogAtom);
+  const setOpenQRScanner = useSetAtom(captureDialogAtom);
   const {register, home, admin, createStamdata, field, station} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const metadata = useContext(MetadataContext);
@@ -263,20 +256,18 @@ const NavBar = ({children}: {children?: ReactNode}) => {
     return (
       <AppBarLayout>
         <Logo />
-        {/* <Typography variant="h4">Field</Typography> */}
         {url !== '/register' ? (
           <Button
             color="secondary"
             variant="contained"
             onClick={() => {
-              // navigate('/register');
               register();
             }}
           >
             Opret konto
           </Button>
         ) : (
-          <Button color="secondary" variant="contained" onClick={(e) => home()}>
+          <Button color="secondary" variant="contained" onClick={() => home()}>
             Log ind
           </Button>
         )}
@@ -324,13 +315,11 @@ const NavBar = ({children}: {children?: ReactNode}) => {
         <Box>
           {adminAccess && <NavBarNotifications />}
           <NavBarMenu
-            // highligtFirst={!isMobile}
             items={[
               {
                 title: 'Admin',
                 icon: <AdminPanelSettingsIcon fontSize="medium" />,
                 onClick: () => {
-                  // navigate('/admin');
                   admin();
                 },
               },
@@ -340,7 +329,6 @@ const NavBar = ({children}: {children?: ReactNode}) => {
                       title: 'Opret station',
                       icon: <AddLocationAltIcon fontSize="medium" />,
                       onClick: () => {
-                        // navigate('/field/stamdata');
                         createStamdata();
                       },
                     },
@@ -386,13 +374,11 @@ const NavBar = ({children}: {children?: ReactNode}) => {
         <Box>
           {adminAccess && <NavBarNotifications />}
           <NavBarMenu
-            // highligtFirst={!isMobile}
             items={[
               {
                 title: 'Field',
                 icon: <BuildCircleIcon fontSize="medium" />,
                 onClick: () => {
-                  // navigate('/field');
                   field();
                 },
               },
@@ -424,7 +410,6 @@ const NavBar = ({children}: {children?: ReactNode}) => {
                 title: 'Til service',
                 icon: <QueryStatsIcon />,
                 onClick: () => {
-                  // navigate(`/field/location/${metadata?.loc_id}/${metadata?.ts_id}`);
                   station(metadata?.loc_id, metadata?.ts_id);
                 },
               },
@@ -432,7 +417,6 @@ const NavBar = ({children}: {children?: ReactNode}) => {
                 title: 'Field',
                 icon: <BuildCircleIcon fontSize="medium" />,
                 onClick: () => {
-                  // navigate('/field');
                   field();
                 },
               },

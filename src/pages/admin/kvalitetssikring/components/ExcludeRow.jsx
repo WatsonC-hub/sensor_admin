@@ -138,8 +138,6 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
               size="small"
               onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
               startIcon={<SaveIcon />}
-              // disabled={isSubmitting}
-              //   sx={{alignSelf: 'center'}}
             >
               Gem
             </Button>
@@ -150,8 +148,6 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
               size="small"
               onClick={() => setEditMode(true)}
               startIcon={<EditIcon />}
-              // disabled={isSubmitting}
-              //   sx={{alignSelf: 'center'}}
             >
               Rediger
             </Button>

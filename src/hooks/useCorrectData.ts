@@ -13,7 +13,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
   const {data: pollData, refetch} = useQuery({
     queryKey: ['pollData', ts_id],
     queryFn: async () => {
-      const {data, status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
+      const {status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
       return status;
     },
     enabled: true,

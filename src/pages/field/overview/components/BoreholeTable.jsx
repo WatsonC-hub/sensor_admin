@@ -4,7 +4,6 @@ import StraightenIcon from '@mui/icons-material/Straighten';
 import {Box, IconButton, Tooltip, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {useMemo} from 'react';
-import {useNavigate} from 'react-router-dom';
 
 import TableComponent from '~/components/TableComponent';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -53,7 +52,6 @@ function statusIcon(row) {
 
 const BoreholeTable = ({data, isLoading}) => {
   const {isTouch} = useBreakpoints();
-  const navigate = useNavigate();
   const {boreholeIntake} = useNavigationFunctions();
   const mobileColumns = useMemo(
     () => [

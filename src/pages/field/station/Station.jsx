@@ -1,5 +1,5 @@
 import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
-import {Box, Divider, Input} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
@@ -167,7 +167,7 @@ export default function Station({ts_id, stamdata}) {
         );
       }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       resetPejlingData();
       setShowForm(null);
       toast.success('Kontrolmåling gemt');
@@ -175,7 +175,7 @@ export default function Station({ts_id, stamdata}) {
         queryKey: ['measurements', ts_id],
       });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Der skete en fejl');
     },
   });
@@ -215,7 +215,7 @@ export default function Station({ts_id, stamdata}) {
     payload.dato = moment(payload.dato).toISOString();
 
     serviceMutate.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         resetServiceData();
         // setPageToShow('ADDTILSYN');
         setShowForm(null);
@@ -235,7 +235,6 @@ export default function Station({ts_id, stamdata}) {
   };
 
   // Regex to find matches on systemx._13, systemx._144, systemx._1423 etc.
-  const systemxRegex = /systemx\._\d+/g;
 
   const handleEdit = (type) => {
     if (type === 'service') {
@@ -260,7 +259,7 @@ export default function Station({ts_id, stamdata}) {
   const handleDelete = (type) => {
     if (type === 'service') {
       return (gid) => {
-        apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['service', ts_id],
           });
@@ -270,7 +269,7 @@ export default function Station({ts_id, stamdata}) {
       };
     } else {
       return (gid) => {
-        apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['measurements', ts_id],
           });

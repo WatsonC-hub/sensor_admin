@@ -25,7 +25,7 @@ interface NavigationItem {
 
 interface CustomBottomNavigationProps {
   pageToShow: string;
-  onChange: (event: React.ChangeEvent<{}>, newValue: string) => void;
+  onChange: (event: React.ChangeEvent<object>, newValue: string) => void;
   items: NavigationItem[];
   canEdit?: boolean;
 }

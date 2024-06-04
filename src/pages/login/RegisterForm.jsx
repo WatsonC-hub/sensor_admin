@@ -15,11 +15,8 @@ import FormInput from '~/components/FormInput';
 
 const RegisterForm = ({onSubmitHandler, formMethods}) => {
   const {
-    reset,
-    handleSubmit,
     control,
-    register,
-    formState: {isSubmitSuccessful, errors},
+    formState: {errors},
   } = formMethods;
 
   return (
@@ -31,7 +28,6 @@ const RegisterForm = ({onSubmitHandler, formMethods}) => {
             label="Fornavn"
             required
             fullWidth
-            autoFocus
             sx={{
               mb: 2,
             }}

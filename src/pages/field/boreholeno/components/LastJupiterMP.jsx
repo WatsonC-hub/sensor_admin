@@ -36,14 +36,14 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddM
       mp_description: data.descriptio,
     };
     watlevmpMutate.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         toast.success('Målepunkt gemt');
         queryClient.invalidateQueries({
           queryKey: ['watlevmp', boreholeno],
         });
         setAddMPOpen(false);
       },
-      onError: (error) => {
+      onError: () => {
         toast.error('Der skete en fejl');
       },
     });

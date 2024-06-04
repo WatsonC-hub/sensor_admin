@@ -21,7 +21,7 @@ export type Tilsyn = {
 
 interface Props {
   data: Tilsyn[];
-  handleEdit: ({}) => void;
+  handleEdit: (tilsyn: Tilsyn) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -42,7 +42,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
         id: 'batteriskift',
         header: 'Tilsyn',
         size: 200,
-        Cell: ({row, table}) => (
+        Cell: ({row}) => (
           <Box display="flex" gap={1}>
             <Box alignSelf="center">
               {row.original.batteriskift ? (
@@ -61,7 +61,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
               ) : row.original.batteriskift !== true && row.original.tilsyn ? (
                 <b>Tilsyn</b>
               ) : (
-                <b>"-"</b>
+                <b>-</b>
               )}
               {convertDateWithTimeStamp(row.original.dato)}
             </Box>

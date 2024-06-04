@@ -1,9 +1,8 @@
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
-import {Box, Divider, Grid} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -180,7 +179,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     let payload = {...pejlingData};
     if (payload.service) payload.pumpstop = null;
     addOrEditPejling.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         resetPejlingData();
         // setShowForm(null);
         setPageToShow(null);
@@ -189,7 +188,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           queryKey: ['measurements', boreholeno],
         });
       },
-      onError: (error) => {
+      onError: () => {
         toast.error('Kontrolmåling kunne ikke gemmes');
       },
     });
@@ -208,7 +207,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleMpSubmit = () => {
     let payload = {...mpData};
     addOrEditWatlevmp.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         resetMpData();
         setShowForm(null);
         toast.success('Målepunkt gemt');
@@ -216,7 +215,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           queryKey: ['watlevmp', boreholeno],
         });
       },
-      onError: (error) => {
+      onError: () => {
         toast.error('Der skete en fejl');
       },
     });
@@ -247,7 +246,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleDelete = (type) => {
     if (type === 'watlevmp') {
       return (gid) => {
-        apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['watlevmp', boreholeno],
           });
@@ -257,7 +256,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       };
     } else {
       return (gid) => {
-        apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['measurements', boreholeno],
           });

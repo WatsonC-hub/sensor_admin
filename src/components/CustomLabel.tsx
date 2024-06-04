@@ -11,7 +11,6 @@ interface CustomLabelProps {
 
 function CustomBottomNavigationActionLabel({
   text,
-  value,
   icon,
   color = 'inherit',
   typographyProps,

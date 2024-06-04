@@ -1,5 +1,4 @@
 import {NavigateOptions, useNavigate} from 'react-router-dom';
-import {boolean} from 'zod';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();

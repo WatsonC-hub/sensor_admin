@@ -1,10 +1,10 @@
 import {AppBar, Tab, Tabs} from '@mui/material';
 import {useEffect, useState} from 'react';
+import {Swiper} from 'swiper/react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import 'swiper/css';
-import {Swiper} from 'swiper/react';
 function a11yProps(index) {
   return {
     id: `full-width-tab-${index}`,
@@ -55,7 +55,7 @@ const SwiperInstance = ({children}) => {
       <Swiper
         initialSlide={2}
         onSwiper={(swiper) => {
-          setSwiper((prev) => {
+          setSwiper(() => {
             setValue(0);
             swiper.slideTo(0, 0, false);
             return swiper;

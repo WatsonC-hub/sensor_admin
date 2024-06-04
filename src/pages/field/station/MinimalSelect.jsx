@@ -1,7 +1,7 @@
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
@@ -9,7 +9,6 @@ const MinimalSelect = ({locid, stationList}) => {
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.ts_id ? false : true);
-  const navigate = useNavigate();
   const {station} = useNavigationFunctions();
 
   const handleChange = (event) => {

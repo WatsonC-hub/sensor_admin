@@ -26,7 +26,7 @@ export type Tilsyn = {
 
 interface Props {
   data: Tilsyn[];
-  handleEdit: ({}) => void;
+  handleEdit: (tilyn: Tilsyn) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }

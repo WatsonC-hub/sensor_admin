@@ -1,5 +1,5 @@
 import {Box, Grid} from '@mui/material';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import ImageViewer from '~/components/ImageViewer';

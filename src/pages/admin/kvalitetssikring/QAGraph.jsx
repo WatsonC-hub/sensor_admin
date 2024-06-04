@@ -357,7 +357,7 @@ function PlotGraph({qaData, ts_id}) {
   var rerunButton = {
     name: 'Genberegn data',
     icon: rerunIcon,
-    click: function (gd) {
+    click: function () {
       correctMutation.mutate({});
     },
   };
@@ -365,7 +365,7 @@ function PlotGraph({qaData, ts_id}) {
   var rerunQAButton = {
     name: 'Genberegn QA',
     icon: rerunQAIcon,
-    click: function (gd) {
+    click: function () {
       // toastId.current = toast.loading('Genkører kvalitetssikring...');
       rerunQAMutation.mutate({});
     },

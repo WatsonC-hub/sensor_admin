@@ -1,7 +1,6 @@
 import {Box, Typography} from '@mui/material';
 import {
   MRT_ColumnDef,
-  MRT_RowData,
   MRT_TableOptions,
   MRT_ExpandButton,
   MaterialReactTable,
@@ -27,7 +26,7 @@ export type Kontrol = {
 
 interface Props {
   data: Kontrol[] | undefined;
-  handleEdit: ({}) => void;
+  handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
   correction_map: Record<number, string>;

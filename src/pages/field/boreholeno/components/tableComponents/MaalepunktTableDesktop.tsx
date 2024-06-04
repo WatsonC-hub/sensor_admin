@@ -6,7 +6,7 @@ import DeleteAlert from '~/components/DeleteAlert';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {authStore, stamdataStore} from '~/state/store';
+import {authStore} from '~/state/store';
 
 export type Maalepunkt = {
   startdate: string;
@@ -22,14 +22,13 @@ export type Maalepunkt = {
 
 interface Props {
   data: Maalepunkt[];
-  handleEdit: ({}) => void;
+  handleEdit: (maalepuntk: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
 }
 
 export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const org_id = authStore((store) => store.org_id);
 
   const onDeleteBtnClick = (id: number) => {

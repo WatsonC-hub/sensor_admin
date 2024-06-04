@@ -7,7 +7,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
-import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import * as z from 'zod';
 
@@ -48,7 +47,7 @@ export default function Register() {
   });
 
   const {
-    formState: {errors, isSubmitSuccessful, values},
+    formState: {isSubmitSuccessful},
     reset,
     getValues,
     handleSubmit,
@@ -67,7 +66,6 @@ export default function Register() {
     }
   }, [isSubmitSuccessful]);
 
-  const navigate = useNavigate();
   const {home} = useNavigationFunctions();
   const routeChange = () => {
     // navigate(`/`);
@@ -98,11 +96,11 @@ export default function Register() {
 
   const createUserMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success('Bruger oprettet');
       setOpenAwaitDialog(true);
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Bruger kunne ikke oprettes');
     },
   });
@@ -182,7 +180,7 @@ export default function Register() {
           <Button onClick={handleClose} bttype="tertiary">
             Annuller
           </Button>
-          <Button onClick={handleSubmit(handleConfirm)} bttype="primary" autoFocus>
+          <Button onClick={handleSubmit(handleConfirm)} bttype="primary">
             Bekræft
           </Button>
         </DialogActions>
@@ -206,7 +204,7 @@ export default function Register() {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={routeChange} variant="outlined" color="primary" autoFocus>
+          <Button onClick={routeChange} variant="outlined" color="primary">
             Til log ind
           </Button>
         </DialogActions>

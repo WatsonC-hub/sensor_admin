@@ -41,7 +41,6 @@ import OwnDatePicker from '../../../components/OwnDatePicker';
 import {stamdataStore} from '../../../state/store';
 import TabPanel from '../overview/TabPanel';
 import AddUnitForm from '../stamdata/AddUnitForm';
-import KontaktForm from '../stamdata/components/KontaktForm';
 import LocationForm from '../stamdata/components/LocationForm';
 import ReferenceForm from '../stamdata/components/ReferenceForm';
 import TimeseriesForm from '../stamdata/components/TimeseriesForm';
@@ -64,7 +63,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
       );
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       setOpenDialog(false);
       setUdstyrValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
@@ -89,7 +88,6 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
             Annuller
           </Button>
           <Button
-            autoFocus
             bttype="primary"
             startIcon={<SaveIcon />}
             onClick={() => takeHomeMutation.mutate({enddate: moment(date).toISOString()})}
@@ -212,14 +210,9 @@ const UdstyrReplace = ({stationId}) => {
   );
 };
 
-export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) {
+export default function EditStamdata({ts_id, metadata, canEdit}) {
   // const [selectedUnit, setSelectedUnit] = useState('');
   const [mode, setMode] = useState('view');
-  const [location, timeseries, unit] = stamdataStore((store) => [
-    store.location,
-    store.timeseries,
-    store.unit,
-  ]);
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
@@ -239,7 +232,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
       const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
       return out;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['stations', metadata.loc_id.toString()],
       });
@@ -292,7 +285,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
 
   const handleUpdate = (values) => {
     metadataEditMutation.mutate(values, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         toast.success('Stamdata er opdateret');
       },
       onError: (error) => {
@@ -433,7 +426,6 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
                       Annuller
                     </Button>
                     <Button
-                      autoFocus
                       bttype="primary"
                       startIcon={<SaveIcon />}
                       onClick={formMethods.handleSubmit(handleUpdate, (values) =>

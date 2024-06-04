@@ -60,7 +60,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
     formMethods.reset(values);
   };
 
-  const handleErrors = (errors) => {
+  const handleErrors = () => {
     toast.error('Der skete en fejl', {
       autoClose: 2000,
     });
@@ -82,7 +82,6 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
     }
   };
 
-  const mode = 'edit';
   return (
     <Box sx={{mt: 2}}>
       {openCamera && (
@@ -190,7 +189,6 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                     Annuller
                   </Button>
                   <Button
-                    autoFocus
                     bttype="primary"
                     startIcon={<Save />}
                     onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}

@@ -5,7 +5,7 @@ import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 
 const UserAdmin = () => {
-  const {data, isLoading, error} = useQuery({
+  const {data} = useQuery({
     queryKey: ['borehole_permission'],
     queryFn: async ({signal}) => {
       const {data} = await apiClient.get(`/sensor_admin/user/borehole`, {

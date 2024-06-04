@@ -16,7 +16,6 @@ const QAAccordion = ({children, number, title, accordionProps}) => {
         sx={{
           backgroundColor: 'primary.light',
           color: 'primary.contrastText',
-          // borderRadius: '5px',
         }}
       >
         <BoxNumber>
