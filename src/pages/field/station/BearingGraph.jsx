@@ -207,8 +207,8 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
       const daysdiff = x1.diff(x0, 'days');
 
-      x0 = x0.subtract(daysdiff * 0.2, 'days');
-      x1 = x1.add(daysdiff * 0.2, 'days');
+      x0 = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days');
+      x1 = x1.add(Math.max(daysdiff * 0.2, 1), 'days');
 
       setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
       return;
