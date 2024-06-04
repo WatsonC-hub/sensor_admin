@@ -150,6 +150,11 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
+// const initRange = [
+//   moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+//   moment().format('YYYY-MM-DDTHH:mm'),
+// ];
+
 function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
@@ -181,10 +186,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   });
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
-
-  useEffect(() => {
-    refetchData([ts_id, initRange]);
-  }, [ts_id, refetchData]);
 
   const handleRelayout = (e) => {
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
