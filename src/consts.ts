@@ -25,3 +25,13 @@ export const boreholeColors: Record<
     text: 'OK',
   },
 };
+
+export const correction_map: Record<number, string> = {
+  0: 'Kontrol',
+  1: 'Korrektion fremadrettet',
+  2: 'Korrektion frem og tilbage til start af tidsserie',
+  3: 'Lineær',
+  4: 'Korrektion frem og tilbage til udstyr',
+  5: 'Korrektion frem og tilbage til niveau spring',
+  6: 'Korrektion frem og tilbage til forrige spring',
+};

@@ -6,11 +6,11 @@ import {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
+import {correction_map} from '~/consts';
 import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useCorrectData} from '~/hooks/useCorrectData';
-
-import {stamdataStore} from '../../../state/store';
+import {stamdataStore} from '~/state/store';
 
 const selectorOptions = {
   buttons: [
@@ -151,11 +151,10 @@ const initRange = [
 ];
 
 function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
-  const [name, unit, stationtype, terrainlevel] = stamdataStore((state) => [
+  const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
     state.timeseries.unit,
     state.timeseries.tstype_name,
-    state.location.terrainlevel,
   ]);
 
   const theme = useTheme();
@@ -164,10 +163,28 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const [layout, setLayout] = useState(
     matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
   );
+  const [showRawData, setShowRawData] = useState(false);
+
+  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
+
+  const {data: rawData, refetch: fetchRaw} = useQuery({
+    queryKey: ['rawdata', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
+      if (data === null) {
+        return [];
+      }
+      return data;
+    },
+    enabled: false,
+    placeholderData: [],
+  });
+
+  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
   useEffect(() => {
     refetchData([ts_id, initRange]);
-  }, [ts_id]);
+  }, [ts_id, refetchData]);
 
   const handleRelayout = (e) => {
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
@@ -198,45 +215,9 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     }
   };
 
-  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
-
-  const {data: rawData, refetch: fetchRaw} = useQuery({
-    queryKey: ['rawdata', ts_id],
-    queryFn: async ({signal}) => {
-      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
-      if (data === null) {
-        return [];
-      }
-      return data;
-    },
-    enabled: false,
-    placeholderData: [],
-  });
-
-  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
-
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.waterlevel);
-  const textControl = controlData?.map((d) => {
-    switch (d.useforcorrection) {
-      case 0:
-        return 'Kontrol';
-      case 1:
-        return 'Korrektion fremadrettet';
-      case 2:
-        return 'Korrektion fremadrettet og bagudrettet';
-      case 3:
-        return 'Korrektion lineært til forrige pejling';
-      case 4:
-        return 'Korrektion tilbage til unit';
-      case 5:
-        return 'Korrektion tilbage til forrige niveaukorrektion';
-      case 6:
-        return 'Korrektion tilbage til forrige pejling';
-      default:
-        return 'Korrektion';
-    }
-  });
+  const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
   var downloadButton = {
@@ -256,7 +237,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   var rerunButton = {
     name: 'Genberegn data',
     icon: rerunIcon,
-    click: function (gd) {
+    click: function () {
       // toastId.current = toast.loading('Genberegner...');
       correctMutation.mutate({});
     },
@@ -274,6 +255,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           visible: true,
         },
       };
+      setShowRawData(true);
       setLayout(gd.layout);
     },
   };
@@ -281,7 +263,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   var makeLinkButton = {
     name: 'Ekstern link',
     icon: makeLinkIcon,
-    click: function (gd) {
+    click: function () {
       var ts_id = window.location.href.split('/').at(-1).split('#').at(0);
 
       var link = document.createElement('a');
@@ -318,8 +300,8 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           marker: {symbol: '100', size: '3', color: '#177FC1'},
         },
         {
-          x: rawData?.x,
-          y: rawData?.y,
+          x: showRawData ? rawData?.x : [],
+          y: showRawData ? rawData?.y : [],
           name: 'Rådata',
           type: 'scattergl',
           yaxis: 'y2',
