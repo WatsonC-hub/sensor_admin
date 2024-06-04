@@ -1,5 +1,10 @@
 import {Box, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_ExpandButton, MRT_TableOptions} from 'material-react-table';
+import {
+  MRT_ColumnDef,
+  MRT_ExpandButton,
+  MRT_TableOptions,
+  MaterialReactTable,
+} from 'material-react-table';
 import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {
@@ -8,10 +13,10 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import FormTableComponent from '~/components/FormTableComponent';
 import React from 'react';
 import {stamdataStore} from '~/state/store';
 import RenderActions from '~/helpers/RowActions';
+import {useTable} from '~/hooks/useTable';
 
 export type Maalepunkt = {
   startdate: string;
@@ -134,6 +139,8 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
     },
   };
 
+  const table = useTable<Maalepunkt>(columns, data, options);
+
   return (
     <>
       <DeleteAlert
@@ -142,7 +149,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <FormTableComponent columns={columns} data={data} {...options} />
+      <MaterialReactTable table={table} />
     </>
   );
 }

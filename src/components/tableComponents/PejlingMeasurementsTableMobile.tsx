@@ -1,12 +1,18 @@
 import {Box, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_RowData, MRT_TableOptions, MRT_ExpandButton} from 'material-react-table';
+import {
+  MRT_ColumnDef,
+  MRT_RowData,
+  MRT_TableOptions,
+  MRT_ExpandButton,
+  MaterialReactTable,
+} from 'material-react-table';
 import {useMemo, useState} from 'react';
 import RenderActions from '~/helpers/RowActions';
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import FormTableComponent from '~/components/FormTableComponent';
 import {stamdataStore} from '~/state/store';
 import React from 'react';
+import {useTable} from '~/hooks/useTable';
 
 export type Kontrol = {
   comment: string;
@@ -20,7 +26,7 @@ export type Kontrol = {
 };
 
 interface Props {
-  data: Kontrol[];
+  data: Kontrol[] | undefined;
   handleEdit: ({}) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
@@ -131,6 +137,8 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
+  const table = useTable<Kontrol>(columns, data, options);
+
   return (
     <>
       <DeleteAlert
@@ -139,7 +147,7 @@ export default function PejlingMeasurementsTableMobile({
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <FormTableComponent columns={columns} data={data} {...options} />
+      <MaterialReactTable table={table} />
     </>
   );
 }

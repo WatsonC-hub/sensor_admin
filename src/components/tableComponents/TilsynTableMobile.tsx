@@ -1,12 +1,17 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_ExpandButton, MRT_TableOptions} from 'material-react-table';
+import {
+  MRT_ColumnDef,
+  MRT_ExpandButton,
+  MRT_TableOptions,
+  MaterialReactTable,
+} from 'material-react-table';
 import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import FormTableComponent from '~/components/FormTableComponent';
-import React from 'react';
+
 import RenderActions from '~/helpers/RowActions';
+import {useTable} from '~/hooks/useTable';
 
 export type Tilsyn = {
   batteriskift: boolean;
@@ -76,9 +81,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
                   <Typography variant="caption" fontWeight="bold">
                     Tilsyn
                   </Typography>
-                ) : (
-                  <b>"-"</b>
-                )}
+                ) : null}
                 <Typography variant="caption" fontWeight={700} color="grey.700">
                   {convertDate(row.original.dato)}
                 </Typography>
@@ -131,6 +134,8 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     ),
   };
 
+  const table = useTable<Tilsyn>(columns, data, options);
+
   return (
     <>
       <DeleteAlert
@@ -139,7 +144,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <FormTableComponent columns={columns} data={data} {...options} />
+      <MaterialReactTable table={table} />
     </>
   );
 }

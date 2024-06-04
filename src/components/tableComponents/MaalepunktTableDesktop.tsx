@@ -1,12 +1,13 @@
 import {Typography} from '@mui/material';
 import {useMemo, useState} from 'react';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
-import FormTableComponent from '~/components/FormTableComponent';
+
 import RenderActions from '~/helpers/RowActions';
-import {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import DeleteAlert from '~/components/DeleteAlert';
-import React from 'react';
+
 import {stamdataStore} from '~/state/store';
+import {useTable} from '~/hooks/useTable';
 
 export type Maalepunkt = {
   startdate: string;
@@ -77,19 +78,17 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     ),
   };
 
+  const table = useTable<Maalepunkt>(columns, data, options);
+
   return (
     <>
-      {data && (
-        <>
-          <DeleteAlert
-            measurementId={mpId}
-            dialogOpen={dialogOpen}
-            setDialogOpen={setDialogOpen}
-            onOkDelete={handleDelete}
-          />
-          <FormTableComponent columns={columns} data={data} {...options} />
-        </>
-      )}
+      <DeleteAlert
+        measurementId={mpId}
+        dialogOpen={dialogOpen}
+        setDialogOpen={setDialogOpen}
+        onOkDelete={handleDelete}
+      />
+      <MaterialReactTable table={table} />
     </>
   );
 }

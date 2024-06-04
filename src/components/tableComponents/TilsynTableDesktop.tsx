@@ -1,12 +1,12 @@
 import {useMemo, useState} from 'react';
-import FormTableComponent from '~/components/FormTableComponent';
 import RenderActions from '~/helpers/RowActions';
-import {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {Box} from '@mui/material';
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import React from 'react';
+import {useTable} from '~/hooks/useTable';
 
 export type Tilsyn = {
   batteriskift: boolean;
@@ -91,6 +91,8 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     ),
   };
 
+  const table = useTable<Tilsyn>(columns, data, options);
+
   return (
     <>
       <DeleteAlert
@@ -99,7 +101,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <FormTableComponent columns={columns} data={data} {...options} />
+      <MaterialReactTable table={table} />
     </>
   );
 }

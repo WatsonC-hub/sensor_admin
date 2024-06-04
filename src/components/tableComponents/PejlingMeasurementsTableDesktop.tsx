@@ -1,11 +1,11 @@
 import {useMemo, useState} from 'react';
-import FormTableComponent from '~/components/FormTableComponent';
 import RenderActions from '~/helpers/RowActions';
-import {MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import DeleteAlert from '~/components/DeleteAlert';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import React from 'react';
 import {stamdataStore} from '~/state/store';
+import {useTable} from '~/hooks/useTable';
 
 export type Kontrol = {
   comment: string;
@@ -81,6 +81,8 @@ export default function PejlingMeasurementsTableDesktop({
     ),
   };
 
+  const table = useTable<Kontrol>(columns, data, options);
+
   return (
     <>
       <DeleteAlert
@@ -89,7 +91,7 @@ export default function PejlingMeasurementsTableDesktop({
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <FormTableComponent columns={columns} data={data} {...options} />
+      <MaterialReactTable table={table} />
     </>
   );
 }
