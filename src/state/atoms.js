@@ -8,7 +8,7 @@ export const qaSelection = atom({});
 export const stationTableAtom = atomWithStorage('StationTableState', {
   columnVisibility: {
     ts_id: false,
-    'mrt-row-expand': false,
+    'mrt-row-expand': true,
   },
   pagination: {
     page: 0,

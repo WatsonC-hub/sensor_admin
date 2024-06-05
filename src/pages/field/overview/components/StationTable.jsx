@@ -1,16 +1,14 @@
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import BatteryAlertIcon from '@mui/icons-material/BatteryAlert';
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HeightIcon from '@mui/icons-material/Height';
 import InfoIcon from '@mui/icons-material/Info';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SignalCellularConnectedNoInternet0BarRoundedIcon from '@mui/icons-material/SignalCellularConnectedNoInternet0BarRounded';
 import SpeedIcon from '@mui/icons-material/Speed';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
-import {Box, IconButton, Tooltip, Typography} from '@mui/material';
+import {Box, Tooltip, Typography} from '@mui/material';
 import React, {useMemo} from 'react';
 import {useNavigate} from 'react-router-dom';
 
@@ -21,6 +19,8 @@ import {stationTableAtom} from '~/state/atoms';
 
 import {authStore} from '../../../../state/store';
 
+import StationTableMobile from './StationTableMobile';
+
 function typeIcon(type) {
   let icon;
 
@@ -29,15 +29,19 @@ function typeIcon(type) {
   } else if (type == 'Temperatur') {
     icon = <ThermostatIcon style={{color: 'grey'}} />;
   } else if (type == 'Nedbør') {
-    icon = <img width="25" height="25" style={{marginRight: '5px'}} src="/rainIcon.png" />;
+    icon = <img alt="" width="25" height="25" style={{marginRight: '5px'}} src="/rainIcon.png" />;
   } else if (type == 'Hastighed') {
     icon = <SpeedIcon style={{color: 'grey'}} />;
   } else if (type.toLowerCase().includes('ilt')) {
-    icon = <img width="20" height="20" style={{marginRight: '5px'}} src="/oxygenIcon.png" />;
+    icon = <img alt="" width="20" height="20" style={{marginRight: '5px'}} src="/oxygenIcon.png" />;
   } else if (type.toLowerCase().includes('vandføring')) {
-    icon = <img width="25" height="25" style={{marginRight: '5px'}} src="/waterFlowIcon.png" />;
+    icon = (
+      <img alt="" width="25" height="25" style={{marginRight: '5px'}} src="/waterFlowIcon.png" />
+    );
   } else if (type == 'Fugtighed') {
-    icon = <img width="25" height="25" style={{marginRight: '5px'}} src="/soilMoistureIcon.png" />;
+    icon = (
+      <img alt="" width="25" height="25" style={{marginRight: '5px'}} src="/soilMoistureIcon.png" />
+    );
   } else {
     icon = <InfoIcon style={{color: 'grey'}} />;
   }
@@ -93,6 +97,22 @@ const StationTable = ({data, isLoading}) => {
   const mobileColumns = useMemo(
     () => [
       {
+        header: 'Status',
+        accessorKey: 'opgave',
+        size: 20,
+        Cell: ({row}) => statusIcon(row.original),
+        sortingFn: (a, b) => {
+          // sort based on flag
+          if (a.original.flag === b.original.flag) {
+            return 0;
+          }
+          if (a.original.flag > b.original.flag) {
+            return 1;
+          }
+          return -1;
+        },
+      },
+      {
         header: 'Tidsserie ID',
         accessorKey: 'ts_id',
         enableHide: false,
@@ -114,22 +134,6 @@ const StationTable = ({data, isLoading}) => {
               <Typography fontSize={'0.8rem'}>{row.original.ts_name}</Typography>
             </Box>
           );
-        },
-      },
-      {
-        header: 'Status',
-        accessorKey: 'opgave',
-        size: 20,
-        Cell: ({row}) => statusIcon(row.original),
-        sortingFn: (a, b) => {
-          // sort based on flag
-          if (a.original.flag === b.original.flag) {
-            return 0;
-          }
-          if (a.original.flag > b.original.flag) {
-            return 1;
-          }
-          return -1;
         },
       },
     ],
@@ -155,7 +159,7 @@ const StationTable = ({data, isLoading}) => {
       {
         header: 'Parameter',
         accessorKey: 'tstype_name',
-        Cell: ({row}) => {
+        Cell: ({row, table}) => {
           return (
             <Box display="flex">
               {typeIcon(row.original.tstype_name)}
@@ -196,46 +200,52 @@ const StationTable = ({data, isLoading}) => {
     </Box>
   );
 
-  const rowActions = ({row}) => (
-    <Box gap={0.5}>
-      <Tooltip arrow title="Gå til tidsserie" enterTouchDelay={0}>
-        <IconButton
-          size="small"
-          sx={{backgroundColor: 'secondary.main'}}
-          onClick={() => {
-            station(row.original.loc_id, row.original.ts_id);
-            // navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
-          }}
-        >
-          <QueryStatsIcon />
-        </IconButton>
-      </Tooltip>
-      {adminAccess && (
-        <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
-          <IconButton
-            size="small"
-            sx={{backgroundColor: 'secondary.main'}}
-            onClick={
-              () => adminKvalitetssikring(row.original.ts_id)
-              // navigate(`/admin/kvalitetssikring/${row.original.ts_id}`
-            }
-          >
-            <AutoGraphIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Box>
-  );
+  // const rowActions = ({row}) => (
+  //   <Box gap={0.5}>
+  //     <Tooltip arrow title="Gå til tidsserie" enterTouchDelay={0}>
+  //       <IconButton
+  //         size="small"
+  //         sx={{backgroundColor: 'secondary.main'}}
+  //         onClick={() => {
+  //           station(row.original.loc_id, row.original.ts_id);
+  //           // navigate(`/field/location/${row.original.loc_id}/${row.original.ts_id}`);
+  //         }}
+  //       >
+  //         <QueryStatsIcon />
+  //       </IconButton>
+  //     </Tooltip>
+  //     {adminAccess && (
+  //       <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
+  //         <IconButton
+  //           size="small"
+  //           sx={{backgroundColor: 'secondary.main'}}
+  //           onClick={
+  //             () => adminKvalitetssikring(row.original.ts_id)
+  //             // navigate(`/admin/kvalitetssikring/${row.original.ts_id}`
+  //           }
+  //         >
+  //           <AutoGraphIcon />
+  //         </IconButton>
+  //       </Tooltip>
+  //     )}
+  //   </Box>
+  // );
 
   return (
-    <TableComponent
-      data={data}
-      columns={isTouch ? mobileColumns : columns}
-      isLoading={isLoading}
-      renderDetailPanel={renderDetailPanel}
-      rowActions={rowActions}
-      tableStateAtom={stationTableAtom}
-    />
+    <>
+      {isTouch ? (
+        <StationTableMobile data={data} />
+      ) : (
+        <TableComponent
+          data={data}
+          columns={isTouch ? mobileColumns : columns}
+          isLoading={isLoading}
+          renderDetailPanel={renderDetailPanel}
+          // rowActions={rowActions}
+          tableStateAtom={stationTableAtom}
+        />
+      )}
+    </>
   );
 };
 

@@ -28,6 +28,7 @@ const SensorContent = ({data}: SensorContentProps) => {
         <Box>
           <Typography variant="h6">Andre notifikationer</Typography>
           {data.otherNotifications.map((notification) => {
+            notification.notification_id;
             const splitted = notification.stationname.split(notification.locname);
             return (
               <Box key={notification.notification_id} display="flex" alignItems="center" gap={1}>
