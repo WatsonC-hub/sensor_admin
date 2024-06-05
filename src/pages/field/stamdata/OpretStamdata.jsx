@@ -24,6 +24,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
+import {tabsHeight} from '~/consts';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -339,8 +340,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
             aria-label="simple tabs example"
             sx={{
               '& .MuiTab-root': {
-                height: '48px',
-                minHeight: '48px',
+                height: tabsHeight,
+                minHeight: tabsHeight,
                 marginTop: 1,
               },
             }}

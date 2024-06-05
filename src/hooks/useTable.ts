@@ -21,6 +21,13 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
     enableSorting: false,
     enableTopToolbar: false,
     enableStickyFooter: true,
+    muiPaginationProps: {
+      size: 'small',
+      showRowsPerPage: true,
+      color: 'primary',
+      shape: 'rounded',
+      variant: 'outlined',
+    },
     paginationDisplayMode: 'pages',
   };
 
@@ -39,8 +46,17 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
     },
     muiTablePaperProps: {
       sx: {
+        flex: '1 1 0',
+        display: 'flex',
+        'flex-flow': 'column',
         boxShadow: 'none',
         p: 0,
+      },
+    },
+    muiTableContainerProps: {
+      sx: {
+        flex: '1 1 0',
+        pb: 0.5,
       },
     },
     muiTableFooterProps: {
@@ -77,13 +93,7 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         border: 'none',
       },
     },
-    muiPaginationProps: {
-      size: 'small',
-      showRowsPerPage: false,
-      color: 'primary',
-      shape: 'rounded',
-      variant: 'outlined',
-    },
+
     initialState: {
       density: 'compact',
       pagination: {
@@ -125,14 +135,6 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
       size: 'small',
     },
     positionActionsColumn: 'last',
-    muiTablePaperProps: {
-      sx: {
-        width: '100%',
-        boxShadow: '1',
-        p: 0,
-        margin: 'auto',
-      },
-    },
     muiTableBodyRowProps: {
       sx: {
         '&:hover': {
@@ -143,12 +145,6 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
           },
         },
       },
-    },
-    muiPaginationProps: {
-      showRowsPerPage: false,
-      color: 'primary',
-      shape: 'rounded',
-      variant: 'outlined',
     },
     initialState: {
       density: 'comfortable',
@@ -161,13 +157,21 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
       size: 'small',
       align: 'left',
     },
+    muiTablePaperProps: {
+      sx: {
+        width: '100%',
+        boxShadow: '1',
+        p: 0,
+        margin: 'auto',
+        flex: '1 1 0',
+        display: 'flex',
+        'flex-flow': 'column',
+      },
+    },
     muiTableContainerProps: {
       sx: {
-        height: {
-          tablet: 'calc(100vh - 30vh)',
-          laptop: 'calc(100vh - 56vh)',
-          desktop: 'calc(100vh - 47vh)',
-        },
+        flex: '1 1 0',
+        pb: 0.5,
       },
     },
   };

@@ -5,6 +5,7 @@ import React, {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
+import {setGraphHeight} from '~/consts';
 
 const selectorOptions = {
   buttons: [
@@ -237,7 +238,7 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
     <div
       style={{
         width: 'auto',
-        height: matches ? '300px' : '500px',
+        height: setGraphHeight(matches),
         marginBottom: '10px',
         paddingTop: '5px',
       }}

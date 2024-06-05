@@ -4,8 +4,10 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTable} from '~/hooks/useTable';
 
 export type Tilsyn = {
@@ -29,6 +31,7 @@ interface Props {
 export default function TilsynTableDesktop({data, handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
+  const {isTablet} = useBreakpoints();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -94,7 +97,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
   const table = useTable<Tilsyn>(columns, data, options);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -102,6 +105,6 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

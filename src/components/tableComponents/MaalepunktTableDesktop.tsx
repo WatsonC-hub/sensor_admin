@@ -1,10 +1,12 @@
-import {Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
@@ -29,6 +31,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const {isTablet} = useBreakpoints();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -80,7 +83,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const table = useTable<Maalepunkt>(columns, data, options);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -88,6 +91,6 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

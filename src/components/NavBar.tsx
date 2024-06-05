@@ -31,6 +31,7 @@ import {useNavigate} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import NotificationList from '~/components/NotificationList';
+import {appBarHeight} from '~/consts';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -87,7 +88,7 @@ export const AppBarLayout = ({children}: {children?: ReactNode}) => {
     <AppBar position="sticky" enableColorOnDark>
       <Toolbar
         sx={{
-          height: 64,
+          height: appBarHeight,
           pl: 1,
           pr: 1,
           width: '100%',

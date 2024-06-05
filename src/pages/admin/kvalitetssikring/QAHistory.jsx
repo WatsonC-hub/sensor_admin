@@ -3,6 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 import React, {useContext} from 'react';
 
 import {apiClient} from '~/apiClient';
+import {qaHistorySkeletonHeight} from '~/consts';
 import {MetadataContext} from '~/state/contexts';
 
 import ExcludeRow from './components/ExcludeRow';
@@ -31,7 +32,7 @@ export default function QAHistory() {
       <Box>
         <Skeleton
           sx={{
-            height: '40px',
+            height: qaHistorySkeletonHeight,
             width: '100%',
             borderRadius: '5px',
             marginBottom: '10px',
@@ -39,7 +40,7 @@ export default function QAHistory() {
         />
         <Skeleton
           sx={{
-            height: '40px',
+            height: qaHistorySkeletonHeight,
             width: '100%',
             borderRadius: '5px',
             marginBottom: '10px',
@@ -47,7 +48,7 @@ export default function QAHistory() {
         />
         <Skeleton
           sx={{
-            height: '40px',
+            height: qaHistorySkeletonHeight,
             width: '100%',
             borderRadius: '5px',
             marginBottom: '10px',

@@ -8,6 +8,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
+import {setGraphHeight} from '~/consts';
 import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
@@ -587,7 +588,7 @@ export default function QAGraph({stationId}) {
       <div
         style={{
           width: 'auto',
-          height: matches ? '300px' : '500px',
+          height: setGraphHeight(matches),
           // marginBottom: '10px',
           // marginTop: '-10px',
           paddingTop: '5px',

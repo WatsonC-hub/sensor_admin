@@ -34,6 +34,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
+import {tabsHeight} from '~/consts';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
@@ -327,8 +328,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           scrollButtons="auto"
           sx={{
             '& .MuiTab-root': {
-              height: '50px',
-              minHeight: '50px',
+              height: tabsHeight,
+              minHeight: tabsHeight,
             },
             marginTop: 1,
           }}

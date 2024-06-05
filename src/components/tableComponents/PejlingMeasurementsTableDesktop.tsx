@@ -1,9 +1,12 @@
+import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
@@ -33,6 +36,7 @@ export default function PejlingMeasurementsTableDesktop({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const {isTablet} = useBreakpoints();
 
   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 
@@ -84,7 +88,7 @@ export default function PejlingMeasurementsTableDesktop({
   const table = useTable<Kontrol>(columns, data, options);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -92,6 +96,6 @@ export default function PejlingMeasurementsTableDesktop({
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

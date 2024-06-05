@@ -21,6 +21,7 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
+import {alertHeight} from '~/consts';
 
 import {stamdataStore} from '../state/store';
 
@@ -142,7 +143,7 @@ export default function PejlingForm({
                   justifyContent: 'center',
                   display: 'flex',
                   alignItems: 'center',
-                  height: '80px',
+                  height: alertHeight,
                 }}
               >
                 <Link component="button" variant="body2" color="error" onClick={openAddMP}>

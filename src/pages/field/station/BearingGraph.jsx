@@ -6,7 +6,7 @@ import {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
-import {correction_map} from '~/consts';
+import {correction_map, setGraphHeight} from '~/consts';
 import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useCorrectData} from '~/hooks/useCorrectData';
@@ -402,7 +402,7 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
     <div
       style={{
         width: 'auto',
-        height: matches ? '300px' : '500px',
+        height: setGraphHeight(matches),
         // marginBottom: '10px',
       }}
     >

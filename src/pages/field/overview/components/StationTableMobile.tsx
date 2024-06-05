@@ -10,6 +10,7 @@ import React, {useMemo} from 'react';
 
 import Button from '~/components/Button';
 import TableComponent from '~/components/TableComponent';
+import {calculateContentHeight} from '~/consts';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {TableData} from '~/types';
 
@@ -350,7 +351,7 @@ export default function StationTableMobile({data}: Props) {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: 'calc(100vh - 160px)',
+        height: calculateContentHeight(160),
       }}
     >
       <TableComponent columns={columns} data={data} {...options} />

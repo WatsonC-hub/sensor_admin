@@ -14,6 +14,7 @@ import React, {SyntheticEvent} from 'react';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
+import {tabsHeight} from '~/consts';
 import {
   useNotificationOverview,
   useNotificationOverviewMap,
@@ -136,7 +137,7 @@ export default function OverviewPage() {
         sx={{
           '& .MuiTab-root': {
             // height: '48px',
-            minHeight: '48px',
+            minHeight: tabsHeight,
             borderBottom: '1px solid #e0e0e0',
           },
         }}
@@ -162,7 +163,7 @@ export default function OverviewPage() {
             margin: matches ? '0' : 'auto',
             '& .MuiTab-root': {
               // height: '48px',
-              minHeight: '48px',
+              minHeight: tabsHeight,
             },
           }}
           variant={matches ? 'fullWidth' : 'standard'}

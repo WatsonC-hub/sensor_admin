@@ -65,7 +65,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   };
 
   return (
-    <Box sx={{mt: 15, position: 'sticky', zIndex: 3}}>
+    <Box sx={{mt: isMobile ? 15 : 8, position: 'sticky', zIndex: 3}}>
       {isMobile && hiddenItems.length > 0 && (
         <Menu
           anchorEl={anchorEl}

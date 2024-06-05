@@ -35,3 +35,41 @@ export const correction_map: Record<number, string> = {
   5: 'Korrektion frem og tilbage til niveau spring',
   6: 'Korrektion frem og tilbage til forrige spring',
 };
+
+export const appBarHeight = '64px';
+export const alertHeight = '80px';
+
+export const setGraphHeight = (matches: boolean) => {
+  return matches ? '300px' : '500px';
+};
+
+export const qaHistorySkeletonHeight = '40px';
+
+export const tabsHeight = '48px';
+
+export const calculateContentHeight = (pixelToSubtract: number) => {
+  return `calc(100vh - ${pixelToSubtract}px)`;
+};
+
+export const setTableBoxStyle = (pixelToSubtract: number) => {
+  const sx = {
+    display: 'flex',
+    flexDirection: 'column',
+    height: calculateContentHeight(pixelToSubtract),
+  };
+  return sx;
+};
+
+export const renderDetailStyle = {
+  border: 'none',
+  backgroundColor: 'grey.300',
+  mt: -7.7,
+  pt: 7,
+  px: 2,
+  mx: -2,
+  transition: 'transform 0.2s',
+  borderTopLeftRadius: '20px',
+  borderTopRightRadius: '20px',
+  borderBottomLeftRadius: '15px',
+  borderBottomRightRadius: '15px',
+};

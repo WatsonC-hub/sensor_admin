@@ -20,6 +20,7 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
+import {alertHeight} from '~/consts';
 
 import OwnDatePicker from '../../../../components/OwnDatePicker';
 
@@ -117,7 +118,7 @@ export default function PejlingFormBorehole({
                   justifyContent: 'center',
                   display: 'flex',
                   alignItems: 'center',
-                  height: '80px',
+                  height: alertHeight,
                 }}
               >
                 <Link component="button" variant="body2" color="error" onClick={openAddMP}>
