@@ -38,7 +38,7 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
     mpData.enddate = moment(mpData.enddate).toISOString();
 
     const mutationOptions = {
-      onSuccess: (data: {}) => {
+      onSuccess: () => {
         resetMpData();
         setMode('view');
       },
@@ -75,11 +75,9 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
     );
   };
 
-  const handleEdit = (type: string) => {
-    return (data: object) => {
-      setMpData(data);
-      setMode('edit');
-    };
+  const handleEdit = (data: object) => {
+    setMpData(data);
+    setMode('edit');
   };
 
   return (
@@ -103,14 +101,14 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
         {matches ? (
           <MaalepunktTableMobile
             data={watlevmp}
-            handleEdit={handleEdit('watlevmp')}
+            handleEdit={handleEdit}
             handleDelete={handleDeleteMaalepunkt}
             canEdit={canEdit}
           />
         ) : (
           <MaalepunktTableDesktop
             data={watlevmp}
-            handleEdit={handleEdit('watlevmp')}
+            handleEdit={handleEdit}
             handleDelete={handleDeleteMaalepunkt}
             canEdit={canEdit}
           />

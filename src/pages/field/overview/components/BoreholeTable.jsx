@@ -53,6 +53,7 @@ function statusIcon(row) {
 const BoreholeTable = ({data, isLoading}) => {
   const {isTouch} = useBreakpoints();
   const {boreholeIntake} = useNavigationFunctions();
+  console.log(data);
   const mobileColumns = useMemo(
     () => [
       {

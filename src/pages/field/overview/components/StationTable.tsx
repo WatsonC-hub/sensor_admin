@@ -11,6 +11,7 @@ import React, {useMemo} from 'react';
 import Button from '~/components/Button';
 import TableComponent from '~/components/TableComponent';
 import {calculateContentHeight} from '~/consts';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {TableData} from '~/types';
 
@@ -18,7 +19,6 @@ import NotificationIcon from './NotificationIcon';
 
 interface Props {
   data: TableData[];
-  isLoading: boolean;
 }
 
 interface RenderDetailProps {
@@ -58,8 +58,10 @@ function typeIcon(type: string) {
   );
 }
 
-export default function StationTableMobile({data}: Props) {
+export default function StationTable({data}: Props) {
   const {station} = useNavigationFunctions();
+  const {isTouch} = useBreakpoints();
+  console.log(data);
 
   const columns = useMemo<MRT_ColumnDef<TableData>[]>(
     () => [
@@ -219,7 +221,13 @@ export default function StationTableMobile({data}: Props) {
           </Typography>
         </Box>
       </Box>
-      <Box display={'flex'} flexDirection={'row'} pb={1} justifyContent={'space-evenly'}>
+      <Box
+        display={'flex'}
+        flexDirection={'row'}
+        pb={1}
+        justifyContent={isTouch ? 'space-evenly' : 'center'}
+        gap={isTouch ? 0 : 1}
+      >
         <Button
           bttype="primary"
           onClick={() => {
@@ -256,6 +264,7 @@ export default function StationTableMobile({data}: Props) {
     },
     muiTableContainerProps: {
       sx: {
+        width: isTouch ? '100%' : '1080px',
         // height:'100%'
         flex: '1 1 0',
       },
@@ -340,14 +349,21 @@ export default function StationTableMobile({data}: Props) {
     },
     muiPaginationProps: {
       size: 'small',
-      color: 'primary',
       shape: 'rounded',
       variant: 'outlined',
+    },
+    muiTableFooterProps: {
+      sx: {
+        backgroundColor: 'primary.main',
+      },
     },
   };
 
   return (
     <Box
+      justifyContent={'center'}
+      alignItems={'center'}
+      p={1}
       sx={{
         display: 'flex',
         flexDirection: 'column',

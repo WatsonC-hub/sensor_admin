@@ -1,12 +1,10 @@
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import MapIcon from '@mui/icons-material/Map';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import type {BoxProps} from '@mui/material/Box';
 import {useTheme} from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
@@ -15,10 +13,7 @@ import React, {SyntheticEvent} from 'react';
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
-import {
-  useNotificationOverview,
-  useNotificationOverviewMap,
-} from '~/hooks/query/useNotificationOverview';
+import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import {authStore} from '~/state/store';
 
 import ScrollTop from '../../../components/ScrollTop';
@@ -52,7 +47,7 @@ export default function OverviewPage() {
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
-  const {data: tabledata, isLoading} = useQuery({
+  const {data: tabledata} = useQuery({
     queryKey: ['station_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
@@ -102,7 +97,6 @@ export default function OverviewPage() {
     other?: BoxProps;
   }) {
     const {children, value, index, ...other} = props;
-
     return (
       <Box
         display={value === index ? 'flex' : 'none'}
@@ -175,7 +169,7 @@ export default function OverviewPage() {
 
         {iotAccess && (
           <TabPanel value={tabValueInner} index={0}>
-            <StationTable data={tabledata} isLoading={isLoading} />
+            <StationTable data={tabledata} />
           </TabPanel>
         )}
         {boreholeAccess && (

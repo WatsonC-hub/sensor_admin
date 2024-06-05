@@ -13,8 +13,6 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
 import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';
 import {useMetadata} from '~/hooks/query/useMetadata';
-import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
@@ -30,10 +28,6 @@ export default function LocationRouter() {
   const navigate = useNavigate();
   const {station, createStamdata, adminKvalitetssikring} = useNavigationFunctions();
   const adminAccess = authStore((state) => state.adminAccess);
-
-  const {isMobile} = useBreakpoints();
-
-  const {data: notificationOverview} = useNotificationOverview();
 
   const {data} = useQuery({
     queryKey: ['stations', params.locid],
@@ -63,7 +57,7 @@ export default function LocationRouter() {
       <AppBarLayout>
         <IconButton
           color="inherit"
-          onClick={(e) => {
+          onClick={() => {
             navigate(-1);
           }}
           size="large"
