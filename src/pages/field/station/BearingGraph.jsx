@@ -6,11 +6,11 @@ import {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
+import {correction_map} from '~/consts';
 import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useCorrectData} from '~/hooks/useCorrectData';
-
-import {stamdataStore} from '../../../state/store';
+import {stamdataStore} from '~/state/store';
 
 const selectorOptions = {
   buttons: [
@@ -150,6 +150,11 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
+// const initRange = [
+//   moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+//   moment().format('YYYY-MM-DDTHH:mm'),
+// ];
+
 function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
@@ -163,6 +168,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const [layout, setLayout] = useState(
     matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
   );
+  const [showRawData, setShowRawData] = useState(false);
 
   const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
   const {data: rawData, refetch: fetchRaw} = useQuery({
@@ -193,6 +199,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   //   }
   //   console.log(e.layout.xaxis.range);
   // };
+  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
   const handleRelayout = (e) => {
     console.log(e);
@@ -230,38 +237,17 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
       const daysdiff = x1.diff(x0, 'days');
 
-      x0 = x0.subtract(daysdiff * 0.2, 'days');
-      x1 = x1.add(daysdiff * 0.2, 'days');
+      x0 = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days');
+      x1 = x1.add(Math.max(daysdiff * 0.2, 1), 'days');
 
       setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
       return;
     }
   };
 
-  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
-
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.waterlevel);
-  const textControl = controlData?.map((d) => {
-    switch (d.useforcorrection) {
-      case 0:
-        return 'Kontrol';
-      case 1:
-        return 'Korrektion fremadrettet';
-      case 2:
-        return 'Korrektion fremadrettet og bagudrettet';
-      case 3:
-        return 'Korrektion lineært til forrige pejling';
-      case 4:
-        return 'Korrektion tilbage til unit';
-      case 5:
-        return 'Korrektion tilbage til forrige niveaukorrektion';
-      case 6:
-        return 'Korrektion tilbage til forrige pejling';
-      default:
-        return 'Korrektion';
-    }
-  });
+  const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
   var downloadButton = {
@@ -299,6 +285,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           visible: true,
         },
       };
+      setShowRawData(true);
       setLayout(gd.layout);
     },
   };
@@ -345,8 +332,8 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
               marker: {symbol: '100', size: '3', color: '#177FC1'},
             },
             {
-              x: rawData?.x,
-              y: rawData?.y,
+              x: showRawData ? rawData?.x : [],
+              y: showRawData ? rawData?.y : [],
               name: 'Rådata',
               type: 'scattergl',
               yaxis: 'y2',
