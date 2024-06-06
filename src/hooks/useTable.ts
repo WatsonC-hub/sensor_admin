@@ -171,7 +171,6 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
     muiTableContainerProps: {
       sx: {
         flex: '1 1 0',
-        pb: 0.5,
       },
     },
   };
