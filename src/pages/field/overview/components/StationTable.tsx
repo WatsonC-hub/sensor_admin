@@ -5,7 +5,13 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import {Box, Divider, Tooltip, Typography} from '@mui/material';
-import {MRT_ColumnDef, MRT_Row, MRT_TableInstance, MRT_TableOptions} from 'material-react-table';
+import {
+  MRT_ColumnDef,
+  MRT_Row,
+  MRT_TableInstance,
+  MRT_TableOptions,
+  MaterialReactTable,
+} from 'material-react-table';
 import React, {useMemo} from 'react';
 
 import Button from '~/components/Button';
@@ -13,6 +19,7 @@ import TableComponent from '~/components/TableComponent';
 import {calculateContentHeight} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useTable} from '~/hooks/useTable';
 import {TableData} from '~/types';
 
 import NotificationIcon from './NotificationIcon';
@@ -359,6 +366,8 @@ export default function StationTable({data}: Props) {
     },
   };
 
+  const table = useTable<TableData>(columns, data, options);
+
   return (
     <Box
       justifyContent={'center'}
@@ -370,7 +379,7 @@ export default function StationTable({data}: Props) {
         height: calculateContentHeight(160),
       }}
     >
-      <TableComponent columns={columns} data={data} {...options} />
+      <MaterialReactTable table={table} />
     </Box>
   );
 }
