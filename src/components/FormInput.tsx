@@ -1,6 +1,17 @@
-import {TextField} from '@mui/material';
+import {TextField, BaseTextFieldProps} from '@mui/material';
 import moment from 'moment';
+import {ChangeEvent} from 'react';
 import {Controller, get, useFormContext} from 'react-hook-form';
+
+interface FormInputProps extends BaseTextFieldProps {
+  name: string;
+  warning?: (value: string) => boolean;
+  children?: React.ReactNode;
+  rules?: any;
+  transform?: any;
+  onChangeCallback?: any;
+  type?: string;
+}
 
 const FormInput = ({
   name,
@@ -8,33 +19,34 @@ const FormInput = ({
   children,
   rules,
   transform,
+  type,
   onChangeCallback,
-  ...otherProps
-}) => {
+  ...props
+}: FormInputProps) => {
   const {
     control,
     formState: {errors},
-    defaultValues,
+    getValues,
   } = useFormContext();
 
   if (!transform) {
-    transform = (e) => e;
+    transform = (e: React.FormEvent<ChangeEvent>) => e;
   }
 
   return (
     <Controller
       control={control}
       name={name}
-      defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
+      defaultValue={get(getValues, name) === undefined ? '' : get(getValues, name)}
       rules={rules}
       render={({field: {value, onChange, onBlur, ref, name}}) => {
-        if (otherProps.type === 'datetime-local' && value) {
+        if (type === 'datetime-local' && value) {
           value = moment(value).format('YYYY-MM-DDTHH:mm');
         }
 
         return (
           <TextField
-            {...otherProps}
+            {...props}
             name={name}
             value={value ?? ''}
             onBlur={onBlur}
@@ -56,7 +68,7 @@ const FormInput = ({
             fullWidth
             margin="dense"
             onChange={(e) => {
-              if (otherProps.type === 'number' && e.target.value !== '') {
+              if (type === 'number' && e.target.value !== '') {
                 onChange(transform(Number(e.target.value)));
                 onChangeCallback && onChangeCallback(Number(e.target.value));
               } else {

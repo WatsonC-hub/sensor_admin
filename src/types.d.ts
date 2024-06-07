@@ -29,3 +29,12 @@ export type TableData = {
   x: number;
   y: number;
 };
+
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  cvr: string;
+  checkedNews: boolean;
+  checkedTerms: boolean;
+};

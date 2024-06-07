@@ -4,7 +4,7 @@ import {Route, Routes} from 'react-router-dom';
 import Login from './pages/login/Login';
 import Register from './pages/login/Register';
 
-export default function UnAuntenticatedApp({}) {
+export default function UnAuntenticatedApp() {
   return (
     <Routes>
       <Route path="/register" element={<Register />} />

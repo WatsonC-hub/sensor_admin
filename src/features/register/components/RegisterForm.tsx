@@ -1,3 +1,4 @@
+import {zodResolver} from '@hookform/resolvers/zod';
 import {
   Box,
   Button,
@@ -8,16 +9,63 @@ import {
   FormHelperText,
   Typography,
 } from '@mui/material';
-import React from 'react';
-import {Controller, FormProvider} from 'react-hook-form';
+import React, {useEffect} from 'react';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
+import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';
+import {FormData} from '~/types';
 
-const RegisterForm = ({onSubmitHandler, formMethods}) => {
+interface RegisterProps {
+  onSubmitHandler: (e: React.FormEvent<HTMLFormElement>) => void;
+}
+
+const RegisterSchema = z.object({
+  firstName: z
+    .string({required_error: 'Fornavn er påkrævet'})
+    .min(2, 'Fornavn skal være længere end 2 tegn')
+    .max(50, 'Fornavn må ikke være længere end 50 tegn'),
+  lastName: z
+    .string({required_error: 'Efternavn er påkrævet'})
+    .min(2, 'Efternavn skal være længere end 2 tegn')
+    .max(50, 'Efternavn må ikke være længere end 50 tegn'),
+  email: z
+    .string({required_error: 'Email er påkrævet'})
+    .min(1, 'Email er påkrævet')
+    .email('Email er ugyldig'),
+  cvr: z
+    .string({required_error: 'CVR er påkrævet'})
+    .min(8, 'CVR skal være 8 tegn langt')
+    .max(8, 'CVR skal være 8 tegn langt'),
+  checkedTerms: z.literal(true, {
+    errorMap: () => ({message: 'Du skal acceptere betingelserne for at oprette en konto'}),
+  }),
+  checkedNews: z.boolean().optional().default(false),
+});
+
+const RegisterForm = ({onSubmitHandler}: RegisterProps) => {
+  const formMethods = useForm<FormData>({
+    resolver: zodResolver(RegisterSchema),
+  });
+
   const {
     control,
-    formState: {errors},
+    reset,
+    formState: {errors, isSubmitSuccessful},
   } = formMethods;
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({
+        firstName: '',
+        lastName: '',
+        email: '',
+        cvr: '',
+        checkedTerms: false,
+        checkedNews: false,
+      });
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <FormProvider {...formMethods}>

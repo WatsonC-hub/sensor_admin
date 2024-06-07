@@ -1,16 +1,13 @@
-import DownloadIcon from '@mui/icons-material/Download';
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
-import Button from '~/components/Button';
-import FormInput from '~/components/FormInput';
-
-import {getDTMQuota} from '../../fieldAPI';
+import {getDTMQuota} from '~/features/login/api/fieldApi';
 
 import LocationGroups from './LocationGroups';
 import LocationTypeSelect from './LocationTypeSelect';
+import FormInput from '~/components/FormInput';
 
 export default function LocationForm({mode, disable}) {
   const {
@@ -55,7 +52,6 @@ export default function LocationForm({mode, disable}) {
           label="Navn"
           required
           fullWidth
-          autoFocus
           placeholder="f.eks. Engsø"
           sx={{
             mb: 2,
