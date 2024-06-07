@@ -13,10 +13,11 @@ import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useEffect} from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {stationTableAtom} from '~/state/atoms';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
+// import {stationTableAtom} from '~/state/atoms';
 
 const TableComponent = ({data, columns, ...rest}) => {
-  const [tableState, setTableState] = useAtom(stationTableAtom);
+  const [tableState, setTableState] = useStatefullTableAtom('testtable');
   const {isTouch, isMobile} = useBreakpoints();
 
   const stateChangeHandler = (stateName) => (state) => {

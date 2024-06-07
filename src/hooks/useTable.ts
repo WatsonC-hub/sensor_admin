@@ -1,4 +1,5 @@
 // A hook that returns whether the current screen size is mobile, tablet or desktop.
+import {Atom} from 'jotai';
 import {merge} from 'lodash';
 import {
   type MRT_RowData,

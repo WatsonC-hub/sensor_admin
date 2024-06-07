@@ -60,7 +60,7 @@ export default function OverviewPage() {
     refetchOnReconnect: false,
   });
 
-  const {data: boreholetabledata, isLoading: boreholeIsLoading} = useQuery({
+  const {data: boreholetabledata, isPending: boreholeIsPending} = useQuery({
     queryKey: ['borehole_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
@@ -69,7 +69,7 @@ export default function OverviewPage() {
     enabled: boreholeAccess,
   });
 
-  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery<BoreholeData[]>({
+  const {data: boreholeMapdata, isPending: boreholeMapIsPending} = useQuery<BoreholeData[]>({
     queryKey: ['borehole_map'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);
@@ -78,7 +78,7 @@ export default function OverviewPage() {
     enabled: boreholeAccess,
   });
 
-  const {data: mapData, isLoading: mapLoading} = useNotificationOverviewMap({
+  const {data: mapData, isPending: mapPending} = useNotificationOverviewMap({
     enabled: iotAccess,
   });
 
@@ -143,8 +143,8 @@ export default function OverviewPage() {
         <Map
           sensorData={mapData}
           boreholeData={boreholeMapdata}
-          loading={mapLoading && iotAccess}
-          boreholeLoading={boreholeMapIsLoading && boreholeAccess}
+          loading={mapPending && iotAccess}
+          boreholeLoading={boreholeMapIsPending && boreholeAccess}
         />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
@@ -174,7 +174,7 @@ export default function OverviewPage() {
         )}
         {boreholeAccess && (
           <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0}>
-            <BoreholeTable data={boreholetabledata} isLoading={boreholeIsLoading} />
+            <BoreholeTable data={boreholetabledata} isLoading={boreholeIsPending} />
           </TabPanel>
         )}
       </TabPanel>

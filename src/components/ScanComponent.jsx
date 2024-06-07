@@ -9,7 +9,7 @@ import {apiClient} from '~/apiClient';
 export default function ScanComponent() {
   const params = useParams();
 
-  const {data, isLoading, isError} = useQuery({
+  const {data, isError, isPending} = useQuery({
     queryKey: ['labelid', params.labelid],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/calypso_id/${params.labelid}`);
@@ -17,7 +17,7 @@ export default function ScanComponent() {
     },
   });
 
-  if (isLoading) {
+  if (isPending) {
     return <CircularProgress />;
   }
 
