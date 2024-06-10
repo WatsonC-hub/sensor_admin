@@ -1,52 +1,18 @@
-import {Grid, InputAdornment, MenuItem} from '@mui/material';
+import {Grid, InputAdornment} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
 import FormInput from '~/components/formComponents/FormInput';
+import FormTextField from '~/components/formComponents/FormTextField';
+import {timeSeriesType} from '~/types';
 
-import FormTextField from '../formComponents/FormTextField';
-
-interface TimeSeriesTypeList {
-  stationTypes: timeSeriesType[];
-}
+import TimeseriesTypeSelect from './TimeSeriesTypeSelecte';
 
 interface TimeSeriesFormProps {
   mode: string;
 }
-
-export type timeSeriesType = {
-  tstype_id: number;
-  tstype_name: string;
-  default_unit: string;
-};
-
-const TimeseriesTypeSelect = ({stationTypes}: TimeSeriesTypeList) => {
-  const menuItems = stationTypes
-    ?.filter((i) => i.tstype_id !== 0)
-    ?.map((item) => (
-      <MenuItem value={item.tstype_id} key={item.tstype_id}>
-        {item.tstype_name}
-      </MenuItem>
-    ));
-
-  return (
-    <FormInput
-      name="timeseries.tstype_id"
-      label="Tidsserietype"
-      select
-      required
-      fullWidth
-      sx={{
-        mb: 2,
-      }}
-    >
-      <MenuItem value={-1}>Vælg type</MenuItem>
-      {menuItems}
-    </FormInput>
-  );
-};
 
 export default function TimeseriesForm({mode}: TimeSeriesFormProps) {
   const {data: timeseries_types} = useQuery({

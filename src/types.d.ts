@@ -30,11 +30,17 @@ export type TableData = {
   y: number;
 };
 
-type FormData = {
+export type FormData = {
   firstName: string;
   lastName: string;
   email: string;
   cvr: string;
   checkedNews: boolean;
   checkedTerms: boolean;
+};
+
+export type timeSeriesType = {
+  tstype_id: number;
+  tstype_name: string;
+  default_unit: string;
 };
