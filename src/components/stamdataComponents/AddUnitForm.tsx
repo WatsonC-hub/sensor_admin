@@ -6,17 +6,45 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useState} from 'react';
+import React, {ChangeEvent, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 
-import OwnDatePicker from '../../../components/OwnDatePicker';
-import {stamdataStore} from '../../../state/store';
+import {stamdataStore} from '../../state/store';
+import OwnDatePicker from '../OwnDatePicker';
 
-export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
+interface UnitFormProps {
+  udstyrDialogOpen: boolean;
+  setUdstyrDialogOpen: (value: boolean) => void;
+  tstype_id: number;
+  mode?: string;
+}
+
+type Unit = {
+  calypso_id: number;
+  channel: number;
+  enddate: string;
+  org_id_owner: number;
+  projectno: string;
+  sensor_id: string;
+  sensorinfo: string;
+  sensortypeid: number;
+  sensortypename: string;
+  startdate: string;
+  terminal_id: string;
+  type: string;
+  unit_uuid: string;
+};
+
+export default function AddUnitForm({
+  udstyrDialogOpen,
+  setUdstyrDialogOpen,
+  tstype_id,
+  mode,
+}: UnitFormProps) {
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
   const queryClient = useQueryClient();
 
@@ -37,14 +65,14 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries('udstyr');
+      queryClient.invalidateQueries({queryKey: ['udstyr']});
     },
   });
 
   const formMethods = useFormContext();
 
   const [unitData, setUnitData] = useState({
-    calypso_id: -1,
+    calypso_id: '-1',
     sensor_id: '',
     uuid: '',
     fra: new Date(),
@@ -53,8 +81,8 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   const uniqueCalypsoIds = [
     ...new Set(
       availableUnits
-        ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id == 0 ? x.terminal_id : x.calypso_id))
+        ?.filter((unit: Unit) => unit.sensortypeid === tstype_id)
+        ?.map((x: Unit) => (x.calypso_id == 0 ? x.terminal_id : x.calypso_id))
     ),
   ].sort((a, b) => {
     if (typeof a == 'number' && typeof b == 'number') {
@@ -71,15 +99,16 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
     } else {
       return -1;
     }
-  });
+  }) as (string | number)[];
 
-  const sensorsForCalyspoId = (id) =>
+  const sensorsForCalyspoId = (id: string) =>
     availableUnits?.filter(
-      (unit) =>
-        (unit.calypso_id === id || unit.terminal_id === id) && unit.sensortypeid === tstype_id
+      (unit: Unit) =>
+        (unit.calypso_id.toString() === id || unit.terminal_id === id) &&
+        unit.sensortypeid === tstype_id
     );
 
-  const handleCalypsoId = (event) => {
+  const handleCalypsoId = (event: ChangeEvent<HTMLInputElement>) => {
     setUnitData({
       ...unitData,
       calypso_id: event.target.value,
@@ -94,18 +123,18 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
     });
   };
 
-  const handleDateChange = (date) => {
+  const handleDateChange = (date: Date) => {
     setUnitData({
       ...unitData,
       fra: date,
     });
   };
 
-  let handleSave = () => null;
+  let handleSave: () => void;
 
   if (mode === 'edit') {
     handleSave = () => {
-      let unit = availableUnits.find((x) => x.unit_uuid === unitData.uuid);
+      const unit = availableUnits.find((x: Unit) => x.unit_uuid === unitData.uuid);
 
       if (!unit) return;
 
@@ -125,7 +154,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   } else {
     handleSave = () => {
       setUdstyrDialogOpen(false);
-      let unit = availableUnits.find((x) => x.unit_uuid === unitData.uuid);
+      const unit = availableUnits.find((x: Unit) => x.unit_uuid === unitData.uuid);
 
       if (!unit) return;
 
@@ -184,7 +213,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                 </MenuItem>
                 {uniqueCalypsoIds?.map((option) => (
                   <MenuItem key={option} value={option}>
-                    {option}
+                    {option.toString()}
                   </MenuItem>
                 ))}
               </TextField>
@@ -201,7 +230,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                 <MenuItem key={-1} value={''}>
                   Vælg Sensor ID
                 </MenuItem>
-                {sensorsForCalyspoId(unitData.calypso_id)?.map((option) => (
+                {sensorsForCalyspoId(unitData.calypso_id)?.map((option: Unit) => (
                   <MenuItem key={option.unit_uuid} value={option.unit_uuid}>
                     {option.channel} - {option.sensortypename}
                   </MenuItem>
@@ -210,7 +239,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
               <OwnDatePicker
                 label={'Fra'}
                 value={unitData.fra}
-                onChange={(date) => handleDateChange(date)}
+                onChange={(date: Date) => handleDateChange(date)}
               />
             </DialogContent>
             <DialogActions>
@@ -220,7 +249,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
               <Button
                 onClick={handleSave}
                 bttype="primary"
-                disabled={unitData.calypso_id === -1 || unitData.uuid === ''}
+                disabled={unitData.calypso_id === '-1' || unitData.uuid === ''}
               >
                 Tilføj
               </Button>

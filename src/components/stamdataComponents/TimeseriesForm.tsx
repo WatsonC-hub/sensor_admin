@@ -4,12 +4,26 @@ import React, {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 
-import FormTextField from './FormTextField';
+import FormTextField from '../formComponents/FormTextField';
 
-const TimeseriesTypeSelect = ({stationTypes}) => {
-  let menuItems = stationTypes
+interface TimeSeriesTypeList {
+  stationTypes: timeSeriesType[];
+}
+
+interface TimeSeriesFormProps {
+  mode: string;
+}
+
+export type timeSeriesType = {
+  tstype_id: number;
+  tstype_name: string;
+  default_unit: string;
+};
+
+const TimeseriesTypeSelect = ({stationTypes}: TimeSeriesTypeList) => {
+  const menuItems = stationTypes
     ?.filter((i) => i.tstype_id !== 0)
     ?.map((item) => (
       <MenuItem value={item.tstype_id} key={item.tstype_id}>
@@ -34,7 +48,7 @@ const TimeseriesTypeSelect = ({stationTypes}) => {
   );
 };
 
-export default function TimeseriesForm({mode}) {
+export default function TimeseriesForm({mode}: TimeSeriesFormProps) {
   const {data: timeseries_types} = useQuery({
     queryKey: ['timeseries_types'],
     queryFn: async () => {
@@ -78,7 +92,10 @@ export default function TimeseriesForm({mode}) {
           <FormTextField
             disabled
             label="Tidsserie type"
-            value={timeseries_types?.filter((elem) => elem.tstype_id == tstype_id)[0]?.tstype_name}
+            value={
+              timeseries_types?.filter((elem: timeSeriesType) => elem.tstype_id == tstype_id)[0]
+                ?.tstype_name
+            }
           />
         )}
       </Grid>

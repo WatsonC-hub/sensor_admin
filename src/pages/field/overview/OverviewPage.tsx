@@ -47,7 +47,7 @@ export default function OverviewPage() {
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
-  const {data: tabledata} = useQuery({
+  const {data: tabledata, isPending} = useQuery({
     queryKey: ['station_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
@@ -169,7 +169,7 @@ export default function OverviewPage() {
 
         {iotAccess && (
           <TabPanel value={tabValueInner} index={0}>
-            <StationTable data={tabledata} />
+            <StationTable data={tabledata} isPending={isPending} />
           </TabPanel>
         )}
         {boreholeAccess && (

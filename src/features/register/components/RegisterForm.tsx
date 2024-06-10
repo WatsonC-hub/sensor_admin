@@ -13,7 +13,7 @@ import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 import {FormData} from '~/types';
 
 interface RegisterProps {

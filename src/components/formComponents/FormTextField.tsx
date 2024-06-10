@@ -1,8 +1,14 @@
 import {TextField} from '@mui/material';
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 
-const FormTextField = (props) => {
-  const {value, onChange, label, disabled, ...rest} = props;
+interface FormTextFieldProps {
+  disabled: boolean;
+  label: string;
+  value?: string;
+  onChange?: (event: ChangeEvent) => void;
+}
+
+const FormTextField = ({disabled, onChange, label, value, ...rest}: FormTextFieldProps) => {
   return (
     <TextField
       sx={{

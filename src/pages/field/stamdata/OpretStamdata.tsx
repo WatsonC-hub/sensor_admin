@@ -1,6 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {
-  AddLocationAlt,
   BuildRounded,
   LocationOnRounded,
   SettingsPhoneRounded,
@@ -8,37 +7,52 @@ import {
 } from '@mui/icons-material';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import SaveIcon from '@mui/icons-material/Save';
-import {Container, Grid, TextField, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
+import {Grid, TextField, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
-import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
+import AddUnitForm from '~/components/stamdataComponents/AddUnitForm';
+import KontaktForm from '~/components/stamdataComponents/KontaktForm';
+import LocationForm from '~/components/stamdataComponents/LocationForm';
+import TimeseriesForm from '~/components/stamdataComponents/TimeseriesForm';
+import UnitForm from '~/components/stamdataComponents/UnitForm';
 import {tabsHeight} from '~/consts';
+import AddLocationForm from '~/features/stamdata/components/AddLocationForm';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import {stamdataStore} from '~/state/store';
 
-import {stamdataStore} from '../../../state/store';
+interface LocationChooserProps {
+  setLocationDialogOpen: (openDialog: boolean) => void;
+}
 
-import AddLocationForm from './AddLocationForm';
-import AddUnitForm from './AddUnitForm';
-import KontaktForm from './components/KontaktForm';
-import LocationForm from './components/LocationForm';
-import TimeseriesForm from './components/TimeseriesForm';
-import UnitForm from './components/UnitForm';
+type Location = {
+  loc_id: string;
+  loc_name: string;
+  mainloc: string;
+  subloc: string;
+  subsubloc: string;
+  x: number;
+  y: number;
+  groups: string[];
+  terrainqual: string;
+  terrainlevel: number;
+  description: string;
+  loctype_id: number;
+};
 
-function LocationChooser({setLocationDialogOpen}) {
+function LocationChooser({setLocationDialogOpen}: LocationChooserProps) {
   const location = stamdataStore((store) => store.location);
   const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : {loc_name: ''});
   const formMethods = useFormContext();
@@ -46,7 +60,7 @@ function LocationChooser({setLocationDialogOpen}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
-  const populateFormData = (locData) => {
+  const populateFormData = (locData: Location) => {
     setSelectedLoc(locData);
     if (locData) {
       formMethods.reset({
@@ -119,14 +133,16 @@ function LocationChooser({setLocationDialogOpen}) {
             )}
             style={{width: 200, marginLeft: '12px'}}
             onChange={(event, value) => {
-              populateFormData(value);
+              console.log(value);
+              populateFormData(
+                locations.find((location: Location) => location.loc_name === value?.loc_name)
+              );
             }}
           />
 
           <Button
             size="small"
-            color="primary"
-            variant="contained"
+            bttype="primary"
             sx={{
               textTransform: 'none',
               ml: '12px',
@@ -167,7 +183,11 @@ function LocationChooser({setLocationDialogOpen}) {
             )}
             disableClearable
             style={{width: '100%', margin: '0 auto'}}
-            onChange={(event, value) => populateFormData(value)}
+            onChange={(event, value) =>
+              populateFormData(
+                locations.find((location: Location) => location.loc_name === value?.loc_name)
+              )
+            }
           />
           <Button
             bttype="primary"
@@ -188,7 +208,7 @@ function LocationChooser({setLocationDialogOpen}) {
   return matches ? mobileChooser : desktopChooser;
 }
 
-function Location({setLocationDialogOpen}) {
+function Location({setLocationDialogOpen}: LocationChooserProps) {
   return (
     <Grid container>
       <LocationChooser setLocationDialogOpen={setLocationDialogOpen} />
@@ -197,9 +217,13 @@ function Location({setLocationDialogOpen}) {
   );
 }
 
-function TabPanel(props) {
-  const {children, value, index, ...other} = props;
+interface TabPanelProps {
+  value: string | null;
+  index: string;
+  children: ReactNode;
+}
 
+function TabPanel({children, value, index, ...other}: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -213,8 +237,11 @@ function TabPanel(props) {
   );
 }
 
-export default function OpretStamdata({setAddStationDisabled}) {
-  const navigate = useNavigate();
+interface StamdataProps {
+  setAddStationDisabled: (stationDisabled: boolean) => void;
+}
+
+export default function OpretStamdata({setAddStationDisabled}: StamdataProps) {
   const {field} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
@@ -242,6 +269,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
       timeseries: {
         tstype_id: -1,
       },
+      unit: {
+        startdate: store.unit.startdato,
+        unit_uuid: store.unit.uuid,
+      },
+      watlevmp: {},
     },
     mode: 'onTouched',
   });
@@ -252,7 +284,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
     watch,
     getValues,
     handleSubmit,
-    trigger,
   } = formMethods;
 
   const watchtstype_id = watch('timeseries.tstype_id');
@@ -277,14 +308,14 @@ export default function OpretStamdata({setAddStationDisabled}) {
     });
   }, [watchtstype_id]);
 
-  const handleDebug = (error) => {
+  const handleDebug = (error: any) => {
     console.log('values', getValues());
     console.log('error', error);
   };
 
   const handleOpret = async () => {
     setAddStationDisabled(false);
-    let form = {
+    const form = {
       location: {
         ...getValues()?.location,
       },
@@ -295,6 +326,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
         startdate: store.unit.startdato,
         unit_uuid: store.unit.uuid,
       },
+      watlevmp: {},
     };
 
     if (getValues()?.timeseries.tstype_id === 1) {
@@ -319,9 +351,10 @@ export default function OpretStamdata({setAddStationDisabled}) {
   };
 
   useEffect(() => {
-    setTabValue('0');
+    if (tabValue === '') setTabValue('0');
+    else setTabValue(tabValue !== null ? tabValue : '');
     return () => {
-      setTabValue(null);
+      setTabValue('');
     };
   }, []);
 
@@ -447,7 +480,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                   Annuller
                 </Button>
 
-                {tabValue < 3 && (
+                {tabValue !== null && tabValue < '3' && (
                   <Button
                     bttype="primary"
                     sx={{marginRight: 1}}
@@ -461,7 +494,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                     </Box>
                   </Button>
                 )}
-                {tabValue == 3 && (
+                {tabValue == '3' && (
                   <Button
                     bttype="primary"
                     onClick={handleSubmit(handleOpret, handleDebug)}
@@ -484,7 +517,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
           <AddLocationForm
             locationDialogOpen={locationDialogOpen}
             setLocationDialogOpen={setLocationDialogOpen}
-            formMethods={formMethods}
+            // formMethods={formMethods}
           />
           {/* <DevTool control={control} /> */}
         </FormProvider>

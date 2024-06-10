@@ -3,9 +3,18 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 
 import {apiClient} from '~/apiClient';
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 
-export default function LocationTypeSelect({disable}) {
+interface locationTypeProps {
+  disable: boolean;
+}
+
+type locationType = {
+  loctype_id: number;
+  loctypename: string;
+};
+
+export default function LocationTypeSelect({disable}: locationTypeProps) {
   const {data} = useQuery({
     queryKey: ['location_types'],
     queryFn: async () => {
@@ -32,7 +41,7 @@ export default function LocationTypeSelect({disable}) {
       <MenuItem value={-1} key={-1}>
         Vælg type
       </MenuItem>
-      {data?.map((item) => (
+      {data?.map((item: locationType) => (
         <MenuItem value={item.loctype_id} key={item.loctype_id}>
           {item.loctypename}
         </MenuItem>

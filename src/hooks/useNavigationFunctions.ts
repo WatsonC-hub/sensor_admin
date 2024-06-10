@@ -4,7 +4,7 @@ export const useNavigationFunctions = () => {
   const navigate = useNavigate();
 
   const homeFunctions = {
-    home: () => navigate('/*'),
+    home: () => navigate('/'),
     register: () => navigate('/register'),
   };
 

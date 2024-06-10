@@ -8,7 +8,7 @@ import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 
 const YRangeRow = ({data, index}) => {

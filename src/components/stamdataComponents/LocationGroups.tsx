@@ -57,10 +57,8 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
         return `${option.id.slice(0, 4)} - ${option.group_name}`;
       }}
       renderTags={(value, getTagProps) => {
-        value.forEach((option) => console.log('option', option.id));
         return value.map((option, index) => (
           <Chip
-            key={index}
             variant="outlined"
             label={
               <>
@@ -73,6 +71,7 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
               </>
             }
             {...getTagProps({index})}
+            key={index}
           />
         ));
       }}

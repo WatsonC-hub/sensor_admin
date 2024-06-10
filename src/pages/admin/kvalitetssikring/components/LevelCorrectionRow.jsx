@@ -9,7 +9,7 @@ import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 
 const LevelCorrectionRow = ({data, index}) => {

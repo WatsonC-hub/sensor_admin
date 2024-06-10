@@ -1,18 +1,22 @@
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {useEffect} from 'react';
+import {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
+import FormInput from '~/components/formComponents/FormInput';
 import {getDTMQuota} from '~/features/login/api/fieldApi';
 
 import LocationGroups from './LocationGroups';
 import LocationTypeSelect from './LocationTypeSelect';
-import FormInput from '~/components/FormInput';
 
-export default function LocationForm({mode, disable}) {
+interface LocationFormProps {
+  mode?: string;
+  disable: boolean;
+}
+
+export default function LocationForm({mode, disable}: LocationFormProps) {
   const {
     data: DTMData,
-    isFetching,
     isSuccess,
     refetch: refetchDTM,
   } = useQuery({
@@ -28,16 +32,7 @@ export default function LocationForm({mode, disable}) {
     }
   }, [DTMData]);
 
-  const {
-    reset,
-    handleSubmit,
-    watch,
-    control,
-    register,
-    setValue,
-    formState: {isSubmitSuccessful, errors},
-    getValues,
-  } = useFormContext();
+  const {watch, control, setValue, getValues} = useFormContext();
 
   const watchTerrainqual = watch('location.terrainqual', '');
 
@@ -95,7 +90,7 @@ export default function LocationForm({mode, disable}) {
           sx={{
             mb: 2,
           }}
-          onChangeCallback={(e) => {
+          onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
             }
@@ -118,7 +113,7 @@ export default function LocationForm({mode, disable}) {
           sx={{
             mb: 2,
           }}
-          onChangeCallback={(e) => {
+          onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
             }
@@ -151,7 +146,7 @@ export default function LocationForm({mode, disable}) {
             mb: 2,
           }}
           disabled={disable}
-          onChangeCallback={(e) => {
+          onChangeCallback={(e: ChangeEvent<HTMLInputElement>) => {
             if (e.target.value === 'DTM') {
               refetchDTM();
             }

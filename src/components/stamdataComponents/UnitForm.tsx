@@ -2,12 +2,16 @@ import {Grid} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 import {stamdataStore} from '~/state/store';
 
-import FormTextField from './FormTextField';
+import FormTextField from '../formComponents/FormTextField';
 
-export default function UnitForm({mode}) {
+interface UnitFormProps {
+  mode: string;
+}
+
+export default function UnitForm({mode}: UnitFormProps) {
   const editMode = mode === 'edit';
 
   const [unit] = stamdataStore((store) => [store.unit]);

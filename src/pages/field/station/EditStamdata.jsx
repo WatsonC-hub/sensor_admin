@@ -34,18 +34,18 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
+import OwnDatePicker from '~/components/OwnDatePicker';
+import AddUnitForm from '~/components/stamdataComponents/AddUnitForm';
+import LocationForm from '~/components/stamdataComponents/LocationForm';
+import TimeseriesForm from '~/components/stamdataComponents/TimeseriesForm';
+import UnitForm from '~/components/stamdataComponents/UnitForm';
 import {tabsHeight} from '~/consts';
+import ReferenceForm from '~/features/stamdata/components/ReferenceForm';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import {stamdataStore} from '~/state/store';
 
-import OwnDatePicker from '../../../components/OwnDatePicker';
-import {stamdataStore} from '../../../state/store';
 import TabPanel from '../overview/TabPanel';
-import AddUnitForm from '../stamdata/AddUnitForm';
-import LocationForm from '../stamdata/components/LocationForm';
-import ReferenceForm from '../stamdata/components/ReferenceForm';
-import TimeseriesForm from '../stamdata/components/TimeseriesForm';
-import UnitForm from '../stamdata/components/UnitForm';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
   const [date, setdate] = useState(new Date());

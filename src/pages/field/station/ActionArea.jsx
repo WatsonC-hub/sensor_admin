@@ -48,7 +48,7 @@ export default function ActionArea({
       color: navIconStyle(pageToShow === 'billeder'),
     },
     {
-      text: 'Udstyr',
+      text: 'Stamdata',
       value: 'STAMDATA',
       icon: <ConstructionRounded />,
       color: navIconStyle(pageToShow === 'STAMDATA'),

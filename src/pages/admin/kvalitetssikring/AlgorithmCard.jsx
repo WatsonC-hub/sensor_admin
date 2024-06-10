@@ -10,7 +10,7 @@ import * as z from 'zod';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 
 const AlgorithmCard = ({algorithm}) => {
   const params = useParams();

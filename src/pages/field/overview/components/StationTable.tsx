@@ -4,7 +4,7 @@ import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import SpeedIcon from '@mui/icons-material/Speed';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
-import {Box, Divider, Tooltip, Typography} from '@mui/material';
+import {Box, CircularProgress, Divider, Tooltip, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_Row, MRT_TableInstance, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 
@@ -19,6 +19,7 @@ import NotificationIcon from './NotificationIcon';
 
 interface Props {
   data: TableData[];
+  isPending: boolean;
 }
 
 interface RenderDetailProps {
@@ -58,7 +59,7 @@ function typeIcon(type: string) {
   );
 }
 
-export default function StationTable({data}: Props) {
+export default function StationTable({data, isPending}: Props) {
   const {station} = useNavigationFunctions();
   const {isTouch} = useBreakpoints();
   console.log(data);
@@ -370,7 +371,12 @@ export default function StationTable({data}: Props) {
         height: calculateContentHeight(160),
       }}
     >
-      <TableComponent columns={columns} data={data} {...options} />
+      {isPending && (
+        <div>
+          <CircularProgress />
+        </div>
+      )}
+      {!isPending && <TableComponent columns={columns} data={data} {...options} />}
     </Box>
   );
 }

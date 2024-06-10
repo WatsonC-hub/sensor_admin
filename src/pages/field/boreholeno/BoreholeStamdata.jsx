@@ -10,7 +10,7 @@ import * as z from 'zod';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
-import FormInput from '~/components/FormInput';
+import FormInput from '~/components/formComponents/FormInput';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 
 const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {

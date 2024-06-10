@@ -66,11 +66,11 @@ const TableComponent = ({data, columns, ...rest}) => {
     onSortingChange: stateChangeHandler('sorting'),
     onPaginationChange: stateChangeHandler('pagination'),
     renderTopToolbar: ({table}) => (
-      <Box m={1} sx={{display: 'flex'}} justifyContent={'flex-end'}>
-        <Box width={'100%'}>
+      <Box m={1} sx={{display: 'flex'}} justifyContent={'space-between'}>
+        <Box display={'flex'} justifyContent={'end'} width={'63%'}>
           <MRT_GlobalFilterTextField table={table} />
         </Box>
-        <Box alignSelf={'flex-end'}>
+        <Box>
           <Tooltip arrow title="Nulstil tabel">
             <IconButton onClick={() => setTableState(RESET)}>
               <RestartAltIcon />
