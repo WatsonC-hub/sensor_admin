@@ -1,3 +1,4 @@
+import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
 
 export const useNavigationFunctions = () => {
@@ -30,9 +31,13 @@ export const useNavigationFunctions = () => {
     createStamdata: () => navigate('/field/stamdata'),
   };
 
-  return {
-    ...homeFunctions,
-    ...adminFunctions,
-    ...fieldFunctions,
-  };
+  const out = useMemo(() => {
+    return {
+      ...homeFunctions,
+      ...adminFunctions,
+      ...fieldFunctions,
+    };
+  }, []);
+
+  return out;
 };

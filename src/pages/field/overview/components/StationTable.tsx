@@ -15,10 +15,10 @@ import {
 import React, {useMemo} from 'react';
 
 import Button from '~/components/Button';
-import TableComponent from '~/components/TableComponent';
 import {calculateContentHeight} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {TableData} from '~/types';
 
@@ -130,6 +130,7 @@ export default function StationTable({data}: Props) {
     ],
     []
   );
+  const [tableState] = useStatefullTableAtom<TableData>('StationTableState');
 
   const renderDetailPanel = ({row}: RenderDetailProps) => (
     <Box
@@ -259,7 +260,6 @@ export default function StationTable({data}: Props) {
       </Box>
     </Box>
   );
-
   const options: Partial<MRT_TableOptions<TableData>> = {
     renderDetailPanel: renderDetailPanel,
     muiTablePaperProps: {
@@ -271,7 +271,7 @@ export default function StationTable({data}: Props) {
     },
     muiTableContainerProps: {
       sx: {
-        width: isTouch ? '100%' : '1080px',
+        // width: isTouch ? '100%' : '1080px',
         // height:'100%'
         flex: '1 1 0',
       },
@@ -366,17 +366,22 @@ export default function StationTable({data}: Props) {
     },
   };
 
-  const table = useTable<TableData>(columns, data, options);
+  console.log('tableState', tableState);
+
+  const table = useTable<TableData>(columns, data, options, tableState);
+  console.log('rerender');
 
   return (
     <Box
       justifyContent={'center'}
       alignItems={'center'}
+      // alignSelf={'center'}
       p={1}
       sx={{
         display: 'flex',
         flexDirection: 'column',
         height: calculateContentHeight(160),
+        maxWidth: '1080px',
       }}
     >
       <MaterialReactTable table={table} />

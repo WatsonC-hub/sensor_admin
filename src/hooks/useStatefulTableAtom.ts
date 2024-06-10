@@ -1,6 +1,7 @@
 import {useAtom, WritableAtom} from 'jotai';
 import {RESET} from 'jotai/utils';
 import type {MRT_RowData, MRT_TableOptions, MRT_TableState} from 'material-react-table';
+import {useCallback, useMemo} from 'react';
 
 import {statefullTableAtomFamily} from '~/state/atoms';
 
@@ -43,7 +44,7 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
 
   const [tableState, setTableState] = useAtom(atom);
 
-  const stateChangeHandler =
+  const stateChangeHandler = useCallback(
     (
       stateName:
         | 'columnFilters'
@@ -55,26 +56,30 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
         | 'sorting'
         | 'pagination'
     ) =>
-    (state: any) => {
-      setTableState((prev) => {
-        return {
-          ...prev,
-          [stateName]: state instanceof Function ? state(prev[stateName]) : state,
-        };
-      });
+      (state: any) => {
+        setTableState((prev) => {
+          return {
+            ...prev,
+            [stateName]: state instanceof Function ? state(prev[stateName]) : state,
+          };
+        });
+      },
+    [setTableState]
+  );
+
+  const handlers: StateAndHandlers<TData> = useMemo(() => {
+    return {
+      state: tableState,
+      onColumnFiltersChange: stateChangeHandler('columnFilters'),
+      onColumnVisibilityChange: stateChangeHandler('columnVisibility'),
+      onDensityChange: stateChangeHandler('density'),
+      onGlobalFilterChange: stateChangeHandler('globalFilter'),
+      onShowColumnFiltersChange: stateChangeHandler('showColumnFilters'),
+      onShowGlobalFilterChange: stateChangeHandler('showGlobalFilter'),
+      onSortingChange: stateChangeHandler('sorting'),
+      onPaginationChange: stateChangeHandler('pagination'),
     };
+  }, [tableState, stateChangeHandler]);
 
-  const stateAndHandlers: StateAndHandlers<TData> = {
-    state: tableState,
-    onColumnFiltersChange: stateChangeHandler('columnFilters'),
-    onColumnVisibilityChange: stateChangeHandler('columnVisibility'),
-    onDensityChange: stateChangeHandler('density'),
-    onGlobalFilterChange: stateChangeHandler('globalFilter'),
-    onShowColumnFiltersChange: stateChangeHandler('showColumnFilters'),
-    onShowGlobalFilterChange: stateChangeHandler('showGlobalFilter'),
-    onSortingChange: stateChangeHandler('sorting'),
-    onPaginationChange: stateChangeHandler('pagination'),
-  };
-
-  return [stateAndHandlers, () => setTableState(RESET)] as const;
+  return [handlers, () => setTableState(RESET)] as const;
 };

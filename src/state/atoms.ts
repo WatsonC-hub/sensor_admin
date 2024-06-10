@@ -6,39 +6,39 @@ export const captureDialogAtom = atom(false);
 
 export const qaSelection = atom({});
 
-export const statefullTableAtomFamily = atomFamily((key: string) =>
-  atomWithStorage<Partial<MRT_TableState<MRT_RowData>>>(
-    key,
-    {
-      columnVisibility: {
-        ts_id: false,
-        'mrt-row-expand': true,
+export const statefullTableAtomFamily = atomFamily(
+  (key: string) =>
+    atomWithStorage<Partial<MRT_TableState<MRT_RowData>>>(
+      key,
+      {
+        pagination: {
+          pageSize: 10,
+          pageIndex: 0,
+        },
+        density: 'compact',
       },
-      pagination: {
-        pageSize: 10,
-        pageIndex: 0,
-      },
-      density: 'compact',
-    },
-    undefined,
-    {
-      getOnInit: true,
-    }
-  )
+      undefined,
+      {
+        getOnInit: true,
+      }
+    ),
+  (a, b) => {
+    return a == b;
+  }
 );
 
-export const stationTableAtom = atomWithStorage('StationTableState', {
-  columnVisibility: {
-    ts_id: false,
-    'mrt-row-expand': true,
-  },
-  pagination: {
-    page: 0,
-    pageSize: 10,
-    pageIndex: 0,
-  },
-  density: 'compact',
-});
+// export const stationTableAtom = atomWithStorage('StationTableState', {
+//   columnVisibility: {
+//     ts_id: false,
+//     'mrt-row-expand': true,
+//   },
+//   pagination: {
+//     page: 0,
+//     pageSize: 10,
+//     pageIndex: 0,
+//   },
+//   density: 'compact',
+// });
 
 export const boreholeTableAtom = atomWithStorage('BoreholeTableState', {
   columnVisibility: {

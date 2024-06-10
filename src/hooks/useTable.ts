@@ -9,17 +9,23 @@ import {
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 
+import TopToolbar from '~/components/tableComponents/TopToolbar';
+
 import useBreakpoints from './useBreakpoints';
 
-const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean}) => {
+const getOptions = <TData extends MRT_RowData>(
+  breakpoints: {
+    isMobile: boolean;
+  },
+  type: 'list' | 'table'
+) => {
   const globalOptions: Partial<MRT_TableOptions<TData>> = {
     localization: MRT_Localization_DA,
     enableGlobalFilter: false,
-    enableColumnActions: false,
     enableColumnFilters: false,
     enablePagination: true,
-    enableSorting: false,
-    enableTopToolbar: false,
+    // enableSorting: false,
+    // enableTopToolbar: false,
     enableStickyFooter: true,
     muiPaginationProps: {
       size: 'small',
@@ -31,8 +37,7 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
     paginationDisplayMode: 'pages',
   };
 
-  const mobileOptions: Partial<MRT_TableOptions<TData>> = {
-    ...globalOptions,
+  const mobileOptions: Partial<MRT_TableOptions<TData>> = merge({}, globalOptions, {
     enableTableFooter: false,
     enableTableHead: false,
     enableExpandAll: false,
@@ -74,17 +79,10 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         px: 2,
         mx: -2,
         transition: 'transform 0.2s',
-        borderTopLeftRadius: '20px',
-        borderTopRightRadius: '20px',
+        borderTopLeftRadius: 'x',
+        borderTopRightRadius: '20p20px',
         borderBottomLeftRadius: '15px',
         borderBottomRightRadius: '15px',
-        '&:hover': {
-          td: {
-            '&:after': {
-              backgroundColor: 'transparent',
-            },
-          },
-        },
       },
     },
     muiTableProps: {
@@ -117,9 +115,9 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         transition: 'transform 0.2s',
       },
     }),
-  };
+  } as Partial<MRT_TableOptions<TData>>);
 
-  const desktopOptions: Partial<MRT_TableOptions<TData>> = {
+  const desktopOptions: Partial<MRT_TableOptions<TData>> = merge({}, globalOptions, {
     ...globalOptions,
     enableTableFooter: true,
     enableStickyHeader: true,
@@ -140,12 +138,13 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         '&:hover': {
           td: {
             '&:after': {
-              backgroundColor: 'transparent',
+              // backgroundColor: 'transparent',
             },
           },
         },
       },
     },
+    renderTopToolbar: TopToolbar,
     initialState: {
       density: 'comfortable',
     },
@@ -173,7 +172,7 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         flex: '1 1 0',
       },
     },
-  };
+  } as Partial<MRT_TableOptions<TData>>);
   if (breakpoints.isMobile) {
     return mobileOptions;
   }
@@ -184,19 +183,22 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
 export const useTable = <TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
   data: TData[] | undefined,
-  options: Partial<MRT_TableOptions<TData>>
+  options: Partial<MRT_TableOptions<TData>>,
+  tableState: Partial<MRT_TableOptions<TData>>,
+  type: 'list' | 'table' = 'list'
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
 
-  const tableOptions = merge({}, getOptions<TData>(breakpoints), options);
+  const tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
-    state: {
+    initialState: {
       isLoading: data === undefined,
     },
     ...tableOptions,
+    ...tableState,
   });
 
   return table;
