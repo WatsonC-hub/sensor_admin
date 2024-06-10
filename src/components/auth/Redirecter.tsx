@@ -1,19 +1,18 @@
 import {useMediaQuery, useTheme} from '@mui/material';
 import React, {useEffect, useState} from 'react';
-import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
+import {Route, Routes, useLocation} from 'react-router-dom';
 
 // const sensorAdminPromise = import('./pages/admin/SensorAdmin');
 // const SensorAdmin = React.lazy(() => sensorAdminPromise);
+import {RemoveTrailingSlash} from '~/components/auth/RemoveTrailingSlash';
+import Chooser from '~/components/Chooser';
+import LoadingSkeleton from '~/components/LoadingSkeleton';
 import NavBar from '~/components/NavBar';
 import ScanComponent from '~/components/ScanComponent';
-
-import Chooser from './Chooser';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import LoadingSkeleton from './LoadingSkeleton';
-import SensorAdmin from './pages/admin/SensorAdmin';
-import SensorField from './pages/field/SensorField';
-import {RemoveTrailingSlash} from './RemoveTrailingSlash';
-import {authStore} from './state/store';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import SensorAdmin from '~/pages/admin/SensorAdmin';
+import SensorField from '~/pages/field/SensorField';
+import {authStore} from '~/state/store';
 
 const Redirecter = () => {
   const theme = useTheme();
@@ -25,7 +24,6 @@ const Redirecter = () => {
 
   useEffect(() => {
     if (!iotAccess && location.pathname == '/') {
-      // navigate('/field');
       field();
     }
     setAuthChecked(true);
@@ -33,14 +31,12 @@ const Redirecter = () => {
 
   useEffect(() => {
     if (matches && location.pathname == '/') {
-      // navigate('/field');
       field();
     }
   }, [matches]);
 
   useEffect(() => {
     if (!adminAccess && location.pathname == '/') {
-      // navigate('/field');
       field();
     }
   }, [adminAccess]);

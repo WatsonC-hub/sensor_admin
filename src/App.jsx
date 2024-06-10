@@ -6,9 +6,9 @@ import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import {authStore} from '~/state/store';
 
-import LoadingSkeleton from './LoadingSkeleton';
-import Redirecter from './Redirecter';
-import UnAuntenticatedApp from './UnauthenticatedApp';
+import LoadingSkeleton from './components/LoadingSkeleton';
+import Redirecter from './components/auth/Redirecter';
+import UnAuntenticatedApp from './components/auth/UnauthenticatedApp';
 
 function App() {
   // const [authenticated] = authStore((state) => [state.authenticated]);

@@ -3,7 +3,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import {Grid} from '@mui/material';
 import React from 'react';
 
-import ChoiseCard from './components/ChoiseCard';
+import ChoiseCard from '~/components/ChoiseCard';
 const Chooser = () => {
   return (
     <Grid
