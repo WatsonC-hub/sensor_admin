@@ -1,9 +1,16 @@
-import {Card, CardContent, CardHeader, Typography} from '@mui/material';
+import {Card, CardContent, CardHeader, SvgIconProps, Typography} from '@mui/material';
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
 
-const ChoiseCard = ({navigateTo, title, text, icon: Icon, sx}) => {
-  let navigate = useNavigate();
+interface ChoiseCardProps {
+  navigateTo: string;
+  title: string;
+  text: string;
+  icon: React.JSXElementConstructor<SvgIconProps>;
+}
+
+const ChoiseCard = ({navigateTo, title, text, icon: Icon, ...rest}: ChoiseCardProps) => {
+  const navigate = useNavigate();
   return (
     <Card
       sx={{
@@ -15,7 +22,7 @@ const ChoiseCard = ({navigateTo, title, text, icon: Icon, sx}) => {
         backgroundColor: 'primary.light',
         color: 'primary.contrastText',
         cursor: 'pointer',
-        ...sx,
+        ...rest,
       }}
       onClick={() => navigate(navigateTo)}
     >
