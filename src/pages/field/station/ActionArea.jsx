@@ -4,6 +4,9 @@ import {
   PhotoLibraryRounded,
   PlaylistAddCheck,
 } from '@mui/icons-material';
+import {camelCase} from 'lodash';
+
+import {StationPages} from '~/helpers/EnumHelper';
 
 import CustomBottomNavigation from '../../../components/BottomNavigation';
 
@@ -30,28 +33,28 @@ export default function ActionArea({
   const navigationItems = [
     {
       text: 'Pejling',
-      value: null,
+      value: StationPages.PEJLING,
       icon: <AddCircle />,
-      color: navIconStyle(pageToShow === null),
+      color: navIconStyle(pageToShow === StationPages.PEJLING),
     },
     {
-      text: 'Tilsyn',
-      value: 'TILSYN',
+      text: camelCase(StationPages.TILSYN),
+      value: StationPages.TILSYN,
       icon: <PlaylistAddCheck />,
-      color: navIconStyle(pageToShow === 'TILSYN'),
+      color: navIconStyle(pageToShow === StationPages.TILSYN),
       isCalculated: isCalculated,
     },
     {
-      text: 'Billeder',
-      value: 'billeder',
+      text: camelCase(StationPages.BILLEDER),
+      value: StationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(pageToShow === 'billeder'),
+      color: navIconStyle(pageToShow === StationPages.BILLEDER),
     },
     {
-      text: 'Udstyr',
-      value: 'STAMDATA',
+      text: camelCase(StationPages.STAMDATA),
+      value: StationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === 'STAMDATA'),
+      color: navIconStyle(pageToShow === StationPages.STAMDATA),
       isCalculated: isCalculated,
     },
   ];

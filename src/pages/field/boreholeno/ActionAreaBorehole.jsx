@@ -5,10 +5,11 @@ import {
   AddAPhotoRounded,
   ConstructionRounded,
 } from '@mui/icons-material';
+import {camelCase} from 'lodash';
 import React, {useState} from 'react';
 
-import CustomBottomNavigation from '../../../components/BottomNavigation';
-
+import CustomBottomNavigation from '~/components/BottomNavigation';
+import {StationPages} from '~/helpers/EnumHelper';
 const navIconStyle = (isSelected) => {
   return isSelected ? 'secondary.main' : 'inherit';
 };
@@ -24,37 +25,43 @@ export default function ActionArea({setPageToShow, showForm, setShowForm, canEdi
     }
   };
 
-  const pejlingItem = {fabText: 'Tilføj pejling', fabIcon: <AddCircle />};
-  const målepunktItem = {fabText: 'Tilføj målepunkt', fabIcon: <StraightenRounded />};
-  const billedeItem = {fabText: 'Tilføj billede', fabIcon: <AddAPhotoRounded />};
+  const pejlingItem = {fabText: 'Tilføj ' + StationPages.PEJLING, fabIcon: <AddCircle />};
+  const målepunktItem = {
+    fabText: 'Tilføj ' + StationPages.MAALEPUNKT,
+    fabIcon: <StraightenRounded />,
+  };
+  const billedeItem = {
+    fabText: 'Tilføj ' + StationPages.BILLEDEER,
+    fabIcon: <AddAPhotoRounded />,
+  };
 
   const navigationItems = [
     {
       text: 'Pejling',
-      value: null,
+      value: StationPages.PEJLING,
       icon: <AddCircle />,
-      color: navIconStyle(value === null),
+      color: navIconStyle(value === StationPages.PEJLING),
       fabItem: pejlingItem,
     },
     {
-      text: 'Målepunkter',
-      value: 'MAALEPUNKT',
+      text: camelCase(StationPages.MAALEPUNKT),
+      value: StationPages.MAALEPUNKT,
       icon: <StraightenRounded />,
-      color: navIconStyle(value === 'MAALEPUNKT'),
+      color: navIconStyle(value === StationPages.MAALEPUNKT),
       fabItem: målepunktItem,
     },
     {
-      text: 'Billeder',
-      value: 'billeder',
+      text: camelCase(StationPages.BILLEDER),
+      value: StationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(value === 'billeder'),
+      color: navIconStyle(value === StationPages.BILLEDER),
       fabItem: billedeItem,
     },
     {
-      text: 'Stamdata',
-      value: 'STAMDATA',
+      text: camelCase(StationPages.STAMDATA),
+      value: StationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(value === 'STAMDATA'),
+      color: navIconStyle(value === StationPages.STAMDATA),
     },
   ];
 

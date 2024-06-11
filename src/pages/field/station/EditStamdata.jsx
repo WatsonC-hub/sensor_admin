@@ -36,6 +36,7 @@ import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import {tabsHeight} from '~/consts';
+import {StationPages} from '~/helpers/EnumHelper';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -227,23 +228,25 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const queryClient = useQueryClient();
   const [pageToShow] = useSearchParam('page');
   const [tabValue, setTabValue] = useSearchParam('tab');
+  const [, setPageToShow] = useSearchParam('page');
   const {stamdata} = useNavigationFunctions();
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
 
   useEffect(() => {
-    if (pageToShow === 'STAMDATA' && parseInt(ts_id) !== prev_ts_id)
-      stamdata(metadata.loc_id, ts_id, tabValue, {replace: true});
-
     if (tabValue === null) setTabValue('0');
     else if (tabValue === '3' && metadata.tstype_id !== 1) {
       setTabValue('0');
     } else if (tabValue === '2' && metadata.calculated) setTabValue('0');
     else setTabValue(tabValue);
 
+    if (pageToShow === StationPages.STAMDATA && parseInt(ts_id) !== prev_ts_id) {
+      setPageToShow(StationPages.STAMDATA);
+      stamdata(metadata.loc_id, ts_id, tabValue, {replace: false});
+    }
     return () => {
       setTabValue(null);
     };
-  }, [ts_id, metadata.calculated]);
+  }, [ts_id, metadata.calculated, tabValue]);
 
   const metadataEditMutation = useMutation({
     mutationFn: async (data) => {

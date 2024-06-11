@@ -12,6 +12,7 @@ import Images from '~/components/Images';
 import PejlingForm from '~/components/PejlingForm';
 import TilsynForm from '~/components/TilsynForm';
 import TilsynTable from '~/components/TilsynTable';
+import {StationPages} from '~/helpers/EnumHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useFormData from '~/hooks/useFormData';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -152,7 +153,6 @@ export default function Station({ts_id, stamdata}) {
 
   const openAddMP = () => {
     setShowForm(true);
-    // setPageToShow('');
   };
 
   const pejlingMutate = useMutation({
@@ -188,7 +188,7 @@ export default function Station({ts_id, stamdata}) {
     };
     payload.timeofmeas = moment(payload.timeofmeas).toISOString();
     pejlingMutate.mutate(payload);
-    setPageToShow(null);
+    setPageToShow(StationPages.PEJLING);
   };
 
   const serviceMutate = useMutation({
@@ -217,7 +217,6 @@ export default function Station({ts_id, stamdata}) {
     serviceMutate.mutate(payload, {
       onSuccess: () => {
         resetServiceData();
-        // setPageToShow('ADDTILSYN');
         setShowForm(null);
         toast.success('Tilsyn gemt');
         queryClient.invalidateQueries({
@@ -242,7 +241,6 @@ export default function Station({ts_id, stamdata}) {
         data.dato = data.dato.replace(' ', 'T').substr(0, 19);
         setServiceData(data);
         setShowForm(true);
-        // setPageToShow('');
       };
     } else {
       return (data) => {
@@ -251,7 +249,6 @@ export default function Station({ts_id, stamdata}) {
         data.useforcorrection = data.useforcorrection.toString();
         setPejlingData(data); // Fill form data on Edit
         setShowForm(true);
-        // setPageToShow('');
       };
     }
   };
@@ -326,18 +323,20 @@ export default function Station({ts_id, stamdata}) {
   useEffect(() => {
     if (ts_id !== store.timeseries.ts_id) {
       setPageToShow(pageToShow);
-      if (stamdata.calculated) setPageToShow(null);
+      if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
     }
   }, [ts_id]);
 
   return (
     <Box>
-      {pageToShow !== 'billeder' && pageToShow !== 'STAMDATA' && (
+      {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
         <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
             stationId={ts_id}
             measurements={control}
-            dynamicMeasurement={pageToShow === null && showForm === true ? dynamic : undefined}
+            dynamicMeasurement={
+              pageToShow === StationPages.PEJLING && showForm === true ? dynamic : undefined
+            }
           />
           <Divider />
         </Box>
@@ -350,7 +349,7 @@ export default function Station({ts_id, stamdata}) {
           justifyContent: 'center',
         }}
       >
-        {pageToShow === null && showForm === true && (
+        {pageToShow === StationPages.PEJLING && showForm === true && (
           <PejlingForm
             stationId={ts_id}
             formData={pejlingData}
@@ -367,7 +366,7 @@ export default function Station({ts_id, stamdata}) {
             isFlow={isFlow}
           />
         )}
-        {pageToShow === 'STAMDATA' && (
+        {pageToShow === StationPages.STAMDATA && (
           <EditStamdata
             setFormToShow={setShowForm}
             ts_id={ts_id}
@@ -382,7 +381,9 @@ export default function Station({ts_id, stamdata}) {
             onClick={() => {
               setShowForm(true);
             }}
-            visible={pageToShow === null && showForm === null ? 'visible' : 'hidden'}
+            visible={
+              pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'
+            }
           >
             <PejlingMeasurements
               measurements={measurements}
@@ -393,7 +394,7 @@ export default function Station({ts_id, stamdata}) {
           </FabWrapper>
         )}
         <>
-          {pageToShow === 'TILSYN' && showForm === true && (
+          {pageToShow === StationPages.TILSYN && showForm === true && (
             <TilsynForm
               formData={serviceData}
               changeFormData={changeServiceData}
@@ -404,14 +405,16 @@ export default function Station({ts_id, stamdata}) {
               }}
             />
           )}
-          {pageToShow === 'TILSYN' && (
+          {pageToShow === StationPages.TILSYN && (
             <FabWrapper
               icon={<PlaylistAddRounded />}
-              text="Tilføj tilsyn"
+              text={'Tilføj ' + StationPages.TILSYN}
               onClick={() => {
                 setShowForm(true);
               }}
-              visible={pageToShow === 'TILSYN' && showForm === null ? 'visible' : 'hidden'}
+              visible={
+                pageToShow === StationPages.TILSYN && showForm === null ? 'visible' : 'hidden'
+              }
             >
               <TilsynTable
                 services={services}
@@ -423,11 +426,11 @@ export default function Station({ts_id, stamdata}) {
           )}
         </>
 
-        {pageToShow === 'billeder' && (
+        {pageToShow === StationPages.BILLEDER && (
           <Box>
             <FabWrapper
               icon={<AddAPhotoRounded />}
-              text="Tilføj billede"
+              text={'Tilføj ' + StationPages.BILLEDER}
               onClick={() => {
                 fileInputRef.current.click();
               }}

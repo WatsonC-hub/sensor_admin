@@ -13,6 +13,8 @@ import {
 import {useTheme} from '@mui/material/styles';
 import React from 'react';
 
+import {StationPages} from '~/helpers/EnumHelper';
+
 import CustomBottomNavigationActionLabel from './CustomLabel';
 
 interface NavigationItem {
@@ -80,7 +82,11 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           }}
         >
           {hiddenItems.map((item) => {
-            if (item.isCalculated !== undefined && item.isCalculated && item.value === 'TILSYN')
+            if (
+              item.isCalculated !== undefined &&
+              item.isCalculated &&
+              item.value === StationPages.TILSYN
+            )
               return;
             return (
               <MenuItem
@@ -115,7 +121,11 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           }}
         >
           {visibleItems.map((item) => {
-            if (item.isCalculated !== undefined && item.isCalculated && item.value === 'TILSYN') {
+            if (
+              item.isCalculated !== undefined &&
+              item.isCalculated &&
+              item.value === StationPages.TILSYN
+            ) {
               return;
             }
 
