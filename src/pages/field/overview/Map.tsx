@@ -17,7 +17,6 @@ import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
-import {set} from 'lodash';
 import {useRef, useEffect, useState, SyntheticEvent, MouseEventHandler} from 'react';
 import utmObj from 'utm-latlng';
 
@@ -37,7 +36,6 @@ import DrawerComponent from './components/DrawerComponent';
 import FilterOptions from './components/FilterOptions';
 import LegendContent from './components/LegendContent';
 import SensorContent from './components/SensorContent';
-import TaskIcon from './components/TaskIcon';
 import type {BoreholeData} from './OverviewPage';
 
 const utm = new utmObj();
@@ -164,7 +162,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
       }
     );
 
-    var map = L.map('map', {
+    const map = L.map('map', {
       center: [55.876823, 8.961644],
       zoom: 7,
       layers: [outdormapbox],
@@ -254,7 +252,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
     map.on('moveend', mapEvent);
     map.on('zoomend', mapEvent);
 
-    map.on('click', function (e) {
+    map.on('click', function () {
       setSelectedMarker(null);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle({stroke: false, radius: defaultRadius});
@@ -343,7 +341,7 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
     const data = sensorData;
     if (!loading || !boreholeLoading) {
       dataBorehole?.map((element) => {
-        let content = '';
+        let content: string;
 
         element.intakeno.forEach((intake, index) => {
           content += `Indtag ${intake} : ${

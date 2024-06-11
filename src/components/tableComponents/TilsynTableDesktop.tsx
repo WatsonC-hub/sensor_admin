@@ -1,6 +1,7 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import moment from 'moment';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -12,9 +13,11 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 
+import RenderInternalActions from './RenderInternalActions';
+
 export type Tilsyn = {
   batteriskift: boolean;
-  dato: string;
+  dato: moment.Moment;
   gid: number;
   kommentar: string;
   pejling?: string;
@@ -39,9 +42,15 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     setMpId(id);
     setDialogOpen(true);
   };
-
+  console.log('data', data);
   const columns = useMemo<MRT_ColumnDef<Tilsyn>[]>(
     () => [
+      {
+        header: 'Dato',
+        id: 'dato',
+        accessorFn: (row) => row.dato.format('DD-MM-YYYY HH:mm'),
+        sortingFn: (a, b) => (a.original.dato > b.original.dato ? 1 : -1),
+      },
       {
         accessorFn: (row) => row,
         id: 'batteriskift',
@@ -68,7 +77,6 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
               ) : (
                 <b>-</b>
               )}
-              {convertDateWithTimeStamp(row.original.dato)}
             </Box>
           </Box>
         ),
@@ -81,7 +89,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     ],
     []
   );
-
+  const [tableState, reset] = useStatefullTableAtom<Tilsyn>('TilsynTableState');
   const options: Partial<MRT_TableOptions<Tilsyn>> = {
     renderRowActions: ({row}) => (
       <RenderActions
@@ -94,9 +102,10 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
         canEdit={canEdit}
       />
     ),
+    renderToolbarInternalActions: ({table}) => {
+      return <RenderInternalActions table={table} reset={reset} />;
+    },
   };
-
-  const [tableState] = useStatefullTableAtom<Tilsyn>('TilsynTableState');
 
   const table = useTable<Tilsyn>(columns, data, options, tableState, TableTypes.TABLE);
 

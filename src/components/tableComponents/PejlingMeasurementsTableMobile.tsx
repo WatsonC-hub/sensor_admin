@@ -8,7 +8,7 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {setTableBoxStyle, renderDetailStyle} from '~/consts';
+import {setTableBoxStyle, renderDetailStyle, correction_map} from '~/consts';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -31,7 +31,6 @@ interface Props {
   handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
-  correction_map: Record<number, string>;
 }
 
 export default function PejlingMeasurementsTableMobile({
@@ -39,7 +38,6 @@ export default function PejlingMeasurementsTableMobile({
   handleEdit,
   handleDelete,
   canEdit,
-  correction_map,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);

@@ -117,6 +117,7 @@ const getOptions = <TData extends MRT_RowData>(
     enableStickyHeader: true,
     enableRowActions: type === TableTypes.STATIONTABLE ? false : true,
     enableTableHead: true,
+    enableFilter: false,
     displayColumnDefOptions: {
       'mrt-row-actions': {
         size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
@@ -124,7 +125,7 @@ const getOptions = <TData extends MRT_RowData>(
       },
     },
     positionActionsColumn: 'last',
-    renderTopToolbar: ({table}) => TopToolbar(table),
+    // renderTopToolbar: ({table}) => TopToolbar(table),
     initialState: {
       density: 'comfortable',
     },
@@ -146,7 +147,6 @@ export const useTable = <TData extends MRT_RowData>(
   const breakpoints = useBreakpoints();
 
   const tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
-  console.log(tableOptions);
 
   const table = useMaterialReactTable({
     columns,

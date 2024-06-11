@@ -105,7 +105,7 @@ export default function Station({ts_id, stamdata}) {
       const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
 
       return data.map((m) => {
-        return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
+        return {...m, dato: moment(m.dato)};
       });
     },
     enabled: ts_id !== -1 && ts_id !== null,
@@ -245,7 +245,6 @@ export default function Station({ts_id, stamdata}) {
     } else {
       return (data) => {
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-        data.measurement = data.measurement;
         data.useforcorrection = data.useforcorrection.toString();
         setPejlingData(data); // Fill form data on Edit
         setShowForm(true);

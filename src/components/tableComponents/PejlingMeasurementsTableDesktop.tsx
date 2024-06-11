@@ -3,7 +3,8 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {setTableBoxStyle} from '~/consts';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {setTableBoxStyle, correction_map} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -25,7 +26,6 @@ interface Props {
   handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
-  correction_map: Record<number, string>;
 }
 
 export default function PejlingMeasurementsTableDesktop({
@@ -33,7 +33,6 @@ export default function PejlingMeasurementsTableDesktop({
   handleEdit,
   handleDelete,
   canEdit,
-  correction_map,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
@@ -73,6 +72,8 @@ export default function PejlingMeasurementsTableDesktop({
     [unit]
   );
 
+  const [tableState, reset] = useStatefullTableAtom<Kontrol>('PejlingTableState');
+
   const options: Partial<MRT_TableOptions<Kontrol>> = {
     renderRowActions: ({row}) => (
       <RenderActions
@@ -85,9 +86,10 @@ export default function PejlingMeasurementsTableDesktop({
         canEdit={canEdit}
       />
     ),
+    renderToolbarInternalActions: ({table}) => {
+      return <RenderInternalActions table={table} reset={reset} />;
+    },
   };
-
-  const [tableState] = useStatefullTableAtom<Kontrol>('PejlingTableState');
 
   const table = useTable<Kontrol>(columns, data, options, tableState, TableTypes.TABLE);
 

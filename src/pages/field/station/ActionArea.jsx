@@ -4,7 +4,7 @@ import {
   PhotoLibraryRounded,
   PlaylistAddCheck,
 } from '@mui/icons-material';
-import {camelCase} from 'lodash';
+import {startCase} from 'lodash';
 
 import {StationPages} from '~/helpers/EnumHelper';
 
@@ -38,20 +38,20 @@ export default function ActionArea({
       color: navIconStyle(pageToShow === StationPages.PEJLING),
     },
     {
-      text: camelCase(StationPages.TILSYN),
+      text: startCase(StationPages.TILSYN),
       value: StationPages.TILSYN,
       icon: <PlaylistAddCheck />,
       color: navIconStyle(pageToShow === StationPages.TILSYN),
       isCalculated: isCalculated,
     },
     {
-      text: camelCase(StationPages.BILLEDER),
+      text: startCase(StationPages.BILLEDER),
       value: StationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
       color: navIconStyle(pageToShow === StationPages.BILLEDER),
     },
     {
-      text: camelCase(StationPages.STAMDATA),
+      text: startCase(StationPages.STAMDATA),
       value: StationPages.STAMDATA,
       icon: <ConstructionRounded />,
       color: navIconStyle(pageToShow === StationPages.STAMDATA),

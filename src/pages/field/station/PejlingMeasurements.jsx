@@ -3,7 +3,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import PejlingMeasurementsTableDesktop from '~/components/tableComponents/PejlingMeasurementsTableDesktop';
 import PejlingMeasurementsTableMobile from '~/components/tableComponents/PejlingMeasurementsTableMobile';
-import {correction_map} from '~/consts';
 
 export default function PejlingMeasurements(props) {
   const theme = useTheme();
@@ -15,7 +14,6 @@ export default function PejlingMeasurements(props) {
       handleEdit={props.handleEdit}
       handleDelete={props.handleDelete}
       canEdit={props.canEdit}
-      correction_map={correction_map}
     />
   ) : (
     <PejlingMeasurementsTableDesktop
@@ -23,7 +21,6 @@ export default function PejlingMeasurements(props) {
       handleEdit={props.handleEdit}
       handleDelete={props.handleDelete}
       canEdit={props.canEdit}
-      correction_map={correction_map}
     />
   );
 }

@@ -15,7 +15,7 @@ export const statefullTableAtomFamily = atomFamily(
           pageSize: 10,
           pageIndex: 0,
         },
-        density: 'compact',
+        density: 'comfortable',
       },
       undefined,
       {
