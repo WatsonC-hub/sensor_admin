@@ -6,8 +6,10 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 
 export type Tilsyn = {
@@ -94,7 +96,9 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     ),
   };
 
-  const table = useTable<Tilsyn>(columns, data, options);
+  const [tableState] = useStatefullTableAtom<Tilsyn>('TilsynTableState');
+
+  const table = useTable<Tilsyn>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>

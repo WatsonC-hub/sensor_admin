@@ -11,6 +11,7 @@ import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle, setTableBoxStyle} from '~/consts';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 
@@ -121,7 +122,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     ),
   };
 
-  const table = useTable<Tilsyn>(columns, data, options);
+  const table = useTable<Tilsyn>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
     <Box sx={setTableBoxStyle(320)}>

@@ -10,6 +10,7 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle, renderDetailStyle} from '~/consts';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
@@ -123,7 +124,7 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useTable<Kontrol>(columns, data, options);
+  const table = useTable<Kontrol>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
     <Box sx={setTableBoxStyle(320)}>

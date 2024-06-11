@@ -5,3 +5,9 @@ export const StationPages = {
   BILLEDER: 'billeder',
   MAALEPUNKT: 'maalepunkt',
 } as const;
+
+export enum TableTypes {
+  STATIONTABLE = 'stationTable',
+  TABLE = 'table',
+  LIST = 'list',
+}

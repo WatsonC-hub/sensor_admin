@@ -464,12 +464,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           onClick={handleFileInputClick}
         />
         {pageToShow === StationPages.STAMDATA && canEdit && (
-          <BoreholeStamdata
-            boreholeno={boreholeno}
-            intakeno={intakeno}
-            stamdata={stamdata}
-            setShowForm={setShowForm}
-          />
+          <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
         )}
       </Box>
       <ActionAreaBorehole

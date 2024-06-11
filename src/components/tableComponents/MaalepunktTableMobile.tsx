@@ -15,6 +15,7 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
@@ -126,7 +127,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
     // },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options);
+  const table = useTable<Maalepunkt>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
     <Box sx={setTableBoxStyle(320)} width={'100%'}>

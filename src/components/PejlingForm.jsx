@@ -128,6 +128,7 @@ export default function PejlingForm({
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
+        alignSelf: 'center',
       }}
     >
       <CardContent>

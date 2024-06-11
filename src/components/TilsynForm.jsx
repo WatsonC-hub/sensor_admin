@@ -43,6 +43,7 @@ export default function TilsynForm({formData, changeFormData, handleSubmit, canc
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
+        alignSelf: 'center',
       }}
     >
       <CardContent>

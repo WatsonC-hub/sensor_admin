@@ -1,14 +1,18 @@
-import {Checkbox, Typography} from '@mui/material';
+import {Box, Checkbox, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 import {
   calculatePumpstop,
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {authStore, stamdataStore} from '~/state/store';
 
@@ -36,6 +40,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const org_id = authStore((store) => store.org_id);
+  const {isTablet} = useBreakpoints();
 
   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 
@@ -104,11 +109,12 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
       />
     ),
   };
+  const [tableState] = useStatefullTableAtom<Kontrol>('MaalepunktTableState');
 
-  const table = useTable<Kontrol>(columns, data, options);
+  const table = useTable<Kontrol>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -116,6 +122,6 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

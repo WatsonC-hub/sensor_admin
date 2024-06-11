@@ -45,6 +45,7 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
+        alignSelf: 'center',
       }}
     >
       <CardContent>

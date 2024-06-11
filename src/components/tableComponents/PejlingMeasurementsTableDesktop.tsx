@@ -5,8 +5,10 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
@@ -85,7 +87,9 @@ export default function PejlingMeasurementsTableDesktop({
     ),
   };
 
-  const table = useTable<Kontrol>(columns, data, options);
+  const [tableState] = useStatefullTableAtom<Kontrol>('PejlingTableState');
+
+  const table = useTable<Kontrol>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>

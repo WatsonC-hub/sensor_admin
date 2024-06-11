@@ -16,6 +16,7 @@ import React, {useMemo} from 'react';
 
 import Button from '~/components/Button';
 import {calculateContentHeight} from '~/consts';
+import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -366,22 +367,20 @@ export default function StationTable({data}: Props) {
     },
   };
 
-  console.log('tableState', tableState);
-
-  const table = useTable<TableData>(columns, data, options, tableState);
-  console.log('rerender');
+  const table = useTable<TableData>(columns, data, options, tableState, TableTypes.STATIONTABLE);
 
   return (
     <Box
       justifyContent={'center'}
-      alignItems={'center'}
-      // alignSelf={'center'}
+      alignSelf={'center'}
       p={1}
       sx={{
         display: 'flex',
         flexDirection: 'column',
         height: calculateContentHeight(160),
+        minWidth: '50%',
         maxWidth: '1080px',
+        justifySelf: 'center',
       }}
     >
       <MaterialReactTable table={table} />

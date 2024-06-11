@@ -328,7 +328,7 @@ export default function Station({ts_id, stamdata}) {
   }, [ts_id]);
 
   return (
-    <Box>
+    <Box display="flex" flexDirection={'column'}>
       {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
         <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
@@ -345,8 +345,8 @@ export default function Station({ts_id, stamdata}) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: {xs: 'normal', sm: 'center'},
-          justifyContent: 'center',
+          maxWidth: '1080px',
+          alignSelf: 'center',
         }}
       >
         {pageToShow === StationPages.PEJLING && showForm === true && (

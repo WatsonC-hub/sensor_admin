@@ -400,7 +400,6 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
   return (
     <div
       style={{
-        width: 'auto',
         height: setGraphHeight(matches),
         // marginBottom: '10px',
       }}

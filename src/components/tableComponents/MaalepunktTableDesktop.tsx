@@ -5,8 +5,10 @@ import {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
@@ -80,7 +82,9 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     ),
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options);
+  const [tableState] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
+
+  const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
