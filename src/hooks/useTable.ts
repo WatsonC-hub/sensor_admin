@@ -115,6 +115,7 @@ const getOptions = <TData extends MRT_RowData>(
     ...globalOptions,
     enableTableFooter: true,
     enableStickyHeader: true,
+    enableGlobalFilterRankedResults: true,
     enableRowActions: type === TableTypes.STATIONTABLE ? false : true,
     enableTableHead: true,
     displayColumnDefOptions: {
@@ -123,10 +124,15 @@ const getOptions = <TData extends MRT_RowData>(
         grow: false,
       },
     },
+    initialState: {
+      showGlobalFilter: true,
+      density: 'comfortable',
+    },
     positionActionsColumn: 'last',
     renderTopToolbar: ({table}) => TopToolbar(table),
-    initialState: {
-      density: 'comfortable',
+    muiSearchTextFieldProps: {
+      variant: 'outlined',
+      size: 'small',
     },
   } as Partial<MRT_TableOptions<TData>>);
   if (breakpoints.isMobile && type === TableTypes.LIST) {
@@ -146,7 +152,6 @@ export const useTable = <TData extends MRT_RowData>(
   const breakpoints = useBreakpoints();
 
   const tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
-  console.log(tableOptions);
 
   const table = useMaterialReactTable({
     columns,
