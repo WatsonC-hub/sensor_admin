@@ -80,11 +80,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           }}
         >
           {hiddenItems.map((item) => {
-            if (
-              item.isCalculated !== undefined &&
-              item.isCalculated !== false &&
-              (item.value === 'ADDTILSYN' || item.value === 'RET_STAMDATA')
-            )
+            if (item.isCalculated !== undefined && item.isCalculated && item.value === 'TILSYN')
               return;
             return (
               <MenuItem
@@ -119,11 +115,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           }}
         >
           {visibleItems.map((item) => {
-            if (
-              item.isCalculated !== undefined &&
-              item.isCalculated !== false &&
-              (item.value === 'ADDTILSYN' || item.value === 'RET_STAMDATA')
-            ) {
+            if (item.isCalculated !== undefined && item.isCalculated && item.value === 'TILSYN') {
               return;
             }
 

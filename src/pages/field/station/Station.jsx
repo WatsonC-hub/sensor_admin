@@ -323,6 +323,13 @@ export default function Station({ts_id, stamdata}) {
     if (openSave !== true) fileInputRef.current.value = null;
   };
 
+  useEffect(() => {
+    if (ts_id !== store.timeseries.ts_id) {
+      setPageToShow(pageToShow);
+      if (stamdata.calculated) setPageToShow(null);
+    }
+  }, [ts_id]);
+
   return (
     <Box>
       {pageToShow !== 'billeder' && pageToShow !== 'STAMDATA' && (

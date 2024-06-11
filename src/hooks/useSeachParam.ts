@@ -13,6 +13,7 @@ export const useSearchParam = (param: string) => {
     if (value !== '' && value !== null && value !== undefined) {
       searchParams.set(param, value);
     } else {
+      console.log(param);
       searchParams.delete(param);
     }
 
@@ -23,7 +24,7 @@ export const useSearchParam = (param: string) => {
       return;
     }
 
-    console.log({param, value, searchParams: searchParams.toString()});
+    // console.log({param, value, searchParams: searchParams.toString()});
 
     const newUrl = `${window.location.pathname}?${searchParams.toString()}`;
     navigate(newUrl, {replace: true});

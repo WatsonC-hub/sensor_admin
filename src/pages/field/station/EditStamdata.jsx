@@ -29,6 +29,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -36,6 +37,7 @@ import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import {tabsHeight} from '~/consts';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 import OwnDatePicker from '../../../components/OwnDatePicker';
@@ -133,18 +135,19 @@ const UdstyrReplace = ({stationId}) => {
 
   const onSelectionChange = (data, gid) => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
-    setUnit(localUnit);
+    const unit = localUnit ?? data[0];
+    setUnit(unit);
     formMethods.setValue(
       'unit',
       {
-        gid: gid,
-        unit_uuid: localUnit.uuid,
-        startdate: moment(localUnit.startdato).format('YYYY-MM-DDTHH:mm'),
-        enddate: moment(localUnit.slutdato).format('YYYY-MM-DDTHH:mm'),
+        gid: unit.gid,
+        unit_uuid: unit.uuid,
+        startdate: moment(unit.startdato).format('YYYY-MM-DDTHH:mm'),
+        enddate: moment(unit.slutdato).format('YYYY-MM-DDTHH:mm'),
       },
       {shouldValidate: true, shouldDirty: false}
     );
-    setselected(gid);
+    setselected(unit.gid);
   };
 
   const handleChange = (event) => {
@@ -152,62 +155,66 @@ const UdstyrReplace = ({stationId}) => {
   };
 
   return (
-    <Grid container spacing={2} alignItems="center" alignContent="center">
-      <Grid item xs={12} sm={6}>
-        <Select
-          id="udstyr_select"
-          value={selected}
-          onChange={handleChange}
-          className="swiper-no-swiping"
-        >
-          {data?.map((item) => {
-            let endDate =
-              moment(new Date()) < moment(item.slutdato)
-                ? 'nu'
-                : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
+    <>
+      {data && data.length > 0 && (
+        <Grid container spacing={2} alignItems="center" alignContent="center">
+          <Grid item xs={12} sm={6}>
+            <Select
+              id="udstyr_select"
+              value={selected}
+              onChange={handleChange}
+              className="swiper-no-swiping"
+            >
+              {data?.map((item) => {
+                let endDate =
+                  moment(new Date()) < moment(item.slutdato)
+                    ? 'nu'
+                    : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
 
-            return (
-              <MenuItem id={item.gid} key={item.gid} value={item.gid}>
-                {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
-              </MenuItem>
-            );
-          })}
-        </Select>
-        {moment(data?.[0].slutdato) > moment(new Date()) ? (
-          <Button
-            bttype="primary"
-            sx={{marginLeft: 1}}
-            onClick={() => {
-              setOpenDialog(true);
-            }}
-          >
-            Hjemtag udstyr
-          </Button>
-        ) : (
-          <Button
-            bttype="primary"
-            onClick={() => {
-              setOpenAddUdstyr(true);
-            }}
-          >
-            Tilføj udstyr
-          </Button>
-        )}
-      </Grid>
-      <UnitEndDateDialog
-        openDialog={openDialog}
-        setOpenDialog={setOpenDialog}
-        unit={data?.[0]}
-        setUdstyrValue={setUnitValue}
-        stationId={stationId}
-      />
-      <AddUnitForm
-        udstyrDialogOpen={openAddUdstyr}
-        setUdstyrDialogOpen={setOpenAddUdstyr}
-        tstype_id={tstype_id}
-        mode="edit"
-      />
-    </Grid>
+                return (
+                  <MenuItem id={item.gid} key={item.gid} value={item.gid}>
+                    {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+            {moment(data?.[0].slutdato) > moment(new Date()) ? (
+              <Button
+                bttype="primary"
+                sx={{marginLeft: 1}}
+                onClick={() => {
+                  setOpenDialog(true);
+                }}
+              >
+                Hjemtag udstyr
+              </Button>
+            ) : (
+              <Button
+                bttype="primary"
+                onClick={() => {
+                  setOpenAddUdstyr(true);
+                }}
+              >
+                Tilføj udstyr
+              </Button>
+            )}
+          </Grid>
+          <UnitEndDateDialog
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            unit={data?.[0]}
+            setUdstyrValue={setUnitValue}
+            stationId={stationId}
+          />
+          <AddUnitForm
+            udstyrDialogOpen={openAddUdstyr}
+            setUdstyrDialogOpen={setOpenAddUdstyr}
+            tstype_id={tstype_id}
+            mode="edit"
+          />
+        </Grid>
+      )}
+    </>
   );
 };
 
@@ -218,15 +225,25 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
+  const [pageToShow] = useSearchParam('page');
   const [tabValue, setTabValue] = useSearchParam('tab');
+  const {stamdata} = useNavigationFunctions();
+  const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
 
   useEffect(() => {
+    if (pageToShow === 'STAMDATA' && parseInt(ts_id) !== prev_ts_id)
+      stamdata(metadata.loc_id, ts_id, tabValue, {replace: true});
+
     if (tabValue === null) setTabValue('0');
+    else if (tabValue === '3' && metadata.tstype_id !== 1) {
+      setTabValue('0');
+    } else if (tabValue === '2' && metadata.calculated) setTabValue('0');
     else setTabValue(tabValue);
+
     return () => {
       setTabValue(null);
     };
-  }, []);
+  }, [ts_id, metadata.calculated]);
 
   const metadataEditMutation = useMutation({
     mutationFn: async (data) => {
@@ -354,6 +371,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="2"
+            disabled={metadata && metadata.calculated}
             icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -363,6 +381,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="3"
+            disabled={metadata.tstype_id !== 1}
             icon={
               <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
             }

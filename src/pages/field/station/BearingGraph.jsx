@@ -186,8 +186,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   useEffect(() => {
     graphData !== undefined && refetchData([ts_id, xRange]);
-    console.log(xRange);
-  }, [graphData, refetchData, ts_id, xRange]);
+  }, [ts_id]);
 
   // const handleResize = (e) => {
   //   console.log(firstRender);
