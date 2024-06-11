@@ -263,38 +263,9 @@ export default function StationTable({data}: Props) {
   );
   const options: Partial<MRT_TableOptions<TableData>> = {
     renderDetailPanel: renderDetailPanel,
-    muiTablePaperProps: {
-      sx: {
-        flex: '1 1 0',
-        display: 'flex',
-        'flex-flow': 'column',
-      },
-    },
-    muiTableContainerProps: {
-      sx: {
-        // width: isTouch ? '100%' : '1080px',
-        // height:'100%'
-        flex: '1 1 0',
-      },
-    },
-    enableStickyFooter: true,
     muiTableHeadProps: {sx: {backgroundColor: 'primary.main'}},
-    paginationDisplayMode: 'pages',
     positionGlobalFilter: 'none',
-    initialState: {
-      showGlobalFilter: true,
-      pagination: {
-        pageIndex: 0,
-        pageSize: 5,
-      },
-    },
     globalFilterFn: 'fuzzy',
-    enableGlobalFilterRankedResults: true,
-    muiSearchTextFieldProps: {
-      variant: 'outlined',
-      size: 'small',
-    },
-    enableStickyHeader: true,
     enableExpanding: true,
     enableExpandAll: false,
     muiTableHeadCellProps: {
@@ -348,21 +319,6 @@ export default function StationTable({data}: Props) {
             padding: 0,
           },
         },
-      },
-    },
-    muiDetailPanelProps: {
-      sx: {
-        p: 0,
-      },
-    },
-    muiPaginationProps: {
-      size: 'small',
-      shape: 'rounded',
-      variant: 'outlined',
-    },
-    muiTableFooterProps: {
-      sx: {
-        backgroundColor: 'primary.main',
       },
     },
   };

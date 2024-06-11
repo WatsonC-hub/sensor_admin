@@ -115,6 +115,7 @@ const getOptions = <TData extends MRT_RowData>(
     ...globalOptions,
     enableTableFooter: true,
     enableStickyHeader: true,
+    enableGlobalFilterRankedResults: true,
     enableRowActions: type === TableTypes.STATIONTABLE ? false : true,
     enableTableHead: true,
     enableFilter: false,
@@ -124,10 +125,15 @@ const getOptions = <TData extends MRT_RowData>(
         grow: false,
       },
     },
-    positionActionsColumn: 'last',
-    // renderTopToolbar: ({table}) => TopToolbar(table),
     initialState: {
+      showGlobalFilter: true,
       density: 'comfortable',
+    },
+    positionActionsColumn: 'last',
+    renderTopToolbar: ({table}) => TopToolbar(table),
+    muiSearchTextFieldProps: {
+      variant: 'outlined',
+      size: 'small',
     },
   } as Partial<MRT_TableOptions<TData>>);
   if (breakpoints.isMobile && type === TableTypes.LIST) {
