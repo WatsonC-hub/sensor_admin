@@ -340,99 +340,107 @@ function Map({sensorData, boreholeData, loading, boreholeLoading}: MapProps) {
     const dataBorehole = boreholeData;
     const data = sensorData;
     if (!loading || !boreholeLoading) {
-      dataBorehole?.map((element) => {
-        let content: string;
+      dataBorehole
+        ?.sort((a: BoreholeData, b: BoreholeData) => {
+          return a.flag > b.flag ? 1 : -1;
+        })
+        .map((element) => {
+          let content: string;
 
-        element.intakeno.forEach((intake, index) => {
-          content += `Indtag ${intake} : ${
-            element.measurement[index]
-              ? element.measurement[index] + ' m (DVR 90)<br>'
-              : 'Ingen måling<br>'
-          }`;
-        });
+          element.intakeno.forEach((intake, index) => {
+            content += `Indtag ${intake} : ${
+              element.measurement[index]
+                ? element.measurement[index] + ' m (DVR 90)<br>'
+                : 'Ingen måling<br>'
+            }`;
+          });
 
-        element.status.forEach((status, index) => {
-          if (status == 2) {
-            content += `<b>Obs</b> Indtag ${element.intakeno[index]} skal snart pejles.<br>`;
+          element.status.forEach((status, index) => {
+            if (status == 2) {
+              content += `<b>Obs</b> Indtag ${element.intakeno[index]} skal snart pejles.<br>`;
+            }
+            if (status == 3) {
+              content += `<b>Obs pejling er overskredet for Indtag ${element.intakeno[index]}!</b><br>`;
+            }
+          });
+
+          const point: L.LatLngExpression = [element.latitude, element.longitude];
+
+          const maxStatus = Math.max(...element.status);
+
+          const icon = L.divIcon({
+            className: 'custom-div-icon',
+            html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
+            iconSize: [24, 24],
+            iconAnchor: [12, 12],
+          });
+          console.log(element);
+          const marker = L.marker(point, {
+            icon: icon,
+            interactive: true,
+            riseOnHover: true,
+            title: element.boreholeno,
+            data: element,
+            contextmenu: true,
+          });
+
+          // const tooltip = L.tooltip({
+          //   opacity: 0.9,
+          // })
+          //   .setLatLng(point)
+          //   .setContent(element.boreholeno);
+
+          marker.bindTooltip(element.boreholeno, {
+            direction: 'top',
+            offset: [0, -10],
+          });
+
+          // if (tooltipRef.current) {
+          //   tooltip.addTo(tooltipRef.current);
+          // }
+
+          if (layerRef.current) {
+            marker.addTo(layerRef.current);
           }
-          if (status == 3) {
-            content += `<b>Obs pejling er overskredet for Indtag ${element.intakeno[index]}!</b><br>`;
+        });
+
+      data
+        ?.sort((a: NotificationMap, b: NotificationMap) => {
+          return a.flag > b.flag ? 1 : -1;
+        })
+        .forEach((element) => {
+          const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
+          if (typeof coords != 'object') return;
+          const point: L.LatLngExpression = [coords.lat, coords.lng];
+          const marker = L.circleMarker(point, {
+            // icon: element.status ? stationIcon : inactiveIcon,
+            ...defaultCircleMarkerStyle,
+            interactive: true,
+            fillColor: element.active ? element.color : '#C0C0C0',
+            title: element.locname,
+            data: element,
+            contextmenu: true,
+          });
+
+          marker.bindTooltip(element.locname, {
+            direction: 'top',
+            offset: [0, -10],
+          });
+
+          // const tooltip = L.tooltip({
+          //   opacity: 0.9,
+          // })
+          //   .setLatLng(point)
+          //   .setContent(element.locname);
+
+          // if (tooltipRef.current) {
+          //   tooltip.addTo(tooltipRef.current);
+          // }
+
+          if (layerRef.current) {
+            marker.addTo(layerRef.current);
           }
         });
-
-        const point: L.LatLngExpression = [element.latitude, element.longitude];
-
-        const maxStatus = Math.max(...element.status);
-
-        const icon = L.divIcon({
-          className: 'custom-div-icon',
-          html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
-          iconSize: [24, 24],
-          iconAnchor: [12, 12],
-        });
-
-        const marker = L.marker(point, {
-          icon: icon,
-          interactive: true,
-          riseOnHover: true,
-          title: element.boreholeno,
-          data: element,
-          contextmenu: true,
-        });
-
-        // const tooltip = L.tooltip({
-        //   opacity: 0.9,
-        // })
-        //   .setLatLng(point)
-        //   .setContent(element.boreholeno);
-
-        marker.bindTooltip(element.boreholeno, {
-          direction: 'top',
-          offset: [0, -10],
-        });
-
-        // if (tooltipRef.current) {
-        //   tooltip.addTo(tooltipRef.current);
-        // }
-
-        if (layerRef.current) {
-          marker.addTo(layerRef.current);
-        }
-      });
-
-      data?.forEach((element) => {
-        const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
-        if (typeof coords != 'object') return;
-        const point: L.LatLngExpression = [coords.lat, coords.lng];
-        const marker = L.circleMarker(point, {
-          // icon: element.status ? stationIcon : inactiveIcon,
-          ...defaultCircleMarkerStyle,
-          interactive: true,
-          fillColor: element.active ? element.color : '#C0C0C0',
-          title: element.locname,
-          data: element,
-          contextmenu: true,
-        });
-
-        marker.bindTooltip(element.locname, {
-          direction: 'top',
-          offset: [0, -10],
-        });
-
-        // const tooltip = L.tooltip({
-        //   opacity: 0.9,
-        // })
-        //   .setLatLng(point)
-        //   .setContent(element.locname);
-
-        // if (tooltipRef.current) {
-        //   tooltip.addTo(tooltipRef.current);
-        // }
-
-        if (layerRef.current) {
-          marker.addTo(layerRef.current);
-        }
-      });
 
       if (zoom !== null && pan !== null) {
         mapRef.current?.setView(pan, zoom);
