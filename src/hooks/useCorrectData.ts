@@ -10,13 +10,17 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
   const queryClient = useQueryClient();
 
   // TODO: Check me
-  const {data: pollData, refetch} = useQuery({
+  const {
+    data: pollData,
+    dataUpdatedAt,
+    refetch,
+  } = useQuery({
     queryKey: ['pollData', ts_id],
     queryFn: async () => {
       const {status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
       return status;
     },
-    enabled: true,
+    enabled: false,
     refetchInterval: (query) => {
       return query.state.data === 204 ? 100 : false;
     },
@@ -39,7 +43,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
         hideProgressBar: false,
       });
     }
-  }, [pollData, queryKey, queryClient, ts_id]);
+  }, [pollData, queryKey, queryClient, ts_id, dataUpdatedAt]);
 
   const correctMutation = useMutation({
     mutationFn: async () => {
@@ -57,9 +61,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
       return res;
     },
     onSuccess: () => {
-      setTimeout(() => {
-        refetch();
-      }, 3000);
+      refetch();
       //handleXRangeChange({'xaxis.range[0]': undefined});
     },
   });
