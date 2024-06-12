@@ -6,7 +6,6 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -42,7 +41,6 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     setMpId(id);
     setDialogOpen(true);
   };
-  console.log('data', data);
   const columns = useMemo<MRT_ColumnDef<Tilsyn>[]>(
     () => [
       {

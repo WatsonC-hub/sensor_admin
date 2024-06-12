@@ -1,10 +1,11 @@
-import {Box, Typography} from '@mui/material';
+import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import moment from 'moment';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
-import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -13,7 +14,7 @@ import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
 export type Maalepunkt = {
-  startdate: string;
+  startdate: moment.Moment;
   enddate: string;
   elevation: number;
   mp_description: string;
@@ -45,14 +46,15 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
     () => [
       {
-        accessorFn: (row) => (
-          <Typography sx={{display: 'inline', justifySelf: 'flex-end'}}>
-            {convertDate(row.startdate)} {' - '}
-            {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
-          </Typography>
-        ),
-        id: 'startdate',
         header: 'Dato',
+        id: 'startdate',
+        accessorFn: (row) =>
+          moment(row.startdate).format('DD-MM-YYYY HH:mm') +
+          ' - ' +
+          (checkEndDateIsUnset(row.enddate)
+            ? 'Nu'
+            : moment(row.enddate).format('DD-MM-YYYY HH:mm')),
+        sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
       },
       {

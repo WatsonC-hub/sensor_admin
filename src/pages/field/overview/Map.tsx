@@ -20,7 +20,7 @@ import {stamdataStore, authStore} from '~/state/store';
 import BoreholeContent from './components/BoreholeContent';
 import DrawerComponent from './components/DrawerComponent';
 import LegendContent from './components/LegendContent';
-import SearchAndFilter from './components/SearchAndFIlter';
+import SearchAndFilter from './components/SearchAndFilter';
 import SensorContent from './components/SensorContent';
 import type {BoreholeData} from './OverviewPage';
 

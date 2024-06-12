@@ -1,11 +1,12 @@
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import moment from 'moment';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle, correction_map} from '~/consts';
-import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -17,7 +18,7 @@ export type Kontrol = {
   comment: string;
   gid: number;
   measurement: number;
-  timeofmeas: string;
+  timeofmeas: moment.Moment;
   useforcorrection: number;
 };
 
@@ -49,7 +50,8 @@ export default function PejlingMeasurementsTableDesktop({
   const columns = useMemo<MRT_ColumnDef<Kontrol>[]>(
     () => [
       {
-        accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
+        accessorFn: (row) => moment(row.timeofmeas).format('DD-MM-YYYY HH:mm'),
+        sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
         id: 'timeofmeas',
         header: 'Dato',
       },
