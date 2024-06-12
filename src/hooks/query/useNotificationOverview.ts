@@ -58,7 +58,6 @@ export const useNotificationOverviewMap = (
   return useNotificationOverview({
     ...options,
     select: (data) => {
-      console.log('len data', data.length);
       const sorted = reverse(
         sortBy(data, [(item) => (item.status ? item.status : ''), (item) => item.flag])
       );
@@ -74,7 +73,6 @@ export const useNotificationOverviewMap = (
         return acc;
       }, []);
 
-      console.log('len grouped', grouped.length);
       return grouped;
     },
   });

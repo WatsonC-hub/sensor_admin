@@ -8,7 +8,7 @@ import Tabs from '@mui/material/Tabs';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
-import React, {SyntheticEvent} from 'react';
+import React, {SyntheticEvent, useMemo} from 'react';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
@@ -120,6 +120,10 @@ export default function OverviewPage() {
     };
   }
 
+  const allData = useMemo(() => {
+    return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
+  }, [mapData, boreholeMapdata]);
+
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
       <NavBar />
@@ -141,10 +145,8 @@ export default function OverviewPage() {
       </Tabs>
       <TabPanel value={tabValue} index={0}>
         <Map
-          sensorData={mapData}
-          boreholeData={boreholeMapdata}
-          loading={mapPending && iotAccess}
-          boreholeLoading={boreholeMapIsPending && boreholeAccess}
+          data={allData}
+          loading={(mapPending && iotAccess) || (boreholeMapIsPending && boreholeAccess)}
         />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
