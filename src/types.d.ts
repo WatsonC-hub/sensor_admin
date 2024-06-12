@@ -28,4 +28,5 @@ export type TableData = {
   calculated: boolean;
   x: number;
   y: number;
+  notification_id: number;
 };

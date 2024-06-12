@@ -69,7 +69,6 @@ function typeIcon(type: string) {
 export default function StationTable({data}: Props) {
   const {station} = useNavigationFunctions();
   const {isTouch} = useBreakpoints();
-  console.log(data);
 
   const columns = useMemo<MRT_ColumnDef<TableData>[]>(
     () => [
@@ -77,7 +76,11 @@ export default function StationTable({data}: Props) {
         header: 'Status',
         accessorKey: 'opgave',
         size: 20,
-        Cell: ({row}) => NotificationIcon(row.original),
+        Cell: ({row}) => (
+          <Box display={'flex'} alignContent={'center'}>
+            {NotificationIcon(row.original)}
+          </Box>
+        ),
         sortingFn: (a, b) => {
           // sort based on flag
           if (a.original.flag === b.original.flag) {
@@ -196,7 +199,7 @@ export default function StationTable({data}: Props) {
             <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
               Status:
             </Typography>
-            {NotificationIcon(row.original)}
+            {NotificationIcon(row.original, true)}
             <Typography alignSelf={'center'} variant="caption" color="grey.700">
               {row.original.opgave}
             </Typography>
