@@ -1,7 +1,4 @@
 import {Box} from '@mui/material';
-// import Autocomplete from '@mui/material/Autocomplete';
-// import Box from '@mui/material/Box';
-
 import {atom, useAtom} from 'jotai';
 import L from 'leaflet';
 import 'leaflet-contextmenu';
@@ -20,7 +17,7 @@ import {stamdataStore, authStore} from '~/state/store';
 import BoreholeContent from './components/BoreholeContent';
 import DrawerComponent from './components/DrawerComponent';
 import LegendContent from './components/LegendContent';
-import SearchAndFilter from './components/SearchAndFilter';
+import SearchAndFilterMap from './components/SearchAndFilterMap';
 import SensorContent from './components/SensorContent';
 import type {BoreholeData} from './OverviewPage';
 
@@ -302,11 +299,11 @@ function Map({data, loading}: MapProps) {
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
 
-    if (mapRef.current !== null) {
-      [0, 1, 2, 3].forEach((index) => {
-        mapRef.current.createPane(index.toString()).style.zIndex = 400 + index;
-      });
-    }
+    [0, 1, 2, 3].forEach((index) => {
+      if (mapRef.current !== null) {
+        mapRef.current.createPane(index.toString()).style.zIndex = `${400 + index}`;
+      }
+    });
 
     layerRef.current.on('click', function (e) {
       L.DomEvent.stopPropagation(e);
@@ -461,7 +458,7 @@ function Map({data, loading}: MapProps) {
 
   return (
     <>
-      <SearchAndFilter
+      <SearchAndFilterMap
         data={data}
         setData={setFilteredData}
         handleSearchSelect={handleSearchSelect}

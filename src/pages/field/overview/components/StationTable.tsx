@@ -78,7 +78,7 @@ export default function StationTable({data}: Props) {
         size: 20,
         Cell: ({row}) => (
           <Box display={'flex'} alignContent={'center'}>
-            {NotificationIcon(row.original)}
+            <NotificationIcon iconDetails={row.original} enableTooltip />
           </Box>
         ),
         sortingFn: (a, b) => {
@@ -199,7 +199,7 @@ export default function StationTable({data}: Props) {
             <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
               Status:
             </Typography>
-            {NotificationIcon(row.original, true)}
+            <NotificationIcon iconDetails={row.original} />
             <Typography alignSelf={'center'} variant="caption" color="grey.700">
               {row.original.opgave}
             </Typography>

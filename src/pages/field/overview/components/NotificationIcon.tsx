@@ -14,112 +14,150 @@ import TerrainIcon from '@mui/icons-material/Terrain';
 import {Avatar, Tooltip} from '@mui/material';
 
 //Imports
-import {TableData} from '~/types';
 
 export const statusStyling = (flagColor: string) => {
   return {
     bgcolor: flagColor,
     textAlign: 'center',
-    width: 36,
-    height: 36,
+    // width: 36,
+    // height: 36,
   };
 };
 
-export const defaultStyling = (FlagColor: string) => {
-  return {
-    color: FlagColor ?? '#00FF00',
-    textAlign: 'start',
-    width: 36,
-    height: 36,
-  };
+// export const defaultStyling = () => {
+//   return {
+//     textAlign: 'start',
+//     fontSize: 'inherit',
+//     // width: 36,
+//     // height: 36,
+//   };
+// };
+
+const defaultStyling = {
+  textAlign: 'start',
+  fontSize: 'inherit',
+  // width: 36,
+  // height: 36,
 };
 
-const NotificationIcon = (tableData: TableData, isDetailPanel: boolean = false) => {
-  let icon = <Circle sx={defaultStyling(tableData.color)} />;
+type IconDetails = {
+  color: string;
+  notification_id?: number;
+  flag?: number;
+  opgave?: string;
+};
 
-  if ((tableData.notification_id === 0 || tableData.flag === -1) && !isDetailPanel)
+type IconDetailsWithTooltip = IconDetails & {
+  opgave: string;
+};
+
+type NotificationIconProps =
+  | {
+      iconDetails: IconDetailsWithTooltip;
+      enableTooltip?: true;
+    }
+  | {
+      iconDetails: IconDetails;
+      enableTooltip?: false;
+    };
+
+const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {
+  let icon = <Circle sx={{...defaultStyling, color: iconDetails}} />;
+
+  if (
+    (iconDetails.notification_id === 0 ||
+      iconDetails.flag === -1 ||
+      iconDetails.notification_id == undefined) &&
+    enableTooltip
+  )
     return (
-      <Tooltip arrow title={tableData.opgave} enterTouchDelay={0}>
+      <Tooltip arrow title={iconDetails.opgave} enterTouchDelay={0}>
         {icon}
       </Tooltip>
     );
-  else if ((tableData.notification_id === 0 || tableData.flag === -1) && isDetailPanel) return icon;
+  else if (
+    (iconDetails.notification_id === 0 ||
+      iconDetails.flag === -1 ||
+      iconDetails.notification_id == undefined) &&
+    !enableTooltip
+  )
+    return icon;
 
-  switch (tableData.flag) {
+  switch (iconDetails.flag) {
     case 0:
-      switch (tableData.notification_id) {
+      switch (iconDetails.notification_id) {
         case 10:
-          icon = <HeightIcon />;
+          icon = <HeightIcon sx={defaultStyling} />;
           break;
         case 9:
-          icon = <CycloneIcon />;
+          icon = <CycloneIcon sx={defaultStyling} />;
           break;
         case 11:
-          icon = <HeightIcon />;
+          icon = <HeightIcon sx={defaultStyling} />;
           break;
         case 13:
-          icon = <CrisisAlertIcon />;
+          icon = <CrisisAlertIcon sx={defaultStyling} />;
           break;
         case 12:
-          icon = <TerrainIcon />;
+          icon = <TerrainIcon sx={defaultStyling} />;
           break;
         case 75:
-          icon = <HeightIcon />;
+          icon = <HeightIcon sx={defaultStyling} />;
           break;
         case 76:
-          icon = <HeightIcon />;
+          icon = <HeightIcon sx={defaultStyling} />;
           break;
       }
       break;
     case 1:
-      switch (tableData.notification_id) {
+      switch (iconDetails.notification_id) {
         case 6:
-          icon = <NotificationImportantIcon />;
+          icon = <NotificationImportantIcon sx={defaultStyling} />;
           break;
         case 7:
-          icon = <SpeedIcon />;
+          icon = <SpeedIcon sx={defaultStyling} />;
           break;
         case 1:
-          icon = <BatteryAlertRounded />;
+          icon = <BatteryAlertRounded sx={defaultStyling} />;
           break;
       }
       break;
     case 2:
-      switch (tableData.notification_id) {
+      switch (iconDetails.notification_id) {
         case 5:
-          icon = <EventBusyIcon />;
+          icon = <EventBusyIcon sx={defaultStyling} />;
           break;
         case 8:
-          icon = <EventBusyIcon />;
+          icon = <EventBusyIcon sx={defaultStyling} />;
           break;
       }
       break;
     case 3:
-      switch (tableData.notification_id) {
+      switch (iconDetails.notification_id) {
         case 3:
-          icon = <HourglassDisabledIcon />;
+          icon = <HourglassDisabledIcon sx={defaultStyling} />;
           break;
         case 2:
-          icon = <QueryStatsIcon />;
+          icon = <QueryStatsIcon sx={defaultStyling} />;
           break;
         case 42:
-          icon = <CloudOffIcon />;
+          icon = <CloudOffIcon sx={defaultStyling} />;
           break;
         case 4:
-          icon = <DangerousIcon />;
+          icon = <DangerousIcon sx={defaultStyling} />;
           break;
         case 108:
-          icon = <RunningWithErrorsIcon />;
+          icon = <RunningWithErrorsIcon sx={defaultStyling} />;
           break;
       }
       break;
   }
 
-  if (isDetailPanel) return <Avatar sx={statusStyling(tableData.color)}>{icon}</Avatar>;
+  if (!enableTooltip) return <Avatar sx={statusStyling(iconDetails.color)}>{icon}</Avatar>;
   else
     return (
-      <Avatar sx={statusStyling(tableData.color)}>
-        <Tooltip arrow title={tableData.opgave} enterTouchDelay={0}>
+      <Avatar sx={statusStyling(iconDetails.color)}>
+        <Tooltip arrow title={iconDetails.opgave} enterTouchDelay={0}>
           {icon}
         </Tooltip>
       </Avatar>

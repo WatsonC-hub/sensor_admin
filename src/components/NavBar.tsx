@@ -245,7 +245,7 @@ const NavBar = () => {
     state.adminAccess,
   ]);
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
-  const {register, home, admin, createStamdata, field, station} = useNavigationFunctions();
+  const {admin, createStamdata, field, station} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const metadata = useContext(MetadataContext);
 
@@ -257,21 +257,6 @@ const NavBar = () => {
     return (
       <AppBarLayout>
         <Logo />
-        {url !== '/register' ? (
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={() => {
-              register();
-            }}
-          >
-            Opret konto
-          </Button>
-        ) : (
-          <Button color="secondary" variant="contained" onClick={() => home()}>
-            Log ind
-          </Button>
-        )}
       </AppBarLayout>
     );
   }
