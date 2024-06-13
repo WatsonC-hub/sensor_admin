@@ -466,7 +466,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             </footer>
           )}
         </Box>
-        <DevTool control={formMethods.control} />
+        {import.meta.env.DEV && <DevTool control={formMethods.control} />}
       </Box>
     </FormProvider>
   );
