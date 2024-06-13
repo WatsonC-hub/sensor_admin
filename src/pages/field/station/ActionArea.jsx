@@ -27,7 +27,7 @@ export default function ActionArea({
     // setValue(newValue);
     setPageToShow(newValue);
     if (showForm !== null) {
-      setShowForm('');
+      setShowForm(null);
     }
   };
   const navigationItems = [
