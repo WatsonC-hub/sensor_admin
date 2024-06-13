@@ -13,6 +13,8 @@ import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
+import RenderInternalActions from './RenderInternalActions';
+
 export type Maalepunkt = {
   startdate: moment.Moment;
   enddate: string;
@@ -70,6 +72,8 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     [unit]
   );
 
+  const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
+
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
     renderRowActions: ({row}) => (
       <RenderActions
@@ -82,9 +86,10 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         canEdit={canEdit}
       />
     ),
+    renderToolbarInternalActions: ({table}) => {
+      return <RenderInternalActions table={table} reset={reset} />;
+    },
   };
-
-  const [tableState] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
 
   const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
 

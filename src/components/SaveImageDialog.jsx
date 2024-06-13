@@ -26,9 +26,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
   const {post: uploadImage, put: editImage} = useImageUpload(type);
 
   function saveImage() {
-    console.log('Hit Once');
     if (activeImage.gid === -1) {
-      console.log('Hit Twice');
       const payload = {
         path: id,
         data: {
