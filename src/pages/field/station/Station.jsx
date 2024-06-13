@@ -115,7 +115,7 @@ export default function Station({ts_id, stamdata}) {
   });
 
   useEffect(() => {
-    if (watlevmp?.length > 0) {
+    if (store.timeseries.tstype_id && watlevmp?.length > 0) {
       const elev = watlevmp?.filter((e2) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
@@ -130,8 +130,12 @@ export default function Station({ts_id, stamdata}) {
       } else {
         setDynamic([]);
       }
+    } else if (store.timeseries.tstype_id !== 1) {
+      let dynamicDate = moment(pejlingData.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
+      let dynamicMeas = pejlingData.measurement;
+      setDynamic([dynamicDate, dynamicMeas]);
     }
-  }, [pejlingData, watlevmp]);
+  }, [pejlingData, watlevmp, store.timeseries.tstype_id]);
 
   useEffect(() => {
     var ctrls = [];
@@ -322,10 +326,11 @@ export default function Station({ts_id, stamdata}) {
   };
 
   useEffect(() => {
-    if (ts_id !== store.timeseries.ts_id) {
-      setPageToShow(pageToShow);
-      if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
-    }
+    setPageToShow(pageToShow);
+    if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
+    resetPejlingData();
+    resetServiceData();
+    setShowForm(null);
   }, [ts_id]);
 
   return (
