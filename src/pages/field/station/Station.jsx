@@ -90,11 +90,12 @@ export default function Station({ts_id, stamdata}) {
     queryKey: ['measurements', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${ts_id}`);
-
-      return data.map((m) => {
-        return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
-      });
+      return data;
     },
+    select: (data) =>
+      data.map((m) => {
+        return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
+      }),
     enabled: ts_id !== -1 && ts_id !== null,
     initialData: [],
   });
@@ -103,13 +104,14 @@ export default function Station({ts_id, stamdata}) {
     queryKey: ['service', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
-
-      return data.map((m) => {
-        return {...m, dato: moment(m.dato)};
-      });
+      return data;
     },
+    select: (data) =>
+      data.map((m) => {
+        return {...m, dato: moment(m.dato)};
+      }),
     enabled: ts_id !== -1 && ts_id !== null,
-    initialData: [],
+    // initialData: [],
   });
 
   useEffect(() => {

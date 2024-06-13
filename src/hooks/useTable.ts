@@ -9,7 +9,6 @@ import {
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 
-import TopToolbar from '~/components/tableComponents/TopToolbar';
 import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -116,6 +115,7 @@ const getOptions = <TData extends MRT_RowData>(
     enableTableFooter: true,
     enableStickyHeader: true,
     enableGlobalFilterRankedResults: true,
+    positionGlobalFilter: 'left',
     enableRowActions: type === TableTypes.STATIONTABLE ? false : true,
     enableTableHead: true,
     enableFilter: false,
@@ -130,7 +130,6 @@ const getOptions = <TData extends MRT_RowData>(
       density: 'comfortable',
     },
     positionActionsColumn: 'last',
-    renderTopToolbar: ({table}) => TopToolbar(table),
     muiSearchTextFieldProps: {
       variant: 'outlined',
       size: 'small',

@@ -65,10 +65,12 @@ export default function PejlingMeasurementsTableDesktop({
           correction_map[row.useforcorrection] ? correction_map[row.useforcorrection] : 'Kontrol',
         header: 'Anvendelse',
         id: 'useforcorrection',
+        enableColumnFilter: true,
       },
       {
         accessorKey: 'comment',
         header: 'Kommentar',
+        enableColumnFilter: false,
       },
     ],
     [unit]
