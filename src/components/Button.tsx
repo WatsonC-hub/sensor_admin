@@ -4,7 +4,7 @@ import {merge} from 'lodash';
 import {ReactElement} from 'react';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
-  bttype: 'primary' | 'secondary' | 'tertiary';
+  bttype: 'primary' | 'secondary' | 'tertiary' | 'link';
   children: ReactElement | string;
 }
 
@@ -41,7 +41,7 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
   sx = merge(sx, props.sx);
 
   return (
-    <MuiButton {...props} variant="outlined" sx={sx}>
+    <MuiButton {...props} variant={bttype == 'link' ? 'text' : 'outlined'} sx={sx}>
       {children}
     </MuiButton>
   );
