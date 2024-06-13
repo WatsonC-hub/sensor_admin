@@ -77,7 +77,13 @@ export default function StationTable({data}: Props) {
         accessorKey: 'opgave',
         size: 20,
         Cell: ({row}) => (
-          <Box display={'flex'} alignContent={'center'}>
+          <Box
+            display={'flex'}
+            alignContent={'center'}
+            sx={{
+              fontSize: '2rem',
+            }}
+          >
             <NotificationIcon iconDetails={row.original} enableTooltip />
           </Box>
         ),

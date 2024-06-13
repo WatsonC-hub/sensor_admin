@@ -26,6 +26,36 @@ export const boreholeColors: Record<
   },
 };
 
+// Colors ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF']
+export const sensorColors: Record<
+  number,
+  {
+    color: string;
+    text: string;
+  }
+> = {
+  3: {
+    color: '#d32f2f',
+    text: 'Kritisk',
+  },
+  2: {
+    color: '#ff832b',
+    text: 'Advarsel',
+  },
+  1: {
+    color: '#f1c21b',
+    text: 'Info',
+  },
+  0: {
+    color: '#4caf50',
+    text: 'OK',
+  },
+  '-1': {
+    color: '#9F2B68',
+    text: 'Ukendt',
+  },
+};
+
 export const correction_map: Record<number, string> = {
   0: 'Kontrol',
   1: 'Korrektion fremadrettet',

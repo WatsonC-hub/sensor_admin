@@ -1,4 +1,3 @@
-import SaveIcon from '@mui/icons-material/Save';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import {
@@ -14,7 +13,6 @@ import {atom, useAtom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
 import React, {useState, useRef, SyntheticEvent, MouseEventHandler, useEffect} from 'react';
 
-import Button from '~/components/Button';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
@@ -32,7 +30,7 @@ interface LocItems {
 export interface Filter {
   freeText?: string;
   borehole: {
-    hasControlProgram?: boolean;
+    hasControlProgram: boolean | null;
   };
   sensor: {
     showInactive: boolean;
@@ -42,21 +40,24 @@ export interface Filter {
 const typeAheadAtom = atom<string>('');
 const mapFilterAtom = atomWithStorage<Filter>('mapFilter', {
   freeText: '',
-  borehole: {},
+  borehole: {
+    hasControlProgram: null,
+  },
   sensor: {
     showInactive: false,
   },
 });
 
-const getNumberOfNonEmptyFilters = (filter: Filter) => {
-  return Object.values(filter).filter((val) => {
-    if (typeof val === 'string' && val.trim() === '') return false;
-    if (typeof val === 'number' && val === null) return false;
-    if (typeof val === 'object' && (val === null || Object.keys(val).length == 0)) return false;
-    if (typeof val === 'boolean' && val === false) return false;
-    if (Array.isArray(val) && val.length === 0) return false;
-    return true;
-  }).length;
+const getNumberOfNonEmptyFilters = (filter: object): number => {
+  return Object.values(filter).reduce((acc, val) => {
+    if (typeof val === 'string' && val.trim() === '') return acc;
+    if (typeof val === 'number' && val === null) return acc;
+    if (typeof val === 'object' && !Array.isArray(val) && val !== null)
+      return acc + getNumberOfNonEmptyFilters(val);
+    if (typeof val === 'boolean' && val === false) return acc;
+    if (Array.isArray(val) && val.length === 0) return acc;
+    return acc + 1;
+  }, 0);
 };
 
 type Props = {
@@ -95,7 +96,8 @@ const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
 };
 
 const filterBorehole = (data: BoreholeData, filter: Filter['borehole']) => {
-  return true;
+  console.log(data, filter);
+  return filter.hasControlProgram ? data.num_controls_in_a_year.some((num) => num > 0) : true;
 };
 
 const filterChecked = (data: (NotificationMap | BoreholeData)[], filter: Filter) => {
@@ -182,6 +184,8 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const numFilters = getNumberOfNonEmptyFilters(mapFilter);
   return (
     <>
       <Autocomplete
@@ -219,10 +223,8 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
                   position="end"
                 >
                   <IconButton edge="end" onClick={handleOpenFilter}>
-                    <Badge badgeContent={getNumberOfNonEmptyFilters(mapFilter)} color="primary">
-                      <TuneRoundedIcon
-                        color={getNumberOfNonEmptyFilters(mapFilter) > 0 ? 'primary' : undefined}
-                      />
+                    <Badge badgeContent={numFilters} color="primary">
+                      <TuneRoundedIcon color={numFilters > 0 ? 'primary' : undefined} />
                     </Badge>
                   </IconButton>
                 </InputAdornment>
@@ -253,7 +255,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         onClose={handleClose}
         sx={{
           '& .MuiPaper-root': {
-            width: isTouch ? '90%' : 300,
+            width: isTouch ? '90%' : 500,
             p: 1,
           },
         }}

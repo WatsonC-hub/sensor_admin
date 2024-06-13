@@ -17,6 +17,7 @@ import {stamdataStore, authStore} from '~/state/store';
 import BoreholeContent from './components/BoreholeContent';
 import DrawerComponent from './components/DrawerComponent';
 import LegendContent from './components/LegendContent';
+import {getColor} from './components/NotificationIcon';
 import SearchAndFilterMap from './components/SearchAndFilterMap';
 import SensorContent from './components/SensorContent';
 import type {BoreholeData} from './OverviewPage';
@@ -339,12 +340,29 @@ function Map({data, loading}: MapProps) {
         const marker = L.circleMarker(point, {
           ...defaultCircleMarkerStyle,
           interactive: true,
-          fillColor: element.active ? element.color : '#C0C0C0',
+          fillColor: getColor(element),
           title: element.locname,
           data: element,
           contextmenu: true,
           pane: element.flag.toString(),
         });
+
+        // const icon = L.divIcon({
+        //   className: 'custom-div-icon',
+        //   html: <NotificationIcon iconDetails={element} />,
+        //   iconSize: [24, 24],
+        //   iconAnchor: [12, 12],
+        // });
+
+        // const marker = L.marker(point, {
+        //   icon: icon,
+        //   interactive: true,
+        //   riseOnHover: true,
+        //   title: element.locname,
+        //   data: element,
+        //   contextmenu: true,
+        //   pane: element.flag.toString(),
+        // });
 
         marker.bindTooltip(element.locname, {
           direction: 'top',

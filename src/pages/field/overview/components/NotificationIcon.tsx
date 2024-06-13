@@ -11,8 +11,10 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import RunningWithErrorsIcon from '@mui/icons-material/RunningWithErrors';
 import SpeedIcon from '@mui/icons-material/Speed';
 import TerrainIcon from '@mui/icons-material/Terrain';
-import {Avatar, Tooltip} from '@mui/material';
+import {Box, BoxProps, Tooltip} from '@mui/material';
+import React from 'react';
 
+import {sensorColors} from '~/consts';
 //Imports
 
 export const statusStyling = (flagColor: string) => {
@@ -24,27 +26,64 @@ export const statusStyling = (flagColor: string) => {
   };
 };
 
-// export const defaultStyling = () => {
-//   return {
-//     textAlign: 'start',
-//     fontSize: 'inherit',
-//     // width: 36,
-//     // height: 36,
-//   };
-// };
+const flagStyling = (iconDetails: IconDetails) => {
+  return {
+    bgcolor: getColor(iconDetails),
+    textAlign: 'center',
+    // width: 36,
+    // height: 36,
+  };
+};
 
-const defaultStyling = {
+const CircleBox = ({
+  children,
+  sx,
+}: {
+  children: React.ReactNode;
+  sx?: Omit<BoxProps['sx'], 'textAlign' | 'fontSize'>;
+}) => {
+  return (
+    <Box
+      sx={{
+        ...defaultStyling,
+        ...sx,
+        borderRadius: '9999px',
+        color: 'white',
+        display: 'flex',
+        // width: ref.current ? ref.current.clientHeight : undefined,
+        // height: ref.current ? ref.current.clientHeight : undefined,
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '100%',
+          height: '100%',
+          p: '0.2em',
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+};
+
+const defaultStyling: BoxProps['sx'] = {
   textAlign: 'start',
   fontSize: 'inherit',
+  // p: 1,
   // width: 36,
   // height: 36,
 };
 
 type IconDetails = {
-  color: string;
+  color?: string;
   notification_id?: number;
   flag?: number;
   opgave?: string;
+  active?: boolean;
 };
 
 type IconDetailsWithTooltip = IconDetails & {
@@ -61,9 +100,23 @@ type NotificationIconProps =
       enableTooltip?: false;
     };
 
-const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {
-  let icon = <Circle sx={{...defaultStyling, color: iconDetails}} />;
+export const getColor = (iconDetails: IconDetails) => {
+  if (iconDetails.notification_id == 12) return '#334FFF';
+  if ([13, 75, 76].includes(iconDetails.notification_id ?? 0)) return '#9F2B68';
+  if (iconDetails.active === false) return '#C0C0C0';
+  if (iconDetails.flag !== undefined) return sensorColors[iconDetails.flag].color;
+  else return iconDetails.color;
+};
 
+const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {
+  let icon = (
+    <Circle
+      sx={{
+        ...defaultStyling,
+        color: getColor(iconDetails),
+      }}
+    />
+  );
   if (
     (iconDetails.notification_id === 0 ||
       iconDetails.flag === -1 ||
@@ -71,9 +124,11 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
     enableTooltip
   )
     return (
-      <Tooltip arrow title={iconDetails.opgave} enterTouchDelay={0}>
-        {icon}
-      </Tooltip>
+      <CircleBox sx={flagStyling(iconDetails)}>
+        <Tooltip arrow title={iconDetails.opgave} enterTouchDelay={0}>
+          {icon}
+        </Tooltip>
+      </CircleBox>
     );
   else if (
     (iconDetails.notification_id === 0 ||
@@ -81,7 +136,7 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
       iconDetails.notification_id == undefined) &&
     !enableTooltip
   )
-    return icon;
+    return <CircleBox sx={flagStyling(iconDetails)}>{icon}</CircleBox>;
 
   switch (iconDetails.flag) {
     case 0:
@@ -153,14 +208,14 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
       break;
   }
 
-  if (!enableTooltip) return <Avatar sx={statusStyling(iconDetails.color)}>{icon}</Avatar>;
+  if (!enableTooltip) return <CircleBox sx={flagStyling(iconDetails)}>{icon}</CircleBox>;
   else
     return (
-      <Avatar sx={statusStyling(iconDetails.color)}>
+      <CircleBox sx={flagStyling(iconDetails)}>
         <Tooltip arrow title={iconDetails.opgave} enterTouchDelay={0}>
           {icon}
         </Tooltip>
-      </Avatar>
+      </CircleBox>
     );
 };
 

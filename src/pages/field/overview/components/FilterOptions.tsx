@@ -1,10 +1,11 @@
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Typography, FormControlLabel, Checkbox, Divider} from '@mui/material';
+import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
 import {RESET} from 'jotai/utils';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import FormCheckbox from '~/components/FormCheckbox';
 import FormInput from '~/components/FormInput';
 
 import NotificationIcon from './NotificationIcon';
@@ -34,29 +35,53 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
       <Typography variant="h6">Filtrer lokationer</Typography>
       <FormInput name="freeText" label="Fritekst filtrering" />
       <Divider />
-      <Typography variant="subtitle1">Status</Typography>
-      <FormControlLabel
-        control={
-          <Controller
-            control={formMethods.control}
-            name="sensor.showInactive"
-            render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle1">Boringer</Typography>
+
+          <FormCheckbox
+            name="borehole.hasControlProgram"
+            label="Kun pejleprogram"
+            includeInderterminate
           />
-        }
-        label={
-          <Typography
-            variant="body1"
-            sx={{
-              display: 'flex',
-              gap: 1,
-              alignItems: 'center',
-            }}
-          >
-            <NotificationIcon iconDetails={{color: 'grey'}} />
-            Inaktiv
-          </Typography>
-        }
-      />
+
+          {/* <FormControlLabel
+            control={
+              <Controller
+                control={formMethods.control}
+                name="borehole.hasControlProgram"
+                render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
+              />
+            }
+            label="Kun pejleprogram"
+          /> */}
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Typography variant="subtitle1">Iot filtre</Typography>
+          <FormControlLabel
+            control={
+              <Controller
+                control={formMethods.control}
+                name="sensor.showInactive"
+                render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
+              />
+            }
+            label={
+              <Typography
+                variant="body1"
+                sx={{
+                  display: 'flex',
+                  gap: 1,
+                  alignItems: 'center',
+                }}
+              >
+                <NotificationIcon iconDetails={{color: 'grey'}} />
+                Inaktiv
+              </Typography>
+            }
+          />
+        </Grid>
+      </Grid>
 
       <Box
         sx={{

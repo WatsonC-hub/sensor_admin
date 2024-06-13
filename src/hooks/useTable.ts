@@ -35,7 +35,7 @@ const getOptions = <TData extends MRT_RowData>(
         width: '100%',
         flex: '1 1 0',
         display: 'flex',
-        'flex-flow': 'column',
+        flexFlow: 'column',
         boxShadow: breakpoints.isMobile ? 'none' : '1',
       },
     },

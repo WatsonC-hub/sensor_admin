@@ -5,8 +5,9 @@ import {Box, Typography} from '@mui/material';
 import Button from '~/components/Button';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
+
+import NotificationIcon from './NotificationIcon';
 
 interface SensorContentProps {
   data: NotificationMap;
@@ -20,7 +21,7 @@ const SensorContent = ({data}: SensorContentProps) => {
     <>
       <Box display="flex" alignItems="center" gap={1}>
         <Typography variant="body1">Status:</Typography>
-        <TaskIcon color={data.color} />
+        <NotificationIcon iconDetails={data} />
         <Typography variant="body1">{data.opgave}</Typography>
       </Box>
 
@@ -35,7 +36,7 @@ const SensorContent = ({data}: SensorContentProps) => {
                 <Typography variant="body1">
                   {splitted[splitted.length - 1].replace('-', '').trim()}
                 </Typography>
-                <TaskIcon color={notification.color} />
+                <NotificationIcon iconDetails={notification} />
                 <Typography variant="body1">{notification.opgave}</Typography>
               </Box>
             );
