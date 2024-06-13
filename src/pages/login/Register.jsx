@@ -46,25 +46,20 @@ export default function Register() {
     resolver: zodResolver(RegisterSchema),
   });
 
-  const {
-    formState: {isSubmitSuccessful},
-    reset,
-    getValues,
-    handleSubmit,
-  } = formMethods;
+  const {getValues, handleSubmit} = formMethods;
 
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset({
-        firstName: '',
-        lastName: '',
-        email: '',
-        cvr: '',
-        checkedTerms: false,
-        checkedNews: false,
-      });
-    }
-  }, [isSubmitSuccessful]);
+  // useEffect(() => {
+  //   if (isSubmitSuccessful) {
+  //     reset({
+  //       firstName: '',
+  //       lastName: '',
+  //       email: '',
+  //       cvr: '',
+  //       checkedTerms: false,
+  //       checkedNews: false,
+  //     });
+  //   }
+  // }, [isSubmitSuccessful]);
 
   const {home} = useNavigationFunctions();
   const routeChange = () => {
@@ -81,7 +76,6 @@ export default function Register() {
     queryKey: ['cvr'],
     queryFn: () => getCvr(getValues('cvr')),
     enabled: false,
-    refetchOnWindowFocus: false,
     select: (data) => {
       return {
         ...data.data.orgs[0],
@@ -91,7 +85,9 @@ export default function Register() {
   });
 
   useEffect(() => {
-    toast.error('CVR ikke gyldigt');
+    if (error !== null) {
+      toast.error('CVR ikke gyldigt');
+    }
   }, [error]);
 
   const createUserMutation = useMutation({
@@ -105,8 +101,7 @@ export default function Register() {
     },
   });
 
-  const handleOpret = (e) => {
-    e.preventDefault(); //To avoid refreshing page on button click
+  const handleOpret = (values) => {
     refetch();
     setOpenConfirmDialog(true);
   };
@@ -204,7 +199,7 @@ export default function Register() {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={routeChange} variant="outlined" color="primary">
+          <Button onClick={routeChange} bttype="primary">
             Til log ind
           </Button>
         </DialogActions>
