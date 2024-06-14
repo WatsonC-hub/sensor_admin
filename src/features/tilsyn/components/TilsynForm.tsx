@@ -4,13 +4,19 @@ import {Box, Card, CardContent, Grid, TextField, Typography} from '@mui/material
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import moment from 'moment';
-import {Controller, FormProvider} from 'react-hook-form';
+import {Controller, FormProvider, UseFormReturn} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import OwnDatePicker from '~/components/OwnDatePicker';
+import {TilsynItem} from '~/types';
 
-import OwnDatePicker from './OwnDatePicker';
+interface TilsynFormPops {
+  handleServiceSubmit: (values: TilsynItem) => void;
+  cancel: () => void;
+  formMethods: UseFormReturn<TilsynItem>;
+}
 
-export default function TilsynForm({handleSubmit, cancel, formMethods}) {
+export default function TilsynForm({handleServiceSubmit, cancel, formMethods}: TilsynFormPops) {
   return (
     <FormProvider {...formMethods}>
       <Card
@@ -40,7 +46,7 @@ export default function TilsynForm({handleSubmit, cancel, formMethods}) {
                       label="Dato"
                       value={field.value}
                       inputRef={field.ref}
-                      onChange={(e) => {
+                      onChange={(e: string) => {
                         field.onChange(moment(e).format('YYYY-MM-DDTHH:mm'));
                         formMethods.setValue('dato', moment(e).format('YYYY-MM-DDTHH:mm'));
                       }}
@@ -131,7 +137,11 @@ export default function TilsynForm({handleSubmit, cancel, formMethods}) {
                 <Button bttype="tertiary" onClick={cancel}>
                   Annuller
                 </Button>
-                <Button bttype="primary" onClick={handleSubmit} startIcon={<SaveIcon />}>
+                <Button
+                  bttype="primary"
+                  onClick={formMethods.handleSubmit(handleServiceSubmit)}
+                  startIcon={<SaveIcon />}
+                >
                   Gem
                 </Button>
               </Box>

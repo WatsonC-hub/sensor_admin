@@ -1,15 +1,15 @@
-import {zodResolver} from '@hookform/resolvers/zod';
 import {Box} from '@mui/material';
-import {useMutation, useQuery} from '@tanstack/react-query';
+// import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import TilsynForm from '~/components/TilsynForm';
-import TilsynTable from '~/components/TilsynTable';
-import {tilsynMetadata} from '~/helpers/zodSchemas';
+import {useCreateOrUpdateTilsyn} from '~/features/tilsyn/api/createOrUpdateTilsyn';
+import {useDeleteTilsyn} from '~/features/tilsyn/api/deleteTilsyn';
+import TilsynForm from '~/features/tilsyn/components/TilsynForm';
+import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {queryClient} from '~/queryClient';
 import {TilsynItem} from '~/types';
 
@@ -30,73 +30,50 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
   };
 
   const formMethods = useForm({
-    resolver: zodResolver(tilsynMetadata),
+    // resolver: zodResolver(tilsynMetadata),
     defaultValues: {
       ...initialData,
     },
   });
 
-  const {data: services} = useQuery({
-    queryKey: ['service', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
-      return data;
+  const createTilsynMutation = useCreateOrUpdateTilsyn(ts_id, {
+    mutationConfig: {
+      onSuccess: () => {
+        setShowForm(null);
+        toast.success('Tilsyn gemt');
+        queryClient.invalidateQueries({
+          queryKey: ['service', ts_id],
+        });
+        formMethods.reset(initialData);
+      },
+      onError: (error: Error) => {
+        console.log(error);
+        toast.error('Der skete en fejl');
+      },
     },
-    select: (data) =>
-      data.map((m: TilsynItem) => {
-        return {...m, dato: moment(m.dato).format('YYYY-MM-DDTHH:mm')};
-      }),
-    enabled: ts_id !== -1 && ts_id !== null,
   });
 
-  const serviceMutate = useMutation({
-    mutationFn: (data: TilsynItem) => {
-      if (data.gid === -1) {
-        return apiClient.post(`/sensor_field/station/service/${ts_id}`, data);
-      } else {
-        return apiClient.put(`/sensor_field/station/service/${ts_id}/${data.gid}`, data);
-      }
+  const deleteTilsynMutation = useDeleteTilsyn(ts_id, {
+    mutationConfig: {
+      onSuccess: () => {
+        toast.success('Tilsyn slettet');
+      },
     },
   });
 
   const handleServiceSubmit = (values: TilsynItem) => {
-    serviceMutate.mutate(
-      {...values, user_id: sessionStorage.getItem('user')},
-      {
-        onSuccess: () => {
-          setShowForm(null);
-          toast.success('Tilsyn gemt');
-          queryClient.invalidateQueries({
-            queryKey: ['service', ts_id],
-          });
-          formMethods.reset(initialData);
-        },
-        onError: (error: Error) => {
-          console.log(error);
-          if (error.response.data.detail.includes('No unit')) {
-            toast.error('Der er ingen enhed tilknyttet på denne dato');
-          } else {
-            toast.error('Der skete en fejl');
-          }
-        },
-      }
-    );
+    const tilsyn = {...values, user_id: sessionStorage.getItem('user')};
+    createTilsynMutation.mutate({ts_id, data: tilsyn});
   };
 
   const handleEdit = (data: TilsynItem) => {
-    // data.dato = moment.isMoment(data.dato) = data.dato.format() : data.dato
     console.log(data);
     formMethods.reset(data, {keepDirty: true});
     setShowForm(true);
   };
 
-  const handleDelete = (gid: number) => {
-    apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then(() => {
-      queryClient.invalidateQueries({
-        queryKey: ['service', ts_id],
-      });
-      toast.success('Tilsyn slettet');
-    });
+  const handleDelete = (gid: number | undefined) => {
+    deleteTilsynMutation.mutate({ts_id, gid});
   };
 
   const resetFormData = () => {
@@ -114,10 +91,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
       <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
         {showForm === true && (
           <TilsynForm
-            handleSubmit={formMethods.handleSubmit(handleServiceSubmit, (values) => {
-              console.log(formMethods.getValues());
-              console.log(values);
-            })}
+            handleServiceSubmit={handleServiceSubmit}
             cancel={() => {
               resetFormData();
             }}
@@ -125,7 +99,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
           />
         )}
         <TilsynTable
-          services={services}
+          ts_id={ts_id}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
           canEdit={canEdit}

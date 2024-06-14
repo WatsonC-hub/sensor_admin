@@ -10,8 +10,6 @@ import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import PejlingForm from '~/components/PejlingForm';
-import TilsynForm from '~/components/TilsynForm';
-import TilsynTable from '~/components/TilsynTable';
 import {StationPages} from '~/helpers/EnumHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useFormData from '~/hooks/useFormData';

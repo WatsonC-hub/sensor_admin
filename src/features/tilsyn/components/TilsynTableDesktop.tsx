@@ -1,7 +1,6 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
-import moment from 'moment';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -14,7 +13,7 @@ import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
 
-import RenderInternalActions from './RenderInternalActions';
+import RenderInternalActions from '../../../components/tableComponents/RenderInternalActions';
 
 interface Props {
   data: TilsynItem[];
