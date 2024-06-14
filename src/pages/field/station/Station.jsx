@@ -24,6 +24,7 @@ import ActionArea from './ActionArea';
 import BearingGraph from './BearingGraph';
 import EditStamdata from './EditStamdata';
 import PejlingMeasurements from './PejlingMeasurements';
+import Tilsyn from './tilsyn/Tilsyn';
 
 export default function Station({ts_id, stamdata}) {
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
@@ -32,14 +33,6 @@ export default function Station({ts_id, stamdata}) {
     measurement: 0,
     useforcorrection: 0,
     comment: '',
-  });
-
-  const [serviceData, setServiceData, changeServiceData, resetServiceData] = useFormData({
-    gid: -1,
-    dato: moment(),
-    batteriskift: false,
-    tilsyn: false,
-    kommentar: '',
   });
 
   let params = useParams();
@@ -98,20 +91,6 @@ export default function Station({ts_id, stamdata}) {
       }),
     enabled: ts_id !== -1 && ts_id !== null,
     initialData: [],
-  });
-
-  const {data: services} = useQuery({
-    queryKey: ['service', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
-      return data;
-    },
-    select: (data) =>
-      data.map((m) => {
-        return {...m, dato: moment(m.dato)};
-      }),
-    enabled: ts_id !== -1 && ts_id !== null,
-    // initialData: [],
   });
 
   useEffect(() => {
@@ -197,89 +176,27 @@ export default function Station({ts_id, stamdata}) {
     setPageToShow(StationPages.PEJLING);
   };
 
-  const serviceMutate = useMutation({
-    mutationFn: (data) => {
-      if (data.gid === -1) {
-        return apiClient.post(`/sensor_field/station/service/${ts_id}`, data);
-      } else {
-        return apiClient.put(`/sensor_field/station/service/${ts_id}/${data.gid}`, data);
-      }
-    },
-  });
-
-  const handleServiceSubmit = () => {
-    // setFormToShow("ADDTILSYN");
-    const userId = sessionStorage.getItem('user');
-    const payload = {
-      ...serviceData,
-      batteriskift: serviceData.batteriskift.toString(),
-      tilsyn: serviceData.tilsyn.toString(),
-      userid: userId,
-      stationid: ts_id,
-    };
-
-    payload.dato = moment(payload.dato).toISOString();
-
-    serviceMutate.mutate(payload, {
-      onSuccess: () => {
-        resetServiceData();
-        setShowForm(null);
-        toast.success('Tilsyn gemt');
-        queryClient.invalidateQueries({
-          queryKey: ['service', ts_id],
-        });
-      },
-      onError: (error) => {
-        if (error.response.data.detail.includes('No unit')) {
-          toast.error('Der er ingen enhed tilknyttet på denne dato');
-        } else {
-          toast.error('Der skete en fejl');
-        }
-      },
-    });
-  };
-
   // Regex to find matches on systemx._13, systemx._144, systemx._1423 etc.
 
-  const handleEdit = (type) => {
-    if (type === 'service') {
-      return (data) => {
-        data.dato = data.dato.replace(' ', 'T').substr(0, 19);
-        setServiceData(data);
-        setShowForm(true);
-      };
-    } else {
-      return (data) => {
-        data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-        data.useforcorrection = data.useforcorrection.toString();
-        setPejlingData(data); // Fill form data on Edit
-        setShowForm(true);
-      };
-    }
+  const handleEdit = () => {
+    return (data) => {
+      data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
+      data.useforcorrection = data.useforcorrection.toString();
+      setPejlingData(data); // Fill form data on Edit
+      setShowForm(true);
+    };
   };
 
-  const handleDelete = (type) => {
-    if (type === 'service') {
-      return (gid) => {
-        apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then(() => {
-          queryClient.invalidateQueries({
-            queryKey: ['service', ts_id],
-          });
-          resetServiceData();
-          toast.success('Tilsyn slettet');
+  const handleDelete = () => {
+    return (gid) => {
+      apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then(() => {
+        queryClient.invalidateQueries({
+          queryKey: ['measurements', ts_id],
         });
-      };
-    } else {
-      return (gid) => {
-        apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then(() => {
-          queryClient.invalidateQueries({
-            queryKey: ['measurements', ts_id],
-          });
-          resetPejlingData();
-          toast.success('Kontrolmåling slettet');
-        });
-      };
-    }
+        resetPejlingData();
+        toast.success('Kontrolmåling slettet');
+      });
+    };
   };
 
   const changeActiveImageData = (field, value) => {
@@ -329,7 +246,7 @@ export default function Station({ts_id, stamdata}) {
     setPageToShow(pageToShow);
     if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
     resetPejlingData();
-    resetServiceData();
+    // resetServiceData();
     setShowForm(null);
   }, [ts_id]);
 
@@ -399,39 +316,18 @@ export default function Station({ts_id, stamdata}) {
             />
           </FabWrapper>
         )}
-        <>
-          {pageToShow === StationPages.TILSYN && showForm === true && (
-            <TilsynForm
-              formData={serviceData}
-              changeFormData={changeServiceData}
-              handleSubmit={handleServiceSubmit}
-              cancel={() => {
-                resetServiceData();
-                setShowForm(null);
-              }}
-            />
-          )}
-          {pageToShow === StationPages.TILSYN && (
-            <FabWrapper
-              icon={<PlaylistAddRounded />}
-              text={'Tilføj ' + StationPages.TILSYN}
-              onClick={() => {
-                setShowForm(true);
-              }}
-              visible={
-                pageToShow === StationPages.TILSYN && showForm === null ? 'visible' : 'hidden'
-              }
-            >
-              <TilsynTable
-                services={services}
-                handleEdit={handleEdit('service')}
-                handleDelete={handleDelete('service')}
-                canEdit={canEdit}
-              />
-            </FabWrapper>
-          )}
-        </>
-
+        {pageToShow === StationPages.TILSYN && (
+          <FabWrapper
+            icon={<PlaylistAddRounded />}
+            text={'Tilføj ' + StationPages.TILSYN}
+            onClick={() => {
+              setShowForm(true);
+            }}
+            visible={pageToShow === StationPages.TILSYN && showForm === null ? 'visible' : 'hidden'}
+          >
+            <Tilsyn ts_id={ts_id} showForm={showForm} setShowForm={setShowForm} canEdit={canEdit} />
+          </FabWrapper>
+        )}
         {pageToShow === StationPages.BILLEDER && (
           <Box>
             <FabWrapper

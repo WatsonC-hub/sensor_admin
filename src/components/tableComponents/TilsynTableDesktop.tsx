@@ -6,28 +6,19 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
+import {TilsynItem} from '~/types';
 
 import RenderInternalActions from './RenderInternalActions';
 
-export type Tilsyn = {
-  batteriskift: boolean;
-  dato: moment.Moment;
-  gid: number;
-  kommentar: string;
-  pejling?: string;
-  terminal_id: string;
-  tilsyn: boolean;
-  userid: number;
-};
-
 interface Props {
-  data: Tilsyn[];
-  handleEdit: (tilsyn: Tilsyn) => void;
+  data: TilsynItem[];
+  handleEdit: (tilsyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -41,12 +32,12 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     setMpId(id);
     setDialogOpen(true);
   };
-  const columns = useMemo<MRT_ColumnDef<Tilsyn>[]>(
+  const columns = useMemo<MRT_ColumnDef<TilsynItem>[]>(
     () => [
       {
         header: 'Dato',
         id: 'dato',
-        accessorFn: (row) => row.dato.format('DD-MM-YYYY HH:mm'),
+        accessorFn: (row) => convertDateWithTimeStamp(row.dato),
         sortingFn: (a, b) => (a.original.dato > b.original.dato ? 1 : -1),
       },
       {
@@ -87,8 +78,8 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     ],
     []
   );
-  const [tableState, reset] = useStatefullTableAtom<Tilsyn>('TilsynTableState');
-  const options: Partial<MRT_TableOptions<Tilsyn>> = {
+  const [tableState, reset] = useStatefullTableAtom<TilsynItem>('TilsynTableState');
+  const options: Partial<MRT_TableOptions<TilsynItem>> = {
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
@@ -105,7 +96,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     },
   };
 
-  const table = useTable<Tilsyn>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<TilsynItem>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>

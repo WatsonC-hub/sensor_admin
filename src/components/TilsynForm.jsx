@@ -3,132 +3,142 @@ import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import React, {useState} from 'react';
+import moment from 'moment';
+import {Controller, FormProvider} from 'react-hook-form';
 
 import Button from '~/components/Button';
 
 import OwnDatePicker from './OwnDatePicker';
 
-export default function TilsynForm({formData, changeFormData, handleSubmit, cancel}) {
-  const [disableSubmit, setDisableSubmit] = useState(false);
-
-  const handleClickSubmit = () => {
-    setDisableSubmit(true);
-    setTimeout(() => {
-      setDisableSubmit(false);
-    }, 2500);
-  };
-
-  const handleCommentChange = (e) => {
-    changeFormData('kommentar', e.target.value);
-  };
-
-  const handleDateChange = (date) => {
-    changeFormData('dato', date);
-  };
-
-  const handleChangeBattery = (e) => {
-    changeFormData('batteriskift', e.target.checked);
-  };
-
-  const handleChangeService = (e) => {
-    changeFormData('tilsyn', e.target.checked);
-  };
-
+export default function TilsynForm({handleSubmit, cancel, formMethods}) {
   return (
-    <Card
-      style={{marginBottom: 25}}
-      sx={{
-        width: {xs: '100%', sm: '60%'},
-        textAlign: 'center',
-        justifyContent: 'center',
-        alignContent: 'center',
-        alignSelf: 'center',
-      }}
-    >
-      <CardContent>
-        <Typography gutterBottom variant="h5" component="h2">
-          {formData.gid !== -1 ? 'Opdater tilsyn' : 'Indberet tilsyn'}
-        </Typography>
-        <Grid container spacing={3} alignItems="center" justifyContent="center">
-          <Grid item xs={12} sm={7}>
-            <OwnDatePicker
-              label={'Dato'}
-              value={formData.dato}
-              onChange={(date) => handleDateChange(date)}
-            />
-          </Grid>
-          <Grid item xs={12} sm={7}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.batteriskift}
-                  onChange={handleChangeBattery}
-                  name="checkedBattery"
-                  color="primary"
-                />
-              }
-              label={
-                <Box display="flex">
-                  <BatteryAlertRounded sx={{color: 'grey.700'}} />
-                  <Typography alignSelf="center">Batteriskift</Typography>
-                </Box>
-              }
-            />
-
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.tilsyn}
-                  onChange={handleChangeService}
-                  name="checkedService"
-                  color="primary"
-                />
-              }
-              label={
-                <Box display="flex" gap={1}>
-                  <RemoveRedEyeRounded sx={{color: 'grey.700'}} />
-                  <Typography alignSelf="center">Tilsyn</Typography>
-                </Box>
-              }
-            />
-          </Grid>
-          <Grid item xs={12} sm={10}>
-            <TextField
-              label={
-                <Typography variant="h6" component="h3">
-                  Kommentar
-                </Typography>
-              }
-              value={formData.kommentar}
-              variant="outlined"
-              multiline
-              rows={4}
-              InputLabelProps={{shrink: true}}
-              fullWidth
-              onChange={handleCommentChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-              <Button bttype="tertiary" onClick={cancel}>
-                Annuller
-              </Button>
-              <Button
-                bttype="primary"
-                onClick={() => {
-                  handleClickSubmit();
-                  handleSubmit();
+    <FormProvider {...formMethods}>
+      <Card
+        style={{marginBottom: 25}}
+        sx={{
+          width: {xs: '100%', sm: '60%'},
+          textAlign: 'center',
+          justifyContent: 'center',
+          alignContent: 'center',
+          alignSelf: 'center',
+        }}
+      >
+        <CardContent>
+          <Typography gutterBottom variant="h5" component="h2">
+            {formMethods.getValues('gid') !== -1 ? 'Opdater tilsyn' : 'Indberet tilsyn'}
+          </Typography>
+          <Grid container spacing={3} alignItems="center" justifyContent="center">
+            <Grid item xs={12} sm={7}>
+              <Controller
+                control={formMethods.control}
+                defaultValue={moment().format('YYYY-MM-DDTHH:mm')}
+                name="dato"
+                rules={{required: true}}
+                render={({field}) => {
+                  return (
+                    <OwnDatePicker
+                      label="Dato"
+                      value={field.value}
+                      inputRef={field.ref}
+                      onChange={(e) => {
+                        field.onChange(moment(e).format('YYYY-MM-DDTHH:mm'));
+                        formMethods.setValue('dato', moment(e).format('YYYY-MM-DDTHH:mm'));
+                      }}
+                    />
+                  );
                 }}
-                disabled={disableSubmit}
-                startIcon={<SaveIcon />}
-              >
-                Gem
-              </Button>
-            </Box>
+              />
+            </Grid>
+            <Grid item xs={12} sm={7}>
+              <Controller
+                control={formMethods.control}
+                name="batteriskift"
+                rules={{required: false}}
+                render={({field}) => {
+                  return (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={field.value}
+                          onChange={(checked) => field.onChange(checked)}
+                          name="checkedBattery"
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box display="flex">
+                          <BatteryAlertRounded sx={{color: 'grey.700'}} />
+                          <Typography alignSelf="center">Batteriskift</Typography>
+                        </Box>
+                      }
+                    />
+                  );
+                }}
+              />
+              <Controller
+                control={formMethods.control}
+                name="tilsyn"
+                rules={{required: false}}
+                render={({field}) => {
+                  return (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={field.value}
+                          onChange={(checked) => field.onChange(checked)}
+                          name="checkedService"
+                          color="primary"
+                        />
+                      }
+                      label={
+                        <Box display="flex" gap={1}>
+                          <RemoveRedEyeRounded sx={{color: 'grey.700'}} />
+                          <Typography alignSelf="center">Tilsyn</Typography>
+                        </Box>
+                      }
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={10}>
+              <Controller
+                control={formMethods.control}
+                name="kommentar"
+                rules={{required: false}}
+                render={({field}) => {
+                  return (
+                    <TextField
+                      label={
+                        <Typography variant="h6" component="h3">
+                          Kommentar
+                        </Typography>
+                      }
+                      value={field.value}
+                      variant="outlined"
+                      multiline
+                      rows={4}
+                      InputLabelProps={{shrink: true}}
+                      fullWidth
+                      onChange={field.onChange}
+                    />
+                  );
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+                <Button bttype="tertiary" onClick={cancel}>
+                  Annuller
+                </Button>
+                <Button bttype="primary" onClick={handleSubmit} startIcon={<SaveIcon />}>
+                  Gem
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </FormProvider>
   );
 }

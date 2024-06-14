@@ -1,5 +1,5 @@
 import moment from 'moment';
-import * as z from 'zod';
+import {z} from 'zod';
 
 const metadataBaseSchema = z.object({
   location: z.object({
@@ -60,6 +60,15 @@ const metadataPutSchema = metadataBaseSchema.extend({
   }),
 });
 
+const tilsynMetadata = z.object({
+  batteriskift: z.boolean().optional(),
+  dato: z.string().transform((value) => moment(value).format('YYYY-MM-DDTHH:mm')),
+  gid: z.number(),
+  kommentar: z.string().optional(),
+  tilsyn: z.boolean().optional(),
+  user_id: z.string().optional(),
+});
+
 // const metadataSchema = z.object({
 //   location: z.object({
 //     loc_id: z.number().optional(),
@@ -98,4 +107,4 @@ const metadataPutSchema = metadataBaseSchema.extend({
 //     .optional(),
 // });
 
-export {metadataPutSchema, metadataSchema};
+export {metadataPutSchema, metadataSchema, tilsynMetadata};

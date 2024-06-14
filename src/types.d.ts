@@ -1,3 +1,16 @@
+import {
+  ZodBoolean,
+  ZodDate,
+  ZodDefault,
+  ZodNullable,
+  ZodNumber,
+  ZodOptional,
+  ZodOptionalDef,
+  ZodRawShape,
+  ZodString,
+  ZodTypeAny,
+} from 'zod';
+
 export interface Image {
   gid: number;
   loc_id?: number;
@@ -29,4 +42,22 @@ export type TableData = {
   x: number;
   y: number;
   notification_id: number;
+};
+
+export type TilsynItem = {
+  batteriskift?: boolean;
+  dato: string;
+  gid: number;
+  kommentar?: string | undefined;
+  tilsyn?: boolean;
+  user_id?: string | null;
+};
+
+export type ZodTilsynItem = {
+  batteriskift?: ZodOptional<ZodBoolean>;
+  dato: ZodDate;
+  gid: ZodNumber;
+  kommentar?: ZodString;
+  tilsyn?: ZodOptional<ZodBoolean>;
+  user_id?: ZodNullable<ZodString>;
 };

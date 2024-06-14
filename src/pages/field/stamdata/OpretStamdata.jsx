@@ -297,6 +297,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
       },
     };
 
+    console.log(formMethods.getValues());
+
     if (getValues()?.timeseries.tstype_id === 1) {
       form['watlevmp'] = {
         startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),

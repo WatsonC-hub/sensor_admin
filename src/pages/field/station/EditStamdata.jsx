@@ -167,7 +167,7 @@ const UdstyrReplace = ({stationId}) => {
               className="swiper-no-swiping"
             >
               {data?.map((item) => {
-                let endDate =
+                const endDate =
                   moment(new Date()) < moment(item.slutdato)
                     ? 'nu'
                     : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
@@ -280,6 +280,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       },
     }).data,
   });
+
+  console.log(formMethods.getValues());
 
   const resetFormData = () => {
     formMethods.reset(

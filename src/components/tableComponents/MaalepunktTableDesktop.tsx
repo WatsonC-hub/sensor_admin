@@ -5,7 +5,11 @@ import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
-import {checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {
+  checkEndDateIsUnset,
+  convertDateWithTimeStamp,
+  limitDecimalNumbers,
+} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -51,11 +55,9 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         header: 'Dato',
         id: 'startdate',
         accessorFn: (row) =>
-          moment(row.startdate).format('DD-MM-YYYY HH:mm') +
+          convertDateWithTimeStamp(moment(row.startdate)) +
           ' - ' +
-          (checkEndDateIsUnset(row.enddate)
-            ? 'Nu'
-            : moment(row.enddate).format('DD-MM-YYYY HH:mm')),
+          (checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDateWithTimeStamp(moment(row.enddate))),
         sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
       },

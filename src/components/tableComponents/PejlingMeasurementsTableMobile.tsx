@@ -5,6 +5,7 @@ import {
   MRT_ExpandButton,
   MaterialReactTable,
 } from 'material-react-table';
+import moment from 'moment';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -74,7 +75,7 @@ export default function PejlingMeasurementsTableMobile({
                 {limitDecimalNumbers(row.original.measurement)} {unit}
               </Typography>
               <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
-                {convertDate(row.original.timeofmeas)}
+                {convertDate(moment(row.original.timeofmeas))}
               </Typography>
             </Box>
 
@@ -116,7 +117,7 @@ export default function PejlingMeasurementsTableMobile({
             : 'Kontrol'}
         </Typography>
         <Typography>
-          <b>Dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
+          <b>Dato: </b> {convertDateWithTimeStamp(moment(row.original.timeofmeas))}
         </Typography>
       </Box>
     ),
