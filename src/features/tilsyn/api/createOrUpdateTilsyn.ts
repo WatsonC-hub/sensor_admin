@@ -31,13 +31,14 @@ export const createOrUpdateTilsyn = ({
 };
 
 type UseCreateOrUpdateTilsynOptions = {
+  ts_id: number;
   mutationConfig?: any;
 };
 
-export const useCreateOrUpdateTilsyn = (
-  ts_id: number,
-  {mutationConfig}: UseCreateOrUpdateTilsynOptions = {}
-) => {
+export const useCreateOrUpdateTilsyn = ({
+  ts_id,
+  mutationConfig,
+}: UseCreateOrUpdateTilsynOptions) => {
   const queryClient = useQueryClient();
 
   const {onSuccess, ...restConfig} = mutationConfig || {};

@@ -9,10 +9,11 @@ export const deleteTilsyn = ({ts_id, gid}: {ts_id: number; gid: string}) => {
 };
 
 type UseDeleteTilsynOptions = {
+  ts_id: number;
   mutationConfig?: any;
 };
 
-export const useDeleteTilsyn = (ts_id: number, {mutationConfig}: UseDeleteTilsynOptions = {}) => {
+export const useDeleteTilsyn = ({ts_id, mutationConfig}: UseDeleteTilsynOptions) => {
   const queryClient = useQueryClient();
 
   const {onSuccess, ...restConfig} = mutationConfig || {};

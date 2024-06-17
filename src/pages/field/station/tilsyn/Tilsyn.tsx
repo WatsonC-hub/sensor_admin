@@ -30,20 +30,17 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
   };
 
   const formMethods = useForm({
-    // resolver: zodResolver(tilsynMetadata),
     defaultValues: {
       ...initialData,
     },
   });
 
-  const createTilsynMutation = useCreateOrUpdateTilsyn(ts_id, {
+  const createTilsynMutation = useCreateOrUpdateTilsyn({
+    ts_id,
     mutationConfig: {
       onSuccess: () => {
         setShowForm(null);
         toast.success('Tilsyn gemt');
-        queryClient.invalidateQueries({
-          queryKey: ['service', ts_id],
-        });
         formMethods.reset(initialData);
       },
       onError: (error: Error) => {
@@ -53,7 +50,8 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
     },
   });
 
-  const deleteTilsynMutation = useDeleteTilsyn(ts_id, {
+  const deleteTilsynMutation = useDeleteTilsyn({
+    ts_id,
     mutationConfig: {
       onSuccess: () => {
         toast.success('Tilsyn slettet');
@@ -67,7 +65,6 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
   };
 
   const handleEdit = (data: TilsynItem) => {
-    console.log(data);
     formMethods.reset(data, {keepDirty: true});
     setShowForm(true);
   };
@@ -77,7 +74,6 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
   };
 
   const resetFormData = () => {
-    console.log('values', formMethods.getValues());
     formMethods.reset(initialData);
     setShowForm(null);
   };
