@@ -55,7 +55,6 @@ export default function LocationForm({mode, disable}) {
           label="Navn"
           required
           fullWidth
-          autoFocus
           placeholder="f.eks. Engsø"
           sx={{
             mb: 2,
