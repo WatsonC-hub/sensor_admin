@@ -1,16 +1,12 @@
 import {Box} from '@mui/material';
-// import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
-import {apiClient} from '~/apiClient';
-import {useCreateOrUpdateTilsyn} from '~/features/tilsyn/api/createOrUpdateTilsyn';
-import {useDeleteTilsyn} from '~/features/tilsyn/api/deleteTilsyn';
+import {useTilsyn2} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
-import {queryClient} from '~/queryClient';
 import {TilsynItem} from '~/types';
 
 type Props = {
@@ -27,6 +23,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
     batteriskift: false,
     kommentar: '',
     tilsyn: false,
+    user_id: null,
   };
 
   const formMethods = useForm({
@@ -35,33 +32,35 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
     },
   });
 
-  const createTilsynMutation = useCreateOrUpdateTilsyn({
-    ts_id,
-    mutationConfig: {
+  const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn2();
+
+  const handleServiceSubmit = (values: TilsynItem) => {
+    const tilsyn = {...values, user_id: sessionStorage.getItem('user')};
+
+    const mutationOptions = {
       onSuccess: () => {
-        setShowForm(null);
         toast.success('Tilsyn gemt');
-        formMethods.reset(initialData);
+        resetFormData();
       },
       onError: (error: Error) => {
         console.log(error);
         toast.error('Der skete en fejl');
       },
-    },
-  });
+    };
 
-  const deleteTilsynMutation = useDeleteTilsyn({
-    ts_id,
-    mutationConfig: {
-      onSuccess: () => {
-        toast.success('Tilsyn slettet');
-      },
-    },
-  });
-
-  const handleServiceSubmit = (values: TilsynItem) => {
-    const tilsyn = {...values, user_id: sessionStorage.getItem('user')};
-    createTilsynMutation.mutate({ts_id, data: tilsyn});
+    if (tilsyn.gid === -1) {
+      const payload = {
+        data: tilsyn,
+        path: `${ts_id}`,
+      };
+      postTilsyn.mutate(payload, mutationOptions);
+    } else {
+      const payload = {
+        data: tilsyn,
+        path: `${ts_id}/${tilsyn.gid}`,
+      };
+      putTilsyn.mutate(payload, mutationOptions);
+    }
   };
 
   const handleEdit = (data: TilsynItem) => {
@@ -70,7 +69,14 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
   };
 
   const handleDelete = (gid: number | undefined) => {
-    deleteTilsynMutation.mutate({ts_id, gid});
+    const payload = {
+      path: `${ts_id}/${gid}`,
+    };
+    delTilsyn.mutate(payload, {
+      onSuccess: () => {
+        resetFormData();
+      },
+    });
   };
 
   const resetFormData = () => {
@@ -94,12 +100,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
             formMethods={formMethods}
           />
         )}
-        <TilsynTable
-          ts_id={ts_id}
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          canEdit={canEdit}
-        />
+        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
       </Box>
     </FormProvider>
   );

@@ -34,19 +34,19 @@ export type TableData = {
 };
 
 export type TilsynItem = {
-  batteriskift?: boolean;
+  batteriskift: boolean;
   dato: string;
   gid: number;
   kommentar?: string | undefined;
-  tilsyn?: boolean;
-  user_id?: string | null;
+  tilsyn: boolean;
+  user_id: string | null;
 };
 
 export type ZodTilsynItem = {
-  batteriskift?: ZodOptional<ZodBoolean>;
+  batteriskift: ZodBoolean;
   dato: ZodDate;
   gid: ZodNumber;
   kommentar?: ZodString;
-  tilsyn?: ZodOptional<ZodBoolean>;
-  user_id?: ZodNullable<ZodString>;
+  tilsyn: ZodBoolean;
+  user_id: ZodNullable<ZodString>;
 };
