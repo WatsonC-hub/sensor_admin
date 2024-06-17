@@ -20,7 +20,6 @@ export default function AddLocationForm({locationDialogOpen, setLocationDialogOp
   const handleClose = () => {
     formMethods.reset({
       location: {
-        loc_id: '',
         loc_name: '',
         mainloc: '',
         subloc: '',
