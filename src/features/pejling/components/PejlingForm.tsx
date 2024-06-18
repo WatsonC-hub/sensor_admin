@@ -64,7 +64,7 @@ export default function PejlingForm({
 
   const [notPossible, setNotPossible] = useState(false);
   const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
-  const measurement = formMethods.watch('measurement', 0);
+  const measurement = formMethods.watch('measurement');
 
   useEffect(() => {
     if (mpData !== undefined && mpData.length > 0) {
@@ -180,7 +180,6 @@ export default function PejlingForm({
                 <Controller
                   control={formMethods.control}
                   name="measurement"
-                  defaultValue={0}
                   rules={{required: false}}
                   render={({field}) => {
                     return (
@@ -199,10 +198,9 @@ export default function PejlingForm({
                           ),
                         }}
                         fullWidth
-                        value={field.value}
                         disabled={notPossible || (isWaterlevel && currentMP.elevation === null)}
                         onChange={(e) => {
-                          field.onChange(e.target.value);
+                          field.onChange(Number(e.target.value));
                         }}
                       />
                     );
