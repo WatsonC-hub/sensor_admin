@@ -47,7 +47,7 @@ const MinimalSelect = ({locid, stationList}) => {
   return (
     <Select
       MenuProps={menuProps}
-      value={stationList ? parseInt(params.ts_id) : ''}
+      value={stationList && params.ts_id ? parseInt(params.ts_id) : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}
