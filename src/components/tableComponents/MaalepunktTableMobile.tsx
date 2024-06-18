@@ -5,7 +5,6 @@ import {
   MRT_TableOptions,
   MaterialReactTable,
 } from 'material-react-table';
-import moment from 'moment';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -20,16 +19,7 @@ import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
-
-export type Maalepunkt = {
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  mp_description: string;
-  gid: number;
-  ts_id: number;
-  userid: string;
-};
+import {Maalepunkt} from '~/types';
 
 interface Props {
   data: Maalepunkt[] | undefined;
@@ -78,12 +68,10 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
               </Typography>
             </Box>
             <Typography margin={'0 auto'} alignSelf={'center'} variant="caption">
-              <b>Start: </b> {convertDate(moment(row.original.startdate))}
+              <b>Start: </b> {convertDate(row.original.startdate)}
               <br />
               <b>Slut: </b>
-              {checkEndDateIsUnset(row.original.enddate)
-                ? 'Nu'
-                : convertDate(moment(row.original.enddate))}
+              {checkEndDateIsUnset(row.original.enddate) ? 'Nu' : convertDate(row.original.enddate)}
             </Typography>
             <Box marginLeft={'auto'}>
               <RenderActions
@@ -107,13 +95,13 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
-          <b>Start dato: </b> {convertDateWithTimeStamp(moment(row.original.startdate))}
+          <b>Start dato: </b> {convertDateWithTimeStamp(row.original.startdate)}
         </Typography>
         <Typography>
           <b>Slut dato: </b>
           {checkEndDateIsUnset(row.original.enddate)
             ? 'Nu'
-            : convertDateWithTimeStamp(moment(row.original.enddate))}
+            : convertDateWithTimeStamp(row.original.enddate)}
         </Typography>
         <Typography>
           <b>Beskrivelse:</b> {row.original.mp_description}

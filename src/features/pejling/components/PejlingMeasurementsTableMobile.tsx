@@ -5,7 +5,6 @@ import {
   MRT_ExpandButton,
   MaterialReactTable,
 } from 'material-react-table';
-import moment from 'moment';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -15,21 +14,11 @@ import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
-
-export type Kontrol = {
-  comment: string;
-  gid: number;
-  measurement: number;
-  timeofmeas: string;
-  ts_id: number;
-  updated_at: string;
-  useforcorrection: number;
-  userid: string;
-};
+import {PejlingItem} from '~/types';
 
 interface Props {
-  data: Kontrol[] | undefined;
-  handleEdit: (kontrol: Kontrol) => void;
+  data: PejlingItem[] | undefined;
+  handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -51,7 +40,7 @@ export default function PejlingMeasurementsTableMobile({
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Kontrol>[]>(
+  const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -75,7 +64,7 @@ export default function PejlingMeasurementsTableMobile({
                 {limitDecimalNumbers(row.original.measurement)} {unit}
               </Typography>
               <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
-                {convertDate(moment(row.original.timeofmeas))}
+                {convertDate(row.original.timeofmeas)}
               </Typography>
             </Box>
 
@@ -102,7 +91,7 @@ export default function PejlingMeasurementsTableMobile({
     [unit]
   );
 
-  const options: Partial<MRT_TableOptions<Kontrol>> = {
+  const options: Partial<MRT_TableOptions<PejlingItem>> = {
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         {row.original.comment && (
@@ -117,13 +106,13 @@ export default function PejlingMeasurementsTableMobile({
             : 'Kontrol'}
         </Typography>
         <Typography>
-          <b>Dato: </b> {convertDateWithTimeStamp(moment(row.original.timeofmeas))}
+          <b>Dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
         </Typography>
       </Box>
     ),
   };
 
-  const table = useTable<Kontrol>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useTable<PejlingItem>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
     <Box sx={setTableBoxStyle(320)}>

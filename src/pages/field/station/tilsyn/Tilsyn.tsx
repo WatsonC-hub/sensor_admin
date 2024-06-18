@@ -4,7 +4,7 @@ import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
-import {useTilsyn2} from '~/features/tilsyn/api/useTilsyn';
+import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {TilsynItem} from '~/types';
@@ -32,7 +32,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
     },
   });
 
-  const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn2();
+  const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn();
 
   const handleServiceSubmit = (values: TilsynItem) => {
     const tilsyn = {...values, user_id: sessionStorage.getItem('user')};

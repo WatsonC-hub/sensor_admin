@@ -4,7 +4,7 @@ import React from 'react';
 
 import {TilsynItem} from '~/types';
 
-import {useTilsyn2} from '../api/useTilsyn';
+import {useTilsyn} from '../api/useTilsyn';
 
 import TilsynTableDesktop from './TilsynTableDesktop';
 import TilsynTableMobile from './TilsynTableMobile';
@@ -21,7 +21,7 @@ export default function TilsynTable({handleEdit, handleDelete, canEdit}: TilsynT
 
   const {
     get: {data: tilsynList},
-  } = useTilsyn2();
+  } = useTilsyn();
 
   if (tilsynList === undefined) return null;
 

@@ -1,6 +1,5 @@
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
-import moment from 'moment';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -16,18 +15,9 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
+import {Maalepunkt} from '~/types';
 
 import RenderInternalActions from './RenderInternalActions';
-
-export type Maalepunkt = {
-  startdate: moment.Moment;
-  enddate: string;
-  elevation: number;
-  mp_description: string;
-  gid: number;
-  ts_id: number;
-  userid: string;
-};
 
 interface Props {
   data: Maalepunkt[] | undefined;
@@ -55,9 +45,9 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         header: 'Dato',
         id: 'startdate',
         accessorFn: (row) =>
-          convertDateWithTimeStamp(moment(row.startdate)) +
+          convertDateWithTimeStamp(row.startdate) +
           ' - ' +
-          (checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDateWithTimeStamp(moment(row.enddate))),
+          (checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDateWithTimeStamp(row.enddate)),
         sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
       },

@@ -1,50 +1,30 @@
 import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {toast} from 'react-toastify';
 
-import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
-import PejlingForm from '~/components/PejlingForm';
+import SaveImageDialog from '~/components/SaveImageDialog';
+import {usePejling} from '~/features/api/usePejling';
 import {StationPages} from '~/helpers/EnumHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import useFormData from '~/hooks/useFormData';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import ActionArea from '~/pages/field/station/ActionArea';
+import BearingGraph from '~/pages/field/station/BearingGraph';
+import EditStamdata from '~/pages/field/station/EditStamdata';
+import Pejling from '~/pages/field/station/pejling/Pejling';
+import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {stamdataStore} from '~/state/store';
 
-import SaveImageDialog from '../../../components/SaveImageDialog';
-
-import ActionArea from './ActionArea';
-import BearingGraph from './BearingGraph';
-import EditStamdata from './EditStamdata';
-import PejlingMeasurements from './PejlingMeasurements';
-import Tilsyn from './tilsyn/Tilsyn';
-
 export default function Station({ts_id, stamdata}) {
-  const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
-    gid: -1,
-    timeofmeas: moment(),
-    measurement: 0,
-    useforcorrection: 0,
-    comment: '',
-  });
-
   let params = useParams();
-
-  const {
-    get: {data: watlevmp},
-  } = useMaalepunkt();
-
   const [showForm, setShowForm] = useSearchParam('showForm');
-
   const [pageToShow, setPageToShow] = useSearchParam('page');
 
   const [dynamic, setDynamic] = useState([]);
-  const [control, setcontrol] = useState([]);
+  const [control, setControl] = useState([]);
   const [canEdit] = useState(true);
   const fileInputRef = useRef(null);
   const [dataUri, setdataUri] = useState('');
@@ -58,7 +38,6 @@ export default function Station({ts_id, stamdata}) {
   });
 
   const store = stamdataStore();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (stamdata) {
@@ -73,46 +52,14 @@ export default function Station({ts_id, stamdata}) {
     };
   }, [stamdata]);
 
-  const isWaterlevel = stamdata ? stamdata?.tstype_id === 1 : true;
-  const isFlow = stamdata ? stamdata?.tstype_id === 2 : false;
+  const {
+    get: {data: watlevmp},
+  } = useMaalepunkt();
+  const {
+    get: {data: measurements},
+  } = usePejling();
+
   const isCalculated = stamdata ? stamdata?.calculated : false;
-
-  const {data: measurements} = useQuery({
-    queryKey: ['measurements', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/measurements/${ts_id}`);
-      return data;
-    },
-    select: (data) =>
-      data.map((m) => {
-        return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
-      }),
-    enabled: ts_id !== -1 && ts_id !== null,
-    initialData: [],
-  });
-
-  useEffect(() => {
-    if (store.timeseries.tstype_id && watlevmp?.length > 0) {
-      const elev = watlevmp?.filter((e2) => {
-        return (
-          moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
-          moment(pejlingData.timeofmeas) < moment(e2.enddate)
-        );
-      })[0]?.elevation;
-
-      if (elev) {
-        let dynamicDate = moment(pejlingData.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
-        let dynamicMeas = elev - pejlingData.measurement;
-        setDynamic([dynamicDate, dynamicMeas]);
-      } else {
-        setDynamic([]);
-      }
-    } else if (store.timeseries.tstype_id !== 1) {
-      let dynamicDate = moment(pejlingData.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
-      let dynamicMeas = pejlingData.measurement;
-      setDynamic([dynamicDate, dynamicMeas]);
-    }
-  }, [pejlingData, watlevmp, store.timeseries.tstype_id]);
 
   useEffect(() => {
     var ctrls = [];
@@ -131,71 +78,8 @@ export default function Station({ts_id, stamdata}) {
         return {...elem, waterlevel: elem.measurement};
       });
     }
-    setcontrol(ctrls);
+    setControl(ctrls);
   }, [watlevmp, measurements]);
-
-  const openAddMP = () => {
-    setShowForm(true);
-  };
-
-  const pejlingMutate = useMutation({
-    mutationKey: 'pejling',
-    mutationFn: (data) => {
-      if (data.gid === -1) {
-        return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);
-      } else {
-        return apiClient.put(
-          `/sensor_field/station/measurements/${data.stationid}/${data.gid}`,
-          data
-        );
-      }
-    },
-    onSuccess: () => {
-      resetPejlingData();
-      setShowForm(null);
-      toast.success('Kontrolmåling gemt');
-      queryClient.invalidateQueries({
-        queryKey: ['measurements', ts_id],
-      });
-    },
-    onError: () => {
-      toast.error('Der skete en fejl');
-    },
-  });
-
-  const handlePejlingSubmit = () => {
-    const payload = {
-      ...pejlingData,
-      isWaterlevel: isWaterlevel,
-      stationid: ts_id,
-    };
-    payload.timeofmeas = moment(payload.timeofmeas).toISOString();
-    pejlingMutate.mutate(payload);
-    setPageToShow(StationPages.PEJLING);
-  };
-
-  // Regex to find matches on systemx._13, systemx._144, systemx._1423 etc.
-
-  const handleEdit = () => {
-    return (data) => {
-      data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-      data.useforcorrection = data.useforcorrection.toString();
-      setPejlingData(data); // Fill form data on Edit
-      setShowForm(true);
-    };
-  };
-
-  const handleDelete = () => {
-    return (gid) => {
-      apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then(() => {
-        queryClient.invalidateQueries({
-          queryKey: ['measurements', ts_id],
-        });
-        resetPejlingData();
-        toast.success('Kontrolmåling slettet');
-      });
-    };
-  };
 
   const changeActiveImageData = (field, value) => {
     setActiveImage({
@@ -243,8 +127,6 @@ export default function Station({ts_id, stamdata}) {
   useEffect(() => {
     setPageToShow(pageToShow);
     if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
-    resetPejlingData();
-    // resetServiceData();
     setShowForm(null);
   }, [ts_id]);
 
@@ -270,23 +152,6 @@ export default function Station({ts_id, stamdata}) {
           alignSelf: 'center',
         }}
       >
-        {pageToShow === StationPages.PEJLING && showForm === true && (
-          <PejlingForm
-            stationId={ts_id}
-            formData={pejlingData}
-            changeFormData={changePejlingData}
-            handleSubmit={handlePejlingSubmit}
-            openAddMP={openAddMP}
-            resetFormData={() => {
-              resetPejlingData();
-              setShowForm(null);
-            }}
-            canEdit={canEdit}
-            mpData={watlevmp}
-            isWaterlevel={isWaterlevel}
-            isFlow={isFlow}
-          />
-        )}
         {pageToShow === StationPages.STAMDATA && (
           <EditStamdata
             setFormToShow={setShowForm}
@@ -306,11 +171,11 @@ export default function Station({ts_id, stamdata}) {
               pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'
             }
           >
-            <PejlingMeasurements
-              measurements={measurements}
-              handleEdit={handleEdit('pejling')}
-              handleDelete={handleDelete('pejling')}
-              canEdit={canEdit}
+            <Pejling
+              ts_id={ts_id}
+              showForm={showForm}
+              setShowForm={setShowForm}
+              setDynamic={setDynamic}
             />
           </FabWrapper>
         )}
@@ -371,8 +236,6 @@ export default function Station({ts_id, stamdata}) {
         setPageToShow={setPageToShow}
         showForm={showForm}
         setShowForm={setShowForm}
-        canEdit={canEdit}
-        isWaterlevel={isWaterlevel}
         isCalculated={isCalculated}
       />
     </Box>

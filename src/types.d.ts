@@ -1,4 +1,4 @@
-import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodOptional, ZodString} from 'zod';
+import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
 
 export interface Image {
   gid: number;
@@ -49,4 +49,22 @@ export type ZodTilsynItem = {
   kommentar?: ZodString;
   tilsyn: ZodBoolean;
   user_id: ZodNullable<ZodString>;
+};
+
+export type PejlingItem = {
+  comment: string;
+  gid: number;
+  measurement: number;
+  timeofmeas: string;
+  useforcorrection: number;
+};
+
+export type Maalepunkt = {
+  startdate: string;
+  enddate: string;
+  elevation: number;
+  mp_description: string;
+  gid: number;
+  ts_id: number;
+  userid: string;
 };

@@ -5,18 +5,6 @@ import {useCallback, useMemo} from 'react';
 
 import {statefullTableAtomFamily} from '~/state/atoms';
 
-// type StateAndHandlers = {
-//   state: Partial<MRT_TableState<MRT_RowData>>;
-//   onColumnFiltersChange: (state: MRT_ColumnFiltersState) => void;
-//   onColumnVisibilityChange: (state: MRT_TableState<MRT_RowData>['columnVisibility']) => void;
-//   onDensityChange: (state: MRT_TableState<MRT_RowData>['density']) => void;
-//   onGlobalFilterChange: (state: MRT_TableState<MRT_RowData>['globalFilter']) => void;
-//   onShowColumnFiltersChange: (state: MRT_TableState<MRT_RowData>['showColumnFilters']) => void;
-//   onShowGlobalFilterChange: (state: MRT_TableState<MRT_RowData>['showGlobalFilter']) => void;
-//   onSortingChange: (state: MRT_TableState<MRT_RowData>['sorting']) => void;
-//   onPaginationChange: (state: MRT_TableState<MRT_RowData>['pagination']) => void;
-// };
-
 type StateAndHandlers<TData extends MRT_RowData> = Pick<
   MRT_TableOptions<TData>,
   | 'state'

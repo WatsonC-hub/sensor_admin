@@ -60,7 +60,7 @@ export const tilsynDelOptions = {
   },
 };
 
-export const useTilsyn2 = () => {
+export const useTilsyn = () => {
   const ts_id = stamdataStore((store) => store.timeseries.ts_id);
   const get = useQuery({
     queryKey: ['service', ts_id],
