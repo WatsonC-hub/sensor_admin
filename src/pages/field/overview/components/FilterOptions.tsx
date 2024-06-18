@@ -51,7 +51,7 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
             label="Pejles aktivt"
             values={[
               {label: 'Ja', value: true},
-              {label: '-', value: null},
+              {label: '-', value: 'indeterminate'},
               {label: 'Nej', value: false},
             ]}
           />
@@ -80,6 +80,7 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
             label={
               <Typography
                 variant="body1"
+                component="span"
                 sx={{
                   display: 'flex',
                   gap: 1,

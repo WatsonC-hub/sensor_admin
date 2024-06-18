@@ -27,10 +27,12 @@ interface LocItems {
   group: string;
 }
 
+type Inderterminate = boolean | 'indeterminate';
+
 export interface Filter {
   freeText?: string;
   borehole: {
-    hasControlProgram: boolean | null;
+    hasControlProgram: Inderterminate;
   };
   sensor: {
     showInactive: boolean;
@@ -38,15 +40,18 @@ export interface Filter {
 }
 
 const typeAheadAtom = atom<string>('');
-const mapFilterAtom = atomWithStorage<Filter>('mapFilter', {
+
+const defaultMapFilter: Filter = {
   freeText: '',
   borehole: {
-    hasControlProgram: null,
+    hasControlProgram: 'indeterminate',
   },
   sensor: {
     showInactive: false,
   },
-});
+};
+
+const mapFilterAtom = atomWithStorage<Filter>('mapFilter', defaultMapFilter);
 
 const getNumberOfNonEmptyFilters = (filter: object): number => {
   return Object.values(filter).reduce((acc, val) => {
@@ -56,6 +61,25 @@ const getNumberOfNonEmptyFilters = (filter: object): number => {
       return acc + getNumberOfNonEmptyFilters(val);
     if (typeof val === 'boolean' && val === false) return acc;
     if (Array.isArray(val) && val.length === 0) return acc;
+    return acc + 1;
+  }, 0);
+};
+
+type Entry<T> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T];
+
+const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: T): number => {
+  return Object.entries(filter).reduce((acc, entry) => {
+    const [key, val] = entry;
+    if (typeof val === 'object' && !Array.isArray(val) && val !== null) {
+      // @ts-expect-error Key has to be keyof T
+      return acc + getNumberOfNonDefaultFilters(val, default_val[key]);
+    }
+    // @ts-expect-error Key has to be keyof T
+    if (JSON.stringify(val) === JSON.stringify(default_val[key])) {
+      return acc;
+    }
     return acc + 1;
   }, 0);
 };
@@ -101,7 +125,7 @@ const filterBorehole = (data: BoreholeData, filter: Filter['borehole']) => {
       return data.num_controls_in_a_year.some((num) => num > 0);
     case false:
       return !data.num_controls_in_a_year.some((num) => num > 0);
-    case null:
+    case 'indeterminate':
       return true;
   }
 };
@@ -180,7 +204,6 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
 
   useEffect(() => {
     const filtered = filterChecked(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
-    console.log(mapFilter);
     setData(filtered);
   }, [mapFilter, data, setData]);
 
@@ -192,7 +215,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
     setAnchorEl(null);
   };
 
-  const numFilters = getNumberOfNonEmptyFilters(mapFilter);
+  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter);
   return (
     <>
       <Autocomplete

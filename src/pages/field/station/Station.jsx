@@ -327,7 +327,7 @@ export default function Station({ts_id, stamdata}) {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
+    if (stamdata?.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
     resetPejlingData();
     resetServiceData();
     setShowForm(null);

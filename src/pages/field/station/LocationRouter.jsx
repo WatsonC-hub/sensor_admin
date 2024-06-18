@@ -39,7 +39,7 @@ export default function LocationRouter() {
   });
 
   useEffect(() => {
-    if (data && params.ts_id === undefined) {
+    if (data && data.length == 1 && params.ts_id === undefined) {
       station(params.locid, data[0].ts_id, {replace: true});
       // navigate(`../location/${params.locid}/${data[0].ts_id}`, {
       //   replace: true,
@@ -111,7 +111,7 @@ export default function LocationRouter() {
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          {stamdata && <Station ts_id={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />}
+          <Station ts_id={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />
         </ErrorBoundary>
       </main>
     </MetadataContext.Provider>

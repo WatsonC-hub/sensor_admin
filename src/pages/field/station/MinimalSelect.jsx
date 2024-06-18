@@ -29,7 +29,6 @@ const MinimalSelect = ({locid, stationList}) => {
   }, [params.ts_id]);
 
   const menuProps = {
-    getContentAnchorEl: () => null,
     anchorOrigin: {
       vertical: 'bottom',
       horizontal: 'left',
@@ -48,7 +47,7 @@ const MinimalSelect = ({locid, stationList}) => {
   return (
     <Select
       MenuProps={menuProps}
-      value={parseInt(params.ts_id)}
+      value={stationList ? parseInt(params.ts_id) : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}
