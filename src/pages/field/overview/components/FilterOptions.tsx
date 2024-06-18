@@ -6,6 +6,7 @@ import {useForm, FormProvider, Controller} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import FormCheckbox from '~/components/FormCheckbox';
+import FormToggleGroup from '~/components/FormToggleGroup';
 import FormInput from '~/components/FormInput';
 
 import NotificationIcon from './NotificationIcon';
@@ -39,10 +40,20 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
         <Grid item xs={12} sm={6}>
           <Typography variant="subtitle1">Boringer</Typography>
 
-          <FormCheckbox
+          {/* <FormCheckbox
             name="borehole.hasControlProgram"
             label="Kun pejleprogram"
             includeInderterminate
+          /> */}
+
+          <FormToggleGroup
+            name="borehole.hasControlProgram"
+            label="Pejles aktivt"
+            values={[
+              {label: 'Ja', value: true},
+              {label: '-', value: null},
+              {label: 'Nej', value: false},
+            ]}
           />
 
           {/* <FormControlLabel

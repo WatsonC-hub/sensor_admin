@@ -96,8 +96,14 @@ const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
 };
 
 const filterBorehole = (data: BoreholeData, filter: Filter['borehole']) => {
-  console.log(data, filter);
-  return filter.hasControlProgram ? data.num_controls_in_a_year.some((num) => num > 0) : true;
+  switch (filter.hasControlProgram) {
+    case true:
+      return data.num_controls_in_a_year.some((num) => num > 0);
+    case false:
+      return !data.num_controls_in_a_year.some((num) => num > 0);
+    case null:
+      return true;
+  }
 };
 
 const filterChecked = (data: (NotificationMap | BoreholeData)[], filter: Filter) => {
@@ -174,6 +180,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
 
   useEffect(() => {
     const filtered = filterChecked(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
+    console.log(mapFilter);
     setData(filtered);
   }, [mapFilter, data, setData]);
 
@@ -266,4 +273,4 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   );
 };
 
-export default SearchAndFilter;
+export default React.memo(SearchAndFilter);
