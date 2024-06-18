@@ -1,10 +1,10 @@
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
-export const useSearchParam = (param: string) => {
+export const useSearchParam = (param: string, default_value: string) => {
   const navigate = useNavigate();
   const [searchParam, setSearchParam] = useState(
-    new URLSearchParams(window.location.search).get(param)
+    new URLSearchParams(window.location.search).get(param) || (default_value ?? null)
   );
 
   const setParam = (value: string) => {
@@ -13,7 +13,6 @@ export const useSearchParam = (param: string) => {
     if (value !== '' && value !== null && value !== undefined) {
       searchParams.set(param, value);
     } else {
-      console.log(param);
       searchParams.delete(param);
     }
 
