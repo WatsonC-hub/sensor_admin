@@ -24,6 +24,7 @@ import {useTable} from '~/hooks/useTable';
 import {TableData} from '~/types';
 
 import NotificationIcon from './NotificationIcon';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 
 interface Props {
   data: TableData[];
@@ -81,7 +82,7 @@ export default function StationTable({data}: Props) {
             display={'flex'}
             alignContent={'center'}
             sx={{
-              fontSize: '2rem',
+              fontSize: isTouch ? '1.5rem' : '2rem',
             }}
           >
             <NotificationIcon iconDetails={row.original} enableTooltip />
@@ -122,11 +123,15 @@ export default function StationTable({data}: Props) {
           },
         },
       },
-      {
-        header: 'Tidsserie ID',
-        accessorKey: 'ts_id',
-        enableHide: false,
-      },
+      ...(isTouch
+        ? []
+        : [
+            {
+              header: 'Tidsserie ID',
+              accessorKey: 'ts_id',
+              enableHide: false,
+            },
+          ]),
       {
         header: 'Calypso ID',
         accessorKey: 'calypso_id',
@@ -138,9 +143,9 @@ export default function StationTable({data}: Props) {
         },
       },
     ],
-    []
+    [isTouch]
   );
-  const [tableState] = useStatefullTableAtom<TableData>('StationTableState');
+  const [tableState, reset] = useStatefullTableAtom<TableData>('StationTableState');
 
   const renderDetailPanel = ({row}: RenderDetailProps) => (
     <Box
@@ -203,7 +208,7 @@ export default function StationTable({data}: Props) {
         <Box>
           <Typography display={'flex'} flexDirection={'row'} fontWeight="bold" gap={1} m={1}>
             <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
-              Status:
+              Mest kritiske status:
             </Typography>
             <NotificationIcon iconDetails={row.original} />
             <Typography alignSelf={'center'} variant="caption" color="grey.700">
@@ -211,15 +216,12 @@ export default function StationTable({data}: Props) {
             </Typography>
           </Typography>
 
-          <Typography display={'flex'} flexDirection={'row'} fontWeight="bold" gap={1} m={1}>
+          {/* <Typography display={'flex'} flexDirection={'row'} fontWeight="bold" gap={1} m={1}>
             <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
-              Kontakt:
+              Andre status:
             </Typography>
-            <Typography alignSelf={'center'} variant="caption" color="grey.700">
-              +45 XXXXXXXX
-            </Typography>
-          </Typography>
-
+          </Typography> */}
+          {/* 
           <Typography display={'flex'} flexDirection={'row'} fontWeight="bold" gap={1} m={1}>
             <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
               Info ift. kontakt:
@@ -236,7 +238,7 @@ export default function StationTable({data}: Props) {
             <Typography alignSelf={'center'} variant="caption" color="grey.700">
               Hentes hos lodsejer på dagen
             </Typography>
-          </Typography>
+          </Typography> */}
         </Box>
       </Box>
       <Box
@@ -272,9 +274,16 @@ export default function StationTable({data}: Props) {
   );
   const options: Partial<MRT_TableOptions<TableData>> = {
     renderDetailPanel: renderDetailPanel,
-    muiTableHeadProps: {sx: {backgroundColor: 'primary.main'}},
-    positionGlobalFilter: 'none',
-    globalFilterFn: 'fuzzy',
+    renderToolbarInternalActions: ({table}) => {
+      return <RenderInternalActions table={table} reset={reset} />;
+    },
+    muiTableBodyRowProps: ({row}) => {
+      return {
+        onDoubleClick: () => {
+          station(row.original.loc_id, row.original.ts_id);
+        },
+      };
+    },
     enableExpanding: true,
     enableExpandAll: false,
     muiTableHeadCellProps: {
@@ -292,44 +301,12 @@ export default function StationTable({data}: Props) {
       },
     },
     positionExpandColumn: 'last',
-    muiExpandButtonProps: ({row, table}) => ({
-      sx: {
-        px: 0,
-      },
-      size: 'small',
-      onClick: () => {
-        table.setRowSelection({[row.id]: !row.getIsExpanded()});
-      },
-    }),
-    muiTableBodyRowProps: ({row}) => ({
-      sx: {
-        backgroundColor: row.getIsSelected() ? 'grey.300' : 'inherit',
-        cursor: 'pointer',
-        '&:hover': {
-          td: {
-            '&:after': {
-              backgroundColor: row.getIsSelected() ? 'grey.300' : 'inherit',
-            },
-          },
-        },
-        td: {
-          '&:after': {
-            backgroundColor: row.getIsSelected() ? '#E0E0E0 !important' : 'inherit',
-          },
-        },
-      },
-    }),
-    displayColumnDefOptions: {
-      'mrt-row-expand': {
-        header: '',
-        size: 10,
-        muiTableHeadCellProps: {
-          sx: {
-            padding: 0,
-          },
-        },
-      },
-    },
+    // muiExpandButtonProps: ({row, table}) => ({
+    //   sx: {
+    //     px: 0,
+    //   },
+    //   size: 'small',
+    // }),
   };
 
   const table = useTable<TableData>(columns, data, options, tableState, TableTypes.STATIONTABLE);
@@ -344,6 +321,7 @@ export default function StationTable({data}: Props) {
         flexDirection: 'column',
         height: calculateContentHeight(160),
         minWidth: '50%',
+        width: '100%',
         maxWidth: '1080px',
         justifySelf: 'center',
       }}
