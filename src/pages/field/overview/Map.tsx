@@ -5,13 +5,14 @@ import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
-import {useRef, useEffect, useState, SyntheticEvent} from 'react';
+import {useRef, useEffect, useState, SyntheticEvent, memo, useMemo, useCallback} from 'react';
 import utmObj from 'utm-latlng';
 
 import {apiClient} from '~/apiClient';
 import {mapboxToken, boreholeColors} from '~/consts';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {atomWithTimedStorage} from '~/state/atoms';
 import {stamdataStore, authStore} from '~/state/store';
 
 import BoreholeContent from './components/BoreholeContent';
@@ -39,8 +40,8 @@ const defaultCircleMarkerStyle = {
   color: '#000000',
 };
 
-const zoomAtom = atom<number | null>(null);
-const panAtom = atom<L.LatLng | null>(null);
+const zoomAtom = atomWithTimedStorage<number | null>('mapZoom', null, 1000 * 60 * 30);
+const panAtom = atomWithTimedStorage<L.LatLng | null>('mapPan', null, 1000 * 60 * 30);
 
 const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;
 
@@ -413,59 +414,62 @@ function Map({data, loading}: MapProps) {
     }
   }, [filteredData]);
 
-  const handleSearchSelect = (e: SyntheticEvent, value: string | LocItems | null) => {
-    if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
-      if (value.sensor) {
-        // @ts-expect-error Getlayers returns markers
-        const markers: L.Marker[] = layerRef.current.getLayers();
+  const handleSearchSelect = useCallback(
+    () => (e: SyntheticEvent, value: string | LocItems | null) => {
+      if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
+        if (value.sensor) {
+          // @ts-expect-error Getlayers returns markers
+          const markers: L.Marker[] = layerRef.current.getLayers();
 
-        for (let i = 0; i < markers.length; i++) {
-          if (markers[i].options.title == value.name) {
-            markers[i].openPopup();
-            mapRef.current?.flyTo(markers[i].getLatLng(), 14, {
-              animate: false,
-            });
-            markers[i].fire('click');
-            setSelectedMarker(markers[i].options.data);
-            break;
+          for (let i = 0; i < markers.length; i++) {
+            if (markers[i].options.title == value.name) {
+              markers[i].openPopup();
+              mapRef.current?.flyTo(markers[i].getLatLng(), 14, {
+                animate: false,
+              });
+              markers[i].fire('click');
+              setSelectedMarker(markers[i].options.data);
+              break;
+            }
           }
+        } else {
+          apiClient.get<BoreholeData>(`/sensor_field/jupiter/search/${value.name}`).then((res) => {
+            const element = res.data;
+
+            const point: L.LatLngExpression = [element.latitude, element.longitude];
+
+            const maxStatus = Math.max(...element.status);
+
+            const icon = L.divIcon({
+              className: 'custom-div-icon',
+              html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
+              iconSize: [24, 24],
+              iconAnchor: [12, 24],
+            });
+
+            const marker = L.marker(point, {
+              icon: icon,
+              title: element.boreholeno,
+              data: element,
+              contextmenu: true,
+            });
+
+            marker.on('add', function () {
+              mapRef.current?.flyTo(point, 16, {
+                animate: false,
+              });
+              marker.fire('click');
+              setSelectedMarker(element);
+            });
+            if (layerRef.current) {
+              marker.addTo(layerRef.current);
+            }
+          });
         }
-      } else {
-        apiClient.get<BoreholeData>(`/sensor_field/jupiter/search/${value.name}`).then((res) => {
-          const element = res.data;
-
-          const point: L.LatLngExpression = [element.latitude, element.longitude];
-
-          const maxStatus = Math.max(...element.status);
-
-          const icon = L.divIcon({
-            className: 'custom-div-icon',
-            html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
-            iconSize: [24, 24],
-            iconAnchor: [12, 24],
-          });
-
-          const marker = L.marker(point, {
-            icon: icon,
-            title: element.boreholeno,
-            data: element,
-            contextmenu: true,
-          });
-
-          marker.on('add', function () {
-            mapRef.current?.flyTo(point, 16, {
-              animate: false,
-            });
-            marker.fire('click');
-            setSelectedMarker(element);
-          });
-          if (layerRef.current) {
-            marker.addTo(layerRef.current);
-          }
-        });
       }
-    }
-  };
+    },
+    [layerRef.current]
+  );
 
   const getDrawerHeader = () => {
     if (selectedMarker == null) return 'Signaturforklaring';
