@@ -32,7 +32,12 @@ const SensorContent = ({data}: SensorContentProps) => {
             notification.notification_id;
             const splitted = notification.stationname.split(notification.locname);
             return (
-              <Box key={notification.notification_id} display="flex" alignItems="center" gap={1}>
+              <Box
+                key={`${notification.notification_id}_${notification.stationid}`}
+                display="flex"
+                alignItems="center"
+                gap={1}
+              >
                 <Typography variant="body1">
                   {splitted[splitted.length - 1].replace('-', '').trim()}
                 </Typography>

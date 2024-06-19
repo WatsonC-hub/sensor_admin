@@ -15,8 +15,7 @@ const drawerBleeding = 56;
 interface DrawerComponentProps {
   header: string;
   openDrawerOnHeaderChange?: boolean;
-  triggerOpenDrawer?: boolean;
-  triggerCloseDrawer?: boolean;
+  isMarkerSelected?: boolean;
   enableFull?: boolean;
   children?: React.ReactNode;
 }
@@ -25,11 +24,12 @@ const DrawerComponent = ({
   header,
   children,
   openDrawerOnHeaderChange,
-  triggerOpenDrawer,
-  triggerCloseDrawer,
+  isMarkerSelected,
   enableFull,
 }: DrawerComponentProps) => {
-  const [open, setOpen] = useState<'closed' | 'half' | 'full'>('closed');
+  const [open, setOpen] = useState<'closed' | 'half' | 'full'>(
+    isMarkerSelected ? 'half' : 'closed'
+  );
   const {isTouch} = useBreakpoints();
 
   useEffect(() => {
@@ -38,16 +38,16 @@ const DrawerComponent = ({
     }
   }, [header]);
 
-  useEffect(() => {
-    if (triggerOpenDrawer) {
-      setOpen('half');
-    }
-  }, [triggerOpenDrawer]);
-  useEffect(() => {
-    if (triggerCloseDrawer) {
-      setOpen('closed');
-    }
-  }, [triggerCloseDrawer]);
+  // useEffect(() => {
+  //   if (triggerOpenDrawer) {
+  //     setOpen('half');
+  //   }
+  // }, [triggerOpenDrawer]);
+  // useEffect(() => {
+  //   if (triggerCloseDrawer) {
+  //     setOpen('closed');
+  //   }
+  // }, [triggerCloseDrawer]);
 
   return (
     <>

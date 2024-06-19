@@ -12,6 +12,8 @@ const iotItems = [
   {flag: 2, text: 'Advarsel'},
   {flag: 1, text: 'Opmærksom'},
   {flag: 0, text: 'Alt vel'},
+  {notification_id: 12, text: 'Plateau'},
+  {notification_id: 13, text: 'Automatisk kvalitetssikring'},
   {active: false, text: 'Inaktiv'},
 ];
 

@@ -415,12 +415,11 @@ function Map({data, loading}: MapProps) {
   }, [filteredData]);
 
   const handleSearchSelect = useCallback(
-    () => (e: SyntheticEvent, value: string | LocItems | null) => {
+    (e: SyntheticEvent, value: string | LocItems | null) => {
       if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
         if (value.sensor) {
           // @ts-expect-error Getlayers returns markers
           const markers: L.Marker[] = layerRef.current.getLayers();
-
           for (let i = 0; i < markers.length; i++) {
             if (markers[i].options.title == value.name) {
               markers[i].openPopup();
@@ -495,11 +494,9 @@ function Map({data, loading}: MapProps) {
         }}
       ></Box>
       <DrawerComponent
-        // open={selectedMarker !== null}
-        // setOpen={}
+        key={selectedMarker?.locid || selectedMarker?.boreholeno || 'legend'}
         enableFull={selectedMarker != null ? true : false}
-        triggerCloseDrawer={selectedMarker === null}
-        triggerOpenDrawer={selectedMarker !== null}
+        isMarkerSelected={selectedMarker !== null}
         header={getDrawerHeader()}
       >
         {selectedMarker && 'locid' in selectedMarker && <SensorContent data={selectedMarker} />}
