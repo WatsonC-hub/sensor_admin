@@ -5,7 +5,7 @@ import {
   AddAPhotoRounded,
   ConstructionRounded,
 } from '@mui/icons-material';
-import {camelCase} from 'lodash';
+import {startCase} from 'lodash';
 import React, {useState} from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
@@ -21,18 +21,8 @@ export default function ActionArea({setPageToShow, showForm, setShowForm, canEdi
     setValue(newValue);
     setPageToShow(newValue);
     if (showForm !== null) {
-      setShowForm('');
+      setShowForm(null);
     }
-  };
-
-  const pejlingItem = {fabText: 'Tilføj ' + StationPages.PEJLING, fabIcon: <AddCircle />};
-  const målepunktItem = {
-    fabText: 'Tilføj ' + StationPages.MAALEPUNKT,
-    fabIcon: <StraightenRounded />,
-  };
-  const billedeItem = {
-    fabText: 'Tilføj ' + StationPages.BILLEDEER,
-    fabIcon: <AddAPhotoRounded />,
   };
 
   const navigationItems = [
@@ -41,24 +31,21 @@ export default function ActionArea({setPageToShow, showForm, setShowForm, canEdi
       value: StationPages.PEJLING,
       icon: <AddCircle />,
       color: navIconStyle(value === StationPages.PEJLING),
-      fabItem: pejlingItem,
     },
     {
-      text: camelCase(StationPages.MAALEPUNKT),
+      text: 'Målepunkt',
       value: StationPages.MAALEPUNKT,
       icon: <StraightenRounded />,
       color: navIconStyle(value === StationPages.MAALEPUNKT),
-      fabItem: målepunktItem,
     },
     {
-      text: camelCase(StationPages.BILLEDER),
+      text: startCase(StationPages.BILLEDER),
       value: StationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
       color: navIconStyle(value === StationPages.BILLEDER),
-      fabItem: billedeItem,
     },
     {
-      text: camelCase(StationPages.STAMDATA),
+      text: startCase(StationPages.STAMDATA),
       value: StationPages.STAMDATA,
       icon: <ConstructionRounded />,
       color: navIconStyle(value === StationPages.STAMDATA),

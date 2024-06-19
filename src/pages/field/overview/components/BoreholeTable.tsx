@@ -198,6 +198,13 @@ const BoreholeTable = ({data}: Props) => {
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={reset} />;
     },
+    muiTableBodyRowProps: ({row}) => {
+      return {
+        onDoubleClick: () => {
+          boreholeIntake(row.original.boreholeno, row.original.intakeno);
+        },
+      };
+    },
     renderDetailPanel: renderDetailPanel,
     muiTableHeadCellProps: {
       sx: {
