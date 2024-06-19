@@ -13,17 +13,15 @@ import {
   Link,
   Radio,
   RadioGroup,
-  TextField,
   Tooltip,
   Typography,
 } from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {Controller, ControllerRenderProps, UseFormReturn} from 'react-hook-form';
+import {Controller, useFormContext, get} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import OwnDatePicker from '~/components/OwnDatePicker';
 import {alertHeight, correction_map} from '~/consts';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {stamdataStore} from '~/state/store';
@@ -32,12 +30,11 @@ import {Maalepunkt, PejlingItem} from '~/types';
 // - Find ud af om textfield skal have grøn outline
 
 interface PejlingFormProps {
-  handleSubmit: (values: PejlingItem) => void;
+  handleSubmit: (data: any) => void;
   resetFormData: () => void;
   isWaterlevel: boolean;
   isFlow: boolean;
   openAddMP: () => void;
-  formMethods: UseFormReturn<PejlingItem>;
   setDynamic: (dynamic: Array<unknown>) => void;
 }
 
@@ -47,7 +44,6 @@ export default function PejlingForm({
   isWaterlevel,
   isFlow,
   openAddMP,
-  formMethods,
   setDynamic,
 }: PejlingFormProps) {
   const store = stamdataStore();
@@ -55,12 +51,9 @@ export default function PejlingForm({
   const {
     get: {data: mpData},
   } = useMaalepunkt();
-  const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
+  const formMethods = useFormContext<PejlingItem>();
 
-  const [currentMP, setCurrentMP] = useState({
-    elevation: 0,
-    mp_description: '',
-  });
+  const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
 
   const [notPossible, setNotPossible] = useState(false);
   const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
@@ -76,20 +69,18 @@ export default function PejlingForm({
           return true;
         }
       });
-      if (mp.length > 0) {
-        setPejlingOutOfRange(false);
-        setCurrentMP(mp[0]);
+      const internalCurrentMP = mp.length > 0 ? mp[0] : null;
+      if (internalCurrentMP) {
+        setCurrentMP(internalCurrentMP);
       } else {
-        setPejlingOutOfRange(true);
-        setCurrentMP({
-          elevation: 0,
-          mp_description: '',
-        });
+        setCurrentMP(null);
       }
+
       if (tstype_id) {
-        if (currentMP.elevation !== 0) {
+        if (internalCurrentMP) {
           const dynamicDate = formMethods.getValues('timeofmeas');
-          const dynamicMeas = currentMP.elevation - Number(measurement);
+          const dynamicMeas = internalCurrentMP.elevation - Number(measurement);
+          console.log(dynamicMeas);
           setDynamic([dynamicDate, dynamicMeas]);
         } else {
           setDynamic([]);
@@ -102,26 +93,21 @@ export default function PejlingForm({
     }
   }, [mpData, measurement, tstype_id]);
 
-  const handleDateChange = (
-    date: string,
-    field: ControllerRenderProps<PejlingItem, 'timeofmeas'>
-  ) => {
-    if (moment(date).isValid()) {
-      field.onChange(date);
-    }
-
+  const handleDateChange = (date: string) => {
     if (isWaterlevel && mpData !== undefined) {
       const mp = mpData.filter((elem) => {
         if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
           return true;
         }
       });
-
       if (mp.length > 0) {
-        setPejlingOutOfRange(false);
         setCurrentMP(mp[0]);
+        formMethods.clearErrors('timeofmeas');
       } else {
-        setPejlingOutOfRange(true);
+        formMethods.setError('timeofmeas', {
+          type: 'outOfRange',
+          message: 'Tidspunkt er uden for et målepunkt',
+        });
       }
     }
   };
@@ -130,6 +116,8 @@ export default function PejlingForm({
     setNotPossible(!notPossible);
     formMethods.setValue('measurement', 0);
   };
+
+  const pejlingOutOfRange = get(formMethods.formState.errors, 'timeofmeas')?.type == 'outOfRange';
 
   return (
     <Card
@@ -177,88 +165,69 @@ export default function PejlingForm({
                 </Tooltip>
               </Grid>
               <Grid item xs={12} sm={7}>
-                <Controller
-                  control={formMethods.control}
+                <FormInput
+                  type="number"
                   name="measurement"
-                  rules={{required: false}}
-                  render={({field}) => {
-                    return (
-                      <TextField
-                        type="number"
-                        label={
-                          <Typography variant="h5" component="h3">
-                            {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
-                          </Typography>
-                        }
-                        InputProps={{
-                          endAdornment: (
-                            <InputAdornment position="start">
-                              {isWaterlevel ? 'm' : stationUnit}
-                            </InputAdornment>
-                          ),
-                        }}
-                        fullWidth
-                        disabled={notPossible || (isWaterlevel && currentMP.elevation === null)}
-                        onChange={(e) => {
-                          field.onChange(Number(e.target.value));
-                        }}
-                      />
-                    );
+                  rules={{required: true}}
+                  label={
+                    <Typography variant="h5" component="h3">
+                      {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
+                    </Typography>
+                  }
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="start">
+                        {isWaterlevel ? 'm' : stationUnit}
+                      </InputAdornment>
+                    ),
                   }}
+                  fullWidth
+                  disabled={notPossible || (isWaterlevel && currentMP == null)}
                 />
               </Grid>
               {isWaterlevel && (
                 <>
                   <Grid item xs={12} sm={7}>
                     <Alert
-                      severity="info"
+                      severity={pejlingOutOfRange ? 'error' : 'info'}
                       sx={{
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
                       }}
                     >
-                      <Typography>
-                        Målepunkt:{' '}
-                        {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
-                      </Typography>
-                      <Typography>
-                        Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m
-                      </Typography>
+                      {pejlingOutOfRange ? (
+                        <Typography>
+                          Der er intet målepunkt registreret på det valgte tidspunkt.
+                        </Typography>
+                      ) : (
+                        <>
+                          <Typography>
+                            Målepunkt: {currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
+                          </Typography>
+                          <Typography>
+                            Kote:{' '}
+                            {pejlingOutOfRange || currentMP == null ? '' : currentMP.elevation} m
+                          </Typography>
+                        </>
+                      )}
                     </Alert>
                   </Grid>
                 </>
               )}
               <Grid item xs={12} sm={7}>
-                <Controller
-                  control={formMethods.control}
-                  defaultValue={moment().format('YYYY-MM-DDTHH:mm')}
+                <FormInput
                   name="timeofmeas"
-                  rules={{required: true}}
-                  render={({field}) => {
-                    return (
-                      <OwnDatePicker
-                        inputRef={field.ref}
-                        sx={{
-                          '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                          '& .MuiOutlinedInput-root': {
-                            '& > fieldset': {borderColor: 'primary.main'},
-                          },
-                        }}
-                        label={
-                          <Typography variant="h6" component="h3">
-                            Tidspunkt for måling
-                          </Typography>
-                        }
-                        value={field.value}
-                        onChange={(date: string) => {
-                          handleDateChange(date, field);
-                        }}
-                        error={pejlingOutOfRange}
-                        helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
-                      />
-                    );
+                  label="Dato"
+                  fullWidth
+                  type="datetime-local"
+                  required
+                  sx={{
+                    mb: 2,
                   }}
+                  onChangeCallback={(e) => handleDateChange(e.target.value)}
+                  // error={pejlingOutOfRange}
+                  // warning={() => (pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : '')}
                 />
               </Grid>
               {(isWaterlevel || isFlow) && (
@@ -320,6 +289,7 @@ export default function PejlingForm({
                   required
                   fullWidth
                   multiline
+                  rows={4}
                   sx={{
                     mb: 2,
                   }}
@@ -335,7 +305,7 @@ export default function PejlingForm({
                     onClick={formMethods.handleSubmit(handleSubmit)}
                     disabled={
                       pejlingOutOfRange ||
-                      (isWaterlevel && currentMP.elevation === null) ||
+                      (isWaterlevel && currentMP === null) ||
                       formMethods.getValues('useforcorrection').toString() == '-1'
                     }
                     startIcon={<SaveIcon />}

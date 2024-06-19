@@ -31,10 +31,8 @@ const Pejling = ({ts_id, showForm, setShowForm, setDynamic}: Props) => {
     useforcorrection: 0,
     comment: '',
   };
-  const formMethods = useForm({
-    defaultValues: {
-      ...initialData,
-    },
+  const formMethods = useForm<PejlingItem>({
+    defaultValues: initialData,
   });
 
   const handlePejlingSubmit = (values: PejlingItem) => {
@@ -90,7 +88,6 @@ const Pejling = ({ts_id, showForm, setShowForm, setDynamic}: Props) => {
             handleSubmit={handlePejlingSubmit}
             resetFormData={resetFormData}
             isFlow={isFlow}
-            formMethods={formMethods}
             setDynamic={setDynamic}
           />
         )}

@@ -26,7 +26,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
     user_id: null,
   };
 
-  const formMethods = useForm({
+  const formMethods = useForm<TilsynItem>({
     defaultValues: {
       ...initialData,
     },
@@ -92,13 +92,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
     <FormProvider {...formMethods}>
       <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
         {showForm === true && (
-          <TilsynForm
-            handleServiceSubmit={handleServiceSubmit}
-            cancel={() => {
-              resetFormData();
-            }}
-            formMethods={formMethods}
-          />
+          <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
         )}
         <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
       </Box>

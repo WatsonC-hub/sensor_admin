@@ -24,7 +24,6 @@ const FormInput = <TFieldValues extends FieldValues>({
 }: FormInputProps<TFieldValues>) => {
   const {
     control,
-    getValues,
     formState: {errors},
   } = useFormContext<TFieldValues>();
 
@@ -49,7 +48,6 @@ const FormInput = <TFieldValues extends FieldValues>({
             name={name}
             value={value}
             type={type}
-            defaultValue={getValues(name)}
             onBlur={onBlur}
             ref={ref}
             sx={{
