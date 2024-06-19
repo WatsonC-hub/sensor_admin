@@ -1,15 +1,22 @@
-import {Typography} from '@mui/material';
+import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import moment from 'moment';
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {setTableBoxStyle} from '~/consts';
+import {checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
+import RenderInternalActions from './RenderInternalActions';
+
 export type Maalepunkt = {
-  startdate: string;
+  startdate: moment.Moment;
   enddate: string;
   elevation: number;
   mp_description: string;
@@ -20,7 +27,7 @@ export type Maalepunkt = {
 
 interface Props {
   data: Maalepunkt[] | undefined;
-  handleEdit: ({}) => void;
+  handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -29,6 +36,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const {isTablet} = useBreakpoints();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -40,14 +48,15 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
     () => [
       {
-        accessorFn: (row) => (
-          <Typography sx={{display: 'inline', justifySelf: 'flex-end'}}>
-            {convertDate(row.startdate)} {' - '}
-            {checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDate(row.enddate)}
-          </Typography>
-        ),
-        id: 'startdate',
         header: 'Dato',
+        id: 'startdate',
+        accessorFn: (row) =>
+          moment(row.startdate).format('DD-MM-YYYY HH:mm') +
+          ' - ' +
+          (checkEndDateIsUnset(row.enddate)
+            ? 'Nu'
+            : moment(row.enddate).format('DD-MM-YYYY HH:mm')),
+        sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
       },
       {
@@ -63,8 +72,11 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     [unit]
   );
 
+  const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
+
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
-    renderRowActions: ({row, table}) => (
+    enableRowActions: true,
+    renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
           handleEdit(row.original);
@@ -75,12 +87,15 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         canEdit={canEdit}
       />
     ),
+    renderToolbarInternalActions: ({table}) => {
+      return <RenderInternalActions table={table} reset={reset} />;
+    },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options);
+  const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -88,6 +103,6 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

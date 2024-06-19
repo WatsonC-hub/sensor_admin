@@ -6,11 +6,11 @@ import {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
+import {correction_map, setGraphHeight} from '~/consts';
 import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useCorrectData} from '~/hooks/useCorrectData';
-
-import {stamdataStore} from '../../../state/store';
+import {stamdataStore} from '~/state/store';
 
 const selectorOptions = {
   buttons: [
@@ -150,12 +150,16 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
+// const initRange = [
+//   moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+//   moment().format('YYYY-MM-DDTHH:mm'),
+// ];
+
 function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
-  const [name, unit, stationtype, terrainlevel] = stamdataStore((state) => [
+  const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
     state.timeseries.unit,
     state.timeseries.tstype_name,
-    state.location.terrainlevel,
   ]);
 
   const theme = useTheme();
@@ -164,10 +168,27 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const [layout, setLayout] = useState(
     matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
   );
+  const [showRawData, setShowRawData] = useState(false);
+
+  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
+  const {data: rawData, refetch: fetchRaw} = useQuery({
+    queryKey: ['rawdata', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
+      if (data === null) {
+        return [];
+      }
+      return data;
+    },
+    enabled: false,
+    placeholderData: [],
+  });
 
   useEffect(() => {
-    refetchData([ts_id, initRange]);
-  }, [ts_id]);
+    refetchData([ts_id, xRange]);
+  }, [ts_id, xRange, refetchData]);
+
+  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
   const handleRelayout = (e) => {
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
@@ -190,53 +211,17 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
       const daysdiff = x1.diff(x0, 'days');
 
-      x0 = x0.subtract(daysdiff * 0.2, 'days');
-      x1 = x1.add(daysdiff * 0.2, 'days');
+      x0 = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days');
+      x1 = x1.add(Math.max(daysdiff * 0.2, 1), 'days');
 
       setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
       return;
     }
   };
 
-  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
-
-  const {data: rawData, refetch: fetchRaw} = useQuery({
-    queryKey: ['rawdata', ts_id],
-    queryFn: async ({signal}) => {
-      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
-      if (data === null) {
-        return [];
-      }
-      return data;
-    },
-    enabled: false,
-    placeholderData: [],
-  });
-
-  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
-
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.waterlevel);
-  const textControl = controlData?.map((d) => {
-    switch (d.useforcorrection) {
-      case 0:
-        return 'Kontrol';
-      case 1:
-        return 'Korrektion fremadrettet';
-      case 2:
-        return 'Korrektion fremadrettet og bagudrettet';
-      case 3:
-        return 'Korrektion lineært til forrige pejling';
-      case 4:
-        return 'Korrektion tilbage til unit';
-      case 5:
-        return 'Korrektion tilbage til forrige niveaukorrektion';
-      case 6:
-        return 'Korrektion tilbage til forrige pejling';
-      default:
-        return 'Korrektion';
-    }
-  });
+  const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
   var downloadButton = {
@@ -256,7 +241,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   var rerunButton = {
     name: 'Genberegn data',
     icon: rerunIcon,
-    click: function (gd) {
+    click: function () {
       // toastId.current = toast.loading('Genberegner...');
       correctMutation.mutate({});
     },
@@ -274,6 +259,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
           visible: true,
         },
       };
+      setShowRawData(true);
       setLayout(gd.layout);
     },
   };
@@ -281,7 +267,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   var makeLinkButton = {
     name: 'Ekstern link',
     icon: makeLinkIcon,
-    click: function (gd) {
+    click: function () {
       var ts_id = window.location.href.split('/').at(-1).split('#').at(0);
 
       var link = document.createElement('a');
@@ -303,77 +289,80 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   };
 
   return (
-    <Plot
-      // key={ts_id}
-      id={`graph_${ts_id}`}
-      divId={`graph_${ts_id}`}
-      data={[
-        {
-          x: graphData?.x,
-          y: graphData?.y,
-          name: name,
-          type: 'scatter',
-          line: {width: 2},
-          mode: 'lines',
-          marker: {symbol: '100', size: '3', color: '#177FC1'},
-        },
-        {
-          x: rawData?.x,
-          y: rawData?.y,
-          name: 'Rådata',
-          type: 'scattergl',
-          yaxis: 'y2',
-          line: {width: 2},
-          mode: 'lines',
-          marker: {symbol: '100', size: '3'},
-        },
-        {
-          x: xControl,
-          y: yControl,
-          name: 'Kontrolpejlinger',
-          type: 'scatter',
-          mode: 'markers',
-          text: textControl,
-          marker: {
-            symbol: '200',
-            size: '8',
-            color: '#177FC1',
-            line: {color: 'rgb(0,0,0)', width: 1},
+    <>
+      <Plot
+        // key={ts_id}
+        id={`graph_${ts_id}`}
+        divId={`graph_${ts_id}`}
+        data={[
+          {
+            x: graphData?.x,
+            y: graphData?.y,
+            name: name,
+            type: 'scatter',
+            line: {width: 2},
+            mode: 'lines',
+            marker: {symbol: '100', size: '3', color: '#177FC1'},
           },
-        },
-        {
-          x: [dynamicMeasurement?.[0]],
-          y: [dynamicMeasurement?.[1]],
-          name: '',
-          type: 'scatter',
-          mode: 'markers',
-          showlegend: false,
-          marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
-        },
-      ]}
-      layout={{
-        ...layout,
-        uirevision: 'true',
-        yaxis: {
-          title: `${stationtype} [${unit}]`,
-        },
-      }}
-      config={{
-        showTips: false,
-        responsive: true,
-        modeBarButtons: [
-          [downloadButton, makeLinkButton, rerunButton, getRawData],
-          ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
-        ],
+          {
+            x: showRawData ? rawData?.x : [],
+            y: showRawData ? rawData?.y : [],
+            name: 'Rådata',
+            type: 'scattergl',
+            yaxis: 'y2',
+            line: {width: 2},
+            mode: 'lines',
+            marker: {symbol: '100', size: '3'},
+          },
+          {
+            x: xControl,
+            y: yControl,
+            name: 'Kontrolpejlinger',
+            type: 'scatter',
+            mode: 'markers',
+            text: textControl,
+            marker: {
+              symbol: '200',
+              size: '8',
+              color: '#177FC1',
+              line: {color: 'rgb(0,0,0)', width: 1},
+            },
+          },
+          {
+            x: [dynamicMeasurement?.[0]],
+            y: [dynamicMeasurement?.[1]],
+            name: '',
+            type: 'scatter',
+            mode: 'markers',
+            showlegend: false,
+            marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
+          },
+        ]}
+        layout={{
+          ...layout,
+          uirevision: 'true',
+          yaxis: {
+            title: `${stationtype} [${unit}]`,
+          },
+        }}
+        config={{
+          showTips: false,
+          responsive: true,
+          modeBarButtons: [
+            [downloadButton, makeLinkButton, rerunButton, getRawData],
+            ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+          ],
 
-        displaylogo: false,
-        displayModeBar: true,
-      }}
-      useResizeHandler={true}
-      style={{width: '99%', height: '100%'}}
-      onRelayout={handleRelayout}
-      // onDoubleClick={() => setXRange(initRange)}
-    />
+          displaylogo: false,
+          displayModeBar: true,
+        }}
+        useResizeHandler={true}
+        style={{width: '99%', height: '100%'}}
+        onRelayout={handleRelayout}
+        // onInitialized={handleResize}
+        // onDoubleClick={() => setXRange(initRange)}
+      />
+    </>
   );
 }
 
@@ -384,8 +373,7 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
   return (
     <div
       style={{
-        width: 'auto',
-        height: matches ? '300px' : '500px',
+        height: setGraphHeight(matches),
         // marginBottom: '10px',
       }}
     >

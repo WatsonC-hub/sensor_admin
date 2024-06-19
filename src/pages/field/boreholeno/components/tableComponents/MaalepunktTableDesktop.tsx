@@ -1,12 +1,16 @@
-import {Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {authStore, stamdataStore} from '~/state/store';
+import {authStore} from '~/state/store';
 
 export type Maalepunkt = {
   startdate: string;
@@ -22,22 +26,20 @@ export type Maalepunkt = {
 
 interface Props {
   data: Maalepunkt[];
-  handleEdit: ({}) => void;
+  handleEdit: (maalepuntk: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
 }
 
 export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const org_id = authStore((store) => store.org_id);
+  const {isTablet} = useBreakpoints();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
-
-  //   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 
   const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
     () => [
@@ -90,10 +92,11 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
     ),
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options);
+  const [tableState] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
+  const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -101,6 +104,6 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

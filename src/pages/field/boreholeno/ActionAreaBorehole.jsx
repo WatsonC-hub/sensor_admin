@@ -1,80 +1,54 @@
 import {
   AddCircle,
-  EditRounded,
-  Straighten,
-  PlaylistAddCheck,
   StraightenRounded,
   PhotoLibraryRounded,
   AddAPhotoRounded,
   ConstructionRounded,
 } from '@mui/icons-material';
-import PhotoCameraRoundedIcon from '@mui/icons-material/PhotoCameraRounded';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import {startCase} from 'lodash';
 import React, {useState} from 'react';
 
-import CustomBottomNavigation from '../../../components/BottomNavigation';
-
-const bottomNavStyle = {
-  borderRadius: 5,
-  margin: '7px',
-  boxShadow: '3px 3px 3px grey',
-  backgroundColor: 'secondary.main',
-  width: '100px',
-  height: '58px',
-};
-
-const borderGrey = {
-  ...bottomNavStyle,
-  backgroundColor: '#9E9E9E',
-};
-
+import CustomBottomNavigation from '~/components/BottomNavigation';
+import {StationPages} from '~/helpers/EnumHelper';
 const navIconStyle = (isSelected) => {
   return isSelected ? 'secondary.main' : 'inherit';
 };
 
-export default function ActionArea({setPageToShow, showForm, setShowForm, canEdit, fileInputRef}) {
+export default function ActionArea({setPageToShow, showForm, setShowForm, canEdit}) {
   const [value, setValue] = useState(null);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
     setPageToShow(newValue);
     if (showForm !== null) {
-      setShowForm('');
+      setShowForm(null);
     }
   };
-
-  const pejlingItem = {fabText: 'Tilføj pejling', fabIcon: <AddCircle />};
-  const målepunktItem = {fabText: 'Tilføj målepunkt', fabIcon: <StraightenRounded />};
-  const billedeItem = {fabText: 'Tilføj billede', fabIcon: <AddAPhotoRounded />};
 
   const navigationItems = [
     {
       text: 'Pejling',
-      value: null,
+      value: StationPages.PEJLING,
       icon: <AddCircle />,
-      color: navIconStyle(value === null),
-      fabItem: pejlingItem,
+      color: navIconStyle(value === StationPages.PEJLING),
     },
     {
-      text: 'Målepunkter',
-      value: 'MAALEPUNKT',
+      text: 'Målepunkt',
+      value: StationPages.MAALEPUNKT,
       icon: <StraightenRounded />,
-      color: navIconStyle(value === 'MAALEPUNKT'),
-      fabItem: målepunktItem,
+      color: navIconStyle(value === StationPages.MAALEPUNKT),
     },
     {
-      text: 'Billeder',
-      value: 'billeder',
+      text: startCase(StationPages.BILLEDER),
+      value: StationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(value === 'billeder'),
-      fabItem: billedeItem,
+      color: navIconStyle(value === StationPages.BILLEDER),
     },
     {
-      text: 'Stamdata',
-      value: 'STAMDATA',
+      text: startCase(StationPages.STAMDATA),
+      value: StationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(value === 'STAMDATA'),
+      color: navIconStyle(value === StationPages.STAMDATA),
     },
   ];
 

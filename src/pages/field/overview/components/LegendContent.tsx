@@ -2,17 +2,19 @@ import {Box, Divider, Typography} from '@mui/material';
 import React from 'react';
 
 import {boreholeColors} from '~/consts';
-import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
 
 import BoreholeIcon from './BoreholeIcon';
+import NotificationIcon from './NotificationIcon';
 
 const iotItems = [
-  {color: 'red', text: 'Kritisk'},
-  {color: 'orange', text: 'Advarsel'},
-  {color: 'yellow', text: 'Opmærksom'},
-  {color: 'green', text: 'Alt vel'},
-  {color: 'grey', text: 'Inaktiv'},
+  {flag: 3, text: 'Kritisk'},
+  {flag: 2, text: 'Advarsel'},
+  {flag: 1, text: 'Opmærksom'},
+  {flag: 0, text: 'Alt vel'},
+  {notification_id: 12, text: 'Plateau'},
+  {notification_id: 13, text: 'Automatisk kvalitetssikring'},
+  {active: false, text: 'Inaktiv'},
 ];
 
 const LegendContent = () => {
@@ -31,7 +33,7 @@ const LegendContent = () => {
           <Typography variant="body1">IoT</Typography>
           {iotItems.map((item) => (
             <Box display="flex" alignItems="center" gap={1} key={item.text}>
-              <TaskIcon color={item.color} />
+              <NotificationIcon iconDetails={item} />
               <Typography variant="body1">{item.text}</Typography>
             </Box>
           ))}

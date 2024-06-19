@@ -1,14 +1,14 @@
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
-import {Box, Divider, Grid} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
+import {StationPages} from '~/helpers/EnumHelper';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 import MaalepunktForm from '../../../components/MaalepunktForm';
@@ -158,7 +158,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     resetMpData();
     setAddMPOpen(false);
     setShowForm(null);
-    // setPageToShow('ADDMAALEPUNKT');
   };
 
   const openAddMP = () => {
@@ -180,16 +179,15 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     let payload = {...pejlingData};
     if (payload.service) payload.pumpstop = null;
     addOrEditPejling.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         resetPejlingData();
-        // setShowForm(null);
-        setPageToShow(null);
+        setPageToShow(StationPages.PEJLING);
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries({
           queryKey: ['measurements', boreholeno],
         });
       },
-      onError: (error) => {
+      onError: () => {
         toast.error('Kontrolmåling kunne ikke gemmes');
       },
     });
@@ -208,7 +206,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleMpSubmit = () => {
     let payload = {...mpData};
     addOrEditWatlevmp.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         resetMpData();
         setShowForm(null);
         toast.success('Målepunkt gemt');
@@ -216,12 +214,11 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           queryKey: ['watlevmp', boreholeno],
         });
       },
-      onError: (error) => {
+      onError: () => {
         toast.error('Der skete en fejl');
       },
     });
     setAddMPOpen(false);
-    // setPageToShow('ADDMAALEPUNKT');
   };
 
   const handleEdit = (type) => {
@@ -231,7 +228,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
         setShowForm(true); // update to use state machine¨
-        // setPageToShow('');
         setAddMPOpen(true);
       };
     } else {
@@ -239,7 +235,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
         setShowForm(true); // update to use state machine¨
-        // setPageToShow('');
       };
     }
   };
@@ -247,7 +242,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const handleDelete = (type) => {
     if (type === 'watlevmp') {
       return (gid) => {
-        apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['watlevmp', boreholeno],
           });
@@ -257,7 +252,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       };
     } else {
       return (gid) => {
-        apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['measurements', boreholeno],
           });
@@ -314,13 +309,15 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   return (
     <>
-      {pageToShow !== 'billeder' && pageToShow !== 'STAMDATA' && (
+      {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
         <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
             boreholeno={boreholeno}
             intakeno={intakeno}
             measurements={control}
-            dynamicMeasurement={pageToShow === null ? undefined : dynamic}
+            dynamicMeasurement={
+              pageToShow === StationPages.PEJLING && showForm === true ? undefined : dynamic
+            }
           />
           <Divider />
         </Box>
@@ -335,7 +332,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           justifyContent: 'center',
         }}
       >
-        {pageToShow === null && showForm === true && (
+        {pageToShow === StationPages.PEJLING && showForm === true && (
           <PejlingFormBorehole
             formData={pejlingData}
             changeFormData={changePejlingData}
@@ -352,7 +349,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             }
           />
         )}
-        {pageToShow === 'MAALEPUNKT' && (
+        {pageToShow === StationPages.MAALEPUNKT && (
           <Box
             sx={{
               display: 'flex',
@@ -384,16 +381,17 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             )}
           </Box>
         )}
-        {pageToShow === 'MAALEPUNKT' && (
+        {pageToShow === StationPages.MAALEPUNKT && (
           <FabWrapper
             icon={<AddCircle />}
-            text="Tilføj Maalepunkt"
+            text="Tilføj målepunkt"
             onClick={() => {
               setShowForm(true);
               setAddMPOpen(true);
-              // setPageToShow(null);
             }}
-            visible={showForm !== 'MAALEPUNKT' ? 'visible' : 'hidden'}
+            visible={
+              pageToShow === StationPages.MAALEPUNKT && showForm === null ? 'visible' : 'hidden'
+            }
           >
             <MaalepunktTable
               watlevmp={watlevmp}
@@ -406,12 +404,13 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         {pageToShow === null && (
           <FabWrapper
             icon={<AddCircle />}
-            text="Tilføj kontrol"
+            text="Tilføj pejling"
             onClick={() => {
               setShowForm(true);
-              // setPageToShow(null);
             }}
-            visible={pageToShow === null && showForm === null ? 'visible' : 'hidden'}
+            visible={
+              pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'
+            }
           >
             <PejlingMeasurements
               boreholeno={boreholeno}
@@ -423,13 +422,11 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             />
           </FabWrapper>
         )}
-        {pageToShow === 'billeder' && (
+        {pageToShow === StationPages.BILLEDER && (
           <FabWrapper
             icon={<AddAPhotoRounded />}
             text="Tilføj billede"
             onClick={() => {
-              // setShowForm(true);
-              // setPageToShow('CAMERA');
               fileInputRef.current.click();
             }}
           >
@@ -442,7 +439,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             />
           </FabWrapper>
         )}
-        {pageToShow === 'billeder' && (
+        {pageToShow === StationPages.BILLEDER && (
           <div>
             <SaveImageDialog
               activeImage={activeImage}
@@ -466,13 +463,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           onChange={handleFileRead}
           onClick={handleFileInputClick}
         />
-        {pageToShow === 'STAMDATA' && canEdit && (
-          <BoreholeStamdata
-            boreholeno={boreholeno}
-            intakeno={intakeno}
-            stamdata={stamdata}
-            setShowForm={setShowForm}
-          />
+        {pageToShow === StationPages.STAMDATA && canEdit && (
+          <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
         )}
       </Box>
       <ActionAreaBorehole

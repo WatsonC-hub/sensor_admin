@@ -1,5 +1,5 @@
+import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
-import {boolean} from 'zod';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
@@ -24,16 +24,25 @@ export const useNavigationFunctions = () => {
       station_id: number | undefined,
       options?: NavigateOptions
     ) => navigate('/field/location/' + loc_id + '/' + station_id, options),
+    stamdata: (loc_id: number, station_id: number, tabValue?: string, options?: NavigateOptions) =>
+      navigate(
+        '/field/location/' + loc_id + '/' + station_id + '?page=STAMDATA&tab=' + tabValue,
+        options
+      ),
     borehole: (boreholeno: string, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno, options),
-    boreholeIntake: (boreholeno: string, intake: string, options?: NavigateOptions) =>
+    boreholeIntake: (boreholeno: string, intake: string | number, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno + '/' + intake, options),
     createStamdata: () => navigate('/field/stamdata'),
   };
 
-  return {
-    ...homeFunctions,
-    ...adminFunctions,
-    ...fieldFunctions,
-  };
+  const out = useMemo(() => {
+    return {
+      ...homeFunctions,
+      ...adminFunctions,
+      ...fieldFunctions,
+    };
+  }, []);
+
+  return out;
 };

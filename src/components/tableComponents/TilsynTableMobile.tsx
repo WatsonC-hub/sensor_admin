@@ -9,7 +9,9 @@ import {
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {renderDetailStyle, setTableBoxStyle} from '~/consts';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 
@@ -26,7 +28,7 @@ export type Tilsyn = {
 
 interface Props {
   data: Tilsyn[];
-  handleEdit: ({}) => void;
+  handleEdit: (tilyn: Tilsyn) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -107,21 +109,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
 
   const options: Partial<MRT_TableOptions<Tilsyn>> = {
     renderDetailPanel: ({row}) => (
-      <Box
-        sx={{
-          border: 'none',
-          backgroundColor: 'grey.300',
-          mt: -7.7,
-          pt: 7,
-          px: 2,
-          mx: -2,
-          transition: 'transform 0.2s',
-          borderTopLeftRadius: '20px',
-          borderTopRightRadius: '20px',
-          borderBottomLeftRadius: '15px',
-          borderBottomRightRadius: '15px',
-        }}
-      >
+      <Box sx={renderDetailStyle}>
         <Typography>
           <b>Dato: </b> {convertDateWithTimeStamp(row.original.dato)}
         </Typography>
@@ -134,10 +122,10 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     ),
   };
 
-  const table = useTable<Tilsyn>(columns, data, options);
+  const table = useTable<Tilsyn>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(320)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -145,6 +133,6 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

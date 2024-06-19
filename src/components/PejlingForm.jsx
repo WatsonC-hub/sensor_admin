@@ -21,6 +21,7 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
+import {alertHeight} from '~/consts';
 
 import {stamdataStore} from '../state/store';
 
@@ -29,7 +30,6 @@ import OwnDatePicker from './OwnDatePicker';
 // TODO
 // - Find ud af om textfield skal have grøn outline
 export default function PejlingForm({
-  stationId,
   formData,
   changeFormData,
   handleSubmit,
@@ -114,7 +114,7 @@ export default function PejlingForm({
     changeFormData('measurement', e.target.value);
   };
 
-  const handleNotPossibleChange = (e) => {
+  const handleNotPossibleChange = () => {
     setNotPossible(!notPossible);
     changeFormData('measurement', null);
   };
@@ -128,6 +128,7 @@ export default function PejlingForm({
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
+        alignSelf: 'center',
       }}
     >
       <CardContent>
@@ -143,7 +144,7 @@ export default function PejlingForm({
                   justifyContent: 'center',
                   display: 'flex',
                   alignItems: 'center',
-                  height: '80px',
+                  height: alertHeight,
                 }}
               >
                 <Link component="button" variant="body2" color="error" onClick={openAddMP}>
@@ -309,7 +310,6 @@ export default function PejlingForm({
                     Annuller
                   </Button>
                   <Button
-                    autoFocus
                     bttype="primary"
                     onClick={() => {
                       handleClickSubmit();

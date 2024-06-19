@@ -1,4 +1,4 @@
-import {Typography} from '@mui/material';
+import {Typography, Box} from '@mui/material';
 import Container from '@mui/material/Container';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,11 +8,11 @@ import TextField from '@mui/material/TextField';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
+import {authStore} from '~/state/store';
 
-import {authStore} from '../../state/store';
-
-export default function Login({}) {
+export default function Login() {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -20,6 +20,7 @@ export default function Login({}) {
   const [passReset, setPassReset] = useState('');
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
+  const {register} = useNavigationFunctions();
 
   const [setAuthenticated, setLoginExpired, setAuthorization] = authStore((state) => [
     state.setAuthenticated,
@@ -42,13 +43,13 @@ export default function Login({}) {
       });
   };
 
-  const handlePassReset = (e) => {
+  const handlePassReset = () => {
     resetPassword({email: passReset})
-      .then((res) => {
+      .then(() => {
         setPassResetErr(false);
         handleEmailSent();
       })
-      .catch((r) => {
+      .catch(() => {
         setPassResetErr(true);
       });
   };
@@ -66,15 +67,15 @@ export default function Login({}) {
   };
 
   return (
-    <div>
-      <div
-        style={{
+    <Box>
+      <Box
+        sx={{
           textAlign: 'center',
           alignSelf: 'center',
         }}
       >
         <Typography variant="h4">Log ind</Typography>
-      </div>
+      </Box>
 
       <Container fixed maxWidth="sm">
         <Typography
@@ -86,18 +87,15 @@ export default function Login({}) {
           Med denne applikation kan du indberette pejlinger, se grafer og flytte rundt på dit
           udstyr.
         </Typography>
-        {/* {loginExpired && (
-          <Typography
-            style={{
-              textAlign: 'center',
-              alignSelf: 'center',
-              color: 'red',
-            }}
-          >
-            Din session er udløbet. Log venligst ind igen.
-          </Typography>
-        )} */}
-        <form onSubmit={handleSubmit} noValidate>
+        <Box
+          component="form"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+          onSubmit={handleSubmit}
+          noValidate
+        >
           <TextField
             variant="outlined"
             margin="normal"
@@ -107,7 +105,6 @@ export default function Login({}) {
             label="Email"
             name="email"
             autoComplete="email"
-            autoFocus
             onChange={(e) => setUserName(e.target.value)}
             error={!!loginError}
           />
@@ -125,25 +122,47 @@ export default function Login({}) {
             error={!!loginError}
             helperText={!!loginError && loginError}
           />
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              px: 2,
+            }}
+          >
+            <Button
+              variant="outlined"
+              bttype="link"
+              onClick={register}
+              sx={{
+                m: 0,
+                p: 0,
+              }}
+            >
+              Opret konto
+            </Button>
+            <Button
+              variant="outlined"
+              bttype="link"
+              onClick={handleClickOpen}
+              sx={{
+                m: 0,
+                p: 0,
+              }}
+            >
+              Glemt kodeord?
+            </Button>
+          </Box>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             bttype="primary"
             disabled={userName === '' || password === ''}
-            style={{marginTop: '1%'}}
           >
             Log på
           </Button>
-        </form>
-        <Button
-          variant="outlined"
-          bttype="tertiary"
-          onClick={handleClickOpen}
-          style={{marginTop: '1.5%'}}
-        >
-          Glemt kodeord?
-        </Button>
+        </Box>
       </Container>
       <Dialog
         open={open}
@@ -155,45 +174,42 @@ export default function Login({}) {
           <Typography variant="h5">Nulstil kodeord</Typography>
         </DialogTitle>
         <DialogContent>
-          <div>
-            <Typography>
-              {emailSentMess === true ? (
-                'En E-mail er er blevet sendt med instruktioner for hvordan du nulstiller dit kodeord!'
-              ) : (
-                <div>
-                  <Typography>Nulstil dit kodeord ved at indtaste din E-mail adresse</Typography>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    id="passReset"
-                    label="E-mail addresse"
-                    type="email"
-                    onChange={(e) => setPassReset(e.target.value)}
-                    fullWidth
-                    error={passResetErr}
-                    //helperText={loginError ? "E-mail eksisterer ikke i systemet" : ""}
-                  />
-                </div>
-              )}
-            </Typography>
-          </div>
+          <Typography>
+            {emailSentMess === true ? (
+              'En E-mail er er blevet sendt med instruktioner for hvordan du nulstiller dit kodeord!'
+            ) : (
+              <div>
+                <Typography>Nulstil dit kodeord ved at indtaste din E-mail adresse</Typography>
+                <TextField
+                  margin="dense"
+                  id="passReset"
+                  label="E-mail addresse"
+                  type="email"
+                  onChange={(e) => setPassReset(e.target.value)}
+                  fullWidth
+                  error={passResetErr}
+                  //helperText={loginError ? "E-mail eksisterer ikke i systemet" : ""}
+                />
+              </div>
+            )}
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} bttype="tertiary">
             Annuller
           </Button>
           {!emailSentMess && (
-            <Button onClick={handlePassReset} bttype="primary" autoFocus>
+            <Button onClick={handlePassReset} bttype="primary">
               Bekræft
             </Button>
           )}
           {emailSentMess && (
-            <Button onClick={handleClose} bttype="primary" autoFocus>
+            <Button onClick={handleClose} bttype="primary">
               Gå til log ind
             </Button>
           )}
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 }

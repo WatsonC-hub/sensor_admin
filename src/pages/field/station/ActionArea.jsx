@@ -4,9 +4,9 @@ import {
   PhotoLibraryRounded,
   PlaylistAddCheck,
 } from '@mui/icons-material';
-import {useState} from 'react';
+import {startCase} from 'lodash';
 
-import {useSearchParam} from '~/hooks/useSeachParam';
+import {StationPages} from '~/helpers/EnumHelper';
 
 import CustomBottomNavigation from '../../../components/BottomNavigation';
 
@@ -27,34 +27,34 @@ export default function ActionArea({
     // setValue(newValue);
     setPageToShow(newValue);
     if (showForm !== null) {
-      setShowForm('');
+      setShowForm(null);
     }
   };
   const navigationItems = [
     {
       text: 'Pejling',
-      value: null,
+      value: StationPages.PEJLING,
       icon: <AddCircle />,
-      color: navIconStyle(pageToShow === null),
+      color: navIconStyle(pageToShow === StationPages.PEJLING),
     },
     {
-      text: 'Tilsyn',
-      value: 'TILSYN',
+      text: startCase(StationPages.TILSYN),
+      value: StationPages.TILSYN,
       icon: <PlaylistAddCheck />,
-      color: navIconStyle(pageToShow === 'TILSYN'),
+      color: navIconStyle(pageToShow === StationPages.TILSYN),
       isCalculated: isCalculated,
     },
     {
-      text: 'Billeder',
-      value: 'billeder',
+      text: startCase(StationPages.BILLEDER),
+      value: StationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(pageToShow === 'billeder'),
+      color: navIconStyle(pageToShow === StationPages.BILLEDER),
     },
     {
-      text: 'Udstyr',
-      value: 'STAMDATA',
+      text: startCase(StationPages.STAMDATA),
+      value: StationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === 'STAMDATA'),
+      color: navIconStyle(pageToShow === StationPages.STAMDATA),
       isCalculated: isCalculated,
     },
   ];

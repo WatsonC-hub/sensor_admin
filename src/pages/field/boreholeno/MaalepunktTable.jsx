@@ -8,8 +8,6 @@ export default function MaalepunktTable(props) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  console.log(props.watlevmp);
-
   return matches ? (
     <MaalepunktTableMobile
       data={props.watlevmp}

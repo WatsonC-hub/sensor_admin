@@ -12,7 +12,7 @@ export default function PostponeModal({open, setOpen, onPostpone}) {
   const [postponeDate, setPostponeDate] = React.useState(
     moment().add(7, 'days').format('YYYY-MM-DD')
   );
-  const handleClose = (e) => {
+  const handleClose = () => {
     setOpen(false);
     setPostponeDate(moment().add(7, 'days').format('YYYY-MM-DD'));
   };
@@ -30,7 +30,6 @@ export default function PostponeModal({open, setOpen, onPostpone}) {
         <DialogContent sx={{width: '300px'}}>
           <DialogContentText>Udskyd til</DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             id="date"
             label="Dato"

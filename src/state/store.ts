@@ -80,7 +80,7 @@ export const authStore = create<AuthState>()(
 
 type LocationState = {
   location: {
-    loc_id: string;
+    loc_id?: number;
     loc_name: string;
     mainloc: string;
     subloc: string;
@@ -128,7 +128,6 @@ type LocationState = {
 
 const initialState = {
   location: {
-    loc_id: '',
     loc_name: '',
     mainloc: '',
     subloc: '',

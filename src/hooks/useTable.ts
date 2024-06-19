@@ -8,28 +8,72 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import {useMemo} from 'react';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 
-import useBreakpoints from './useBreakpoints';
+import {TableTypes} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
-const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean}) => {
+const getOptions = <TData extends MRT_RowData>(
+  breakpoints: ReturnType<typeof useBreakpoints>,
+  type: string
+) => {
   const globalOptions: Partial<MRT_TableOptions<TData>> = {
     localization: MRT_Localization_DA,
-    enableGlobalFilter: false,
-    enableColumnActions: false,
-    enableColumnFilters: false,
     enablePagination: true,
-    enableSorting: false,
-    enableTopToolbar: false,
+    globalFilterFn: 'fuzzy',
     enableStickyFooter: true,
+    renderToolbarInternalActions: ({table}) => {
+      return RenderInternalActions({table});
+    },
+    positionExpandColumn: 'last',
+    muiPaginationProps: {
+      size: 'small',
+      showRowsPerPage: false,
+      color: 'primary',
+      shape: 'rounded',
+      variant: 'outlined',
+    },
     paginationDisplayMode: 'pages',
+    muiTablePaperProps: {
+      sx: {
+        width: '100%',
+        flex: '1 1 0',
+        display: 'flex',
+        flexFlow: 'column',
+        boxShadow: breakpoints.isMobile ? 'none' : '1',
+      },
+    },
+    displayColumnDefOptions: {
+      'mrt-row-expand': {
+        header: '',
+        size: 10,
+        muiTableHeadCellProps: {
+          sx: {
+            padding: 0,
+          },
+        },
+      },
+    },
+    muiTableContainerProps: {
+      sx: {
+        flex: '1 1 0',
+        height: 'inherit',
+      },
+    },
+    muiBottomToolbarProps: {
+      sx: {
+        boxShadow: 'none',
+      },
+    },
   };
 
-  const mobileOptions: Partial<MRT_TableOptions<TData>> = {
-    ...globalOptions,
+  const mobileListOptions: Partial<MRT_TableOptions<TData>> = merge({}, globalOptions, {
     enableTableFooter: false,
     enableTableHead: false,
+    enableTopToolbar: false,
     enableExpandAll: false,
+    enableExpanding: false,
+    enableColumnActions: false,
     muiTableBodyCellProps: {
       sx: {
         borderRadius: 9999,
@@ -38,18 +82,8 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         alignContent: 'space-between',
       },
     },
-    muiTablePaperProps: {
-      sx: {
-        boxShadow: 'none',
-        p: 0,
-      },
-    },
-    muiTableFooterProps: {
-      sx: {
-        boxShadow: 'none',
-      },
-    },
     muiTableBodyRowProps: {
+      // The following styling is neccessary to make sure the detail panel look as a part of the row. The purpose of the styling is to shift the detail panel upwards so that it aligns with the row.
       sx: {
         display: 'table-row !important',
         border: 'none',
@@ -63,13 +97,6 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         borderTopRightRadius: '20px',
         borderBottomLeftRadius: '15px',
         borderBottomRightRadius: '15px',
-        '&:hover': {
-          td: {
-            '&:after': {
-              backgroundColor: 'transparent',
-            },
-          },
-        },
       },
     },
     muiTableProps: {
@@ -78,19 +105,9 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         border: 'none',
       },
     },
-    muiPaginationProps: {
-      size: 'small',
-      showRowsPerPage: false,
-      color: 'primary',
-      shape: 'rounded',
-      variant: 'outlined',
-    },
+
     initialState: {
       density: 'compact',
-      pagination: {
-        pageIndex: 0,
-        pageSize: 10,
-      },
       columnVisibility: {
         'mrt-row-expand': false,
       },
@@ -102,79 +119,47 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
         borderBottomRightRadius: '15px',
       },
     },
-    muiExpandButtonProps: ({row, table}) => ({
-      sx: {
-        transform: row.getIsExpanded() ? 'rotate(180deg)' : 'rotate(-90deg)',
-        transition: 'transform 0.2s',
-      },
-    }),
-  };
+    // muiExpandButtonProps: ({row}) => ({
+    //   sx: {
+    //     transform: row.getIsExpanded() ? 'rotate(180deg)' : 'rotate(-90deg)',
+    //     transition: 'transform 0.2s',
+    //   },
+    // }),
+  } as Partial<MRT_TableOptions<TData>>);
 
-  const desktopOptions: Partial<MRT_TableOptions<TData>> = {
+  const desktopOptions: Partial<MRT_TableOptions<TData>> = merge({}, globalOptions, {
     ...globalOptions,
     enableTableFooter: true,
     enableStickyHeader: true,
-    enableRowActions: true,
+    enableGlobalFilterRankedResults: true,
+    positionGlobalFilter: 'left',
+    enableColumnActions: breakpoints.isTouch ? false : true,
     enableTableHead: true,
+    enableFilter: false,
     displayColumnDefOptions: {
       'mrt-row-actions': {
         size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
         grow: false,
       },
     },
-    muiTableProps: {
-      size: 'small',
-    },
-    positionActionsColumn: 'last',
-    muiTablePaperProps: {
-      sx: {
-        width: '100%',
-        boxShadow: '1',
-        p: 0,
-        margin: 'auto',
-      },
-    },
-    muiTableBodyRowProps: {
-      sx: {
-        '&:hover': {
-          td: {
-            '&:after': {
-              backgroundColor: 'transparent',
-            },
-          },
-        },
-      },
-    },
-    muiPaginationProps: {
-      showRowsPerPage: false,
-      color: 'primary',
-      shape: 'rounded',
-      variant: 'outlined',
-    },
     initialState: {
+      showGlobalFilter: true,
       density: 'comfortable',
     },
-    muiTableHeadCellProps: {
+    positionActionsColumn: 'last',
+    muiSearchTextFieldProps: {
+      variant: 'outlined',
       size: 'small',
-      align: 'left',
     },
-    muiTableBodyCellProps: {
-      size: 'small',
-      align: 'left',
-    },
-    muiTableContainerProps: {
-      sx: {
-        height: {
-          tablet: 'calc(100vh - 30vh)',
-          laptop: 'calc(100vh - 56vh)',
-          desktop: 'calc(100vh - 47vh)',
-        },
-      },
-    },
-  };
-  if (breakpoints.isMobile) {
-    return mobileOptions;
+  } as Partial<MRT_TableOptions<TData>>);
+
+  if (breakpoints.isMobile && type === TableTypes.LIST) {
+    return mobileListOptions;
   }
+
+  // if (breakpoints.isMobile && type === TableTypes.TABLE) {
+  //   return globalOptions;
+  // }
 
   return desktopOptions;
 };
@@ -182,19 +167,22 @@ const getOptions = <TData extends MRT_RowData>(breakpoints: {isMobile: boolean})
 export const useTable = <TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
   data: TData[] | undefined,
-  options: Partial<MRT_TableOptions<TData>>
+  options: Partial<MRT_TableOptions<TData>>,
+  tableState: Partial<MRT_TableOptions<TData>> | undefined,
+  type: string = TableTypes.LIST
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
 
-  const tableOptions = merge({}, getOptions<TData>(breakpoints), options);
+  const tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
-    state: {
+    initialState: {
       isLoading: data === undefined,
     },
     ...tableOptions,
+    ...tableState,
   });
 
   return table;

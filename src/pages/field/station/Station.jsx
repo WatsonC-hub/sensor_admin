@@ -1,5 +1,5 @@
 import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
-import {Box, Divider, Input} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
@@ -12,6 +12,7 @@ import Images from '~/components/Images';
 import PejlingForm from '~/components/PejlingForm';
 import TilsynForm from '~/components/TilsynForm';
 import TilsynTable from '~/components/TilsynTable';
+import {StationPages} from '~/helpers/EnumHelper';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useFormData from '~/hooks/useFormData';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -89,11 +90,12 @@ export default function Station({ts_id, stamdata}) {
     queryKey: ['measurements', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/measurements/${ts_id}`);
-
-      return data.map((m) => {
-        return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
-      });
+      return data;
     },
+    select: (data) =>
+      data.map((m) => {
+        return {...m, timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss')};
+      }),
     enabled: ts_id !== -1 && ts_id !== null,
     initialData: [],
   });
@@ -102,17 +104,18 @@ export default function Station({ts_id, stamdata}) {
     queryKey: ['service', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
-
-      return data.map((m) => {
-        return {...m, dato: moment(m.dato).format('YYYY-MM-DD HH:mm:ss')};
-      });
+      return data;
     },
+    select: (data) =>
+      data.map((m) => {
+        return {...m, dato: moment(m.dato)};
+      }),
     enabled: ts_id !== -1 && ts_id !== null,
-    initialData: [],
+    // initialData: [],
   });
 
   useEffect(() => {
-    if (watlevmp?.length > 0) {
+    if (store.timeseries.tstype_id && watlevmp?.length > 0) {
       const elev = watlevmp?.filter((e2) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
@@ -127,8 +130,12 @@ export default function Station({ts_id, stamdata}) {
       } else {
         setDynamic([]);
       }
+    } else if (store.timeseries.tstype_id !== 1) {
+      let dynamicDate = moment(pejlingData.timeofmeas).format('YYYY-MM-DD HH:mm:ss');
+      let dynamicMeas = pejlingData.measurement;
+      setDynamic([dynamicDate, dynamicMeas]);
     }
-  }, [pejlingData, watlevmp]);
+  }, [pejlingData, watlevmp, store.timeseries.tstype_id]);
 
   useEffect(() => {
     var ctrls = [];
@@ -152,7 +159,6 @@ export default function Station({ts_id, stamdata}) {
 
   const openAddMP = () => {
     setShowForm(true);
-    // setPageToShow('');
   };
 
   const pejlingMutate = useMutation({
@@ -167,7 +173,7 @@ export default function Station({ts_id, stamdata}) {
         );
       }
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       resetPejlingData();
       setShowForm(null);
       toast.success('Kontrolmåling gemt');
@@ -175,7 +181,7 @@ export default function Station({ts_id, stamdata}) {
         queryKey: ['measurements', ts_id],
       });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Der skete en fejl');
     },
   });
@@ -188,7 +194,7 @@ export default function Station({ts_id, stamdata}) {
     };
     payload.timeofmeas = moment(payload.timeofmeas).toISOString();
     pejlingMutate.mutate(payload);
-    setPageToShow(null);
+    setPageToShow(StationPages.PEJLING);
   };
 
   const serviceMutate = useMutation({
@@ -215,9 +221,8 @@ export default function Station({ts_id, stamdata}) {
     payload.dato = moment(payload.dato).toISOString();
 
     serviceMutate.mutate(payload, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         resetServiceData();
-        // setPageToShow('ADDTILSYN');
         setShowForm(null);
         toast.success('Tilsyn gemt');
         queryClient.invalidateQueries({
@@ -235,7 +240,6 @@ export default function Station({ts_id, stamdata}) {
   };
 
   // Regex to find matches on systemx._13, systemx._144, systemx._1423 etc.
-  const systemxRegex = /systemx\._\d+/g;
 
   const handleEdit = (type) => {
     if (type === 'service') {
@@ -243,16 +247,13 @@ export default function Station({ts_id, stamdata}) {
         data.dato = data.dato.replace(' ', 'T').substr(0, 19);
         setServiceData(data);
         setShowForm(true);
-        // setPageToShow('');
       };
     } else {
       return (data) => {
         data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-        data.measurement = data.measurement;
         data.useforcorrection = data.useforcorrection.toString();
         setPejlingData(data); // Fill form data on Edit
         setShowForm(true);
-        // setPageToShow('');
       };
     }
   };
@@ -260,7 +261,7 @@ export default function Station({ts_id, stamdata}) {
   const handleDelete = (type) => {
     if (type === 'service') {
       return (gid) => {
-        apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/station/service/${ts_id}/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['service', ts_id],
           });
@@ -270,7 +271,7 @@ export default function Station({ts_id, stamdata}) {
       };
     } else {
       return (gid) => {
-        apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then((res) => {
+        apiClient.delete(`/sensor_field/station/measurements/${ts_id}/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['measurements', ts_id],
           });
@@ -324,14 +325,24 @@ export default function Station({ts_id, stamdata}) {
     if (openSave !== true) fileInputRef.current.value = null;
   };
 
+  useEffect(() => {
+    setPageToShow(pageToShow);
+    if (stamdata?.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
+    resetPejlingData();
+    resetServiceData();
+    setShowForm(null);
+  }, [ts_id]);
+
   return (
-    <Box>
-      {pageToShow !== 'billeder' && pageToShow !== 'STAMDATA' && (
+    <Box display="flex" flexDirection={'column'}>
+      {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
         <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
             stationId={ts_id}
             measurements={control}
-            dynamicMeasurement={pageToShow === null && showForm === true ? dynamic : undefined}
+            dynamicMeasurement={
+              pageToShow === StationPages.PEJLING && showForm === true ? dynamic : undefined
+            }
           />
           <Divider />
         </Box>
@@ -340,11 +351,11 @@ export default function Station({ts_id, stamdata}) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          alignItems: {xs: 'normal', sm: 'center'},
-          justifyContent: 'center',
+          maxWidth: '1080px',
+          alignSelf: 'center',
         }}
       >
-        {pageToShow === null && showForm === true && (
+        {pageToShow === StationPages.PEJLING && showForm === true && (
           <PejlingForm
             stationId={ts_id}
             formData={pejlingData}
@@ -361,7 +372,7 @@ export default function Station({ts_id, stamdata}) {
             isFlow={isFlow}
           />
         )}
-        {pageToShow === 'STAMDATA' && (
+        {pageToShow === StationPages.STAMDATA && (
           <EditStamdata
             setFormToShow={setShowForm}
             ts_id={ts_id}
@@ -376,7 +387,9 @@ export default function Station({ts_id, stamdata}) {
             onClick={() => {
               setShowForm(true);
             }}
-            visible={pageToShow === null && showForm === null ? 'visible' : 'hidden'}
+            visible={
+              pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'
+            }
           >
             <PejlingMeasurements
               measurements={measurements}
@@ -387,7 +400,7 @@ export default function Station({ts_id, stamdata}) {
           </FabWrapper>
         )}
         <>
-          {pageToShow === 'TILSYN' && showForm === true && (
+          {pageToShow === StationPages.TILSYN && showForm === true && (
             <TilsynForm
               formData={serviceData}
               changeFormData={changeServiceData}
@@ -398,14 +411,16 @@ export default function Station({ts_id, stamdata}) {
               }}
             />
           )}
-          {pageToShow === 'TILSYN' && (
+          {pageToShow === StationPages.TILSYN && (
             <FabWrapper
               icon={<PlaylistAddRounded />}
-              text="Tilføj tilsyn"
+              text={'Tilføj ' + StationPages.TILSYN}
               onClick={() => {
                 setShowForm(true);
               }}
-              visible={pageToShow === 'TILSYN' && showForm === null ? 'visible' : 'hidden'}
+              visible={
+                pageToShow === StationPages.TILSYN && showForm === null ? 'visible' : 'hidden'
+              }
             >
               <TilsynTable
                 services={services}
@@ -417,11 +432,11 @@ export default function Station({ts_id, stamdata}) {
           )}
         </>
 
-        {pageToShow === 'billeder' && (
+        {pageToShow === StationPages.BILLEDER && (
           <Box>
             <FabWrapper
               icon={<AddAPhotoRounded />}
-              text="Tilføj billede"
+              text={'Tilføj ' + StationPages.BILLEDER}
               onClick={() => {
                 fileInputRef.current.click();
               }}

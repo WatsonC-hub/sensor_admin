@@ -41,7 +41,7 @@ export default function DeleteAlert({
         <DialogTitle id="alert-dialog-title">{title ? title : 'Vil du slette rækken?'}</DialogTitle>
 
         <DialogActions>
-          <Button autoFocus onClick={handleClose} bttype="tertiary">
+          <Button onClick={handleClose} bttype="tertiary">
             <Typography>Nej</Typography>
           </Button>
           <Button onClick={handleOk} bttype="primary">

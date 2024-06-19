@@ -92,8 +92,6 @@ const LevelCorrectionRow = ({data, index}) => {
               size="small"
               onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
               startIcon={<SaveIcon />}
-              // disabled={isSubmitting}
-              //   sx={{alignSelf: 'center'}}
             >
               Gem
             </Button>
@@ -104,8 +102,6 @@ const LevelCorrectionRow = ({data, index}) => {
               size="small"
               onClick={() => setEditMode(true)}
               startIcon={<EditIcon />}
-              // disabled={isSubmitting}
-              //   sx={{alignSelf: 'center'}}
             >
               Rediger
             </Button>

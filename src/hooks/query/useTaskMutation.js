@@ -26,7 +26,7 @@ export const useTaskMutation = () => {
 
   const post = useMutation({
     ...taskMutationPostOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
@@ -39,7 +39,7 @@ export const useTaskMutation = () => {
 
   const markAsDone = useMutation({
     ...taskMutationMarkAsDoneOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {

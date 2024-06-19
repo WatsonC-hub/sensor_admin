@@ -8,12 +8,14 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {renderDetailStyle, setTableBoxStyle} from '~/consts';
 import {
   convertDate,
   checkEndDateIsUnset,
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
@@ -30,7 +32,7 @@ export type Maalepunkt = {
 
 interface Props {
   data: Maalepunkt[] | undefined;
-  handleEdit: ({}) => void;
+  handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -100,21 +102,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
     renderDetailPanel: ({row}) => (
-      <Box
-        sx={{
-          border: 'none',
-          backgroundColor: 'grey.300',
-          mt: -7.7,
-          pt: 7,
-          px: 2,
-          mx: -2,
-          transition: 'transform 0.2s',
-          borderTopLeftRadius: '20px',
-          borderTopRightRadius: '20px',
-          borderBottomLeftRadius: '15px',
-          borderBottomRightRadius: '15px',
-        }}
-      >
+      <Box sx={renderDetailStyle}>
         <Typography>
           <b>Start dato: </b> {convertDateWithTimeStamp(row.original.startdate)}
         </Typography>
@@ -129,20 +117,20 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
         </Typography>
       </Box>
     ),
-    muiTablePaperProps: {
-      sx: {
-        boxShadow: 'none',
-        p: 0,
-        margin: 'auto',
-        width: '100%',
-      },
-    },
+    // muiTablePaperProps: {
+    //   sx: {
+    //     boxShadow: 'none',
+    //     p: 0,
+    //     margin: 'auto',
+    //     width: '100%',
+    //   },
+    // },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options);
+  const table = useTable<Maalepunkt>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(320)} width={'100%'}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -150,6 +138,6 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

@@ -26,9 +26,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
   const {post: uploadImage, put: editImage} = useImageUpload(type);
 
   function saveImage() {
-    console.log('Hit Once');
     if (activeImage.gid === -1) {
-      console.log('Hit Twice');
       const payload = {
         path: id,
         data: {
@@ -42,7 +40,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
       toast.promise(() => uploadImage.mutateAsync(payload), {
         pending: 'Gemmer billede',
         success: {
-          render({data}) {
+          render() {
             handleCloseSave();
             return 'Billede gemt';
           },
@@ -62,7 +60,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
       toast.promise(() => editImage.mutateAsync(payload), {
         pending: 'Gemmer billede',
         success: {
-          render({data}) {
+          render() {
             handleCloseSave();
             return 'Billede gemt';
           },
@@ -92,6 +90,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
             }}
           >
             <img
+              alt=""
               src={activeImage.gid === -1 ? dataUri : imageUrl}
               height="800px"
               style={{maxWidth: '800px', objectFit: 'cover', margin: 'auto'}}
@@ -124,7 +123,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
                   color="primary"
                 />
               }
-              label={<label>Offentliggør på Calypso</label>}
+              label={'Offentliggør på Calypso'}
             />
             <OwnDatePicker
               label={'Dato'}

@@ -27,10 +27,10 @@ export const useYRangeMutations = () => {
 
   const post = useMutation({
     ...yRangePostOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['qa_all', Number(variables.path)],
       });
@@ -40,7 +40,7 @@ export const useYRangeMutations = () => {
 
   const del = useMutation({
     ...yRangeDelOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {

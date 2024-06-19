@@ -1,10 +1,8 @@
 import {useQuery, useMutation} from '@tanstack/react-query';
 import moment from 'moment';
-import {useContext} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-// @ts-ignore
 import {stamdataStore} from '~/state/store';
 
 interface Maalepunkt {

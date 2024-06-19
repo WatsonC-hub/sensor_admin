@@ -13,7 +13,7 @@ import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 
-const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
+const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
   const [openCamera, setOpenCamera] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [calypso_id, setCalypso_id] = useState(stamdata?.calypso_id);
@@ -60,7 +60,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
     formMethods.reset(values);
   };
 
-  const handleErrors = (errors) => {
+  const handleErrors = () => {
     toast.error('Der skete en fejl', {
       autoClose: 2000,
     });
@@ -82,7 +82,6 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
     }
   };
 
-  const mode = 'edit';
   return (
     <Box sx={{mt: 2}}>
       {openCamera && (
@@ -184,13 +183,12 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata, setFormToShow}) => {
                   <Button
                     bttype="tertiary"
                     onClick={() => {
-                      setFormToShow(null);
+                      formMethods.reset(stamdata);
                     }}
                   >
                     Annuller
                   </Button>
                   <Button
-                    autoFocus
                     bttype="primary"
                     startIcon={<Save />}
                     onClick={formMethods.handleSubmit(handleUpdate, handleErrors)}

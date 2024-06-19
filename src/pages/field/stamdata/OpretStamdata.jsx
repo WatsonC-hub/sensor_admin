@@ -1,6 +1,6 @@
+import {DevTool} from '@hookform/devtools';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {
-  AddLocationAlt,
   BuildRounded,
   LocationOnRounded,
   SettingsPhoneRounded,
@@ -8,22 +8,21 @@ import {
 } from '@mui/icons-material';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import SaveIcon from '@mui/icons-material/Save';
-import {Container, Grid, TextField, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
+import {Grid, TextField, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
-import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
+import {tabsHeight} from '~/consts';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -39,7 +38,7 @@ import UnitForm from './components/UnitForm';
 
 function LocationChooser({setLocationDialogOpen}) {
   const location = stamdataStore((store) => store.location);
-  const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : {loc_name: ''});
+  const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : null);
   const formMethods = useFormContext();
 
   const theme = useTheme();
@@ -125,7 +124,7 @@ function LocationChooser({setLocationDialogOpen}) {
           <Button
             size="small"
             color="primary"
-            variant="contained"
+            bttype="primary"
             sx={{
               textTransform: 'none',
               ml: '12px',
@@ -213,7 +212,6 @@ function TabPanel(props) {
 }
 
 export default function OpretStamdata({setAddStationDisabled}) {
-  const navigate = useNavigate();
   const {field} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
@@ -251,7 +249,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
     watch,
     getValues,
     handleSubmit,
-    trigger,
   } = formMethods;
 
   const watchtstype_id = watch('timeseries.tstype_id');
@@ -324,9 +321,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
     };
   }, []);
 
-  console.log('errors', errors);
-  console.log('values', getValues());
-
   return (
     <>
       <NavBar />
@@ -339,8 +333,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
             aria-label="simple tabs example"
             sx={{
               '& .MuiTab-root': {
-                height: '48px',
-                minHeight: '48px',
+                height: tabsHeight,
+                minHeight: tabsHeight,
                 marginTop: 1,
               },
             }}
@@ -485,7 +479,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
             setLocationDialogOpen={setLocationDialogOpen}
             formMethods={formMethods}
           />
-          {/* <DevTool control={control} /> */}
+          <DevTool control={formMethods.control} />
         </FormProvider>
       </div>
     </>

@@ -5,7 +5,7 @@ import {apiClient} from '~/apiClient';
 export const useGraphData = (ts_id, xRange) => {
   const query = useQuery({
     queryKey: ['graphData', ts_id, xRange],
-    queryFn: async ({signal}) => {
+    queryFn: async () => {
       const {data} = await apiClient.get(`/data/timeseriesV2/${ts_id}`, {
         params: {
           start: xRange[0],

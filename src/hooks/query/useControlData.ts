@@ -1,5 +1,4 @@
 import {useQuery} from '@tanstack/react-query';
-import {useContext} from 'react';
 
 import {apiClient} from '~/apiClient';
 

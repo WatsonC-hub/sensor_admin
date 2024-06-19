@@ -58,7 +58,7 @@ export default function BoreholeRouter() {
         <Toolbar>
           <IconButton
             color="inherit"
-            onClick={(e) => {
+            onClick={() => {
               navigate(-1);
             }}
             size="large"

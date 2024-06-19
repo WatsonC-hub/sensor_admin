@@ -8,15 +8,17 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 import {
   convertDate,
   checkEndDateIsUnset,
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {authStore, stamdataStore} from '~/state/store';
+import {authStore} from '~/state/store';
 
 export type Maalepunkt = {
   startdate: string;
@@ -32,14 +34,13 @@ export type Maalepunkt = {
 
 interface Props {
   data: Maalepunkt[];
-  handleEdit: ({}) => void;
+  handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
 }
 
 export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const org_id = authStore((store) => store.org_id);
 
   const onDeleteBtnClick = (id: number) => {
@@ -142,10 +143,10 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
     },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options);
+  const table = useTable<Maalepunkt>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(320)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -153,6 +154,6 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

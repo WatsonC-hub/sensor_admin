@@ -5,6 +5,7 @@ import React, {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
+import {setGraphHeight} from '~/consts';
 
 const selectorOptions = {
   buttons: [
@@ -120,12 +121,6 @@ const TRACE_NAMES = {
   null: 'Jupiter - ukendt årsag',
 };
 
-const TRACE_COLORS = {
-  0: '#177FC1',
-  1: '#FF0000',
-  null: '#000000',
-};
-
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => d.waterlevel);
@@ -157,7 +152,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
       x,
       y,
       name: TRACE_NAMES[i],
-      type: 'scatter',
+      type: 'scattergl',
       line: {width: 2},
       mode: 'lines+markers',
       marker: {symbol: '100', size: '8'},
@@ -174,7 +169,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
           x: xOurData,
           y: yOurData,
           name: 'Calypso data',
-          type: 'scatter',
+          type: 'scattergl',
           mode: 'markers',
           marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
         },
@@ -182,7 +177,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
           x: xDynamicMeasurement,
           y: yDynamicMeasurement,
           name: '',
-          type: 'scatter',
+          type: 'scattergl',
           mode: 'markers',
           showlegend: false,
           marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
@@ -243,7 +238,7 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
     <div
       style={{
         width: 'auto',
-        height: matches ? '300px' : '500px',
+        height: setGraphHeight(matches),
         marginBottom: '10px',
         paddingTop: '5px',
       }}

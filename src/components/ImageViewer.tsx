@@ -1,7 +1,6 @@
 import {Grid} from '@mui/material';
 import React from 'react';
 
-// @ts-ignore
 import ImageCard from '~/components/ImageCard';
 
 type Image = {

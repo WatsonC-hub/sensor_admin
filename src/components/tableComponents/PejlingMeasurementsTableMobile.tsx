@@ -1,7 +1,6 @@
 import {Box, Typography} from '@mui/material';
 import {
   MRT_ColumnDef,
-  MRT_RowData,
   MRT_TableOptions,
   MRT_ExpandButton,
   MaterialReactTable,
@@ -9,7 +8,9 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle, renderDetailStyle, correction_map} from '~/consts';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
@@ -27,10 +28,9 @@ export type Kontrol = {
 
 interface Props {
   data: Kontrol[] | undefined;
-  handleEdit: ({}) => void;
+  handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
-  correction_map: Record<number, string>;
 }
 
 export default function PejlingMeasurementsTableMobile({
@@ -38,7 +38,6 @@ export default function PejlingMeasurementsTableMobile({
   handleEdit,
   handleDelete,
   canEdit,
-  correction_map,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
@@ -104,21 +103,7 @@ export default function PejlingMeasurementsTableMobile({
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
     renderDetailPanel: ({row}) => (
-      <Box
-        sx={{
-          border: 'none',
-          backgroundColor: 'grey.300',
-          mt: -7.7,
-          pt: 7,
-          px: 2,
-          mx: -2,
-          transition: 'transform 0.2s',
-          borderTopLeftRadius: '20px',
-          borderTopRightRadius: '20px',
-          borderBottomLeftRadius: '15px',
-          borderBottomRightRadius: '15px',
-        }}
-      >
+      <Box sx={renderDetailStyle}>
         {row.original.comment && (
           <Typography>
             <b>Kommentar: </b> {row.original.comment}
@@ -137,10 +122,10 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useTable<Kontrol>(columns, data, options);
+  const table = useTable<Kontrol>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(320)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -148,6 +133,6 @@ export default function PejlingMeasurementsTableMobile({
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

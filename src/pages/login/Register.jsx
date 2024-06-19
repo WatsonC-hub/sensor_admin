@@ -7,7 +7,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
-import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import * as z from 'zod';
 
@@ -47,27 +46,21 @@ export default function Register() {
     resolver: zodResolver(RegisterSchema),
   });
 
-  const {
-    formState: {errors, isSubmitSuccessful, values},
-    reset,
-    getValues,
-    handleSubmit,
-  } = formMethods;
+  const {getValues, handleSubmit} = formMethods;
 
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset({
-        firstName: '',
-        lastName: '',
-        email: '',
-        cvr: '',
-        checkedTerms: false,
-        checkedNews: false,
-      });
-    }
-  }, [isSubmitSuccessful]);
+  // useEffect(() => {
+  //   if (isSubmitSuccessful) {
+  //     reset({
+  //       firstName: '',
+  //       lastName: '',
+  //       email: '',
+  //       cvr: '',
+  //       checkedTerms: false,
+  //       checkedNews: false,
+  //     });
+  //   }
+  // }, [isSubmitSuccessful]);
 
-  const navigate = useNavigate();
   const {home} = useNavigationFunctions();
   const routeChange = () => {
     // navigate(`/`);
@@ -83,7 +76,6 @@ export default function Register() {
     queryKey: ['cvr'],
     queryFn: () => getCvr(getValues('cvr')),
     enabled: false,
-    refetchOnWindowFocus: false,
     select: (data) => {
       return {
         ...data.data.orgs[0],
@@ -93,22 +85,23 @@ export default function Register() {
   });
 
   useEffect(() => {
-    toast.error('CVR ikke gyldigt');
+    if (error !== null) {
+      toast.error('CVR ikke gyldigt');
+    }
   }, [error]);
 
   const createUserMutation = useMutation({
     mutationFn: createUser,
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast.success('Bruger oprettet');
       setOpenAwaitDialog(true);
     },
-    onError: (error) => {
+    onError: () => {
       toast.error('Bruger kunne ikke oprettes');
     },
   });
 
-  const handleOpret = (e) => {
-    e.preventDefault(); //To avoid refreshing page on button click
+  const handleOpret = (values) => {
     refetch();
     setOpenConfirmDialog(true);
   };
@@ -182,7 +175,7 @@ export default function Register() {
           <Button onClick={handleClose} bttype="tertiary">
             Annuller
           </Button>
-          <Button onClick={handleSubmit(handleConfirm)} bttype="primary" autoFocus>
+          <Button onClick={handleSubmit(handleConfirm)} bttype="primary">
             Bekræft
           </Button>
         </DialogActions>
@@ -206,7 +199,7 @@ export default function Register() {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={routeChange} variant="outlined" color="primary" autoFocus>
+          <Button onClick={routeChange} bttype="primary">
             Til log ind
           </Button>
         </DialogActions>

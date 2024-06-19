@@ -10,7 +10,7 @@ const HandleNowButton = () => {
   const metadata = useContext(MetadataContext);
 
   const handledMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async () => {
       const {data: res} = await apiClient.post(`/sensor_admin/qa_handled/${metadata?.ts_id}`);
       return res;
     },

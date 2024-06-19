@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import * as React from 'react';
 
 export default function ConfirmCalypsoIDDialog({open, setOpen, onConfirm, calypso_id}) {
-  const handleClose = (e) => {
+  const handleClose = () => {
     setOpen(false);
   };
 

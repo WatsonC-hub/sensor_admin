@@ -1,5 +1,5 @@
 import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {reverse, sortBy, uniqBy} from 'lodash';
+import {reverse, sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
 
@@ -14,7 +14,7 @@ export interface Notification {
   latitude: number;
   terminalid: string;
   opgave: string;
-  dato: string;
+  dato: string | null;
   color: string;
   flag: number;
   notification_id: number;
@@ -33,10 +33,7 @@ type NotificationOverviewOptions = Partial<
   Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
 >;
 
-export const useNotificationOverview = (
-  options?: NotificationOverviewOptions,
-  returnMapData?: boolean
-) => {
+export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async ({signal}) => {
@@ -57,11 +54,10 @@ export const useNotificationOverview = (
 export const useNotificationOverviewMap = (
   options?: NotificationOverviewOptions
 ): UseQueryResult<NotificationMap[], Error> => {
-  // @ts-ignore
+  // @ts-expect-error - This is a valid use case for the hook
   return useNotificationOverview({
     ...options,
     select: (data) => {
-      console.log('len data', data.length);
       const sorted = reverse(
         sortBy(data, [(item) => (item.status ? item.status : ''), (item) => item.flag])
       );
@@ -70,13 +66,13 @@ export const useNotificationOverviewMap = (
         const existing = acc.find((accItem) => accItem.locid === item.locid);
         if (existing) {
           existing.otherNotifications.push(item);
+          existing.active = existing.active || item.active;
         } else {
           acc.push({...item, otherNotifications: []});
         }
         return acc;
       }, []);
 
-      console.log('len grouped', grouped.length);
       return grouped;
     },
   });

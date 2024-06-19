@@ -1,10 +1,8 @@
 import {Typography} from '@mui/material';
 import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
-import {useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 
@@ -13,13 +11,6 @@ interface Group {
   group_name: string;
   new?: boolean;
 }
-
-const top100Films: Array<Group> = [
-  {group_name: 'The Shawshank Redemption', id: '1994'},
-  {group_name: 'The Godfather', id: '1972'},
-  {group_name: 'The Godfather: Part II', id: '1974'},
-  {group_name: 'The Dark Knight', id: '2008'},
-];
 
 const filter = createFilterOptions<Group>();
 
@@ -66,7 +57,6 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
         return `${option.id.slice(0, 4)} - ${option.group_name}`;
       }}
       renderTags={(value, getTagProps) => {
-        value.forEach((option) => console.log('option', option.id));
         return value.map((option, index) => (
           <Chip
             variant="outlined"

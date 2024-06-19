@@ -1,23 +1,19 @@
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import MapIcon from '@mui/icons-material/Map';
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import type {BoxProps} from '@mui/material/Box';
 import {useTheme} from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
-import React, {SyntheticEvent} from 'react';
+import React, {SyntheticEvent, useMemo} from 'react';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
-import {
-  useNotificationOverview,
-  useNotificationOverviewMap,
-} from '~/hooks/query/useNotificationOverview';
+import {tabsHeight} from '~/consts';
+import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import {authStore} from '~/state/store';
 
 import ScrollTop from '../../../components/ScrollTop';
@@ -25,24 +21,10 @@ import ScrollTop from '../../../components/ScrollTop';
 import BoreholeTable from './components/BoreholeTable';
 import StationTable from './components/StationTable';
 import Map from './Map';
+import {TableData, BoreholeMapData, BoreholeData} from '~/types';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
-
-export interface BoreholeData {
-  boreholeno: string;
-  latitude: number;
-  longitude: number;
-  intakeno: number[];
-  plantname: string;
-  plantid: number;
-  drilldepth: number[];
-  measurement: number[];
-  status: number[];
-  timeofmeas: string[];
-  calypso_id: number[];
-  num_controls_in_a_year: number[];
-}
 
 export default function OverviewPage() {
   const theme = useTheme();
@@ -51,7 +33,7 @@ export default function OverviewPage() {
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
-  const {data: tabledata, isLoading} = useQuery({
+  const {data: tabledata} = useQuery<TableData[]>({
     queryKey: ['station_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
@@ -64,7 +46,7 @@ export default function OverviewPage() {
     refetchOnReconnect: false,
   });
 
-  const {data: boreholetabledata, isLoading: boreholeIsLoading} = useQuery({
+  const {data: boreholetabledata, isPending: boreholeIsPending} = useQuery<BoreholeData[]>({
     queryKey: ['borehole_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
@@ -73,7 +55,7 @@ export default function OverviewPage() {
     enabled: boreholeAccess,
   });
 
-  const {data: boreholeMapdata, isLoading: boreholeMapIsLoading} = useQuery<BoreholeData[]>({
+  const {data: boreholeMapdata, isPending: boreholeMapIsPending} = useQuery<BoreholeMapData[]>({
     queryKey: ['borehole_map'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);
@@ -82,7 +64,7 @@ export default function OverviewPage() {
     enabled: boreholeAccess,
   });
 
-  const {data: mapData, isLoading: mapLoading} = useNotificationOverviewMap({
+  const {data: mapData, isPending: mapPending} = useNotificationOverviewMap({
     enabled: iotAccess,
   });
 
@@ -101,7 +83,6 @@ export default function OverviewPage() {
     other?: BoxProps;
   }) {
     const {children, value, index, ...other} = props;
-
     return (
       <Box
         display={value === index ? 'flex' : 'none'}
@@ -125,6 +106,10 @@ export default function OverviewPage() {
     };
   }
 
+  const allData = useMemo(() => {
+    return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
+  }, [mapData, boreholeMapdata]);
+
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
       <NavBar />
@@ -136,7 +121,7 @@ export default function OverviewPage() {
         sx={{
           '& .MuiTab-root': {
             // height: '48px',
-            minHeight: '48px',
+            minHeight: tabsHeight,
             borderBottom: '1px solid #e0e0e0',
           },
         }}
@@ -146,10 +131,8 @@ export default function OverviewPage() {
       </Tabs>
       <TabPanel value={tabValue} index={0}>
         <Map
-          sensorData={mapData}
-          boreholeData={boreholeMapdata}
-          loading={mapLoading && iotAccess}
-          boreholeLoading={boreholeMapIsLoading && boreholeAccess}
+          data={allData}
+          loading={(mapPending && iotAccess) || (boreholeMapIsPending && boreholeAccess)}
         />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
@@ -162,7 +145,7 @@ export default function OverviewPage() {
             margin: matches ? '0' : 'auto',
             '& .MuiTab-root': {
               // height: '48px',
-              minHeight: '48px',
+              minHeight: tabsHeight,
             },
           }}
           variant={matches ? 'fullWidth' : 'standard'}
@@ -174,12 +157,12 @@ export default function OverviewPage() {
 
         {iotAccess && (
           <TabPanel value={tabValueInner} index={0}>
-            <StationTable data={tabledata} isLoading={isLoading} />
+            <StationTable data={tabledata} />
           </TabPanel>
         )}
         {boreholeAccess && (
           <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0}>
-            <BoreholeTable data={boreholetabledata} isLoading={boreholeIsLoading} />
+            <BoreholeTable data={boreholetabledata} />
           </TabPanel>
         )}
       </TabPanel>

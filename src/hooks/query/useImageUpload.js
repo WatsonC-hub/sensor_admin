@@ -39,7 +39,7 @@ export const useImageUpload = (endpoint) => {
       );
       return res;
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['images'],
       });

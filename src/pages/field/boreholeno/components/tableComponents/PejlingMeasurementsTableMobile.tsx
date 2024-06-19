@@ -1,7 +1,6 @@
 import {Box, Checkbox, Typography} from '@mui/material';
 import {
   MRT_ColumnDef,
-  MRT_RowData,
   MRT_TableOptions,
   MRT_ExpandButton,
   MaterialReactTable,
@@ -9,12 +8,14 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {setTableBoxStyle} from '~/consts';
 import {
   calculatePumpstop,
   convertDate,
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
+import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {authStore, stamdataStore} from '~/state/store';
@@ -34,7 +35,7 @@ export type Kontrol = {
 
 interface Props {
   data: Kontrol[];
-  handleEdit: ({}) => void;
+  handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number | undefined) => void;
 }
 
@@ -148,10 +149,10 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
     ),
   };
 
-  const table = useTable<Kontrol>(columns, data, options);
+  const table = useTable<Kontrol>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
-    <>
+    <Box sx={setTableBoxStyle(320)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
@@ -159,6 +160,6 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
         onOkDelete={handleDelete}
       />
       <MaterialReactTable table={table} />
-    </>
+    </Box>
   );
 }

@@ -1,4 +1,3 @@
-import CircleIcon from '@mui/icons-material/Circle';
 import DirectionsIcon from '@mui/icons-material/Directions';
 import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import {Box, Divider, Typography} from '@mui/material';
@@ -38,7 +37,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
             if (data.measurement[index] === null || data.timeofmeas[index] === null) return null;
 
             return (
-              <Box display="flex" alignItems="center" gap={1}>
+              <Box key={index} display="flex" alignItems="center" gap={1}>
                 <Typography variant="body2" fontWeight="bold">
                   Indtag {intake}:
                 </Typography>

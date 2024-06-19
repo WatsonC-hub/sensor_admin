@@ -36,10 +36,10 @@ export const useLevelCorrection = () => {
 
   const post = useMutation({
     ...levelCorrectionPostOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['qa_all', Number(variables.path)],
       });
@@ -49,7 +49,7 @@ export const useLevelCorrection = () => {
 
   const put = useMutation({
     ...levelCorrectionPutOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
@@ -62,7 +62,7 @@ export const useLevelCorrection = () => {
 
   const del = useMutation({
     ...levelCorrectionDelOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {

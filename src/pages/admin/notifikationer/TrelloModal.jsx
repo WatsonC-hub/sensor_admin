@@ -9,7 +9,7 @@ import * as React from 'react';
 
 export default function TrelloModal({open, setOpen, onSchedule}) {
   const [description, setDescription] = React.useState('');
-  const handleClose = (e) => {
+  const handleClose = () => {
     setDescription('');
     setOpen(false);
   };
@@ -27,7 +27,6 @@ export default function TrelloModal({open, setOpen, onSchedule}) {
         <DialogContent sx={{maxWidth: '300px'}}>
           <DialogContentText>Ekstra beskrivelse til Trello</DialogContentText>
           <TextField
-            autoFocus
             multiline
             margin="dense"
             id="description"

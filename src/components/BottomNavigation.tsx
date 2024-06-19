@@ -13,6 +13,8 @@ import {
 import {useTheme} from '@mui/material/styles';
 import React from 'react';
 
+import {StationPages} from '~/helpers/EnumHelper';
+
 import CustomBottomNavigationActionLabel from './CustomLabel';
 
 interface NavigationItem {
@@ -25,7 +27,7 @@ interface NavigationItem {
 
 interface CustomBottomNavigationProps {
   pageToShow: string;
-  onChange: (event: React.ChangeEvent<{}>, newValue: string) => void;
+  onChange: (event: React.ChangeEvent<object>, newValue: string) => void;
   items: NavigationItem[];
   canEdit?: boolean;
 }
@@ -65,7 +67,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   };
 
   return (
-    <Box sx={{mt: 15, position: 'sticky', zIndex: 3}}>
+    <Box sx={{mt: isMobile ? 15 : 8, position: 'sticky', zIndex: 3}}>
       {isMobile && hiddenItems.length > 0 && (
         <Menu
           anchorEl={anchorEl}
@@ -82,8 +84,8 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           {hiddenItems.map((item) => {
             if (
               item.isCalculated !== undefined &&
-              item.isCalculated !== false &&
-              (item.value === 'ADDTILSYN' || item.value === 'RET_STAMDATA')
+              item.isCalculated &&
+              item.value === StationPages.TILSYN
             )
               return;
             return (
@@ -121,8 +123,8 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           {visibleItems.map((item) => {
             if (
               item.isCalculated !== undefined &&
-              item.isCalculated !== false &&
-              (item.value === 'ADDTILSYN' || item.value === 'RET_STAMDATA')
+              item.isCalculated &&
+              item.value === StationPages.TILSYN
             ) {
               return;
             }

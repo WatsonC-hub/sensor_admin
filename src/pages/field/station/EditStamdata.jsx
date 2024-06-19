@@ -29,19 +29,22 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
+import {tabsHeight} from '~/consts';
+import {StationPages} from '~/helpers/EnumHelper';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 import OwnDatePicker from '../../../components/OwnDatePicker';
 import {stamdataStore} from '../../../state/store';
 import TabPanel from '../overview/TabPanel';
 import AddUnitForm from '../stamdata/AddUnitForm';
-import KontaktForm from '../stamdata/components/KontaktForm';
 import LocationForm from '../stamdata/components/LocationForm';
 import ReferenceForm from '../stamdata/components/ReferenceForm';
 import TimeseriesForm from '../stamdata/components/TimeseriesForm';
@@ -64,7 +67,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
       );
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       setOpenDialog(false);
       setUdstyrValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
@@ -89,7 +92,6 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
             Annuller
           </Button>
           <Button
-            autoFocus
             bttype="primary"
             startIcon={<SaveIcon />}
             onClick={() => takeHomeMutation.mutate({enddate: moment(date).toISOString()})}
@@ -134,18 +136,19 @@ const UdstyrReplace = ({stationId}) => {
 
   const onSelectionChange = (data, gid) => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
-    setUnit(localUnit);
+    const unit = localUnit ?? data[0];
+    setUnit(unit);
     formMethods.setValue(
       'unit',
       {
-        gid: gid,
-        unit_uuid: localUnit.uuid,
-        startdate: moment(localUnit.startdato).format('YYYY-MM-DDTHH:mm'),
-        enddate: moment(localUnit.slutdato).format('YYYY-MM-DDTHH:mm'),
+        gid: unit.gid,
+        unit_uuid: unit.uuid,
+        startdate: moment(unit.startdato).format('YYYY-MM-DDTHH:mm'),
+        enddate: moment(unit.slutdato).format('YYYY-MM-DDTHH:mm'),
       },
       {shouldValidate: true, shouldDirty: false}
     );
-    setselected(gid);
+    setselected(unit.gid);
   };
 
   const handleChange = (event) => {
@@ -153,93 +156,104 @@ const UdstyrReplace = ({stationId}) => {
   };
 
   return (
-    <Grid container spacing={2} alignItems="center" alignContent="center">
-      <Grid item xs={12} sm={6}>
-        <Select
-          id="udstyr_select"
-          value={selected}
-          onChange={handleChange}
-          className="swiper-no-swiping"
-        >
-          {data?.map((item) => {
-            let endDate =
-              moment(new Date()) < moment(item.slutdato)
-                ? 'nu'
-                : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
+    <>
+      {data && data.length > 0 && (
+        <Grid container spacing={2} alignItems="center" alignContent="center">
+          <Grid item xs={12} sm={6}>
+            <Select
+              id="udstyr_select"
+              value={selected}
+              onChange={handleChange}
+              className="swiper-no-swiping"
+            >
+              {data?.map((item) => {
+                let endDate =
+                  moment(new Date()) < moment(item.slutdato)
+                    ? 'nu'
+                    : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
 
-            return (
-              <MenuItem id={item.gid} key={item.gid} value={item.gid}>
-                {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
-              </MenuItem>
-            );
-          })}
-        </Select>
-        {moment(data?.[0].slutdato) > moment(new Date()) ? (
-          <Button
-            bttype="primary"
-            sx={{marginLeft: 1}}
-            onClick={() => {
-              setOpenDialog(true);
-            }}
-          >
-            Hjemtag udstyr
-          </Button>
-        ) : (
-          <Button
-            bttype="primary"
-            onClick={() => {
-              setOpenAddUdstyr(true);
-            }}
-          >
-            Tilføj udstyr
-          </Button>
-        )}
-      </Grid>
-      <UnitEndDateDialog
-        openDialog={openDialog}
-        setOpenDialog={setOpenDialog}
-        unit={data?.[0]}
-        setUdstyrValue={setUnitValue}
-        stationId={stationId}
-      />
-      <AddUnitForm
-        udstyrDialogOpen={openAddUdstyr}
-        setUdstyrDialogOpen={setOpenAddUdstyr}
-        tstype_id={tstype_id}
-        mode="edit"
-      />
-    </Grid>
+                return (
+                  <MenuItem id={item.gid} key={item.gid} value={item.gid}>
+                    {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+            {moment(data?.[0].slutdato) > moment(new Date()) ? (
+              <Button
+                bttype="primary"
+                sx={{marginLeft: 1}}
+                onClick={() => {
+                  setOpenDialog(true);
+                }}
+              >
+                Hjemtag udstyr
+              </Button>
+            ) : (
+              <Button
+                bttype="primary"
+                onClick={() => {
+                  setOpenAddUdstyr(true);
+                }}
+              >
+                Tilføj udstyr
+              </Button>
+            )}
+          </Grid>
+          <UnitEndDateDialog
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            unit={data?.[0]}
+            setUdstyrValue={setUnitValue}
+            stationId={stationId}
+          />
+          <AddUnitForm
+            udstyrDialogOpen={openAddUdstyr}
+            setUdstyrDialogOpen={setOpenAddUdstyr}
+            tstype_id={tstype_id}
+            mode="edit"
+          />
+        </Grid>
+      )}
+    </>
   );
 };
 
-export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) {
+export default function EditStamdata({ts_id, metadata, canEdit}) {
   // const [selectedUnit, setSelectedUnit] = useState('');
   const [mode, setMode] = useState('view');
-  const [location, timeseries, unit] = stamdataStore((store) => [
-    store.location,
-    store.timeseries,
-    store.unit,
-  ]);
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
-  const [tabValue, setTabValue] = useSearchParam('tab');
+  const [pageToShow] = useSearchParam('page');
+  const [tabValue, setTabValue] = useSearchParam('tab', '0');
+  const [, setPageToShow] = useSearchParam('page');
+  const {stamdata} = useNavigationFunctions();
+  const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
 
   useEffect(() => {
     if (tabValue === null) setTabValue('0');
+    else if (tabValue === '3' && metadata.tstype_id !== 1) {
+      setTabValue('0');
+    } else if (tabValue === '2' && metadata.calculated) setTabValue('0');
     else setTabValue(tabValue);
+
+    if (pageToShow === StationPages.STAMDATA && parseInt(ts_id) !== prev_ts_id) {
+      setPageToShow(StationPages.STAMDATA);
+      stamdata(metadata.loc_id, ts_id, tabValue, {replace: false});
+    }
     return () => {
       setTabValue(null);
     };
-  }, []);
+  }, [ts_id, metadata.calculated, tabValue]);
 
   const metadataEditMutation = useMutation({
     mutationFn: async (data) => {
       const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
       return out;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['stations', metadata.loc_id.toString()],
       });
@@ -292,7 +306,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
 
   const handleUpdate = (values) => {
     metadataEditMutation.mutate(values, {
-      onSuccess: (data) => {
+      onSuccess: () => {
         toast.success('Stamdata er opdateret');
       },
       onError: (error) => {
@@ -334,8 +348,8 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
           scrollButtons="auto"
           sx={{
             '& .MuiTab-root': {
-              height: '50px',
-              minHeight: '50px',
+              height: tabsHeight,
+              minHeight: tabsHeight,
             },
             marginTop: 1,
           }}
@@ -360,6 +374,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
           />
           <Tab
             value="2"
+            disabled={metadata && metadata.calculated}
             icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -369,6 +384,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
           />
           <Tab
             value="3"
+            disabled={metadata.tstype_id !== 1}
             icon={
               <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
             }
@@ -433,7 +449,6 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
                       Annuller
                     </Button>
                     <Button
-                      autoFocus
                       bttype="primary"
                       startIcon={<SaveIcon />}
                       onClick={formMethods.handleSubmit(handleUpdate, (values) =>
@@ -451,7 +466,7 @@ export default function EditStamdata({setFormToShow, ts_id, metadata, canEdit}) 
             </footer>
           )}
         </Box>
-        <DevTool control={formMethods.control} />
+        {import.meta.env.DEV && <DevTool control={formMethods.control} />}
       </Box>
     </FormProvider>
   );
