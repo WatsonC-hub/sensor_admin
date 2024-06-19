@@ -21,24 +21,10 @@ import ScrollTop from '../../../components/ScrollTop';
 import BoreholeTable from './components/BoreholeTable';
 import StationTable from './components/StationTable';
 import Map from './Map';
+import {TableData, BoreholeMapData, BoreholeData} from '~/types';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
-
-export interface BoreholeData {
-  boreholeno: string;
-  latitude: number;
-  longitude: number;
-  intakeno: number[];
-  plantname: string;
-  plantid: number;
-  drilldepth: number[];
-  measurement: number[];
-  status: number[];
-  timeofmeas: string[];
-  calypso_id: number[];
-  num_controls_in_a_year: number[];
-}
 
 export default function OverviewPage() {
   const theme = useTheme();
@@ -47,7 +33,7 @@ export default function OverviewPage() {
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
   const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
 
-  const {data: tabledata} = useQuery({
+  const {data: tabledata} = useQuery<TableData[]>({
     queryKey: ['station_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
@@ -60,7 +46,7 @@ export default function OverviewPage() {
     refetchOnReconnect: false,
   });
 
-  const {data: boreholetabledata, isPending: boreholeIsPending} = useQuery({
+  const {data: boreholetabledata, isPending: boreholeIsPending} = useQuery<BoreholeData[]>({
     queryKey: ['borehole_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
@@ -69,7 +55,7 @@ export default function OverviewPage() {
     enabled: boreholeAccess,
   });
 
-  const {data: boreholeMapdata, isPending: boreholeMapIsPending} = useQuery<BoreholeData[]>({
+  const {data: boreholeMapdata, isPending: boreholeMapIsPending} = useQuery<BoreholeMapData[]>({
     queryKey: ['borehole_map'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);
@@ -176,7 +162,7 @@ export default function OverviewPage() {
         )}
         {boreholeAccess && (
           <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0}>
-            <BoreholeTable data={boreholetabledata} isLoading={boreholeIsPending} />
+            <BoreholeTable data={boreholetabledata} />
           </TabPanel>
         )}
       </TabPanel>

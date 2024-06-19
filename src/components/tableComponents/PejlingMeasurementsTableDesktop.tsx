@@ -79,6 +79,7 @@ export default function PejlingMeasurementsTableDesktop({
   const [tableState, reset] = useStatefullTableAtom<Kontrol>('PejlingTableState');
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
+    enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {

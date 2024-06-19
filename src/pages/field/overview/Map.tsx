@@ -21,7 +21,7 @@ import LegendContent from './components/LegendContent';
 import {getColor} from './components/NotificationIcon';
 import SearchAndFilterMap from './components/SearchAndFilterMap';
 import SensorContent from './components/SensorContent';
-import type {BoreholeData} from './OverviewPage';
+import {BoreholeMapData} from '~/types';
 
 const utm = new utmObj();
 
@@ -66,7 +66,7 @@ declare module 'leaflet' {
   interface MarkerOptions {
     contextmenu?: boolean;
     title?: string;
-    data?: BoreholeData;
+    data?: BoreholeMapData;
   }
 
   interface MapOptions {
@@ -91,7 +91,7 @@ interface LocItems {
 }
 
 interface MapProps {
-  data: (NotificationMap | BoreholeData)[];
+  data: (NotificationMap | BoreholeMapData)[];
   loading: boolean;
 }
 
@@ -103,10 +103,10 @@ function Map({data, loading}: MapProps) {
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
 
-  const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeData)[]>(data);
+  const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>(data);
 
   const [selectedMarker, setSelectedMarker] = useState<
-    NotificationMap | BoreholeData | null | undefined
+    NotificationMap | BoreholeMapData | null | undefined
   >(null);
   const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
@@ -432,38 +432,40 @@ function Map({data, loading}: MapProps) {
             }
           }
         } else {
-          apiClient.get<BoreholeData>(`/sensor_field/jupiter/search/${value.name}`).then((res) => {
-            const element = res.data;
+          apiClient
+            .get<BoreholeMapData>(`/sensor_field/jupiter/search/${value.name}`)
+            .then((res) => {
+              const element = res.data;
 
-            const point: L.LatLngExpression = [element.latitude, element.longitude];
+              const point: L.LatLngExpression = [element.latitude, element.longitude];
 
-            const maxStatus = Math.max(...element.status);
+              const maxStatus = Math.max(...element.status);
 
-            const icon = L.divIcon({
-              className: 'custom-div-icon',
-              html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
-              iconSize: [24, 24],
-              iconAnchor: [12, 24],
-            });
-
-            const marker = L.marker(point, {
-              icon: icon,
-              title: element.boreholeno,
-              data: element,
-              contextmenu: true,
-            });
-
-            marker.on('add', function () {
-              mapRef.current?.flyTo(point, 16, {
-                animate: false,
+              const icon = L.divIcon({
+                className: 'custom-div-icon',
+                html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
+                iconSize: [24, 24],
+                iconAnchor: [12, 24],
               });
-              marker.fire('click');
-              setSelectedMarker(element);
+
+              const marker = L.marker(point, {
+                icon: icon,
+                title: element.boreholeno,
+                data: element,
+                contextmenu: true,
+              });
+
+              marker.on('add', function () {
+                mapRef.current?.flyTo(point, 16, {
+                  animate: false,
+                });
+                marker.fire('click');
+                setSelectedMarker(element);
+              });
+              if (layerRef.current) {
+                marker.addTo(layerRef.current);
+              }
             });
-            if (layerRef.current) {
-              marker.addTo(layerRef.current);
-            }
-          });
         }
       }
     },

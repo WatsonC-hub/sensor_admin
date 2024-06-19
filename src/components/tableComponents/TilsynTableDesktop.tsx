@@ -89,6 +89,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
   );
   const [tableState, reset] = useStatefullTableAtom<Tilsyn>('TilsynTableState');
   const options: Partial<MRT_TableOptions<Tilsyn>> = {
+    enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {

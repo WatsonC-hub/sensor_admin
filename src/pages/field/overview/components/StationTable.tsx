@@ -27,7 +27,7 @@ import NotificationIcon from './NotificationIcon';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 
 interface Props {
-  data: TableData[];
+  data?: TableData[];
 }
 
 interface RenderDetailProps {

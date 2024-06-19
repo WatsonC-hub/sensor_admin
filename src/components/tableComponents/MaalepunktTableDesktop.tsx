@@ -75,6 +75,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+    enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {

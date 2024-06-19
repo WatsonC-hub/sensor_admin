@@ -25,6 +25,7 @@ const getOptions = <TData extends MRT_RowData>(
     renderToolbarInternalActions: ({table}) => {
       return RenderInternalActions({table});
     },
+    positionExpandColumn: 'last',
     muiPaginationProps: {
       size: 'small',
       showRowsPerPage: false,
@@ -132,7 +133,6 @@ const getOptions = <TData extends MRT_RowData>(
     enableStickyHeader: true,
     enableGlobalFilterRankedResults: true,
     positionGlobalFilter: 'left',
-    enableRowActions: type === TableTypes.STATIONTABLE ? false : true,
     enableColumnActions: breakpoints.isTouch ? false : true,
     enableTableHead: true,
     enableFilter: false,
@@ -157,9 +157,9 @@ const getOptions = <TData extends MRT_RowData>(
     return mobileListOptions;
   }
 
-  if (breakpoints.isMobile && type === TableTypes.TABLE) {
-    return globalOptions;
-  }
+  // if (breakpoints.isMobile && type === TableTypes.TABLE) {
+  //   return globalOptions;
+  // }
 
   return desktopOptions;
 };

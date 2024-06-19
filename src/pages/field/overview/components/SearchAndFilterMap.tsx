@@ -19,7 +19,7 @@ import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {authStore} from '~/state/store';
 
-import type {BoreholeData} from '../OverviewPage';
+import {BoreholeMapData} from '~/types';
 
 interface LocItems {
   name: string;
@@ -85,8 +85,8 @@ const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: 
 };
 
 type Props = {
-  data: (NotificationMap | BoreholeData)[];
-  setData: (data: (NotificationMap | BoreholeData)[]) => void;
+  data: (NotificationMap | BoreholeMapData)[];
+  setData: (data: (NotificationMap | BoreholeMapData)[]) => void;
   handleSearchSelect: (e: SyntheticEvent, value: string | LocItems | null) => void;
 };
 
@@ -110,7 +110,7 @@ const searchElement = (elem: object, search_string: string) => {
   return Object.values(elem).some((value) => searchValue(value, search_string));
 };
 
-const searchAcrossAll = (data: (NotificationMap | BoreholeData)[], search_string: string) => {
+const searchAcrossAll = (data: (NotificationMap | BoreholeMapData)[], search_string: string) => {
   if (search_string === '') return data;
   return data.filter((elem) => searchElement(elem, search_string));
 };
@@ -119,7 +119,7 @@ const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
   return data.active ? true : filter.showInactive;
 };
 
-const filterBorehole = (data: BoreholeData, filter: Filter['borehole']) => {
+const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
   switch (filter.hasControlProgram) {
     case true:
       return data.num_controls_in_a_year.some((num) => num > 0);
@@ -130,14 +130,14 @@ const filterBorehole = (data: BoreholeData, filter: Filter['borehole']) => {
   }
 };
 
-const filterChecked = (data: (NotificationMap | BoreholeData)[], filter: Filter) => {
+const filterChecked = (data: (NotificationMap | BoreholeMapData)[], filter: Filter) => {
   let filteredData = data;
 
   filteredData = filteredData.filter((elem): elem is NotificationMap =>
     'locid' in elem ? filterSensor(elem, filter.sensor) : true
   );
 
-  filteredData = filteredData.filter((elem): elem is BoreholeData =>
+  filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
 
