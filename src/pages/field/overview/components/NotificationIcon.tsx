@@ -50,6 +50,9 @@ const CircleBox = ({
         borderRadius: '9999px',
         color: 'white',
         display: 'flex',
+        width: '1.5em',
+        height: '1.5em',
+        alignSelf: 'center',
         // width: ref.current ? ref.current.clientHeight : undefined,
         // height: ref.current ? ref.current.clientHeight : undefined,
       }}
@@ -60,7 +63,8 @@ const CircleBox = ({
           alignItems: 'center',
           justifyContent: 'center',
           width: '100%',
-          height: '100%',
+          // height: '100%',
+          aspectRatio: '1/1',
           p: '0.2em',
         }}
       >

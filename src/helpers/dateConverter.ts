@@ -11,7 +11,11 @@ const convertDate = (dateString: string) => {
   return `${day}-${month}-${date.getFullYear()}`;
 };
 
-const convertDateWithTimeStamp = (dateString: string) => {
+const convertDateWithTimeStamp = (dateString: string | null) => {
+  if (dateString === null) {
+    return '';
+  }
+
   const date: Date = new Date(dateString);
   const day: string = setTrailingZero(date.getDate());
   const month: string = setTrailingZero(date.getMonth() + 1);
