@@ -114,6 +114,7 @@ const DrawerComponent = ({
         <Box
           display="flex"
           flexDirection="column"
+          overflow="auto"
           sx={{
             px: 2,
             pb: 2,
