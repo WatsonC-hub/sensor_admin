@@ -14,16 +14,7 @@ import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 
 import RenderInternalActions from './RenderInternalActions';
-
-export type Maalepunkt = {
-  startdate: moment.Moment;
-  enddate: string;
-  elevation: number;
-  mp_description: string;
-  gid: number;
-  ts_id: number;
-  userid: string;
-};
+import {Maalepunkt} from '~/types';
 
 interface Props {
   data: Maalepunkt[] | undefined;
