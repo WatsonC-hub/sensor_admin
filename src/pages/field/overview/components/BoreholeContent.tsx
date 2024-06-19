@@ -10,10 +10,10 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
 
-import type {BoreholeData} from '../OverviewPage';
+import {BoreholeMapData} from '~/types';
 
 interface BoreholeContentProps {
-  data: BoreholeData;
+  data: BoreholeMapData;
 }
 
 const BoreholeContent = ({data}: BoreholeContentProps) => {

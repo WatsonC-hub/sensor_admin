@@ -66,3 +66,13 @@ export interface BoreholeData {
   calypso_id: number | null;
   status: number;
 }
+
+export type Maalepunkt = {
+  startdate: string;
+  enddate: string;
+  elevation: number;
+  mp_description: string;
+  gid: number;
+  ts_id: number;
+  userid: string;
+};
