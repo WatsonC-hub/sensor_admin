@@ -496,7 +496,7 @@ function Map({data, loading}: MapProps) {
         }}
       ></Box>
       <DrawerComponent
-        key={selectedMarker?.locid || selectedMarker?.boreholeno || 'legend'}
+        key={getDrawerHeader()}
         enableFull={selectedMarker != null ? true : false}
         isMarkerSelected={selectedMarker !== null}
         header={getDrawerHeader()}
