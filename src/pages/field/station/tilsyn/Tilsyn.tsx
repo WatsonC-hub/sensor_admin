@@ -39,7 +39,6 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
 
     const mutationOptions = {
       onSuccess: () => {
-        toast.success('Tilsyn gemt');
         resetFormData();
       },
       onError: (error: Error) => {
