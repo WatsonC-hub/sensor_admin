@@ -17,7 +17,7 @@ import {useTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
 
 interface Props {
-  data: TilsynItem[];
+  data: TilsynItem[] | undefined;
   handleEdit: (tilyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;

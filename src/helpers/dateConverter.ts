@@ -13,7 +13,7 @@ const convertDateWithTimeStamp = (dateString: string | null) => {
     return '';
   }
 
-  return moment(date).format('DD-MM-YYYY HH:mm');
+  return moment(dateString).format('DD-MM-YYYY HH:mm');
 };
 
 const checkEndDateIsUnset = (dateString: string) => {

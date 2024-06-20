@@ -23,8 +23,6 @@ export default function TilsynTable({handleEdit, handleDelete, canEdit}: TilsynT
     get: {data: tilsynList},
   } = useTilsyn();
 
-  if (tilsynList === undefined) return null;
-
   return matches ? (
     <TilsynTableMobile
       data={tilsynList}

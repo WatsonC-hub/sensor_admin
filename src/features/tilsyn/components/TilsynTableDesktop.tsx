@@ -16,7 +16,7 @@ import {TilsynItem} from '~/types';
 import RenderInternalActions from '../../../components/tableComponents/RenderInternalActions';
 
 interface Props {
-  data: TilsynItem[];
+  data: TilsynItem[] | undefined;
   handleEdit: (tilsyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;

@@ -15,7 +15,7 @@ import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
-  data: PejlingItem[];
+  data: PejlingItem[] | undefined;
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;

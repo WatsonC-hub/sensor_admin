@@ -8,7 +8,6 @@ import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/api/usePejling';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
@@ -27,7 +26,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
-  const {stamdata} = useNavigationFunctions();
 
   const initialData = {
     gid: -1,
@@ -54,6 +52,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
 
     if (values.gid === -1) postPejling.mutate(payload);
     else putPejling.mutate(payload);
+    setDynamic([]);
     setShowForm(null);
   };
 
@@ -72,7 +71,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
 
   const openAddMP = () => {
     setPageToShow('stamdata');
-    stamdata(parseInt(store.location.loc_id), ts_id, '3');
     setTabValue('3');
     setShowForm('true');
   };

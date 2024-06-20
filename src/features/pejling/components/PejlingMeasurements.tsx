@@ -24,8 +24,6 @@ export default function PejlingMeasurements({
     get: {data: measurements},
   } = usePejling();
 
-  if (measurements === undefined) return null;
-
   return matches ? (
     <PejlingMeasurementsTableMobile
       data={measurements}

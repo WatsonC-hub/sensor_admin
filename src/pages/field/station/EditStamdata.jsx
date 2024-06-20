@@ -237,9 +237,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     }
 
     if (tabValue === null) setTabValue('0');
-    else if (tabValue === '3' && metadata.tstype_id !== 1) {
+    else if (tabValue === '3' && metadata?.tstype_id !== 1) {
       setTabValue('0');
-    } else if (tabValue === '2' && metadata.calculated) setTabValue('0');
+    } else if (tabValue === '2' && metadata?.calculated) setTabValue('0');
     else setTabValue(tabValue);
 
     if (tabValue !== '3' && showForm === 'true') {
@@ -249,7 +249,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     return () => {
       setTabValue(null);
     };
-  }, [ts_id, metadata.calculated, tabValue]);
+  }, [ts_id, metadata?.calculated, tabValue]);
 
   const metadataEditMutation = useMutation({
     mutationFn: async (data) => {
@@ -389,7 +389,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="3"
-            disabled={metadata.tstype_id !== 1}
+            disabled={metadata && metadata.tstype_id !== 1}
             icon={
               <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
             }

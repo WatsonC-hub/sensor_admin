@@ -298,7 +298,13 @@ export default function PejlingForm({
           )}
           <Grid item xs={12} sm={6}>
             <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-              <Button bttype="tertiary" onClick={resetFormData}>
+              <Button
+                bttype="tertiary"
+                onClick={() => {
+                  resetFormData();
+                  setDynamic([]);
+                }}
+              >
                 Annuller
               </Button>
               <Button

@@ -94,8 +94,10 @@ export default function Station({ts_id, stamdata}) {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
-  }, [ts_id, pageToShow]);
+    if (stamdata?.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
+
+    if (showForm === null) setDynamic([]);
+  }, [ts_id, pageToShow, showForm]);
 
   return (
     <Box display="flex" flexDirection={'column'}>
