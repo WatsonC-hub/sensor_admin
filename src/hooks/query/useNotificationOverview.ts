@@ -13,9 +13,9 @@ export interface Notification {
   longitude: number;
   latitude: number;
   terminalid: string;
-  opgave: string;
+  opgave: string | null;
   dato: string | null;
-  color: string;
+  color: string | null;
   flag: number;
   notification_id: number;
   status: string | null;
@@ -23,15 +23,41 @@ export interface Notification {
   projectno: string;
   is_customer_service: boolean;
   active: boolean;
+  notify_type: 'primary' | 'obs' | 'station' | null;
 }
 
 export interface NotificationMap extends Notification {
   otherNotifications: Notification[];
+  obsNotifications: Notification[];
 }
 
 type NotificationOverviewOptions = Partial<
   Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
 >;
+
+const sortByNotifyType = (item: Notification) => {
+  switch (item.notify_type) {
+    case 'primary':
+      return 3;
+    case 'obs':
+      return 2;
+    case 'station':
+      return 1;
+    default:
+      return 0;
+  }
+};
+
+const nullState: Partial<Notification> = {
+  opgave: null,
+  dato: null,
+  color: null,
+  flag: 0,
+  notification_id: 0,
+  status: null,
+  enddate: null,
+  notify_type: null,
+};
 
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
   const query = useQuery<Notification[]>({
@@ -59,16 +85,31 @@ export const useNotificationOverviewMap = (
     ...options,
     select: (data) => {
       const sorted = reverse(
-        sortBy(data, [(item) => (item.status ? item.status : ''), (item) => item.flag])
+        sortBy(data, [
+          sortByNotifyType,
+          (item) => (item.status ? item.status : ''),
+          (item) => item.flag,
+        ])
       );
 
       const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
         const existing = acc.find((accItem) => accItem.locid === item.locid);
+
         if (existing) {
+          if (item.notify_type === 'obs') {
+            existing.obsNotifications.push(item);
+          }
           existing.otherNotifications.push(item);
+
           existing.active = existing.active || item.active;
         } else {
-          acc.push({...item, otherNotifications: []});
+          if (item.notify_type === 'primary') {
+            acc.push({...item, otherNotifications: [], obsNotifications: []});
+          } else if (item.notify_type === 'obs') {
+            acc.push({...item, ...nullState, otherNotifications: [item], obsNotifications: [item]});
+          } else {
+            acc.push({...item, ...nullState, otherNotifications: [item], obsNotifications: []});
+          }
         }
         return acc;
       }, []);
