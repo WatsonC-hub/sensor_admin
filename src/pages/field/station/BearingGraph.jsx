@@ -150,11 +150,6 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
-// const initRange = [
-//   moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
-//   moment().format('YYYY-MM-DDTHH:mm'),
-// ];
-
 function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
@@ -164,7 +159,10 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [xRange, setXRange] = useState(initRange);
+  const [xRange, setXRange] = useState([
+    moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+    moment().format('YYYY-MM-DDTHH:mm'),
+  ]);
   const [layout, setLayout] = useState(
     matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
   );
@@ -192,7 +190,10 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
 
   const handleRelayout = (e) => {
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
-      setXRange(initRange);
+      setXRange([
+        moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+        moment().format('YYYY-MM-DDTHH:mm'),
+      ]);
       return;
     }
 
@@ -359,8 +360,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
         useResizeHandler={true}
         style={{width: '99%', height: '100%'}}
         onRelayout={handleRelayout}
-        // onInitialized={handleResize}
-        // onDoubleClick={() => setXRange(initRange)}
       />
     </>
   );
