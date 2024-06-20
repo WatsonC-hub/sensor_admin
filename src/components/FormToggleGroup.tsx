@@ -53,6 +53,8 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
               ref={ref}
               value={value}
               exclusive
+              size="small"
+              color="primary"
               aria-label={name}
               onChange={(e, value) => {
                 onChange(value);

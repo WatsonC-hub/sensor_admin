@@ -36,18 +36,20 @@ export interface Filter {
   };
   sensor: {
     showInactive: boolean;
+    isCustomerService: Inderterminate;
   };
 }
 
 const typeAheadAtom = atom<string>('');
 
-const defaultMapFilter: Filter = {
+export const defaultMapFilter: Filter = {
   freeText: '',
   borehole: {
     hasControlProgram: 'indeterminate',
   },
   sensor: {
     showInactive: false,
+    isCustomerService: 'indeterminate',
   },
 };
 
@@ -116,7 +118,12 @@ const searchAcrossAll = (data: (NotificationMap | BoreholeMapData)[], search_str
 };
 
 const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
-  return data.active ? true : filter.showInactive;
+  const serviceFilter =
+    filter.isCustomerService === 'indeterminate'
+      ? true
+      : data.is_customer_service === filter.isCustomerService;
+  const activeFilter = data.active ? true : filter.showInactive;
+  return activeFilter && serviceFilter;
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
@@ -130,7 +137,7 @@ const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
   }
 };
 
-const filterChecked = (data: (NotificationMap | BoreholeMapData)[], filter: Filter) => {
+const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter) => {
   let filteredData = data;
 
   filteredData = filteredData.filter((elem): elem is NotificationMap =>
@@ -151,7 +158,11 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isTouch} = useBreakpoints();
-  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
+  const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
+    state.boreholeAccess,
+    state.iotAccess,
+    state.superUser,
+  ]);
 
   const elasticSearch = (
     e: SyntheticEvent,
@@ -203,7 +214,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   };
 
   useEffect(() => {
-    const filtered = filterChecked(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
+    const filtered = filterData(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
     setData(filtered);
   }, [mapFilter, data, setData]);
 

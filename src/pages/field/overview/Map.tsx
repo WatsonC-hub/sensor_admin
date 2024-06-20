@@ -95,6 +95,14 @@ interface MapProps {
   loading: boolean;
 }
 
+const offSetPoint = (point: L.LatLngExpression, offset: number, map: L.Map): L.LatLngExpression => {
+  var pixelPoint = map.latLngToContainerPoint(point);
+
+  var newPoint = L.point([pixelPoint.x + offset, pixelPoint.y - offset]);
+
+  return map.containerPointToLatLng(newPoint);
+};
+
 function Map({data, loading}: MapProps) {
   const {createStamdata} = useNavigationFunctions();
   const mapRef = useRef<L.Map | null>(null);
@@ -153,6 +161,7 @@ function Map({data, loading}: MapProps) {
       zoom: 7,
       layers: [outdormapbox],
       tap: false,
+      renderer: L.canvas(),
       contextmenu: true,
       contextmenuWidth: 140,
       contextmenuItems: [
@@ -301,12 +310,6 @@ function Map({data, loading}: MapProps) {
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
 
-    [0, 1, 2, 3].forEach((index) => {
-      if (mapRef.current !== null) {
-        mapRef.current.createPane(index.toString()).style.zIndex = `${400 + index}`;
-      }
-    });
-
     layerRef.current.on('click', function (e) {
       L.DomEvent.stopPropagation(e);
       setSelectedMarker(e.sourceTarget.options.data);
@@ -333,7 +336,17 @@ function Map({data, loading}: MapProps) {
 
   useEffect(() => {
     layerRef.current?.clearLayers();
-    filteredData.forEach((element) => {
+    const sorted = filteredData.sort((a, b) => {
+      if ('locid' in a && 'locid' in b) {
+        return a.flag - b.flag;
+      }
+      if ('boreholeno' in a && 'boreholeno' in b) {
+        return Math.max(...a.status) - Math.max(...b.status);
+      }
+      return 0;
+    });
+
+    sorted.forEach((element) => {
       if ('locid' in element) {
         const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
         if (typeof coords != 'object') return;
@@ -345,25 +358,27 @@ function Map({data, loading}: MapProps) {
           title: element.locname,
           data: element,
           contextmenu: true,
-          pane: element.flag.toString(),
+          // pane: element.flag.toString(),
+          // renderer: renderer,
         });
 
-        // const icon = L.divIcon({
-        //   className: 'custom-div-icon',
-        //   html: <NotificationIcon iconDetails={element} />,
-        //   iconSize: [24, 24],
-        //   iconAnchor: [12, 12],
-        // });
-
-        // const marker = L.marker(point, {
-        //   icon: icon,
-        //   interactive: true,
-        //   riseOnHover: true,
-        //   title: element.locname,
-        //   data: element,
-        //   contextmenu: true,
-        //   pane: element.flag.toString(),
-        // });
+        if (
+          element.obsNotifications.length > 0
+          // && element.obsNotifications[0].flag > element.flag
+        ) {
+          // console.log(element.obsNotifications[0]);
+          const smallMarker = L.circleMarker(point, {
+            ...defaultCircleMarkerStyle,
+            radius: defaultRadius + 4,
+            interactive: false,
+            fillColor: getColor(element.obsNotifications[0]),
+            // pane: element.flag.toString(),
+            // renderer: renderer,
+          });
+          if (layerRef.current) {
+            smallMarker.addTo(layerRef.current);
+          }
+        }
 
         marker.bindTooltip(element.locname, {
           direction: 'top',
@@ -377,12 +392,6 @@ function Map({data, loading}: MapProps) {
         const point: L.LatLngExpression = [element.latitude, element.longitude];
 
         const maxStatus = Math.max(...element.status);
-        // const icon = L.divIcon({
-        //   className: 'custom-div-icon',
-        //   html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
-        //   iconSize: [24, 24],
-        //   iconAnchor: [12, 12],
-        // });
 
         const marker = L.marker(point, {
           icon: leafletIcons[maxStatus],
@@ -391,7 +400,6 @@ function Map({data, loading}: MapProps) {
           title: element.boreholeno,
           data: element,
           contextmenu: true,
-          pane: maxStatus.toString(),
         });
 
         marker.bindTooltip(element.boreholeno, {

@@ -1,5 +1,8 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import RemoveIcon from '@mui/icons-material/Remove';
 import {RESET} from 'jotai/utils';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
@@ -10,7 +13,8 @@ import FormToggleGroup from '~/components/FormToggleGroup';
 import FormInput from '~/components/FormInput';
 
 import NotificationIcon from './NotificationIcon';
-import type {Filter} from './SearchAndFilterMap';
+import {Filter, defaultMapFilter} from './SearchAndFilterMap';
+import {authStore} from '~/state/store';
 
 interface FilterOptionsProps {
   filters: Filter;
@@ -18,6 +22,12 @@ interface FilterOptionsProps {
 }
 
 const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
+  const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
+    state.boreholeAccess,
+    state.iotAccess,
+    state.superUser,
+  ]);
+
   const formMethods = useForm<Filter>({
     values: filters,
   });
@@ -27,8 +37,16 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
   };
 
   const reset = () => {
-    formMethods.reset();
-    setFilter(RESET);
+    const mapFilter: Filter = {
+      ...defaultMapFilter,
+      sensor: {
+        ...defaultMapFilter.sensor,
+        isCustomerService: superUser ? false : true,
+      },
+    };
+
+    formMethods.reset(mapFilter);
+    setFilter(mapFilter);
   };
 
   return (
@@ -37,26 +55,27 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
       <FormInput name="freeText" label="Fritekst filtrering" />
       <Divider />
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          <Typography variant="subtitle1">Boringer</Typography>
+        {boreholeAccess && (
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle1">Boringer</Typography>
 
-          {/* <FormCheckbox
+            {/* <FormCheckbox
             name="borehole.hasControlProgram"
             label="Kun pejleprogram"
             includeInderterminate
           /> */}
 
-          <FormToggleGroup
-            name="borehole.hasControlProgram"
-            label="Pejles aktivt"
-            values={[
-              {label: 'Ja', value: true},
-              {label: '-', value: 'indeterminate'},
-              {label: 'Nej', value: false},
-            ]}
-          />
+            <FormToggleGroup
+              name="borehole.hasControlProgram"
+              label="Pejles aktivt"
+              values={[
+                {label: <CheckIcon />, value: true},
+                {label: <RemoveIcon />, value: 'indeterminate'},
+                {label: <ClearIcon />, value: false},
+              ]}
+            />
 
-          {/* <FormControlLabel
+            {/* <FormControlLabel
             control={
               <Controller
                 control={formMethods.control}
@@ -66,33 +85,45 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
             }
             label="Kun pejleprogram"
           /> */}
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <Typography variant="subtitle1">Iot filtre</Typography>
-          <FormControlLabel
-            control={
-              <Controller
-                control={formMethods.control}
-                name="sensor.showInactive"
-                render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
-              />
-            }
-            label={
-              <Typography
-                variant="body1"
-                component="span"
-                sx={{
-                  display: 'flex',
-                  gap: 1,
-                  alignItems: 'center',
-                }}
-              >
-                <NotificationIcon iconDetails={{color: 'grey'}} />
-                Inaktiv
-              </Typography>
-            }
-          />
-        </Grid>
+          </Grid>
+        )}
+        {iotAccess && (
+          <Grid item xs={12} sm={6}>
+            <Typography variant="subtitle1">Iot filtre</Typography>
+            <FormControlLabel
+              control={
+                <Controller
+                  control={formMethods.control}
+                  name="sensor.showInactive"
+                  render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
+                />
+              }
+              label={
+                <Typography
+                  variant="body1"
+                  component="span"
+                  sx={{
+                    display: 'flex',
+                    gap: 1,
+                    alignItems: 'center',
+                  }}
+                >
+                  <NotificationIcon iconDetails={{color: 'grey'}} />
+                  Inaktiv
+                </Typography>
+              }
+            />
+            <FormToggleGroup
+              name="sensor.isCustomerService"
+              label="Kunde service"
+              values={[
+                {label: <CheckIcon />, value: true},
+                {label: <RemoveIcon />, value: 'indeterminate'},
+                {label: <ClearIcon />, value: false},
+              ]}
+            />
+          </Grid>
+        )}
       </Grid>
 
       <Box
