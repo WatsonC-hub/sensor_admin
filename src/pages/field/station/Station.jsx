@@ -1,4 +1,4 @@
-import {AddAPhotoRounded, AddCircle, PlaylistAddRounded} from '@mui/icons-material';
+import {AddAPhotoRounded} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useRef, useState} from 'react';
@@ -7,9 +7,7 @@ import {useParams} from 'react-router-dom';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
-import {usePejling} from '~/features/api/usePejling';
 import {StationPages} from '~/helpers/EnumHelper';
-import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import ActionArea from '~/pages/field/station/ActionArea';
 import BearingGraph from '~/pages/field/station/BearingGraph';
@@ -22,9 +20,7 @@ export default function Station({ts_id, stamdata}) {
   let params = useParams();
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [pageToShow, setPageToShow] = useSearchParam('page');
-
   const [dynamic, setDynamic] = useState([]);
-  const [control, setControl] = useState([]);
   const [canEdit] = useState(true);
   const fileInputRef = useRef(null);
   const [dataUri, setdataUri] = useState('');
@@ -38,7 +34,6 @@ export default function Station({ts_id, stamdata}) {
   });
 
   const store = stamdataStore();
-
   useEffect(() => {
     if (stamdata) {
       store.setLocation(stamdata);
@@ -52,34 +47,7 @@ export default function Station({ts_id, stamdata}) {
     };
   }, [stamdata]);
 
-  const {
-    get: {data: watlevmp},
-  } = useMaalepunkt();
-  const {
-    get: {data: measurements},
-  } = usePejling();
-
   const isCalculated = stamdata ? stamdata?.calculated : false;
-
-  useEffect(() => {
-    var ctrls = [];
-    if (watlevmp?.length > 0) {
-      ctrls = measurements?.map((e) => {
-        const elev = watlevmp?.filter((e2) => {
-          return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
-        })[0]?.elevation;
-        return {
-          ...e,
-          waterlevel: e.measurement != null ? elev - e.measurement : null,
-        };
-      });
-    } else {
-      ctrls = measurements?.map((elem) => {
-        return {...elem, waterlevel: elem.measurement};
-      });
-    }
-    setControl(ctrls);
-  }, [watlevmp, measurements]);
 
   const changeActiveImageData = (field, value) => {
     setActiveImage({
@@ -114,7 +82,7 @@ export default function Station({ts_id, stamdata}) {
   };
 
   const handleFileRead = async (event) => {
-    setShowForm(true);
+    setShowForm('true');
     const file = event.target.files[0];
     const base64 = await convertBase64(file);
     handleSetDataURI(base64);
@@ -127,8 +95,7 @@ export default function Station({ts_id, stamdata}) {
   useEffect(() => {
     setPageToShow(pageToShow);
     if (stamdata.calculated && pageToShow == StationPages.TILSYN) setPageToShow(null);
-    setShowForm(null);
-  }, [ts_id]);
+  }, [ts_id, pageToShow]);
 
   return (
     <Box display="flex" flexDirection={'column'}>
@@ -136,9 +103,8 @@ export default function Station({ts_id, stamdata}) {
         <Box sx={{marginBottom: 1, marginTop: 1}}>
           <BearingGraph
             stationId={ts_id}
-            measurements={control}
             dynamicMeasurement={
-              pageToShow === StationPages.PEJLING && showForm === true ? dynamic : undefined
+              pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
             }
           />
           <Divider />
@@ -153,44 +119,11 @@ export default function Station({ts_id, stamdata}) {
         }}
       >
         {pageToShow === StationPages.STAMDATA && (
-          <EditStamdata
-            setFormToShow={setShowForm}
-            ts_id={ts_id}
-            metadata={stamdata}
-            canEdit={canEdit}
-          />
+          <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} />
         )}
-        {pageToShow === null && (
-          <FabWrapper
-            icon={<AddCircle />}
-            text="Tilføj kontrol"
-            onClick={() => {
-              setShowForm(true);
-            }}
-            visible={
-              pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'
-            }
-          >
-            <Pejling
-              ts_id={ts_id}
-              showForm={showForm}
-              setShowForm={setShowForm}
-              setDynamic={setDynamic}
-            />
-          </FabWrapper>
-        )}
-        {pageToShow === StationPages.TILSYN && (
-          <FabWrapper
-            icon={<PlaylistAddRounded />}
-            text={'Tilføj ' + StationPages.TILSYN}
-            onClick={() => {
-              setShowForm(true);
-            }}
-            visible={pageToShow === StationPages.TILSYN && showForm === null ? 'visible' : 'hidden'}
-          >
-            <Tilsyn ts_id={ts_id} showForm={showForm} setShowForm={setShowForm} canEdit={canEdit} />
-          </FabWrapper>
-        )}
+        {pageToShow === null && <Pejling ts_id={ts_id} setDynamic={setDynamic} />}
+        {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
+
         {pageToShow === StationPages.BILLEDER && (
           <Box>
             <FabWrapper

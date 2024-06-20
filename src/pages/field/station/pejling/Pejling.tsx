@@ -1,28 +1,33 @@
+import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
+import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/api/usePejling';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 type Props = {
   ts_id: number;
-  showForm: boolean;
-  setShowForm: (showForm: boolean | null) => void;
   setDynamic: (dynamic: Array<unknown>) => void;
 };
 
-const Pejling = ({ts_id, showForm, setShowForm, setDynamic}: Props) => {
+const Pejling = ({ts_id, setDynamic}: Props) => {
   const store = stamdataStore();
   const [canEdit] = useState(true);
   const isWaterlevel = store.timeseries?.tstype_id === 1;
   const isFlow = store.timeseries?.tstype_id === 2;
-
+  const [showForm, setShowForm] = useSearchParam('showForm');
+  const [, setPageToShow] = useSearchParam('page');
+  const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
+  const {stamdata} = useNavigationFunctions();
 
   const initialData = {
     gid: -1,
@@ -55,7 +60,7 @@ const Pejling = ({ts_id, showForm, setShowForm, setDynamic}: Props) => {
   const handleEdit = (data: PejlingItem) => {
     data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
     formMethods.reset(data);
-    setShowForm(true);
+    setShowForm('true');
   };
 
   const handleDelete = (gid: number | undefined) => {
@@ -66,7 +71,10 @@ const Pejling = ({ts_id, showForm, setShowForm, setDynamic}: Props) => {
   };
 
   const openAddMP = () => {
-    setShowForm(true);
+    setPageToShow('stamdata');
+    stamdata(parseInt(store.location.loc_id), ts_id, '3');
+    setTabValue('3');
+    setShowForm('true');
   };
 
   const resetFormData = () => {
@@ -78,26 +86,41 @@ const Pejling = ({ts_id, showForm, setShowForm, setDynamic}: Props) => {
     if (showForm && formMethods.getValues('gid') === -1) formMethods.reset(initialData);
   }, [showForm]);
 
+  useEffect(() => {
+    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
+      setShowForm(null);
+    }
+  }, [ts_id]);
+
   return (
-    <FormProvider {...formMethods}>
-      <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
-        {showForm === true && (
-          <PejlingForm
-            isWaterlevel={isWaterlevel}
-            openAddMP={openAddMP}
-            handleSubmit={handlePejlingSubmit}
-            resetFormData={resetFormData}
-            isFlow={isFlow}
-            setDynamic={setDynamic}
+    <FabWrapper
+      icon={<AddCircle />}
+      text="Tilføj kontrol"
+      onClick={() => {
+        setShowForm('true');
+      }}
+      visible={showForm === null ? 'visible' : 'hidden'}
+    >
+      <FormProvider {...formMethods}>
+        <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+          {showForm === 'true' && (
+            <PejlingForm
+              isWaterlevel={isWaterlevel}
+              openAddMP={openAddMP}
+              handleSubmit={handlePejlingSubmit}
+              resetFormData={resetFormData}
+              isFlow={isFlow}
+              setDynamic={setDynamic}
+            />
+          )}
+          <PejlingMeasurements
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            canEdit={canEdit}
           />
-        )}
-        <PejlingMeasurements
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          canEdit={canEdit}
-        />
-      </Box>
-    </FormProvider>
+        </Box>
+      </FormProvider>
+    </FabWrapper>
   );
 };
 

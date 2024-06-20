@@ -21,7 +21,7 @@ export default function ActionArea({setPageToShow, showForm, setShowForm, canEdi
     setValue(newValue);
     setPageToShow(newValue);
     if (showForm !== null) {
-      setShowForm('');
+      setShowForm(null);
     }
   };
 

@@ -1,23 +1,22 @@
 import {Box, useMediaQuery, useTheme} from '@mui/material';
 import moment from 'moment';
-import React from 'react';
 
 import MaalepunktForm from '~/components/MaalepunktForm';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useFormData from '~/hooks/useFormData';
+import {useSearchParam} from '~/hooks/useSeachParam';
 
 interface Props {
-  mode: string;
-  setMode: (form: string) => void;
   canEdit: boolean;
   ts_id: number;
 }
 
-export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
+export default function ReferenceForm({canEdit, ts_id}: Props) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const [showForm, setShowForm] = useSearchParam('showForm');
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: moment(),
@@ -40,7 +39,7 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
     const mutationOptions = {
       onSuccess: () => {
         resetMpData();
-        setMode('view');
+        setShowForm(null);
       },
     };
 
@@ -61,7 +60,7 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
 
   const handleMpCancel = () => {
     resetMpData();
-    setMode('view');
+    setShowForm(null);
   };
 
   const handleDeleteMaalepunkt = (gid: number | undefined) => {
@@ -77,12 +76,12 @@ export default function ReferenceForm({mode, setMode, canEdit, ts_id}: Props) {
 
   const handleEdit = (data: object) => {
     setMpData(data);
-    setMode('edit');
+    setShowForm('true');
   };
 
   return (
     <>
-      {mode !== 'view' && canEdit && (
+      {showForm === 'true' && canEdit && (
         <Box
           sx={{
             display: 'flex',

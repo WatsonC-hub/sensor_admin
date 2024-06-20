@@ -1,22 +1,27 @@
+import {PlaylistAddRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
+import FabWrapper from '~/components/FabWrapper';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
+import {StationPages} from '~/helpers/EnumHelper';
+import {useSearchParam} from '~/hooks/useSeachParam';
+import {stamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
 
 type Props = {
   ts_id: number;
-  showForm: boolean;
-  setShowForm: (showForm: boolean | null) => void;
   canEdit: boolean;
 };
 
-export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
+export default function Tilsyn({ts_id, canEdit}: Props) {
+  const [showForm, setShowForm] = useSearchParam('showForm');
+  const store = stamdataStore();
   const initialData: TilsynItem = {
     dato: moment().format('YYYY-MM-DDTHH:mm'),
     gid: -1,
@@ -64,7 +69,7 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
 
   const handleEdit = (data: TilsynItem) => {
     formMethods.reset(data, {keepDirty: true});
-    setShowForm(true);
+    setShowForm('true');
   };
 
   const handleDelete = (gid: number | undefined) => {
@@ -87,14 +92,29 @@ export default function Tilsyn({ts_id, showForm, setShowForm, canEdit}: Props) {
     if (showForm && formMethods.getValues('gid') === -1) formMethods.reset(initialData);
   }, [showForm]);
 
+  useEffect(() => {
+    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
+      setShowForm(null);
+    }
+  }, [ts_id]);
+
   return (
-    <FormProvider {...formMethods}>
-      <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
-        {showForm === true && (
-          <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
-        )}
-        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
-      </Box>
-    </FormProvider>
+    <FabWrapper
+      icon={<PlaylistAddRounded />}
+      text={'Tilføj ' + StationPages.TILSYN}
+      onClick={() => {
+        setShowForm('true');
+      }}
+      visible={showForm === null ? 'visible' : 'hidden'}
+    >
+      <FormProvider {...formMethods}>
+        <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+          {showForm === 'true' && (
+            <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
+          )}
+          <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
+        </Box>
+      </FormProvider>
+    </FabWrapper>
   );
 }

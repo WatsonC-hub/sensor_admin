@@ -80,7 +80,6 @@ export default function PejlingForm({
         if (internalCurrentMP) {
           const dynamicDate = formMethods.getValues('timeofmeas');
           const dynamicMeas = internalCurrentMP.elevation - Number(measurement);
-          console.log(dynamicMeas);
           setDynamic([dynamicDate, dynamicMeas]);
         } else {
           setDynamic([]);
@@ -295,27 +294,27 @@ export default function PejlingForm({
                   }}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
-                <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-                  <Button bttype="tertiary" onClick={resetFormData}>
-                    Annuller
-                  </Button>
-                  <Button
-                    bttype="primary"
-                    onClick={formMethods.handleSubmit(handleSubmit)}
-                    disabled={
-                      pejlingOutOfRange ||
-                      (isWaterlevel && currentMP === null) ||
-                      formMethods.getValues('useforcorrection').toString() == '-1'
-                    }
-                    startIcon={<SaveIcon />}
-                  >
-                    Gem
-                  </Button>
-                </Box>
-              </Grid>
             </>
           )}
+          <Grid item xs={12} sm={6}>
+            <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
+              <Button bttype="tertiary" onClick={resetFormData}>
+                Annuller
+              </Button>
+              <Button
+                bttype="primary"
+                onClick={formMethods.handleSubmit(handleSubmit)}
+                disabled={
+                  pejlingOutOfRange ||
+                  (isWaterlevel && currentMP === null) ||
+                  formMethods.getValues('useforcorrection').toString() == '-1'
+                }
+                startIcon={<SaveIcon />}
+              >
+                Gem
+              </Button>
+            </Box>
+          </Grid>
         </Grid>
       </CardContent>
     </Card>

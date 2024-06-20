@@ -1,14 +1,12 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Card, CardContent, Grid, TextField, Typography} from '@mui/material';
+import {Box, Card, CardContent, Grid, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import moment from 'moment';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import OwnDatePicker from '~/components/OwnDatePicker';
 import {TilsynItem} from '~/types';
 
 interface TilsynFormPops {

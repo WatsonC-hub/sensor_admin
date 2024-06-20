@@ -29,7 +29,6 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -38,7 +37,6 @@ import FabWrapper from '~/components/FabWrapper';
 import {tabsHeight} from '~/consts';
 import {StationPages} from '~/helpers/EnumHelper';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 import OwnDatePicker from '../../../components/OwnDatePicker';
@@ -221,28 +219,33 @@ const UdstyrReplace = ({stationId}) => {
 
 export default function EditStamdata({ts_id, metadata, canEdit}) {
   // const [selectedUnit, setSelectedUnit] = useState('');
-  const [mode, setMode] = useState('view');
-
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
-  const [pageToShow] = useSearchParam('page');
+  const [pageToShow, setPageToShow] = useSearchParam('page');
   const [tabValue, setTabValue] = useSearchParam('tab');
-  const [, setPageToShow] = useSearchParam('page');
-  const {stamdata} = useNavigationFunctions();
+  const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
-
   useEffect(() => {
+    if (
+      pageToShow === StationPages.STAMDATA &&
+      parseInt(ts_id) !== prev_ts_id &&
+      prev_ts_id !== 0
+    ) {
+      setPageToShow(StationPages.STAMDATA);
+      setShowForm(null);
+    }
+
     if (tabValue === null) setTabValue('0');
     else if (tabValue === '3' && metadata.tstype_id !== 1) {
       setTabValue('0');
     } else if (tabValue === '2' && metadata.calculated) setTabValue('0');
     else setTabValue(tabValue);
 
-    if (pageToShow === StationPages.STAMDATA && parseInt(ts_id) !== prev_ts_id) {
-      setPageToShow(StationPages.STAMDATA);
-      stamdata(metadata.loc_id, ts_id, tabValue, {replace: false});
+    if (tabValue !== '3' && showForm === 'true') {
+      setShowForm(null);
     }
+
     return () => {
       setTabValue(null);
     };
@@ -423,17 +426,17 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               icon={<AddCircle />}
               text="Tilføj målepunkt"
               onClick={() => {
-                setMode('add');
+                setShowForm('true');
               }}
-              visible={mode === 'view' ? 'visible' : 'hidden'}
+              visible={showForm === null ? 'visible' : 'hidden'}
             >
-              <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
+              <ReferenceForm canEdit={canEdit} ts_id={ts_id} />
             </FabWrapper>
           </TabPanel>
           <TabPanel value={tabValue} index={'4'}>
             Kontaktinformation
           </TabPanel>
-          {mode !== 'edit' && tabValue !== '3' && (
+          {showForm === null && tabValue !== '3' && (
             <footer style={{position: 'sticky', bottom: 60, float: 'right'}}>
               <Grid
                 container
