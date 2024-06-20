@@ -170,7 +170,6 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                 </Typography>
               )}
               <TextField
-                autoFocus
                 select
                 margin="dense"
                 value={unitData.calypso_id}

@@ -1,4 +1,3 @@
-import SaveIcon from '@mui/icons-material/Save';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import {
@@ -14,14 +13,13 @@ import {atom, useAtom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
 import React, {useState, useRef, SyntheticEvent, MouseEventHandler, useEffect} from 'react';
 
-import Button from '~/components/Button';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {authStore} from '~/state/store';
 
-import type {BoreholeData} from '../OverviewPage';
+import {BoreholeMapData} from '~/types';
 
 interface LocItems {
   name: string;
@@ -29,39 +27,68 @@ interface LocItems {
   group: string;
 }
 
+type Inderterminate = boolean | 'indeterminate';
+
 export interface Filter {
   freeText?: string;
   borehole: {
-    hasControlProgram?: boolean;
+    hasControlProgram: Inderterminate;
   };
   sensor: {
     showInactive: boolean;
+    isCustomerService: Inderterminate;
   };
 }
 
 const typeAheadAtom = atom<string>('');
-const mapFilterAtom = atomWithStorage<Filter>('mapFilter', {
+
+export const defaultMapFilter: Filter = {
   freeText: '',
-  borehole: {},
+  borehole: {
+    hasControlProgram: 'indeterminate',
+  },
   sensor: {
     showInactive: false,
+    isCustomerService: 'indeterminate',
   },
-});
+};
 
-const getNumberOfNonEmptyFilters = (filter: Filter) => {
-  return Object.values(filter).filter((val) => {
-    if (typeof val === 'string' && val.trim() === '') return false;
-    if (typeof val === 'number' && val === null) return false;
-    if (typeof val === 'object' && (val === null || Object.keys(val).length == 0)) return false;
-    if (typeof val === 'boolean' && val === false) return false;
-    if (Array.isArray(val) && val.length === 0) return false;
-    return true;
-  }).length;
+const mapFilterAtom = atomWithStorage<Filter>('mapFilter', defaultMapFilter);
+
+const getNumberOfNonEmptyFilters = (filter: object): number => {
+  return Object.values(filter).reduce((acc, val) => {
+    if (typeof val === 'string' && val.trim() === '') return acc;
+    if (typeof val === 'number' && val === null) return acc;
+    if (typeof val === 'object' && !Array.isArray(val) && val !== null)
+      return acc + getNumberOfNonEmptyFilters(val);
+    if (typeof val === 'boolean' && val === false) return acc;
+    if (Array.isArray(val) && val.length === 0) return acc;
+    return acc + 1;
+  }, 0);
+};
+
+type Entry<T> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T];
+
+const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: T): number => {
+  return Object.entries(filter).reduce((acc, entry) => {
+    const [key, val] = entry;
+    if (typeof val === 'object' && !Array.isArray(val) && val !== null) {
+      // @ts-expect-error Key has to be keyof T
+      return acc + getNumberOfNonDefaultFilters(val, default_val[key]);
+    }
+    // @ts-expect-error Key has to be keyof T
+    if (JSON.stringify(val) === JSON.stringify(default_val[key])) {
+      return acc;
+    }
+    return acc + 1;
+  }, 0);
 };
 
 type Props = {
-  data: (NotificationMap | BoreholeData)[];
-  setData: (data: (NotificationMap | BoreholeData)[]) => void;
+  data: (NotificationMap | BoreholeMapData)[];
+  setData: (data: (NotificationMap | BoreholeMapData)[]) => void;
   handleSearchSelect: (e: SyntheticEvent, value: string | LocItems | null) => void;
 };
 
@@ -85,27 +112,39 @@ const searchElement = (elem: object, search_string: string) => {
   return Object.values(elem).some((value) => searchValue(value, search_string));
 };
 
-const searchAcrossAll = (data: (NotificationMap | BoreholeData)[], search_string: string) => {
+const searchAcrossAll = (data: (NotificationMap | BoreholeMapData)[], search_string: string) => {
   if (search_string === '') return data;
   return data.filter((elem) => searchElement(elem, search_string));
 };
 
 const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
-  return data.active ? true : filter.showInactive;
+  const serviceFilter =
+    filter.isCustomerService === 'indeterminate'
+      ? true
+      : data.is_customer_service === filter.isCustomerService;
+  const activeFilter = data.active ? true : filter.showInactive;
+  return activeFilter && serviceFilter;
 };
 
-const filterBorehole = (data: BoreholeData, filter: Filter['borehole']) => {
-  return true;
+const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
+  switch (filter.hasControlProgram) {
+    case true:
+      return data.num_controls_in_a_year.some((num) => num > 0);
+    case false:
+      return !data.num_controls_in_a_year.some((num) => num > 0);
+    case 'indeterminate':
+      return true;
+  }
 };
 
-const filterChecked = (data: (NotificationMap | BoreholeData)[], filter: Filter) => {
+const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter) => {
   let filteredData = data;
 
   filteredData = filteredData.filter((elem): elem is NotificationMap =>
     'locid' in elem ? filterSensor(elem, filter.sensor) : true
   );
 
-  filteredData = filteredData.filter((elem): elem is BoreholeData =>
+  filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
 
@@ -119,7 +158,11 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isTouch} = useBreakpoints();
-  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
+  const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
+    state.boreholeAccess,
+    state.iotAccess,
+    state.superUser,
+  ]);
 
   const elasticSearch = (
     e: SyntheticEvent,
@@ -171,7 +214,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   };
 
   useEffect(() => {
-    const filtered = filterChecked(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
+    const filtered = filterData(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
     setData(filtered);
   }, [mapFilter, data, setData]);
 
@@ -182,6 +225,8 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter);
   return (
     <>
       <Autocomplete
@@ -219,10 +264,8 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
                   position="end"
                 >
                   <IconButton edge="end" onClick={handleOpenFilter}>
-                    <Badge badgeContent={getNumberOfNonEmptyFilters(mapFilter)} color="primary">
-                      <TuneRoundedIcon
-                        color={getNumberOfNonEmptyFilters(mapFilter) > 0 ? 'primary' : undefined}
-                      />
+                    <Badge badgeContent={numFilters} color="primary">
+                      <TuneRoundedIcon color={numFilters > 0 ? 'primary' : undefined} />
                     </Badge>
                   </IconButton>
                 </InputAdornment>
@@ -253,7 +296,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         onClose={handleClose}
         sx={{
           '& .MuiPaper-root': {
-            width: isTouch ? '90%' : 300,
+            width: isTouch ? '90%' : 500,
             p: 1,
           },
         }}
@@ -264,4 +307,4 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   );
 };
 
-export default SearchAndFilter;
+export default React.memo(SearchAndFilter);

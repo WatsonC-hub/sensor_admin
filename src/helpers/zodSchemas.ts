@@ -3,7 +3,7 @@ import {z} from 'zod';
 
 const metadataBaseSchema = z.object({
   location: z.object({
-    loc_id: z.number().optional(),
+    loc_id: z.number().nullish(),
     loc_name: z.string({required_error: 'Lokationsnavn skal udfyldes'}),
     // .min(6, {message: 'Lokationsnavn skal være mindst 6 tegn'}),
     mainloc: z.string().nullish(),

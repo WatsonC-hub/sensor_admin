@@ -33,6 +33,52 @@ export type TableData = {
   notification_id: number;
 };
 
+export interface BoreholeMapData {
+  boreholeno: string;
+  latitude: number;
+  longitude: number;
+  intakeno: number[];
+  plantname: string;
+  plantid: number;
+  drilldepth: number[];
+  measurement: number[];
+  status: number[];
+  timeofmeas: string[];
+  calypso_id: number[];
+  num_controls_in_a_year: number[];
+}
+
+// example data
+
+export interface BoreholeData {
+  boreholeno: string;
+  intakeno: number;
+  drilldepth: number | null;
+  elevation: number | null;
+  latitude: number;
+  longitude: number;
+  municipal: string | null;
+  comments: string | null;
+  plantid: number | null;
+  plantname: string | null;
+  timeofmeas: string | null;
+  measurement: number | null;
+  description: string | null;
+  num_controls_in_a_year: number | null;
+  calypso_id: number | null;
+  status: number;
+}
+
+export type Maalepunkt = {
+  startdate: string;
+  enddate: string;
+  elevation: number;
+  mp_description: string;
+  gid: number;
+  ts_id: number;
+  userid: string;
+};
+
 export type TilsynItem = {
   batteriskift: boolean;
   dato: string;
@@ -57,14 +103,4 @@ export type PejlingItem = {
   measurement: number;
   timeofmeas: string;
   useforcorrection: number;
-};
-
-export type Maalepunkt = {
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  mp_description: string;
-  gid: number;
-  ts_id: number;
-  userid: string;
 };

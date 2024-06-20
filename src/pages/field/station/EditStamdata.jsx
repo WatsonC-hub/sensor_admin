@@ -223,7 +223,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
   const [pageToShow, setPageToShow] = useSearchParam('page');
-  const [tabValue, setTabValue] = useSearchParam('tab');
+  const [tabValue, setTabValue] = useSearchParam('tab', '0');
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
   useEffect(() => {

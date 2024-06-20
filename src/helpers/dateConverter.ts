@@ -8,7 +8,11 @@ const convertDate = (date: string) => {
   return moment(date).format('DD-MM-YYYY');
 };
 
-const convertDateWithTimeStamp = (date: string) => {
+const convertDateWithTimeStamp = (dateString: string | null) => {
+  if (dateString === null) {
+    return '';
+  }
+
   return moment(date).format('DD-MM-YYYY HH:mm');
 };
 

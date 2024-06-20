@@ -1,6 +1,126 @@
 import {atom} from 'jotai';
 import {atomWithStorage, atomFamily} from 'jotai/utils';
+import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
+
+function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
+  return {
+    getItem(key, initialValue) {
+      const storedValue = localStorage.getItem(key);
+      let parsedValue;
+      try {
+        parsedValue = JSON.parse(storedValue ?? '');
+      } catch {
+        return initialValue;
+      }
+      if (parsedValue?.timestamp && Date.now() - parsedValue.timestamp > timeout_ms) {
+        return initialValue;
+      }
+      return parsedValue?.value ?? initialValue;
+    },
+    setItem(key, value) {
+      const data = {
+        value,
+        timestamp: Date.now(),
+      };
+
+      localStorage.setItem(key, JSON.stringify(data));
+    },
+    removeItem(key) {
+      localStorage.removeItem(key);
+    },
+    subscribe(key, callback, initialValue) {
+      const eventCallback = (e: StorageEvent) => {
+        if (e.storageArea === localStorage && e.key === key) {
+          let newValue;
+          try {
+            newValue = JSON.parse(e.newValue ?? '');
+          } catch {
+            newValue = initialValue;
+          }
+          callback(newValue);
+        }
+      };
+
+      window.addEventListener('storage', eventCallback);
+
+      return () => {
+        window.removeEventListener('storage', eventCallback);
+      };
+    },
+  };
+}
+
+function createPartialTimedStorage<T>(
+  timeout_ms: number,
+  partialKeys: Array<keyof T>
+): SyncStorage<T> {
+  return {
+    getItem(key, initialValue) {
+      const storedValue = localStorage.getItem(key);
+      let parsedValue;
+      try {
+        parsedValue = JSON.parse(storedValue ?? '');
+      } catch {
+        return initialValue;
+      }
+      if (parsedValue?.timestamp && Date.now() - parsedValue.timestamp > timeout_ms) {
+        return initialValue;
+      }
+      const isOutdated = parsedValue?.timestamp && Date.now() - parsedValue.timestamp > timeout_ms;
+      const value = parsedValue?.value ?? initialValue;
+
+      if (isOutdated) {
+        const newValue = {...value};
+        for (const partialKey of partialKeys) {
+          newValue[partialKey] = initialValue[partialKey];
+        }
+        return newValue;
+      }
+      return value;
+    },
+    setItem(key, value) {
+      const data = {
+        value,
+        timestamp: Date.now(),
+      };
+
+      localStorage.setItem(key, JSON.stringify(data));
+    },
+    removeItem(key) {
+      localStorage.removeItem(key);
+    },
+    subscribe(key, callback, initialValue) {
+      const eventCallback = (e: StorageEvent) => {
+        if (e.storageArea === localStorage && e.key === key) {
+          let newValue;
+          try {
+            newValue = JSON.parse(e.newValue ?? '');
+          } catch {
+            newValue = initialValue;
+          }
+          callback(newValue);
+        }
+      };
+
+      window.addEventListener('storage', eventCallback);
+
+      return () => {
+        window.removeEventListener('storage', eventCallback);
+      };
+    },
+  };
+}
+
+export const atomWithPartialTimedStorage = <T>(
+  key: string,
+  initialValue: T,
+  timeout_ms: number,
+  partialKeys: Array<keyof T>
+) => atomWithStorage(key, initialValue, createPartialTimedStorage(timeout_ms, partialKeys));
+
+export const atomWithTimedStorage = <T>(key: string, initialValue: T, timeout_ms: number) =>
+  atomWithStorage(key, initialValue, createTimedStorage(timeout_ms));
 
 export const captureDialogAtom = atom(false);
 
@@ -8,7 +128,7 @@ export const qaSelection = atom({});
 
 export const statefullTableAtomFamily = atomFamily(
   (key: string) =>
-    atomWithStorage<Partial<MRT_TableState<MRT_RowData>>>(
+    atomWithPartialTimedStorage<Partial<MRT_TableState<MRT_RowData>>>(
       key,
       {
         pagination: {
@@ -17,10 +137,8 @@ export const statefullTableAtomFamily = atomFamily(
         },
         density: 'comfortable',
       },
-      undefined,
-      {
-        getOnInit: true,
-      }
+      1000 * 60 * 60,
+      ['pagination']
     ),
   (a, b) => {
     return a == b;

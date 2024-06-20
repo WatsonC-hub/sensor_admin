@@ -5,21 +5,23 @@ import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
-import {useRef, useEffect, useState, SyntheticEvent} from 'react';
+import {useRef, useEffect, useState, SyntheticEvent, memo, useMemo, useCallback} from 'react';
 import utmObj from 'utm-latlng';
 
 import {apiClient} from '~/apiClient';
 import {mapboxToken, boreholeColors} from '~/consts';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {atomWithTimedStorage} from '~/state/atoms';
 import {stamdataStore, authStore} from '~/state/store';
 
 import BoreholeContent from './components/BoreholeContent';
 import DrawerComponent from './components/DrawerComponent';
 import LegendContent from './components/LegendContent';
+import {getColor} from './components/NotificationIcon';
 import SearchAndFilterMap from './components/SearchAndFilterMap';
 import SensorContent from './components/SensorContent';
-import type {BoreholeData} from './OverviewPage';
+import {BoreholeMapData} from '~/types';
 
 const utm = new utmObj();
 
@@ -38,8 +40,8 @@ const defaultCircleMarkerStyle = {
   color: '#000000',
 };
 
-const zoomAtom = atom<number | null>(null);
-const panAtom = atom<L.LatLng | null>(null);
+const zoomAtom = atomWithTimedStorage<number | null>('mapZoom', null, 1000 * 60 * 30);
+const panAtom = atomWithTimedStorage<L.LatLng | null>('mapPan', null, 1000 * 60 * 30);
 
 const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;
 
@@ -64,7 +66,7 @@ declare module 'leaflet' {
   interface MarkerOptions {
     contextmenu?: boolean;
     title?: string;
-    data?: BoreholeData;
+    data?: BoreholeMapData;
   }
 
   interface MapOptions {
@@ -89,9 +91,15 @@ interface LocItems {
 }
 
 interface MapProps {
-  data: (NotificationMap | BoreholeData)[];
+  data: (NotificationMap | BoreholeMapData)[];
   loading: boolean;
 }
+
+const renderes: L.Canvas[] = [0, 1, 2, 3].map((index) => {
+  return L.canvas({pane: index.toString()});
+});
+
+const renderer = L.canvas();
 
 function Map({data, loading}: MapProps) {
   const {createStamdata} = useNavigationFunctions();
@@ -101,10 +109,10 @@ function Map({data, loading}: MapProps) {
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
 
-  const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeData)[]>(data);
+  const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>(data);
 
   const [selectedMarker, setSelectedMarker] = useState<
-    NotificationMap | BoreholeData | null | undefined
+    NotificationMap | BoreholeMapData | null | undefined
   >(null);
   const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
@@ -299,12 +307,6 @@ function Map({data, loading}: MapProps) {
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
 
-    [0, 1, 2, 3].forEach((index) => {
-      if (mapRef.current !== null) {
-        mapRef.current.createPane(index.toString()).style.zIndex = `${400 + index}`;
-      }
-    });
-
     layerRef.current.on('click', function (e) {
       L.DomEvent.stopPropagation(e);
       setSelectedMarker(e.sourceTarget.options.data);
@@ -331,7 +333,17 @@ function Map({data, loading}: MapProps) {
 
   useEffect(() => {
     layerRef.current?.clearLayers();
-    filteredData.forEach((element) => {
+    const sorted = filteredData.sort((a, b) => {
+      if ('locid' in a && 'locid' in b) {
+        return a.flag - b.flag;
+      }
+      if ('boreholeno' in a && 'boreholeno' in b) {
+        return Math.max(...a.status) - Math.max(...b.status);
+      }
+      return 0;
+    });
+
+    sorted.forEach((element) => {
       if ('locid' in element) {
         const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
         if (typeof coords != 'object') return;
@@ -339,11 +351,12 @@ function Map({data, loading}: MapProps) {
         const marker = L.circleMarker(point, {
           ...defaultCircleMarkerStyle,
           interactive: true,
-          fillColor: element.active ? element.color : '#C0C0C0',
+          fillColor: getColor(element),
           title: element.locname,
           data: element,
           contextmenu: true,
-          pane: element.flag.toString(),
+          // pane: element.flag.toString(),
+          renderer: renderer,
         });
 
         marker.bindTooltip(element.locname, {
@@ -358,12 +371,6 @@ function Map({data, loading}: MapProps) {
         const point: L.LatLngExpression = [element.latitude, element.longitude];
 
         const maxStatus = Math.max(...element.status);
-        // const icon = L.divIcon({
-        //   className: 'custom-div-icon',
-        //   html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
-        //   iconSize: [24, 24],
-        //   iconAnchor: [12, 12],
-        // });
 
         const marker = L.marker(point, {
           icon: leafletIcons[maxStatus],
@@ -372,7 +379,6 @@ function Map({data, loading}: MapProps) {
           title: element.boreholeno,
           data: element,
           contextmenu: true,
-          pane: maxStatus.toString(),
         });
 
         marker.bindTooltip(element.boreholeno, {
@@ -395,59 +401,63 @@ function Map({data, loading}: MapProps) {
     }
   }, [filteredData]);
 
-  const handleSearchSelect = (e: SyntheticEvent, value: string | LocItems | null) => {
-    if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
-      if (value.sensor) {
-        // @ts-expect-error Getlayers returns markers
-        const markers: L.Marker[] = layerRef.current.getLayers();
-
-        for (let i = 0; i < markers.length; i++) {
-          if (markers[i].options.title == value.name) {
-            markers[i].openPopup();
-            mapRef.current?.flyTo(markers[i].getLatLng(), 14, {
-              animate: false,
-            });
-            markers[i].fire('click');
-            setSelectedMarker(markers[i].options.data);
-            break;
+  const handleSearchSelect = useCallback(
+    (e: SyntheticEvent, value: string | LocItems | null) => {
+      if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
+        if (value.sensor) {
+          // @ts-expect-error Getlayers returns markers
+          const markers: L.Marker[] = layerRef.current.getLayers();
+          for (let i = 0; i < markers.length; i++) {
+            if (markers[i].options.title == value.name) {
+              markers[i].openPopup();
+              mapRef.current?.flyTo(markers[i].getLatLng(), 14, {
+                animate: false,
+              });
+              markers[i].fire('click');
+              setSelectedMarker(markers[i].options.data);
+              break;
+            }
           }
+        } else {
+          apiClient
+            .get<BoreholeMapData>(`/sensor_field/jupiter/search/${value.name}`)
+            .then((res) => {
+              const element = res.data;
+
+              const point: L.LatLngExpression = [element.latitude, element.longitude];
+
+              const maxStatus = Math.max(...element.status);
+
+              const icon = L.divIcon({
+                className: 'custom-div-icon',
+                html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
+                iconSize: [24, 24],
+                iconAnchor: [12, 24],
+              });
+
+              const marker = L.marker(point, {
+                icon: icon,
+                title: element.boreholeno,
+                data: element,
+                contextmenu: true,
+              });
+
+              marker.on('add', function () {
+                mapRef.current?.flyTo(point, 16, {
+                  animate: false,
+                });
+                marker.fire('click');
+                setSelectedMarker(element);
+              });
+              if (layerRef.current) {
+                marker.addTo(layerRef.current);
+              }
+            });
         }
-      } else {
-        apiClient.get<BoreholeData>(`/sensor_field/jupiter/search/${value.name}`).then((res) => {
-          const element = res.data;
-
-          const point: L.LatLngExpression = [element.latitude, element.longitude];
-
-          const maxStatus = Math.max(...element.status);
-
-          const icon = L.divIcon({
-            className: 'custom-div-icon',
-            html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
-            iconSize: [24, 24],
-            iconAnchor: [12, 24],
-          });
-
-          const marker = L.marker(point, {
-            icon: icon,
-            title: element.boreholeno,
-            data: element,
-            contextmenu: true,
-          });
-
-          marker.on('add', function () {
-            mapRef.current?.flyTo(point, 16, {
-              animate: false,
-            });
-            marker.fire('click');
-            setSelectedMarker(element);
-          });
-          if (layerRef.current) {
-            marker.addTo(layerRef.current);
-          }
-        });
       }
-    }
-  };
+    },
+    [layerRef.current]
+  );
 
   const getDrawerHeader = () => {
     if (selectedMarker == null) return 'Signaturforklaring';
@@ -473,11 +483,9 @@ function Map({data, loading}: MapProps) {
         }}
       ></Box>
       <DrawerComponent
-        // open={selectedMarker !== null}
-        // setOpen={}
+        key={getDrawerHeader()}
         enableFull={selectedMarker != null ? true : false}
-        triggerCloseDrawer={selectedMarker === null}
-        triggerOpenDrawer={selectedMarker !== null}
+        isMarkerSelected={selectedMarker !== null}
         header={getDrawerHeader()}
       >
         {selectedMarker && 'locid' in selectedMarker && <SensorContent data={selectedMarker} />}

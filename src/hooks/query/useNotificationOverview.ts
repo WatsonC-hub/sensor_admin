@@ -14,7 +14,7 @@ export interface Notification {
   latitude: number;
   terminalid: string;
   opgave: string;
-  dato: string;
+  dato: string | null;
   color: string;
   flag: number;
   notification_id: number;

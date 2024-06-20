@@ -42,7 +42,7 @@ export const useNavigationFunctions = () => {
       ),
     borehole: (boreholeno: string, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno, options),
-    boreholeIntake: (boreholeno: string, intake: string, options?: NavigateOptions) =>
+    boreholeIntake: (boreholeno: string, intake: string | number, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno + '/' + intake, options),
     createStamdata: () => navigate('/field/stamdata'),
   };

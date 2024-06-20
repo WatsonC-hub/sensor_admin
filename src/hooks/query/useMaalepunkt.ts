@@ -4,16 +4,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {stamdataStore} from '~/state/store';
-
-interface Maalepunkt {
-  gid: number;
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  ts_id: number;
-  mp_description: string;
-  userid: string;
-}
+import {Maalepunkt} from '~/types';
 
 interface MaalepunktBase {
   path: string;

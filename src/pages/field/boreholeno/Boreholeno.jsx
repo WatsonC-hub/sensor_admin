@@ -384,7 +384,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         {pageToShow === StationPages.MAALEPUNKT && (
           <FabWrapper
             icon={<AddCircle />}
-            text="Tilføj Maalepunkt"
+            text="Tilføj målepunkt"
             onClick={() => {
               setShowForm(true);
               setAddMPOpen(true);
@@ -404,7 +404,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         {pageToShow === null && (
           <FabWrapper
             icon={<AddCircle />}
-            text="Tilføj kontrol"
+            text="Tilføj pejling"
             onClick={() => {
               setShowForm(true);
             }}

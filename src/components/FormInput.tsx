@@ -46,8 +46,8 @@ const FormInput = <TFieldValues extends FieldValues>({
           <TextField
             {...otherProps}
             name={name}
-            value={value}
             type={type}
+            value={value ?? ''}
             onBlur={onBlur}
             ref={ref}
             sx={{

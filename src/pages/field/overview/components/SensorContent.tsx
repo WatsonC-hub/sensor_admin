@@ -5,8 +5,10 @@ import {Box, Typography} from '@mui/material';
 import Button from '~/components/Button';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+
+import NotificationIcon from './NotificationIcon';
 
 interface SensorContentProps {
   data: NotificationMap;
@@ -16,31 +18,50 @@ const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
   const {location} = useNavigationFunctions();
 
+  const splitted = data.stationname.split(data.locname);
   return (
     <>
       <Box display="flex" alignItems="center" gap={1}>
-        <Typography variant="body1">Status:</Typography>
-        <TaskIcon color={data.color} />
-        <Typography variant="body1">{data.opgave}</Typography>
+        <Typography variant="body2">
+          {splitted[splitted.length - 1].replace('-', '').trim()}
+        </Typography>
+        <Box display="flex" gap={1}>
+          <NotificationIcon iconDetails={data} />
+          <Typography variant="body2">{data.opgave}</Typography>
+        </Box>
+        <Typography variant="body2">{convertDateWithTimeStamp(data.dato)}</Typography>
       </Box>
 
       {drawerContext === 'full' && (
-        <Box>
+        <>
           <Typography variant="h6">Andre notifikationer</Typography>
-          {data.otherNotifications.map((notification) => {
-            notification.notification_id;
-            const splitted = notification.stationname.split(notification.locname);
-            return (
-              <Box key={notification.notification_id} display="flex" alignItems="center" gap={1}>
-                <Typography variant="body1">
-                  {splitted[splitted.length - 1].replace('-', '').trim()}
-                </Typography>
-                <TaskIcon color={notification.color} />
-                <Typography variant="body1">{notification.opgave}</Typography>
-              </Box>
-            );
-          })}
-        </Box>
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 1,
+              gridTemplateColumns: 'fit-content(300px) fit-content(300px) 1fr',
+            }}
+          >
+            {data.otherNotifications.map((notification) => {
+              notification.notification_id;
+              const splitted = notification.stationname.split(notification.locname);
+              return (
+                <>
+                  <Typography variant="body2">
+                    {splitted[splitted.length - 1].replace('-', '').trim()}
+                  </Typography>
+                  <Box display="flex" gap={1}>
+                    <NotificationIcon iconDetails={notification} />
+                    <Typography variant="body2">{notification.opgave}</Typography>
+                  </Box>
+                  <Typography variant="body2">
+                    {convertDateWithTimeStamp(notification.dato)}
+                  </Typography>
+                </>
+              );
+            })}
+          </Box>
+        </>
       )}
       <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
