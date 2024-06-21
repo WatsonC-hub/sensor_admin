@@ -27,8 +27,9 @@ export const useSearchParam = (param: string, default_value?: string) => {
     navigate(newUrl, {replace: true});
   };
 
-  const callback = (event) => {
-    const url = new URL(event.destination.url);
+  const callback = (event: any) => {
+    console.log(event);
+    const url = new URL(event.view.location.href);
     const search = url.searchParams.get(param);
     if (search) {
       // console.log('search', search, 'param', search, 'url', url.href);
@@ -36,10 +37,10 @@ export const useSearchParam = (param: string, default_value?: string) => {
     }
   };
   useEffect(() => {
-    window.navigation.addEventListener('navigate', callback);
+    if (param) document.addEventListener('click', callback);
 
     return () => {
-      window.navigation.removeEventListener('navigate', callback);
+      if (param) document.removeEventListener('click', callback);
     };
   }, []);
 

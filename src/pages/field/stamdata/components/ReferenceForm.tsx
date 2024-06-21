@@ -17,6 +17,7 @@ export default function ReferenceForm({canEdit, ts_id}: Props) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const [showForm, setShowForm] = useSearchParam('showForm');
+  // console.log('referenceForm', showForm);
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: moment(),

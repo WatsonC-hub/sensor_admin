@@ -33,6 +33,8 @@ export default function Station({ts_id, stamdata}) {
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
 
+  // console.log('showForm station', showForm);
+
   const store = stamdataStore();
   useEffect(() => {
     if (stamdata) {
@@ -123,7 +125,7 @@ export default function Station({ts_id, stamdata}) {
         {pageToShow === StationPages.STAMDATA && (
           <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} />
         )}
-        {pageToShow === null && <Pejling ts_id={ts_id} setDynamic={setDynamic} />}
+        {pageToShow === StationPages.PEJLING && <Pejling ts_id={ts_id} setDynamic={setDynamic} />}
         {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
 
         {pageToShow === StationPages.BILLEDER && (

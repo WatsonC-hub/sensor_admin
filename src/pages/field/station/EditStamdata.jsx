@@ -223,9 +223,10 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
   const [pageToShow, setPageToShow] = useSearchParam('page');
-  const [tabValue, setTabValue] = useSearchParam('tab', '0');
+  const [tabValue, setTabValue] = useSearchParam('tab');
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
+  // console.log('showForm stamdata', showForm);
   useEffect(() => {
     if (
       pageToShow === StationPages.STAMDATA &&
@@ -235,14 +236,23 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       setPageToShow(StationPages.STAMDATA);
       setShowForm(null);
     }
-
-    if (tabValue === null) setTabValue('0');
-    else if (tabValue === '3' && metadata?.tstype_id !== 1) {
+    console.log('tab before', tabValue);
+    if (tabValue === null) {
+      console.log('if');
       setTabValue('0');
-    } else if (tabValue === '2' && metadata?.calculated) setTabValue('0');
-    else setTabValue(tabValue);
+    } else if (tabValue === '3' && metadata && metadata.tstype_id !== 1) {
+      console.log(metadata?.tstype_id);
+      console.log('else if');
+      setTabValue('0');
+    } else if (tabValue === '2' && metadata && metadata.calculated) {
+      console.log('else if 2');
+      setTabValue('0');
+    } else setTabValue(tabValue);
+
+    console.log('tab after', tabValue);
 
     if (tabValue !== '3' && showForm === 'true') {
+      console.log(showForm);
       setShowForm(null);
     }
 
