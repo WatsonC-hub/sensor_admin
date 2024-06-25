@@ -1,8 +1,10 @@
 import {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 
 export const useSearchParam = (param: string, default_value?: string) => {
   const navigate = useNavigate();
+  const {search} = useLocation();
+
   const [searchParam, setSearchParam] = useState(
     new URLSearchParams(window.location.search).get(param) || (default_value ?? null)
   );
@@ -27,22 +29,11 @@ export const useSearchParam = (param: string, default_value?: string) => {
     navigate(newUrl, {replace: true});
   };
 
-  const callback = (event: any) => {
-    console.log(event);
-    const url = new URL(event.view.location.href);
-    const search = url.searchParams.get(param);
-    if (search) {
-      // console.log('search', search, 'param', search, 'url', url.href);
-      setSearchParam(search);
-    }
-  };
   useEffect(() => {
-    if (param) document.addEventListener('click', callback);
+    const innerSearchParam = new URLSearchParams(search).get(param);
 
-    return () => {
-      if (param) document.removeEventListener('click', callback);
-    };
-  }, []);
+    setSearchParam(innerSearchParam);
+  }, [search, param]);
 
   return [searchParam, setParam] as const;
 };

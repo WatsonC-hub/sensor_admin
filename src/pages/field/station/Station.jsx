@@ -33,7 +33,7 @@ export default function Station({ts_id, stamdata}) {
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
 
-  // console.log('showForm station', showForm);
+  console.log('showForm station', showForm);
 
   const store = stamdataStore();
   useEffect(() => {
