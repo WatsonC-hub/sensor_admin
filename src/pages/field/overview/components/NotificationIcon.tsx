@@ -83,10 +83,10 @@ const defaultStyling: BoxProps['sx'] = {
 };
 
 type IconDetails = {
-  color?: string;
+  color?: string | null;
   notification_id?: number;
   flag?: number;
-  opgave?: string;
+  opgave?: string | null;
   active?: boolean;
 };
 
@@ -109,7 +109,7 @@ export const getColor = (iconDetails: IconDetails) => {
   if ([13, 75, 76].includes(iconDetails.notification_id ?? 0)) return '#9F2B68';
   if (iconDetails.active === false) return '#C0C0C0';
   if (iconDetails.flag !== undefined) return sensorColors[iconDetails.flag].color;
-  else return iconDetails.color;
+  else return iconDetails.color ?? '#66bb6a';
 };
 
 const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {

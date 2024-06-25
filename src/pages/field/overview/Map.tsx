@@ -95,11 +95,13 @@ interface MapProps {
   loading: boolean;
 }
 
-const renderes: L.Canvas[] = [0, 1, 2, 3].map((index) => {
-  return L.canvas({pane: index.toString()});
-});
+const offSetPoint = (point: L.LatLngExpression, offset: number, map: L.Map): L.LatLngExpression => {
+  var pixelPoint = map.latLngToContainerPoint(point);
 
-const renderer = L.canvas();
+  var newPoint = L.point([pixelPoint.x + offset, pixelPoint.y - offset]);
+
+  return map.containerPointToLatLng(newPoint);
+};
 
 function Map({data, loading}: MapProps) {
   const {createStamdata} = useNavigationFunctions();
@@ -159,6 +161,7 @@ function Map({data, loading}: MapProps) {
       zoom: 7,
       layers: [outdormapbox],
       tap: false,
+      renderer: L.canvas(),
       contextmenu: true,
       contextmenuWidth: 140,
       contextmenuItems: [
@@ -356,8 +359,26 @@ function Map({data, loading}: MapProps) {
           data: element,
           contextmenu: true,
           // pane: element.flag.toString(),
-          renderer: renderer,
+          // renderer: renderer,
         });
+
+        if (
+          element.obsNotifications.length > 0
+          // && element.obsNotifications[0].flag > element.flag
+        ) {
+          // console.log(element.obsNotifications[0]);
+          const smallMarker = L.circleMarker(point, {
+            ...defaultCircleMarkerStyle,
+            radius: defaultRadius + 4,
+            interactive: false,
+            fillColor: getColor(element.obsNotifications[0]),
+            // pane: element.flag.toString(),
+            // renderer: renderer,
+          });
+          if (layerRef.current) {
+            smallMarker.addTo(layerRef.current);
+          }
+        }
 
         marker.bindTooltip(element.locname, {
           direction: 'top',
