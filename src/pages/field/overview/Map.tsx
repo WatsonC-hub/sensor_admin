@@ -111,7 +111,7 @@ function Map({data, loading}: MapProps) {
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
 
-  const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>(data);
+  const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
 
   const [selectedMarker, setSelectedMarker] = useState<
     NotificationMap | BoreholeMapData | null | undefined
@@ -490,7 +490,7 @@ function Map({data, loading}: MapProps) {
   return (
     <>
       <SearchAndFilterMap
-        data={data}
+        data={loading ? [] : data}
         setData={setFilteredData}
         handleSearchSelect={handleSearchSelect}
       />
