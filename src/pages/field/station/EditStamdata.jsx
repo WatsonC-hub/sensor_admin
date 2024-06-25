@@ -226,7 +226,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const [tabValue, setTabValue] = useSearchParam('tab');
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
-  console.log('showForm stamdata', showForm);
   useEffect(() => {
     if (
       pageToShow === StationPages.STAMDATA &&
@@ -293,8 +292,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       },
     }).data,
   });
-
-  console.log(formMethods.getValues());
 
   const resetFormData = () => {
     formMethods.reset(
