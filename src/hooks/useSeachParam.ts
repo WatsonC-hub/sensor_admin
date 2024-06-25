@@ -9,6 +9,12 @@ export const useSearchParam = (param: string, default_value?: string) => {
     new URLSearchParams(window.location.search).get(param) || (default_value ?? null)
   );
 
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get(param) === null) {
+      setParam(default_value ?? null);
+    }
+  }, []);
+
   const setParam = (value: string | null) => {
     setSearchParam(value);
     const searchParams = new URLSearchParams(window.location.search);
