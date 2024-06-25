@@ -51,6 +51,7 @@ const FormInput = <TFieldValues extends FieldValues>({
             onBlur={onBlur}
             ref={ref}
             sx={{
+              pb: 1,
               '& .MuiInputBase-input.Mui-disabled': {
                 WebkitTextFillColor: '#000000',
               },
@@ -59,7 +60,12 @@ const FormInput = <TFieldValues extends FieldValues>({
               '& .MuiOutlinedInput-root': {
                 '& > fieldset': {borderColor: 'primary.main'},
               },
-              '.MuiFormHelperText-root': {color: warning && warning(value) ? 'orange' : 'red'},
+              '.MuiFormHelperText-root': {
+                color: warning && warning(value) ? 'orange' : 'red',
+                position: 'absolute',
+                pb: 2,
+                top: '80%',
+              },
             }}
             className="swiper-no-swiping"
             variant="outlined"
