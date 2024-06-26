@@ -88,7 +88,7 @@ type IconDetails = {
   flag?: number;
   opgave?: string | null;
   active?: boolean;
-  status?: 'SCHEDULED' | 'POSTPONED' | 'IGNORED';
+  status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
 };
 
 type IconDetailsWithTooltip = IconDetails & {
