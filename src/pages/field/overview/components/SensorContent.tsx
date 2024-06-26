@@ -17,7 +17,7 @@ interface SensorContentProps {
 const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
   const {location} = useNavigationFunctions();
-  console.log('data', data);
+
   const splitted = data.stationname.split(data.locname);
   return (
     <>

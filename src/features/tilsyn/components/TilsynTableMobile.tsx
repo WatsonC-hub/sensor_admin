@@ -14,21 +14,11 @@ import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-
-export type Tilsyn = {
-  batteriskift: boolean;
-  dato: string;
-  gid: number;
-  kommentar: string;
-  pejling?: string;
-  terminal_id: string;
-  tilsyn: boolean;
-  userid: number;
-};
+import {TilsynItem} from '~/types';
 
 interface Props {
-  data: Tilsyn[];
-  handleEdit: (tilyn: Tilsyn) => void;
+  data: TilsynItem[] | undefined;
+  handleEdit: (tilyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -42,7 +32,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Tilsyn>[]>(
+  const columns = useMemo<MRT_ColumnDef<TilsynItem>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -107,7 +97,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     []
   );
 
-  const options: Partial<MRT_TableOptions<Tilsyn>> = {
+  const options: Partial<MRT_TableOptions<TilsynItem>> = {
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
@@ -122,7 +112,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     ),
   };
 
-  const table = useTable<Tilsyn>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useTable<TilsynItem>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
     <Box sx={setTableBoxStyle(320)}>

@@ -228,7 +228,9 @@ export default function OpretStamdata({setAddStationDisabled}) {
     };
   }, []);
 
-  const [tabValue, setTabValue] = useSearchParam('tab');
+  const [tabValue, setTabValue] = useSearchParam('tab', '0');
+
+  console.log('tabValue', tabValue, typeof tabValue);
 
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
@@ -293,6 +295,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
       },
     };
 
+    console.log(formMethods.getValues());
+
     if (getValues()?.timeseries.tstype_id === 1) {
       form['watlevmp'] = {
         startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
@@ -314,12 +318,12 @@ export default function OpretStamdata({setAddStationDisabled}) {
     }
   };
 
-  useEffect(() => {
-    setTabValue('0');
-    return () => {
-      setTabValue(null);
-    };
-  }, []);
+  // useEffect(() => {
+  //   setTabValue('0');
+  //   return () => {
+  //     setTabValue(null);
+  //   };
+  // }, []);
 
   return (
     <>
@@ -328,7 +332,9 @@ export default function OpretStamdata({setAddStationDisabled}) {
         <FormProvider {...formMethods}>
           <Tabs
             value={tabValue}
-            onChange={(_, newValue) => setTabValue(newValue)}
+            onChange={(_, newValue) => {
+              setTabValue(newValue);
+            }}
             variant="fullWidth"
             aria-label="simple tabs example"
             sx={{

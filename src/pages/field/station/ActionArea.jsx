@@ -6,9 +6,8 @@ import {
 } from '@mui/icons-material';
 import {startCase} from 'lodash';
 
+import CustomBottomNavigation from '~/components/BottomNavigation';
 import {StationPages} from '~/helpers/EnumHelper';
-
-import CustomBottomNavigation from '../../../components/BottomNavigation';
 
 const navIconStyle = (isSelected) => {
   return isSelected ? 'secondary.main' : 'inherit';
@@ -21,10 +20,7 @@ export default function ActionArea({
   setShowForm,
   isCalculated,
 }) {
-  // const [value, setValue] = useSearchParam('page');
-
   const handleChange = (event, newValue) => {
-    // setValue(newValue);
     setPageToShow(newValue);
     if (showForm !== null) {
       setShowForm(null);

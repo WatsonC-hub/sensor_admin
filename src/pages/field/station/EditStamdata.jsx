@@ -29,7 +29,6 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -38,7 +37,6 @@ import FabWrapper from '~/components/FabWrapper';
 import {tabsHeight} from '~/consts';
 import {StationPages} from '~/helpers/EnumHelper';
 import {metadataPutSchema} from '~/helpers/zodSchemas';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 import OwnDatePicker from '../../../components/OwnDatePicker';
@@ -167,7 +165,7 @@ const UdstyrReplace = ({stationId}) => {
               className="swiper-no-swiping"
             >
               {data?.map((item) => {
-                let endDate =
+                const endDate =
                   moment(new Date()) < moment(item.slutdato)
                     ? 'nu'
                     : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
@@ -221,32 +219,46 @@ const UdstyrReplace = ({stationId}) => {
 
 export default function EditStamdata({ts_id, metadata, canEdit}) {
   // const [selectedUnit, setSelectedUnit] = useState('');
-  const [mode, setMode] = useState('view');
-
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
-  const [pageToShow] = useSearchParam('page');
-  const [tabValue, setTabValue] = useSearchParam('tab', '0');
-  const [, setPageToShow] = useSearchParam('page');
-  const {stamdata} = useNavigationFunctions();
+  const [pageToShow, setPageToShow] = useSearchParam('page');
+  const [tabValue, setTabValue] = useSearchParam('tab');
+  const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
-
   useEffect(() => {
-    if (tabValue === null) setTabValue('0');
-    else if (tabValue === '3' && metadata.tstype_id !== 1) {
-      setTabValue('0');
-    } else if (tabValue === '2' && metadata.calculated) setTabValue('0');
-    else setTabValue(tabValue);
-
-    if (pageToShow === StationPages.STAMDATA && parseInt(ts_id) !== prev_ts_id) {
+    if (
+      pageToShow === StationPages.STAMDATA &&
+      parseInt(ts_id) !== prev_ts_id &&
+      prev_ts_id !== 0
+    ) {
       setPageToShow(StationPages.STAMDATA);
-      stamdata(metadata.loc_id, ts_id, tabValue, {replace: false});
+      setShowForm(null);
     }
+    console.log('tab before', tabValue);
+    if (tabValue === null) {
+      console.log('if');
+      setTabValue('0');
+    } else if (tabValue === '3' && metadata && metadata.tstype_id !== 1) {
+      console.log(metadata?.tstype_id);
+      console.log('else if');
+      setTabValue('0');
+    } else if (tabValue === '2' && metadata && metadata.calculated) {
+      console.log('else if 2');
+      setTabValue('0');
+    } else setTabValue(tabValue);
+
+    console.log('tab after', tabValue);
+
+    if (tabValue !== '3' && showForm === 'true') {
+      console.log(showForm);
+      setShowForm(null);
+    }
+
     return () => {
       setTabValue(null);
     };
-  }, [ts_id, metadata.calculated, tabValue]);
+  }, [ts_id, metadata?.calculated, tabValue]);
 
   const metadataEditMutation = useMutation({
     mutationFn: async (data) => {
@@ -384,7 +396,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="3"
-            disabled={metadata.tstype_id !== 1}
+            disabled={metadata && metadata.tstype_id !== 1}
             icon={
               <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
             }
@@ -421,17 +433,17 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               icon={<AddCircle />}
               text="Tilføj målepunkt"
               onClick={() => {
-                setMode('add');
+                setShowForm('true');
               }}
-              visible={mode === 'view' ? 'visible' : 'hidden'}
+              visible={showForm === null ? 'visible' : 'hidden'}
             >
-              <ReferenceForm mode={mode} setMode={setMode} canEdit={canEdit} ts_id={ts_id} />
+              <ReferenceForm canEdit={canEdit} ts_id={ts_id} />
             </FabWrapper>
           </TabPanel>
           <TabPanel value={tabValue} index={'4'}>
             Kontaktinformation
           </TabPanel>
-          {mode !== 'edit' && tabValue !== '3' && (
+          {showForm === null && tabValue !== '3' && (
             <footer style={{position: 'sticky', bottom: 60, float: 'right'}}>
               <Grid
                 container

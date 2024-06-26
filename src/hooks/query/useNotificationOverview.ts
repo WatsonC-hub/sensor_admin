@@ -18,7 +18,7 @@ export interface Notification {
   color: string | null;
   flag: number;
   notification_id: number;
-  status: string | null;
+  status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
   projectno: string;
   is_customer_service: boolean;

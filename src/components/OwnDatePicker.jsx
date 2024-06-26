@@ -16,7 +16,9 @@ const OwnDatePicker = (props) => {
         helperText={props.helperText}
         disabled={props.disabled}
         value={moment(props.value).format('YYYY-MM-DDTHH:mm')}
-        onChange={(e) => props.onChange(moment(e.target.value).toDate())}
+        onChange={(e) => {
+          props.onChange(moment(e.target.value).toDate());
+        }}
         sx={props.error ? {} : props.sx}
         inputProps={{
           max: props.max ? moment(props.max).format('YYYY-MM-DDTHH:mm:ss') : null,

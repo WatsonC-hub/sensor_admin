@@ -23,10 +23,21 @@ export const useNavigationFunctions = () => {
       loc_id: number | undefined,
       station_id: number | undefined,
       options?: NavigateOptions
-    ) => navigate('/field/location/' + loc_id + '/' + station_id, options),
-    stamdata: (loc_id: number, station_id: number, tabValue?: string, options?: NavigateOptions) =>
+    ) =>
       navigate(
-        '/field/location/' + loc_id + '/' + station_id + '?page=STAMDATA&tab=' + tabValue,
+        {
+          pathname: '/field/location/' + loc_id + '/' + station_id,
+        },
+        options
+      ),
+    stamdata: (
+      loc_id: number,
+      station_id: number,
+      tabValue: string = '0',
+      options?: NavigateOptions
+    ) =>
+      navigate(
+        '/field/location/' + loc_id + '/' + station_id + '?page=stamdata&tab=' + tabValue,
         options
       ),
     borehole: (boreholeno: string, options?: NavigateOptions) =>

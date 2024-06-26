@@ -1,3 +1,5 @@
+import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
+
 export interface Image {
   gid: number;
   loc_id?: number;
@@ -75,4 +77,30 @@ export type Maalepunkt = {
   gid: number;
   ts_id: number;
   userid: string;
+};
+
+export type TilsynItem = {
+  batteriskift: boolean;
+  dato: string;
+  gid: number;
+  kommentar?: string | undefined;
+  tilsyn: boolean;
+  user_id: string | null;
+};
+
+export type ZodTilsynItem = {
+  batteriskift: ZodBoolean;
+  dato: ZodDate;
+  gid: ZodNumber;
+  kommentar?: ZodString;
+  tilsyn: ZodBoolean;
+  user_id: ZodNullable<ZodString>;
+};
+
+export type PejlingItem = {
+  comment: string;
+  gid: number;
+  measurement: number;
+  timeofmeas: string;
+  useforcorrection: number;
 };

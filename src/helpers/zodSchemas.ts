@@ -1,5 +1,5 @@
 import moment from 'moment';
-import * as z from 'zod';
+import {z} from 'zod';
 
 const metadataBaseSchema = z.object({
   location: z.object({

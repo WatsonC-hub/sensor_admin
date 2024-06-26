@@ -4,11 +4,8 @@ Adding one to the month is mainly done because the method date.getMonth return a
 
 import moment from 'moment';
 
-const convertDate = (dateString: string) => {
-  const date: Date = new Date(dateString);
-  const day: string = setTrailingZero(date.getDate());
-  const month: string = setTrailingZero(date.getMonth() + 1);
-  return `${day}-${month}-${date.getFullYear()}`;
+const convertDate = (date: string) => {
+  return moment(date).format('DD-MM-YYYY');
 };
 
 const convertDateWithTimeStamp = (dateString: string | null) => {
@@ -16,21 +13,12 @@ const convertDateWithTimeStamp = (dateString: string | null) => {
     return '';
   }
 
-  const date: Date = new Date(dateString);
-  const day: string = setTrailingZero(date.getDate());
-  const month: string = setTrailingZero(date.getMonth() + 1);
-  const hours: string = setTrailingZero(date.getHours());
-  const minutes: string = setTrailingZero(date.getMinutes());
-  return `${day}-${month}-${date.getFullYear()} ${hours}:${minutes}`;
+  return moment(dateString).format('DD-MM-YYYY HH:mm');
 };
 
 const checkEndDateIsUnset = (dateString: string) => {
   const date: Date = new Date(dateString);
   return date.getFullYear() === 2099;
-};
-
-const setTrailingZero = (number: number) => {
-  return number < 10 ? '0' + number : number.toString();
 };
 
 const calculatePumpstop = (timeofmeas: string, pumpstop: string, service: boolean) => {

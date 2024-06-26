@@ -26,19 +26,22 @@ import Button from '~/components/Button';
 
 import {useNotificationOverview} from '../hooks/query/useNotificationOverview';
 import {useTaskMutation} from '../hooks/query/useTaskMutation';
+import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
+import UpdateNotificationModal from '~/components/UpdateNotificationModal';
 
 // Mock data for notifications
 const CHARACTERLIMIT = 60;
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [urgency, setUrgency] = useState('');
-  const [description, setDescription] = useState('');
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
 
   const {post: createTask, markAsDone} = useTaskMutation();
   const params = useParams();
 
-  const {data, isLoading} = useNotificationOverview();
+  const {data, isPending} = useNotificationOverview();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -53,29 +56,17 @@ const NotificationList = () => {
     handleClose();
   };
 
+  const openUpdateModal = () => {
+    setUpdateModalOpen(true);
+    handleClose();
+  };
+
   const closeModal = () => {
     setModalOpen(false);
   };
 
-  const handleUrgencyChange = (event) => {
-    setUrgency(event.target.value);
-  };
-
-  const handleDescriptionChange = (event) => {
-    setDescription(event.target.value);
-  };
-
-  const handleRegisterNotification = () => {
-    console.log('Urgency:', urgency);
-    console.log('Description:', description);
-    createTask.mutate({
-      path: params.ts_id,
-      data: {
-        opgave: description,
-        flag: Number(urgency),
-      },
-    });
-    closeModal();
+  const closeUpdateModal = () => {
+    setUpdateModalOpen(false);
   };
 
   const handleMarkAsDone = (notification) => {
@@ -87,7 +78,7 @@ const NotificationList = () => {
     });
   };
 
-  const onstation = data?.filter((elem) => elem.stationid == params.ts_id && elem.opgave != null);
+  const onstation = data?.filter((elem) => elem.locid == params.locid && elem.opgave != null);
   const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
     onstation?.filter((elem) => elem.notification_id != 0),
@@ -105,7 +96,10 @@ const NotificationList = () => {
     (iMax, x, i, arr) => (x.flag > arr[iMax].flag ? i : iMax),
     0
   );
-  const badgeColor = notifications?.[maxFlagIndex]?.color;
+
+  const badgeColor = getColor(notifications[maxFlagIndex]);
+
+  console.log('notifications', notifications);
 
   return (
     <div>
@@ -120,7 +114,7 @@ const NotificationList = () => {
           badgeContent={notifications?.length}
           sx={{
             '& .MuiBadge-badge': {
-              color: 'grey.800',
+              // color: 'grey.800',
               backgroundColor: badgeColor,
             },
           }}
@@ -144,117 +138,57 @@ const NotificationList = () => {
           </ListItemIcon>
           <ListItemText primary="Registrer opgave" />
         </MenuItem>
-        {isLoading && <MenuItem>Indlæster...</MenuItem>}
-        {notifications?.map((notification, index) => (
-          <MenuItem
-            key={index}
-            onClick={handleClose}
-            sx={{gap: 0.5, pointerEvents: notification.notification_id == 0 ? 'none' : 'none'}}
-          >
-            <ListItemIcon>
-              <Avatar>
-                <NotificationsIcon
-                  //   fontSize="small"
-                  sx={{
-                    color: notification.color,
-                  }}
-                />
-              </Avatar>
-            </ListItemIcon>
-            <ListItemText
-              primary={notification.opgave}
-              secondary={notification.dato.slice(0, 10)}
-            />
-            {/* <Typography variant="caption">{}</Typography> */}
-            {notification.notification_id == 0 && (
-              <IconButton
+        {isPending && <MenuItem>Indlæster...</MenuItem>}
+        {notifications?.map((notification, index) => {
+          const splitted = notification.stationname.split(notification.locname);
+          return (
+            <MenuItem
+              key={index}
+              onClick={() => {
+                setSelectedNotification(notification);
+                openUpdateModal();
+              }}
+              sx={{gap: 0.5}}
+            >
+              <ListItemIcon
                 sx={{
-                  pointerEvents: 'auto',
+                  fontSize: '1.5rem',
                 }}
-                aria-label="Mark as done"
-                onClick={() => handleMarkAsDone(notification)}
               >
-                <DoneIcon />
-              </IconButton>
-            )}
-          </MenuItem>
-        ))}
+                <NotificationIcon iconDetails={notification} />
+              </ListItemIcon>
+              <ListItemText
+                primary={notification.opgave}
+                secondary={
+                  splitted[splitted.length - 1].replace('-', '').trim() +
+                  ' - ' +
+                  notification.dato.slice(0, 10)
+                }
+              />
+              {/* <Typography variant="caption">{}</Typography> */}
+              {notification.notification_id == 0 && (
+                <IconButton
+                  sx={{
+                    pointerEvents: 'auto',
+                  }}
+                  aria-label="Mark as done"
+                  onClick={() => handleMarkAsDone(notification)}
+                >
+                  <DoneIcon />
+                </IconButton>
+              )}
+            </MenuItem>
+          );
+        })}
       </Menu>
-      <Dialog open={isModalOpen} onClose={closeModal}>
-        <DialogTitle>Registrer opgave</DialogTitle>
-        <DialogContent
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-          }}
-        >
-          <TextField
-            value={urgency}
-            onChange={handleUrgencyChange}
-            select
-            label="Niveau"
-            variant="outlined"
-            fullWidth
-            margin="dense"
-          >
-            <SelectMenuItem value="3">
-              <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                <ErrorOutlineOutlined
-                  sx={{
-                    color: '#d32f2f',
-                  }}
-                />
-                Kritisk
-              </Box>
-            </SelectMenuItem>
-            <SelectMenuItem value="2">
-              <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                <ErrorOutlineOutlined
-                  sx={{
-                    color: '#FF6C00',
-                  }}
-                />
-                Middel
-              </Box>
-            </SelectMenuItem>
-            <SelectMenuItem value="1">
-              <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                <ErrorOutlineOutlined
-                  sx={{
-                    color: '#ffb13f',
-                  }}
-                />
-                Lav
-              </Box>
-            </SelectMenuItem>
-          </TextField>
-
-          <TextField
-            label="Beskrivelse"
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-            value={description}
-            onChange={handleDescriptionChange}
-            inputProps={{maxLength: CHARACTERLIMIT}}
-            helperText={`${description.length}/${CHARACTERLIMIT}`}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeModal} bttype="tertiary">
-            Annuller
-          </Button>
-          <Button
-            onClick={handleRegisterNotification}
-            bttype="primary"
-            disabled={urgency == '' || description.length < 10}
-          >
-            Registrer
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CreateManualTaskModal open={isModalOpen} closeModal={closeModal} />
+      {isUpdateModalOpen && (
+        <UpdateNotificationModal
+          open={isUpdateModalOpen}
+          closeModal={closeUpdateModal}
+          notification={selectedNotification}
+        />
+      )}
     </div>
   );
 };

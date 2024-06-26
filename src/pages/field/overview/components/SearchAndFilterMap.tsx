@@ -214,8 +214,10 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   };
 
   useEffect(() => {
-    const filtered = filterData(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
-    setData(filtered);
+    if (data.length > 0) {
+      const filtered = filterData(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
+      setData(filtered);
+    }
   }, [mapFilter, data, setData]);
 
   const handleOpenFilter: MouseEventHandler<HTMLButtonElement> = () => {
@@ -301,7 +303,13 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
           },
         }}
       >
-        <FilterOptions filters={mapFilter} setFilter={setMapFilter} />
+        <FilterOptions
+          filters={mapFilter}
+          onSubmit={(filter) => {
+            handleClose();
+            setMapFilter(filter);
+          }}
+        />
       </Menu>
     </>
   );

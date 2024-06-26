@@ -7,8 +7,10 @@ import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {correction_map, setGraphHeight} from '~/consts';
+import {usePejling} from '~/features/api/usePejling';
 import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
 import {useGraphData} from '~/hooks/query/useGraphData';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {stamdataStore} from '~/state/store';
 
@@ -365,9 +367,37 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   );
 }
 
-export default function BearingGraph({stationId, measurements, dynamicMeasurement}) {
+export default function BearingGraph({stationId, dynamicMeasurement}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const [control, setControl] = useState([]);
+
+  const {
+    get: {data: watlevmp},
+  } = useMaalepunkt();
+  const {
+    get: {data: measurements},
+  } = usePejling();
+
+  useEffect(() => {
+    var ctrls = [];
+    if (watlevmp?.length > 0) {
+      ctrls = measurements?.map((e) => {
+        const elev = watlevmp?.filter((e2) => {
+          return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
+        })[0]?.elevation;
+        return {
+          ...e,
+          waterlevel: e.measurement != null ? elev - e.measurement : null,
+        };
+      });
+    } else {
+      ctrls = measurements?.map((elem) => {
+        return {...elem, waterlevel: elem.measurement};
+      });
+    }
+    setControl(ctrls);
+  }, [watlevmp, measurements]);
 
   return (
     <div
@@ -379,7 +409,7 @@ export default function BearingGraph({stationId, measurements, dynamicMeasuremen
       <PlotGraph
         key={stationId}
         ts_id={stationId}
-        controlData={measurements}
+        controlData={control}
         dynamicMeasurement={dynamicMeasurement}
       />
     </div>

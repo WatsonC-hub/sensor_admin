@@ -1,30 +1,22 @@
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
-import moment from 'moment';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle, correction_map} from '~/consts';
-import {limitDecimalNumbers} from '~/helpers/dateConverter';
+import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
-
-export type Kontrol = {
-  comment: string;
-  gid: number;
-  measurement: number;
-  timeofmeas: moment.Moment;
-  useforcorrection: number;
-};
+import {PejlingItem} from '~/types';
 
 interface Props {
-  data: Kontrol[];
-  handleEdit: (kontrol: Kontrol) => void;
+  data: PejlingItem[] | undefined;
+  handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
@@ -47,10 +39,10 @@ export default function PejlingMeasurementsTableDesktop({
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Kontrol>[]>(
+  const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
       {
-        accessorFn: (row) => moment(row.timeofmeas).format('DD-MM-YYYY HH:mm'),
+        accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
         sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
         id: 'timeofmeas',
         header: 'Dato',
@@ -76,9 +68,9 @@ export default function PejlingMeasurementsTableDesktop({
     [unit]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<Kontrol>('PejlingTableState');
+  const [tableState, reset] = useStatefullTableAtom<PejlingItem>('PejlingTableState');
 
-  const options: Partial<MRT_TableOptions<Kontrol>> = {
+  const options: Partial<MRT_TableOptions<PejlingItem>> = {
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -96,7 +88,7 @@ export default function PejlingMeasurementsTableDesktop({
     },
   };
 
-  const table = useTable<Kontrol>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<PejlingItem>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
