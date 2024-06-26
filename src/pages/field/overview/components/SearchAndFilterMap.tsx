@@ -303,7 +303,13 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
           },
         }}
       >
-        <FilterOptions filters={mapFilter} setFilter={setMapFilter} />
+        <FilterOptions
+          filters={mapFilter}
+          onSubmit={(filter) => {
+            handleClose();
+            setMapFilter(filter);
+          }}
+        />
       </Menu>
     </>
   );

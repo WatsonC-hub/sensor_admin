@@ -28,7 +28,9 @@ const utm = new utmObj();
 let hightlightedMarker: L.CircleMarker | null = null;
 
 const defaultRadius = 8;
+const smallRadius = 4;
 const highlightRadius = 14;
+const zoomThresholdForSmallMarkers = 8;
 const zoomThreshold = 14;
 const markerNumThreshold = 10;
 
@@ -248,7 +250,7 @@ function Map({data, loading}: MapProps) {
       .addTo(map);
 
     map.on('moveend', mapEvent);
-    map.on('zoomend', mapEvent);
+    // map.on('zoomend', mapEvent);
 
     map.on('click', function () {
       setSelectedMarker(null);
@@ -261,7 +263,7 @@ function Map({data, loading}: MapProps) {
     return map;
   };
 
-  const mapEvent: L.LeafletEventHandlerFn = () => {
+  const mapEvent: L.LeafletEventHandlerFn = (event) => {
     const map = mapRef.current;
     if (!map) return;
     const zoom = map.getZoom();
@@ -282,6 +284,18 @@ function Map({data, loading}: MapProps) {
         }
       }
     });
+
+    if (zoom < zoomThresholdForSmallMarkers) {
+      markersInViewport.forEach(function (layer) {
+        if (layer instanceof L.CircleMarker)
+          layer.setRadius(layer.options.data ? smallRadius : smallRadius + 2);
+      });
+    } else {
+      markersInViewport.forEach(function (layer) {
+        if (layer instanceof L.CircleMarker)
+          layer.setRadius(layer.options.data ? defaultRadius : defaultRadius + 4);
+      });
+    }
 
     if (zoom > zoomThreshold || markersInViewport.length < markerNumThreshold) {
       tooltipLayer.clearLayers();
@@ -338,6 +352,12 @@ function Map({data, loading}: MapProps) {
     layerRef.current?.clearLayers();
     const sorted = filteredData.sort((a, b) => {
       if ('locid' in a && 'locid' in b) {
+        if (a.flag === b.flag) {
+          if (a.obsNotifications.length === 0 && b.obsNotifications.length === 0) return 0;
+          if (a.obsNotifications.length === 0) return -1;
+          if (b.obsNotifications.length === 0) return 1;
+          return a.obsNotifications[0].flag - b.obsNotifications[0].flag;
+        }
         return a.flag - b.flag;
       }
       if ('boreholeno' in a && 'boreholeno' in b) {
@@ -371,6 +391,8 @@ function Map({data, loading}: MapProps) {
             ...defaultCircleMarkerStyle,
             radius: defaultRadius + 4,
             interactive: false,
+            fillOpacity: 1,
+            opacity: 1,
             fillColor: getColor(element.obsNotifications[0]),
             // pane: element.flag.toString(),
             // renderer: renderer,

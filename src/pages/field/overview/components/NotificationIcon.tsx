@@ -88,6 +88,7 @@ type IconDetails = {
   flag?: number;
   opgave?: string | null;
   active?: boolean;
+  status?: 'SCHEDULED' | 'POSTPONED' | 'IGNORED';
 };
 
 type IconDetailsWithTooltip = IconDetails & {
@@ -105,11 +106,12 @@ type NotificationIconProps =
     };
 
 export const getColor = (iconDetails: IconDetails) => {
-  if (iconDetails.notification_id == 12) return '#334FFF';
-  if ([13, 75, 76].includes(iconDetails.notification_id ?? 0)) return '#9F2B68';
-  if (iconDetails.active === false) return '#C0C0C0';
-  if (iconDetails.flag !== undefined) return sensorColors[iconDetails.flag].color;
-  else return iconDetails.color ?? '#66bb6a';
+  if (iconDetails?.status == 'POSTPONED') return '#66bb6a';
+  if (iconDetails?.notification_id == 12) return '#334FFF';
+  if ([13, 75, 76].includes(iconDetails?.notification_id ?? 0)) return '#9F2B68';
+  if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
+  if (iconDetails?.active === false) return '#C0C0C0';
+  else return iconDetails?.color ?? '#66bb6a';
 };
 
 const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {

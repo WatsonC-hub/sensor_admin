@@ -18,10 +18,10 @@ import {authStore} from '~/state/store';
 
 interface FilterOptionsProps {
   filters: Filter;
-  setFilter: (filter: Filter | typeof RESET) => void;
+  onSubmit: (filter: Filter | typeof RESET) => void;
 }
 
-const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
+const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
   const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
     state.boreholeAccess,
     state.iotAccess,
@@ -33,7 +33,7 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
   });
 
   const submit = (data: Filter) => {
-    setFilter(data);
+    onSubmit(data);
   };
 
   const reset = () => {
@@ -46,7 +46,7 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
     };
 
     formMethods.reset(mapFilter);
-    setFilter(mapFilter);
+    onSubmit(mapFilter);
   };
 
   return (
