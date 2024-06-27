@@ -97,6 +97,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
   );
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
+    enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {

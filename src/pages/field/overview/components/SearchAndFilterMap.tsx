@@ -67,10 +67,6 @@ const getNumberOfNonEmptyFilters = (filter: object): number => {
   }, 0);
 };
 
-type Entry<T> = {
-  [K in keyof T]: [K, T[K]];
-}[keyof T];
-
 const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: T): number => {
   return Object.entries(filter).reduce((acc, entry) => {
     const [key, val] = entry;
