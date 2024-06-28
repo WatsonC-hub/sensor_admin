@@ -23,9 +23,10 @@ const filter = createFilterOptions<Group>({
 interface LocationGroupsProps {
   value: Array<Group> | undefined | null;
   setValue: (value: Array<Group>) => void;
+  label?: string;
 }
 
-const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
+const LocationGroups = ({value, setValue, label = 'Gruppering'}: LocationGroupsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_groups'],
     queryFn: async () => {
@@ -35,9 +36,14 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
   });
   return (
     <Autocomplete
+      sx={{
+        marginTop: '8px',
+        marginBottom: '4px',
+      }}
       freeSolo
       forcePopupIcon={false}
       multiple
+      fullWidth
       value={value ?? []}
       autoHighlight={true}
       onChange={(event, newValue, reason) => {
@@ -99,7 +105,7 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
           fullWidth
           InputLabelProps={{shrink: true}}
           variant="outlined"
-          label="Gruppering"
+          label={label}
           placeholder="Indtast gruppe..."
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {

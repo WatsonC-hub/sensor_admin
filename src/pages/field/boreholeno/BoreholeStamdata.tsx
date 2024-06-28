@@ -125,8 +125,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
       )}
       <Card
         sx={{
-          width: {xs: '100%', sm: '60%'},
-          ml: {xs: '0%', sm: '20%'},
+          width: {xs: window.innerWidth, md: 1080},
           textAlign: 'center',
           justifyContent: 'center',
           alignContent: 'center',

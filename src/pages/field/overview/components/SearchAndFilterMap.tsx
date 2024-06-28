@@ -20,6 +20,7 @@ import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {authStore} from '~/state/store';
 
 import {BoreholeMapData} from '~/types';
+import {Group} from '~/pages/field/stamdata/components/LocationGroups';
 
 interface LocItems {
   name: string;
@@ -38,6 +39,7 @@ export interface Filter {
     showInactive: boolean;
     isCustomerService: Inderterminate;
   };
+  groups: Group[];
 }
 
 const typeAheadAtom = atom<string>('');
@@ -51,6 +53,7 @@ export const defaultMapFilter: Filter = {
     showInactive: false,
     isCustomerService: 'indeterminate',
   },
+  groups: [],
 };
 
 const mapFilterAtom = atomWithStorage<Filter>('mapFilter', defaultMapFilter);
@@ -143,6 +146,15 @@ const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter)
   filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
+
+  if (filter.groups.length > 0) {
+    filteredData = filteredData.filter((elem) => {
+      if (elem.groups !== null) {
+        return filter.groups.some((group) => elem.groups.some((item) => item.id === group.id));
+      }
+      return false;
+    });
+  }
 
   return filteredData;
 };
