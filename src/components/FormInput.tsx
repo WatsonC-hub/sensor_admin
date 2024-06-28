@@ -4,7 +4,7 @@ import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-for
 
 type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
-  warning?: (value: any) => string;
+  warning?: (value: any) => string | undefined;
   children?: React.ReactNode;
   rules?: any;
   transform?: (value: any) => any;

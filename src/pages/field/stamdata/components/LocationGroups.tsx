@@ -3,19 +3,25 @@ import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
+import {getGroupLink} from '~/helpers/links';
 
 import {apiClient} from '~/apiClient';
+import Button from '~/components/Button';
+import {set} from 'lodash';
 
-interface Group {
+export type Group = {
   id: string;
   group_name: string;
   new?: boolean;
-}
+};
 
-const filter = createFilterOptions<Group>();
+const filter = createFilterOptions<Group>({
+  ignoreCase: true,
+  ignoreAccents: true,
+});
 
 interface LocationGroupsProps {
-  value: Array<Group>;
+  value: Array<Group> | undefined | null;
   setValue: (value: Array<Group>) => void;
 }
 
@@ -27,14 +33,14 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
       return data;
     },
   });
-
   return (
     <Autocomplete
       freeSolo
       forcePopupIcon={false}
       multiple
       value={value ?? []}
-      onChange={(event, newValue) => {
+      autoHighlight={true}
+      onChange={(event, newValue, reason) => {
         setValue(
           newValue.map((item) => {
             if (typeof item === 'string') {
@@ -56,19 +62,22 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
 
         return `${option.id.slice(0, 4)} - ${option.group_name}`;
       }}
+      isOptionEqualToValue={(option, value) => {
+        return option.id === value.id;
+      }}
       renderTags={(value, getTagProps) => {
         return value.map((option, index) => (
           <Chip
             variant="outlined"
             label={
-              <>
+              <Button bttype="link" href={getGroupLink(option.id)} target="_blank">
                 <Typography display="inline" variant="body2" color="grey.400">
                   {option.id === '' ? 'ny' : option.id.slice(0, 4)} -{' '}
                 </Typography>
                 <Typography display="inline" variant="body2">
                   {option.group_name}
                 </Typography>
-              </>
+              </Button>
             }
             {...getTagProps({index})}
           />
@@ -104,6 +113,7 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
           }}
         />
       )}
+      filterSelectedOptions
       filterOptions={(options, params) => {
         const filtered = filter(options, params);
 

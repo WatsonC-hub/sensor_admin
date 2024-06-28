@@ -3,7 +3,7 @@ import {EditRounded, PhotoCameraRounded, Save} from '@mui/icons-material';
 import {Box, Card, CardContent, Grid, InputAdornment, Typography} from '@mui/material';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import * as z from 'zod';
 
@@ -12,8 +12,34 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
+import LocationGroups from '~/pages/field/stamdata/components/LocationGroups';
 
-const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
+const schema = z.object({
+  calypso_id: z.number().int().min(1).optional().nullish(),
+  num_controls_in_a_year: z
+    .number()
+    .int()
+    .min(0, {message: 'Antal kontroller skal være 0 eller større'}),
+  description: z.string().nullish().optional(),
+  groups: z
+    .array(
+      z.object({
+        id: z.string(),
+        group_name: z.string(),
+      })
+    )
+    .nullish(),
+});
+
+type Stamdata = z.infer<typeof schema>;
+
+interface BoreholeStamdataProps {
+  boreholeno: string;
+  intakeno: string;
+  stamdata: Stamdata;
+}
+
+const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProps) => {
   const [openCamera, setOpenCamera] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [calypso_id, setCalypso_id] = useState(stamdata?.calypso_id);
@@ -21,7 +47,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
   const queryClient = useQueryClient();
 
   const changeStamdata = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: Stamdata) => {
       const {data: out} = await apiClient.put(
         `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`,
         data
@@ -29,20 +55,13 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries('borehole_stamdata');
+      queryClient.invalidateQueries({
+        queryKey: ['borehole_stamdata'],
+      });
     },
   });
 
-  const schema = z.object({
-    calypso_id: z.number().int().min(1).optional().nullish(),
-    num_controls_in_a_year: z
-      .number()
-      .int()
-      .min(0, {message: 'Antal kontroller skal være 0 eller større'}),
-    description: z.string().nullish().optional(),
-  });
-
-  const formMethods = useForm({
+  const formMethods = useForm<Stamdata>({
     resolver: zodResolver(schema),
     defaultValues: stamdata,
   });
@@ -51,7 +70,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
     formMethods.reset(stamdata);
   }, [stamdata]);
 
-  const handleUpdate = (values) => {
+  const handleUpdate = (values: Stamdata) => {
     toast.promise(() => changeStamdata.mutateAsync(values), {
       pending: 'Opdaterer stamdata...',
       success: 'Stamdata er opdateret',
@@ -66,7 +85,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
     });
   };
 
-  const handleScan = async (data) => {
+  const handleScan = async (data: any) => {
     if (
       data?.text.includes('www.sensor.watsonc.dk/') ||
       data?.text.includes('https://sensor.watsonc.dk/')
@@ -130,6 +149,15 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
                 <FormInput name="description" label="Beskrivelse" fullWidth />
               </Grid>
               <Grid item xs={12} sm={6}>
+                <Controller
+                  name="groups"
+                  control={formMethods.control}
+                  render={({field: {onChange, value}}) => (
+                    <LocationGroups value={value} setValue={onChange} />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <FormInput
                   name="num_controls_in_a_year"
                   label="Årlige kontroller"
@@ -157,7 +185,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}) => {
                       textTransform: 'initial',
                       borderRadius: 15,
                     }}
-                    variant="contained"
+                    bttype="primary"
                     color="primary"
                     startIcon={<PhotoCameraRounded />}
                     onClick={() => setOpenCamera(true)}

@@ -9,10 +9,17 @@ import FormInput from '~/components/FormInput';
 
 import {getDTMQuota} from '../../fieldAPI';
 
-import LocationGroups from './LocationGroups';
+import LocationGroups, {Group} from './LocationGroups';
 import LocationTypeSelect from './LocationTypeSelect';
 
-export default function LocationForm({mode, disable}) {
+import {apiClient} from '~/apiClient';
+
+interface Props {
+  mode: 'modal' | 'normal';
+  disable?: boolean;
+}
+
+export default function LocationForm({mode, disable = false}: Props) {
   const {
     data: DTMData,
     isFetching,
