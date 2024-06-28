@@ -15,8 +15,8 @@ import OverviewPage from './overview/OverviewPage';
 import OpretStamdata from './stamdata/OpretStamdata';
 import LocationRouter from './station/LocationRouter';
 
-function SensorField({}) {
-  const [addStationDisabled, setAddStationDisabled] = useState(false);
+function SensorField() {
+  const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
 
   async function getData(labelid) {

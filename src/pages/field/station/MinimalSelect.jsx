@@ -44,10 +44,11 @@ const MinimalSelect = ({locid, stationList}) => {
     },
   };
 
+  const hasTimeseries = stationList && stationList.some((stamdata) => stamdata.ts_id !== null);
   return (
     <Select
       MenuProps={menuProps}
-      value={stationList && params.ts_id ? parseInt(params.ts_id) : ''}
+      value={hasTimeseries && stationList && params.ts_id ? parseInt(params.ts_id) : []}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

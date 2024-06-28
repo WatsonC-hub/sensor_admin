@@ -71,6 +71,7 @@ const LocationGroups = ({value, setValue}: LocationGroupsProps) => {
               </>
             }
             {...getTagProps({index})}
+            key={index}
           />
         ));
       }}

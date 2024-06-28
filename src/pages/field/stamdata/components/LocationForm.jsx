@@ -1,21 +1,20 @@
-import DownloadIcon from '@mui/icons-material/Download';
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
-import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {authStore} from '~/state/store';
 
 import {getDTMQuota} from '../../fieldAPI';
 
 import LocationGroups from './LocationGroups';
+import LocationProjects from './LocationProjects';
 import LocationTypeSelect from './LocationTypeSelect';
 
 export default function LocationForm({mode, disable}) {
   const {
     data: DTMData,
-    isFetching,
     isSuccess,
     refetch: refetchDTM,
   } = useQuery({
@@ -25,22 +24,15 @@ export default function LocationForm({mode, disable}) {
     enabled: false,
   });
 
+  const superUser = authStore().superUser;
+
   useEffect(() => {
     if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
       setValue('location.terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
     }
   }, [DTMData]);
 
-  const {
-    reset,
-    handleSubmit,
-    watch,
-    control,
-    register,
-    setValue,
-    formState: {isSubmitSuccessful, errors},
-    getValues,
-  } = useFormContext();
+  const {watch, control, setValue, getValues} = useFormContext();
 
   const watchTerrainqual = watch('location.terrainqual', '');
 
@@ -83,6 +75,18 @@ export default function LocationForm({mode, disable}) {
           )}
         />
       </Grid>
+      {superUser && mode !== 'edit' && (
+        <Grid item xs={12} sm={gridsize}>
+          <Controller
+            name="location.initial_project_no"
+            control={control}
+            required={mode !== 'edit'}
+            render={({field: {onChange, value}, fieldState: {error}}) => (
+              <LocationProjects value={value} setValue={onChange} error={error} />
+            )}
+          />
+        </Grid>
+      )}
       <Grid item xs={12} sm={gridsize}>
         <FormInput
           name="location.x"
@@ -98,7 +102,7 @@ export default function LocationForm({mode, disable}) {
           sx={{
             mb: 2,
           }}
-          onChangeCallback={(e) => {
+          onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
             }
@@ -121,7 +125,7 @@ export default function LocationForm({mode, disable}) {
           sx={{
             mb: 2,
           }}
-          onChangeCallback={(e) => {
+          onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
             }

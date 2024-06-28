@@ -4,6 +4,7 @@ export const StationPages = {
   STAMDATA: 'stamdata',
   BILLEDER: 'billeder',
   MAALEPUNKT: 'maalepunkt',
+  DEFAULT: null,
 } as const;
 
 export enum TableTypes {

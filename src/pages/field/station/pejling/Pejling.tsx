@@ -23,7 +23,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const isWaterlevel = store.timeseries?.tstype_id === 1;
   const isFlow = store.timeseries?.tstype_id === 2;
   const [showForm, setShowForm] = useSearchParam('showForm');
-  const [pageToShow, setPageToShow] = useSearchParam('page');
+  const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
 
