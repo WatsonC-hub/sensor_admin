@@ -43,6 +43,13 @@ const getOptions = <TData extends MRT_RowData>(
         boxShadow: breakpoints.isMobile ? 'none' : '1',
       },
     },
+    muiSearchTextFieldProps: {
+      sx: {
+        '& .MuiOutlinedInput-root': {
+          borderRadius: '9999px',
+        },
+      },
+    },
     displayColumnDefOptions: {
       'mrt-row-expand': {
         header: '',
