@@ -50,7 +50,6 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
 
   return (
     <Select
-      disableUnderline
       MenuProps={menuProps}
       value={selectedIntake}
       onChange={handleChange}

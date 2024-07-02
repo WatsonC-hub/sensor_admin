@@ -38,9 +38,11 @@ const flagStyling = (iconDetails: IconDetails) => {
 const CircleBox = ({
   children,
   sx,
+  padding = '0.2em',
 }: {
   children: React.ReactNode;
   sx?: Omit<BoxProps['sx'], 'textAlign' | 'fontSize'>;
+  padding?: string;
 }) => {
   return (
     <Box
@@ -62,10 +64,10 @@ const CircleBox = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: '100%',
+          // width: '100%',
           // height: '100%',
           aspectRatio: '1/1',
-          p: '0.2em',
+          p: padding,
         }}
       >
         {children}
@@ -88,6 +90,8 @@ type IconDetails = {
   flag?: number;
   opgave?: string | null;
   active?: boolean;
+  status?: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
+  notify_type?: 'obs' | 'station' | 'primary' | null;
 };
 
 type IconDetailsWithTooltip = IconDetails & {
@@ -105,22 +109,46 @@ type NotificationIconProps =
     };
 
 export const getColor = (iconDetails: IconDetails) => {
-  if (iconDetails.notification_id == 12) return '#334FFF';
-  if ([13, 75, 76].includes(iconDetails.notification_id ?? 0)) return '#9F2B68';
-  if (iconDetails.active === false) return '#C0C0C0';
-  if (iconDetails.flag !== undefined) return sensorColors[iconDetails.flag].color;
-  else return iconDetails.color ?? '#66bb6a';
+  if (iconDetails?.notify_type === 'station') return '#4caf50';
+  if (iconDetails?.status == 'POSTPONED') return '#4caf50';
+  if (iconDetails?.notification_id == 12) return '#334FFF';
+  if ([13, 75, 76].includes(iconDetails?.notification_id ?? 0)) return '#9F2B68';
+  if (iconDetails?.active === false || iconDetails?.active === null) return '#C0C0C0';
+  if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
+  else return iconDetails?.color ?? '#4caf50';
 };
 
 const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {
-  let icon = (
-    <Circle
-      sx={{
-        ...defaultStyling,
-        color: getColor(iconDetails),
-      }}
-    />
-  );
+  let icon;
+  if (iconDetails.notify_type === 'obs') {
+    icon = (
+      <CircleBox
+        sx={{
+          ...defaultStyling,
+          color: getColor(iconDetails),
+        }}
+        padding="0em"
+      >
+        <Circle
+          sx={{
+            textAlign: 'start',
+            fontSize: '1.3em',
+            color: '#4caf50',
+          }}
+        />
+      </CircleBox>
+    );
+  } else {
+    icon = (
+      <Circle
+        sx={{
+          ...defaultStyling,
+          color: getColor(iconDetails),
+        }}
+      />
+    );
+  }
+
   if (
     (iconDetails.notification_id === 0 ||
       iconDetails.flag === -1 ||
@@ -139,8 +167,9 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
       iconDetails.flag === -1 ||
       iconDetails.notification_id == undefined) &&
     !enableTooltip
-  )
+  ) {
     return <CircleBox sx={flagStyling(iconDetails)}>{icon}</CircleBox>;
+  }
 
   switch (iconDetails.flag) {
     case 0:

@@ -15,13 +15,14 @@ import FormInput from '~/components/FormInput';
 import NotificationIcon from './NotificationIcon';
 import {Filter, defaultMapFilter} from './SearchAndFilterMap';
 import {authStore} from '~/state/store';
+import LocationGroups from '../../stamdata/components/LocationGroups';
 
 interface FilterOptionsProps {
   filters: Filter;
-  setFilter: (filter: Filter | typeof RESET) => void;
+  onSubmit: (filter: Filter | typeof RESET) => void;
 }
 
-const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
+const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
   const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
     state.boreholeAccess,
     state.iotAccess,
@@ -33,7 +34,7 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
   });
 
   const submit = (data: Filter) => {
-    setFilter(data);
+    onSubmit(data);
   };
 
   const reset = () => {
@@ -46,7 +47,7 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
     };
 
     formMethods.reset(mapFilter);
-    setFilter(mapFilter);
+    onSubmit(mapFilter);
   };
 
   return (
@@ -56,7 +57,7 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
       <Divider />
       <Grid container spacing={2}>
         {boreholeAccess && (
-          <Grid item xs={12} sm={6}>
+          <Grid item sm={iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">Boringer</Typography>
 
             {/* <FormCheckbox
@@ -88,8 +89,24 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
           </Grid>
         )}
         {iotAccess && (
-          <Grid item xs={12} sm={6}>
+          <Grid
+            item
+            sm={boreholeAccess ? 6 : 12}
+            display="flex"
+            flexDirection="column"
+            flexGrow={1}
+          >
             <Typography variant="subtitle1">Iot filtre</Typography>
+
+            <FormToggleGroup
+              name="sensor.isCustomerService"
+              label="Kunde service"
+              values={[
+                {label: <CheckIcon />, value: true},
+                {label: <RemoveIcon />, value: 'indeterminate'},
+                {label: <ClearIcon />, value: false},
+              ]}
+            />
             <FormControlLabel
               control={
                 <Controller
@@ -113,17 +130,17 @@ const FilterOptions = ({filters, setFilter}: FilterOptionsProps) => {
                 </Typography>
               }
             />
-            <FormToggleGroup
-              name="sensor.isCustomerService"
-              label="Kunde service"
-              values={[
-                {label: <CheckIcon />, value: true},
-                {label: <RemoveIcon />, value: 'indeterminate'},
-                {label: <ClearIcon />, value: false},
-              ]}
-            />
           </Grid>
         )}
+      </Grid>
+      <Grid item xs={12}>
+        <Controller
+          name="groups"
+          control={formMethods.control}
+          render={({field: {onChange, value}}) => (
+            <LocationGroups value={value} setValue={onChange} label="Filtrer grupper" />
+          )}
+        />
       </Grid>
 
       <Box

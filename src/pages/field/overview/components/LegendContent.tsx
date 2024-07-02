@@ -12,8 +12,8 @@ const iotItems = [
   {flag: 2, text: 'Advarsel'},
   {flag: 1, text: 'Opmærksom'},
   {flag: 0, text: 'Alt vel'},
-  {notification_id: 12, text: 'Plateau'},
-  {notification_id: 13, text: 'Automatisk kvalitetssikring'},
+  // {notification_id: 12, text: 'Plateau'},
+  // {notification_id: 13, text: 'Automatisk kvalitetssikring'},
   {active: false, text: 'Inaktiv'},
 ];
 
@@ -29,7 +29,7 @@ const LegendContent = () => {
           gridTemplateColumns: 'auto auto',
         }}
       >
-        <Box>
+        <Box display="flex" flexDirection="column" gap={0.5}>
           <Typography variant="body1">IoT</Typography>
           {iotItems.map((item) => (
             <Box display="flex" alignItems="center" gap={1} key={item.text}>

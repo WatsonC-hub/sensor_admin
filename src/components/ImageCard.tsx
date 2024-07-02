@@ -58,6 +58,10 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         justifyContent: 'center',
         flexDirection: 'column ',
         borderRadius: 5,
+        minWidth: 300,
+        minHeight: 300,
+        // maxWidth: 640,
+        // maxHeight: 640,
       }}
     >
       <DeleteAlert
@@ -66,16 +70,20 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <CardMedia
-        component="img"
-        image={imageUrl}
-        sx={{
-          objectFit: 'cover',
-          maxWidth: 640,
-          maxHeight: 640,
-          alignSelf: 'center',
-        }}
-      />
+      <CardMedia>
+        <img
+          src={imageUrl}
+          alt={image.title}
+          height={isMobile ? 300 : 640}
+          width={isMobile ? 300 : 640}
+          loading="lazy"
+          style={{
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
+          }}
+        />
+      </CardMedia>
       <CardContent
         sx={{
           display: 'flex',

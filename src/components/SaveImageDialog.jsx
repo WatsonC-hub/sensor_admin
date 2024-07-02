@@ -75,7 +75,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
       open={open}
       onClose={handleCloseSave}
       fullWidth={true}
-      maxWidth="lg"
+      maxWidth="md"
       fullScreen={matches}
     >
       <DialogTitle id="form-dialog-title">Gem billede</DialogTitle>
@@ -92,8 +92,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
             <img
               alt=""
               src={activeImage.gid === -1 ? dataUri : imageUrl}
-              height="800px"
-              style={{maxWidth: '800px', objectFit: 'cover', margin: 'auto'}}
+              style={{maxWidth: '100%', objectFit: 'cover', margin: 'auto'}}
               loading="lazy"
             />
           </Grid>

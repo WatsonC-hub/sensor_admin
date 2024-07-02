@@ -2,6 +2,7 @@ import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-qu
 import {reverse, sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
+import {Group} from '~/pages/field/stamdata/components/LocationGroups';
 
 export interface Notification {
   locname: string;
@@ -18,12 +19,13 @@ export interface Notification {
   color: string | null;
   flag: number;
   notification_id: number;
-  status: string | null;
+  status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
   projectno: string;
   is_customer_service: boolean;
   active: boolean;
   notify_type: 'primary' | 'obs' | 'station' | null;
+  groups: Group[];
 }
 
 export interface NotificationMap extends Notification {

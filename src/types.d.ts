@@ -1,4 +1,5 @@
 import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
+import {Group} from './pages/field/stamdata/components/LocationGroups';
 
 export interface Image {
   gid: number;
@@ -46,6 +47,7 @@ export interface BoreholeMapData {
   timeofmeas: string[];
   calypso_id: number[];
   num_controls_in_a_year: number[];
+  groups: Group[];
 }
 
 // example data
@@ -67,6 +69,7 @@ export interface BoreholeData {
   num_controls_in_a_year: number | null;
   calypso_id: number | null;
   status: number;
+  groups: Group[];
 }
 
 export type Maalepunkt = {
