@@ -17,10 +17,11 @@ const filter = createFilterOptions<string>();
 interface LocationProjectsProps {
   value: string;
   setValue: (value: string) => void;
-  error: FieldError;
+  error: FieldError | undefined;
+  disable?: boolean;
 }
 
-const LocationProjects = ({value, setValue, error}: LocationProjectsProps) => {
+const LocationProjects = ({value, setValue, error, disable}: LocationProjectsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_projects'],
     queryFn: async () => {
@@ -40,11 +41,11 @@ const LocationProjects = ({value, setValue, error}: LocationProjectsProps) => {
         forcePopupIcon={false}
         value={value}
         onChange={(event, newValue) => {
-          console.log(newValue);
           setValue(newValue ? newValue : '');
         }}
         id="tags-standard"
         options={(options && options.map((option) => option.project_no)) ?? []}
+        disabled={disable}
         getOptionLabel={(option) => {
           return `${option}`;
         }}

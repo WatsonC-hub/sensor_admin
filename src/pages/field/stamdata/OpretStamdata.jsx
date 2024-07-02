@@ -100,6 +100,7 @@ function LocationChooser({setLocationDialogOpen}) {
             value={selectedLoc}
             options={locations ? locations : []}
             getOptionLabel={(option) => option.loc_name}
+            isOptionEqualToValue={(option, value) => option.loc_name === value}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -222,7 +223,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
   const superUser = authStore().superUser;
 
-  console.log(tabValue);
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -291,13 +291,15 @@ export default function OpretStamdata({setAddStationDisabled}) {
   };
 
   const nextTab = () => {
-    if (tabValue === '3') setTabValue((parseInt(tabValue) + 1).toString());
+    if (tabValue !== '3') setTabValue((parseInt(tabValue) + 1).toString());
   };
+
+  useEffect(() => {
+    if (tabValue === null && getValues().location.loc_id) setTabValue('1');
+  }, [tabValue]);
 
   const handleLocationOpret = async () => {
     const locationValid = await trigger('location');
-    console.log(getFieldState('location'));
-    console.log(getValues().location);
     if (locationValid) {
       const location = {
         location: {
@@ -394,7 +396,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       <div>
         <FormProvider {...formMethods}>
           <Tabs
-            value={tabValue}
+            value={tabValue !== null ? tabValue : '0'}
             onChange={(_, newValue) => {
               console.log(newValue);
               console.log(tabValue);
@@ -453,7 +455,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               <StamdataFooter
                 cancel={cancel}
                 nextTab={nextTab}
-                disabled={false}
+                disabled={getValues().location.loc_id !== undefined}
                 handleOpret={handleLocationOpret}
                 type="lokalitet"
               />
@@ -517,120 +519,4 @@ export default function OpretStamdata({setAddStationDisabled}) {
       </div>
     </>
   );
-}
-
-// const handleOpret = async () => {
-//   const location_validated = await trigger('location');
-//   console.log(location_validated);
-//   const locationState = getFieldState('location');
-//   const timeseriesState = getFieldState('timeseries');
-//   console.log(getFieldState('timeseries'));
-//   console.log(errors);
-//   setAddStationDisabled(false);
-
-//   let formTest = {};
-
-//   const locationValid =
-//     !locationState.invalid && locationState.isTouched && locationState.isDirty;
-
-//   if (locationValid) {
-//     formTest = {
-//       location: {
-//         ...getValues().location,
-//       },
-//     };
-//   }
-
-//   const timeseriesValid =
-//     locationValid &&
-//     !timeseriesState.invalid &&
-//     timeseriesState.isTouched &&
-//     timeseriesState.isDirty;
-
-//   if (timeseriesValid) {
-//     formTest = {
-//       location: {
-//         ...getValues().location,
-//       },
-//       timeseries: {
-//         ...getValues().timeseries,
-//       },
-//       unit: {
-//         startdate: store.unit.startdato,
-//         unit_uuid: store.unit.uuid,
-//       },
-//     };
-//   }
-
-//   const onlyLocationFilled =
-//     locationValid &&
-//     !timeseriesState.isDirty &&
-//     !timeseriesState.isTouched &&
-//     !timeseriesState.invalid;
-
-//   if (getValues()?.timeseries.tstype_id === 1) {
-//     formTest['watlevmp'] = {
-//       startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
-//       ...getValues()?.watlevmp,
-//     };
-//   }
-
-//   try {
-//     if (onlyLocationFilled) {
-//       await toast.promise(() => stamdataNewLocationMutation.mutateAsync(formTest.location), {
-//         pending: 'Opretter lokation...',
-//         success: 'lokation oprettet!',
-//         error: 'Noget gik galt!',
-//       });
-//     } else {
-//       await toast.promise(() => stamdataNewMutation.mutateAsync(formTest), {
-//         pending: 'Opretter stamdata...',
-//         success: 'Stamdata oprettet!',
-//         error: 'Noget gik galt!',
-//       });
-//     }
-
-//     // navigate('/field');
-//     field();
-//   } catch (e) {
-//     console.log(e);
-//   }
-// };
-
-{
-  /* <footer style={{position: 'sticky', bottom: 0, float: 'right'}}>
-              <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-                <Button
-                  bttype="tertiary"
-                  onClick={() => {
-                    // navigate('/field');
-                    field();
-                    setAddStationDisabled(false);
-                  }}
-                >
-                  Annuller
-                </Button>
-                <Button
-                  bttype="primary"
-                  sx={{marginRight: 1}}
-                  endIcon={<ArrowForwardIcon fontSize="small" />}
-                  onClick={() => {
-                    setTabValue((parseInt(tabValue) + 1).toString());
-                  }}
-                >
-                  <Box display="flex" alignItems="center">
-                    Videre
-                  </Box>
-                </Button>
-                <Button
-                  bttype="primary"
-                  onClick={handleOpret}
-                  startIcon={<SaveIcon />}
-                  sx={{marginRight: 1}}
-                  disabled={isSubmitting}
-                >
-                  Gem
-                </Button>
-              </Box>
-            </footer> */
 }

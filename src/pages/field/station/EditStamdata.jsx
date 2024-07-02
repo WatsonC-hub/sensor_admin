@@ -155,9 +155,9 @@ const UdstyrReplace = ({stationId}) => {
 
   return (
     <>
-      {data && data.length > 0 && (
-        <Grid container spacing={2} alignItems="center" alignContent="center">
-          <Grid item xs={12} sm={6}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          {data && data.length > 0 ? (
             <Select
               id="udstyr_select"
               value={selected}
@@ -177,42 +177,48 @@ const UdstyrReplace = ({stationId}) => {
                 );
               })}
             </Select>
-            {moment(data?.[0].slutdato) > moment(new Date()) ? (
-              <Button
-                bttype="primary"
-                sx={{marginLeft: 1}}
-                onClick={() => {
-                  setOpenDialog(true);
-                }}
-              >
-                Hjemtag udstyr
-              </Button>
-            ) : (
-              <Button
-                bttype="primary"
-                onClick={() => {
-                  setOpenAddUdstyr(true);
-                }}
-              >
-                Tilføj udstyr
-              </Button>
-            )}
-          </Grid>
-          <UnitEndDateDialog
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            unit={data?.[0]}
-            setUdstyrValue={setUnitValue}
-            stationId={stationId}
-          />
-          <AddUnitForm
-            udstyrDialogOpen={openAddUdstyr}
-            setUdstyrDialogOpen={setOpenAddUdstyr}
-            tstype_id={tstype_id}
-            mode="edit"
-          />
+          ) : (
+            <Typography align={'center'} display={'inline-block'}>
+              Tilknyt venligst et udstyr
+            </Typography>
+          )}
+
+          {data && data.length && moment(data?.[0].slutdato) > moment(new Date()) ? (
+            <Button
+              bttype="primary"
+              sx={{marginLeft: 1}}
+              onClick={() => {
+                setOpenDialog(true);
+              }}
+            >
+              Hjemtag udstyr
+            </Button>
+          ) : (
+            <Button
+              bttype="primary"
+              sx={{marginLeft: 1}}
+              onClick={() => {
+                setOpenAddUdstyr(true);
+              }}
+            >
+              Tilføj udstyr
+            </Button>
+          )}
         </Grid>
-      )}
+        <UnitEndDateDialog
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          unit={data?.[0]}
+          setUdstyrValue={setUnitValue}
+          stationId={stationId}
+        />
+        <AddUnitForm
+          udstyrDialogOpen={openAddUdstyr}
+          setUdstyrDialogOpen={setOpenAddUdstyr}
+          tstype_id={tstype_id}
+          mode="edit"
+        />
+      </Grid>
     </>
   );
 };
@@ -444,7 +450,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="2"
-            disabled={metadata && (metadata.calculated || metadata.unit_uuid === null)}
+            disabled={metadata && (metadata.calculated || ts_id === -1)}
             icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>

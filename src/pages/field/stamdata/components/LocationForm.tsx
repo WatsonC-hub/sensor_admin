@@ -1,16 +1,15 @@
-import DownloadIcon from '@mui/icons-material/Download';
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
-import {apiClient} from '~/apiClient';
-import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {authStore, stamdataStore} from '~/state/store';
 
 import {getDTMQuota} from '../../fieldAPI';
 
-import LocationGroups, {Group} from './LocationGroups';
+import LocationGroups from './LocationGroups';
+import LocationProjects from './LocationProjects';
 import LocationTypeSelect from './LocationTypeSelect';
 
 interface Props {
@@ -21,7 +20,6 @@ interface Props {
 export default function LocationForm({mode, disable = false}: Props) {
   const {
     data: DTMData,
-    isFetching,
     isSuccess,
     refetch: refetchDTM,
   } = useQuery({
@@ -37,20 +35,20 @@ export default function LocationForm({mode, disable = false}: Props) {
     }
   }, [DTMData]);
 
-  const {
-    reset,
-    handleSubmit,
-    watch,
-    control,
-    register,
-    setValue,
-    formState: {isSubmitSuccessful, errors},
-    getValues,
-  } = useFormContext();
+  const {watch, control, setValue, getValues, reset} = useFormContext();
 
   const watchTerrainqual = watch('location.terrainqual', '');
 
+  console.log(getValues());
+  if (mode === 'modal' && getValues().location && getValues().location.loc_id)
+    reset({
+      location: stamdataStore().location,
+      timeseries: getValues().timeseries,
+      unit: getValues().unit,
+    });
+
   const gridsize = mode === 'modal' ? 12 : 6;
+  const superUser = authStore().superUser;
 
   return (
     // <FormProvider {...formMethods}>
@@ -85,10 +83,21 @@ export default function LocationForm({mode, disable = false}: Props) {
           name="location.groups"
           control={control}
           render={({field: {onChange, value}}) => (
-            <LocationGroups value={value} setValue={onChange} />
+            <LocationGroups value={value} setValue={onChange} disable={disable} />
           )}
         />
       </Grid>
+      {superUser && mode !== 'normal' && getValues().location && !getValues().location.loc_id && (
+        <Grid item xs={12} sm={gridsize}>
+          <Controller
+            name="location.initial_project_no"
+            control={control}
+            render={({field: {onChange, value}, fieldState: {error}}) => (
+              <LocationProjects value={value} setValue={onChange} error={error} disable={disable} />
+            )}
+          />
+        </Grid>
+      )}
       <Grid item xs={12} sm={gridsize}>
         <FormInput
           name="location.x"
@@ -104,7 +113,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           sx={{
             mb: 2,
           }}
-          onChangeCallback={(e) => {
+          onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
             }
@@ -127,7 +136,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           sx={{
             mb: 2,
           }}
-          onChangeCallback={(e) => {
+          onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
             }

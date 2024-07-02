@@ -72,10 +72,25 @@ const metadataPutSchema = metadataBaseSchema.extend({
   timeseries: metadataBaseSchema.shape.timeseries.extend({
     tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
   }),
-  unit: metadataBaseSchema.shape.unit.extend({
-    gid: z.number().optional(),
-    enddate: z.string().transform((value) => moment(value).toISOString()),
-  }),
+  unit: metadataBaseSchema.shape.unit
+    .extend({
+      gid: z.number().optional(),
+      enddate: z.string().transform((value) => moment(value).toISOString()),
+    })
+    .superRefine((unit, ctx) => {
+      if (unit.startdate > unit.enddate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.invalid_date,
+          message: 'start dato må ikke være senere end slut dato',
+          path: ['startdate'],
+        });
+        ctx.addIssue({
+          code: z.ZodIssueCode.invalid_date,
+          message: 'slut dato må ikke være tidligere end start datoo',
+          path: ['enddate'],
+        });
+      }
+    }),
 });
 
 // const metadataSchema = z.object({
