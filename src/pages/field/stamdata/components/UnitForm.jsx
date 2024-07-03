@@ -17,7 +17,7 @@ export default function UnitForm({mode}) {
   const enddate = watch('unit.enddate');
 
   useEffect(() => {
-    if (getFieldState('unit.startdate').error && getFieldState('unit.enddate').error)
+    if (getFieldState('unit.startdate').error || getFieldState('unit.enddate').error)
       trigger('unit');
   }, [startdate, enddate]);
 
