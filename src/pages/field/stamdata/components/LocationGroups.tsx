@@ -3,11 +3,10 @@ import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
-import {getGroupLink} from '~/helpers/links';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
-import {set} from 'lodash';
+import {getGroupLink} from '~/helpers/links';
 
 export type Group = {
   id: string;
@@ -24,9 +23,15 @@ interface LocationGroupsProps {
   value: Array<Group> | undefined | null;
   setValue: (value: Array<Group>) => void;
   label?: string;
+  disable?: boolean;
 }
 
-const LocationGroups = ({value, setValue, label = 'Gruppering'}: LocationGroupsProps) => {
+const LocationGroups = ({
+  value,
+  setValue,
+  label = 'Gruppering',
+  disable = false,
+}: LocationGroupsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_groups'],
     queryFn: async () => {
@@ -44,6 +49,7 @@ const LocationGroups = ({value, setValue, label = 'Gruppering'}: LocationGroupsP
       forcePopupIcon={false}
       multiple
       fullWidth
+      disabled={disable}
       value={value ?? []}
       autoHighlight={true}
       onChange={(event, newValue, reason) => {
@@ -86,6 +92,7 @@ const LocationGroups = ({value, setValue, label = 'Gruppering'}: LocationGroupsP
               </Button>
             }
             {...getTagProps({index})}
+            key={index}
           />
         ));
       }}

@@ -8,8 +8,8 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 

@@ -4,42 +4,53 @@ import {
   PhotoLibraryRounded,
   PlaylistAddCheck,
 } from '@mui/icons-material';
+import RuleIcon from '@mui/icons-material/Rule';
 import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {StationPages} from '~/helpers/EnumHelper';
+import {useSearchParam} from '~/hooks/useSeachParam';
 
 const navIconStyle = (isSelected) => {
   return isSelected ? 'secondary.main' : 'inherit';
 };
 
-export default function ActionArea({
-  pageToShow,
-  setPageToShow,
-  showForm,
-  setShowForm,
-  isCalculated,
-}) {
+export default function ActionArea({isCalculated, ts_id, stamdata}) {
+  const [pageToShow, setPageToShow] = useSearchParam('page');
+  const [showForm, setShowForm] = useSearchParam('showForm');
   const handleChange = (event, newValue) => {
     setPageToShow(newValue);
     if (showForm !== null) {
       setShowForm(null);
     }
   };
-  const navigationItems = [
-    {
-      text: 'Pejling',
-      value: StationPages.PEJLING,
-      icon: <AddCircle />,
-      color: navIconStyle(pageToShow === StationPages.PEJLING),
-    },
-    {
-      text: startCase(StationPages.TILSYN),
-      value: StationPages.TILSYN,
-      icon: <PlaylistAddCheck />,
-      color: navIconStyle(pageToShow === StationPages.TILSYN),
-      isCalculated: isCalculated,
-    },
+  const navigationItems = [];
+  if (ts_id !== -1 || !stamdata) {
+    navigationItems.push(
+      {
+        text: 'Pejling',
+        value: StationPages.PEJLING,
+        icon: <AddCircle />,
+        color: navIconStyle(pageToShow === null),
+      },
+      {
+        text: startCase(StationPages.TILSYN),
+        value: StationPages.TILSYN,
+        icon: <PlaylistAddCheck />,
+        color: navIconStyle(pageToShow === StationPages.TILSYN),
+        isCalculated: isCalculated,
+      }
+    );
+  } else {
+    navigationItems.push({
+      text: 'Tidsserie',
+      value: StationPages.DEFAULT,
+      icon: <RuleIcon />,
+      color: navIconStyle(pageToShow === StationPages.DEFAULT),
+    });
+  }
+
+  navigationItems.push(
     {
       text: startCase(StationPages.BILLEDER),
       value: StationPages.BILLEDER,
@@ -52,8 +63,8 @@ export default function ActionArea({
       icon: <ConstructionRounded />,
       color: navIconStyle(pageToShow === StationPages.STAMDATA),
       isCalculated: isCalculated,
-    },
-  ];
+    }
+  );
 
   return (
     <CustomBottomNavigation

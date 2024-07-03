@@ -14,6 +14,7 @@ import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {atomWithTimedStorage} from '~/state/atoms';
 import {stamdataStore, authStore} from '~/state/store';
+import {BoreholeMapData} from '~/types';
 
 import BoreholeContent from './components/BoreholeContent';
 import DrawerComponent from './components/DrawerComponent';
@@ -21,7 +22,6 @@ import LegendContent from './components/LegendContent';
 import {getColor} from './components/NotificationIcon';
 import SearchAndFilterMap from './components/SearchAndFilterMap';
 import SensorContent from './components/SensorContent';
-import {BoreholeMapData} from '~/types';
 
 const utm = new utmObj();
 
@@ -98,9 +98,9 @@ interface MapProps {
 }
 
 const offSetPoint = (point: L.LatLngExpression, offset: number, map: L.Map): L.LatLngExpression => {
-  var pixelPoint = map.latLngToContainerPoint(point);
+  const pixelPoint = map.latLngToContainerPoint(point);
 
-  var newPoint = L.point([pixelPoint.x + offset, pixelPoint.y - offset]);
+  const newPoint = L.point([pixelPoint.x + offset, pixelPoint.y - offset]);
 
   return map.containerPointToLatLng(newPoint);
 };
@@ -170,9 +170,12 @@ function Map({data, loading}: MapProps) {
         {
           text: 'Opret ny lokation',
           callback: function (e: any) {
-            const coords = utm.ConvertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
+            console.log(utm);
+            // @ts-expect-error error in type definition
+            const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
             if (typeof coords == 'object') {
+              console.log('coords', coords);
               setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
               setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
               // navigate('/field/stamdata');
