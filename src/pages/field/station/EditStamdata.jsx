@@ -296,6 +296,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     },
   });
 
+  console.log(metadata);
   let schema = locationSchema;
   let schemaData = locationSchema.safeParse({
     location: {
@@ -329,6 +330,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       },
     });
   }
+
+  console.log(schemaData.data);
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
@@ -483,7 +486,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         <Divider />
         <Box>
           <TabPanel value={tabValue} index={'0'}>
-            <LocationForm mode="edit" />
+            <LocationForm mode="normal" />
             <StamdataFooter
               cancel={resetFormData}
               handleOpret={() => handleUpdate('location')}

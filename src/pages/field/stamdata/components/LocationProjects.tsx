@@ -33,13 +33,14 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
   });
 
   const superUser = authStore().superUser;
+  console.log(value);
 
   return (
     <>
       <Autocomplete
         //   freeSolo
         forcePopupIcon={false}
-        value={value}
+        value={value ?? ''}
         onChange={(event, newValue) => {
           setValue(newValue ? newValue : '');
         }}
@@ -76,7 +77,6 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
           <TextField
             {...params}
             fullWidth
-            defaultValue={''}
             InputLabelProps={{shrink: true}}
             variant="outlined"
             error={Boolean(error) && superUser}
@@ -102,7 +102,6 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
         )}
         filterOptions={(options, params) => {
           const filtered = filter(options, params);
-
           const {inputValue} = params;
 
           const isExisting = options.some((option) => inputValue === option);

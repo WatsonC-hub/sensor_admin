@@ -53,7 +53,7 @@ function LocationChooser({setLocationDialogOpen}) {
           terrainlevel: locData.terrainlevel,
           description: locData.description,
           loctype_id: locData.loctype_id,
-          initial_project_no: locData.initial_project_no,
+          projectno: locData.initial_project_no,
         },
       });
     } else {
@@ -70,7 +70,7 @@ function LocationChooser({setLocationDialogOpen}) {
           terrainlevel: 0,
           description: '',
           loctype_id: -1,
-          initial_project_no: '',
+          projectno: '',
         },
       });
     }
@@ -83,6 +83,8 @@ function LocationChooser({setLocationDialogOpen}) {
       return data;
     },
   });
+
+  // console.log(locations?.find((location) => location.loc_name === 'TEST_EBA 4'));
 
   const desktopChooser = (
     <>
@@ -221,14 +223,13 @@ export default function OpretStamdata({setAddStationDisabled}) {
   }, []);
 
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
-  const superUser = authStore().superUser;
 
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
       location: {
         ...store.location,
-        initial_project_no: superUser ? '' : null,
+        // projectno: superUser ? '' : null,
       },
       timeseries: {
         tstype_id: -1,
@@ -242,7 +243,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
     reset,
     watch,
     getValues,
-    getFieldState,
     trigger,
   } = formMethods;
 
@@ -304,6 +304,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       const location = {
         location: {
           ...getValues().location,
+          initial_project_no: getValues().location.projectno,
         },
       };
 
@@ -324,6 +325,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       form = {
         location: {
           ...getValues().location,
+          initial_project_no: getValues().location.projectno,
         },
         timeseries: {
           ...getValues().timeseries,
@@ -362,6 +364,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       form = {
         location: {
           ...getValues().location,
+          initial_project_no: getValues().location.projectno,
         },
         timeseries: {
           ...getValues().timeseries,
@@ -372,6 +375,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
         },
       };
 
+      console.log(form);
       if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
         form['watlevmp'] = {
           startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),

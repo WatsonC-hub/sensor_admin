@@ -39,13 +39,12 @@ export default function LocationForm({mode, disable = false}: Props) {
 
   const watchTerrainqual = watch('location.terrainqual', '');
 
-  console.log(getValues());
-  if (mode === 'modal' && getValues().location && getValues().location.loc_id)
-    reset({
-      location: stamdataStore().location,
-      timeseries: getValues().timeseries,
-      unit: getValues().unit,
-    });
+  // if (mode === 'modal' && getValues().location && getValues().location.loc_id)
+  //   reset({
+  //     location: stamdataStore().location,
+  //     timeseries: getValues().timeseries,
+  //     unit: getValues().unit,
+  //   });
 
   const gridsize = mode === 'modal' ? 12 : 6;
   const superUser = authStore().superUser;
@@ -87,10 +86,10 @@ export default function LocationForm({mode, disable = false}: Props) {
           )}
         />
       </Grid>
-      {superUser && mode !== 'normal' && getValues().location && !getValues().location.loc_id && (
+      {superUser && (
         <Grid item xs={12} sm={gridsize}>
           <Controller
-            name="location.initial_project_no"
+            name="location.projectno"
             control={control}
             render={({field: {onChange, value}, fieldState: {error}}) => (
               <LocationProjects value={value} setValue={onChange} error={error} disable={disable} />
