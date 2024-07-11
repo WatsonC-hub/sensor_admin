@@ -4,7 +4,7 @@ import {useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
-import {authStore, stamdataStore} from '~/state/store';
+import {authStore} from '~/state/store';
 
 import {getDTMQuota} from '../../fieldAPI';
 
@@ -35,7 +35,7 @@ export default function LocationForm({mode, disable = false}: Props) {
     }
   }, [DTMData]);
 
-  const {watch, control, setValue, getValues, reset} = useFormContext();
+  const {watch, control, setValue, getValues} = useFormContext();
 
   const watchTerrainqual = watch('location.terrainqual', '');
 
@@ -87,16 +87,24 @@ export default function LocationForm({mode, disable = false}: Props) {
         />
       </Grid>
       {superUser && (
-        <Grid item xs={12} sm={gridsize}>
-          <Controller
-            name="location.projectno"
-            control={control}
-            render={({field: {onChange, value}, fieldState: {error}}) => (
-              <LocationProjects value={value} setValue={onChange} error={error} disable={disable} />
-            )}
-          />
-        </Grid>
+        <>
+          <Grid item xs={12} sm={gridsize}>
+            <Controller
+              name="location.projectno"
+              control={control}
+              render={({field: {onChange, value}, fieldState: {error}}) => (
+                <LocationProjects
+                  value={value}
+                  setValue={onChange}
+                  error={error}
+                  disable={disable}
+                />
+              )}
+            />
+          </Grid>
+        </>
       )}
+
       <Grid item xs={12} sm={gridsize}>
         <FormInput
           name="location.x"

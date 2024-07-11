@@ -266,4 +266,12 @@ const stamdataStore = create<LocationState>()(
   }))
 );
 
+export const parkingStore = create<{
+  selectedLocId: number | null;
+  setSelectedLocId: (loc_id: number | null) => void;
+}>((set) => ({
+  selectedLocId: null,
+  setSelectedLocId: (loc_id: number | null) => set({selectedLocId: loc_id}),
+}));
+
 export {initialState, stamdataStore};

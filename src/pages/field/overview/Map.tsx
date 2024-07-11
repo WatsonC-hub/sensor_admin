@@ -1,20 +1,26 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {atom, useAtom} from 'jotai';
-import L from 'leaflet';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
+import 'leaflet-routing-machine';
+import L, {LeafletMouseEvent} from 'leaflet';
 import '~/css/leaflet.css';
-import {useRef, useEffect, useState, SyntheticEvent, memo, useMemo, useCallback} from 'react';
+import {useRef, useEffect, useState, SyntheticEvent, useCallback} from 'react';
+import {ToastContainer, toast} from 'react-toastify';
 import utmObj from 'utm-latlng';
 
 import {apiClient} from '~/apiClient';
+import AlertDialog from '~/components/AlertDialog';
+import Button from '~/components/Button';
 import {mapboxToken, boreholeColors} from '~/consts';
+import {useParkering} from '~/features/parkering/api/useParkering';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {queryClient} from '~/queryClient';
 import {atomWithTimedStorage} from '~/state/atoms';
-import {stamdataStore, authStore} from '~/state/store';
-import {BoreholeMapData} from '~/types';
+import {stamdataStore, authStore, parkingStore} from '~/state/store';
+import {BoreholeMapData, Parking, PartialBy} from '~/types';
 
 import BoreholeContent from './components/BoreholeContent';
 import DrawerComponent from './components/DrawerComponent';
@@ -26,10 +32,12 @@ import SensorContent from './components/SensorContent';
 const utm = new utmObj();
 
 let hightlightedMarker: L.CircleMarker | null = null;
+let highlightedParking: L.Marker | null = null;
 
 const defaultRadius = 8;
 const smallRadius = 4;
 const highlightRadius = 14;
+const zoomThresholdForParking = 16;
 const zoomThresholdForSmallMarkers = 8;
 const zoomThreshold = 14;
 const markerNumThreshold = 10;
@@ -47,6 +55,9 @@ const panAtom = atomWithTimedStorage<L.LatLng | null>('mapPan', null, 1000 * 60 
 
 const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;
 
+// const parkingSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:#22b;fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"></circle><text x="8" y="16" style="stroke:white;fill:white;stroke-width:1">P</text></svg>`;
+const parkingSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:{color};stroke-linecap:round;stroke-linejoin:round;stroke-width:1"></circle><text x="8.5" y="16" style="stroke:#fff;stroke-width:1">P</text></svg>`;
+
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
 
@@ -58,17 +69,35 @@ const leafletIcons = Object.keys(boreholeColors).map((key) => {
   });
 });
 
+const parkingIcon = new L.DivIcon({
+  className: 'parking-icon',
+  html: L.Util.template(parkingSVG, {color: '#000'}),
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+
+const hightlightParkingIcon = new L.DivIcon({
+  className: 'highlight-parking-icon',
+  html: L.Util.template(parkingSVG, {color: 'rgba(10, 100, 200, 1)'}),
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+
 declare module 'leaflet' {
   interface CircleMarkerOptions {
     contextmenu?: boolean;
+    contextmenuItems?: Array<object>;
     title?: string;
     data?: NotificationMap;
+    icon?: any;
+    visible?: boolean;
   }
 
   interface MarkerOptions {
     contextmenu?: boolean;
+    contextmenuItems?: Array<object>;
     title?: string;
-    data?: BoreholeMapData;
+    data?: BoreholeMapData | Parking;
   }
 
   interface MapOptions {
@@ -83,6 +112,22 @@ declare module 'leaflet' {
 
   interface LeafletMouseEvent {
     sourceTarget: Marker | CircleMarker;
+  }
+
+  interface Marker {
+    bindContextMenu: (options: {
+      contextmenu?: boolean;
+      contextmenuInheritItems: boolean;
+      contextmenuItems?: Array<string | object>;
+    }) => void;
+  }
+
+  interface CircleMarker {
+    bindContextMenu: (options: {
+      contextmenu?: boolean;
+      contextmenuInheritItems: boolean;
+      contextmenuItems?: Array<string | object>;
+    }) => void;
   }
 }
 
@@ -109,18 +154,86 @@ function Map({data, loading}: MapProps) {
   const {createStamdata} = useNavigationFunctions();
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.FeatureGroup | null>(null);
+  const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
-
+  const [displayAlert, setDisplayAlert] = useState<boolean>(false);
+  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
+  const store = stamdataStore();
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
 
   const [selectedMarker, setSelectedMarker] = useState<
-    NotificationMap | BoreholeMapData | null | undefined
+    NotificationMap | BoreholeMapData | Parking | null | undefined
   >(null);
   const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
   const setLocationValue = stamdataStore((store) => store.setLocationValue);
+
+  const superUser = authStore((state) => state.superUser);
+
+  const {
+    get: {data: parkings},
+    post: postParkering,
+    put: putParkering,
+  } = useParkering();
+
+  const contextmenuItems = [
+    {
+      text: 'Opret ny lokation',
+      callback: function (e: LeafletMouseEvent) {
+        // @ts-expect-error error in type definition
+        const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
+
+        if (typeof coords == 'object') {
+          setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
+          setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
+
+          createStamdata();
+        }
+      },
+      icon: '/leaflet-images/marker.png',
+    },
+    {
+      text: 'Google Maps',
+      callback: function (e: any) {
+        if (e.relatedTarget) {
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget._latlng.lat},${e.relatedTarget._latlng.lng}`,
+            '_blank'
+          );
+        } else {
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+            '_blank'
+          );
+        }
+      },
+      icon: '/leaflet-images/map.png',
+    },
+    '-', // this is a separator
+    {
+      text: 'Zoom ind',
+      callback: function () {
+        if (mapRef && mapRef.current) mapRef.current.zoomIn();
+      },
+      icon: '/leaflet-images/zoom-in.png',
+    },
+    {
+      text: 'Zoom ud',
+      callback: function () {
+        if (mapRef && mapRef.current) mapRef.current.zoomOut();
+      },
+      icon: '/leaflet-images/zoom-out.png',
+    },
+    {
+      text: 'Centrer kort her',
+      callback: function (e: any) {
+        if (mapRef && mapRef.current) mapRef.current.panTo(e.latlng);
+      },
+      icon: '/leaflet-images/center.png',
+    },
+  ];
 
   const renderMap = () => {
     const myAttributionText =
@@ -166,64 +279,7 @@ function Map({data, loading}: MapProps) {
       renderer: L.canvas(),
       contextmenu: true,
       contextmenuWidth: 140,
-      contextmenuItems: [
-        {
-          text: 'Opret ny lokation',
-          callback: function (e: any) {
-            console.log(utm);
-            // @ts-expect-error error in type definition
-            const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
-
-            if (typeof coords == 'object') {
-              console.log('coords', coords);
-              setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
-              setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
-              // navigate('/field/stamdata');
-              createStamdata();
-            }
-          },
-          icon: '/leaflet-images/marker.png',
-        },
-        {
-          text: 'Google Maps',
-          callback: function (e: any) {
-            if (e.relatedTarget) {
-              window.open(
-                `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget._latlng.lat},${e.relatedTarget._latlng.lng}`,
-                '_blank'
-              );
-            } else {
-              window.open(
-                `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-                '_blank'
-              );
-            }
-          },
-          icon: '/leaflet-images/map.png',
-        },
-        '-', // this is a separator
-        {
-          text: 'Zoom ind',
-          callback: function () {
-            map.zoomIn();
-          },
-          icon: '/leaflet-images/zoom-in.png',
-        },
-        {
-          text: 'Zoom ud',
-          callback: function () {
-            map.zoomOut();
-          },
-          icon: '/leaflet-images/zoom-out.png',
-        },
-        {
-          text: 'Centrer kort her',
-          callback: function (e: any) {
-            map.panTo(e.latlng);
-          },
-          icon: '/leaflet-images/center.png',
-        },
-      ],
+      contextmenuItems: contextmenuItems,
     });
 
     map.attributionControl.setPrefix(false);
@@ -253,37 +309,91 @@ function Map({data, loading}: MapProps) {
       .addTo(map);
 
     map.on('moveend', mapEvent);
-    // map.on('zoomend', mapEvent);
 
-    map.on('click', function () {
+    map.on('click', function (e) {
       setSelectedMarker(null);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
         hightlightedMarker = null;
+      }
+      if (highlightedParking && highlightedParking.options) {
+        highlightParking((highlightedParking.options.data as Parking).parking_id, false);
+        highlightedParking = null;
+      }
+
+      if (parkingStore.getState().selectedLocId && parkingStore.getState().selectedLocId !== null) {
+        // @ts-expect-error error in type definition
+        const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
+
+        if (typeof coords == 'object') {
+          const loc_id = parkingStore.getState().selectedLocId;
+
+          const parkering: PartialBy<Parking, 'parking_id'> = {
+            loc_id: loc_id as number,
+            x: parseFloat(coords.Easting.toFixed(2)),
+            y: parseFloat(coords.Northing.toFixed(2)),
+          };
+          const payload = {
+            path: '',
+            data: parkering,
+          };
+
+          postParkering.mutate(payload, {
+            onSettled: () => {
+              queryClient.invalidateQueries({
+                queryKey: ['overblik'],
+              });
+              setSelectParking(null);
+              toast.dismiss('tilknytParking');
+            },
+          });
+        }
       }
     });
 
     return map;
   };
 
-  const mapEvent: L.LeafletEventHandlerFn = (event) => {
+  function highlightParking(parking_id: number, highlight: boolean) {
+    if (parkingLayerRef && parkingLayerRef.current) {
+      parkingLayerRef.current.eachLayer((layer) => {
+        if (layer instanceof L.Marker && layer.options.data) {
+          const parking = layer.options.data as Parking;
+          if (parking.parking_id === parking_id && parkingLayerRef.current !== null) {
+            let view = parkingIcon;
+            if (highlight) view = hightlightParkingIcon;
+            layer.setIcon(view);
+            highlightedParking = layer;
+          }
+        }
+      });
+    }
+  }
+  const mapEvent: L.LeafletEventHandlerFn = () => {
     const map = mapRef.current;
     if (!map) return;
     const zoom = map.getZoom();
     setZoom(zoom);
     setPan(map.getCenter());
+
     const layer = layerRef.current;
     if (!layer) return;
+
+    const parkingLayer = parkingLayerRef.current;
+    if (!parkingLayer) return;
+
     const tooltipLayer = tooltipRef.current;
     if (!tooltipLayer) return;
 
-    const bounds = map.getBounds();
+    if (zoom > zoomThresholdForParking) parkingLayer.addTo(map);
+    else map.removeLayer(parkingLayer);
 
+    const bounds = map.getBounds();
     const markersInViewport: (L.Marker | L.CircleMarker)[] = [];
-    layer?.eachLayer(function (layer) {
-      if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
-        if (bounds.contains(layer.getLatLng())) {
-          markersInViewport.push(layer);
+    layer?.eachLayer(function (marker) {
+      if (marker instanceof L.Marker || marker instanceof L.CircleMarker) {
+        if (bounds.contains(marker.getLatLng())) {
+          markersInViewport.push(marker);
         }
       }
     });
@@ -323,11 +433,68 @@ function Map({data, loading}: MapProps) {
   };
 
   useEffect(() => {
+    parkingLayerRef.current?.clearLayers();
+    if (mapRef && mapRef.current && parkings) {
+      if (parkings)
+        parkings.forEach((parking: Parking) => {
+          const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
+          if (typeof coords != 'object') return;
+          const point: L.LatLngExpression = [coords.lat, coords.lng];
+          const parkingMarker = L.marker(point, {
+            data: parking,
+            icon: parkingIcon,
+          });
+          const parkingMenu = [...contextmenuItems.slice(1)];
+
+          parkingMarker.bindContextMenu({
+            contextmenu: superUser,
+            contextmenuInheritItems: false,
+            contextmenuItems: [...parkingMenu],
+          });
+          parkingMarker.on('click', () => {
+            const loc_id = parkingStore.getState().selectedLocId;
+
+            if (loc_id != null) {
+              const payload = {
+                data: {
+                  loc_id: loc_id,
+                },
+                path: parking.parking_id.toString(),
+              };
+              putParkering.mutate(payload, {
+                onSettled: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ['overblik'],
+                  });
+                  setSelectParking(null);
+                  toast.dismiss('tilknytParking');
+                },
+              });
+            }
+          });
+          if (parkingLayerRef.current) {
+            parkingMarker.addTo(parkingLayerRef.current);
+          }
+          if (
+            hightlightedMarker &&
+            hightlightedMarker.options.data &&
+            hightlightedMarker.options.data.parking_id === parking.parking_id
+          )
+            highlightParking(parking.parking_id, true);
+        });
+    }
+    // return () => {
+    //   if (mapRef && mapRef.current && parkings) mapRef.current.on('moveend', mapEvent);
+    // };
+  }, [parkings, parkingLayerRef.current]);
+
+  useEffect(() => {
     mapRef.current = renderMap();
+    parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
 
-    layerRef.current.on('click', function (e) {
+    layerRef.current.on('click', function (e: L.LeafletMouseEvent) {
       L.DomEvent.stopPropagation(e);
       setSelectedMarker(e.sourceTarget.options.data);
       if (hightlightedMarker) {
@@ -341,6 +508,13 @@ function Map({data, loading}: MapProps) {
           radius: highlightRadius,
         });
         hightlightedMarker = e.sourceTarget;
+
+        if (highlightedParking) highlightedParking.setIcon(parkingIcon);
+
+        if (e.sourceTarget.options.data) {
+          const parking_id = e.sourceTarget.options.data?.parking_id;
+          highlightParking(parking_id, true);
+        }
       }
     });
 
@@ -383,6 +557,59 @@ function Map({data, loading}: MapProps) {
           contextmenu: true,
           // pane: element.flag.toString(),
           // renderer: renderer,
+        });
+
+        let locationMenu = [
+          {
+            text: 'Opret station',
+            callback: () => {
+              store.setLocation({
+                loc_id: element.locid,
+              });
+              createStamdata('1');
+            },
+            icon: '/leaflet-images/marker.png',
+          },
+          ...contextmenuItems.slice(1),
+        ];
+
+        if (superUser) {
+          locationMenu = [
+            ...locationMenu.slice(0, 1),
+            {
+              text: 'Tilknyt parking',
+              callback: () => {
+                setSelectParking(element.locid);
+                toast('Vælg parkering for at tilknytte den lokationen', {
+                  toastId: 'tilknytParking',
+                  type: 'info',
+                  autoClose: false,
+                  draggable: false,
+                  closeButton: (
+                    <div style={{alignSelf: 'center'}}>
+                      <Button
+                        bttype="tertiary"
+                        onClick={() => {
+                          setSelectParking(null);
+                          toast.dismiss('tilknytParking');
+                        }}
+                      >
+                        <Typography>Annuller</Typography>
+                      </Button>
+                    </div>
+                  ),
+                });
+              },
+              icon: '/parking-icon.png',
+            },
+            ...locationMenu.slice(1),
+          ];
+        }
+
+        marker.bindContextMenu({
+          contextmenu: superUser,
+          contextmenuInheritItems: false,
+          contextmenuItems: [...locationMenu],
         });
 
         if (
@@ -514,6 +741,13 @@ function Map({data, loading}: MapProps) {
 
   return (
     <>
+      <AlertDialog
+        open={displayAlert}
+        setOpen={setDisplayAlert}
+        title="Opret parkering"
+        message="Vælg venligst hvor parkeringen skal oprettes."
+        handleOpret={() => null}
+      />
       <SearchAndFilterMap
         data={loading ? [] : data}
         setData={setFilteredData}
