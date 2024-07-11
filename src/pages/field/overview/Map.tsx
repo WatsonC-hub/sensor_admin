@@ -1,4 +1,4 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {atom, useAtom} from 'jotai';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
@@ -7,11 +7,12 @@ import 'leaflet-routing-machine';
 import L, {LeafletMouseEvent} from 'leaflet';
 import '~/css/leaflet.css';
 import {useRef, useEffect, useState, SyntheticEvent, useCallback} from 'react';
-import {toast} from 'react-toastify';
+import {ToastContainer, toast} from 'react-toastify';
 import utmObj from 'utm-latlng';
 
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
+import Button from '~/components/Button';
 import {mapboxToken, boreholeColors} from '~/consts';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
@@ -188,8 +189,6 @@ function Map({data, loading}: MapProps) {
           setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
           setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
 
-          // if (e.relatedTarget.options.data.loc_id) createStamdata('2');
-
           createStamdata();
         }
       },
@@ -235,36 +234,6 @@ function Map({data, loading}: MapProps) {
       icon: '/leaflet-images/center.png',
     },
   ];
-
-  if (superUser) {
-    contextmenuItems.splice(1, 0, {
-      text: 'Tilføj parkering',
-      callback: (e: any) => {
-        // @ts-expect-error error in type definition
-        const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
-
-        if (typeof coords == 'object' && toast.isActive('opretParking')) {
-          const parkering: PartialBy<Parking, 'parking_id' | 'loc_id'> = {
-            x: parseFloat(coords.Easting.toFixed(2)),
-            y: parseFloat(coords.Northing.toFixed(2)),
-          };
-
-          const payload = {
-            path: '',
-            data: parkering,
-          };
-
-          postParkering.mutate(payload, {
-            onSettled: () => {
-              setSelectParking(null);
-              toast.dismiss('opretParking');
-            },
-          });
-        }
-      },
-      icon: '/parking-icon.png',
-    });
-  }
 
   const renderMap = () => {
     const myAttributionText =
@@ -356,7 +325,7 @@ function Map({data, loading}: MapProps) {
         // @ts-expect-error error in type definition
         const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
-        if (typeof coords == 'object' && toast.isActive('opretParking')) {
+        if (typeof coords == 'object') {
           const loc_id = parkingStore.getState().selectedLocId;
 
           const parkering: PartialBy<Parking, 'parking_id'> = {
@@ -375,7 +344,7 @@ function Map({data, loading}: MapProps) {
                 queryKey: ['overblik'],
               });
               setSelectParking(null);
-              toast.dismiss('opretParking');
+              toast.dismiss('tilknytParking');
             },
           });
         }
@@ -475,7 +444,7 @@ function Map({data, loading}: MapProps) {
             data: parking,
             icon: parkingIcon,
           });
-          const parkingMenu = [...contextmenuItems.slice(2)];
+          const parkingMenu = [...contextmenuItems.slice(1)];
 
           parkingMarker.bindContextMenu({
             contextmenu: superUser,
@@ -485,7 +454,7 @@ function Map({data, loading}: MapProps) {
           parkingMarker.on('click', () => {
             const loc_id = parkingStore.getState().selectedLocId;
 
-            if (loc_id != null && toast.isActive('tilknytParking')) {
+            if (loc_id != null) {
               const payload = {
                 data: {
                   loc_id: loc_id,
@@ -590,7 +559,7 @@ function Map({data, loading}: MapProps) {
           // renderer: renderer,
         });
 
-        const locationMenu = [
+        let locationMenu = [
           {
             text: 'Opret station',
             callback: () => {
@@ -601,48 +570,44 @@ function Map({data, loading}: MapProps) {
             },
             icon: '/leaflet-images/marker.png',
           },
-          {
-            text: 'Tilknyt parking',
-            callback: () => {
-              setSelectParking(element.locid);
-              toast('Vælg parkering for at tilknytte den lokationen', {
-                toastId: 'tilknytParking',
-                type: 'info',
-                autoClose: false,
-                closeOnClick: false,
-                draggable: false,
-                onClick: () => {
-                  setSelectParking(null);
-                  toast.dismiss('tilknytParking');
-                },
-              });
-            },
-            icon: '/parking-icon.png',
-          },
-          {
-            text: 'Tilføj parkering',
-            callback: () => {
-              setSelectParking(element.locid);
-              toast('Tryk på kortet for at oprette en parkering til denne lokation', {
-                toastId: 'opretParking',
-                type: 'info',
-                autoClose: false,
-                closeOnClick: false,
-                draggable: false,
-                onClick: () => {
-                  setSelectParking(null);
-                  toast.dismiss('opretParking');
-                },
-              });
-            },
-            icon: '/parking-icon.png',
-          },
-          ...contextmenuItems.slice(2),
-          // ...contextmenuItems.slice(2),
+          ...contextmenuItems.slice(1),
         ];
 
+        if (superUser) {
+          locationMenu = [
+            ...locationMenu.slice(0, 1),
+            {
+              text: 'Tilknyt parking',
+              callback: () => {
+                setSelectParking(element.locid);
+                toast('Vælg parkering for at tilknytte den lokationen', {
+                  toastId: 'tilknytParking',
+                  type: 'info',
+                  autoClose: false,
+                  draggable: false,
+                  closeButton: (
+                    <div style={{alignSelf: 'center'}}>
+                      <Button
+                        bttype="tertiary"
+                        onClick={() => {
+                          setSelectParking(null);
+                          toast.dismiss('tilknytParking');
+                        }}
+                      >
+                        <Typography>Annuller</Typography>
+                      </Button>
+                    </div>
+                  ),
+                });
+              },
+              icon: '/parking-icon.png',
+            },
+            ...locationMenu.slice(1),
+          ];
+        }
+
         marker.bindContextMenu({
-          contextmenu: true,
+          contextmenu: superUser,
           contextmenuInheritItems: false,
           contextmenuItems: [...locationMenu],
         });
