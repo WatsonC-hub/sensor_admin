@@ -2,7 +2,7 @@ import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-qu
 import {reverse, sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
-import {Group} from '~/pages/field/stamdata/components/LocationGroups';
+import {Group} from '~/types';
 
 export interface Notification {
   locname: string;
@@ -26,6 +26,7 @@ export interface Notification {
   active: boolean;
   notify_type: 'primary' | 'obs' | 'station' | null;
   groups: Group[];
+  parking_id: number;
 }
 
 export interface NotificationMap extends Notification {

@@ -33,7 +33,6 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
   });
 
   const superUser = authStore().superUser;
-  console.log(value);
 
   return (
     <>

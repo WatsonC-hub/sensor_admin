@@ -4,15 +4,11 @@ import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
 
-import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import {getGroupLink} from '~/helpers/links';
+import {Group} from '~/types';
 
-export type Group = {
-  id: string;
-  group_name: string;
-  new?: boolean;
-};
+import {apiClient} from '../../fieldAPI';
 
 const filter = createFilterOptions<Group>({
   ignoreCase: true,

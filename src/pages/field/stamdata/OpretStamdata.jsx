@@ -19,7 +19,7 @@ import {tabsHeight} from '~/consts';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
-import {authStore, stamdataStore} from '~/state/store';
+import {stamdataStore} from '~/state/store';
 
 import AddLocationForm from './AddLocationForm';
 import AddUnitForm from './AddUnitForm';
@@ -29,9 +29,23 @@ import TimeseriesForm from './components/TimeseriesForm';
 import UnitForm from './components/UnitForm';
 
 function LocationChooser({setLocationDialogOpen}) {
-  const location = stamdataStore((store) => store.location);
-  const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : null);
+  const loc_id = stamdataStore((store) => store.location.loc_id);
+  const [selectedLoc, setSelectedLoc] = useState(null);
+  console.log(selectedLoc);
   const formMethods = useFormContext();
+  const {data: locations} = useQuery({
+    queryKey: ['locations'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    if (loc_id != undefined && locations != undefined) {
+      populateFormData(locations.find((item) => item.loc_id === loc_id));
+    }
+  }, [loc_id, locations]);
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -76,43 +90,38 @@ function LocationChooser({setLocationDialogOpen}) {
     }
   };
 
-  const {data: locations} = useQuery({
-    queryKey: ['locations'],
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
-      return data;
-    },
-  });
-
-  // console.log(locations?.find((location) => location.loc_name === 'TEST_EBA 4'));
-
-  const desktopChooser = (
+  const locationSelector = (
     <>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={matches ? 12 : 6} md={6} sm={matches ? 6 : 12}>
         <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'baseline',
-            justifyContent: 'start',
-          }}
+          sx={
+            matches
+              ? {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'end',
+                  justifyContent: 'start',
+                }
+              : {
+                  display: 'flex',
+                  alignItems: 'center',
+                  align: 'center',
+                  justifyContent: 'start',
+                }
+          }
         >
-          <Typography>Lokation</Typography>
+          {matches ? '' : <Typography>Lokation</Typography>}
 
           <Autocomplete
             value={selectedLoc}
             options={locations ? locations : []}
             getOptionLabel={(option) => option.loc_name}
-            isOptionEqualToValue={(option, value) => option.loc_name === value}
+            isOptionEqualToValue={(option, value) => option.loc_name === value.loc_name}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                size="small"
-                variant="outlined"
-                placeholder="Vælg lokalitet"
-                style={{marginTop: '-6px'}}
-              />
+              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokalitet" />
             )}
-            style={{width: 200, marginLeft: '12px'}}
+            disableClearable={matches}
+            style={matches ? {width: '100%'} : {width: 200, marginLeft: '12px'}}
             onChange={(event, value) => {
               populateFormData(value);
             }}
@@ -122,53 +131,7 @@ function LocationChooser({setLocationDialogOpen}) {
             size="small"
             color="primary"
             bttype="primary"
-            sx={{
-              textTransform: 'none',
-              ml: '12px',
-            }}
-            onClick={() => setLocationDialogOpen(true)}
-          >
-            Tilføj ny lokation
-          </Button>
-        </Box>
-      </Grid>
-    </>
-  );
-
-  const mobileChooser = (
-    <>
-      <Grid item xs={12}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'end',
-            justifyContent: 'start',
-          }}
-        >
-          <Autocomplete
-            value={selectedLoc}
-            options={locations ? locations : []}
-            getOptionLabel={(option) => option.loc_name}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                size="small"
-                variant="outlined"
-                placeholder="Vælg lokalitet"
-                style={{marginTop: '-6px'}}
-              />
-            )}
-            disableClearable
-            style={{width: '100%', margin: '0 auto'}}
-            onChange={(event, value) => populateFormData(value)}
-          />
-          <Button
-            bttype="primary"
-            size="small"
-            sx={{
-              ml: 1,
-            }}
+            sx={matches ? {ml: 1} : {textTransform: 'none', ml: '12px'}}
             startIcon={<AddLocationAltIcon />}
             onClick={() => setLocationDialogOpen(true)}
           >
@@ -179,7 +142,7 @@ function LocationChooser({setLocationDialogOpen}) {
     </>
   );
 
-  return matches ? mobileChooser : desktopChooser;
+  return locationSelector;
 }
 
 function Location({setLocationDialogOpen}) {
@@ -246,6 +209,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
     trigger,
   } = formMethods;
 
+  console.log(getValues());
   const watchtstype_id = watch('timeseries.tstype_id');
 
   const stamdataNewMutation = useMutation({

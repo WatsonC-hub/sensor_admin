@@ -5,7 +5,7 @@ import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
-import {usePejling} from '~/features/api/usePejling';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import {useSearchParam} from '~/hooks/useSeachParam';
