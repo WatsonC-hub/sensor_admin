@@ -1,5 +1,5 @@
 import {Box, Typography} from '@mui/material';
-import {atom, useAtom} from 'jotai';
+import {useAtom} from 'jotai';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
@@ -7,7 +7,7 @@ import 'leaflet-routing-machine';
 import L, {LeafletMouseEvent} from 'leaflet';
 import '~/css/leaflet.css';
 import {useRef, useEffect, useState, SyntheticEvent, useCallback} from 'react';
-import {ToastContainer, toast} from 'react-toastify';
+import {toast} from 'react-toastify';
 import utmObj from 'utm-latlng';
 
 import {apiClient} from '~/apiClient';
@@ -16,7 +16,6 @@ import Button from '~/components/Button';
 import {mapboxToken, boreholeColors} from '~/consts';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {queryClient} from '~/queryClient';
 import {atomWithTimedStorage} from '~/state/atoms';
@@ -152,7 +151,7 @@ const offSetPoint = (point: L.LatLngExpression, offset: number, map: L.Map): L.L
 };
 
 function Map({data, loading}: MapProps) {
-  const {createStamdata, location, borehole} = useNavigationFunctions();
+  const {createStamdata} = useNavigationFunctions();
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.FeatureGroup | null>(null);
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -163,7 +162,6 @@ function Map({data, loading}: MapProps) {
   const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
   const store = stamdataStore();
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  const {isMobile} = useBreakpoints();
 
   const [selectedMarker, setSelectedMarker] = useState<
     NotificationMap | BoreholeMapData | Parking | null | undefined
@@ -681,7 +679,7 @@ function Map({data, loading}: MapProps) {
       if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
         if (value.sensor) {
           // @ts-expect-error Getlayers returns markers
-          const markers: L.CircleMarker[] = layerRef.current.getLayers();
+          const markers: L.Marker[] = layerRef.current.getLayers();
           for (let i = 0; i < markers.length; i++) {
             if (markers[i].options.title == value.name) {
               markers[i].openPopup();
@@ -690,8 +688,6 @@ function Map({data, loading}: MapProps) {
               });
               markers[i].fire('click');
               setSelectedMarker(markers[i].options.data);
-              if (isMobile) location((markers[i].options.data as NotificationMap).locid);
-              // !isMobile ?? location(markers[i].options.data?.loc_id);
               break;
             }
           }
@@ -725,7 +721,6 @@ function Map({data, loading}: MapProps) {
                 });
                 marker.fire('click');
                 setSelectedMarker(element);
-                if (isMobile) borehole(element.boreholeno);
               });
               if (layerRef.current) {
                 marker.addTo(layerRef.current);
