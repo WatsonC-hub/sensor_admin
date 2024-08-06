@@ -1,5 +1,5 @@
 import DirectionsIcon from '@mui/icons-material/Directions';
-import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
+import PlaceIcon from '@mui/icons-material/Place';
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
@@ -34,7 +34,7 @@ const SensorContent = ({data}: SensorContentProps) => {
 
       {drawerContext === 'full' && (
         <>
-          <Typography variant="h6">Andre notifikationer</Typography>
+          <Typography variant="h6">Andre Notifikationer</Typography>
           <Box
             sx={{
               display: 'grid',
@@ -84,9 +84,9 @@ const SensorContent = ({data}: SensorContentProps) => {
           onClick={() => {
             location(data.locid);
           }}
-          startIcon={<ShowChartRoundedIcon />}
+          startIcon={<PlaceIcon />}
         >
-          Tidsserie
+          Lokalitet
         </Button>
       </Box>
     </>

@@ -16,6 +16,7 @@ import Button from '~/components/Button';
 import {mapboxToken, boreholeColors} from '~/consts';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {queryClient} from '~/queryClient';
 import {atomWithTimedStorage} from '~/state/atoms';
@@ -151,7 +152,7 @@ const offSetPoint = (point: L.LatLngExpression, offset: number, map: L.Map): L.L
 };
 
 function Map({data, loading}: MapProps) {
-  const {createStamdata} = useNavigationFunctions();
+  const {createStamdata, location, borehole} = useNavigationFunctions();
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.FeatureGroup | null>(null);
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -162,6 +163,7 @@ function Map({data, loading}: MapProps) {
   const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
   const store = stamdataStore();
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
+  const {isMobile} = useBreakpoints();
 
   const [selectedMarker, setSelectedMarker] = useState<
     NotificationMap | BoreholeMapData | Parking | null | undefined
@@ -435,7 +437,7 @@ function Map({data, loading}: MapProps) {
   useEffect(() => {
     parkingLayerRef.current?.clearLayers();
     if (mapRef && mapRef.current && parkings) {
-      if (parkings)
+      if (parkings && !loading)
         parkings.forEach((parking: Parking) => {
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
@@ -679,7 +681,7 @@ function Map({data, loading}: MapProps) {
       if (value !== null && typeof value == 'object' && layerRef.current && mapRef.current) {
         if (value.sensor) {
           // @ts-expect-error Getlayers returns markers
-          const markers: L.Marker[] = layerRef.current.getLayers();
+          const markers: L.CircleMarker[] = layerRef.current.getLayers();
           for (let i = 0; i < markers.length; i++) {
             if (markers[i].options.title == value.name) {
               markers[i].openPopup();
@@ -688,6 +690,8 @@ function Map({data, loading}: MapProps) {
               });
               markers[i].fire('click');
               setSelectedMarker(markers[i].options.data);
+              if (isMobile) location((markers[i].options.data as NotificationMap).locid);
+              // !isMobile ?? location(markers[i].options.data?.loc_id);
               break;
             }
           }
@@ -721,6 +725,7 @@ function Map({data, loading}: MapProps) {
                 });
                 marker.fire('click');
                 setSelectedMarker(element);
+                if (isMobile) borehole(element.boreholeno);
               });
               if (layerRef.current) {
                 marker.addTo(layerRef.current);

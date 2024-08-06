@@ -1,5 +1,5 @@
 import DirectionsIcon from '@mui/icons-material/Directions';
-import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
+import PlaceIcon from '@mui/icons-material/Place';
 import {Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
@@ -9,7 +9,6 @@ import {boreholeColors} from '~/consts';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
-
 import {BoreholeMapData} from '~/types';
 
 interface BoreholeContentProps {
@@ -73,9 +72,9 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
           onClick={() => {
             borehole(data.boreholeno);
           }}
-          startIcon={<ShowChartRoundedIcon />}
+          startIcon={<PlaceIcon />}
         >
-          Boring
+          Lokalitet
         </Button>
       </Box>
     </>
