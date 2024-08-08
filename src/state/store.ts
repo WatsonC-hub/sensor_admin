@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 
+import {Ressourcer} from '~/features/stamdata/components/multiselect/types';
+
 type AuthState = {
   authenticated: boolean;
   user_id: number | null;
@@ -116,15 +118,21 @@ type LocationState = {
     uuid: string;
     gid: number;
   };
+  stationDetails: {
+    ressourcer: Ressourcer[];
+  };
   resetLocation: () => void;
   resetTimeseries: () => void;
   resetUnit: () => void;
+  resetStationDetails: () => void;
   setLocation: (locationData: any) => void;
   setTimeseries: (timeseriesdata: any) => void;
   setUnit: (unitData: any) => void;
+  setStationDetails: (stationDetails: any) => void;
   setUnitValue: (key: string, value: any) => void;
   setLocationValue: (key: string, value: any) => void;
   setTimeseriesValue: (key: string, value: any) => void;
+  setStationDetailsValue: (key: string, value: any) => void;
 };
 
 const initialState = {
@@ -164,6 +172,9 @@ const initialState = {
     uuid: '',
     gid: -1,
   },
+  stationDetails: {
+    ressourcer: [],
+  },
 };
 
 const stamdataStore = create<LocationState>()(
@@ -172,6 +183,7 @@ const stamdataStore = create<LocationState>()(
     resetLocation: () => set({location: initialState.location}),
     resetTimeseries: () => set({timeseries: initialState.timeseries}),
     resetUnit: () => set({unit: initialState.unit}),
+    resetStationDetails: () => set({stationDetails: initialState.stationDetails}),
     setLocation: (locationData) =>
       set(
         {
@@ -230,6 +242,16 @@ const stamdataStore = create<LocationState>()(
         false,
         'setUnit'
       ),
+    setStationDetails: (stationDetails) =>
+      set(
+        {
+          stationDetails: {
+            ressourcer: stationDetails.ressourcer,
+          },
+        },
+        false,
+        'setStationDetails'
+      ),
     setUnitValue: (key, value) =>
       set(
         (state) => ({
@@ -262,6 +284,17 @@ const stamdataStore = create<LocationState>()(
         }),
         false,
         'setTimeseriesValue'
+      ),
+    setStationDetailsValue: (key, value) =>
+      set(
+        (state) => ({
+          stationDetails: {
+            ...state.stationDetails,
+            [key]: value,
+          },
+        }),
+        false,
+        'setStationDetailsValue'
       ),
   }))
 );

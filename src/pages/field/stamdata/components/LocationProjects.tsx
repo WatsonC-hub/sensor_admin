@@ -3,7 +3,7 @@ import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
-import {FieldError} from 'react-hook-form';
+import {FieldError, Noop} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
 import {authStore} from '~/state/store';
@@ -17,11 +17,12 @@ const filter = createFilterOptions<string>();
 interface LocationProjectsProps {
   value: string;
   setValue: (value: string) => void;
+  onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;
 }
 
-const LocationProjects = ({value, setValue, error, disable}: LocationProjectsProps) => {
+const LocationProjects = ({value, setValue, onBlur, error, disable}: LocationProjectsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_projects'],
     queryFn: async () => {
@@ -77,6 +78,7 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
             {...params}
             fullWidth
             InputLabelProps={{shrink: true}}
+            onBlur={onBlur}
             variant="outlined"
             error={Boolean(error) && superUser}
             helperText={Boolean(error) && superUser && error?.message}

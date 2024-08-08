@@ -26,7 +26,33 @@ const locationSchema = z.object({
   }),
 });
 
-const timeseriesSchema = locationSchema.extend({
+const stationDetailsSchema = locationSchema.extend({
+  stationDetails: z.object({
+    ressourcer: z
+      .array(
+        z.object({
+          id: z.number(),
+          navn: z.string(),
+          kategori: z.string(),
+          tstype_id: z
+            .number()
+            .array()
+            .nullable()
+            .transform((array) => array ?? []),
+          loctype_id: z
+            .number()
+            .array()
+            .nullable()
+            .transform((array) => array ?? []),
+          forudvalgt: z.boolean(),
+        })
+      )
+      .nullish()
+      .transform((ressourcer) => ressourcer ?? []),
+  }),
+});
+
+const timeseriesSchema = stationDetailsSchema.extend({
   timeseries: z.object({
     prefix: z.string().nullish(),
     sensor_depth_m: z.number().nullish(),
@@ -132,4 +158,4 @@ const metadataPutSchema = metadataBaseSchema.extend({
 //     .optional(),
 // });
 
-export {locationSchema, timeseriesSchema, metadataPutSchema, metadataSchema};
+export {locationSchema, timeseriesSchema, metadataPutSchema, stationDetailsSchema, metadataSchema};

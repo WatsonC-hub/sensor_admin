@@ -36,8 +36,14 @@ import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {tabsHeight} from '~/consts';
+import StationDetails from '~/features/stamdata/components/StationDetails';
 import {StationPages} from '~/helpers/EnumHelper';
-import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
+import {
+  locationSchema,
+  metadataPutSchema,
+  stationDetailsSchema,
+  timeseriesSchema,
+} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
@@ -112,7 +118,7 @@ const UdstyrReplace = ({stationId}) => {
     store.setUnit,
   ]);
 
-  const formMethods = useFormContext();
+  const {setValue} = useFormContext();
 
   const {data} = useQuery({
     queryKey: ['udstyr', stationId],
@@ -136,7 +142,7 @@ const UdstyrReplace = ({stationId}) => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
     const unit = localUnit ?? data[0];
     setUnit(unit);
-    formMethods.setValue(
+    setValue(
       'unit',
       {
         gid: unit.gid,
@@ -296,13 +302,40 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     },
   });
 
-  console.log(metadata);
+  const metadataEditStationDetailsMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: out} = await apiClient.put(
+        `/sensor_field/stamdata/update_station_details/${metadata.loc_id}`,
+        data
+      );
+      return out;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['stations', metadata.loc_id.toString()],
+      });
+    },
+  });
+
   let schema = locationSchema;
   let schemaData = locationSchema.safeParse({
     location: {
       ...metadata,
     },
   });
+
+  if (metadata && metadata.ressourcer && metadata.ressourcer.length > 0) {
+    schema = stationDetailsSchema;
+    schemaData = stationDetailsSchema.safeParse({
+      location: {
+        ...metadata,
+      },
+      stationDetails: {
+        ...metadata,
+      },
+    });
+  }
+
   if (metadata && metadata.ts_id && !metadata.unit_uuid) {
     schema = timeseriesSchema;
     schemaData = timeseriesSchema.safeParse({
@@ -312,8 +345,12 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       timeseries: {
         ...metadata,
       },
+      stationDetails: {
+        ...metadata,
+      },
     });
-  } else if (metadata && metadata.unit_uuid) {
+  }
+  if (metadata && metadata.unit_uuid) {
     schema = metadataPutSchema;
     schemaData = metadataPutSchema.safeParse({
       location: {
@@ -328,16 +365,24 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         startdate: metadata.startdato,
         enddate: metadata.slutdato,
       },
+      stationDetails: {
+        ...metadata,
+      },
     });
   }
-
-  console.log(schemaData.data);
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: schemaData.data,
     mode: 'onTouched',
   });
+
+  const {
+    formState: {dirtyFields, isSubmitting},
+    getValues,
+    reset,
+    control,
+  } = formMethods;
 
   const resetFormData = () => {
     const result = schema.safeParse({
@@ -348,14 +393,17 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         ...metadata,
       },
       unit: {
-        ...formMethods.getValues()?.unit,
+        ...getValues()?.unit,
         ...metadata,
         startdate: metadata?.startdato,
         enddate: metadata?.slutdato,
       },
+      stationDetails: {
+        ...metadata,
+      },
     });
     console.log(result);
-    formMethods.reset(result.data);
+    reset(result.data);
   };
 
   useEffect(() => {
@@ -364,21 +412,28 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
 
   const handleUpdate = (type) => {
     if (type === 'location') {
-      const locationData = formMethods.getValues('location');
+      const locationData = getValues('location');
       metadataEditLocationMutation.mutate(locationData, {
         onSuccess: () => {
           toast.success('Lokalitet er opdateret');
         },
       });
     } else if (type === 'timeseries') {
-      const timeseriesData = formMethods.getValues('timeseries');
+      const timeseriesData = getValues('timeseries');
       metadataEditTimeseriesMutation.mutate(timeseriesData, {
         onSuccess: () => {
           toast.success('Tidsserie er opdateret');
         },
       });
+    } else if (type === 'stationDetails') {
+      const stationDetailsData = getValues('stationDetails');
+      metadataEditStationDetailsMutation.mutate(stationDetailsData, {
+        onSuccess: () => {
+          toast.success('Stationsinformation er opdateret');
+        },
+      });
     } else {
-      const unitData = formMethods.getValues('unit');
+      const unitData = getValues('unit');
       metadataEditUnitMutation.mutate(unitData, {
         onSuccess: () => {
           toast.success('Udstyr er opdateret');
@@ -407,7 +462,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       });
     }
   };
-
+  console.log('renreder');
   return (
     <FormProvider {...formMethods}>
       <Box
@@ -478,7 +533,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
-                Kontakt
+                Stationsinformation
               </Typography>
             }
           />
@@ -491,9 +546,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               cancel={resetFormData}
               handleOpret={() => handleUpdate('location')}
               saveTitle="Gem lokalitet"
-              disabled={
-                formMethods.formState.isSubmitting || !formMethods.getFieldState('location').isDirty
-              }
+              disabled={isSubmitting || !('location' in dirtyFields)}
             />
           </TabPanel>
           <TabPanel value={tabValue} index={'1'}>
@@ -502,10 +555,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               cancel={resetFormData}
               handleOpret={() => handleUpdate('timeseries')}
               saveTitle="Gem tidsserie"
-              disabled={
-                formMethods.formState.isSubmitting ||
-                !formMethods.getFieldState('timeseries').isDirty
-              }
+              disabled={isSubmitting || !('timeseries' in dirtyFields)}
             />
           </TabPanel>
           <TabPanel value={tabValue} index="2">
@@ -515,9 +565,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               cancel={resetFormData}
               handleOpret={() => handleUpdate('udstyr')}
               saveTitle="Gem udstyr"
-              disabled={
-                formMethods.formState.isSubmitting || !formMethods.getFieldState('unit').isDirty
-              }
+              disabled={isSubmitting || !('unit' in dirtyFields)}
             />
           </TabPanel>
           <TabPanel value={tabValue} index={'3'}>
@@ -533,10 +581,16 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             </FabWrapper>
           </TabPanel>
           <TabPanel value={tabValue} index={'4'}>
-            Kontaktinformation
+            <StationDetails mode={'normal'} />
+            <StamdataFooter
+              cancel={resetFormData}
+              handleOpret={() => handleUpdate('stationDetails')}
+              saveTitle="Gem information"
+              disabled={isSubmitting || !('stationDetails' in dirtyFields)}
+            />
           </TabPanel>
         </Box>
-        {import.meta.env.DEV && <DevTool control={formMethods.control} />}
+        {import.meta.env.DEV && <DevTool control={control} />}
       </Box>
     </FormProvider>
   );
