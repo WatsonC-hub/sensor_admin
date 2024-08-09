@@ -73,6 +73,9 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
         queryKey: ['udstyr', stationId],
       });
     },
+    onError: () => {
+      toast.error('Der skete en fejl');
+    },
   });
 
   return (

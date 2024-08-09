@@ -37,7 +37,7 @@ const timeseriesSchema = locationSchema.extend({
 const metadataBaseSchema = timeseriesSchema.extend({
   unit: z.object({
     unit_uuid: z.string(),
-    startdate: z.string().transform((value) => moment(value).toISOString()),
+    startdate: z.string(),
   }),
 });
 
@@ -76,10 +76,10 @@ const metadataPutSchema = metadataBaseSchema.extend({
   unit: metadataBaseSchema.shape.unit
     .extend({
       gid: z.number().optional(),
-      enddate: z.string().transform((value) => moment(value).toISOString()),
+      enddate: z.string(),
     })
     .superRefine((unit, ctx) => {
-      if (unit.startdate > unit.enddate) {
+      if (moment(unit.startdate) > moment(unit.enddate)) {
         ctx.addIssue({
           code: z.ZodIssueCode.invalid_date,
           message: 'start dato må ikke være senere end slut dato',
