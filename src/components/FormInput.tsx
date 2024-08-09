@@ -4,7 +4,7 @@ import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-for
 
 type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
-  warning?: (value: any) => string;
+  warning?: (value: any) => string | undefined;
   children?: React.ReactNode;
   rules?: any;
   transform?: (value: any) => any;
@@ -42,6 +42,9 @@ const FormInput = <TFieldValues extends FieldValues>({
           value = moment(value).format('YYYY-MM-DDTHH:mm') as any;
         }
 
+        const errorMessage = !!get(errors, name) && get(errors, name).message;
+        const warningMessage = warning && warning(value);
+
         return (
           <TextField
             {...otherProps}
@@ -63,7 +66,7 @@ const FormInput = <TFieldValues extends FieldValues>({
                 '& > fieldset': {borderColor: 'primary.main'},
               },
               '.MuiFormHelperText-root': {
-                color: warning && warning(value) ? 'orange' : 'red',
+                color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
                 position: 'absolute',
                 top: 'calc(100% - 8px)',
               },
@@ -82,10 +85,8 @@ const FormInput = <TFieldValues extends FieldValues>({
                 onChangeCallback && onChangeCallback(e);
               }
             }}
-            error={!!get(errors, name)}
-            helperText={
-              get(errors, name) ? get(errors, name).message : '' || (warning && warning(value))
-            }
+            error={!!errorMessage}
+            helperText={errorMessage || warningMessage || (otherProps?.helperText ?? '')}
           >
             {children}
           </TextField>

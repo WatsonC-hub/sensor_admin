@@ -73,10 +73,10 @@ module.exports = {
               // enforce unidirectional codebase:
 
               // e.g. src/app can import from src/features but not the other way around
-              {
-                target: './src/features',
-                from: './src/app',
-              },
+              // {
+              //   target: './src/features',
+              //   from: './src/pages',
+              // },
 
               // e.g src/features and src/app can import from these shared modules but not the other way around
               {
@@ -87,7 +87,7 @@ module.exports = {
                   './src/types',
                   './src/utils',
                 ],
-                from: ['./src/features', './src/app'],
+                from: ['./src/features', './src/pages'],
               },
             ],
           },

@@ -15,13 +15,13 @@ import NavBar from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
 import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import {authStore} from '~/state/store';
+import {TableData, BoreholeMapData, BoreholeData} from '~/types';
 
 import ScrollTop from '../../../components/ScrollTop';
 
 import BoreholeTable from './components/BoreholeTable';
 import StationTable from './components/StationTable';
 import Map from './Map';
-import {TableData, BoreholeMapData, BoreholeData} from '~/types';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);

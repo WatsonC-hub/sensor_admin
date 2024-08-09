@@ -1,14 +1,7 @@
 import {DevTool} from '@hookform/devtools';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {
-  BuildRounded,
-  LocationOnRounded,
-  SettingsPhoneRounded,
-  ShowChartRounded,
-} from '@mui/icons-material';
+import {BuildRounded, LocationOnRounded, ShowChartRounded} from '@mui/icons-material';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import SaveIcon from '@mui/icons-material/Save';
 import {Grid, TextField, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import {useTheme} from '@mui/material/styles';
@@ -26,20 +19,33 @@ import {tabsHeight} from '~/consts';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
-
-import {stamdataStore} from '../../../state/store';
+import {stamdataStore} from '~/state/store';
 
 import AddLocationForm from './AddLocationForm';
 import AddUnitForm from './AddUnitForm';
-import KontaktForm from './components/KontaktForm';
 import LocationForm from './components/LocationForm';
+import StamdataFooter from './components/StamdataFooter';
 import TimeseriesForm from './components/TimeseriesForm';
 import UnitForm from './components/UnitForm';
 
 function LocationChooser({setLocationDialogOpen}) {
-  const location = stamdataStore((store) => store.location);
-  const [selectedLoc, setSelectedLoc] = useState(location.loc_id ? location : null);
+  const loc_id = stamdataStore((store) => store.location.loc_id);
+  const [selectedLoc, setSelectedLoc] = useState(null);
+  console.log(selectedLoc);
   const formMethods = useFormContext();
+  const {data: locations} = useQuery({
+    queryKey: ['locations'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
+      return data;
+    },
+  });
+
+  useEffect(() => {
+    if (loc_id != undefined && locations != undefined) {
+      populateFormData(locations.find((item) => item.loc_id === loc_id));
+    }
+  }, [loc_id, locations]);
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -61,6 +67,7 @@ function LocationChooser({setLocationDialogOpen}) {
           terrainlevel: locData.terrainlevel,
           description: locData.description,
           loctype_id: locData.loctype_id,
+          projectno: locData.initial_project_no,
         },
       });
     } else {
@@ -70,52 +77,51 @@ function LocationChooser({setLocationDialogOpen}) {
           mainloc: '',
           subloc: '',
           subsubloc: '',
-          x: '',
-          y: '',
+          x: 0,
+          y: 0,
           groups: [],
           terrainqual: '',
-          terrainlevel: '',
+          terrainlevel: 0,
           description: '',
-          loctype_id: '',
+          loctype_id: -1,
+          projectno: '',
         },
       });
     }
   };
 
-  const {data: locations} = useQuery({
-    queryKey: ['locations'],
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
-      return data;
-    },
-  });
-
-  const desktopChooser = (
+  const locationSelector = (
     <>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={matches ? 12 : 6} md={6} sm={matches ? 6 : 12}>
         <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'baseline',
-            justifyContent: 'start',
-          }}
+          sx={
+            matches
+              ? {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'end',
+                  justifyContent: 'start',
+                }
+              : {
+                  display: 'flex',
+                  alignItems: 'center',
+                  align: 'center',
+                  justifyContent: 'start',
+                }
+          }
         >
-          <Typography>Lokation</Typography>
+          {matches ? '' : <Typography>Lokation</Typography>}
 
           <Autocomplete
             value={selectedLoc}
             options={locations ? locations : []}
             getOptionLabel={(option) => option.loc_name}
+            isOptionEqualToValue={(option, value) => option.loc_name === value.loc_name}
             renderInput={(params) => (
-              <TextField
-                {...params}
-                size="small"
-                variant="outlined"
-                placeholder="Vælg lokalitet"
-                style={{marginTop: '-6px'}}
-              />
+              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokalitet" />
             )}
-            style={{width: 200, marginLeft: '12px'}}
+            disableClearable={matches}
+            style={matches ? {width: '100%'} : {width: 200, marginLeft: '12px'}}
             onChange={(event, value) => {
               populateFormData(value);
             }}
@@ -125,54 +131,7 @@ function LocationChooser({setLocationDialogOpen}) {
             size="small"
             color="primary"
             bttype="primary"
-            sx={{
-              textTransform: 'none',
-              ml: '12px',
-            }}
-            onClick={() => setLocationDialogOpen(true)}
-          >
-            Tilføj ny lokation
-          </Button>
-        </Box>
-      </Grid>
-      {/* <Grid item xs={12} sm={6}></Grid> */}
-    </>
-  );
-
-  const mobileChooser = (
-    <>
-      <Grid item xs={12}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'end',
-            justifyContent: 'start',
-          }}
-        >
-          <Autocomplete
-            value={selectedLoc}
-            options={locations ? locations : []}
-            getOptionLabel={(option) => option.loc_name}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                size="small"
-                variant="outlined"
-                placeholder="Vælg lokalitet"
-                style={{marginTop: '-6px'}}
-              />
-            )}
-            disableClearable
-            style={{width: '100%', margin: '0 auto'}}
-            onChange={(event, value) => populateFormData(value)}
-          />
-          <Button
-            bttype="primary"
-            size="small"
-            sx={{
-              ml: 1,
-            }}
+            sx={matches ? {ml: 1} : {textTransform: 'none', ml: '12px'}}
             startIcon={<AddLocationAltIcon />}
             onClick={() => setLocationDialogOpen(true)}
           >
@@ -183,7 +142,7 @@ function LocationChooser({setLocationDialogOpen}) {
     </>
   );
 
-  return matches ? mobileChooser : desktopChooser;
+  return locationSelector;
 }
 
 function Location({setLocationDialogOpen}) {
@@ -218,8 +177,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(
     store.location.x ? (store.location.loc_id ? false : true) : false
   );
-  // const [tabValue, setTabValue] = useState(0);
-
   useEffect(() => {
     return () => {
       store.resetLocation();
@@ -230,13 +187,12 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
 
-  console.log('tabValue', tabValue, typeof tabValue);
-
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
       location: {
         ...store.location,
+        // projectno: superUser ? '' : null,
       },
       timeseries: {
         tstype_id: -1,
@@ -246,18 +202,36 @@ export default function OpretStamdata({setAddStationDisabled}) {
   });
 
   const {
-    formState: {isSubmitting, errors},
+    formState: {errors},
     reset,
     watch,
     getValues,
-    handleSubmit,
+    trigger,
   } = formMethods;
 
+  console.log(getValues());
   const watchtstype_id = watch('timeseries.tstype_id');
 
   const stamdataNewMutation = useMutation({
     mutationFn: async (data) => {
       const {data: out} = await apiClient.post(`/sensor_field/stamdata/`, data);
+      return out;
+    },
+  });
+
+  const stamdataNewLocationMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: out} = await apiClient.post(
+        `/sensor_field/stamdata/create_location`,
+        data.location
+      );
+      return out;
+    },
+  });
+
+  const stamdataNewTimeseriesMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_timeseries`, data);
       return out;
     },
   });
@@ -275,55 +249,114 @@ export default function OpretStamdata({setAddStationDisabled}) {
     });
   }, [watchtstype_id]);
 
-  const handleDebug = (error) => {
-    console.log('values', getValues());
-    console.log('error', error);
+  const cancel = () => {
+    field();
+    setAddStationDisabled(false);
   };
 
-  const handleOpret = async () => {
-    setAddStationDisabled(false);
-    let form = {
-      location: {
-        ...getValues()?.location,
-      },
-      timeseries: {
-        ...getValues()?.timeseries,
-      },
-      unit: {
-        startdate: store.unit.startdato,
-        unit_uuid: store.unit.uuid,
-      },
-    };
+  const nextTab = () => {
+    if (tabValue !== '3') setTabValue((parseInt(tabValue) + 1).toString());
+  };
 
-    console.log(formMethods.getValues());
+  useEffect(() => {
+    if (tabValue === null && getValues().location.loc_id) setTabValue('1');
+  }, [tabValue]);
 
-    if (getValues()?.timeseries.tstype_id === 1) {
-      form['watlevmp'] = {
-        startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
-        ...getValues()?.watlevmp,
+  const handleLocationOpret = async () => {
+    const locationValid = await trigger('location');
+    if (locationValid) {
+      const location = {
+        location: {
+          ...getValues().location,
+          initial_project_no: getValues().location.projectno,
+        },
       };
-    }
 
-    try {
-      await toast.promise(() => stamdataNewMutation.mutateAsync(form), {
-        pending: 'Opretter stamdata...',
-        success: 'Stamdata oprettet!',
+      await toast.promise(() => stamdataNewLocationMutation.mutateAsync(location), {
+        pending: 'Opretter lokation...',
+        success: 'lokation oprettet!',
         error: 'Noget gik galt!',
       });
-
-      // navigate('/field');
-      field();
-    } catch (e) {
-      console.log(e);
     }
   };
 
-  // useEffect(() => {
-  //   setTabValue('0');
-  //   return () => {
-  //     setTabValue(null);
-  //   };
-  // }, []);
+  const handleTimeseriesOpret = async () => {
+    const locationValid = await trigger('location');
+    const timeseriesValid = await trigger('timeseries');
+
+    let form = null;
+    if (locationValid && timeseriesValid) {
+      form = {
+        location: {
+          ...getValues().location,
+          initial_project_no: getValues().location.projectno,
+        },
+        timeseries: {
+          ...getValues().timeseries,
+        },
+      };
+
+      if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
+        form['watlevmp'] = {
+          startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
+          ...getValues()?.watlevmp,
+        };
+      } else {
+        form['watlevmp'] = {
+          startdate: moment().format('YYYY-MM-DD'),
+          ...getValues()?.watlevmp,
+        };
+      }
+
+      let text = 'lokation og tidsserie';
+      if (!form.location.loc_id) text = 'tidsserie';
+
+      await toast.promise(() => stamdataNewTimeseriesMutation.mutateAsync(form), {
+        pending: 'Opretter ' + text + '' + '...',
+        success: text + ' oprettet!',
+        error: 'Noget gik galt!',
+      });
+    }
+  };
+
+  const handleUnitOpret = async () => {
+    const locationValid = await trigger('location');
+    const timeseriesValid = await trigger('timeseries');
+
+    let form = null;
+    if (locationValid && timeseriesValid) {
+      form = {
+        location: {
+          ...getValues().location,
+          initial_project_no: getValues().location.projectno,
+        },
+        timeseries: {
+          ...getValues().timeseries,
+        },
+        unit: {
+          startdate: store.unit.startdato,
+          unit_uuid: store.unit.uuid,
+        },
+      };
+
+      console.log(form);
+      if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
+        form['watlevmp'] = {
+          startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
+          ...getValues()?.watlevmp,
+        };
+      }
+
+      let text = 'lokation, tidsserie og udstyr';
+      if (!form.location.loc_id) text = 'udstyr';
+
+      await toast.promise(() => stamdataNewMutation.mutateAsync(form), {
+        pending: 'Opretter ' + text + '' + '...',
+        success: text + ' oprettet!',
+        error: 'Noget gik galt!',
+      });
+    }
+  };
 
   return (
     <>
@@ -331,8 +364,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
       <div>
         <FormProvider {...formMethods}>
           <Tabs
-            value={tabValue}
+            value={tabValue !== null ? tabValue : '0'}
             onChange={(_, newValue) => {
+              console.log(newValue);
+              console.log(tabValue);
+
               setTabValue(newValue);
             }}
             variant="fullWidth"
@@ -354,18 +390,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 </Typography>
               }
             />
-
             <Tab
               value="1"
-              icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
-              label={
-                <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
-                  Kontakt
-                </Typography>
-              }
-            />
-            <Tab
-              value="2"
               icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -374,7 +400,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               }
             />
             <Tab
-              value="3"
+              value="2"
               icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -392,21 +418,27 @@ export default function OpretStamdata({setAddStationDisabled}) {
               margin: 'auto',
             }}
           >
-            {/* <Typography variant="h6" component="h3">
-              Stamdata
-            </Typography> */}
             <TabPanel value={tabValue} index={'0'}>
               <Location setLocationDialogOpen={setLocationDialogOpen} />
+              <StamdataFooter
+                cancel={cancel}
+                nextTab={nextTab}
+                disabled={getValues().location.loc_id !== undefined}
+                handleOpret={handleLocationOpret}
+                type="lokalitet"
+              />
             </TabPanel>
             <TabPanel value={tabValue} index={'1'}>
-              <KontaktForm />
+              <TimeseriesForm mode="add" />
+              <StamdataFooter
+                cancel={cancel}
+                nextTab={nextTab}
+                handleOpret={handleTimeseriesOpret}
+                disabled={false}
+                type="lokation og tidsserie"
+              />
             </TabPanel>
             <TabPanel value={tabValue} index={'2'}>
-              {/* <Typography>Tidsserie</Typography> */}
-              <TimeseriesForm mode="add" />
-            </TabPanel>
-            <TabPanel value={tabValue} index={'3'}>
-              {/* <Typography>Udstyr</Typography> */}
               <Box
                 sx={{
                   display: 'flex',
@@ -432,47 +464,12 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 )}
               </Box>
               <UnitForm mode="add" />
+              <StamdataFooter
+                cancel={cancel}
+                disabled={getValues().unit && !getValues().unit.unit_uuid}
+                handleOpret={handleUnitOpret}
+              />
             </TabPanel>
-            <footer style={{position: 'sticky', bottom: 0, float: 'right'}}>
-              <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-                <Button
-                  bttype="tertiary"
-                  onClick={() => {
-                    // navigate('/field');
-                    field();
-                    setAddStationDisabled(false);
-                  }}
-                >
-                  Annuller
-                </Button>
-
-                {tabValue < 3 && (
-                  <Button
-                    bttype="primary"
-                    sx={{marginRight: 1}}
-                    endIcon={<ArrowForwardIcon fontSize="small" />}
-                    onClick={() => {
-                      setTabValue((parseInt(tabValue) + 1).toString());
-                    }}
-                  >
-                    <Box display="flex" alignItems="center">
-                      Videre
-                    </Box>
-                  </Button>
-                )}
-                {tabValue == 3 && (
-                  <Button
-                    bttype="primary"
-                    onClick={handleSubmit(handleOpret, handleDebug)}
-                    startIcon={<SaveIcon />}
-                    sx={{marginRight: 1}}
-                    disabled={isSubmitting}
-                  >
-                    Gem
-                  </Button>
-                )}
-              </Box>
-            </footer>
           </Box>
 
           <AddUnitForm

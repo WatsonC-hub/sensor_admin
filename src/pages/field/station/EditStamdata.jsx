@@ -34,19 +34,19 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
+import OwnDatePicker from '~/components/OwnDatePicker';
 import {tabsHeight} from '~/consts';
 import {StationPages} from '~/helpers/EnumHelper';
-import {metadataPutSchema} from '~/helpers/zodSchemas';
+import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
-
-import OwnDatePicker from '../../../components/OwnDatePicker';
-import {stamdataStore} from '../../../state/store';
-import TabPanel from '../overview/TabPanel';
-import AddUnitForm from '../stamdata/AddUnitForm';
-import LocationForm from '../stamdata/components/LocationForm';
-import ReferenceForm from '../stamdata/components/ReferenceForm';
-import TimeseriesForm from '../stamdata/components/TimeseriesForm';
-import UnitForm from '../stamdata/components/UnitForm';
+import TabPanel from '~/pages/field/overview/TabPanel';
+import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
+import LocationForm from '~/pages/field/stamdata/components/LocationForm';
+import ReferenceForm from '~/pages/field/stamdata/components/ReferenceForm';
+import StamdataFooter from '~/pages/field/stamdata/components/StamdataFooter';
+import TimeseriesForm from '~/pages/field/stamdata/components/TimeseriesForm';
+import UnitForm from '~/pages/field/stamdata/components/UnitForm';
+import {stamdataStore} from '~/state/store';
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
   const [date, setdate] = useState(new Date());
@@ -155,9 +155,9 @@ const UdstyrReplace = ({stationId}) => {
 
   return (
     <>
-      {data && data.length > 0 && (
-        <Grid container spacing={2} alignItems="center" alignContent="center">
-          <Grid item xs={12} sm={6}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          {data && data.length > 0 ? (
             <Select
               id="udstyr_select"
               value={selected}
@@ -177,42 +177,48 @@ const UdstyrReplace = ({stationId}) => {
                 );
               })}
             </Select>
-            {moment(data?.[0].slutdato) > moment(new Date()) ? (
-              <Button
-                bttype="primary"
-                sx={{marginLeft: 1}}
-                onClick={() => {
-                  setOpenDialog(true);
-                }}
-              >
-                Hjemtag udstyr
-              </Button>
-            ) : (
-              <Button
-                bttype="primary"
-                onClick={() => {
-                  setOpenAddUdstyr(true);
-                }}
-              >
-                Tilføj udstyr
-              </Button>
-            )}
-          </Grid>
-          <UnitEndDateDialog
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            unit={data?.[0]}
-            setUdstyrValue={setUnitValue}
-            stationId={stationId}
-          />
-          <AddUnitForm
-            udstyrDialogOpen={openAddUdstyr}
-            setUdstyrDialogOpen={setOpenAddUdstyr}
-            tstype_id={tstype_id}
-            mode="edit"
-          />
+          ) : (
+            <Typography align={'center'} display={'inline-block'}>
+              Tilknyt venligst et udstyr
+            </Typography>
+          )}
+
+          {data && data.length && moment(data?.[0].slutdato) > moment(new Date()) ? (
+            <Button
+              bttype="primary"
+              sx={{marginLeft: 1}}
+              onClick={() => {
+                setOpenDialog(true);
+              }}
+            >
+              Hjemtag udstyr
+            </Button>
+          ) : (
+            <Button
+              bttype="primary"
+              sx={{marginLeft: 1}}
+              onClick={() => {
+                setOpenAddUdstyr(true);
+              }}
+            >
+              Tilføj udstyr
+            </Button>
+          )}
         </Grid>
-      )}
+        <UnitEndDateDialog
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          unit={data?.[0]}
+          setUdstyrValue={setUnitValue}
+          stationId={stationId}
+        />
+        <AddUnitForm
+          udstyrDialogOpen={openAddUdstyr}
+          setUdstyrDialogOpen={setOpenAddUdstyr}
+          tstype_id={tstype_id}
+          mode="edit"
+        />
+      </Grid>
     </>
   );
 };
@@ -226,6 +232,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const [tabValue, setTabValue] = useSearchParam('tab');
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
+
   useEffect(() => {
     if (
       pageToShow === StationPages.STAMDATA &&
@@ -235,23 +242,15 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       setPageToShow(StationPages.STAMDATA);
       setShowForm(null);
     }
-    console.log('tab before', tabValue);
     if (tabValue === null) {
-      console.log('if');
       setTabValue('0');
     } else if (tabValue === '3' && metadata && metadata.tstype_id !== 1) {
-      console.log(metadata?.tstype_id);
-      console.log('else if');
       setTabValue('0');
     } else if (tabValue === '2' && metadata && metadata.calculated) {
-      console.log('else if 2');
       setTabValue('0');
     } else setTabValue(tabValue);
 
-    console.log('tab after', tabValue);
-
     if (tabValue !== '3' && showForm === 'true') {
-      console.log(showForm);
       setShowForm(null);
     }
 
@@ -260,24 +259,63 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     };
   }, [ts_id, metadata?.calculated, tabValue]);
 
-  const metadataEditMutation = useMutation({
+  const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data) => {
-      const {data: out} = await apiClient.put(`/sensor_field/stamdata/${ts_id}`, data);
+      const {data: out} = await apiClient.put(
+        `/sensor_field/stamdata/update_timeseries/${ts_id}`,
+        data
+      );
+      return out;
+    },
+  });
+
+  const metadataEditLocationMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: out} = await apiClient.put(
+        `/sensor_field/stamdata/update_location/${metadata.loc_id}`,
+        data
+      );
       return out;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['stations', metadata.loc_id.toString()],
       });
+    },
+  });
+
+  const metadataEditUnitMutation = useMutation({
+    mutationFn: async (data) => {
+      const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
+      return out;
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['udstyr', ts_id],
       });
     },
   });
 
-  const formMethods = useForm({
-    resolver: zodResolver(metadataPutSchema),
-    defaultValues: metadataPutSchema.safeParse({
+  console.log(metadata);
+  let schema = locationSchema;
+  let schemaData = locationSchema.safeParse({
+    location: {
+      ...metadata,
+    },
+  });
+  if (metadata && metadata.ts_id && !metadata.unit_uuid) {
+    schema = timeseriesSchema;
+    schemaData = timeseriesSchema.safeParse({
+      location: {
+        ...metadata,
+      },
+      timeseries: {
+        ...metadata,
+      },
+    });
+  } else if (metadata && metadata.unit_uuid) {
+    schema = metadataPutSchema;
+    schemaData = metadataPutSchema.safeParse({
       location: {
         ...metadata,
       },
@@ -287,59 +325,87 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       unit: {
         ...metadata,
         gid: -1,
-        startdate: metadata?.startdato,
-        enddate: metadata?.slutdato,
+        startdate: metadata.startdato,
+        enddate: metadata.slutdato,
       },
-    }).data,
+    });
+  }
+
+  console.log(schemaData.data);
+
+  const formMethods = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: schemaData.data,
+    mode: 'onTouched',
   });
 
   const resetFormData = () => {
-    formMethods.reset(
-      metadataPutSchema.safeParse({
-        location: {
-          ...metadata,
-        },
-        timeseries: {
-          ...metadata,
-        },
-        unit: {
-          ...formMethods.getValues()?.unit,
-          ...metadata,
-          startdate: metadata?.startdato,
-          enddate: metadata?.slutdato,
-        },
-      }).data
-    );
+    const result = schema.safeParse({
+      location: {
+        ...metadata,
+      },
+      timeseries: {
+        ...metadata,
+      },
+      unit: {
+        ...formMethods.getValues()?.unit,
+        ...metadata,
+        startdate: metadata?.startdato,
+        enddate: metadata?.slutdato,
+      },
+    });
+    console.log(result);
+    formMethods.reset(result.data);
   };
 
   useEffect(() => {
     resetFormData();
   }, [metadata]);
 
-  const handleUpdate = (values) => {
-    metadataEditMutation.mutate(values, {
-      onSuccess: () => {
-        toast.success('Stamdata er opdateret');
-      },
-      onError: (error) => {
-        if (error.response?.status !== 409) {
-          toast.error('Der skete en fejl');
-        } else {
-          toast.error(
-            <Box>
-              Enheden overlapper med følgende periode
+  const handleUpdate = (type) => {
+    if (type === 'location') {
+      const locationData = formMethods.getValues('location');
+      metadataEditLocationMutation.mutate(locationData, {
+        onSuccess: () => {
+          toast.success('Lokalitet er opdateret');
+        },
+      });
+    } else if (type === 'timeseries') {
+      const timeseriesData = formMethods.getValues('timeseries');
+      metadataEditTimeseriesMutation.mutate(timeseriesData, {
+        onSuccess: () => {
+          toast.success('Tidsserie er opdateret');
+        },
+      });
+    } else {
+      const unitData = formMethods.getValues('unit');
+      metadataEditUnitMutation.mutate(unitData, {
+        onSuccess: () => {
+          toast.success('Udstyr er opdateret');
+        },
+        onError: (error) => {
+          if (error.response?.status !== 409) {
+            toast.error('Der skete en fejl');
+          } else {
+            toast.error(
               <Box>
-                {moment(error.response.data.detail.overlap[0].startdate).format('YYYY-MM-DD HH:mm')}{' '}
-                -{moment(error.response.data.detail.overlap[0].enddate).format('YYYY-MM-DD HH:mm')}
-              </Box>
-            </Box>,
-            {
-              autoClose: false,
-            }
-          );
-        }
-      },
-    });
+                Enheden overlapper med følgende periode
+                <Box>
+                  {moment(error.response.data.detail.overlap[0].startdate).format(
+                    'YYYY-MM-DD HH:mm'
+                  )}{' '}
+                  -
+                  {moment(error.response.data.detail.overlap[0].enddate).format('YYYY-MM-DD HH:mm')}
+                </Box>
+              </Box>,
+              {
+                autoClose: false,
+              }
+            );
+          }
+        },
+      });
+    }
   };
 
   return (
@@ -377,6 +443,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="1"
+            disabled={ts_id === -1}
             icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -386,7 +453,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="2"
-            disabled={metadata && metadata.calculated}
+            disabled={metadata && (metadata.calculated || ts_id === -1)}
             icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -419,14 +486,39 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         <Divider />
         <Box>
           <TabPanel value={tabValue} index={'0'}>
-            <LocationForm mode="edit" />
+            <LocationForm mode="normal" />
+            <StamdataFooter
+              cancel={resetFormData}
+              handleOpret={() => handleUpdate('location')}
+              saveTitle="Gem lokalitet"
+              disabled={
+                formMethods.formState.isSubmitting || !formMethods.getFieldState('location').isDirty
+              }
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={'1'}>
             <TimeseriesForm />
+            <StamdataFooter
+              cancel={resetFormData}
+              handleOpret={() => handleUpdate('timeseries')}
+              saveTitle="Gem tidsserie"
+              disabled={
+                formMethods.formState.isSubmitting ||
+                !formMethods.getFieldState('timeseries').isDirty
+              }
+            />
           </TabPanel>
           <TabPanel value={tabValue} index="2">
             <UdstyrReplace stationId={ts_id} />
             <UnitForm mode="edit" />
+            <StamdataFooter
+              cancel={resetFormData}
+              handleOpret={() => handleUpdate('udstyr')}
+              saveTitle="Gem udstyr"
+              disabled={
+                formMethods.formState.isSubmitting || !formMethods.getFieldState('unit').isDirty
+              }
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={'3'}>
             <FabWrapper
@@ -443,40 +535,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           <TabPanel value={tabValue} index={'4'}>
             Kontaktinformation
           </TabPanel>
-          {showForm === null && tabValue !== '3' && (
-            <footer style={{position: 'sticky', bottom: 60, float: 'right'}}>
-              <Grid
-                container
-                alignItems="center"
-                justifyContent="right"
-                sx={{
-                  marginTop: 2,
-                  pl: 2,
-                  pr: 2,
-                }}
-              >
-                <Grid item xs={12} sm={12}>
-                  <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
-                    <Button bttype="tertiary" onClick={resetFormData}>
-                      Annuller
-                    </Button>
-                    <Button
-                      bttype="primary"
-                      startIcon={<SaveIcon />}
-                      onClick={formMethods.handleSubmit(handleUpdate, (values) =>
-                        console.log(values)
-                      )}
-                      disabled={
-                        formMethods.formState.isSubmitting || !formMethods.formState.isDirty
-                      }
-                    >
-                      Gem
-                    </Button>
-                  </Box>
-                </Grid>
-              </Grid>
-            </footer>
-          )}
         </Box>
         {import.meta.env.DEV && <DevTool control={formMethods.control} />}
       </Box>

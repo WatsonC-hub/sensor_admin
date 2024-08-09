@@ -17,6 +17,7 @@ import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
+import {Group} from '~/pages/field/stamdata/components/LocationGroups';
 import {authStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
@@ -83,7 +84,7 @@ const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
     filter.isCustomerService === 'indeterminate'
       ? true
       : data.is_customer_service === filter.isCustomerService;
-  const activeFilter = data.active ? true : filter.showInactive;
+  const activeFilter = data.active == true || data.active == null ? true : filter.showInactive;
   return activeFilter && serviceFilter;
 };
 
@@ -108,6 +109,15 @@ const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter)
   filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
+
+  if (filter.groups && filter.groups.length > 0) {
+    filteredData = filteredData.filter((elem) => {
+      if (elem.groups !== null) {
+        return filter.groups.some((group) => elem.groups.some((item) => item.id === group.id));
+      }
+      return false;
+    });
+  }
 
   return filteredData;
 };

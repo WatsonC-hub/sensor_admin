@@ -1,11 +1,11 @@
 import type {ButtonProps} from '@mui/material';
 import MuiButton from '@mui/material/Button';
 import {merge} from 'lodash';
-import {ReactElement} from 'react';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
   bttype: 'primary' | 'secondary' | 'tertiary' | 'link';
-  children: ReactElement | string;
+  children: React.ReactNode;
+  target?: string;
 }
 
 const Button = ({bttype, children, ...props}: MyButtonProps) => {

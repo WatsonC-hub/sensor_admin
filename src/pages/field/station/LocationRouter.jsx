@@ -39,7 +39,7 @@ export default function LocationRouter() {
   });
 
   useEffect(() => {
-    if (data && data.length == 1 && params.ts_id === undefined) {
+    if (data && data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
       station(params.locid, data[0].ts_id, {replace: true});
       // navigate(`../location/${params.locid}/${data[0].ts_id}`, {
       //   replace: true,
@@ -51,6 +51,7 @@ export default function LocationRouter() {
 
   const stamdata = data?.filter((elem) => elem.ts_id == params.ts_id)?.[0];
 
+  const hasTimeseries = data && data.some((stamdata) => stamdata.ts_id !== null);
   return (
     <MetadataContext.Provider value={metadata}>
       <CssBaseline />
@@ -71,7 +72,11 @@ export default function LocationRouter() {
               {data?.[0].loc_name}
             </Typography>
           </Tooltip>
-          <MinimalSelect locid={params.locid} stationList={data} />
+          {hasTimeseries ? (
+            <MinimalSelect locid={params.locid} stationList={data} />
+          ) : (
+            'Ingen tidsserie på lokalitet'
+          )}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <HomeButton />

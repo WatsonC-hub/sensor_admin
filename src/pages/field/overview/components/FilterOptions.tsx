@@ -11,6 +11,7 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
 import {authStore} from '~/state/store';
+import LocationGroups from '../../stamdata/components/LocationGroups';
 
 import {Filter, defaultMapFilter} from './filter_consts';
 import NotificationIcon from './NotificationIcon';
@@ -55,7 +56,7 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
       <Divider />
       <Grid container spacing={2}>
         {boreholeAccess && (
-          <Grid item xs={12} sm={6}>
+          <Grid item sm={iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">Boringer</Typography>
 
             {/* <FormCheckbox
@@ -87,8 +88,24 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
           </Grid>
         )}
         {iotAccess && (
-          <Grid item xs={12} sm={6}>
+          <Grid
+            item
+            sm={boreholeAccess ? 6 : 12}
+            display="flex"
+            flexDirection="column"
+            flexGrow={1}
+          >
             <Typography variant="subtitle1">Iot filtre</Typography>
+
+            <FormToggleGroup
+              name="sensor.isCustomerService"
+              label="Kunde service"
+              values={[
+                {label: <CheckIcon />, value: true},
+                {label: <RemoveIcon />, value: 'indeterminate'},
+                {label: <ClearIcon />, value: false},
+              ]}
+            />
             <FormControlLabel
               control={
                 <Controller
@@ -112,17 +129,17 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
                 </Typography>
               }
             />
-            <FormToggleGroup
-              name="sensor.isCustomerService"
-              label="Kunde service"
-              values={[
-                {label: <CheckIcon />, value: true},
-                {label: <RemoveIcon />, value: 'indeterminate'},
-                {label: <ClearIcon />, value: false},
-              ]}
-            />
           </Grid>
         )}
+      </Grid>
+      <Grid item xs={12}>
+        <Controller
+          name="groups"
+          control={formMethods.control}
+          render={({field: {onChange, value}}) => (
+            <LocationGroups value={value} setValue={onChange} label="Filtrer grupper" />
+          )}
+        />
       </Grid>
 
       <Box
