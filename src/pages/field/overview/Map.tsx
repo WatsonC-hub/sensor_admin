@@ -758,7 +758,6 @@ function Map({data, loading}: MapProps) {
           width: '100%',
           minHeight: '300px',
           flexGrow: 1,
-          //'@media (min-width:1280px)': {height: '90vh', }
         }}
       ></Box>
       <DrawerComponent

@@ -122,6 +122,7 @@ const DrawerComponent = ({
         >
           <DrawerContext.Provider value={open}>{children}</DrawerContext.Provider>
         </Box>
+        <Typography>Bottom</Typography>
       </Drawer>
     </>
   );
