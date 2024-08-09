@@ -13,6 +13,8 @@ export default function AddLocationForm({locationDialogOpen, setLocationDialogOp
   const handleSave = async () => {
     const result = await formMethods.trigger('location');
     setLocationDialogOpen(!result);
+    console.log(formMethods.getFieldState('location'));
+    console.log(formMethods.getValues().location);
   };
 
   const formMethods = useFormContext();
@@ -24,12 +26,13 @@ export default function AddLocationForm({locationDialogOpen, setLocationDialogOp
         mainloc: '',
         subloc: '',
         subsubloc: '',
-        x: '',
-        y: '',
+        x: 0,
+        y: 0,
         terrainqual: '',
-        terrainlevel: '',
+        terrainlevel: 0,
         description: '',
-        loctype_id: '',
+        loctype_id: -1,
+        initial_project_no: '',
       },
     });
     setLocationDialogOpen(false);

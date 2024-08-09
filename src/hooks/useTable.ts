@@ -8,8 +8,8 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -41,6 +41,13 @@ const getOptions = <TData extends MRT_RowData>(
         display: 'flex',
         flexFlow: 'column',
         boxShadow: breakpoints.isMobile ? 'none' : '1',
+      },
+    },
+    muiSearchTextFieldProps: {
+      sx: {
+        '& .MuiOutlinedInput-root': {
+          borderRadius: '9999px',
+        },
       },
     },
     displayColumnDefOptions: {

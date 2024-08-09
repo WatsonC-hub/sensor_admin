@@ -19,8 +19,8 @@ export default function ReferenceForm({canEdit, ts_id}: Props) {
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
-    startdate: moment(),
-    enddate: moment('2099-01-01'),
+    startdate: () => moment().format('YYYY-MM-DDTHH:mm'),
+    enddate: () => moment('2099-01-01').format('YYYY-MM-DDTHH:mm'),
     elevation: 0,
     mp_description: '',
   });

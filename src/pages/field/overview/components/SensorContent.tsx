@@ -3,10 +3,10 @@ import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useDrawerContext} from '~/state/contexts';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 import NotificationIcon from './NotificationIcon';
 
@@ -63,6 +63,7 @@ const SensorContent = ({data}: SensorContentProps) => {
           </Box>
         </>
       )}
+
       <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
           bttype="tertiary"

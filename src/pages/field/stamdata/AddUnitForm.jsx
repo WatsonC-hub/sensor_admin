@@ -6,7 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
@@ -95,6 +95,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   };
 
   const handleDateChange = (date) => {
+    formMethods.trigger('unit');
     setUnitData({
       ...unitData,
       fra: date,
@@ -154,6 +155,11 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   const handleClose = () => {
     setUdstyrDialogOpen(false);
   };
+
+  useEffect(() => {
+    if (udstyrDialogOpen === true)
+      setUnitData((currentUnit) => ({...currentUnit, fra: new Date()}));
+  }, [udstyrDialogOpen, setUnitData]);
 
   return (
     <div>

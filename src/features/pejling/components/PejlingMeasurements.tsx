@@ -1,7 +1,7 @@
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import {usePejling} from '~/features/api/usePejling';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
 import PejlingMeasurementsTableMobile from '~/features/pejling/components/PejlingMeasurementsTableMobile';
 import {PejlingItem} from '~/types';

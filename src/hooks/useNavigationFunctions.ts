@@ -44,7 +44,11 @@ export const useNavigationFunctions = () => {
       navigate('/field/borehole/' + boreholeno, options),
     boreholeIntake: (boreholeno: string, intake: string | number, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno + '/' + intake, options),
-    createStamdata: () => navigate('/field/stamdata'),
+    createStamdata: (tabValue?: string, options?: NavigateOptions) => {
+      console.log(tabValue);
+      if (tabValue) navigate('/field/stamdata?tab=' + tabValue, options);
+      else navigate('/field/stamdata', options);
+    },
   };
 
   const out = useMemo(() => {

@@ -7,7 +7,7 @@ import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {correction_map, setGraphHeight} from '~/consts';
-import {usePejling} from '~/features/api/usePejling';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';

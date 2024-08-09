@@ -92,6 +92,7 @@ type LocationState = {
     terrainlevel: number;
     description: string;
     loctype_id: number;
+    projectno: string | null;
   };
   timeseries: {
     ts_id: number;
@@ -139,6 +140,7 @@ const initialState = {
     terrainlevel: 0,
     description: '',
     loctype_id: -1,
+    projectno: null,
   },
   timeseries: {
     ts_id: 0,
@@ -186,6 +188,7 @@ const stamdataStore = create<LocationState>()(
             terrainlevel: locationData.terrainlevel,
             description: locationData.description,
             loctype_id: locationData.loctype_id,
+            projectno: locationData.projectno,
           },
         },
         false,
@@ -262,5 +265,13 @@ const stamdataStore = create<LocationState>()(
       ),
   }))
 );
+
+export const parkingStore = create<{
+  selectedLocId: number | null;
+  setSelectedLocId: (loc_id: number | null) => void;
+}>((set) => ({
+  selectedLocId: null,
+  setSelectedLocId: (loc_id: number | null) => set({selectedLocId: loc_id}),
+}));
 
 export {initialState, stamdataStore};

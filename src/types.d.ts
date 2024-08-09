@@ -1,5 +1,8 @@
 import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
 
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export interface Image {
   gid: number;
   loc_id?: number;
@@ -46,6 +49,7 @@ export interface BoreholeMapData {
   timeofmeas: string[];
   calypso_id: number[];
   num_controls_in_a_year: number[];
+  groups: Group[];
 }
 
 // example data
@@ -67,6 +71,7 @@ export interface BoreholeData {
   num_controls_in_a_year: number | null;
   calypso_id: number | null;
   status: number;
+  groups: Group[];
 }
 
 export type Maalepunkt = {
@@ -103,4 +108,17 @@ export type PejlingItem = {
   measurement: number;
   timeofmeas: string;
   useforcorrection: number;
+};
+
+export type Parking = {
+  parking_id: number;
+  loc_id: number;
+  x: number;
+  y: number;
+};
+
+export type Group = {
+  id: string;
+  group_name: string;
+  new?: boolean;
 };

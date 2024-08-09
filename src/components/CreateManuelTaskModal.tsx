@@ -17,6 +17,7 @@ import {z} from 'zod';
 import FormInput from './FormInput';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import {useParams} from 'react-router-dom';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
 interface Props {
   open: boolean;
@@ -38,6 +39,11 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
   const params = useParams();
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
+    defaultValues: {
+      flag: '1',
+      description: '',
+      notify_type: 'primary',
+    },
   });
 
   const {post: createTask, markAsDone} = useTaskMutation();
@@ -54,6 +60,9 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     closeModal();
   };
 
+  const descriptionLength = formMethods.watch('description')?.length;
+  const flag = formMethods.watch('flag');
+
   return (
     <Dialog open={open} onClose={closeModal}>
       <FormProvider {...formMethods}>
@@ -69,9 +78,9 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
           <FormInput select label="Niveau" name="flag" fullWidth margin="dense">
             <MenuItem value="3">
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                <ErrorOutlineOutlined
-                  sx={{
-                    color: '#d32f2f',
+                <NotificationIcon
+                  iconDetails={{
+                    flag: 3,
                   }}
                 />
                 Kritisk
@@ -79,9 +88,9 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             </MenuItem>
             <MenuItem value="2">
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                <ErrorOutlineOutlined
-                  sx={{
-                    color: '#FF6C00',
+                <NotificationIcon
+                  iconDetails={{
+                    flag: 2,
                   }}
                 />
                 Middel
@@ -89,9 +98,9 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             </MenuItem>
             <MenuItem value="1">
               <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-                <ErrorOutlineOutlined
-                  sx={{
-                    color: '#ffb13f',
+                <NotificationIcon
+                  iconDetails={{
+                    flag: 1,
                   }}
                 />
                 Lav
@@ -108,12 +117,52 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             multiline
             rows={4}
             inputProps={{maxLength: 60}}
+            placeholder="Skriv en kort beskrivelse af opgaven"
+            helperText={`${descriptionLength}/60 tegn`}
           />
 
-          <FormInput select label="Type" name="notify_type" fullWidth margin="dense">
-            <MenuItem value="primary">Primær</MenuItem>
-            <MenuItem value="obs">Sekundær</MenuItem>
-            <MenuItem value="station">Station</MenuItem>
+          <FormInput
+            select
+            label="Type"
+            name="notify_type"
+            fullWidth
+            margin="dense"
+            InputProps={{
+              sx: {
+                '& .MuiSelect-select': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  alignContent: 'center',
+                  gap: 1,
+                },
+              },
+            }}
+          >
+            <MenuItem value="primary" sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+              <NotificationIcon
+                iconDetails={{
+                  flag: Number(flag),
+                }}
+              />
+              Primær
+            </MenuItem>
+            <MenuItem value="obs" sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+              <NotificationIcon
+                iconDetails={{
+                  flag: Number(flag),
+                  notify_type: 'obs',
+                }}
+              />
+              Sekundær
+            </MenuItem>
+            <MenuItem value="station" sx={{display: 'flex', alignItems: 'center', gap: 1}}>
+              <NotificationIcon
+                iconDetails={{
+                  flag: 0,
+                }}
+              />
+              Station
+            </MenuItem>
           </FormInput>
         </DialogContent>
         <DialogActions>

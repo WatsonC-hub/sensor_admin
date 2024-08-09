@@ -5,7 +5,7 @@ import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
-import {usePejling} from '~/features/api/usePejling';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -23,7 +23,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const isWaterlevel = store.timeseries?.tstype_id === 1;
   const isFlow = store.timeseries?.tstype_id === 2;
   const [showForm, setShowForm] = useSearchParam('showForm');
-  const [pageToShow, setPageToShow] = useSearchParam('page');
+  const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
 

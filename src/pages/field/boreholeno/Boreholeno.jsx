@@ -25,7 +25,6 @@ import PejlingMeasurements from './PejlingMeasurements';
 
 const Boreholeno = ({boreholeno, intakeno}) => {
   const queryClient = useQueryClient();
-  const [addMPOpen, setAddMPOpen] = useState(false);
   const [canEdit, setCanEdit] = useState(false);
 
   const {data: permissions} = useQuery({
@@ -44,7 +43,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
-    timeofmeas: new Date(),
+    timeofmeas: () => moment().format('YYYY-MM-DDTHH:mm'),
     pumpstop: null,
     disttowatertable_m: 0,
     service: false,
@@ -60,7 +59,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     type: boreholeno,
     comment: '',
     public: false,
-    date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+    date: () => moment().format('YYYY-MM-DDTHH:mm'),
   });
 
   const [showForm, setShowForm] = useSearchParam('showForm');
@@ -69,8 +68,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
-    startdate: new Date(),
-    enddate: new Date('2099-01-01'),
+    startdate: () => moment().format('YYYY-MM-DDTHH:mm'),
+    enddate: () => moment('2099-01-01').format('YYYY-MM-DDTHH:mm'),
     elevation: 0,
     mp_description: '',
   });
@@ -156,13 +155,11 @@ const Boreholeno = ({boreholeno, intakeno}) => {
 
   const handleMpCancel = () => {
     resetMpData();
-    setAddMPOpen(false);
     setShowForm(null);
   };
 
   const openAddMP = () => {
     setShowForm(true);
-    setAddMPOpen(true);
   };
 
   const addOrEditPejling = useMutation({
@@ -218,7 +215,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         toast.error('Der skete en fejl');
       },
     });
-    setAddMPOpen(false);
   };
 
   const handleEdit = (type) => {
@@ -228,7 +224,6 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
         setShowForm(true); // update to use state machine¨
-        setAddMPOpen(true);
       };
     } else {
       return (data) => {
@@ -316,7 +311,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             intakeno={intakeno}
             measurements={control}
             dynamicMeasurement={
-              pageToShow === StationPages.PEJLING && showForm === true ? undefined : dynamic
+              pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
             }
           />
           <Divider />
@@ -332,7 +327,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           justifyContent: 'center',
         }}
       >
-        {pageToShow === StationPages.PEJLING && showForm === true && (
+        {pageToShow === StationPages.PEJLING && showForm === 'true' && (
           <PejlingFormBorehole
             formData={pejlingData}
             changeFormData={changePejlingData}
@@ -366,10 +361,10 @@ const Boreholeno = ({boreholeno, intakeno}) => {
               intakeno={intakeno}
               lastOurMP={watlevmp?.[0]}
               watlevmpMutate={addOrEditWatlevmp}
-              setAddMPOpen={setAddMPOpen}
+              setAddMPOpen={setShowForm}
             />
 
-            {addMPOpen && showForm === true && (
+            {showForm === 'true' && (
               <MaalepunktForm
                 formData={mpData}
                 changeFormData={changeMpData}
@@ -387,7 +382,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             text="Tilføj målepunkt"
             onClick={() => {
               setShowForm(true);
-              setAddMPOpen(true);
+              resetMpData();
             }}
             visible={
               pageToShow === StationPages.MAALEPUNKT && showForm === null ? 'visible' : 'hidden'
@@ -406,6 +401,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             icon={<AddCircle />}
             text="Tilføj pejling"
             onClick={() => {
+              resetPejlingData();
               setShowForm(true);
             }}
             visible={
