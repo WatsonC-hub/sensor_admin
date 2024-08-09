@@ -1,20 +1,19 @@
-import SaveIcon from '@mui/icons-material/Save';
-import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import RemoveIcon from '@mui/icons-material/Remove';
+import SaveIcon from '@mui/icons-material/Save';
+import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
 import {RESET} from 'jotai/utils';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
 
 import Button from '~/components/Button';
-import FormCheckbox from '~/components/FormCheckbox';
-import FormToggleGroup from '~/components/FormToggleGroup';
 import FormInput from '~/components/FormInput';
-
-import NotificationIcon from './NotificationIcon';
-import {Filter, defaultMapFilter} from './SearchAndFilterMap';
+import FormToggleGroup from '~/components/FormToggleGroup';
 import {authStore} from '~/state/store';
+
+import {Filter, defaultMapFilter} from './filter_consts';
+import NotificationIcon from './NotificationIcon';
 
 interface FilterOptionsProps {
   filters: Filter;

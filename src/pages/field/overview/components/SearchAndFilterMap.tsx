@@ -18,8 +18,9 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {authStore} from '~/state/store';
-
 import {BoreholeMapData} from '~/types';
+
+import {Filter, defaultMapFilter} from './filter_consts';
 
 interface LocItems {
   name: string;
@@ -27,49 +28,9 @@ interface LocItems {
   group: string;
 }
 
-type Inderterminate = boolean | 'indeterminate';
-
-export interface Filter {
-  freeText?: string;
-  borehole: {
-    hasControlProgram: Inderterminate;
-  };
-  sensor: {
-    showInactive: boolean;
-    isCustomerService: Inderterminate;
-  };
-}
-
 const typeAheadAtom = atom<string>('');
 
-export const defaultMapFilter: Filter = {
-  freeText: '',
-  borehole: {
-    hasControlProgram: 'indeterminate',
-  },
-  sensor: {
-    showInactive: false,
-    isCustomerService: 'indeterminate',
-  },
-};
-
 const mapFilterAtom = atomWithStorage<Filter>('mapFilter', defaultMapFilter);
-
-const getNumberOfNonEmptyFilters = (filter: object): number => {
-  return Object.values(filter).reduce((acc, val) => {
-    if (typeof val === 'string' && val.trim() === '') return acc;
-    if (typeof val === 'number' && val === null) return acc;
-    if (typeof val === 'object' && !Array.isArray(val) && val !== null)
-      return acc + getNumberOfNonEmptyFilters(val);
-    if (typeof val === 'boolean' && val === false) return acc;
-    if (Array.isArray(val) && val.length === 0) return acc;
-    return acc + 1;
-  }, 0);
-};
-
-type Entry<T> = {
-  [K in keyof T]: [K, T[K]];
-}[keyof T];
 
 const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: T): number => {
   return Object.entries(filter).reduce((acc, entry) => {
@@ -158,11 +119,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isTouch} = useBreakpoints();
-  const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
-    state.boreholeAccess,
-    state.iotAccess,
-    state.superUser,
-  ]);
+  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
   const elasticSearch = (
     e: SyntheticEvent,
