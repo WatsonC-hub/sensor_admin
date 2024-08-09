@@ -1,13 +1,12 @@
 import {Box, Typography} from '@mui/material';
-import {atom, useAtom} from 'jotai';
+import {useAtom} from 'jotai';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
-import 'leaflet-routing-machine';
 import L, {LeafletMouseEvent} from 'leaflet';
 import '~/css/leaflet.css';
 import {useRef, useEffect, useState, SyntheticEvent, useCallback} from 'react';
-import {ToastContainer, toast} from 'react-toastify';
+import {toast} from 'react-toastify';
 import utmObj from 'utm-latlng';
 
 import {apiClient} from '~/apiClient';
