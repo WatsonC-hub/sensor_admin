@@ -1,3 +1,5 @@
+import type {Group} from '~/types';
+
 type Inderterminate = boolean | 'indeterminate';
 
 interface Filter {
@@ -9,6 +11,7 @@ interface Filter {
     showInactive: boolean;
     isCustomerService: Inderterminate;
   };
+  groups: Group[];
 }
 
 const defaultMapFilter: Filter = {
@@ -20,6 +23,7 @@ const defaultMapFilter: Filter = {
     showInactive: false,
     isCustomerService: 'indeterminate',
   },
+  groups: [],
 };
 
 export {defaultMapFilter};

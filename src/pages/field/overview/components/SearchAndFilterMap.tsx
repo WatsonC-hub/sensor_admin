@@ -17,7 +17,6 @@ import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
-import {Group} from '~/pages/field/stamdata/components/LocationGroups';
 import {authStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
