@@ -1,5 +1,3 @@
-import DirectionsIcon from '@mui/icons-material/Directions';
-import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
@@ -17,7 +15,7 @@ interface SensorContentProps {
 
 const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
-  const {location, station, adminKvalitetssikring} = useNavigationFunctions();
+  const {station, adminKvalitetssikring} = useNavigationFunctions();
 
   const all_notifications = [data, ...data.otherNotifications];
 
@@ -112,7 +110,7 @@ const SensorContent = ({data}: SensorContentProps) => {
         </>
       )}
 
-      <Box display="flex" gap={1} ml="auto" mr={0}>
+      {/* <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
           bttype="tertiary"
           color="primary"
@@ -136,7 +134,7 @@ const SensorContent = ({data}: SensorContentProps) => {
         >
           Tidsserie
         </Button>
-      </Box>
+      </Box> */}
     </>
   );
 };

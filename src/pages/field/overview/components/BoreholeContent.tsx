@@ -9,7 +9,6 @@ import {boreholeColors} from '~/consts';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
-
 import {BoreholeMapData} from '~/types';
 
 interface BoreholeContentProps {
@@ -53,7 +52,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
           })}
         </Box>
       )}
-      <Box display="flex" gap={1} ml="auto" mr={0}>
+      {/* <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
           bttype="tertiary"
           color="primary"
@@ -77,7 +76,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
         >
           Boring
         </Button>
-      </Box>
+      </Box> */}
     </>
   );
 };

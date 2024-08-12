@@ -21,11 +21,13 @@ import {atomWithTimedStorage} from '~/state/atoms';
 import {stamdataStore, authStore, parkingStore} from '~/state/store';
 import {BoreholeMapData, Parking, PartialBy} from '~/types';
 
+import BoreholeActions from './components/BoreholeActions';
 import BoreholeContent from './components/BoreholeContent';
 import DrawerComponent from './components/DrawerComponent';
 import LegendContent from './components/LegendContent';
 import {getColor} from './components/NotificationIcon';
 import SearchAndFilterMap from './components/SearchAndFilterMap';
+import SensorActions from './components/SensorActions';
 import SensorContent from './components/SensorContent';
 
 const utm = new utmObj();
@@ -738,6 +740,13 @@ function Map({data, loading}: MapProps) {
     return 'Signaturforklaring';
   };
 
+  const getDrawerActions = (
+    data: NotificationMap | BoreholeMapData | Parking | null | undefined
+  ) => {
+    if (data && 'locid' in data) return <SensorActions data={data} />;
+    if (data && 'boreholeno' in data) return <BoreholeActions data={data} />;
+  };
+
   return (
     <>
       <AlertDialog
@@ -765,6 +774,7 @@ function Map({data, loading}: MapProps) {
         enableFull={selectedMarker != null ? true : false}
         isMarkerSelected={selectedMarker !== null}
         header={getDrawerHeader()}
+        actions={getDrawerActions(selectedMarker)}
       >
         {selectedMarker && 'locid' in selectedMarker && <SensorContent data={selectedMarker} />}
         {selectedMarker == null && <LegendContent />}
