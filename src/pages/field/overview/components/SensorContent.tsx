@@ -19,9 +19,11 @@ const SensorContent = ({data}: SensorContentProps) => {
 
   const all_notifications = [data, ...data.otherNotifications];
 
-  const unique_stations = all_notifications.filter(
-    (item, index, self) => index === self.findIndex((t) => t.stationid === item.stationid)
-  );
+  const unique_stations = all_notifications
+    .filter((item, index, self) => index === self.findIndex((t) => t.stationid === item.stationid))
+    .filter((item) => item.stationid !== null);
+
+  console.log(unique_stations);
 
   return (
     <>

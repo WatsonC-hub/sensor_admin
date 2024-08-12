@@ -171,7 +171,7 @@ function TabPanel(props) {
 }
 
 export default function OpretStamdata({setAddStationDisabled}) {
-  const {field} = useNavigationFunctions();
+  const {field, location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(
@@ -272,11 +272,19 @@ export default function OpretStamdata({setAddStationDisabled}) {
         },
       };
 
-      await toast.promise(() => stamdataNewLocationMutation.mutateAsync(location), {
-        pending: 'Opretter lokation...',
-        success: 'lokation oprettet!',
-        error: 'Noget gik galt!',
-      });
+      await toast.promise(
+        () =>
+          stamdataNewLocationMutation.mutateAsync(location, {
+            onSuccess: (data) => {
+              locationNavigate(data.loc_id);
+            },
+          }),
+        {
+          pending: 'Opretter lokation...',
+          success: 'lokation oprettet!',
+          error: 'Noget gik galt!',
+        }
+      );
     }
   };
 
@@ -311,11 +319,19 @@ export default function OpretStamdata({setAddStationDisabled}) {
       let text = 'lokation og tidsserie';
       if (!form.location.loc_id) text = 'tidsserie';
 
-      await toast.promise(() => stamdataNewTimeseriesMutation.mutateAsync(form), {
-        pending: 'Opretter ' + text + '' + '...',
-        success: text + ' oprettet!',
-        error: 'Noget gik galt!',
-      });
+      await toast.promise(
+        () =>
+          stamdataNewTimeseriesMutation.mutateAsync(form, {
+            onSuccess: (data) => {
+              stationNavigate(data.loc_id, data.ts_id);
+            },
+          }),
+        {
+          pending: 'Opretter ' + text + '' + '...',
+          success: text + ' oprettet!',
+          error: 'Noget gik galt!',
+        }
+      );
     }
   };
 
@@ -350,11 +366,19 @@ export default function OpretStamdata({setAddStationDisabled}) {
       let text = 'lokation, tidsserie og udstyr';
       if (!form.location.loc_id) text = 'udstyr';
 
-      await toast.promise(() => stamdataNewMutation.mutateAsync(form), {
-        pending: 'Opretter ' + text + '' + '...',
-        success: text + ' oprettet!',
-        error: 'Noget gik galt!',
-      });
+      await toast.promise(
+        () =>
+          stamdataNewMutation.mutateAsync(form, {
+            onSuccess: (data) => {
+              stationNavigate(data.loc_id, data.ts_id);
+            },
+          }),
+        {
+          pending: 'Opretter ' + text + '' + '...',
+          success: text + ' oprettet!',
+          error: 'Noget gik galt!',
+        }
+      );
     }
   };
 
