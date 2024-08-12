@@ -29,7 +29,7 @@ const StamdataFooter = ({cancel, nextTab, handleOpret, disabled, type, saveTitle
   };
 
   return (
-    <footer style={{position: 'sticky', bottom: 0, float: 'right'}}>
+    <footer style={{position: 'sticky', bottom: 0, float: 'right', zIndex: 1}}>
       {type && (
         <AlertDialog
           open={showAlert}

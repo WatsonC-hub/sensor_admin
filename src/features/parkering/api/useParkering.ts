@@ -60,7 +60,6 @@ export const useParkering = () => {
       return data;
     },
   });
-  console.log(get.data);
 
   const post = useMutation({
     ...parkeringPostOptions,

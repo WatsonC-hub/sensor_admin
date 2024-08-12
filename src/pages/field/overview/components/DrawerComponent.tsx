@@ -18,6 +18,7 @@ interface DrawerComponentProps {
   isMarkerSelected?: boolean;
   enableFull?: boolean;
   children?: React.ReactNode;
+  actions?: React.ReactNode;
 }
 
 const DrawerComponent = ({
@@ -26,6 +27,7 @@ const DrawerComponent = ({
   openDrawerOnHeaderChange,
   isMarkerSelected,
   enableFull,
+  actions,
 }: DrawerComponentProps) => {
   const [open, setOpen] = useState<'closed' | 'half' | 'full'>(
     isMarkerSelected ? 'half' : 'closed'
@@ -122,6 +124,11 @@ const DrawerComponent = ({
         >
           <DrawerContext.Provider value={open}>{children}</DrawerContext.Provider>
         </Box>
+        {actions && (
+          <Box display="flex" gap={1} ml="auto" mr={0}>
+            {actions}
+          </Box>
+        )}
       </Drawer>
     </>
   );

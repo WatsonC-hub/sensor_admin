@@ -48,7 +48,7 @@ const LocationGroups = ({
       disabled={disable}
       value={value ?? []}
       autoHighlight={true}
-      onChange={(event, newValue, reason) => {
+      onChange={(event, newValue) => {
         setValue(
           newValue.map((item) => {
             if (typeof item === 'string') {
