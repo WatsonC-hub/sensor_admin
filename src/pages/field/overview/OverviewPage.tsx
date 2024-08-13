@@ -46,7 +46,7 @@ export default function OverviewPage() {
     refetchOnReconnect: false,
   });
 
-  const {data: boreholetabledata, isPending: boreholeIsPending} = useQuery<BoreholeData[]>({
+  const {data: boreholetabledata} = useQuery<BoreholeData[]>({
     queryKey: ['borehole_list'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
