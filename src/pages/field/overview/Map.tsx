@@ -491,7 +491,7 @@ function Map({data, loading}: MapProps) {
 
   useEffect(() => {
     mapRef.current = renderMap();
-    parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
+    parkingLayerRef.current = L.featureGroup();
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
 

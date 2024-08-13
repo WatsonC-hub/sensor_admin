@@ -121,7 +121,7 @@ const NotificationList = () => {
           </ListItemIcon>
           <ListItemText primary="Registrer opgave" />
         </MenuItem>
-        {isPending && <MenuItem>Indlæster...</MenuItem>}
+        {isPending && <MenuItem>Indlæser...</MenuItem>}
         {notifications?.map((notification, index) => {
           const splitted = notification.stationname.split(notification.locname);
           return (

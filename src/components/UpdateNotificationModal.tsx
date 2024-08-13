@@ -1,24 +1,15 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import moment from 'moment';
 import React from 'react';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  MenuItem,
-} from '@mui/material';
-import {ErrorOutlineOutlined} from '@mui/icons-material';
+import {useForm, FormProvider} from 'react-hook-form';
+import {z} from 'zod';
 
 import Button from '~/components/Button';
-import {useForm, FormProvider} from 'react-hook-form';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {z} from 'zod';
-import FormInput from './FormInput';
-import {useTaskMutation} from '~/hooks/query/useTaskMutation';
-import {useParams} from 'react-router-dom';
 import {Notification} from '~/hooks/query/useNotificationOverview';
-import moment from 'moment';
+import {useTaskMutation} from '~/hooks/query/useTaskMutation';
+
+import FormInput from './FormInput';
 
 interface Props {
   open: boolean;
@@ -37,7 +28,6 @@ const zodSchema = z.object({
 type FormValues = z.infer<typeof zodSchema>;
 
 const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
-  const params = useParams();
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
@@ -78,7 +68,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
         >
           <FormInput
             name="enddate"
-            label="Slutdato for opgave"
+            label="Udskyd opgave til"
             fullWidth
             type="datetime-local"
             required
