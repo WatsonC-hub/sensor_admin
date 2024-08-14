@@ -80,8 +80,8 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
             variant="outlined"
             error={Boolean(error) && superUser}
             helperText={Boolean(error) && superUser && error?.message}
-            label="Projekter"
-            placeholder="Indtast projekt nummer..."
+            label="Projekt nummber"
+            placeholder="Vælg projekt nummer..."
             sx={{
               pb: 0,
               '& .MuiInputBase-input.Mui-disabled': {
