@@ -309,7 +309,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
           startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
           ...getValues()?.watlevmp,
         };
-      } else {
+      } else if (getValues()?.timeseries.tstype_id === 1 && !form['unit']) {
         form['watlevmp'] = {
           startdate: moment().format('YYYY-MM-DD'),
           ...getValues()?.watlevmp,
