@@ -3,11 +3,9 @@ import {useAtom} from 'jotai';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
-import 'leaflet-draw';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import L, {CircleMarker, LeafletMouseEvent} from 'leaflet';
+import L, {LeafletMouseEvent} from 'leaflet';
 import '~/css/leaflet.css';
 import {useRef, useEffect, useState, SyntheticEvent, useCallback} from 'react';
 import {toast} from 'react-toastify';
@@ -22,7 +20,6 @@ import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {queryClient} from '~/queryClient';
 import {atomWithTimedStorage} from '~/state/atoms';
 import {stamdataStore, authStore, parkingStore} from '~/state/store';
 import {BoreholeMapData, LeafletMapRoute, Parking, PartialBy} from '~/types';
@@ -55,6 +52,12 @@ const defaultCircleMarkerStyle = {
   fillOpacity: 0.8,
   opacity: 0.8,
   color: '#000000',
+};
+
+const routeStyle: L.PathOptions = {
+  weight: 5,
+  color: '#e50000',
+  opacity: 0.8,
 };
 
 const zoomAtom = atomWithTimedStorage<number | null>('mapZoom', null, 1000 * 60 * 30);
@@ -464,10 +467,12 @@ function Map({data, loading}: MapProps) {
     const tooltipLayer = tooltipRef.current;
     if (!tooltipLayer) return;
 
-    if (zoom > zoomThresholdForParking) geoJsonLayer.addTo(map);
-    else map.removeLayer(geoJsonLayer);
+    if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
+      geoJsonLayer.addTo(map);
+      geoJsonLayer.setStyle(routeStyle);
+    } else map.removeLayer(geoJsonLayer);
 
-    if (zoom > zoomThresholdForParking) parkingLayer.addTo(map);
+    if (zoom > zoomThresholdForParking && parkings && parkings.length > 0) parkingLayer.addTo(map);
     else map.removeLayer(parkingLayer);
 
     const bounds = map.getBounds();
@@ -515,126 +520,140 @@ function Map({data, loading}: MapProps) {
   };
 
   useEffect(() => {
+    geoJsonRef.current?.clearLayers();
     if (geoJsonRef.current) {
-      geoJsonRef.current.clearLayers();
-
-      if (mapRef && mapRef.current) {
-        if (leafletMapRoutes) {
+      const active_loc_ids = filteredData.map((item) => {
+        if ('locid' in item) {
+          return item.locid;
+        }
+      });
+      if (mapRef && mapRef.current && filteredData.length > 0) {
+        if (leafletMapRoutes && leafletMapRoutes.length > 0) {
           leafletMapRoutes.forEach((route: LeafletMapRoute) => {
-            const geo = L.geoJSON(route.geo_route, {
-              onEachFeature: function onEachFeature(feature, layer) {
-                layer.bindContextMenu({
-                  contextmenu: superUser,
-                  contextmenuInheritItems: true,
-                  contextmenuItems: [
-                    {
-                      text: 'Slet rute',
-                      callback: () => {
-                        setDeleteId(route.geo_route.route_id);
-                        mutateLeafletMapRouteRef.current = route.geo_route.loc_id;
-                        setDisplayDelete(true);
-                        setType('rute');
-                        setDeleteTitle('Er du sikker på at du vil slette denne rute?');
+            if (active_loc_ids.includes(route.geo_route.loc_id)) {
+              const geo = L.geoJSON(route.geo_route, {
+                onEachFeature: function onEachFeature(feature, layer) {
+                  layer.bindContextMenu({
+                    contextmenu: superUser,
+                    contextmenuInheritItems: true,
+                    contextmenuItems: [
+                      {
+                        text: 'Slet rute',
+                        callback: () => {
+                          setDeleteId(route.geo_route.route_id);
+                          mutateLeafletMapRouteRef.current = route.geo_route.loc_id;
+                          setDisplayDelete(true);
+                          setType('rute');
+                          setDeleteTitle('Er du sikker på at du vil slette denne rute?');
+                        },
+                        icon: '/parking-icon.png',
                       },
-                      icon: '/parking-icon.png',
-                    },
-                  ],
-                });
-              },
-            });
-
-            if (geoJsonRef && geoJsonRef.current) geo.addTo(geoJsonRef.current);
+                    ],
+                  });
+                },
+              });
+              if (geoJsonRef && geoJsonRef.current) {
+                geo.addTo(geoJsonRef.current);
+                geoJsonRef.current.setStyle(routeStyle);
+              }
+            }
           });
         }
       }
     }
-  }, [leafletMapRoutes, geoJsonRef.current]);
+  }, [leafletMapRoutes, geoJsonRef.current, filteredData]);
 
   useEffect(() => {
     parkingLayerRef.current?.clearLayers();
-    if (mapRef && mapRef.current && parkings) {
-      if (parkings) console.log(parkings);
-      parkings.forEach((parking: Parking) => {
-        const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
-        if (typeof coords != 'object') return;
-
-        const parkingMenu = [
-          {
-            text: 'Slet parkering',
-            callback: () => {
-              let locationCounter = 0;
-              if (layerRef && layerRef.current) {
-                layerRef.current.eachLayer(function (marker) {
-                  if (
-                    marker instanceof L.CircleMarker &&
-                    marker.options.data &&
-                    marker.options.data.locid === parking.loc_id
-                  ) {
-                    locationCounter++;
-                  }
-                });
-
-                setDeleteId(parking.parking_id);
-                setDisplayDelete(true);
-                setType('parkering');
-                if (locationCounter >= 1) {
-                  const tekst =
-                    locationCounter === 1 ? 'en lokation' : locationCounter + ' lokationer';
-                  setDeleteTitle(
-                    `Parkeringen er tilknyttet ${tekst}. Er du sikker på at du gerne vil slette parkeringen?`
-                  );
-                }
-              }
-            },
-            icon: '/parking-icon.png',
-          },
-          ...contextmenuItems.slice(1),
-        ];
-
-        const point: L.LatLngExpression = [coords.lat, coords.lng];
-        const parkingMarker = L.marker(point, {
-          data: parking,
-          icon: parkingIcon,
-        });
-
-        parkingMarker.bindContextMenu({
-          contextmenu: superUser,
-          contextmenuInheritItems: false,
-          contextmenuItems: [...parkingMenu],
-        });
-        parkingMarker.on('click', () => {
-          const loc_id = parkingStore.getState().selectedLocId;
-
-          if (loc_id != null && mutateParkingRef.current) {
-            const payload = {
-              data: {
-                loc_id: loc_id,
-              },
-              path: parking.parking_id.toString(),
-            };
-            putParkering.mutate(payload, {
-              onSettled: () => {
-                highlightParking(parking.loc_id, true);
-                setSelectParking(null);
-                mutateParkingRef.current = false;
-                toast.dismiss('tilknytParking');
-              },
-            });
-            if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
-          }
-        });
-        if (parkingLayerRef.current) {
-          parkingMarker.addTo(parkingLayerRef.current);
+    if (mapRef && mapRef.current && parkings && parkings.length > 0 && filteredData.length > 0) {
+      const active_loc_ids = filteredData.map((item) => {
+        if ('locid' in item) {
+          return item.locid;
         }
-        if (
-          hightlightedMarker &&
-          hightlightedMarker.options.data &&
-          hightlightedMarker.options.data.locid === parking.loc_id
-        )
-          highlightParking(parking.loc_id, true);
+      });
+      parkings.forEach((parking: Parking) => {
+        if (parking.loc_id !== null && active_loc_ids.includes(parking.loc_id)) {
+          const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
+          if (typeof coords != 'object') return;
+
+          const parkingMenu = [
+            {
+              text: 'Slet parkering',
+              callback: () => {
+                let locationCounter = 0;
+                if (layerRef && layerRef.current) {
+                  layerRef.current.eachLayer(function (marker) {
+                    if (
+                      marker instanceof L.CircleMarker &&
+                      marker.options.data &&
+                      marker.options.data.locid === parking.loc_id
+                    ) {
+                      locationCounter++;
+                    }
+                  });
+
+                  setDeleteId(parking.parking_id);
+                  setDisplayDelete(true);
+                  setType('parkering');
+                  if (locationCounter >= 1) {
+                    const tekst =
+                      locationCounter === 1 ? 'en lokation' : locationCounter + ' lokationer';
+                    setDeleteTitle(
+                      `Parkeringen er tilknyttet ${tekst}. Er du sikker på at du gerne vil slette parkeringen?`
+                    );
+                  }
+                }
+              },
+              icon: '/parking-icon.png',
+            },
+            ...contextmenuItems.slice(1),
+          ];
+
+          const point: L.LatLngExpression = [coords.lat, coords.lng];
+          const parkingMarker = L.marker(point, {
+            data: parking,
+            icon: parkingIcon,
+          });
+
+          parkingMarker.bindContextMenu({
+            contextmenu: superUser,
+            contextmenuInheritItems: false,
+            contextmenuItems: [...parkingMenu],
+          });
+          parkingMarker.on('click', () => {
+            const loc_id = parkingStore.getState().selectedLocId;
+
+            if (loc_id != null && mutateParkingRef.current) {
+              const payload = {
+                data: {
+                  loc_id: loc_id,
+                },
+                path: parking.parking_id.toString(),
+              };
+              putParkering.mutate(payload, {
+                onSettled: () => {
+                  highlightParking(parking.loc_id, true);
+                  setSelectParking(null);
+                  mutateParkingRef.current = false;
+                  toast.dismiss('tilknytParking');
+                },
+              });
+              if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
+            }
+          });
+          if (parkingLayerRef.current) {
+            parkingMarker.addTo(parkingLayerRef.current);
+          }
+          if (
+            hightlightedMarker &&
+            hightlightedMarker.options.data &&
+            hightlightedMarker.options.data.locid === parking.loc_id
+          )
+            highlightParking(parking.loc_id, true);
+        }
       });
     }
-  }, [parkings, parkingLayerRef.current]);
+  }, [parkings, parkingLayerRef.current, filteredData]);
 
   useEffect(() => {
     mapRef.current = renderMap();
@@ -731,6 +750,11 @@ function Map({data, loading}: MapProps) {
                 if (mapRef && mapRef.current) {
                   setSelectParking(element.locid);
                   mutateLeafletMapRouteRef.current = true;
+                  mapRef.current.pm.setGlobalOptions({
+                    snappable: true,
+                    snapDistance: 5,
+                    pathOptions: routeStyle,
+                  });
                   mapRef.current.pm.enableDraw('Line');
                 }
               },
@@ -783,7 +807,7 @@ function Map({data, loading}: MapProps) {
           element.obsNotifications.length > 0
           // && element.obsNotifications[0].flag > element.flag
         ) {
-          // console.log(element.obsNotifications[0]);
+          //  .log(element.obsNotifications[0]);
           const smallMarker = L.circleMarker(point, {
             ...defaultCircleMarkerStyle,
             radius: defaultRadius + 4,
