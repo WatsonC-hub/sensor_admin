@@ -1,23 +1,15 @@
+import {zodResolver} from '@hookform/resolvers/zod';
+import {Box, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem} from '@mui/material';
 import React from 'react';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  MenuItem,
-} from '@mui/material';
-import {ErrorOutlineOutlined} from '@mui/icons-material';
+import {useForm, FormProvider} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
+import {z} from 'zod';
 
 import Button from '~/components/Button';
-import {useForm, FormProvider} from 'react-hook-form';
-import {zodResolver} from '@hookform/resolvers/zod';
-import {z} from 'zod';
-import FormInput from './FormInput';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
-import {useParams} from 'react-router-dom';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+
+import FormInput from './FormInput';
 
 interface Props {
   open: boolean;
@@ -46,17 +38,24 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     },
   });
 
-  const {post: createTask, markAsDone} = useTaskMutation();
+  const {post: createTask} = useTaskMutation();
 
   const submitTask = async (values: FormValues) => {
-    await createTask.mutateAsync({
-      path: params.ts_id,
-      data: {
-        opgave: values.description,
-        flag: Number(values.flag),
-        notify_type: values.notify_type,
+    await createTask.mutateAsync(
+      {
+        path: params.ts_id,
+        data: {
+          opgave: values.description,
+          flag: Number(values.flag),
+          notify_type: values.notify_type,
+        },
       },
-    });
+      {
+        onSuccess: () => {
+          closeModal();
+        },
+      }
+    );
     closeModal();
   };
 

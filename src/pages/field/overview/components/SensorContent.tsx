@@ -1,8 +1,7 @@
-import DirectionsIcon from '@mui/icons-material/Directions';
-import PlaceIcon from '@mui/icons-material/Place';
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
+import {qaNotifications} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -16,55 +15,104 @@ interface SensorContentProps {
 
 const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
-  const {location} = useNavigationFunctions();
+  const {station, adminKvalitetssikring} = useNavigationFunctions();
 
-  const splitted = data.stationname.split(data.locname);
+  const all_notifications = [data, ...data.otherNotifications];
+
+  const unique_stations = all_notifications
+    .filter((item, index, self) => index === self.findIndex((t) => t.stationid === item.stationid))
+    .filter((item) => item.stationid !== null);
+
+  console.log(unique_stations);
+
   return (
     <>
-      <Box display="flex" alignItems="center" gap={1}>
-        <Typography variant="body2">
-          {splitted[splitted.length - 1].replace('-', '').trim()}
-        </Typography>
-        <Box display="flex" gap={1}>
-          <NotificationIcon iconDetails={data} />
-          <Typography variant="body2">{data.opgave}</Typography>
-        </Box>
-        <Typography variant="body2">{convertDateWithTimeStamp(data.dato)}</Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 1,
+          flexWrap: 'wrap',
+        }}
+      >
+        {unique_stations.map((notification, index) => {
+          notification.notification_id;
+          const splitted = notification.stationname.split(notification.locname);
+          return (
+            <Box
+              key={index}
+              sx={{
+                display: 'flex',
+                gap: 0.5,
+                alignItems: 'center',
+              }}
+            >
+              <Button
+                bttype="link"
+                onClick={() => station(notification.locid, notification.stationid)}
+              >
+                {splitted[splitted.length - 1].replace('-', '').trim()}
+              </Button>
+              <Box display="flex" gap={0.5}>
+                <NotificationIcon iconDetails={notification} />
+                {/* <Typography variant="body2">{notification.opgave}</Typography> */}
+              </Box>
+              {/* <Typography variant="body2">{convertDateWithTimeStamp(notification.dato)}</Typography> */}
+            </Box>
+          );
+        })}
       </Box>
 
       {drawerContext === 'full' && (
         <>
-          <Typography variant="h6">Andre Notifikationer</Typography>
+          <Typography variant="h6">Notifikationer</Typography>
           <Box
             sx={{
-              display: 'grid',
+              display: 'flex',
               gap: 1,
-              gridTemplateColumns: 'fit-content(300px) fit-content(300px) 1fr',
+              flexWrap: 'wrap',
             }}
           >
-            {data.otherNotifications.map((notification) => {
-              notification.notification_id;
-              const splitted = notification.stationname.split(notification.locname);
-              return (
-                <>
-                  <Typography variant="body2">
-                    {splitted[splitted.length - 1].replace('-', '').trim()}
-                  </Typography>
-                  <Box display="flex" gap={1}>
-                    <NotificationIcon iconDetails={notification} />
-                    <Typography variant="body2">{notification.opgave}</Typography>
+            {[data, ...data.otherNotifications]
+              .filter((item) => item.opgave !== null)
+              .map((notification, index) => {
+                notification.notification_id;
+                const splitted = notification.stationname.split(notification.locname);
+                return (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: 'flex',
+                      gap: 0.5,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Button
+                      bttype="link"
+                      onClick={() => {
+                        if (qaNotifications.includes(notification.notification_id)) {
+                          adminKvalitetssikring(notification.stationid);
+                        } else {
+                          station(notification.locid, notification.stationid);
+                        }
+                      }}
+                    >
+                      {splitted[splitted.length - 1].replace('-', '').trim()}
+                    </Button>
+                    <Box display="flex" gap={1}>
+                      <NotificationIcon iconDetails={notification} />
+                      <Typography variant="body2">{notification.opgave}</Typography>
+                    </Box>
+                    <Typography variant="body2">
+                      {convertDateWithTimeStamp(notification.dato)}
+                    </Typography>
                   </Box>
-                  <Typography variant="body2">
-                    {convertDateWithTimeStamp(notification.dato)}
-                  </Typography>
-                </>
-              );
-            })}
+                );
+              })}
           </Box>
         </>
       )}
 
-      <Box display="flex" gap={1} ml="auto" mr={0}>
+      {/* <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
           bttype="tertiary"
           color="primary"
@@ -88,7 +136,7 @@ const SensorContent = ({data}: SensorContentProps) => {
         >
           Lokalitet
         </Button>
-      </Box>
+      </Box> */}
     </>
   );
 };

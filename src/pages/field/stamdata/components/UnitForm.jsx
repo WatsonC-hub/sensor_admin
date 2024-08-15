@@ -49,7 +49,7 @@ export default function UnitForm({mode}) {
           <FormInput
             name="unit.startdate"
             label="Startdato"
-            disabled={unit && !unit.gid}
+            disabled={unit && !startdate}
             fullWidth
             type="datetime-local"
             required
@@ -62,7 +62,7 @@ export default function UnitForm({mode}) {
             name="unit.enddate"
             label="Slutdato"
             fullWidth
-            disabled={unit && !unit.gid}
+            disabled={unit && !startdate}
             type="datetime-local"
             required
             inputProps={{

@@ -1,12 +1,8 @@
-import DirectionsIcon from '@mui/icons-material/Directions';
-import PlaceIcon from '@mui/icons-material/Place';
 import {Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 
-import Button from '~/components/Button';
 import {boreholeColors} from '~/consts';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
 import {BoreholeMapData} from '~/types';
@@ -17,7 +13,6 @@ interface BoreholeContentProps {
 
 const BoreholeContent = ({data}: BoreholeContentProps) => {
   const drawerContext = useDrawerContext();
-  const {borehole} = useNavigationFunctions();
   const maxStatus = Math.max(...data.status);
   console.log(data);
   return (
@@ -52,7 +47,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
           })}
         </Box>
       )}
-      <Box display="flex" gap={1} ml="auto" mr={0}>
+      {/* <Box display="flex" gap={1} ml="auto" mr={0}>
         <Button
           bttype="tertiary"
           color="primary"
@@ -76,7 +71,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
         >
           Lokalitet
         </Button>
-      </Box>
+      </Box> */}
     </>
   );
 };

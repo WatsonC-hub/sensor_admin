@@ -79,6 +79,9 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
         queryKey: ['udstyr', stationId],
       });
     },
+    onError: () => {
+      toast.error('Der skete en fejl');
+    },
   });
 
   return (
@@ -120,7 +123,7 @@ const UdstyrReplace = ({stationId}) => {
 
   const {setValue} = useFormContext();
 
-  const {data} = useQuery({
+  const {data, isPending} = useQuery({
     queryKey: ['udstyr', stationId],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${stationId}`);
@@ -162,55 +165,64 @@ const UdstyrReplace = ({stationId}) => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
-          {data && data.length > 0 ? (
-            <Select
-              id="udstyr_select"
-              value={selected}
-              onChange={handleChange}
-              className="swiper-no-swiping"
-            >
-              {data?.map((item) => {
-                const endDate =
-                  moment(new Date()) < moment(item.slutdato)
-                    ? 'nu'
-                    : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
-
-                return (
-                  <MenuItem id={item.gid} key={item.gid} value={item.gid}>
-                    {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          ) : (
+        {isPending && (
+          <Grid item xs={12} sm={6}>
             <Typography align={'center'} display={'inline-block'}>
-              Tilknyt venligst et udstyr
+              Henter udstyr...
             </Typography>
-          )}
+          </Grid>
+        )}
+        {!isPending && (
+          <Grid item xs={12} sm={6}>
+            {data && data.length > 0 ? (
+              <Select
+                id="udstyr_select"
+                value={selected}
+                onChange={handleChange}
+                className="swiper-no-swiping"
+              >
+                {data?.map((item) => {
+                  const endDate =
+                    moment(new Date()) < moment(item.slutdato)
+                      ? 'nu'
+                      : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
 
-          {data && data.length && moment(data?.[0].slutdato) > moment(new Date()) ? (
-            <Button
-              bttype="primary"
-              sx={{marginLeft: 1}}
-              onClick={() => {
-                setOpenDialog(true);
-              }}
-            >
-              Hjemtag udstyr
-            </Button>
-          ) : (
-            <Button
-              bttype="primary"
-              sx={{marginLeft: 1}}
-              onClick={() => {
-                setOpenAddUdstyr(true);
-              }}
-            >
-              Tilføj udstyr
-            </Button>
-          )}
-        </Grid>
+                  return (
+                    <MenuItem id={item.gid} key={item.gid} value={item.gid}>
+                      {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            ) : (
+              <Typography align={'center'} display={'inline-block'}>
+                Tilknyt venligst et udstyr
+              </Typography>
+            )}
+
+            {data && data.length && moment(data?.[0].slutdato) > moment(new Date()) ? (
+              <Button
+                bttype="primary"
+                sx={{marginLeft: 1}}
+                onClick={() => {
+                  setOpenDialog(true);
+                }}
+              >
+                Hjemtag udstyr
+              </Button>
+            ) : (
+              <Button
+                bttype="primary"
+                sx={{marginLeft: 1}}
+                onClick={() => {
+                  setOpenAddUdstyr(true);
+                }}
+              >
+                Tilføj udstyr
+              </Button>
+            )}
+          </Grid>
+        )}
         <UnitEndDateDialog
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
@@ -410,6 +422,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     resetFormData();
   }, [metadata]);
 
+  console.log('dirtyFields', dirtyFields);
+
   const handleUpdate = (type) => {
     if (type === 'location') {
       const locationData = getValues('location');
@@ -498,7 +512,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="1"
-            disabled={ts_id === -1}
+            disabled={metadata && (metadata.calculated || ts_id === -1)}
             icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>

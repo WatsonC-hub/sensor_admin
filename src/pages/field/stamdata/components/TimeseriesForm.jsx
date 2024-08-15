@@ -43,14 +43,14 @@ export default function TimeseriesForm({mode}) {
     },
   });
 
-  const formMethods = useFormContext();
+  const {watch, unregister} = useFormContext();
 
-  const loc_name = formMethods.watch('location.loc_name');
-  const tstype_id = formMethods.watch('timeseries.tstype_id');
+  const loc_name = watch('location.loc_name');
+  const tstype_id = watch('timeseries.tstype_id');
 
   useEffect(() => {
     if (mode === 'add' && tstype_id !== 1) {
-      formMethods.unregister('watlevmp');
+      unregister('watlevmp');
     }
   }, [tstype_id]);
 

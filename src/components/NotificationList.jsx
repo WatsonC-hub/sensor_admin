@@ -1,44 +1,27 @@
-import {ErrorOutlineOutlined} from '@mui/icons-material';
+import {Edit} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import {
-  Avatar,
-  Badge,
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  MenuItem as SelectMenuItem,
-  TextField,
-} from '@mui/material';
+import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
 
-import Button from '~/components/Button';
+import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
+import UpdateNotificationModal from '~/components/UpdateNotificationModal';
+import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 
 import {useNotificationOverview} from '../hooks/query/useNotificationOverview';
 import {useTaskMutation} from '../hooks/query/useTaskMutation';
-import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
-import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
-import UpdateNotificationModal from '~/components/UpdateNotificationModal';
 
 // Mock data for notifications
-const CHARACTERLIMIT = 60;
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
 
-  const {post: createTask, markAsDone} = useTaskMutation();
+  const {markAsDone} = useTaskMutation();
   const params = useParams();
 
   const {data, isPending} = useNotificationOverview();
@@ -138,18 +121,11 @@ const NotificationList = () => {
           </ListItemIcon>
           <ListItemText primary="Registrer opgave" />
         </MenuItem>
-        {isPending && <MenuItem>Indlæster...</MenuItem>}
+        {isPending && <MenuItem>Indlæser...</MenuItem>}
         {notifications?.map((notification, index) => {
           const splitted = notification.stationname.split(notification.locname);
           return (
-            <MenuItem
-              key={index}
-              onClick={() => {
-                setSelectedNotification(notification);
-                openUpdateModal();
-              }}
-              sx={{gap: 0.5}}
-            >
+            <MenuItem key={index} sx={{gap: 0.5}}>
               <ListItemIcon
                 sx={{
                   fontSize: '1.5rem',
@@ -177,6 +153,18 @@ const NotificationList = () => {
                   <DoneIcon />
                 </IconButton>
               )}
+              <IconButton
+                sx={{
+                  pointerEvents: 'auto',
+                }}
+                aria-label="Edit task"
+                onClick={() => {
+                  setSelectedNotification(notification);
+                  openUpdateModal();
+                }}
+              >
+                <Edit />
+              </IconButton>
             </MenuItem>
           );
         })}

@@ -1,4 +1,4 @@
-import {useMutation, useQueryClient, MutationFunction} from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -56,6 +56,7 @@ export const useTaskMutation = () => {
         queryKey: ['overblik'],
       });
       //   toast.success('Registreret');
+      toast.success('Opgave oprettet');
     },
   });
 
@@ -68,7 +69,7 @@ export const useTaskMutation = () => {
       queryClient.invalidateQueries({
         queryKey: ['overblik'],
       });
-      //   toast.success('Færdiggjort');
+      toast.success('Opgave færdiggjort');
     },
   });
 
@@ -92,6 +93,7 @@ export const useTaskMutation = () => {
       return out;
     },
     onSuccess: () => {
+      toast.success('Opgave opdateret');
       queryClient.invalidateQueries({
         queryKey: ['overblik'],
       });

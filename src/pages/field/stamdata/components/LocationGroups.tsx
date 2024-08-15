@@ -50,7 +50,7 @@ const LocationGroups = ({
       disabled={disable}
       value={value ?? []}
       autoHighlight={true}
-      onChange={(event, newValue, reason) => {
+      onChange={(event, newValue) => {
         setValue(
           newValue.map((item) => {
             if (typeof item === 'string') {
@@ -111,8 +111,8 @@ const LocationGroups = ({
           InputLabelProps={{shrink: true}}
           variant="outlined"
           label={label}
+          placeholder="Indtast gruppe(r)..."
           onBlur={onBlur}
-          placeholder="Indtast gruppe..."
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {
               WebkitTextFillColor: '#000000',
