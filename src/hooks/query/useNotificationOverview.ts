@@ -26,7 +26,6 @@ export interface Notification {
   active: boolean;
   notify_type: 'primary' | 'obs' | 'station' | null;
   groups: Group[];
-  parking_id: number;
 }
 
 export interface NotificationMap extends Notification {

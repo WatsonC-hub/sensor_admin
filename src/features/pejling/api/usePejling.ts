@@ -1,4 +1,4 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import {toast} from 'react-toastify';
 
@@ -59,6 +59,8 @@ export const pejlingDelOptions = {
 };
 
 export const usePejling = () => {
+  const queryClient = useQueryClient();
+
   const ts_id = stamdataStore((store) => store.timeseries.ts_id);
   const get = useQuery({
     queryKey: ['measurements', ts_id],
@@ -80,7 +82,9 @@ export const usePejling = () => {
   const post = useMutation({
     ...pejlingPostOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['measurements', ts_id],
+      });
       toast.success('Pejling gemt');
     },
   });
@@ -88,7 +92,9 @@ export const usePejling = () => {
   const put = useMutation({
     ...pejlingPutOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['measurements', ts_id],
+      });
       toast.success('Pejling ændret');
     },
   });
@@ -97,7 +103,9 @@ export const usePejling = () => {
     ...pejlingDelOptions,
     onSuccess: () => {
       toast.success('Pejling slettet');
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['measurements', ts_id],
+      });
     },
   });
 

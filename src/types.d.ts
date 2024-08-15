@@ -117,6 +117,12 @@ export type Parking = {
   y: number;
 };
 
+export type LeafletMapRoute = {
+  route_id: number;
+  loc_id: number;
+  geo_route: JSON | GeoJsonObject;
+};
+
 export type Group = {
   id: string;
   group_name: string;
