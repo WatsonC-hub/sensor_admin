@@ -1,4 +1,4 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -52,6 +52,8 @@ export const parkeringDelOptions = {
 };
 
 export const useParkering = () => {
+  const queryClient = useQueryClient();
+
   const get = useQuery({
     queryKey: ['parking'],
     queryFn: async () => {
@@ -64,7 +66,9 @@ export const useParkering = () => {
   const post = useMutation({
     ...parkeringPostOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['parking'],
+      });
       toast.success('Parkering gemt');
     },
   });
@@ -72,7 +76,9 @@ export const useParkering = () => {
   const put = useMutation({
     ...parkeringPutOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['parking'],
+      });
       toast.success('Parkering ændret');
     },
   });
@@ -81,7 +87,9 @@ export const useParkering = () => {
     ...parkeringDelOptions,
     onSuccess: () => {
       toast.success('Parkering slettet');
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['parking'],
+      });
     },
   });
 

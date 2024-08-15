@@ -1,4 +1,4 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import {toast} from 'react-toastify';
 
@@ -61,6 +61,8 @@ export const tilsynDelOptions = {
 };
 
 export const useTilsyn = () => {
+  const queryClient = useQueryClient();
+
   const ts_id = stamdataStore((store) => store.timeseries.ts_id);
   const get = useQuery({
     queryKey: ['service', ts_id],
@@ -82,7 +84,9 @@ export const useTilsyn = () => {
   const post = useMutation({
     ...tilsynPostOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['service', ts_id],
+      });
       toast.success('Tilsyn gemt');
     },
   });
@@ -90,7 +94,9 @@ export const useTilsyn = () => {
   const put = useMutation({
     ...tilsynPutOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['service', ts_id],
+      });
       toast.success('Tilsyn ændret');
     },
   });
@@ -99,7 +105,9 @@ export const useTilsyn = () => {
     ...tilsynDelOptions,
     onSuccess: () => {
       toast.success('Tilsyn slettet');
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['service', ts_id],
+      });
     },
   });
 
