@@ -18,7 +18,7 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {stamdataStore} from '~/state/store';
 
-export default function Station({ts_id, stamdata}) {
+export default function Station({ts_id, stamdata, tempData}) {
   let params = useParams();
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [pageToShow, setPageToShow] = useSearchParam('page', null);
@@ -172,7 +172,7 @@ export default function Station({ts_id, stamdata}) {
       )}
 
       {pageToShow === StationPages.STAMDATA && (
-        <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} />
+        <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} tempData={tempData} />
       )}
       {pageToShow === StationPages.BILLEDER && (
         <Box>
@@ -213,7 +213,14 @@ export default function Station({ts_id, stamdata}) {
         onChange={handleFileRead}
         onClick={handleFileInputClick}
       />
-      <ActionArea isCalculated={isCalculated} ts_id={ts_id} stamdata={stamdata} />
+      {(tempData || stamdata) && (
+        <ActionArea
+          isCalculated={isCalculated}
+          ts_id={ts_id}
+          stamdata={stamdata}
+          tempData={tempData}
+        />
+      )}
     </Box>
   );
 }

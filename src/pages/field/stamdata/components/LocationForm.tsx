@@ -48,6 +48,7 @@ export default function LocationForm({mode, disable = false}: Props) {
 
   const gridsize = mode === 'modal' ? 12 : 6;
   const superUser = authStore().superUser;
+  console.log('values', getValues());
 
   return (
     // <FormProvider {...formMethods}>

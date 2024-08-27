@@ -15,7 +15,7 @@ const navIconStyle = (isSelected) => {
   return isSelected ? 'secondary.main' : 'inherit';
 };
 
-export default function ActionArea({isCalculated, ts_id, stamdata}) {
+export default function ActionArea({isCalculated, ts_id, stamdata, tempData}) {
   const [pageToShow, setPageToShow] = useSearchParam('page');
   const [showForm, setShowForm] = useSearchParam('showForm');
   const handleChange = (event, newValue) => {
@@ -26,21 +26,22 @@ export default function ActionArea({isCalculated, ts_id, stamdata}) {
   };
   const navigationItems = [];
   if (ts_id !== -1 || !stamdata) {
-    navigationItems.push(
-      {
-        text: 'Pejling',
-        value: StationPages.PEJLING,
-        icon: <AddCircle />,
-        color: navIconStyle(pageToShow === null),
-      },
-      {
-        text: startCase(StationPages.TILSYN),
-        value: StationPages.TILSYN,
-        icon: <PlaylistAddCheck />,
-        color: navIconStyle(pageToShow === StationPages.TILSYN),
-        isCalculated: isCalculated,
-      }
-    );
+    if (!tempData || stamdata)
+      navigationItems.push(
+        {
+          text: 'Pejling',
+          value: StationPages.PEJLING,
+          icon: <AddCircle />,
+          color: navIconStyle(pageToShow === null),
+        },
+        {
+          text: startCase(StationPages.TILSYN),
+          value: StationPages.TILSYN,
+          icon: <PlaylistAddCheck />,
+          color: navIconStyle(pageToShow === StationPages.TILSYN),
+          isCalculated: isCalculated,
+        }
+      );
   } else {
     navigationItems.push({
       text: 'Tidsserie',
