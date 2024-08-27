@@ -110,7 +110,7 @@ function LocationChooser({setLocationDialogOpen}) {
                 }
           }
         >
-          {matches ? '' : <Typography>Lokation</Typography>}
+          {/* {matches ? '' : <Typography>Lokation</Typography>} */}
 
           <Autocomplete
             value={selectedLoc}
@@ -118,7 +118,7 @@ function LocationChooser({setLocationDialogOpen}) {
             getOptionLabel={(option) => option.loc_name}
             isOptionEqualToValue={(option, value) => option.loc_name === value.loc_name}
             renderInput={(params) => (
-              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokalitet" />
+              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokation" />
             )}
             disableClearable={matches}
             style={matches ? {width: '100%'} : {width: 200, marginLeft: '12px'}}
@@ -135,7 +135,7 @@ function LocationChooser({setLocationDialogOpen}) {
             startIcon={<AddLocationAltIcon />}
             onClick={() => setLocationDialogOpen(true)}
           >
-            Opret lokalitet
+            Opret lokation
           </Button>
         </Box>
       </Grid>
@@ -410,7 +410,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                  Lokalitet
+                  Lokation
                 </Typography>
               }
             />
@@ -449,7 +449,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 nextTab={nextTab}
                 disabled={getValues().location.loc_id !== undefined}
                 handleOpret={handleLocationOpret}
-                type="lokalitet"
+                type="lokation"
               />
             </TabPanel>
             <TabPanel value={tabValue} index={'1'}>

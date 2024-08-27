@@ -2,23 +2,22 @@ import {
   AddCircle,
   StraightenRounded,
   PhotoLibraryRounded,
-  AddAPhotoRounded,
   ConstructionRounded,
 } from '@mui/icons-material';
 import {startCase} from 'lodash';
-import React, {useState} from 'react';
+import React from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {StationPages} from '~/helpers/EnumHelper';
+import {useSearchParam} from '~/hooks/useSeachParam';
 const navIconStyle = (isSelected) => {
   return isSelected ? 'secondary.main' : 'inherit';
 };
 
-export default function ActionArea({setPageToShow, showForm, setShowForm, canEdit}) {
-  const [value, setValue] = useState(null);
-
+export default function ActionArea({canEdit}) {
+  const [pageToShow, setPageToShow] = useSearchParam('page');
+  const [showForm, setShowForm] = useSearchParam('showForm');
   const handleChange = (event, newValue) => {
-    setValue(newValue);
     setPageToShow(newValue);
     if (showForm !== null) {
       setShowForm(null);
@@ -30,31 +29,31 @@ export default function ActionArea({setPageToShow, showForm, setShowForm, canEdi
       text: 'Pejling',
       value: StationPages.PEJLING,
       icon: <AddCircle />,
-      color: navIconStyle(value === StationPages.PEJLING),
+      color: navIconStyle(pageToShow === StationPages.PEJLING),
     },
     {
       text: 'Målepunkt',
       value: StationPages.MAALEPUNKT,
       icon: <StraightenRounded />,
-      color: navIconStyle(value === StationPages.MAALEPUNKT),
+      color: navIconStyle(pageToShow === StationPages.MAALEPUNKT),
     },
     {
       text: startCase(StationPages.BILLEDER),
       value: StationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(value === StationPages.BILLEDER),
+      color: navIconStyle(pageToShow === StationPages.BILLEDER),
     },
     {
       text: startCase(StationPages.STAMDATA),
       value: StationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(value === StationPages.STAMDATA),
+      color: navIconStyle(pageToShow === StationPages.STAMDATA),
     },
   ];
 
   return (
     <CustomBottomNavigation
-      showData={value}
+      pageToShow={pageToShow}
       onChange={handleChange}
       items={navigationItems}
       canEdit={canEdit}

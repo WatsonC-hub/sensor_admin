@@ -26,6 +26,8 @@ import PejlingMeasurements from './PejlingMeasurements';
 const Boreholeno = ({boreholeno, intakeno}) => {
   const queryClient = useQueryClient();
   const [canEdit, setCanEdit] = useState(false);
+  const [showForm, setShowForm] = useSearchParam('showForm');
+  const [pageToShow, setPageToShow] = useSearchParam('page', null);
 
   const {data: permissions} = useQuery({
     queryKey: ['borehole_permissions'],
@@ -62,9 +64,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     date: () => moment().format('YYYY-MM-DDTHH:mm'),
   });
 
-  const [showForm, setShowForm] = useSearchParam('showForm');
-
-  const [pageToShow, setPageToShow] = useSearchParam('page');
+  console.log(boreholeno, intakeno);
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
@@ -159,7 +159,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   const openAddMP = () => {
-    setShowForm(true);
+    setShowForm('true');
   };
 
   const addOrEditPejling = useMutation({
@@ -179,6 +179,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       onSuccess: () => {
         resetPejlingData();
         setPageToShow(StationPages.PEJLING);
+        setShowForm(null);
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries({
           queryKey: ['measurements', boreholeno],
@@ -223,13 +224,13 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
-        setShowForm(true); // update to use state machine¨
+        setShowForm('true'); // update to use state machine¨
       };
     } else {
       return (data) => {
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
-        setShowForm(true); // update to use state machine¨
+        setShowForm('true'); // update to use state machine¨
       };
     }
   };
@@ -291,7 +292,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   const handleFileRead = async (event) => {
-    setShowForm(true);
+    setShowForm('true');
     const file = event.target.files[0];
     const base64 = await convertBase64(file);
     handleSetDataURI(base64);
@@ -381,7 +382,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             icon={<AddCircle />}
             text="Tilføj målepunkt"
             onClick={() => {
-              setShowForm(true);
+              setShowForm('true');
               resetMpData();
             }}
             visible={
@@ -402,7 +403,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             text="Tilføj pejling"
             onClick={() => {
               resetPejlingData();
-              setShowForm(true);
+              setShowForm('true');
             }}
             visible={
               pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'

@@ -388,7 +388,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       const locationData = getValues('location');
       metadataEditLocationMutation.mutate(locationData, {
         onSuccess: () => {
-          toast.success('Lokalitet er opdateret');
+          toast.success('Lokation er opdateret');
         },
       });
     } else if (type === 'timeseries') {
@@ -458,7 +458,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Lokalitet
+                Lokation
               </Typography>
             }
           />
@@ -494,7 +494,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               </Typography>
             }
           />
-          <Tab
+          {/* <Tab
             value="4"
             icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
@@ -502,7 +502,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
                 Kontakt
               </Typography>
             }
-          />
+          /> */}
         </Tabs>
         <Divider />
         <Box>
@@ -511,7 +511,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             <StamdataFooter
               cancel={resetFormData}
               handleOpret={() => handleUpdate('location')}
-              saveTitle="Gem lokalitet"
+              saveTitle="Gem lokation"
               disabled={isSubmitting || !('location' in dirtyFields)}
             />
           </TabPanel>
@@ -546,9 +546,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               <ReferenceForm canEdit={canEdit} ts_id={ts_id} />
             </FabWrapper>
           </TabPanel>
-          <TabPanel value={tabValue} index={'4'}>
+          {/* <TabPanel value={tabValue} index={'4'}>
             Kontaktinformation
-          </TabPanel>
+          </TabPanel> */}
         </Box>
         {import.meta.env.DEV && <DevTool control={control} />}
       </Box>

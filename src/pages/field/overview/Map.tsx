@@ -749,7 +749,7 @@ function Map({data, loading}: MapProps) {
 
         let locationMenu = [
           {
-            text: 'Opret station',
+            text: 'Tilføj stamdata',
             callback: () => {
               store.setLocation({
                 loc_id: element.locid,

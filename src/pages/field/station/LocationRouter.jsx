@@ -75,7 +75,7 @@ export default function LocationRouter() {
           {hasTimeseries ? (
             <MinimalSelect locid={params.locid} stationList={data} />
           ) : (
-            'Ingen tidsserie på lokalitet'
+            'Ingen tidsserie på lokationen'
           )}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>

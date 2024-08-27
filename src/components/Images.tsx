@@ -8,10 +8,10 @@ import {Image} from '~/types';
 
 interface Props {
   type: string;
-  typeId: string;
+  typeId: string | number;
   setOpenSave: (openSave: boolean) => void;
   setActiveImage: (image: Image) => void;
-  setShowForm: (showForm: boolean) => void;
+  setShowForm: (showForm: string) => void;
 }
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
@@ -24,12 +24,13 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
     },
   });
 
-  const {del: deleteImage} = useImageUpload('station');
+  const endpoint = type === 'borehole' ? 'borehole' : 'station';
+  const {del: deleteImage} = useImageUpload(endpoint);
 
   const handleEdit = (image: Image) => {
     setActiveImage(image);
     setOpenSave(true);
-    setShowForm(true);
+    setShowForm('true');
   };
 
   return (

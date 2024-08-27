@@ -41,7 +41,7 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddM
         queryClient.invalidateQueries({
           queryKey: ['watlevmp', boreholeno],
         });
-        setAddMPOpen(false);
+        setAddMPOpen(null);
       },
       onError: () => {
         toast.error('Der skete en fejl');
