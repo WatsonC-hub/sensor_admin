@@ -160,7 +160,7 @@ declare module 'leaflet' {
   }
 
   interface Layer {
-    toGeoJSON: () => GeoJsonObject;
+    toGeoJSON: () => GeoJSON.Feature | GeoJSON.GeoJsonObject;
     bindContextMenu: (options: {
       contextmenu?: boolean;
       contextmenuInheritItems: boolean;
@@ -354,6 +354,8 @@ function Map({data, loading}: MapProps) {
 
     map.on('pm:create', async (e) => {
       const layer: L.Layer = e.layer;
+      console.log(layer.toGeoJSON());
+
       if (
         geoJsonRef &&
         geoJsonRef.current &&
@@ -361,11 +363,10 @@ function Map({data, loading}: MapProps) {
         mutateLeafletMapRouteRef.current
       ) {
         geoJsonRef.current.addLayer(layer);
-
         const payload = {
           path: (parkingStore.getState().selectedLocId as number).toString(),
           data: {
-            geo_route: layer.toGeoJSON().geometry,
+            geo_route: (layer.toGeoJSON() as GeoJSON.Feature).geometry,
           },
         };
 
@@ -841,6 +842,12 @@ function Map({data, loading}: MapProps) {
           if (layerRef.current) {
             smallMarker.addTo(layerRef.current);
           }
+
+          smallMarker.bindContextMenu({
+            contextmenu: superUser,
+            contextmenuInheritItems: false,
+            contextmenuItems: [...locationMenu],
+          });
         }
 
         marker.bindTooltip(element.locname, {
@@ -863,6 +870,26 @@ function Map({data, loading}: MapProps) {
           title: element.boreholeno,
           data: element,
           contextmenu: true,
+        });
+
+        const locationMenu = [
+          {
+            text: 'Tilføj stamdata',
+            callback: () => {
+              store.setLocation({
+                loc_id: element.boreholeno,
+              });
+              createStamdata('1');
+            },
+            icon: '/leaflet-images/marker.png',
+          },
+          ...contextmenuItems.slice(1),
+        ];
+
+        marker.bindContextMenu({
+          contextmenu: superUser,
+          contextmenuInheritItems: false,
+          contextmenuItems: [...locationMenu],
         });
 
         marker.bindTooltip(element.boreholeno, {
