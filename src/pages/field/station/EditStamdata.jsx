@@ -245,8 +245,7 @@ export default function EditStamdata({ts_id, metadata, canEdit, tempData}) {
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
 
-  const loc_id = metadata === undefined ? tempData.loc_id : metadata.loc_id;
-
+  const loc_id = metadata === undefined ? tempData?.loc_id : metadata?.loc_id;
   useEffect(() => {
     if (
       pageToShow === StationPages.STAMDATA &&
