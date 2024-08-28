@@ -1,9 +1,7 @@
-import path from 'path';
-
+import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
 import {defineConfig} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
-import removeConsole from 'vite-plugin-remove-console';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
@@ -128,7 +126,10 @@ export default defineConfig({
     svgrPlugin(),
     VitePWA(pwaOptions),
     viteTsconfigPaths(),
-    removeConsole(),
+    strip({
+      functions: ['console.log', 'console.info', 'console.debug', 'console.warn'],
+    }),
+    // removeConsole(),
     // sentryVitePlugin(sentryOptions),
   ],
   build: {
