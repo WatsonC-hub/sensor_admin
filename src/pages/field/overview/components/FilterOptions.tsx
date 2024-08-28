@@ -52,7 +52,11 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
   return (
     <FormProvider {...formMethods}>
       <Typography variant="h6">Filtrer lokationer</Typography>
-      <FormInput name="freeText" label="Fritekst filtrering" />
+      <FormInput
+        name="freeText"
+        label="Fritekst filtrering"
+        placeholder="Indtast filtreringstekst..."
+      />
       <Divider />
       <Grid container spacing={2}>
         {boreholeAccess && (

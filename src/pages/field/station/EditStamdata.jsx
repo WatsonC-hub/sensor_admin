@@ -4,7 +4,6 @@ import {
   AddCircle,
   BuildRounded,
   LocationOnRounded,
-  SettingsPhoneRounded,
   ShowChartRounded,
   StraightenRounded,
 } from '@mui/icons-material';
@@ -245,6 +244,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
 
+  const loc_id = metadata?.loc_id;
   useEffect(() => {
     if (
       pageToShow === StationPages.STAMDATA &&
@@ -284,14 +284,14 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   const metadataEditLocationMutation = useMutation({
     mutationFn: async (data) => {
       const {data: out} = await apiClient.put(
-        `/sensor_field/stamdata/update_location/${metadata.loc_id}`,
+        `/sensor_field/stamdata/update_location/${loc_id}`,
         data
       );
       return out;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['stations', metadata.loc_id.toString()],
+        queryKey: ['stations', loc_id.toString()],
       });
     },
   });
@@ -308,13 +308,15 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     },
   });
 
-  console.log(metadata);
   let schema = locationSchema;
-  let schemaData = locationSchema.safeParse({
+  let schemaData;
+
+  schemaData = locationSchema.safeParse({
     location: {
       ...metadata,
     },
   });
+
   if (metadata && metadata.ts_id && !metadata.unit_uuid) {
     schema = timeseriesSchema;
     schemaData = timeseriesSchema.safeParse({
@@ -343,8 +345,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     });
   }
 
-  console.log(schemaData.data);
-
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: schemaData.data,
@@ -359,7 +359,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   } = formMethods;
 
   const resetFormData = () => {
-    const result = schema.safeParse({
+    let result;
+
+    result = schema.safeParse({
       location: {
         ...metadata,
       },
@@ -373,7 +375,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         enddate: metadata?.slutdato,
       },
     });
-    console.log(result);
+
     reset(result.data);
   };
 
@@ -381,14 +383,12 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     resetFormData();
   }, [metadata]);
 
-  console.log('dirtyFields', dirtyFields);
-
   const handleUpdate = (type) => {
     if (type === 'location') {
       const locationData = getValues('location');
       metadataEditLocationMutation.mutate(locationData, {
         onSuccess: () => {
-          toast.success('Lokalitet er opdateret');
+          toast.success('Lokation er opdateret');
         },
       });
     } else if (type === 'timeseries') {
@@ -458,13 +458,13 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Lokalitet
+                Lokation
               </Typography>
             }
           />
           <Tab
             value="1"
-            disabled={metadata && (metadata.calculated || ts_id === -1)}
+            disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
             icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -474,7 +474,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="2"
-            disabled={metadata && (metadata.calculated || ts_id === -1)}
+            disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
             icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -484,7 +484,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="3"
-            disabled={metadata && metadata.tstype_id !== 1}
+            disabled={!metadata || (metadata && metadata.tstype_id !== 1)}
             icon={
               <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
             }
@@ -494,7 +494,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               </Typography>
             }
           />
-          <Tab
+          {/* <Tab
             value="4"
             icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
@@ -502,7 +502,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
                 Kontakt
               </Typography>
             }
-          />
+          /> */}
         </Tabs>
         <Divider />
         <Box>
@@ -511,7 +511,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             <StamdataFooter
               cancel={resetFormData}
               handleOpret={() => handleUpdate('location')}
-              saveTitle="Gem lokalitet"
+              saveTitle="Gem lokation"
               disabled={isSubmitting || !('location' in dirtyFields)}
             />
           </TabPanel>
@@ -546,9 +546,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               <ReferenceForm canEdit={canEdit} ts_id={ts_id} />
             </FabWrapper>
           </TabPanel>
-          <TabPanel value={tabValue} index={'4'}>
+          {/* <TabPanel value={tabValue} index={'4'}>
             Kontaktinformation
-          </TabPanel>
+          </TabPanel> */}
         </Box>
         {import.meta.env.DEV && <DevTool control={control} />}
       </Box>

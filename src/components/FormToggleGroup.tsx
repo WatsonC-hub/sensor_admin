@@ -37,7 +37,6 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
     control,
     formState: {errors},
   } = useFormContext<TFieldValues>();
-
   return (
     <>
       <Typography variant="subtitle1">{label}</Typography>
@@ -57,9 +56,11 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
               color="primary"
               aria-label={name}
               onChange={(e, value) => {
-                onChange(value);
-                if (onChangeCallback) {
-                  onChangeCallback(value);
+                if (value !== null) {
+                  onChange(value);
+                  if (onChangeCallback) {
+                    onChangeCallback(value);
+                  }
                 }
               }}
               {...otherProps}

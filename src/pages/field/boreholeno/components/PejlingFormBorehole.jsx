@@ -57,9 +57,11 @@ export default function PejlingFormBorehole({
           moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
           moment(formData.timeofmeas).isBefore(elem.enddate)
         ) {
+          console.log('true');
           return true;
         }
       });
+      console.log(mp);
       if (mp.length > 0) {
         setPejlingOutOfRange(false);
         setCurrentMP(mp[0]);
@@ -92,6 +94,12 @@ export default function PejlingFormBorehole({
     setNotPossible(event.target.checked);
     changeFormData('disttowatertable_m', null);
   };
+
+  console.log('submit', disableSubmit);
+  console.log('elevation', !(currentMP.elevation !== null || currentMP.elevation !== undefined));
+  console.log('pejlingoutofrange', pejlingOutOfRange);
+  console.log('formdata timeof meas', !formData.timeofmeas);
+  console.log('pumpstop', isPump && formData.pumpstop > formData.timeofmeas);
 
   return (
     <Card
@@ -322,7 +330,7 @@ export default function PejlingFormBorehole({
                     }}
                     disabled={
                       disableSubmit ||
-                      !currentMP.elevation ||
+                      !(currentMP.elevation !== null || currentMP.elevation !== undefined) ||
                       pejlingOutOfRange ||
                       !formData.timeofmeas ||
                       (isPump && formData.pumpstop > formData.timeofmeas)

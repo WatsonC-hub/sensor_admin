@@ -239,8 +239,7 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
       style={{
         width: 'auto',
         height: setGraphHeight(matches),
-        marginBottom: '10px',
-        paddingTop: '5px',
+        marginBottom: '5px',
       }}
     >
       <PlotGraph

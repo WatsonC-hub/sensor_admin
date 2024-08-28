@@ -19,7 +19,12 @@ const MinimalSelect = ({locid, stationList}) => {
     setIsOpen(false);
   };
 
-  const handleClose = () => setIsOpen(false);
+  const handleClose = () => {
+    const value = hasTimeseries && stationList && params.ts_id ? parseInt(params.ts_id) : '';
+    if (typeof value == 'number') {
+      setIsOpen(false);
+    }
+  };
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
@@ -48,7 +53,7 @@ const MinimalSelect = ({locid, stationList}) => {
   return (
     <Select
       MenuProps={menuProps}
-      value={hasTimeseries && stationList && params.ts_id ? parseInt(params.ts_id) : []}
+      value={hasTimeseries && stationList && params.ts_id ? parseInt(params.ts_id) : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

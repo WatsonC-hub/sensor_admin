@@ -29,10 +29,12 @@ import TimeseriesForm from './components/TimeseriesForm';
 import UnitForm from './components/UnitForm';
 
 function LocationChooser({setLocationDialogOpen}) {
-  const loc_id = stamdataStore((store) => store.location.loc_id);
+  const formMethods = useFormContext();
+  const loc_id = stamdataStore((store) => store.location.loc_id)
+    ? stamdataStore((store) => store.location.loc_id)
+    : formMethods.getValues('location.loc_id');
   const [selectedLoc, setSelectedLoc] = useState(null);
   console.log(selectedLoc);
-  const formMethods = useFormContext();
   const {data: locations} = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
@@ -41,8 +43,10 @@ function LocationChooser({setLocationDialogOpen}) {
     },
   });
 
+  console.log(stamdataStore().location);
   useEffect(() => {
     if (loc_id != undefined && locations != undefined) {
+      console.log('populating', loc_id, locations.length);
       populateFormData(locations.find((item) => item.loc_id === loc_id));
     }
   }, [loc_id, locations]);
@@ -110,7 +114,7 @@ function LocationChooser({setLocationDialogOpen}) {
                 }
           }
         >
-          {matches ? '' : <Typography>Lokation</Typography>}
+          {/* {matches ? '' : <Typography>Lokation</Typography>} */}
 
           <Autocomplete
             value={selectedLoc}
@@ -118,7 +122,7 @@ function LocationChooser({setLocationDialogOpen}) {
             getOptionLabel={(option) => option.loc_name}
             isOptionEqualToValue={(option, value) => option.loc_name === value.loc_name}
             renderInput={(params) => (
-              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokalitet" />
+              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokation" />
             )}
             disableClearable={matches}
             style={matches ? {width: '100%'} : {width: 200, marginLeft: '12px'}}
@@ -135,7 +139,7 @@ function LocationChooser({setLocationDialogOpen}) {
             startIcon={<AddLocationAltIcon />}
             onClick={() => setLocationDialogOpen(true)}
           >
-            Opret lokalitet
+            Opret lokation
           </Button>
         </Box>
       </Grid>
@@ -187,6 +191,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
 
+  console.log(store);
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -390,9 +395,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
           <Tabs
             value={tabValue !== null ? tabValue : '0'}
             onChange={(_, newValue) => {
-              console.log(newValue);
-              console.log(tabValue);
-
               setTabValue(newValue);
             }}
             variant="fullWidth"
@@ -410,7 +412,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                  Lokalitet
+                  Lokation
                 </Typography>
               }
             />
@@ -449,7 +451,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 nextTab={nextTab}
                 disabled={getValues().location.loc_id !== undefined}
                 handleOpret={handleLocationOpret}
-                type="lokalitet"
+                type="lokation"
               />
             </TabPanel>
             <TabPanel value={tabValue} index={'1'}>

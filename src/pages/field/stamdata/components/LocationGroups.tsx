@@ -109,7 +109,7 @@ const LocationGroups = ({
           InputLabelProps={{shrink: true}}
           variant="outlined"
           label={label}
-          placeholder="Indtast gruppe..."
+          placeholder="Indtast gruppe(r)..."
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {
               WebkitTextFillColor: '#000000',

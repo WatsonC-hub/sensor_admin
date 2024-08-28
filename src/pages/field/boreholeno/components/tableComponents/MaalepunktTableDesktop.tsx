@@ -3,6 +3,7 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
@@ -63,9 +64,9 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
       {
         accessorKey: 'organisationname',
         header: 'Organisation',
-        Cell: ({row}) => (
+        Cell: ({row, renderedCellValue}) => (
           <Typography>
-            {row.original.organisationid === org_id ? row.original.organisationname : '-'}
+            {row.original.organisationid === org_id ? renderedCellValue : '-'}
           </Typography>
         ),
       },
@@ -77,6 +78,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
     ],
     []
   );
+  const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
     enableRowActions: true,
@@ -91,13 +93,15 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         canEdit={row.original.organisationid == org_id}
       />
     ),
+    renderToolbarInternalActions: ({table}) => {
+      return <RenderInternalActions table={table} reset={reset} />;
+    },
   };
 
-  const [tableState] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
   const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
-    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
+    <Box sx={setTableBoxStyle(isTablet ? 436 : 886)}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
