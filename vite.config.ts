@@ -126,9 +126,11 @@ export default defineConfig({
     svgrPlugin(),
     VitePWA(pwaOptions),
     viteTsconfigPaths(),
-    strip({
-      functions: ['console.log', 'console.info', 'console.debug', 'console.warn'],
-    }),
+    {
+      ...strip({include: /\**\/*.js/}),
+      // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
+      apply: 'build',
+    },
     // removeConsole(),
     // sentryVitePlugin(sentryOptions),
   ],
