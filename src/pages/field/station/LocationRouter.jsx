@@ -51,13 +51,9 @@ export default function LocationRouter() {
 
   const stamdata = data?.filter((elem) => elem.ts_id == params.ts_id)?.[0];
 
-  const hasTimeseries = data && data.some((stamdata) => stamdata.ts_id !== null);
-
-  let tempData;
-  if (hasTimeseries) {
-    tempData = data[0];
-    console.log(tempData);
-  }
+  let hasTimeseries = undefined;
+  if (data && data.length > 0)
+    hasTimeseries = data && data.some((stamdata) => stamdata.ts_id !== null);
 
   return (
     <MetadataContext.Provider value={metadata}>
@@ -81,8 +77,10 @@ export default function LocationRouter() {
           </Tooltip>
           {hasTimeseries ? (
             <MinimalSelect locid={params.locid} stationList={data} />
-          ) : (
+          ) : hasTimeseries === false ? (
             'Ingen tidsserie på lokationen'
+          ) : (
+            ''
           )}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
@@ -123,11 +121,7 @@ export default function LocationRouter() {
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <Station
-            ts_id={params.ts_id ? params.ts_id : -1}
-            stamdata={stamdata}
-            tempData={tempData}
-          />
+          <Station ts_id={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />
         </ErrorBoundary>
       </main>
     </MetadataContext.Provider>

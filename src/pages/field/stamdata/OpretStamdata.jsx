@@ -29,10 +29,12 @@ import TimeseriesForm from './components/TimeseriesForm';
 import UnitForm from './components/UnitForm';
 
 function LocationChooser({setLocationDialogOpen}) {
-  const loc_id = stamdataStore((store) => store.location.loc_id);
+  const formMethods = useFormContext();
+  const loc_id = stamdataStore((store) => store.location.loc_id)
+    ? stamdataStore((store) => store.location.loc_id)
+    : formMethods.getValues('location.loc_id');
   const [selectedLoc, setSelectedLoc] = useState(null);
   console.log(selectedLoc);
-  const formMethods = useFormContext();
   const {data: locations} = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
@@ -41,8 +43,10 @@ function LocationChooser({setLocationDialogOpen}) {
     },
   });
 
+  console.log(stamdataStore().location);
   useEffect(() => {
     if (loc_id != undefined && locations != undefined) {
+      console.log('populating', loc_id, locations.length);
       populateFormData(locations.find((item) => item.loc_id === loc_id));
     }
   }, [loc_id, locations]);
@@ -187,6 +191,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
 
+  console.log(store);
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -390,9 +395,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
           <Tabs
             value={tabValue !== null ? tabValue : '0'}
             onChange={(_, newValue) => {
-              console.log(newValue);
-              console.log(tabValue);
-
               setTabValue(newValue);
             }}
             variant="fullWidth"

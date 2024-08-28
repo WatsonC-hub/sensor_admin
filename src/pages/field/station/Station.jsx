@@ -18,7 +18,7 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {stamdataStore} from '~/state/store';
 
-export default function Station({ts_id, stamdata, tempData}) {
+export default function Station({ts_id, stamdata}) {
   let params = useParams();
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [pageToShow, setPageToShow] = useSearchParam('page', null);
@@ -112,7 +112,7 @@ export default function Station({ts_id, stamdata, tempData}) {
       {((!stamdata && ts_id === -1) || ts_id !== -1) && (
         <>
           {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
-            <Box sx={{marginBottom: 1, marginTop: 1}}>
+            <Box sx={{marginBottom: 0.5, marginTop: 0.2}}>
               <BearingGraph
                 stationId={ts_id}
                 dynamicMeasurement={
@@ -172,7 +172,7 @@ export default function Station({ts_id, stamdata, tempData}) {
       )}
 
       {pageToShow === StationPages.STAMDATA && (
-        <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} tempData={tempData} />
+        <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} />
       )}
       {pageToShow === StationPages.BILLEDER && (
         <Box>
@@ -213,14 +213,7 @@ export default function Station({ts_id, stamdata, tempData}) {
         onChange={handleFileRead}
         onClick={handleFileInputClick}
       />
-      {(tempData || stamdata) && (
-        <ActionArea
-          isCalculated={isCalculated}
-          ts_id={ts_id}
-          stamdata={stamdata}
-          tempData={tempData}
-        />
-      )}
+      <ActionArea isCalculated={isCalculated} ts_id={ts_id} stamdata={stamdata} />
     </Box>
   );
 }

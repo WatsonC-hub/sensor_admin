@@ -232,7 +232,7 @@ function Map({data, loading}: MapProps) {
 
   const setLocationValue = stamdataStore((store) => store.setLocationValue);
 
-  const superUser = authStore((state) => state.superUser);
+  const [superUser, iotAccess] = authStore((state) => [state.superUser, state.iotAccess]);
 
   const {
     get: {data: leafletMapRoutes},
@@ -247,8 +247,10 @@ function Map({data, loading}: MapProps) {
     del: deleteParkering,
   } = useParkering();
 
-  const contextmenuItems = [
-    {
+  const contextmenuItems: Array<any> = [];
+
+  if (iotAccess)
+    contextmenuItems.push({
       text: 'Opret ny lokation',
       callback: function (e: LeafletMouseEvent) {
         // @ts-expect-error error in type definition
@@ -262,47 +264,51 @@ function Map({data, loading}: MapProps) {
         }
       },
       icon: '/leaflet-images/marker.png',
-    },
-    {
-      text: 'Google Maps',
-      callback: function (e: any) {
-        if (e.relatedTarget) {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget._latlng.lat},${e.relatedTarget._latlng.lng}`,
-            '_blank'
-          );
-        } else {
-          window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-            '_blank'
-          );
-        }
+    });
+
+  contextmenuItems.push(
+    ...[
+      {
+        text: 'Google Maps',
+        callback: function (e: any) {
+          if (e.relatedTarget) {
+            window.open(
+              `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget._latlng.lat},${e.relatedTarget._latlng.lng}`,
+              '_blank'
+            );
+          } else {
+            window.open(
+              `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+              '_blank'
+            );
+          }
+        },
+        icon: '/leaflet-images/map.png',
       },
-      icon: '/leaflet-images/map.png',
-    },
-    '-', // this is a separator
-    {
-      text: 'Zoom ind',
-      callback: function () {
-        if (mapRef && mapRef.current) mapRef.current.zoomIn();
+      '-', // this is a separator
+      {
+        text: 'Zoom ind',
+        callback: function () {
+          if (mapRef && mapRef.current) mapRef.current.zoomIn();
+        },
+        icon: '/leaflet-images/zoom-in.png',
       },
-      icon: '/leaflet-images/zoom-in.png',
-    },
-    {
-      text: 'Zoom ud',
-      callback: function () {
-        if (mapRef && mapRef.current) mapRef.current.zoomOut();
+      {
+        text: 'Zoom ud',
+        callback: function () {
+          if (mapRef && mapRef.current) mapRef.current.zoomOut();
+        },
+        icon: '/leaflet-images/zoom-out.png',
       },
-      icon: '/leaflet-images/zoom-out.png',
-    },
-    {
-      text: 'Centrer kort her',
-      callback: function (e: any) {
-        if (mapRef && mapRef.current) mapRef.current.panTo(e.latlng);
+      {
+        text: 'Centrer kort her',
+        callback: function (e: any) {
+          if (mapRef && mapRef.current) mapRef.current.panTo(e.latlng);
+        },
+        icon: '/leaflet-images/center.png',
       },
-      icon: '/leaflet-images/center.png',
-    },
-  ];
+    ]
+  );
 
   const renderMap = () => {
     const myAttributionText =
@@ -354,7 +360,6 @@ function Map({data, loading}: MapProps) {
 
     map.on('pm:create', async (e) => {
       const layer: L.Layer = e.layer;
-      console.log(layer.toGeoJSON());
 
       if (
         geoJsonRef &&
@@ -362,7 +367,6 @@ function Map({data, loading}: MapProps) {
         parkingStore.getState().selectedLocId !== null &&
         mutateLeafletMapRouteRef.current
       ) {
-        geoJsonRef.current.addLayer(layer);
         const payload = {
           path: (parkingStore.getState().selectedLocId as number).toString(),
           data: {
@@ -376,6 +380,7 @@ function Map({data, loading}: MapProps) {
           },
         });
       }
+      layer.remove();
     });
 
     map.attributionControl.setPrefix(false);
@@ -490,7 +495,7 @@ function Map({data, loading}: MapProps) {
 
     if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
       geoJsonLayer.addTo(map);
-      geoJsonLayer.setStyle(routeStyle);
+      // geoJsonLayer.setStyle(routeStyle);
     } else map.removeLayer(geoJsonLayer);
 
     if (zoom > zoomThresholdForParking && parkings && parkings.length > 0) parkingLayer.addTo(map);
@@ -575,10 +580,10 @@ function Map({data, loading}: MapProps) {
               });
               if (geoJsonRef && geoJsonRef.current) {
                 geo.addTo(geoJsonRef.current);
-                geoJsonRef.current.setStyle(routeStyle);
               }
             }
           });
+          geoJsonRef.current.setStyle(routeStyle);
         }
       }
     }
@@ -682,6 +687,13 @@ function Map({data, loading}: MapProps) {
     layerRef.current = L.featureGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup();
+    geoJsonRef.current.setStyle(routeStyle);
+
+    mapRef.current.pm.setGlobalOptions({
+      snappable: true,
+      snapDistance: 5,
+      pathOptions: routeStyle,
+    });
 
     layerRef.current.on('click', function (e: L.LeafletMouseEvent) {
       L.DomEvent.stopPropagation(e);
@@ -744,16 +756,15 @@ function Map({data, loading}: MapProps) {
           title: element.locname,
           data: element,
           contextmenu: true,
-          // pane: element.flag.toString(),
-          // renderer: renderer,
         });
 
         let locationMenu = [
           {
-            text: 'Tilføj stamdata',
+            text: 'Opret tidsserie',
             callback: () => {
               store.setLocation({
                 loc_id: element.locid,
+                loc_name: element.locname,
               });
               createStamdata('1');
             },
@@ -771,11 +782,7 @@ function Map({data, loading}: MapProps) {
                 if (mapRef && mapRef.current) {
                   setSelectParking(element.locid);
                   mutateLeafletMapRouteRef.current = true;
-                  mapRef.current.pm.setGlobalOptions({
-                    snappable: true,
-                    snapDistance: 5,
-                    pathOptions: routeStyle,
-                  });
+
                   mapRef.current.pm.enableDraw('Line');
                 }
               },
@@ -836,18 +843,10 @@ function Map({data, loading}: MapProps) {
             fillOpacity: 1,
             opacity: 1,
             fillColor: getColor(element.obsNotifications[0]),
-            // pane: element.flag.toString(),
-            // renderer: renderer,
           });
           if (layerRef.current) {
             smallMarker.addTo(layerRef.current);
           }
-
-          smallMarker.bindContextMenu({
-            contextmenu: superUser,
-            contextmenuInheritItems: false,
-            contextmenuItems: [...locationMenu],
-          });
         }
 
         marker.bindTooltip(element.locname, {
@@ -870,26 +869,6 @@ function Map({data, loading}: MapProps) {
           title: element.boreholeno,
           data: element,
           contextmenu: true,
-        });
-
-        const locationMenu = [
-          {
-            text: 'Tilføj stamdata',
-            callback: () => {
-              store.setLocation({
-                loc_id: element.boreholeno,
-              });
-              createStamdata('1');
-            },
-            icon: '/leaflet-images/marker.png',
-          },
-          ...contextmenuItems.slice(1),
-        ];
-
-        marker.bindContextMenu({
-          contextmenu: superUser,
-          contextmenuInheritItems: false,
-          contextmenuItems: [...locationMenu],
         });
 
         marker.bindTooltip(element.boreholeno, {

@@ -19,7 +19,8 @@ const schema = z.object({
   num_controls_in_a_year: z
     .number()
     .int()
-    .min(0, {message: 'Antal kontroller skal være 0 eller større'}),
+    .min(0, {message: 'Antal kontroller skal være 0 eller større'})
+    .nullish(),
   description: z.string().nullish().optional(),
   groups: z
     .array(
@@ -162,7 +163,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
                   label="Årlige kontroller"
                   fullWidth
                   type="number"
-                  transform={(val) => parseInt(val)}
+                  // transform={(val) => parseInt(val)}
                   InputProps={{
                     endAdornment: <InputAdornment position="start">pr. år</InputAdornment>,
                     inputProps: {min: 0},

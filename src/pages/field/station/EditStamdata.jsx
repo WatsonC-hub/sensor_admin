@@ -4,7 +4,6 @@ import {
   AddCircle,
   BuildRounded,
   LocationOnRounded,
-  SettingsPhoneRounded,
   ShowChartRounded,
   StraightenRounded,
 } from '@mui/icons-material';
@@ -235,7 +234,7 @@ const UdstyrReplace = ({stationId}) => {
   );
 };
 
-export default function EditStamdata({ts_id, metadata, canEdit, tempData}) {
+export default function EditStamdata({ts_id, metadata, canEdit}) {
   // const [selectedUnit, setSelectedUnit] = useState('');
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
@@ -245,7 +244,7 @@ export default function EditStamdata({ts_id, metadata, canEdit, tempData}) {
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
 
-  const loc_id = metadata === undefined ? tempData?.loc_id : metadata?.loc_id;
+  const loc_id = metadata?.loc_id;
   useEffect(() => {
     if (
       pageToShow === StationPages.STAMDATA &&
@@ -311,19 +310,12 @@ export default function EditStamdata({ts_id, metadata, canEdit, tempData}) {
 
   let schema = locationSchema;
   let schemaData;
-  if (metadata === undefined) {
-    schemaData = locationSchema.safeParse({
-      location: {
-        ...tempData,
-      },
-    });
-  } else {
-    schemaData = locationSchema.safeParse({
-      location: {
-        ...metadata,
-      },
-    });
-  }
+
+  schemaData = locationSchema.safeParse({
+    location: {
+      ...metadata,
+    },
+  });
 
   if (metadata && metadata.ts_id && !metadata.unit_uuid) {
     schema = timeseriesSchema;
@@ -368,35 +360,28 @@ export default function EditStamdata({ts_id, metadata, canEdit, tempData}) {
 
   const resetFormData = () => {
     let result;
-    if (metadata === undefined) {
-      result = schema.safeParse({
-        location: {
-          ...tempData,
-        },
-      });
-    } else {
-      result = schema.safeParse({
-        location: {
-          ...metadata,
-        },
-        timeseries: {
-          ...metadata,
-        },
-        unit: {
-          ...getValues()?.unit,
-          ...metadata,
-          startdate: metadata?.startdato,
-          enddate: metadata?.slutdato,
-        },
-      });
-    }
+
+    result = schema.safeParse({
+      location: {
+        ...metadata,
+      },
+      timeseries: {
+        ...metadata,
+      },
+      unit: {
+        ...getValues()?.unit,
+        ...metadata,
+        startdate: metadata?.startdato,
+        enddate: metadata?.slutdato,
+      },
+    });
 
     reset(result.data);
   };
 
   useEffect(() => {
     resetFormData();
-  }, [metadata, tempData]);
+  }, [metadata]);
 
   const handleUpdate = (type) => {
     if (type === 'location') {

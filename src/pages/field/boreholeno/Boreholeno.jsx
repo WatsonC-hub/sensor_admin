@@ -9,6 +9,7 @@ import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import {StationPages} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 import MaalepunktForm from '../../../components/MaalepunktForm';
@@ -28,7 +29,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   const [canEdit, setCanEdit] = useState(false);
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [pageToShow, setPageToShow] = useSearchParam('page', null);
-
+  const {isMobile} = useBreakpoints();
   const {data: permissions} = useQuery({
     queryKey: ['borehole_permissions'],
     queryFn: async () => {
@@ -159,6 +160,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   const openAddMP = () => {
+    setPageToShow(StationPages.MAALEPUNKT);
     setShowForm('true');
   };
 
@@ -304,9 +306,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   return (
-    <>
+    <Box display="flex" height={'max-content'} flexDirection={'column'}>
       {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
-        <Box sx={{marginBottom: 1, marginTop: 1}}>
+        <Box>
           <BearingGraph
             boreholeno={boreholeno}
             intakeno={intakeno}
@@ -322,10 +324,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          flexWrap: 'wrap',
-          alignContent: 'center',
-          alignItems: 'center',
-          justifyContent: 'center',
+          maxWidth: '1080px',
+          alignSelf: isMobile ? '' : 'center',
         }}
       >
         {pageToShow === StationPages.PEJLING && showForm === 'true' && (
@@ -471,7 +471,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         canEdit={canEdit}
         fileInputRef={fileInputRef}
       />
-    </>
+    </Box>
   );
 };
 
