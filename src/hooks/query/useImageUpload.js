@@ -1,5 +1,6 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
-import {apiClient} from 'src/apiClient';
+
+import {apiClient} from '~/apiClient';
 
 const dataURLtoFile = (dataurl, filename) => {
   const arr = dataurl.split(',');
@@ -38,8 +39,10 @@ export const useImageUpload = (endpoint) => {
       );
       return res;
     },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries(['images']);
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['images'],
+      });
     },
   });
 
@@ -51,7 +54,9 @@ export const useImageUpload = (endpoint) => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['images']);
+      queryClient.invalidateQueries({
+        queryKey: ['images'],
+      });
     },
   });
 
@@ -63,7 +68,9 @@ export const useImageUpload = (endpoint) => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['images']);
+      queryClient.invalidateQueries({
+        queryKey: ['images'],
+      });
     },
   });
 

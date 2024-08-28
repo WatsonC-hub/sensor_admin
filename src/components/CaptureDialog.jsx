@@ -64,7 +64,7 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
           // style={previewStyle}
           onError={handleError}
           onScan={handleScanning}
-          onLoad={(e) => setShowText(false)}
+          onLoad={() => setShowText(false)}
           constraints={{
             video: {
               facingMode: 'environment',

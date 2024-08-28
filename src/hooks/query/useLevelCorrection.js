@@ -1,7 +1,8 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
-import {rerunToast} from 'src/helpers/toasts';
+
+import {apiClient} from '~/apiClient';
+import {rerunToast} from '~/helpers/toasts';
 
 export const levelCorrectionPostOptions = {
   mutationKey: 'level_correction_post',
@@ -35,33 +36,39 @@ export const useLevelCorrection = () => {
 
   const post = useMutation({
     ...levelCorrectionPostOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries(['qa_all', Number(variables.path)]);
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all', Number(variables.path)],
+      });
       rerunToast();
     },
   });
 
   const put = useMutation({
     ...levelCorrectionPutOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['qa_all']);
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all'],
+      });
       rerunToast();
     },
   });
 
   const del = useMutation({
     ...levelCorrectionDelOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['qa_all']);
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all'],
+      });
       rerunToast();
     },
   });

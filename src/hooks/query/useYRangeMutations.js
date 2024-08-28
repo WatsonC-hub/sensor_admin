@@ -1,7 +1,8 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
-import {rerunToast} from 'src/helpers/toasts';
+
+import {apiClient} from '~/apiClient';
+import {rerunToast} from '~/helpers/toasts';
 
 export const yRangePostOptions = {
   mutationKey: 'y_range_post',
@@ -26,22 +27,26 @@ export const useYRangeMutations = () => {
 
   const post = useMutation({
     ...yRangePostOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables, context) => {
-      queryClient.invalidateQueries(['qa_all', Number(variables.path)]);
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all', Number(variables.path)],
+      });
       rerunToast();
     },
   });
 
   const del = useMutation({
     ...yRangeDelOptions,
-    onError: (error) => {
+    onError: () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['qa_all']);
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all'],
+      });
       rerunToast();
     },
   });

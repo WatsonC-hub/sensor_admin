@@ -1,18 +1,22 @@
 import {useAtom} from 'jotai';
 import React, {useState} from 'react';
-import {Route, Routes, useNavigate} from 'react-router-dom';
+import {Route, Routes} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
-import CaptureDialog from 'src/components/CaptureDialog';
+
+import {apiClient} from '~/apiClient';
+import CaptureDialog from '~/components/CaptureDialog';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+
 import ScanComponent from '../../components/ScanComponent';
 import {captureDialogAtom} from '../../state/atoms';
-import BoreholeRouter from './Boreholeno/BoreholeRouter';
-import OverviewPage from './Overview/OverviewPage';
-import OpretStamdata from './Stamdata/OpretStamdata';
-import LocationRouter from './Station/LocationRouter';
 
-function SensorField({}) {
-  const [addStationDisabled, setAddStationDisabled] = useState(false);
+import BoreholeRouter from './boreholeno/BoreholeRouter';
+import OverviewPage from './overview/OverviewPage';
+import OpretStamdata from './stamdata/OpretStamdata';
+import LocationRouter from './station/LocationRouter';
+
+function SensorField() {
+  const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
 
   async function getData(labelid) {
@@ -20,7 +24,7 @@ function SensorField({}) {
     return data;
   }
 
-  const navigate = useNavigate();
+  const {location, station, borehole, boreholeIntake} = useNavigationFunctions();
 
   const handleClose = () => {
     setOpen(false);
@@ -30,20 +34,26 @@ function SensorField({}) {
     const split = data['text'].split('/');
     const calypso_id = split[split.length - 1];
 
+    const options = {replace: true};
+
     try {
       const resp = await getData(calypso_id);
 
       if (resp.loc_id) {
         if (resp.ts_id) {
-          navigate(`/field/location/${resp.loc_id}/${resp.ts_id}`, {replace: true});
+          // navigate(`/field/location/${resp.loc_id}/${resp.ts_id}`, {replace: true});
+          station(resp.loc_id, resp.ts_id, options);
         } else {
-          navigate(`/field/location/${resp.loc_id}`, {replace: true});
+          // navigate(`/field/location/${resp.loc_id}`, {replace: true});
+          location(resp.loc_id, options);
         }
       } else if (resp.boreholeno) {
         if (resp.intakeno) {
-          navigate(`/field/borehole/${resp.boreholeno}/${resp.intakeno}`, {replace: true});
+          // navigate(`/field/borehole/${resp.boreholeno}/${resp.intakeno}`, {replace: true});
+          boreholeIntake(resp.boreholeno, resp.intakeno, options);
         } else {
-          navigate(`/field/borehole/${resp.boreholeno}`, {replace: true});
+          // navigate(`/field/borehole/${resp.boreholeno}`, {replace: true});
+          borehole(resp.boreholeno, options);
         }
       } else {
         toast.error('Ukendt fejl', {

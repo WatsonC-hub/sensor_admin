@@ -3,17 +3,21 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {Navigate, useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
-import {apiClient} from 'src/apiClient';
+
+import {apiClient} from '~/apiClient';
 
 export default function ScanComponent() {
   const params = useParams();
 
-  const {data, isLoading, isError} = useQuery(['labelid', params.labelid], async () => {
-    const {data} = await apiClient.get(`/sensor_field/calypso_id/${params.labelid}`);
-    return data;
+  const {data, isError, isPending} = useQuery({
+    queryKey: ['labelid', params.labelid],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/calypso_id/${params.labelid}`);
+      return data;
+    },
   });
 
-  if (isLoading) {
+  if (isPending) {
     return <CircularProgress />;
   }
 

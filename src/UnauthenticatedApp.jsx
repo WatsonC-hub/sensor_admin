@@ -1,7 +1,8 @@
 import React from 'react';
 import {Route, Routes} from 'react-router-dom';
-import Login from './pages/Login/Login';
-import Register from './pages/Login/Register';
+
+import Login from './pages/login/Login';
+import Register from './pages/login/Register';
 
 export default function UnAuntenticatedApp({}) {
   return (
