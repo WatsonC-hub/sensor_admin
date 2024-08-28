@@ -1,9 +1,7 @@
-import path from 'path';
-
+import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
 import {defineConfig} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
-import removeConsole from 'vite-plugin-remove-console';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
@@ -128,7 +126,12 @@ export default defineConfig({
     svgrPlugin(),
     VitePWA(pwaOptions),
     viteTsconfigPaths(),
-    removeConsole(),
+    {
+      ...strip({include: /\**\/*.js/}),
+      // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
+      apply: 'build',
+    },
+    // removeConsole(),
     // sentryVitePlugin(sentryOptions),
   ],
   build: {

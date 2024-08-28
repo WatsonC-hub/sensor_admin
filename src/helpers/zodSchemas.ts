@@ -3,8 +3,8 @@ import {z} from 'zod';
 
 const locationSchema = z.object({
   location: z.object({
-    loc_id: z.number().nullish(),
-    loc_name: z.string().min(1, {message: 'Lokationsnavn skal udfyldes'}),
+    loc_id: z.number().optional(),
+    loc_name: z.string({required_error: 'Lokationsnavn skal udfyldes'}),
     mainloc: z.string().nullish(),
     subloc: z.string().nullish(),
     subsubloc: z.string().nullish(),
