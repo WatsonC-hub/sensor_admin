@@ -9,6 +9,7 @@ import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import {StationPages} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 import MaalepunktForm from '../../../components/MaalepunktForm';
@@ -26,7 +27,9 @@ import PejlingMeasurements from './PejlingMeasurements';
 const Boreholeno = ({boreholeno, intakeno}) => {
   const queryClient = useQueryClient();
   const [canEdit, setCanEdit] = useState(false);
-
+  const [showForm, setShowForm] = useSearchParam('showForm');
+  const [pageToShow, setPageToShow] = useSearchParam('page', null);
+  const {isMobile} = useBreakpoints();
   const {data: permissions} = useQuery({
     queryKey: ['borehole_permissions'],
     queryFn: async () => {
@@ -62,9 +65,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     date: () => moment().format('YYYY-MM-DDTHH:mm'),
   });
 
-  const [showForm, setShowForm] = useSearchParam('showForm');
-
-  const [pageToShow, setPageToShow] = useSearchParam('page');
+  console.log(boreholeno, intakeno);
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
@@ -159,7 +160,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   const openAddMP = () => {
-    setShowForm(true);
+    setPageToShow(StationPages.MAALEPUNKT);
+    setShowForm('true');
   };
 
   const addOrEditPejling = useMutation({
@@ -179,6 +181,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       onSuccess: () => {
         resetPejlingData();
         setPageToShow(StationPages.PEJLING);
+        setShowForm(null);
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries({
           queryKey: ['measurements', boreholeno],
@@ -223,13 +226,13 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
-        setShowForm(true); // update to use state machine¨
+        setShowForm('true'); // update to use state machine¨
       };
     } else {
       return (data) => {
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
-        setShowForm(true); // update to use state machine¨
+        setShowForm('true'); // update to use state machine¨
       };
     }
   };
@@ -291,7 +294,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   const handleFileRead = async (event) => {
-    setShowForm(true);
+    setShowForm('true');
     const file = event.target.files[0];
     const base64 = await convertBase64(file);
     handleSetDataURI(base64);
@@ -303,9 +306,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   return (
-    <>
+    <Box display="flex" height={'max-content'} flexDirection={'column'}>
       {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
-        <Box sx={{marginBottom: 1, marginTop: 1}}>
+        <Box>
           <BearingGraph
             boreholeno={boreholeno}
             intakeno={intakeno}
@@ -321,10 +324,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          flexWrap: 'wrap',
-          alignContent: 'center',
-          alignItems: 'center',
-          justifyContent: 'center',
+          maxWidth: '1080px',
+          alignSelf: isMobile ? '' : 'center',
         }}
       >
         {pageToShow === StationPages.PEJLING && showForm === 'true' && (
@@ -381,7 +382,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             icon={<AddCircle />}
             text="Tilføj målepunkt"
             onClick={() => {
-              setShowForm(true);
+              setShowForm('true');
               resetMpData();
             }}
             visible={
@@ -402,7 +403,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             text="Tilføj pejling"
             onClick={() => {
               resetPejlingData();
-              setShowForm(true);
+              setShowForm('true');
             }}
             visible={
               pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'
@@ -470,7 +471,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         canEdit={canEdit}
         fileInputRef={fileInputRef}
       />
-    </>
+    </Box>
   );
 };
 

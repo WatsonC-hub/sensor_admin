@@ -3,6 +3,7 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {
   calculatePumpstop,
@@ -77,10 +78,8 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
       {
         accessorKey: 'organisationname',
         header: 'Organisation',
-        Cell: ({row}) => (
-          <Typography>
-            {row.original.organisationid !== null ? row.getValue('organisationname') : '-'}
-          </Typography>
+        Cell: ({row, renderedCellValue}) => (
+          <Typography>{row.original.organisationid !== null ? renderedCellValue : '-'}</Typography>
         ),
       },
       {
@@ -95,6 +94,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
     ],
     [unit]
   );
+  const [tableState, reset] = useStatefullTableAtom<Kontrol>('MaalepunktTableState');
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
     enableRowActions: true,
@@ -109,8 +109,10 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
         canEdit={row.original.organisationid == org_id}
       />
     ),
+    renderToolbarInternalActions: ({table}) => {
+      return <RenderInternalActions table={table} reset={reset} />;
+    },
   };
-  const [tableState] = useStatefullTableAtom<Kontrol>('MaalepunktTableState');
 
   const table = useTable<Kontrol>(columns, data, options, tableState, TableTypes.TABLE);
 

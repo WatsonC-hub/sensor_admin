@@ -49,6 +49,7 @@ export default function LocationForm({mode, disable = false}: Props) {
 
   const gridsize = mode === 'modal' ? 12 : 6;
   const superUser = authStore().superUser;
+  console.log('values', getValues());
 
   return (
     // <FormProvider {...formMethods}>
@@ -91,7 +92,7 @@ export default function LocationForm({mode, disable = false}: Props) {
         <>
           <Grid item xs={12} sm={gridsize}>
             <Controller
-              name="location.projectno"
+              name="location.initial_project_no"
               control={control}
               render={({field: {onChange, value, onBlur}, fieldState: {error}}) => (
                 <LocationProjects

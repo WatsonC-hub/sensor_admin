@@ -11,13 +11,13 @@ interface LeafletMapRouteBase {
 
 interface LeafletMapRoutePost extends LeafletMapRouteBase {
   data: {
-    geo_route: JSON;
+    geo_route: GeoJSON.Geometry;
   };
 }
 
 interface LeafletMapRoutePut extends LeafletMapRouteBase {
   data: {
-    geo_route: JSON;
+    geo_route: GeoJSON.Geometry;
   };
 }
 

@@ -20,7 +20,6 @@ const Redirecter = () => {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const {field} = useNavigationFunctions();
   const location = useLocation();
-  const [authChecked, setAuthChecked] = useState(false);
   const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
 
   useEffect(() => {
@@ -28,7 +27,6 @@ const Redirecter = () => {
       // navigate('/field');
       field();
     }
-    setAuthChecked(true);
   }, [iotAccess]);
 
   useEffect(() => {
@@ -54,7 +52,7 @@ const Redirecter = () => {
           element={
             <>
               <NavBar />
-              {authChecked ? <Chooser /> : <LoadingSkeleton />}
+              <Chooser />
             </>
           }
         />

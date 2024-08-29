@@ -112,7 +112,7 @@ export default function Station({ts_id, stamdata}) {
       {((!stamdata && ts_id === -1) || ts_id !== -1) && (
         <>
           {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
-            <Box sx={{marginBottom: 1, marginTop: 1}}>
+            <Box sx={{marginBottom: 0.5, marginTop: 0.2}}>
               <BearingGraph
                 stationId={ts_id}
                 dynamicMeasurement={

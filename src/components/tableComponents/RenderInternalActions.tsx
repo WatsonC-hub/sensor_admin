@@ -6,6 +6,7 @@ import {
   MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
 } from 'material-react-table';
+
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const RenderInternalActions = <TData extends MRT_RowData>({

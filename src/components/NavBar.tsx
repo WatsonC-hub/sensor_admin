@@ -312,7 +312,7 @@ const NavBar = () => {
               ...(iotAccess
                 ? [
                     {
-                      title: 'Opret station',
+                      title: 'Opret lokation',
                       icon: <AddLocationAltIcon fontSize="medium" />,
                       onClick: () => {
                         createStamdata();

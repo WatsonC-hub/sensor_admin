@@ -48,7 +48,7 @@ const SwiperInstance = ({children}) => {
           aria-label="full width tabs example"
         >
           <Tab label="Udstyr" {...a11yProps(0)} />
-          <Tab label="Lokalitet" {...a11yProps(1)} />
+          <Tab label="Lokation" {...a11yProps(1)} />
           <Tab label="Station" {...a11yProps(2)} />
         </Tabs>
       </AppBar>

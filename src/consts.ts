@@ -88,7 +88,7 @@ export const setTableBoxStyle = (pixelToSubtract: number) => {
     display: 'flex',
     flexDirection: 'column',
     height: calculateContentHeight(pixelToSubtract),
-    minHeight: '500px',
+    minHeight: '300px',
   };
   return sx;
 };

@@ -24,9 +24,14 @@ const StamdataFooter = ({cancel, nextTab, handleOpret, disabled, type, saveTitle
   const handleSubmit = async () => {
     setShowAlert(true);
     setAlertTitle('Opret ' + type);
-    setAlertMessage(
-      'Du er i gang med at kun oprette ' + type + '. Er du sikker på at du vil fortsætte?'
-    );
+    if (type === 'lokation')
+      setAlertMessage(
+        'Du er i gang med at oprette en lokation uden tidsserie og udstyr. Er du sikker på at du vil fortsætte?'
+      );
+    else if (type === 'tidsserie')
+      setAlertMessage(
+        'Du er i gang med at oprette en lokation og tidsserie uden udstyr. Er du sikker på at du vil fortsætte?'
+      );
   };
 
   return (

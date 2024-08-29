@@ -14,7 +14,6 @@ interface BoreholeContentProps {
 const BoreholeContent = ({data}: BoreholeContentProps) => {
   const drawerContext = useDrawerContext();
   const maxStatus = Math.max(...data.status);
-  console.log(data);
   return (
     <>
       <Box display="flex" alignItems="center" gap={1}>

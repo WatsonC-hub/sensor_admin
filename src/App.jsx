@@ -1,5 +1,5 @@
 import {Typography} from '@mui/material';
-import React, {Suspense, useEffect} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
 import {apiClient} from '~/apiClient';
@@ -11,7 +11,7 @@ import Redirecter from './Redirecter';
 import UnAuntenticatedApp from './UnauthenticatedApp';
 
 function App() {
-  // const [authenticated] = authStore((state) => [state.authenticated]);
+  const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = authStore(
     (state) => [
       state.authenticated,
@@ -21,14 +21,15 @@ function App() {
     ]
   );
 
-  const urlParams = new URLSearchParams(window.location.search);
-
   useEffect(() => {
-    apiClient.get('/auth/me/secure').then((res) => {
-      setAuthorization(res.data);
-      setAuthenticated(true);
-      setLoginExpired(false);
-    });
+    apiClient
+      .get('/auth/me/secure')
+      .then((res) => {
+        setAuthorization(res.data);
+        setAuthenticated(true);
+        setLoginExpired(false);
+      })
+      .finally(() => setLoading(false));
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {
       // fade out
@@ -40,6 +41,10 @@ function App() {
     }
   }, []);
 
+  if (loading) {
+    return <LoadingSkeleton />;
+  }
+
   if (!authenticated) {
     return (
       <>
@@ -49,6 +54,7 @@ function App() {
     );
   }
 
+  console.log('App');
   return (
     <ErrorBoundary
       FallbackComponent={() => (

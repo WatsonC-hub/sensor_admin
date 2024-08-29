@@ -3,8 +3,8 @@ import {z} from 'zod';
 
 const locationSchema = z.object({
   location: z.object({
-    loc_id: z.number().nullish(),
-    loc_name: z.string().min(1, {message: 'Lokationsnavn skal udfyldes'}),
+    loc_id: z.number().optional(),
+    loc_name: z.string({required_error: 'Lokationsnavn skal udfyldes'}),
     mainloc: z.string().nullish(),
     subloc: z.string().nullish(),
     subsubloc: z.string().nullish(),
@@ -22,7 +22,7 @@ const locationSchema = z.object({
     terrainlevel: z.number().nullish(),
     description: z.string().nullish(),
     loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
-    projectno: z.string().nullable(),
+    initial_project_no: z.string().nullable(),
   }),
 });
 
@@ -69,7 +69,7 @@ const metadataBaseSchema = timeseriesSchema.extend({
 
 const metadataSchema = metadataBaseSchema.extend({
   location: locationSchema.shape.location.extend({
-    projectno: z
+    initial_project_no: z
       .string()
       .nullable()
       .refine(

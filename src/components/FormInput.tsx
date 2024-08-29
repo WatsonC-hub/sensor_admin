@@ -80,6 +80,8 @@ const FormInput = <TFieldValues extends FieldValues>({
               if (type === 'number' && e.target.value !== '') {
                 onChange(transform(Number(e.target.value)));
                 onChangeCallback && onChangeCallback(Number(e.target.value));
+              } else if (type === 'number' && e.target.value === '') {
+                onChange(null);
               } else {
                 onChange(transform(e));
                 onChangeCallback && onChangeCallback(e);

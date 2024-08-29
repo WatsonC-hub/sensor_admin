@@ -28,24 +28,12 @@ import StamdataFooter from './components/StamdataFooter';
 import TimeseriesForm from './components/TimeseriesForm';
 import UnitForm from './components/UnitForm';
 
-function LocationChooser({setLocationDialogOpen}) {
-  const loc_id = stamdataStore((store) => store.location.loc_id);
-  const [selectedLoc, setSelectedLoc] = useState(null);
-  console.log(selectedLoc);
-  const {reset} = useFormContext();
-  const {data: locations} = useQuery({
-    queryKey: ['locations'],
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
-      return data;
-    },
-  });
+function LocationChooser({setLocationDialogOpen, setSelectedLoc, selectedLoc, locations}) {
+  const formMethods = useFormContext();
 
-  useEffect(() => {
-    if (loc_id != undefined && locations != undefined) {
-      populateFormData(locations.find((item) => item.loc_id === loc_id));
-    }
-  }, [loc_id, locations]);
+  // console.log(selectedLoc);
+
+  console.log(stamdataStore().location);
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -67,7 +55,7 @@ function LocationChooser({setLocationDialogOpen}) {
           terrainlevel: locData.terrainlevel,
           description: locData.description,
           loctype_id: locData.loctype_id,
-          projectno: locData.initial_project_no,
+          initial_project_no: locData.initial_project_no,
         },
       });
     } else {
@@ -84,7 +72,7 @@ function LocationChooser({setLocationDialogOpen}) {
           terrainlevel: 0,
           description: '',
           loctype_id: -1,
-          projectno: '',
+          initial_project_no: '',
         },
       });
     }
@@ -110,7 +98,7 @@ function LocationChooser({setLocationDialogOpen}) {
                 }
           }
         >
-          {matches ? '' : <Typography>Lokation</Typography>}
+          {/* {matches ? '' : <Typography>Lokation</Typography>} */}
 
           <Autocomplete
             value={selectedLoc}
@@ -118,7 +106,7 @@ function LocationChooser({setLocationDialogOpen}) {
             getOptionLabel={(option) => option.loc_name}
             isOptionEqualToValue={(option, value) => option.loc_name === value.loc_name}
             renderInput={(params) => (
-              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokalitet" />
+              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokation" />
             )}
             disableClearable={matches}
             style={matches ? {width: '100%'} : {width: 200, marginLeft: '12px'}}
@@ -135,7 +123,7 @@ function LocationChooser({setLocationDialogOpen}) {
             startIcon={<AddLocationAltIcon />}
             onClick={() => setLocationDialogOpen(true)}
           >
-            Opret lokalitet
+            Opret lokation
           </Button>
         </Box>
       </Grid>
@@ -145,10 +133,15 @@ function LocationChooser({setLocationDialogOpen}) {
   return locationSelector;
 }
 
-function Location({setLocationDialogOpen}) {
+function Location({setLocationDialogOpen, setSelectedLoc, selectedLoc, locations}) {
   return (
     <Grid container>
-      <LocationChooser setLocationDialogOpen={setLocationDialogOpen} />
+      <LocationChooser
+        setLocationDialogOpen={setLocationDialogOpen}
+        setSelectedLoc={setSelectedLoc}
+        selectedLoc={selectedLoc}
+        locations={locations}
+      />
       <LocationForm disable />
     </Grid>
   );
@@ -177,6 +170,20 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const [locationDialogOpen, setLocationDialogOpen] = React.useState(
     store.location.x ? (store.location.loc_id ? false : true) : false
   );
+
+  console.log(locationDialogOpen);
+
+  const {data: locations} = useQuery({
+    queryKey: ['locations'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
+      return data;
+    },
+  });
+
+  const loc_id = stamdataStore((store) => store.location.loc_id);
+  const [selectedLoc, setSelectedLoc] = useState(null);
+
   useEffect(() => {
     return () => {
       store.resetLocation();
@@ -187,6 +194,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
 
+  console.log(store);
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -201,13 +209,23 @@ export default function OpretStamdata({setAddStationDisabled}) {
   });
 
   const {
-    formState: {errors},
+    formState: {errors, dirtyFields},
     reset,
     watch,
     getValues,
+    setValue,
     trigger,
     control,
   } = formMethods;
+
+  useEffect(() => {
+    if (loc_id != undefined && locations != undefined) {
+      setValue(
+        'location',
+        locations.find((item) => item.loc_id === loc_id)
+      );
+    }
+  }, [loc_id, locations]);
 
   console.log(getValues());
   const watchtstype_id = watch('timeseries.tstype_id');
@@ -268,7 +286,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       const location = {
         location: {
           ...getValues().location,
-          initial_project_no: getValues().location.projectno,
+          // initial_project_no: getValues().location.projectno,
         },
       };
 
@@ -292,12 +310,16 @@ export default function OpretStamdata({setAddStationDisabled}) {
     const locationValid = await trigger('location');
     const timeseriesValid = await trigger('timeseries');
 
+    console.log(getValues('location'));
+    console.log(locationValid);
+    console.log(timeseriesValid);
+
     let form = null;
     if (locationValid && timeseriesValid) {
       form = {
         location: {
           ...getValues().location,
-          initial_project_no: getValues().location.projectno,
+          // initial_project_no: getValues().location.projectno,
         },
         timeseries: {
           ...getValues().timeseries,
@@ -344,7 +366,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       form = {
         location: {
           ...getValues().location,
-          initial_project_no: getValues().location.projectno,
+          // initial_project_no: getValues().location.projectno,
         },
         timeseries: {
           ...getValues().timeseries,
@@ -390,9 +412,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
           <Tabs
             value={tabValue !== null ? tabValue : '0'}
             onChange={(_, newValue) => {
-              console.log(newValue);
-              console.log(tabValue);
-
               setTabValue(newValue);
             }}
             variant="fullWidth"
@@ -410,7 +429,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                  Lokalitet
+                  Lokation
                 </Typography>
               }
             />
@@ -443,13 +462,18 @@ export default function OpretStamdata({setAddStationDisabled}) {
             }}
           >
             <TabPanel value={tabValue} index={'0'}>
-              <Location setLocationDialogOpen={setLocationDialogOpen} />
+              <Location
+                setLocationDialogOpen={setLocationDialogOpen}
+                setSelectedLoc={setSelectedLoc}
+                selectedLoc={selectedLoc}
+                locations={locations}
+              />
               <StamdataFooter
                 cancel={cancel}
                 nextTab={nextTab}
-                disabled={getValues().location.loc_id !== undefined}
+                disabled={!('location' in dirtyFields)}
                 handleOpret={handleLocationOpret}
-                type="lokalitet"
+                type="lokation"
               />
             </TabPanel>
             <TabPanel value={tabValue} index={'1'}>
@@ -458,8 +482,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 cancel={cancel}
                 nextTab={nextTab}
                 handleOpret={handleTimeseriesOpret}
-                disabled={false}
-                type="lokation og tidsserie"
+                disabled={!('timeseries' in dirtyFields)}
+                type="tidsserie"
               />
             </TabPanel>
             <TabPanel value={tabValue} index={'2'}>
@@ -490,7 +514,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
               <UnitForm mode="add" />
               <StamdataFooter
                 cancel={cancel}
-                disabled={getValues().unit && !getValues().unit.unit_uuid}
+                disabled={!('unit' in dirtyFields)}
                 handleOpret={handleUnitOpret}
               />
             </TabPanel>
