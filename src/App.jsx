@@ -28,14 +28,8 @@ function App() {
         setAuthorization(res.data);
         setAuthenticated(true);
         setLoginExpired(false);
-        setLoading(false);
       })
-      .catch((error) => {
-        if (error.response.status === 401) {
-          setLoginExpired(true);
-          setLoading(false);
-        }
-      });
+      .finally(() => setLoading(false));
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {
       // fade out
