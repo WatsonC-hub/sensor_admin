@@ -80,7 +80,7 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
             variant="outlined"
             error={Boolean(error) && superUser}
             helperText={Boolean(error) && superUser && error?.message}
-            label="Projekt nummber"
+            label="Projekt nummer"
             placeholder="Vælg projekt nummer..."
             sx={{
               pb: 0,

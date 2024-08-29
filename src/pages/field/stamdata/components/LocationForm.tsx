@@ -91,7 +91,7 @@ export default function LocationForm({mode, disable = false}: Props) {
         <>
           <Grid item xs={12} sm={gridsize}>
             <Controller
-              name="location.projectno"
+              name="location.initial_project_no"
               control={control}
               render={({field: {onChange, value}, fieldState: {error}}) => (
                 <LocationProjects

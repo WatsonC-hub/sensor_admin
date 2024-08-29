@@ -92,7 +92,7 @@ type LocationState = {
     terrainlevel: number;
     description: string;
     loctype_id: number;
-    projectno: string | null;
+    initial_project_no: string | null;
   };
   timeseries: {
     ts_id: number;
@@ -140,7 +140,7 @@ const initialState = {
     terrainlevel: 0,
     description: '',
     loctype_id: -1,
-    projectno: null,
+    initial_project_no: null,
   },
   timeseries: {
     ts_id: 0,
@@ -188,7 +188,7 @@ const stamdataStore = create<LocationState>()(
             terrainlevel: locationData.terrainlevel,
             description: locationData.description,
             loctype_id: locationData.loctype_id,
-            projectno: locationData.projectno,
+            initial_project_no: locationData.initial_project_no,
           },
         },
         false,

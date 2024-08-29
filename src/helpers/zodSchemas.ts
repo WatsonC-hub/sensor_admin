@@ -22,7 +22,7 @@ const locationSchema = z.object({
     terrainlevel: z.number().nullish(),
     description: z.string().nullish(),
     loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
-    projectno: z.string().nullable(),
+    initial_project_no: z.string().nullable(),
   }),
 });
 
@@ -43,7 +43,7 @@ const metadataBaseSchema = timeseriesSchema.extend({
 
 const metadataSchema = metadataBaseSchema.extend({
   location: locationSchema.shape.location.extend({
-    projectno: z
+    initial_project_no: z
       .string()
       .nullable()
       .refine(
