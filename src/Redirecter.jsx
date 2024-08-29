@@ -17,44 +17,45 @@ import {authStore} from './state/store';
 
 const Redirecter = () => {
   const theme = useTheme();
-  // const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const {field} = useNavigationFunctions();
+  const location = useLocation();
+  const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
 
   useEffect(() => {
-    field();
-  }, []);
+    if (!iotAccess && location.pathname == '/') {
+      // navigate('/field');
+      field();
+    }
+  }, [iotAccess]);
 
-  // const location = useLocation();
-  // const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
+  useEffect(() => {
+    if (matches && location.pathname == '/') {
+      // navigate('/field');
+      field();
+    }
+  }, [matches]);
 
-  // if (!iotAccess) {
-  // }
-  // useEffect(() => {
-  //   if (!iotAccess && location.pathname == '/') {
-  //     // navigate('/field');
-  //     field();
-  //   }
-  // }, [iotAccess]);
+  useEffect(() => {
+    if (!adminAccess && location.pathname == '/') {
+      // navigate('/field');
+      field();
+    }
+  }, [adminAccess]);
 
-  // useEffect(() => {
-  //   if (matches && location.pathname == '/') {
-  //     // navigate('/field');
-  //     field();
-  //   }
-  // }, [matches]);
-
-  // useEffect(() => {
-  //   if (!adminAccess && location.pathname == '/') {
-  //     // navigate('/field');
-  //     field();
-  //   }
-  // }, [adminAccess]);
-
-  console.log('Redirecter');
   return (
     <>
       <RemoveTrailingSlash />
       <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <NavBar />
+              <Chooser />
+            </>
+          }
+        />
         <Route
           path="/field/*"
           element={
@@ -63,15 +64,6 @@ const Redirecter = () => {
             </>
           }
         />
-        {/* <Redirect from="/" to="/field" /> */}
-        {/* <Route
-          path="/field/*"
-          element={
-            <>
-              <SensorField />
-            </>
-          }
-        /> */}
         <Route
           path="/admin/*"
           element={
