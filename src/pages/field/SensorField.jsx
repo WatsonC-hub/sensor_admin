@@ -70,6 +70,7 @@ function SensorField() {
     }
   };
 
+  console.log('rerender field');
   return (
     <div className="App">
       {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}

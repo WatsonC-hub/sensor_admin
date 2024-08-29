@@ -110,6 +110,7 @@ export default function OverviewPage() {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
   }, [mapData, boreholeMapdata]);
 
+  console.log('overview page render');
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
       <NavBar />

@@ -68,26 +68,6 @@ const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http
 // const parkingSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:#22b;fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"></circle><text x="8" y="16" style="stroke:white;fill:white;stroke-width:1">P</text></svg>`;
 const parkingSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:{color};stroke-linecap:round;stroke-linejoin:round;stroke-width:1"></circle><text x="8.5" y="16" style="stroke:#fff;stroke-width:1">P</text></svg>`;
 
-const routeSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="24" height="24" >
-<!-- Define arrowhead marker for the end -->
-<defs>
-  <marker id="arrowhead-end" markerWidth="4" markerHeight="4" refX="2" refY="2">
-    <polygon points="0 0, 4 2, 0 4" fill="black" />
-  </marker>
-  <!-- Define arrowhead marker for the start -->
-  <marker id="arrowhead-start" markerWidth="4" markerHeight="4" refX="2" refY="2">
-          <polygon points="4 0, 0 2, 4 4" fill="black" />
-  </marker>
-</defs>
-
-<!-- Draw the snake-like polyline with thicker and more rounded edges -->
-<polyline points="20, 20,60 20,70 20, 70 50, 30 50, 30, 80, 80 80" 
-          fill="none" stroke="black" stroke-width="8" 
-          stroke-linecap="round" stroke-linejoin="round"
-          marker-start="url(#arrowhead-start)" marker-end="url(#arrowhead-end)"  />
-</svg>
-`;
-
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
   return new L.DivIcon({
@@ -195,14 +175,6 @@ L.drawLocal = {
   },
 };
 
-const offSetPoint = (point: L.LatLngExpression, offset: number, map: L.Map): L.LatLngExpression => {
-  const pixelPoint = map.latLngToContainerPoint(point);
-
-  const newPoint = L.point([pixelPoint.x + offset, pixelPoint.y - offset]);
-
-  return map.containerPointToLatLng(newPoint);
-};
-
 function Map({data, loading}: MapProps) {
   const {createStamdata} = useNavigationFunctions();
   const mapRef = useRef<L.Map | null>(null);
@@ -220,7 +192,6 @@ function Map({data, loading}: MapProps) {
   const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
   const [deleteId, setDeleteId] = useState<number>();
   const [type, setType] = useState<string>('parkering');
-  const store = stamdataStore();
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
   const mutateParkingRef = useRef<boolean>(false);
   const mutateLeafletMapRouteRef = useRef<number | boolean | null>();
@@ -228,11 +199,17 @@ function Map({data, loading}: MapProps) {
   const [selectedMarker, setSelectedMarker] = useState<
     NotificationMap | BoreholeMapData | Parking | null | undefined
   >(null);
-  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
-  const setLocationValue = stamdataStore((store) => store.setLocationValue);
+  const [setLocation, setLocationValue] = stamdataStore((store) => [
+    store.setLocation,
+    store.setLocationValue,
+  ]);
 
-  const [superUser, iotAccess] = authStore((state) => [state.superUser, state.iotAccess]);
+  const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
+    state.superUser,
+    state.iotAccess,
+    state.boreholeAccess,
+  ]);
 
   const {
     get: {data: leafletMapRoutes},
@@ -682,6 +659,7 @@ function Map({data, loading}: MapProps) {
   }, [parkings, parkingLayerRef.current, filteredData]);
 
   useEffect(() => {
+    console.log('maprender');
     mapRef.current = renderMap();
     parkingLayerRef.current = L.featureGroup();
     layerRef.current = L.featureGroup().addTo(mapRef.current);
@@ -762,7 +740,7 @@ function Map({data, loading}: MapProps) {
           {
             text: 'Opret tidsserie',
             callback: () => {
-              store.setLocation({
+              setLocation({
                 loc_id: element.locid,
                 loc_name: element.locname,
               });
