@@ -400,32 +400,42 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       });
     } else {
       const unitData = getValues('unit');
-      metadataEditUnitMutation.mutate(unitData, {
-        onSuccess: () => {
-          toast.success('Udstyr er opdateret');
+
+      metadataEditUnitMutation.mutate(
+        {
+          ...unitData,
+          startdate: moment(unitData.startdate).toISOString(),
+          enddate: moment(unitData.enddate).toISOString(),
         },
-        onError: (error) => {
-          if (error.response?.status !== 409) {
-            toast.error('Der skete en fejl');
-          } else {
-            toast.error(
-              <Box>
-                Enheden overlapper med følgende periode
+        {
+          onSuccess: () => {
+            toast.success('Udstyr er opdateret');
+          },
+          onError: (error) => {
+            if (error.response?.status !== 409) {
+              toast.error('Der skete en fejl');
+            } else {
+              toast.error(
                 <Box>
-                  {moment(error.response.data.detail.overlap[0].startdate).format(
-                    'YYYY-MM-DD HH:mm'
-                  )}{' '}
-                  -
-                  {moment(error.response.data.detail.overlap[0].enddate).format('YYYY-MM-DD HH:mm')}
-                </Box>
-              </Box>,
-              {
-                autoClose: false,
-              }
-            );
-          }
-        },
-      });
+                  Enheden overlapper med følgende periode
+                  <Box>
+                    {moment(error.response.data.detail.overlap[0].startdate).format(
+                      'YYYY-MM-DD HH:mm'
+                    )}{' '}
+                    -
+                    {moment(error.response.data.detail.overlap[0].enddate).format(
+                      'YYYY-MM-DD HH:mm'
+                    )}
+                  </Box>
+                </Box>,
+                {
+                  autoClose: false,
+                }
+              );
+            }
+          },
+        }
+      );
     }
   };
 
