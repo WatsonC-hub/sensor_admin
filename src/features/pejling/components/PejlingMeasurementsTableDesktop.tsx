@@ -93,10 +93,9 @@ export default function PejlingMeasurementsTableDesktop({
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

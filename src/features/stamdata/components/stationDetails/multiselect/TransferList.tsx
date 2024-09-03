@@ -1,5 +1,5 @@
-import {Box, Divider, Typography} from '@mui/material';
-import Button from '@mui/material/Button';
+import {ExpandLess, ExpandMore} from '@mui/icons-material';
+import {Box, Collapse, Divider, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
@@ -10,9 +10,14 @@ import Paper from '@mui/material/Paper';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Noop, useFormContext} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 
+import Button from '~/components/Button';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
-import type {MultiSelectProps, Ressourcer} from '~/features/stamdata/components/multiselect/types';
+import type {
+  MultiSelectProps,
+  Ressourcer,
+} from '~/features/stamdata/components/stationDetails/multiselect/types';
 import {CategoryType} from '~/helpers/EnumHelper';
 
 function not(a: Ressourcer[], b: Ressourcer[]) {
@@ -48,14 +53,15 @@ interface TransferListProps extends MultiSelectProps {
 }
 
 export default function TranserList({value, setValue, onBlur}: TransferListProps) {
-  const {watch} = useFormContext();
+  const params = useParams();
+  const loc_id = params.locid;
   const {
     get: {data: options},
-  } = useRessourcer();
+    post: postRessourcer,
+    relation: {data: related},
+  } = useRessourcer(parseInt(loc_id!));
 
-  const tstype_id = watch('timeseries.tstype_id');
-  const loctype_id = watch('location.loctype_id');
-
+  const {trigger} = useFormContext();
   const [checked, setChecked] = useState<Ressourcer[]>([]);
   const [selected, setSelected] = useState<Ressourcer[]>(value);
   const [selectedCategory, setSelectedCategory] = useState<Array<string>>([]);
@@ -65,6 +71,7 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
       Object.keys(CategoryType).length
     )
   );
+  const [collapsed, setCollapsed] = useState<Array<string>>([]);
 
   useEffect(() => {
     if (value && value.length > 0) {
@@ -74,23 +81,18 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
   }, [value]);
 
   useEffect(() => {
-    if (
-      options &&
-      options.length > 0 &&
-      (tstype_id !== -1 || loctype_id !== -1) &&
-      value.length === 0
-    ) {
-      const test = options.filter(
-        (ressource) =>
-          (ressource.loctype_id && ressource.loctype_id.includes(loctype_id)) ||
-          (ressource.tstype_id && ressource.tstype_id.includes(tstype_id))
-      );
-      if (test && test.length > 0) {
-        setSelectedCategory([...new Set([...test.map((ressource) => ressource.kategori)])]);
-      }
-      setSelected(test);
+    if (value && options && options.length > 0 && !related) {
+      setSelectedCategory([...new Set([...value.map((ressource) => ressource.kategori)])]);
+      setSelected(value);
     }
-  }, [tstype_id, loctype_id, options, value]);
+  }, [options, related, value]);
+
+  useEffect(() => {
+    if (related && related.length > 0) {
+      setSelectedCategory([...new Set([...related.map((ressource) => ressource.kategori)])]);
+      setSelected(related);
+    }
+  }, [related]);
 
   let left: Array<Ressourcer> = [];
   if (options) left = not(options ?? [], selected ?? []);
@@ -123,13 +125,13 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
     setChecked(newChecked);
   };
 
-  const handleAllRight = () => {
-    setSelected(options ?? []);
-    setValue(options ?? []);
-    setSelectedCategory([
-      ...new Set(options ? options.map((ressource) => ressource.kategori) : []),
-    ]);
-  };
+  // const handleAllRight = () => {
+  //   setSelected(options ?? []);
+  //   setValue(options ?? []);
+  //   setSelectedCategory([
+  //     ...new Set(options ? options.map((ressource) => ressource.kategori) : []),
+  //   ]);
+  // };
 
   const handleCheckedRight = () => {
     setSelected(selected.concat(leftChecked));
@@ -138,6 +140,7 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
     setSelectedCategory([
       ...new Set(selectedCategory.concat(leftChecked.map((ressource) => ressource.kategori))),
     ]);
+    handleSave(selected.concat(leftChecked));
   };
 
   const handleCheckedLeft = () => {
@@ -145,24 +148,52 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
     setValue(not(selected, rightChecked));
     setChecked(not(checked, rightChecked));
     setSelectedCategory(categoryNot(selected, rightChecked));
+    handleSave(not(selected, rightChecked));
   };
 
-  const handleAllLeft = () => {
-    setSelected([]);
-    setValue([]);
-    setSelectedCategory([]);
+  // const handleAllLeft = () => {
+  //   setSelected([]);
+  //   setValue([]);
+  //   setSelectedCategory([]);
+  // };
+
+  const handleSave = async (ressourcer: Array<Ressourcer>) => {
+    const result = await trigger('ressourcer');
+    if (ressourcer && result) {
+      const payload = {
+        path: `${loc_id}`,
+        data: {
+          ressourcer: ressourcer,
+        },
+      };
+      postRessourcer.mutate(payload);
+    }
+  };
+
+  const handleClick = (collapsedCategory: string) => {
+    if (!collapsed.includes(collapsedCategory)) {
+      setCollapsed([...collapsed, collapsedCategory]);
+    } else {
+      setCollapsed(...[collapsed.filter((category) => category !== collapsedCategory)]);
+    }
   };
 
   const customList = (items: Ressourcer[], categoryList: Array<string>, title: string) => {
     return (
-      <Paper sx={{width: 300, height: 400, overflow: 'auto', boxShadow: 3}} onBlur={onBlur}>
+      <Paper sx={{width: 300, height: 400, overflow: 'auto', boxShadow: 3}}>
         <Box display={'flex'} flexDirection={'column'}>
           <Typography align="center" variant="h5" m={0.5}>
             {title}
           </Typography>
           <Divider />
           {options && options.length > 0 && (
-            <List dense component="div" role="list" sx={{bgcolor: 'Background.paper'}}>
+            <List
+              disablePadding
+              dense
+              component="div"
+              role="list"
+              sx={{bgcolor: 'Background.paper'}}
+            >
               {categoryList &&
                 categoryList.length > 0 &&
                 categoryList
@@ -182,39 +213,56 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
                     const labelId = `transfer-list-item-${category}-label`;
                     return (
                       <Box gap={1} display={'flex'} flexDirection={'column'} key={category + 'box'}>
-                        <ListItemText id={labelId}>
-                          <Typography ml={2} fontWeight={'bold'}>
+                        <ListItemText id={labelId} onClick={() => handleClick(category)}>
+                          <Typography
+                            ml={2}
+                            fontWeight={'bold'}
+                            display={'flex'}
+                            flexDirection={'row'}
+                          >
                             {category}
+                            {title !== 'Udvalgt' && (
+                              <>{collapsed.includes(category) ? <ExpandMore /> : <ExpandLess />}</>
+                            )}
                           </Typography>
-                          {filteredRessources.map((ressource) => {
-                            const labelId = `transfer-list-item-${ressource.navn}-label`;
-                            return (
-                              <ListItemButton
-                                key={ressource.navn}
-                                role="listitem"
-                                onClick={handleToggle(ressource)}
-                                sx={{'&:hover': {bgcolor: 'grey.100'}}}
-                              >
-                                <ListItemIcon sx={{mr: -1.5}}>
-                                  <Checkbox
-                                    onBlur={onBlur}
-                                    checked={
-                                      checked
-                                        .map((option) => option.navn)
-                                        .indexOf(ressource.navn) !== -1
-                                    }
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{
-                                      'aria-labelledby': labelId,
-                                    }}
-                                  />
-                                </ListItemIcon>
-                                <ListItemText id={labelId} primary={ressource.navn} />
-                              </ListItemButton>
-                            );
-                          })}
                         </ListItemText>
+                        <List component="li" disablePadding key={category}>
+                          <Collapse
+                            key={category}
+                            in={title === 'Udvalgt' || collapsed.includes(category)}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            {filteredRessources.map((ressource) => {
+                              const labelId = `transfer-list-item-${ressource.navn}-label`;
+                              return (
+                                <ListItemButton
+                                  key={ressource.navn}
+                                  role="listitem"
+                                  onClick={handleToggle(ressource)}
+                                  sx={{'&:hover': {bgcolor: 'grey.200'}, padding: 0.5}}
+                                >
+                                  <ListItemIcon sx={{mr: -1.5}} key={ressource.id}>
+                                    <Checkbox
+                                      onBlur={onBlur}
+                                      checked={
+                                        checked
+                                          .map((option) => option.navn)
+                                          .indexOf(ressource.navn) !== -1
+                                      }
+                                      tabIndex={-1}
+                                      disableRipple
+                                      inputProps={{
+                                        'aria-labelledby': labelId,
+                                      }}
+                                    />
+                                  </ListItemIcon>
+                                  <ListItemText id={labelId} primary={ressource.navn} />
+                                </ListItemButton>
+                              );
+                            })}
+                          </Collapse>
+                        </List>
                       </Box>
                     );
                   })}
@@ -229,22 +277,12 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
     <>
       {options && options.length > 0 && categories && categories.length > 0 && (
         <Grid container my={1} spacing={1} gap={2} justifyContent="center" alignItems="center">
-          <Grid item>{customList(left ?? [], leftCategory ?? [], 'Redskaber')}</Grid>
+          <Grid item>{customList(left ?? [], leftCategory ?? [], 'Liste')}</Grid>
           <Grid item>
             <Grid container direction="column" alignItems="center">
               <Button
                 sx={{my: 0.5}}
-                variant="outlined"
-                size="small"
-                onClick={handleAllRight}
-                disabled={left.length === 0}
-                aria-label="move all right"
-              >
-                ≫
-              </Button>
-              <Button
-                sx={{my: 0.5}}
-                variant="outlined"
+                bttype="secondary"
                 size="small"
                 onClick={handleCheckedRight}
                 disabled={leftChecked.length === 0}
@@ -254,7 +292,7 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
               </Button>
               <Button
                 sx={{my: 0.5}}
-                variant="outlined"
+                bttype="secondary"
                 size="small"
                 onClick={handleCheckedLeft}
                 disabled={rightChecked.length === 0}
@@ -262,21 +300,9 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
               >
                 &lt;
               </Button>
-              <Button
-                sx={{my: 0.5}}
-                variant="outlined"
-                size="small"
-                onClick={handleAllLeft}
-                disabled={selected && selected.length === 0}
-                aria-label="move all left"
-              >
-                ≪
-              </Button>
             </Grid>
           </Grid>
-          <Grid item>
-            {customList(selected ?? [], selectedCategory ?? [], 'Udvalgte redskaber')}
-          </Grid>
+          <Grid item>{customList(selected ?? [], selectedCategory ?? [], 'Udvalgt')}</Grid>
         </Grid>
       )}
     </>

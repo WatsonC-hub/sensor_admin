@@ -1,5 +1,5 @@
 // A hook that returns whether the current screen size is mobile, tablet or desktop.
-import {merge} from 'lodash';
+import {merge, assign} from 'lodash';
 import {
   type MRT_RowData,
   type MRT_TableOptions,
@@ -10,7 +10,7 @@ import {
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const getOptions = <TData extends MRT_RowData>(
@@ -176,11 +176,16 @@ export const useTable = <TData extends MRT_RowData>(
   data: TData[] | undefined,
   options: Partial<MRT_TableOptions<TData>>,
   tableState: Partial<MRT_TableOptions<TData>> | undefined,
-  type: string = TableTypes.LIST
+  type: string = TableTypes.LIST,
+  merge_method: string = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
 
-  const tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+  let tableOptions: Partial<MRT_TableOptions<TData>>;
+
+  if (merge_method === MergeType.SHALLOWMERGE)
+    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+  else tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
   const table = useMaterialReactTable({
     columns,

@@ -2,7 +2,8 @@ import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 
-import {Ressourcer} from '~/features/stamdata/components/multiselect/types';
+import {Ressourcer} from '~/features/stamdata/components/stationDetails/multiselect/types';
+import {Access, ContactInfo} from '~/types';
 
 type AuthState = {
   authenticated: boolean;
@@ -119,6 +120,8 @@ type LocationState = {
     gid: number;
   };
   stationDetails: {
+    contact_info: ContactInfo;
+    accessKey: Array<Access>;
     ressourcer: Ressourcer[];
   };
   resetLocation: () => void;
@@ -173,6 +176,16 @@ const initialState = {
     gid: -1,
   },
   stationDetails: {
+    contact_info: {
+      id: '',
+      navn: '',
+      telefonnummer: -1,
+      email: '',
+      kommentar: '',
+      rolle: '',
+      user_id: '',
+    },
+    accessKey: [],
     ressourcer: [],
   },
 };
@@ -246,6 +259,8 @@ const stamdataStore = create<LocationState>()(
       set(
         {
           stationDetails: {
+            contact_info: stationDetails.contact_info,
+            accessKey: stationDetails.accessKey,
             ressourcer: stationDetails.ressourcer,
           },
         },

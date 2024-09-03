@@ -132,6 +132,7 @@ export default function OverviewPage() {
       </Tabs>
       <TabPanel value={tabValue} index={0}>
         <Map
+          key="map"
           data={allData}
           loading={(mapPending && iotAccess) || (boreholeMapIsPending && boreholeAccess)}
         />

@@ -7,9 +7,9 @@ import React from 'react';
 import Button from './Button';
 
 type DeleteAlertProps = {
-  measurementId?: number;
+  measurementId?: number | string;
   dialogOpen: boolean;
-  onOkDelete: (measurementId: number | undefined) => void;
+  onOkDelete: (measurementId: number | string | undefined) => void;
   setDialogOpen: (dialogOpen: boolean) => void;
   title?: string;
   onCancel?: () => void;

@@ -6,7 +6,9 @@ import {
   LocationOnRounded,
   ShowChartRounded,
   StraightenRounded,
+  SettingsPhoneRounded,
 } from '@mui/icons-material';
+import ErrorIcon from '@mui/icons-material/Error';
 import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
@@ -37,12 +39,7 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {tabsHeight} from '~/consts';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {StationPages} from '~/helpers/EnumHelper';
-import {
-  locationSchema,
-  metadataPutSchema,
-  stationDetailsSchema,
-  timeseriesSchema,
-} from '~/helpers/zodSchemas';
+import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
@@ -241,7 +238,6 @@ const UdstyrReplace = ({stationId}) => {
 };
 
 export default function EditStamdata({ts_id, metadata, canEdit}) {
-  // const [selectedUnit, setSelectedUnit] = useState('');
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
@@ -314,20 +310,26 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     },
   });
 
-  const metadataEditStationDetailsMutation = useMutation({
-    mutationFn: async (data) => {
-      const {data: out} = await apiClient.put(
-        `/sensor_field/stamdata/update_station_details/${metadata.loc_id}`,
-        data
-      );
-      return out;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['stations', metadata.loc_id.toString()],
-      });
-    },
-  });
+  // const metadataEditStationDetailsMutation = useMutation({
+  //   mutationFn: async (data) => {
+  //     const {data: out} = await apiClient.put(
+  //       `/sensor_field/stamdata/update_station_details/${metadata.loc_id}`,
+  //       data
+  //     );
+  //     return out;
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({
+  //       queryKey: ['stations', metadata.loc_id.toString()],
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ['ressourcer'],
+  //     });
+  //     queryClient.invalidateQueries({
+  //       queryKey: ['ressourcer', metadata.loc_id.toString()],
+  //     });
+  //   },
+  // });
 
   let schema = locationSchema;
   let schemaData;
@@ -338,17 +340,17 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     },
   });
 
-  if (metadata && metadata.ressourcer && metadata.ressourcer.length > 0) {
-    schema = stationDetailsSchema;
-    schemaData = stationDetailsSchema.safeParse({
-      location: {
-        ...metadata,
-      },
-      stationDetails: {
-        ...metadata,
-      },
-    });
-  }
+  // if (metadata && metadata.ressourcer && metadata.ressourcer.length > 0) {
+  //   schema = stationDetailsSchema;
+  //   schemaData = stationDetailsSchema.safeParse({
+  //     location: {
+  //       ...metadata,
+  //     },
+  //     stationDetails: {
+  //       ...metadata,
+  //     },
+  //   });
+  // }
 
   if (metadata && metadata.ts_id && !metadata.unit_uuid) {
     schema = timeseriesSchema;
@@ -359,9 +361,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       timeseries: {
         ...metadata,
       },
-      stationDetails: {
-        ...metadata,
-      },
+      // stationDetails: {
+      //   ...metadata,
+      // },
     });
   }
   if (metadata && metadata.unit_uuid) {
@@ -379,12 +381,14 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         startdate: metadata.startdato,
         enddate: metadata.slutdato,
       },
-      stationDetails: {
-        ...metadata,
-      },
+      // stationDetails: {
+      //   ...metadata,
+      // },
     });
   }
 
+  // console.log(schemaData);
+  // console.log(metadata);
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: schemaData.data,
@@ -414,9 +418,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         startdate: metadata?.startdato,
         enddate: metadata?.slutdato,
       },
-      stationDetails: {
-        ...metadata,
-      },
+      // stationDetails: {
+      //   ...metadata,
+      // },
     });
 
     reset(result.data);
@@ -441,14 +445,16 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           toast.success('Tidsserie er opdateret');
         },
       });
-    } else if (type === 'stationDetails') {
-      const stationDetailsData = getValues('stationDetails');
-      metadataEditStationDetailsMutation.mutate(stationDetailsData, {
-        onSuccess: () => {
-          toast.success('Stationsinformation er opdateret');
-        },
-      });
-    } else {
+    }
+    // else if (type === 'stationDetails') {
+    //   const stationDetailsData = getValues('stationDetails');
+    //   metadataEditStationDetailsMutation.mutate(stationDetailsData, {
+    //     onSuccess: () => {
+    //       toast.success('Stationsinformation er opdateret');
+    //     },
+    //   });
+    // }
+    else {
       const unitData = getValues('unit');
       metadataEditUnitMutation.mutate(unitData, {
         onSuccess: () => {
@@ -478,84 +484,100 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       });
     }
   };
-  console.log('renreder');
+
+  const softValidateStationDetails = (stationDetails) => {
+    let warning = stationDetails !== undefined && stationDetails !== null;
+    if (stationDetails) {
+      const accessKey2 = stationDetails.accessKey;
+      const ressourcer2 = stationDetails.ressourcer;
+      const {accessKey, ressourcer} = stamdataStore.getInitialState().stationDetails;
+      if (accessKey2) {
+        warning = warning && accessKey && accessKey.length !== accessKey2.length;
+      }
+      if (ressourcer2) {
+        warning = warning && ressourcer && ressourcer.length !== ressourcer2.length;
+      }
+    }
+    return warning;
+  };
+
   return (
-    <FormProvider {...formMethods}>
-      <Box
+    <Box
+      sx={{
+        boxShadow: 2,
+        margin: 'auto',
+        width: {xs: window.innerWidth, md: 1080},
+        height: '100%',
+      }}
+    >
+      <Tabs
+        value={tabValue}
+        onChange={(_, newValue) => setTabValue(newValue)}
+        variant={matches ? 'scrollable' : 'fullWidth'}
+        aria-label="simple tabs example"
+        scrollButtons="auto"
         sx={{
-          boxShadow: 2,
-          margin: 'auto',
-          width: {xs: window.innerWidth, md: 1080},
-          height: '100%',
+          '& .MuiTab-root': {
+            height: tabsHeight,
+            minHeight: tabsHeight,
+          },
+          marginTop: 1,
         }}
       >
-        <Tabs
-          value={tabValue}
-          onChange={(_, newValue) => setTabValue(newValue)}
-          variant={matches ? 'scrollable' : 'fullWidth'}
-          aria-label="simple tabs example"
-          scrollButtons="auto"
-          sx={{
-            '& .MuiTab-root': {
-              height: tabsHeight,
-              minHeight: tabsHeight,
-            },
-            marginTop: 1,
-          }}
-        >
-          <Tab
-            value="0"
-            icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Lokation
-              </Typography>
-            }
-          />
-          <Tab
-            value="1"
-            disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
-            icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Tidsserie
-              </Typography>
-            }
-          />
-          <Tab
-            value="2"
-            disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
-            icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Udstyr
-              </Typography>
-            }
-          />
-          <Tab
-            value="3"
-            disabled={!metadata || (metadata && metadata.tstype_id !== 1)}
-            icon={
-              <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
-            }
-            label={
-              <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
-                Reference
-              </Typography>
-            }
-          />
-          {/* <Tab
-            value="4"
-            icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
-                Stationsinformation
-              </Typography>
-            }
-          /> */}
-        </Tabs>
-        <Divider />
-        <Box>
+        <Tab
+          value="0"
+          icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+              Lokation
+            </Typography>
+          }
+        />
+        <Tab
+          value="1"
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+          icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+              Tidsserie
+            </Typography>
+          }
+        />
+        <Tab
+          value="2"
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+          icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+              Udstyr
+            </Typography>
+          }
+        />
+        <Tab
+          value="3"
+          disabled={!metadata || (metadata && metadata.tstype_id !== 1)}
+          icon={
+            <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
+          }
+          label={
+            <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
+              Reference
+            </Typography>
+          }
+        />
+        <Tab
+          value="4"
+          icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
+              Stationsinformation
+            </Typography>
+          }
+        />
+      </Tabs>
+      <Divider />
+      <Box>
+        <FormProvider {...formMethods}>
           <TabPanel value={tabValue} index={'0'}>
             <LocationForm mode="normal" />
             <StamdataFooter
@@ -596,12 +618,12 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               <ReferenceForm canEdit={canEdit} ts_id={ts_id} />
             </FabWrapper>
           </TabPanel>
-          {/* <TabPanel value={tabValue} index={'4'}>
-            Kontaktinformation
-          </TabPanel> */}
-        </Box>
-        {import.meta.env.DEV && <DevTool control={control} />}
+        </FormProvider>
+        <TabPanel value={tabValue} index={'4'}>
+          <StationDetails mode={'normal'} metadata={metadata} />
+        </TabPanel>
       </Box>
-    </FormProvider>
+      {import.meta.env.DEV && <DevTool control={control} />}
+    </Box>
   );
 }

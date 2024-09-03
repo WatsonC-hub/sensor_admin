@@ -13,8 +13,25 @@ export enum TableTypes {
   LIST = 'list',
 }
 
+export enum MergeType {
+  RECURSIVEMERGE = 'merge',
+  SHALLOWMERGE = 'assign',
+}
+
 export enum CategoryType {
   Udstyr = 0,
-  Certifikat = 1,
-  Standard = 2,
+  Sikkerhed = 1,
+  Hygiejne = 2,
+  Certifikat = 3,
+  Standard = 4,
+}
+
+export enum AccessType {
+  Key = 'Nøgle',
+  Code = 'Kode',
+}
+
+export enum ContactInfoRole {
+  DataEjer = 'Data Ejer',
+  kontakter = 'Adgangskontakt',
 }

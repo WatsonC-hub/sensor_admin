@@ -1,8 +1,8 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {Ressourcer} from '~/features/stamdata/components/multiselect/types';
+import {Ressourcer} from '~/features/stamdata/components/stationDetails/multiselect/types';
 
 interface RessourcerBase {
   path: string;
@@ -11,21 +11,13 @@ interface RessourcerBase {
 
 interface RessourcerPost extends RessourcerBase {
   data: {
-    navn: string;
-    kategori: string;
-    ts_type_id?: Array<number>;
-    loc_type_id?: Array<number>;
-    forudvalgt: boolean;
+    ressourcer: Array<Ressourcer>;
   };
 }
 
 interface RessourcerPut extends RessourcerBase {
   data: {
-    navn: string;
-    kategori: string;
-    ts_type_id?: Array<number>;
-    loc_type_id?: Array<number>;
-    forudvalgt: boolean;
+    ressourcer: Array<Ressourcer>;
   };
 }
 
@@ -56,7 +48,8 @@ export const ressourcerDelOptions = {
   },
 };
 
-export const useRessourcer = () => {
+export const useRessourcer = (loc_id: number | undefined) => {
+  const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: ['ressourcer'],
     queryFn: async () => {
@@ -66,10 +59,26 @@ export const useRessourcer = () => {
     },
   });
 
+  const relation = useQuery({
+    queryKey: ['ressourcer', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<Ressourcer>>(
+        `/sensor_field/stamdata/ressourcer/${loc_id}`
+      );
+
+      return data;
+    },
+  });
+
   const post = useMutation({
     ...ressourcerPostOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['ressourcer'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['ressourcer', loc_id],
+      });
       toast.success('Ressourcer gemt');
     },
   });
@@ -77,7 +86,12 @@ export const useRessourcer = () => {
   const put = useMutation({
     ...ressourcerPutOptions,
     onSuccess: () => {
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['ressourcer'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['ressourcer', loc_id],
+      });
       toast.success('Ressourcer ændret');
     },
   });
@@ -86,9 +100,14 @@ export const useRessourcer = () => {
     ...ressourcerDelOptions,
     onSuccess: () => {
       toast.success('Ressourcer slettet');
-      get.refetch();
+      queryClient.invalidateQueries({
+        queryKey: ['ressourcer'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['ressourcer', loc_id],
+      });
     },
   });
 
-  return {get, post, put, del};
+  return {get, relation, post, put, del};
 };

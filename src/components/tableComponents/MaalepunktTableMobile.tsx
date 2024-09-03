@@ -123,10 +123,9 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
   return (
     <Box sx={setTableBoxStyle(320)} width={'100%'}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

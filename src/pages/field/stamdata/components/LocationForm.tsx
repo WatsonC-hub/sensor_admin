@@ -4,7 +4,6 @@ import {useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {authStore} from '~/state/store';
 
 import {getDTMQuota} from '../../fieldAPI';

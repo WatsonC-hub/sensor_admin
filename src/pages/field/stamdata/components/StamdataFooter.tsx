@@ -20,7 +20,6 @@ const StamdataFooter = ({cancel, nextTab, handleOpret, disabled, type, saveTitle
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
 
-  console.log(disabled);
   const handleSubmit = async () => {
     setShowAlert(true);
     setAlertTitle('Opret ' + type);
