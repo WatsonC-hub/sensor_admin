@@ -1,9 +1,10 @@
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {useEffect} from 'react';
+import {useContext, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
+import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
 
 import {getDTMQuota} from '../../fieldAPI';
@@ -24,9 +25,9 @@ export default function LocationForm({mode, disable = false}: Props) {
     refetch: refetchDTM,
   } = useQuery({
     queryKey: ['dtm'],
-    queryFn: () => getDTMQuota(getValues()?.location.x, getValues()?.location.y),
+    queryFn: () => getDTMQuota(getValues('location.x'), getValues('location.y')),
     refetchOnWindowFocus: false,
-    enabled: false,
+    enabled: true,
   });
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function LocationForm({mode, disable = false}: Props) {
 
   const {watch, control, setValue, getValues} = useFormContext();
 
+  const metadata = useContext(MetadataContext);
   const watchTerrainqual = watch('location.terrainqual', '');
 
   // if (mode === 'modal' && getValues().location && getValues().location.loc_id)
@@ -47,9 +49,8 @@ export default function LocationForm({mode, disable = false}: Props) {
   //   });
 
   const gridsize = mode === 'modal' ? 12 : 6;
-  const superUser = authStore().superUser;
-  console.log('values', getValues());
-
+  const superUser = authStore((store) => store.superUser);
+  console.log('metadata?.unit_uuid', metadata?.unit_uuid);
   return (
     // <FormProvider {...formMethods}>
     <Grid container spacing={2} alignItems="center">
@@ -98,7 +99,9 @@ export default function LocationForm({mode, disable = false}: Props) {
                   value={value}
                   setValue={onChange}
                   error={error}
-                  disable={disable}
+                  disable={
+                    disable || (metadata?.unit_uuid !== null && metadata?.unit_uuid !== undefined)
+                  }
                 />
               )}
             />

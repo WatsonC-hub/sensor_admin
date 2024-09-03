@@ -1,4 +1,4 @@
-import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography} from '@mui/material';
@@ -102,8 +102,8 @@ export default function LocationRouter() {
                   ]
                 : []),
               {
-                title: 'Opret station',
-                icon: <AddLocationAltIcon fontSize="medium" />,
+                title: 'Opret tidsserie',
+                icon: <AddIcon />,
                 onClick: () => {
                   createStamdata();
                   // navigate('/field/stamdata');

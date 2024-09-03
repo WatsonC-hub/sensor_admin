@@ -82,8 +82,6 @@ const NotificationList = () => {
 
   const badgeColor = getColor(notifications[maxFlagIndex]);
 
-  console.log('notifications', notifications);
-
   return (
     <div>
       <IconButton

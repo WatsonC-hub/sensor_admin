@@ -1,6 +1,5 @@
-import {Typography} from '@mui/material';
-import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
-import Chip from '@mui/material/Chip';
+import {Chip, Typography} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
 import {FieldError} from 'react-hook-form';
@@ -10,9 +9,9 @@ import {authStore} from '~/state/store';
 
 interface Project {
   project_no: string;
+  customer_name: string | null;
+  project_info: string | null;
 }
-
-const filter = createFilterOptions<string>();
 
 interface LocationProjectsProps {
   value: string;
@@ -32,46 +31,23 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
     },
   });
 
-  const superUser = authStore().superUser;
+  const superUser = authStore((store) => store.superUser);
 
   return (
     <>
       <Autocomplete
-        //   freeSolo
         forcePopupIcon={false}
-        value={value ?? ''}
+        value={options?.find((option) => option.project_no == value) ?? null}
         onChange={(event, newValue) => {
-          setValue(newValue ? newValue : '');
+          setValue(newValue ? newValue.project_no : '');
         }}
         id="tags-standard"
-        options={(options && options.map((option) => option.project_no)) ?? []}
+        options={options ?? []}
         disabled={disable}
         getOptionLabel={(option) => {
-          return `${option}`;
+          return `${option.project_no} ${option.customer_name ? ' - ' + option.customer_name : ''} ${option.project_info ? ' - ' + option.project_info : ''}`;
         }}
-        renderTags={(value, getTagProps) => {
-          return value.map((option, index) => (
-            <Chip
-              variant="outlined"
-              label={
-                <>
-                  <Typography display="inline" variant="body2">
-                    {option}
-                  </Typography>
-                </>
-              }
-              {...getTagProps({index})}
-              key={index}
-            />
-          ));
-        }}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <Typography display="inline" variant="body2">
-              {option}
-            </Typography>
-          </li>
-        )}
+        isOptionEqualToValue={(option, value) => option.project_no === value.project_no}
         renderInput={(params) => (
           <TextField
             {...params}
@@ -80,8 +56,8 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
             variant="outlined"
             error={Boolean(error) && superUser}
             helperText={Boolean(error) && superUser && error?.message}
-            label="Projekt nummer"
-            placeholder="Vælg projekt nummer..."
+            label="Projektnummer"
+            placeholder="Vælg projektnummer..."
             sx={{
               pb: 0,
               '& .MuiInputBase-input.Mui-disabled': {
@@ -99,17 +75,6 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
             }}
           />
         )}
-        filterOptions={(options, params) => {
-          const filtered = filter(options, params);
-          const {inputValue} = params;
-
-          const isExisting = options.some((option) => inputValue === option);
-          if (inputValue !== '' && !isExisting) {
-            filtered.push(inputValue);
-          }
-
-          return filtered;
-        }}
         selectOnFocus
         clearOnBlur
         handleHomeEndKeys

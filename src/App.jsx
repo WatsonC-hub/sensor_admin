@@ -53,8 +53,6 @@ function App() {
       </>
     );
   }
-
-  console.log('App');
   return (
     <ErrorBoundary
       FallbackComponent={() => (

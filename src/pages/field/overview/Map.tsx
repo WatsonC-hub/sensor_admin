@@ -659,7 +659,6 @@ function Map({data, loading}: MapProps) {
   }, [parkings, parkingLayerRef.current, filteredData]);
 
   useEffect(() => {
-    console.log('maprender');
     mapRef.current = renderMap();
     parkingLayerRef.current = L.featureGroup();
     layerRef.current = L.featureGroup().addTo(mapRef.current);

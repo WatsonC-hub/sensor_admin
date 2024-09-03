@@ -314,6 +314,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   schemaData = locationSchema.safeParse({
     location: {
       ...metadata,
+      initial_project_no: metadata?.projectno,
     },
   });
 
@@ -322,6 +323,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     schemaData = timeseriesSchema.safeParse({
       location: {
         ...metadata,
+        initial_project_no: metadata?.projectno,
       },
       timeseries: {
         ...metadata,
@@ -332,6 +334,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     schemaData = metadataPutSchema.safeParse({
       location: {
         ...metadata,
+        initial_project_no: metadata?.projectno,
       },
       timeseries: {
         ...metadata,
@@ -450,7 +453,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         }}
       >
         <Tabs
-          value={tabValue}
+          value={tabValue ?? '0'}
           onChange={(_, newValue) => setTabValue(newValue)}
           variant={matches ? 'scrollable' : 'fullWidth'}
           aria-label="simple tabs example"

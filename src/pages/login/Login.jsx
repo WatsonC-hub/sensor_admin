@@ -38,7 +38,6 @@ export default function Login() {
         setLoginExpired(false);
       })
       .catch((err) => {
-        console.log(err);
         setLoginError(err.response.data.detail);
       });
   };
