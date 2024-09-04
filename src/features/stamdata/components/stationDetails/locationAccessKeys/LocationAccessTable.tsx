@@ -109,16 +109,17 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
       return !isMobile
         ? {
             onDoubleClick: () => {
-              console.log('Clicking');
               setValue('adgangsforhold', row.original);
               table.setEditingRow(row);
             },
           }
         : {
-            onClick: () => {
-              console.log('Clicking');
-              setValue('adgangsforhold', row.original);
-              table.setEditingRow(row);
+            onClick: (e) => {
+              console.log((e.target as HTMLElement).innerText);
+              if ((e.target as HTMLElement).innerText) {
+                setValue('adgangsforhold', row.original);
+                table.setEditingRow(row);
+              }
             },
           };
     },

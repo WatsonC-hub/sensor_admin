@@ -105,10 +105,12 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
             },
           }
         : {
-            onClick: () => {
+            onClick: (e) => {
               console.log('Clicking');
-              setValue('contact_info', row.original);
-              table.setEditingRow(row);
+              if ((e.target as HTMLElement).innerText) {
+                setValue('contact_info', row.original);
+                table.setEditingRow(row);
+              }
             },
           };
     },
