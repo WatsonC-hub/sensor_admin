@@ -19,14 +19,13 @@ import {tabsHeight} from '~/consts';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import AddLocationForm from '~/pages/field/stamdata/AddLocationForm';
+import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
+import LocationForm from '~/pages/field/stamdata/components/LocationForm';
+import StamdataFooter from '~/pages/field/stamdata/components/StamdataFooter';
+import TimeseriesForm from '~/pages/field/stamdata/components/TimeseriesForm';
+import UnitForm from '~/pages/field/stamdata/components/UnitForm';
 import {stamdataStore} from '~/state/store';
-
-import AddLocationForm from './AddLocationForm';
-import AddUnitForm from './AddUnitForm';
-import LocationForm from './components/LocationForm';
-import StamdataFooter from './components/StamdataFooter';
-import TimeseriesForm from './components/TimeseriesForm';
-import UnitForm from './components/UnitForm';
 
 function LocationChooser({setLocationDialogOpen, setSelectedLoc, selectedLoc, locations}) {
   const formMethods = useFormContext();

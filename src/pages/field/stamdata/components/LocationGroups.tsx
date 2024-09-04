@@ -6,9 +6,8 @@ import {useQuery} from '@tanstack/react-query';
 
 import Button from '~/components/Button';
 import {getGroupLink} from '~/helpers/links';
+import {apiClient} from '~/pages/field/fieldAPI';
 import {Group} from '~/types';
-
-import {apiClient} from '../../fieldAPI';
 
 const filter = createFilterOptions<Group>({
   ignoreCase: true,

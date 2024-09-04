@@ -2,8 +2,8 @@ import {Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import MaalepunktTableDesktop from './components/tableComponents/MaalepunktTableDesktop';
-import MaalepunktTableMobile from './components/tableComponents/MaalepunktTableMobile';
+import MaalepunktTableDesktop from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableDesktop';
+import MaalepunktTableMobile from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableMobile';
 
 export default function MaalepunktTable(props) {
   const theme = useTheme();

@@ -5,9 +5,8 @@ import {qaNotifications} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useDrawerContext} from '~/state/contexts';
-
-import NotificationIcon from './NotificationIcon';
 
 interface SensorContentProps {
   data: NotificationMap;

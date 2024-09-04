@@ -6,7 +6,7 @@ import {groupBy, map, maxBy, sortBy, uniqBy} from 'lodash';
 import moment from 'moment';
 import React, {useEffect} from 'react';
 
-import NotificationRow from './NotificationRow';
+import NotificationRow from '~/pages/admin/notifikationer/NotificationRow';
 
 const expandedAtom = atom([]);
 const typeAheadAtom = atom('');

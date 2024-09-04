@@ -5,10 +5,9 @@ import {Box, Tooltip} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
 
+import GraphActionModal from '~/pages/admin/kvalitetssikring/GraphActionModal';
+import GraphButton from '~/pages/admin/kvalitetssikring/GraphButton';
 import {qaSelection} from '~/state/atoms';
-
-import GraphActionModal from './GraphActionModal';
-import GraphButton from './GraphButton';
 
 const GraphActions = () => {
   const selectedData = useAtomValue(qaSelection);

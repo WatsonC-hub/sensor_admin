@@ -9,10 +9,9 @@ import {useParams} from 'react-router-dom';
 
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/components/UpdateNotificationModal';
+import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
-
-import {useNotificationOverview} from '../hooks/query/useNotificationOverview';
-import {useTaskMutation} from '../hooks/query/useTaskMutation';
 
 // Mock data for notifications
 const NotificationList = () => {

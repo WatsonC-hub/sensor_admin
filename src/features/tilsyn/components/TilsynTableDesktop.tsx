@@ -4,6 +4,7 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
@@ -12,8 +13,6 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
-
-import RenderInternalActions from '../../../components/tableComponents/RenderInternalActions';
 
 interface Props {
   data: TilsynItem[] | undefined;

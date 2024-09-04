@@ -10,15 +10,14 @@ import {
   useMaterialReactTable,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-// import {stationTableAtom} from '~/state/atoms';
 
 const TableComponent = ({data, columns, ...rest}) => {
   const [stateAndHandlers, resetState] = useStatefullTableAtom('testtable');
-  const {isTouch, isMobile} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
 
   const table = useMaterialReactTable({
     columns,

@@ -5,8 +5,7 @@ import React from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-
-import LastMPCard from './LastMPCard';
+import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 
 const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddMPOpen}) => {
   const queryClient = useQueryClient();

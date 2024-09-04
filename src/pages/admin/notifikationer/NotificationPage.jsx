@@ -17,12 +17,11 @@ import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
+import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import NotificationTree from '~/pages/admin/notifikationer/NotificationTree';
 import ServiceMap from '~/pages/admin/notifikationer/ServiceMap';
-
-import {useNotificationOverview} from '../../../hooks/query/useNotificationOverview';
-import useBreakpoints from '../../../hooks/useBreakpoints';
-import {authStore} from '../../../state/store';
+import {authStore} from '~/state/store';
 
 const getNavigation = (item) => {
   switch (item.color) {

@@ -4,8 +4,7 @@ import React from 'react';
 import {useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
-
-import AlgorithmCard from './AlgorithmCard';
+import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 
 const Algorithms = () => {
   let params = useParams();

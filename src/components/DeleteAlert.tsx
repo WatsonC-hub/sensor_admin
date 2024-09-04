@@ -4,7 +4,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import React from 'react';
 
-import Button from './Button';
+import Button from '~/components/Button';
 
 type DeleteAlertProps = {
   measurementId?: number;
