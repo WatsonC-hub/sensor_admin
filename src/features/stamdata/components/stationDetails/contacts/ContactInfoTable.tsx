@@ -66,6 +66,7 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
       {
         header: 'Email',
         accessorKey: 'email',
+        size: 20,
       },
       {
         header: 'Organisation',
@@ -106,13 +107,20 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
           }
         : {
             onClick: (e) => {
-              console.log('Clicking');
+              console.log((e!.target as HTMLElement).ondblclick);
               if ((e.target as HTMLElement).innerText) {
                 setValue('contact_info', row.original);
                 table.setEditingRow(row);
               }
             },
           };
+      // return {
+      //   onDoubleClick: (e) => {
+      //     console.log(e);
+      //     setValue('contact_info', row.original);
+      //     table.setEditingRow(row);
+      //   },
+      // };
     },
     renderEditRowDialogContent: () => {
       return (
@@ -140,9 +148,11 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
     },
-    initialState: {
-      columnVisibility: {org: false, telefonnummer: false, kommentar: false, email: false},
-    },
+    initialState: isMobile
+      ? {
+          columnVisibility: {org: false, telefonnummer: false, kommentar: false, email: false},
+        }
+      : {},
   };
 
   const table = useTable<ContactTable>(

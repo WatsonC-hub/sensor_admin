@@ -27,7 +27,6 @@ const data = {
 const StationDetails = ({mode, disable}: Props) => {
   const {isMobile} = useBreakpoints();
   const superUser = authStore().superUser;
-
   const schema = stationDetailsSchema;
 
   const formMethods = useForm({
@@ -41,13 +40,13 @@ const StationDetails = ({mode, disable}: Props) => {
   return (
     <FormProvider {...formMethods}>
       <Grid container spacing={1}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <Typography ml={2} py={0} variant="h6">
             Adgangsinformation
           </Typography>
           <LocationAccess />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <Typography ml={2} py={0} variant="h6">
             Kontaktinformation
           </Typography>

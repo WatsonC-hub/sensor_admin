@@ -148,9 +148,11 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
     },
-    initialState: {
-      columnVisibility: {koden: false, placering: false, contact_name: false, kommentar: false},
-    },
+    initialState: isMobile
+      ? {
+          columnVisibility: {koden: false, placering: false, contact_name: false, kommentar: false},
+        }
+      : {},
   };
 
   const table = useTable<AccessTable>(
