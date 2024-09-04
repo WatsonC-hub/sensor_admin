@@ -9,6 +9,7 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {initialContactData} from '~/consts';
 import {ContactInfoRole, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
@@ -36,27 +37,20 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   const {setValue, trigger, getValues, clearErrors} = useFormContext();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
+  const {isMobile} = useBreakpoints();
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
       {
         header: 'Navn',
         accessorKey: 'navn',
-        size: 20,
-      },
-      {
-        header: 'Organisation',
-        accessorKey: 'org',
-        size: 20,
-      },
-      {
-        header: 'Telefon nummer',
-        accessorKey: 'telefonnummer',
+        enableColumnActions: false,
         size: 20,
       },
       {
         header: 'Rolle',
         id: 'rolle',
+        enableColumnActions: false,
         accessorFn: (row) => {
           switch (row.rolle) {
             case ContactInfoRole.DataEjer:
@@ -67,6 +61,20 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
               return '';
           }
         },
+        size: 20,
+      },
+      {
+        header: 'Email',
+        accessorKey: 'email',
+      },
+      {
+        header: 'Organisation',
+        accessorKey: 'org',
+        size: 20,
+      },
+      {
+        header: 'Telefon nummer',
+        accessorKey: 'telefonnummer',
         size: 20,
       },
       {
@@ -86,6 +94,34 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     enableRowActions: true,
     muiTablePaperProps: {},
     muiTableContainerProps: {},
+    enableEditing: true,
+    editDisplayMode: 'modal',
+    muiTableBodyRowProps: ({row, table}) => {
+      return !isMobile
+        ? {
+            onDoubleClick: () => {
+              setValue('contact_info', row.original);
+              table.setEditingRow(row);
+            },
+          }
+        : {
+            onClick: () => {
+              console.log('Clicking');
+              setValue('contact_info', row.original);
+              table.setEditingRow(row);
+            },
+          };
+    },
+    renderEditRowDialogContent: () => {
+      return (
+        <Box py={4} px={2} boxShadow={6}>
+          <StationContactInfo modal={true} isUser={true} tableModal={true} />
+        </Box>
+      );
+    },
+    onEditingRowCancel: () => {
+      setValue('contact_info', null);
+    },
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
@@ -101,6 +137,9 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     ),
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
+    },
+    initialState: {
+      columnVisibility: {org: false, telefonnummer: false, kommentar: false, email: false},
     },
   };
 

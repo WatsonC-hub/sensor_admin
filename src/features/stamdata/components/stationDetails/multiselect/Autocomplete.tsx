@@ -1,5 +1,5 @@
 import {ExpandLess, ExpandMore} from '@mui/icons-material';
-import {Collapse, List, ListItemText, Typography} from '@mui/material';
+import {Collapse, List, ListItemText, Popper, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
@@ -103,8 +103,18 @@ export default function CheckboxesTags({value, setValue, onBlur, ...props}: Chec
             value={selected ?? []}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
+            PopperComponent={(props) => <Popper {...props} placement="top" />}
+            componentsProps={{
+              popper: {
+                modifiers: [
+                  {
+                    name: 'flip',
+                    enabled: false,
+                  },
+                ],
+              },
+            }}
             renderGroup={({key, group, children}) => {
-              console.log(children);
               return (
                 <>
                   <ListItemText id={key} onClick={() => handleClick(group)}>
@@ -122,16 +132,14 @@ export default function CheckboxesTags({value, setValue, onBlur, ...props}: Chec
                     role="list"
                     sx={{bgcolor: 'Background.paper'}}
                   >
-                    <li {...props}>
-                      <Collapse
-                        key={group}
-                        in={collapsed.includes(group)}
-                        timeout="auto"
-                        unmountOnExit
-                      >
-                        {children}
-                      </Collapse>
-                    </li>
+                    <Collapse
+                      key={group}
+                      in={collapsed.includes(group)}
+                      timeout="auto"
+                      unmountOnExit
+                    >
+                      {children}
+                    </Collapse>
                   </List>
                 </>
               );

@@ -40,16 +40,14 @@ const StationDetails = ({mode, disable}: Props) => {
 
   return (
     <FormProvider {...formMethods}>
-      <Grid container spacing={1} my={0.5} justifyContent="center" alignItems="center">
-        <Grid item xs={12} sm={12}>
+      <Grid container spacing={1}>
+        <Grid item xs={12} sm={6}>
           <Typography ml={2} py={0} variant="h6">
             Adgangsinformation
           </Typography>
-        </Grid>
-        <Grid item xs={12} sm={12}>
           <LocationAccess />
         </Grid>
-        <Grid item xs={12} sm={12}>
+        <Grid item xs={12} sm={6}>
           <Typography ml={2} py={0} variant="h6">
             Kontaktinformation
           </Typography>

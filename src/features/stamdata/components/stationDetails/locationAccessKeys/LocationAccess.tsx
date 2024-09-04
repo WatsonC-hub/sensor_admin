@@ -102,7 +102,7 @@ const LocationAccess = () => {
     });
   };
   return (
-    <Grid container spacing={1} my={0.5} justifyContent="center" alignItems="center">
+    <Grid container spacing={1} my={1} justifyContent="center" alignItems="center">
       {loc_id && (
         <>
           <Grid item xs={12} md={12} sm={12}>
@@ -119,9 +119,7 @@ const LocationAccess = () => {
               </Button>
             </Box>
           </Grid>
-          <Grid item>
-            <Divider />
-          </Grid>
+
           <Grid item xs={12} sm={12}>
             <LocationAccessTable
               data={locationAccess}

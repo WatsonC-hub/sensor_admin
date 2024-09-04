@@ -10,6 +10,7 @@ import RenderInternalActions from '~/components/tableComponents/RenderInternalAc
 import {initialLocationAccessData} from '~/consts';
 import {AccessType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {AccessTable} from '~/types';
@@ -38,6 +39,7 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const params = useParams();
   const loc_id = parseInt(params.locid!);
+  const {isMobile} = useBreakpoints();
 
   const navnLabel = watch('adgangsforhold.type');
   const columns = useMemo<MRT_ColumnDef<AccessTable>[]>(
@@ -45,6 +47,7 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
       {
         header: 'Type',
         id: 'type',
+        enableColumnActions: false,
         accessorFn: (row) => {
           switch (row.type) {
             case AccessType.Code:
@@ -60,6 +63,7 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
       {
         header: 'Navn',
         accessorKey: 'navn',
+        enableColumnActions: false,
         size: 120,
       },
       {
@@ -99,6 +103,35 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     enableRowActions: true,
     muiTablePaperProps: {},
     muiTableContainerProps: {},
+    enableEditing: true,
+    editDisplayMode: 'modal',
+    muiTableBodyRowProps: ({row, table}) => {
+      return !isMobile
+        ? {
+            onDoubleClick: () => {
+              console.log('Clicking');
+              setValue('adgangsforhold', row.original);
+              table.setEditingRow(row);
+            },
+          }
+        : {
+            onClick: () => {
+              console.log('Clicking');
+              setValue('adgangsforhold', row.original);
+              table.setEditingRow(row);
+            },
+          };
+    },
+    renderEditRowDialogContent: () => {
+      return (
+        <Box py={4} px={2} boxShadow={6}>
+          <LocationAccessFormDialog loc_id={loc_id} />
+        </Box>
+      );
+    },
+    onEditingRowCancel: () => {
+      setValue('adgangsforhold', null);
+    },
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
@@ -113,6 +146,9 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     ),
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
+    },
+    initialState: {
+      columnVisibility: {koden: false, placering: false, contact_name: false, kommentar: false},
     },
   };
 

@@ -6,10 +6,11 @@ import {ContactInfoRole} from '~/helpers/EnumHelper';
 
 interface modalProps {
   modal: boolean;
+  tableModal?: boolean;
   isUser: boolean;
 }
 
-export default function StationContactInfo({modal, isUser}: modalProps) {
+export default function StationContactInfo({modal, isUser, tableModal = false}: modalProps) {
   return (
     <Box>
       <Collapse in={true} sx={{width: 'inherit'}}>
@@ -30,7 +31,6 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
           <Grid item xs={12} sm={6}>
             <FormInput
               name="contact_info.telefonnummer"
-              defaultValue={null}
               label="Tlf. nummer"
               placeholder="Telefonnummer..."
               type={'number'}
@@ -61,7 +61,7 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
               label="Organisation"
               placeholder="Organisationen kontakten er tilknyttet..."
               fullWidth
-              disabled={true}
+              disabled={isUser}
               sx={{mb: 2}}
             />
           </Grid>
@@ -70,6 +70,7 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
               name="contact_info.rolle"
               label="Rolle"
               placeholder="Hvilken rolle har kontakten..."
+              disabled={tableModal}
               select
               required
               fullWidth
@@ -86,6 +87,7 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
             <FormInput
               name="contact_info.kommentar"
               label="Kommentar"
+              disabled={tableModal}
               multiline
               placeholder="Eks. kan kun kontaktes mellem 9-10 på telefonnummer..."
               fullWidth
