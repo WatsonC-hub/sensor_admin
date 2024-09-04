@@ -29,37 +29,28 @@ const LocationAccessFormDialog = ({loc_id, editMode = false}: Props) => {
     <Box>
       {contacts && (
         <Collapse in={true} sx={{width: 'inherit'}}>
-          <Grid container mt={1} alignItems="center">
-            <Grid item xs={12} sm={12}>
+          <Grid container spacing={1}>
+            <Grid item xs={12} sm={6}>
               <FormInput
                 name="adgangsforhold.type"
                 label="Type"
+                placeholder="Vælg en type..."
                 select
                 required
                 fullWidth
                 disabled={location_access_id && location_access_id !== -1}
                 style={{
-                  marginBottom: 16,
-                  marginTop: 16,
+                  marginTop: 12,
                 }}
               >
+                <MenuItem value={'-1'} key={'-1'}>
+                  Vælg type
+                </MenuItem>
                 <MenuItem value={AccessType.Code}>Kode</MenuItem>
                 <MenuItem value={AccessType.Key}>Nøgle</MenuItem>
               </FormInput>
             </Grid>
-            <Grid item xs={12} sm={12}>
-              <FormInput
-                name="adgangsforhold.navn"
-                label={navnLabel === AccessType.Code ? 'Navn' : 'Nøgle ID.'}
-                required
-                fullWidth
-                disabled={location_access_id && location_access_id !== -1 && !editMode}
-                style={{
-                  marginBottom: 12,
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
+            <Grid item xs={12} sm={6}>
               <Controller
                 name="adgangsforhold.contact_id"
                 control={control}
@@ -83,17 +74,18 @@ const LocationAccessFormDialog = ({loc_id, editMode = false}: Props) => {
                     }}
                     isOptionEqualToValue={(option, value) => {
                       if (typeof value === 'string') return option && value && option.id === value;
+
                       return option && value && option.id === value.id;
                     }}
                     value={value ?? null}
                     onChange={(event, value) => {
-                      console.log(value);
                       if (value) onChange(value.id);
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
                         required
+                        fullWidth
                         InputLabelProps={{shrink: true}}
                         value={value && contacts.find((contact) => contact.id === value.id)?.navn}
                         error={
@@ -109,7 +101,6 @@ const LocationAccessFormDialog = ({loc_id, editMode = false}: Props) => {
                         placeholder="Vælg Kontakt"
                         sx={{
                           pb: get(errors, 'adgangsforhold.contact_id') ? 0 : 2,
-                          mt: 1,
                           '& .MuiInputBase-input.Mui-disabled': {
                             WebkitTextFillColor: '#000000',
                           },
@@ -118,6 +109,9 @@ const LocationAccessFormDialog = ({loc_id, editMode = false}: Props) => {
                           '& .MuiOutlinedInput-root': {
                             '& > fieldset': {borderColor: 'primary.main'},
                           },
+                        }}
+                        style={{
+                          marginTop: 12,
                         }}
                       />
                     )}
@@ -149,43 +143,57 @@ const LocationAccessFormDialog = ({loc_id, editMode = false}: Props) => {
                 )}
               />
             </Grid>
-            <Grid item xs={12} sm={12}>
-              {navnLabel === AccessType.Code ? (
+            <Grid item xs={12} sm={6}>
+              {navnLabel && navnLabel !== '-1' && (
                 <FormInput
-                  name="adgangsforhold.koden"
-                  label={'Koden på låsen'}
+                  name="adgangsforhold.navn"
+                  label={navnLabel === AccessType.Code ? 'Navn' : 'Nøgle ID.'}
+                  placeholder={
+                    navnLabel === AccessType.Code
+                      ? 'Eks. identificerbart navn...'
+                      : 'Eks. et identificerbart tal...'
+                  }
                   required
-                  disabled={location_access_id && location_access_id !== -1 && !editMode}
                   fullWidth
-                  style={{
-                    marginBottom: 8,
-                  }}
-                />
-              ) : (
-                <FormInput
-                  name="adgangsforhold.placering"
-                  label={'Udleveres på adresse'}
-                  required
+                  style={{marginBottom: 12}}
                   disabled={location_access_id && location_access_id !== -1 && !editMode}
-                  fullWidth
-                  style={{
-                    marginBottom: 8,
-                  }}
                 />
+              )}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              {navnLabel && navnLabel !== '-1' && (
+                <>
+                  {navnLabel === AccessType.Code ? (
+                    <FormInput
+                      name="adgangsforhold.koden"
+                      label={'Koden på låsen'}
+                      placeholder="Eks. kode 2024 eller 3962..."
+                      required
+                      disabled={location_access_id && location_access_id !== -1 && !editMode}
+                      fullWidth
+                    />
+                  ) : (
+                    <FormInput
+                      name="adgangsforhold.placering"
+                      label={'Udleveres på adresse'}
+                      placeholder="Eks. Østre Alle, 9000 Aalborg..."
+                      required
+                      disabled={location_access_id && location_access_id !== -1 && !editMode}
+                      fullWidth
+                    />
+                  )}
+                </>
               )}
             </Grid>
             <Grid item xs={12} sm={12}>
               <FormInput
                 name="adgangsforhold.kommentar"
                 label={'Kommentar'}
+                placeholder="F.eks. at det er tredje hænge lås eller det er koden til en dør..."
                 disabled={location_access_id && location_access_id !== -1 && !editMode}
                 fullWidth
-                sx={{
-                  mb: 2,
-                }}
               />
             </Grid>
-            <Grid item xs={12} sm={12}></Grid>
           </Grid>
         </Collapse>
       )}

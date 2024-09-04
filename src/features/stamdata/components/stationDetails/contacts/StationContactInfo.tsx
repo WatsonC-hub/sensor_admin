@@ -18,6 +18,7 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
             <FormInput
               name="contact_info.navn"
               label="Navn"
+              placeholder="Navn på kontakten..."
               required
               fullWidth
               disabled={!modal || isUser}
@@ -31,6 +32,7 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
               name="contact_info.telefonnummer"
               defaultValue={null}
               label="Tlf. nummer"
+              placeholder="Telefonnummer..."
               type={'number'}
               fullWidth
               disabled={!modal || isUser}
@@ -43,6 +45,7 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
             <FormInput
               name="contact_info.email"
               label="Email"
+              placeholder="Email på kontakten..."
               type={'email'}
               required
               fullWidth
@@ -56,6 +59,7 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
             <FormInput
               name="contact_info.org"
               label="Organisation"
+              placeholder="Organisationen kontakten er tilknyttet..."
               fullWidth
               disabled={true}
               sx={{mb: 2}}
@@ -65,21 +69,26 @@ export default function StationContactInfo({modal, isUser}: modalProps) {
             <FormInput
               name="contact_info.rolle"
               label="Rolle"
+              placeholder="Hvilken rolle har kontakten..."
               select
               required
               fullWidth
               sx={{mb: 2}}
             >
+              <MenuItem value={'-1'} key={'-1'}>
+                Vælg type
+              </MenuItem>
               <MenuItem value={ContactInfoRole.DataEjer}>Data Ejer</MenuItem>
               <MenuItem value={ContactInfoRole.kontakter}>Kontakt</MenuItem>
             </FormInput>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <FormInput
               name="contact_info.kommentar"
               label="Kommentar"
+              multiline
+              placeholder="Eks. kan kun kontaktes mellem 9-10 på telefonnummer..."
               fullWidth
-              // disabled={!modal}
               sx={{
                 mb: 2,
               }}

@@ -92,20 +92,8 @@ export const useContactInfo = (loc_id: number | undefined) => {
       },
       staleTime: 10 * 1000,
     });
-    // const {data} = searched_contacts;
     return searched_contacts;
   };
-
-  const relevant_contacts = useQuery({
-    queryKey: ['relevant_contacts'],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<ContactInfo>>(
-        `/sensor_field/stamdata/relevant_contacts/${loc_id}`
-      );
-      return data;
-    },
-    enabled: loc_id !== undefined && loc_id !== null,
-  });
 
   const post = useMutation({
     ...contactInfoPostOptions,
@@ -139,5 +127,5 @@ export const useContactInfo = (loc_id: number | undefined) => {
     },
   });
 
-  return {get, get_all, useSearchContact, post, put, del, relevant_contacts};
+  return {get, get_all, useSearchContact, post, put, del};
 };

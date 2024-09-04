@@ -7,6 +7,7 @@ import {useParams} from 'react-router-dom';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {initialLocationAccessData} from '~/consts';
 import {AccessType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -30,23 +31,15 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const initialData = {
-  navn: '',
-  type: '',
-  contact_id: null,
-  placering: '',
-  koden: '',
-  kommentar: '',
-};
-
 const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Props) => {
   const [locationAccessID, setLocationAccessID] = useState<number>();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const {setValue, trigger, getValues} = useFormContext();
+  const {setValue, trigger, getValues, watch, clearErrors} = useFormContext();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const params = useParams();
   const loc_id = parseInt(params.locid!);
 
+  const navnLabel = watch('adgangsforhold.type');
   const columns = useMemo<MRT_ColumnDef<AccessTable>[]>(
     () => [
       {
@@ -109,7 +102,6 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          console.log(row.original);
           setValue('adgangsforhold', row.original);
           setOpenContactInfoDialog(true);
         }}
@@ -135,6 +127,7 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
 
   const handleClose = () => {
     setValue('adgangsforhold', {});
+    clearErrors('adgangsforhold');
     setOpenContactInfoDialog(false);
   };
 
@@ -146,7 +139,7 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     editLocationAccess(details);
 
     setOpenContactInfoDialog(!result);
-    setValue('adgangsforhold', initialData);
+    setValue('adgangsforhold', initialLocationAccessData);
   };
 
   return (
@@ -161,8 +154,9 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
         open={openContactInfoDialog}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
+        fullWidth
       >
-        <DialogTitle id="form-dialog-title">Ændre kontakt information</DialogTitle>
+        <DialogTitle id="form-dialog-title">Ændre adgangsinformation</DialogTitle>
         <DialogContent>
           <LocationAccessFormDialog loc_id={loc_id} editMode={true} />
         </DialogContent>
@@ -171,7 +165,7 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
             Annuller
           </Button>
           <Button onClick={handleSave} bttype="primary">
-            Ændre kontakt
+            Ændre {navnLabel && navnLabel.toLowerCase()}
           </Button>
         </DialogActions>
       </Dialog>

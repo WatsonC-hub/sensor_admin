@@ -36,7 +36,9 @@ const stationDetailsSchema = z.object({
       .string({required_error: 'Email feltet skal udfyldes'})
       .email('Det skal være en valid email'),
     kommentar: z.string().nullish(),
-    rolle: z.string({required_error: 'Der skal vælges en værdi fra listen'}),
+    rolle: z
+      .string({required_error: 'Der skal vælges en værdi fra listen'})
+      .min(3, 'Der skal vælges en værdi fra listen'),
     user_id: z.string().nullish(),
   }),
   adgangsforhold: z
@@ -44,7 +46,7 @@ const stationDetailsSchema = z.object({
       id: z.number().nullish(),
       type: z
         .string({required_error: 'En type skal vælges ud fra listen'})
-        .min(1, 'En type skal vælges ud fra listen'),
+        .min(3, 'En type skal vælges ud fra listen'),
       navn: z.string({required_error: 'Feltet skal udfyldes'}).min(1, 'Feltet skal udfyldes'),
       contact_id: z.string().min(1, 'Feltet skal udfyldes').nullish(),
       placering: z.string().optional().nullish(),
@@ -52,9 +54,9 @@ const stationDetailsSchema = z.object({
       kommentar: z.string().optional(),
     })
     .refine(
-      ({placering, koden}) => placering && koden && placering === '' && koden === '',
+      ({placering, koden}) => placering === '' || koden === '',
       ({type}) => {
-        if (type !== '' && type === AccessType.Key)
+        if (type !== '-1' && type === AccessType.Key)
           return {
             message: 'Udleveres på adresse felt skal udfyldes',
             path: ['placering'],

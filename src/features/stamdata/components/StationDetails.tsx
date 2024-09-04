@@ -1,8 +1,9 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Grid, Typography} from '@mui/material';
-import React, {useCallback, useEffect} from 'react';
+import React from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 
+import {initialContactData, initialLocationAccessData} from '~/consts';
 import {stationDetailsSchema} from '~/helpers/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {authStore} from '~/state/store';
@@ -18,24 +19,9 @@ type Props = {
 };
 
 const data = {
-  adgangsforhold: {
-    navn: '',
-    type: '',
-    contact_id: '',
-    placering: '',
-    koden: '',
-    kommentar: '',
-  },
-  contact_info: {
-    navn: '',
-    telefonnummer: '',
-    email: '',
-    rolle: '',
-    kommentar: '',
-    user_id: null,
-    org: '',
-    relation_id: -1,
-  },
+  adgangsforhold: initialLocationAccessData,
+  contact_info: initialContactData,
+  ressourcer: [],
 };
 
 const StationDetails = ({mode, disable}: Props) => {
@@ -43,32 +29,14 @@ const StationDetails = ({mode, disable}: Props) => {
   const superUser = authStore().superUser;
 
   const schema = stationDetailsSchema;
-  const schemaParsed = stationDetailsSchema.safeParse({
-    ...data,
-    ressourcer: [],
-  });
-
-  let schemaData;
-  if (schemaParsed.success) schemaData = schemaParsed.data;
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: schemaData,
+    defaultValues: data,
     mode: 'onTouched',
   });
 
-  const {control, reset} = formMethods;
-
-  const handleReset = useCallback(() => {
-    const result = schema.safeParse({
-      ...data,
-    });
-    if (result.success) reset(result.data);
-  }, [reset, schema]);
-
-  useEffect(() => {
-    handleReset();
-  }, [handleReset]);
+  const {control} = formMethods;
 
   return (
     <FormProvider {...formMethods}>

@@ -6,6 +6,7 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {initialContactData} from '~/consts';
 import {ContactInfoRole, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -29,21 +30,10 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const initialData = {
-  navn: '',
-  telefonnummer: null,
-  email: '',
-  rolle: null,
-  kommentar: '',
-  user_id: null,
-  org: '',
-  relation_id: -1,
-};
-
 const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   const [contactID, setContactID] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const {setValue, trigger, getValues} = useFormContext();
+  const {setValue, trigger, getValues, clearErrors} = useFormContext();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
 
@@ -124,8 +114,9 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   );
 
   const handleClose = () => {
-    setValue('contact_info', initialData);
+    setValue('contact_info', initialContactData);
     setOpenContactInfoDialog(false);
+    clearErrors('contact_info');
     setIsUser(false);
   };
 
@@ -138,7 +129,7 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
 
     setOpenContactInfoDialog(!result);
     setIsUser(!result);
-    setValue('contact_info', initialData);
+    setValue('contact_info', initialContactData);
   };
 
   return (

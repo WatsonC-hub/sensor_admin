@@ -64,31 +64,27 @@ export const useLocationAccess = (loc_id: number | undefined) => {
   });
 
   const useSearchLocationAccess = (searchString: string) => {
-    const searched_contacts = useQuery({
+    const searched_location_access = useQuery({
       queryKey: ['search_location_access', searchString],
       queryFn: async () => {
-        console.log(searchString);
-        const {data} = await apiClient.get<Array<Access>>(
-          `/sensor_field/stamdata/search_location_access/${searchString}`
-        );
+        let data;
+        if (searchString === '') {
+          const response = await apiClient.get<Array<Access>>(
+            `/sensor_field/stamdata/relevant_location_access/${loc_id}`
+          );
+          data = response.data;
+        } else {
+          const response = await apiClient.get<Array<Access>>(
+            `/sensor_field/stamdata/search_location_access/${loc_id}/${searchString}`
+          );
+          data = response.data;
+        }
         return data;
       },
-      enabled: searchString !== undefined && searchString !== null && searchString !== '',
+      staleTime: 10 * 1000,
     });
-    const {data} = searched_contacts;
-    return data;
+    return searched_location_access;
   };
-
-  const relevant_location_access = useQuery({
-    queryKey: ['relevant_location_access'],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<Access>>(
-        `/sensor_field/stamdata/relevant_location_access/${loc_id}`
-      );
-      return data;
-    },
-    enabled: loc_id !== undefined && loc_id !== null,
-  });
 
   const post = useMutation({
     ...locationAccessPostOptions,
@@ -122,5 +118,5 @@ export const useLocationAccess = (loc_id: number | undefined) => {
     },
   });
 
-  return {get, useSearchLocationAccess, post, put, del, relevant_location_access};
+  return {get, useSearchLocationAccess, post, put, del};
 };

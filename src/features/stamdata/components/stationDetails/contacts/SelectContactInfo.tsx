@@ -1,3 +1,5 @@
+import {Save} from '@mui/icons-material';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {
   Autocomplete,
   Box,
@@ -10,11 +12,13 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+  Divider,
 } from '@mui/material';
 import React, {useContext, useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import {initialContactData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import {MetadataContext} from '~/state/contexts';
 import {stamdataStore} from '~/state/store';
@@ -22,25 +26,13 @@ import {ContactInfo} from '~/types';
 
 import StationContactInfo from './StationContactInfo';
 
-const initialData = {
-  navn: '',
-  telefonnummer: null,
-  email: '',
-  rolle: null,
-  kommentar: '',
-  user_id: null,
-  org: '',
-  relation_id: -1,
-};
-
 const SelectContactInfo = () => {
   const contact_info_id = stamdataStore((store) => store.stationDetails.contact_info.id);
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [search, setSearch] = useState<string>('');
-  // const [contactInfoOptions, setContactInfoOptions] = useState<Array<ContactInfoOptions>>([]);
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
 
-  const {getValues, trigger, setValue} = useFormContext();
+  const {getValues, trigger, setValue, clearErrors} = useFormContext();
   const metadata = useContext(MetadataContext);
   const loc_id: number | undefined = metadata?.loc_id;
 
@@ -59,15 +51,15 @@ const SelectContactInfo = () => {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleClose = () => {
-    setValue('contact_info', initialData);
+    setValue('contact_info', initialContactData);
     setSelectedContactInfo(null);
+    clearErrors('contact_info');
     setOpenContactInfoDialog(false);
   };
 
   const handleSave = async () => {
     const result = await trigger('contact_info');
     const details = getValues().contact_info;
-    console.log(details);
     const test = {
       id: details.id ?? null,
       navn: details.navn,
@@ -84,7 +76,7 @@ const SelectContactInfo = () => {
       };
       postContact.mutate(payload, {
         onSuccess: () => {
-          setValue('contact_info', initialData);
+          setValue('contact_info', initialContactData);
           setSelectedContactInfo(null);
         },
       });
@@ -102,7 +94,7 @@ const SelectContactInfo = () => {
             color="primary"
             bttype="primary"
             sx={matches ? {ml: 1} : {textTransform: 'none', ml: '12px'}}
-            // startIcon={<AddLocationAltIcon />}
+            startIcon={<PersonAddIcon />}
             onClick={() => setOpenContactInfoDialog(true)}
           >
             Tilføj kontakt
@@ -175,7 +167,7 @@ const SelectContactInfo = () => {
                     setSelectedContactInfo(contactInfo);
                     setValue('contact_info', contactInfo);
                   } else {
-                    setValue('contact_info', initialData);
+                    setValue('contact_info', initialContactData);
                     setSelectedContactInfo(null);
                   }
                 }
@@ -187,14 +179,22 @@ const SelectContactInfo = () => {
               clearOnBlur
               handleHomeEndKeys
             />
-            <StationContactInfo modal={true} isUser={selectedContactInfo?.org} />
+            <Grid item mt={1}>
+              <Divider sx={{bgcolor: 'secondary.light', paddingTop: 0.1, paddingBottom: 0.1}} />
+            </Grid>
+            <StationContactInfo
+              modal={true}
+              isUser={
+                selectedContactInfo && selectedContactInfo.org && selectedContactInfo.org !== ''
+              }
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} bttype="tertiary">
               Annuller
             </Button>
-            <Button onClick={handleSave} bttype="primary">
-              Tilføj
+            <Button onClick={handleSave} bttype="primary" startIcon={<Save />}>
+              Gem
             </Button>
           </DialogActions>
         </Dialog>
