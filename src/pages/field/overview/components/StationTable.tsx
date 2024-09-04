@@ -15,6 +15,7 @@ import {
 import React, {useMemo} from 'react';
 
 import Button from '~/components/Button';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight} from '~/consts';
 import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -24,7 +25,6 @@ import {useTable} from '~/hooks/useTable';
 import {TableData} from '~/types';
 
 import NotificationIcon from './NotificationIcon';
-import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 
 interface Props {
   data?: TableData[];
