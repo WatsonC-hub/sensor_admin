@@ -4,12 +4,11 @@ import React, {useContext} from 'react';
 
 import {apiClient} from '~/apiClient';
 import {qaHistorySkeletonHeight} from '~/consts';
+import ExcludeRow from '~/pages/admin/kvalitetssikring/components/ExcludeRow';
+import LevelCorrectionRow from '~/pages/admin/kvalitetssikring/components/LevelCorrectionRow';
+import QAAccordion from '~/pages/admin/kvalitetssikring/components/QAAccordion';
+import YRangeRow from '~/pages/admin/kvalitetssikring/components/YRangeRow';
 import {MetadataContext} from '~/state/contexts';
-
-import ExcludeRow from './components/ExcludeRow';
-import LevelCorrectionRow from './components/LevelCorrectionRow';
-import QAAccordion from './components/QAAccordion';
-import YRangeRow from './components/YRangeRow';
 
 export default function QAHistory() {
   const metadata = useContext(MetadataContext);

@@ -12,16 +12,14 @@ import {useNavigate, useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';
+import NotificationList from '~/components/NotificationList';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import ErrorPage from '~/pages/field/station/ErrorPage';
+import MinimalSelect from '~/pages/field/station/MinimalSelect';
 import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
-
-import NotificationList from '../../../components/NotificationList';
-
-import ErrorPage from './ErrorPage';
-import MinimalSelect from './MinimalSelect';
 
 export default function LocationRouter() {
   const params = useParams();

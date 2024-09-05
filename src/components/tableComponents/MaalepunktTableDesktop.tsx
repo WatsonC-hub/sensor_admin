@@ -3,6 +3,7 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {
   checkEndDateIsUnset,
@@ -16,8 +17,6 @@ import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 import {Maalepunkt} from '~/types';
-
-import RenderInternalActions from './RenderInternalActions';
 
 interface Props {
   data: Maalepunkt[] | undefined;

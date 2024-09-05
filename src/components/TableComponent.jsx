@@ -14,7 +14,6 @@ import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-// import {stationTableAtom} from '~/state/atoms';
 
 const TableComponent = ({data, columns, ...rest}) => {
   const [stateAndHandlers, resetState] = useStatefullTableAtom('testtable');

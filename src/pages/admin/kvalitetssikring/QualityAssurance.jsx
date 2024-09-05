@@ -5,13 +5,12 @@ import {useParams} from 'react-router-dom';
 import NavBar from '~/components/NavBar';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
+import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
+import HandleNowButton from '~/pages/admin/kvalitetssikring/components/HandleNowButton';
+import QAGraph from '~/pages/admin/kvalitetssikring/QAGraph';
+import QAHistory from '~/pages/admin/kvalitetssikring/QAHistory';
 import {MetadataContext} from '~/state/contexts';
-
-import Algorithms from './Algorithms';
-import DataToShow from './components/DataToShow';
-import HandleNowButton from './components/HandleNowButton';
-import QAGraph from './QAGraph';
-import QAHistory from './QAHistory';
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;

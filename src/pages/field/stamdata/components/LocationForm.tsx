@@ -4,13 +4,11 @@ import {useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
+import {getDTMQuota} from '~/pages/field/fieldAPI';
+import LocationGroups from '~/pages/field/stamdata/components/LocationGroups';
+import LocationProjects from '~/pages/field/stamdata/components/LocationProjects';
+import LocationTypeSelect from '~/pages/field/stamdata/components/LocationTypeSelect';
 import {authStore} from '~/state/store';
-
-import {getDTMQuota} from '../../fieldAPI';
-
-import LocationGroups from './LocationGroups';
-import LocationProjects from './LocationProjects';
-import LocationTypeSelect from './LocationTypeSelect';
 
 interface Props {
   mode: 'modal' | 'normal';

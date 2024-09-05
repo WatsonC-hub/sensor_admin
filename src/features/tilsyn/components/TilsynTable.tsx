@@ -2,12 +2,10 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
 
+import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
+import TilsynTableDesktop from '~/features/tilsyn/components/TilsynTableDesktop';
+import TilsynTableMobile from '~/features/tilsyn/components/TilsynTableMobile';
 import {TilsynItem} from '~/types';
-
-import {useTilsyn} from '../api/useTilsyn';
-
-import TilsynTableDesktop from './TilsynTableDesktop';
-import TilsynTableMobile from './TilsynTableMobile';
 
 interface TilsynTableProps {
   handleEdit: (data: TilsynItem) => void;

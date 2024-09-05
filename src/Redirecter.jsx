@@ -1,19 +1,17 @@
 import {useMediaQuery, useTheme} from '@mui/material';
-import React, {useEffect, useState} from 'react';
-import {Route, Routes, useLocation, useNavigate} from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {Route, Routes, useLocation} from 'react-router-dom';
 
 // const sensorAdminPromise = import('./pages/admin/SensorAdmin');
 // const SensorAdmin = React.lazy(() => sensorAdminPromise);
+import Chooser from '~/Chooser';
 import NavBar from '~/components/NavBar';
 import ScanComponent from '~/components/ScanComponent';
-
-import Chooser from './Chooser';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import LoadingSkeleton from './LoadingSkeleton';
-import SensorAdmin from './pages/admin/SensorAdmin';
-import SensorField from './pages/field/SensorField';
-import {RemoveTrailingSlash} from './RemoveTrailingSlash';
-import {authStore} from './state/store';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import SensorAdmin from '~/pages/admin/SensorAdmin';
+import SensorField from '~/pages/field/SensorField';
+import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
+import {authStore} from '~/state/store';
 
 const Redirecter = () => {
   const theme = useTheme();

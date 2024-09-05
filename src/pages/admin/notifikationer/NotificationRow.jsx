@@ -5,11 +5,9 @@ import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
-
-import {authStore} from '../../../state/store';
-
-import PostponeModal from './PostponeModal';
-import TrelloModal from './TrelloModal';
+import PostponeModal from '~/pages/admin/notifikationer/PostponeModal';
+import TrelloModal from '~/pages/admin/notifikationer/TrelloModal';
+import {authStore} from '~/state/store';
 
 const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
   const [trelloOpen, setTrelloOpen] = useState(false);

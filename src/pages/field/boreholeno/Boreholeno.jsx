@@ -8,21 +8,19 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
+import MaalepunktForm from '~/components/MaalepunktForm';
+import SaveImageDialog from '~/components/SaveImageDialog';
 import {StationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import useFormData from '~/hooks/useFormData';
 import {useSearchParam} from '~/hooks/useSeachParam';
-
-import MaalepunktForm from '../../../components/MaalepunktForm';
-import SaveImageDialog from '../../../components/SaveImageDialog';
-import useFormData from '../../../hooks/useFormData';
-
-import ActionAreaBorehole from './ActionAreaBorehole';
-import BearingGraph from './BearingGraph';
-import BoreholeStamdata from './BoreholeStamdata';
-import LastJupiterMP from './components/LastJupiterMP';
-import PejlingFormBorehole from './components/PejlingFormBorehole';
-import MaalepunktTable from './MaalepunktTable';
-import PejlingMeasurements from './PejlingMeasurements';
+import ActionAreaBorehole from '~/pages/field/boreholeno/ActionAreaBorehole';
+import BearingGraph from '~/pages/field/boreholeno/BearingGraph';
+import BoreholeStamdata from '~/pages/field/boreholeno/BoreholeStamdata';
+import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
+import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingFormBorehole';
+import MaalepunktTable from '~/pages/field/boreholeno/MaalepunktTable';
+import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
 
 const Boreholeno = ({boreholeno, intakeno}) => {
   const queryClient = useQueryClient();

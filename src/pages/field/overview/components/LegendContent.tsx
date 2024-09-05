@@ -2,10 +2,9 @@ import {Box, Divider, Typography} from '@mui/material';
 import React from 'react';
 
 import {boreholeColors} from '~/consts';
+import BoreholeIcon from '~/pages/field/overview/components/BoreholeIcon';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useDrawerContext} from '~/state/contexts';
-
-import BoreholeIcon from './BoreholeIcon';
-import NotificationIcon from './NotificationIcon';
 
 const iotItems = [
   {flag: 3, text: 'Kritisk'},

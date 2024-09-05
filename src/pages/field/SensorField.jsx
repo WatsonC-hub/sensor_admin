@@ -5,15 +5,13 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import CaptureDialog from '~/components/CaptureDialog';
+import ScanComponent from '~/components/ScanComponent';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-
-import ScanComponent from '../../components/ScanComponent';
-import {captureDialogAtom} from '../../state/atoms';
-
-import BoreholeRouter from './boreholeno/BoreholeRouter';
-import OverviewPage from './overview/OverviewPage';
-import OpretStamdata from './stamdata/OpretStamdata';
-import LocationRouter from './station/LocationRouter';
+import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
+import OverviewPage from '~/pages/field/overview/OverviewPage';
+import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
+import LocationRouter from '~/pages/field/station/LocationRouter';
+import {captureDialogAtom} from '~/state/atoms';
 
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);

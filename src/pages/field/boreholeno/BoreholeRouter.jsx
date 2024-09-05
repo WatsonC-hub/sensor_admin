@@ -10,9 +10,8 @@ import {useNavigate, useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-
-import Boreholeno from './Boreholeno';
-import MinimalSelectBorehole from './MinimalSelectBorehole';
+import Boreholeno from '~/pages/field/boreholeno/Boreholeno';
+import MinimalSelectBorehole from '~/pages/field/boreholeno/MinimalSelectBorehole';
 
 export default function BoreholeRouter() {
   const [selectedItem, setSelectedItem] = useState(-1);

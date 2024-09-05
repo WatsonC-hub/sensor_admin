@@ -1,8 +1,8 @@
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import PejlingMeasurementsTableDesktop from './components/tableComponents/PejlingMeasurementsTableDesktop';
-import PejlingMeasurementsTableMobile from './components/tableComponents/PejlingMeasurementsTableMobile';
+import PejlingMeasurementsTableDesktop from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
+import PejlingMeasurementsTableMobile from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableMobile';
 
 export default function PejlingMeasurements(props) {
   const theme = useTheme();
