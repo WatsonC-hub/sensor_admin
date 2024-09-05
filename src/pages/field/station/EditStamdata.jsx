@@ -8,7 +8,6 @@ import {
   StraightenRounded,
   SettingsPhoneRounded,
 } from '@mui/icons-material';
-import ErrorIcon from '@mui/icons-material/Error';
 import SaveIcon from '@mui/icons-material/Save';
 import {
   Box,
@@ -310,27 +309,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     },
   });
 
-  // const metadataEditStationDetailsMutation = useMutation({
-  //   mutationFn: async (data) => {
-  //     const {data: out} = await apiClient.put(
-  //       `/sensor_field/stamdata/update_station_details/${metadata.loc_id}`,
-  //       data
-  //     );
-  //     return out;
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['stations', metadata.loc_id.toString()],
-  //     });
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['ressourcer'],
-  //     });
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['ressourcer', metadata.loc_id.toString()],
-  //     });
-  //   },
-  // });
-
   let schema = locationSchema;
   let schemaData;
 
@@ -339,18 +317,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       ...metadata,
     },
   });
-
-  // if (metadata && metadata.ressourcer && metadata.ressourcer.length > 0) {
-  //   schema = stationDetailsSchema;
-  //   schemaData = stationDetailsSchema.safeParse({
-  //     location: {
-  //       ...metadata,
-  //     },
-  //     stationDetails: {
-  //       ...metadata,
-  //     },
-  //   });
-  // }
 
   if (metadata && metadata.ts_id && !metadata.unit_uuid) {
     schema = timeseriesSchema;
@@ -361,9 +327,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       timeseries: {
         ...metadata,
       },
-      // stationDetails: {
-      //   ...metadata,
-      // },
     });
   }
   if (metadata && metadata.unit_uuid) {
@@ -381,14 +344,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         startdate: metadata.startdato,
         enddate: metadata.slutdato,
       },
-      // stationDetails: {
-      //   ...metadata,
-      // },
     });
   }
 
-  // console.log(schemaData);
-  // console.log(metadata);
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: schemaData.data,
@@ -418,9 +376,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         startdate: metadata?.startdato,
         enddate: metadata?.slutdato,
       },
-      // stationDetails: {
-      //   ...metadata,
-      // },
     });
 
     reset(result.data);
@@ -445,16 +400,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           toast.success('Tidsserie er opdateret');
         },
       });
-    }
-    // else if (type === 'stationDetails') {
-    //   const stationDetailsData = getValues('stationDetails');
-    //   metadataEditStationDetailsMutation.mutate(stationDetailsData, {
-    //     onSuccess: () => {
-    //       toast.success('Stationsinformation er opdateret');
-    //     },
-    //   });
-    // }
-    else {
+    } else {
       const unitData = getValues('unit');
 
       metadataEditUnitMutation.mutate(
@@ -493,22 +439,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         }
       );
     }
-  };
-
-  const softValidateStationDetails = (stationDetails) => {
-    let warning = stationDetails !== undefined && stationDetails !== null;
-    if (stationDetails) {
-      const accessKey2 = stationDetails.accessKey;
-      const ressourcer2 = stationDetails.ressourcer;
-      const {accessKey, ressourcer} = stamdataStore.getInitialState().stationDetails;
-      if (accessKey2) {
-        warning = warning && accessKey && accessKey.length !== accessKey2.length;
-      }
-      if (ressourcer2) {
-        warning = warning && ressourcer && ressourcer.length !== ressourcer2.length;
-      }
-    }
-    return warning;
   };
 
   return (

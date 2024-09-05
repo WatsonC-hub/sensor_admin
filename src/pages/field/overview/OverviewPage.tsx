@@ -8,18 +8,17 @@ import Tabs from '@mui/material/Tabs';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
-import React, {SyntheticEvent, useMemo} from 'react';
+import React, {SyntheticEvent} from 'react';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import ScrollTop from '~/components/ScrollTop';
 import {tabsHeight} from '~/consts';
-import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import BoreholeTable from '~/pages/field/overview/components/BoreholeTable';
 import StationTable from '~/pages/field/overview/components/StationTable';
 import Map from '~/pages/field/overview/Map';
 import {authStore} from '~/state/store';
-import {TableData, BoreholeMapData, BoreholeData} from '~/types';
+import {TableData, BoreholeData} from '~/types';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -51,19 +50,6 @@ export default function OverviewPage() {
       return data;
     },
     enabled: boreholeAccess,
-  });
-
-  const {data: boreholeMapdata, isPending: boreholeMapIsPending} = useQuery<BoreholeMapData[]>({
-    queryKey: ['borehole_map'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
-      return data;
-    },
-    enabled: boreholeAccess,
-  });
-
-  const {data: mapData, isPending: mapPending} = useNotificationOverviewMap({
-    enabled: iotAccess,
   });
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
@@ -104,10 +90,6 @@ export default function OverviewPage() {
     };
   }
 
-  const allData = useMemo(() => {
-    return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
-  }, [mapData, boreholeMapdata]);
-
   console.log('overview page render');
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
@@ -129,11 +111,7 @@ export default function OverviewPage() {
         <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Liste" />
       </Tabs>
       <TabPanel value={tabValue} index={0}>
-        <Map
-          key="map"
-          data={allData}
-          loading={(mapPending && iotAccess) || (boreholeMapIsPending && boreholeAccess)}
-        />
+        <Map key="map" />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <Tabs
