@@ -61,7 +61,9 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
       <Grid container spacing={2}>
         {boreholeAccess && (
           <Grid item sm={iotAccess ? 6 : 12} flexGrow={1}>
-            <Typography variant="subtitle1">Boringer</Typography>
+            <Typography variant="subtitle1">
+              <u>Boringer</u>
+            </Typography>
 
             {/* <FormCheckbox
             name="borehole.hasControlProgram"
@@ -71,11 +73,12 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
 
             <FormToggleGroup
               name="borehole.hasControlProgram"
-              label="Pejles aktivt"
+              label="Del af pejleprogram"
+              noSelectValue={'indeterminate'}
               values={[
-                {label: <CheckIcon />, value: true},
-                {label: <RemoveIcon />, value: 'indeterminate'},
-                {label: <ClearIcon />, value: false},
+                {label: <Typography>Ja</Typography>, value: true},
+                // {label: <RemoveIcon />, value: 'indeterminate'},
+                {label: <Typography>Nej</Typography>, value: false},
               ]}
             />
 
@@ -99,15 +102,18 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
             flexDirection="column"
             flexGrow={1}
           >
-            <Typography variant="subtitle1">Iot filtre</Typography>
+            <Typography variant="subtitle1">
+              <u>Iot filtre</u>
+            </Typography>
 
             <FormToggleGroup
               name="sensor.isCustomerService"
-              label="Kunde service"
+              label="Kundeservice"
+              noSelectValue={'indeterminate'}
               values={[
-                {label: <CheckIcon />, value: true},
-                {label: <RemoveIcon />, value: 'indeterminate'},
-                {label: <ClearIcon />, value: false},
+                {label: <Typography>Ja</Typography>, value: true},
+                // {label: <RemoveIcon />, value: 'indeterminate'},
+                {label: <Typography>Nej</Typography>, value: false},
               ]}
             />
             <FormControlLabel
@@ -129,7 +135,7 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
                   }}
                 >
                   <NotificationIcon iconDetails={{color: 'grey'}} />
-                  Inaktiv
+                  Vis inaktive lokationer
                 </Typography>
               }
             />
@@ -141,7 +147,13 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
           name="groups"
           control={formMethods.control}
           render={({field: {onChange, value}}) => (
-            <LocationGroups value={value} setValue={onChange} label="Filtrer grupper" />
+            <LocationGroups
+              value={value}
+              setValue={onChange}
+              label="Filtrer grupper"
+              disableLink
+              creatable={false}
+            />
           )}
         />
       </Grid>
