@@ -131,9 +131,9 @@ const SensorContent = ({data}: SensorContentProps) => {
           onClick={() => {
             location(data.locid);
           }}
-          startIcon={<ShowChartRoundedIcon />}
+          startIcon={<PlaceIcon />}
         >
-          Tidsserie
+          Lokalitet
         </Button>
       </Box> */}
     </>

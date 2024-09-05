@@ -120,7 +120,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
         measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

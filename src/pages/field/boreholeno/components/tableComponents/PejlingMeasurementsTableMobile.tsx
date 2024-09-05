@@ -157,7 +157,7 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
         measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

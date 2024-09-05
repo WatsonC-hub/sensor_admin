@@ -48,6 +48,7 @@ const FormInput = <TFieldValues extends FieldValues>({
         return (
           <TextField
             {...otherProps}
+            key={name}
             name={name}
             type={type}
             value={value ?? ''}

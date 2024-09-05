@@ -10,16 +10,16 @@ import LocationForm from '~/pages/field/stamdata/components/LocationForm';
 
 export default function AddLocationForm({locationDialogOpen, setLocationDialogOpen}) {
   const handleSave = async () => {
-    const result = await formMethods.trigger('location');
+    const result = await trigger('location');
     setLocationDialogOpen(!result);
-    console.log(formMethods.getFieldState('location'));
-    console.log(formMethods.getValues().location);
+    console.log(getFieldState('location'));
+    console.log(getValues().location);
   };
 
-  const formMethods = useFormContext();
+  const {reset, trigger, getFieldState, getValues} = useFormContext();
 
   const handleClose = () => {
-    formMethods.reset({
+    reset({
       location: {
         loc_name: '',
         mainloc: '',

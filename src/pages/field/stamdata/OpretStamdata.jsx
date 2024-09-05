@@ -40,7 +40,7 @@ function LocationChooser({setLocationDialogOpen, setSelectedLoc, selectedLoc, lo
   const populateFormData = (locData) => {
     setSelectedLoc(locData);
     if (locData) {
-      formMethods.reset({
+      reset({
         location: {
           loc_id: locData.loc_id,
           loc_name: locData.loc_name,
@@ -58,7 +58,7 @@ function LocationChooser({setLocationDialogOpen, setSelectedLoc, selectedLoc, lo
         },
       });
     } else {
-      formMethods.reset({
+      reset({
         location: {
           loc_name: '',
           mainloc: '',
@@ -199,7 +199,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
     defaultValues: {
       location: {
         ...store.location,
-        // projectno: superUser ? '' : null,
       },
       timeseries: {
         tstype_id: -1,
@@ -215,6 +214,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
     getValues,
     setValue,
     trigger,
+    control,
   } = formMethods;
 
   useEffect(() => {
@@ -376,7 +376,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
         },
       };
 
-      console.log(form);
       if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
         form['watlevmp'] = {
           startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
@@ -527,9 +526,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
           <AddLocationForm
             locationDialogOpen={locationDialogOpen}
             setLocationDialogOpen={setLocationDialogOpen}
-            formMethods={formMethods}
           />
-          <DevTool control={formMethods.control} />
+          <DevTool control={control} />
         </FormProvider>
       </div>
     </>
