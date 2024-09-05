@@ -147,6 +147,12 @@ const getOptions = <TData extends MRT_RowData>(
       'mrt-row-actions': {
         size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
         grow: false,
+        muiTableHeadCellProps: {
+          align: 'right',
+        },
+        muiTableBodyCellProps: {
+          align: 'right',
+        },
       },
     },
     initialState: {

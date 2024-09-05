@@ -122,7 +122,7 @@ const SelectContactInfo = () => {
               inputValue={search}
               renderOption={(props, option) => {
                 return (
-                  <li {...props} key={option.id}>
+                  <li {...props} key={option.id + ' - ' + option.loc_id}>
                     <Box display={'flex'} flexDirection={'column'}>
                       <Typography>{option.navn}</Typography>
                       <Box display={'flex'} flexDirection={'row'} mx={2} gap={1}>

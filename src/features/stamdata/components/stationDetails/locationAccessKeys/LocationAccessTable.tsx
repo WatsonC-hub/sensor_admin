@@ -69,11 +69,13 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
       {
         header: 'Kode',
         accessorKey: 'koden',
+        enableColumnActions: false,
         size: 120,
       },
       {
         header: 'Adresse',
         id: 'placering',
+        enableColumnActions: false,
         accessorFn: (row) => {
           if (row.placering && row.placering !== '')
             return <Typography>{row.placering}</Typography>;
@@ -84,11 +86,41 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
       {
         header: 'Udleveres af',
         accessorKey: 'contact_name',
+        enableColumnActions: false,
         size: 120,
       },
       {
         header: 'Kommentar',
         accessorKey: 'kommentar',
+        enableColumnActions: false,
+        size: 120,
+      },
+    ],
+    []
+  );
+
+  const mobileColumns = useMemo<MRT_ColumnDef<AccessTable>[]>(
+    () => [
+      {
+        header: 'Type',
+        id: 'type',
+        enableColumnActions: false,
+        accessorFn: (row) => {
+          switch (row.type) {
+            case AccessType.Code:
+              return AccessType.Code;
+            case AccessType.Key:
+              return AccessType.Key;
+            default:
+              return '';
+          }
+        },
+        size: 120,
+      },
+      {
+        header: 'Navn',
+        accessorKey: 'navn',
+        enableColumnActions: false,
         size: 120,
       },
     ],
@@ -108,10 +140,10 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     muiTableBodyRowProps: ({row, table}) => {
       return !isMobile
         ? {
-            onDoubleClick: () => {
-              setValue('adgangsforhold', row.original);
-              table.setEditingRow(row);
-            },
+            // onDoubleClick: () => {
+            //   setValue('adgangsforhold', row.original);
+            //   table.setEditingRow(row);
+            // },
           }
         : {
             onClick: (e) => {
@@ -148,15 +180,10 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
     },
-    initialState: isMobile
-      ? {
-          columnVisibility: {koden: false, placering: false, contact_name: false, kommentar: false},
-        }
-      : {},
   };
 
   const table = useTable<AccessTable>(
-    columns,
+    isMobile ? mobileColumns : columns,
     data,
     options,
     tableState,

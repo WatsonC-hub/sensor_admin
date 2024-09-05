@@ -67,20 +67,52 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
         header: 'Email',
         accessorKey: 'email',
         size: 20,
+        enableColumnActions: false,
       },
       {
         header: 'Organisation',
         accessorKey: 'org',
         size: 20,
+        enableColumnActions: false,
       },
       {
-        header: 'Telefon nummer',
+        header: 'Tlf.',
         accessorKey: 'telefonnummer',
         size: 20,
+        enableColumnActions: false,
       },
       {
         header: 'Kommentar',
         accessorKey: 'kommentar',
+        size: 20,
+        enableColumnActions: false,
+      },
+    ],
+    []
+  );
+
+  const mobileColumns = useMemo<MRT_ColumnDef<ContactTable>[]>(
+    () => [
+      {
+        header: 'Navn',
+        accessorKey: 'navn',
+        enableColumnActions: false,
+        size: 20,
+      },
+      {
+        header: 'Rolle',
+        id: 'rolle',
+        enableColumnActions: false,
+        accessorFn: (row) => {
+          switch (row.rolle) {
+            case ContactInfoRole.DataEjer:
+              return ContactInfoRole.DataEjer;
+            case ContactInfoRole.kontakter:
+              return ContactInfoRole.kontakter;
+            default:
+              return '';
+          }
+        },
         size: 20,
       },
     ],
@@ -99,12 +131,7 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     editDisplayMode: 'modal',
     muiTableBodyRowProps: ({row, table}) => {
       return !isMobile
-        ? {
-            onDoubleClick: () => {
-              setValue('contact_info', row.original);
-              table.setEditingRow(row);
-            },
-          }
+        ? {}
         : {
             onClick: (e) => {
               console.log((e!.target as HTMLElement).ondblclick);
@@ -114,13 +141,6 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
               }
             },
           };
-      // return {
-      //   onDoubleClick: (e) => {
-      //     console.log(e);
-      //     setValue('contact_info', row.original);
-      //     table.setEditingRow(row);
-      //   },
-      // };
     },
     renderEditRowDialogContent: () => {
       return (
@@ -148,15 +168,10 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
     },
-    initialState: isMobile
-      ? {
-          columnVisibility: {org: false, telefonnummer: false, kommentar: false, email: false},
-        }
-      : {},
   };
 
   const table = useTable<ContactTable>(
-    columns,
+    isMobile ? mobileColumns : columns,
     data,
     options,
     tableState,
