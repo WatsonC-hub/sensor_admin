@@ -1,6 +1,3 @@
-import CheckIcon from '@mui/icons-material/Check';
-import ClearIcon from '@mui/icons-material/Clear';
-import RemoveIcon from '@mui/icons-material/Remove';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
 import {RESET} from 'jotai/utils';
@@ -108,7 +105,7 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
 
             <FormToggleGroup
               name="sensor.isCustomerService"
-              label="Kundeservice"
+              label="Serviceres af kunden"
               noSelectValue={'indeterminate'}
               values={[
                 {label: <Typography>Ja</Typography>, value: true},

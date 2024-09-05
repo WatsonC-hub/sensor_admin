@@ -1,10 +1,4 @@
-import {
-  ToggleButtonGroupProps,
-  ToggleButtonGroup,
-  Typography,
-  ToggleButton,
-  Box,
-} from '@mui/material';
+import {ToggleButtonGroupProps, ToggleButtonGroup, Typography, ToggleButton} from '@mui/material';
 import React from 'react';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 
@@ -24,7 +18,6 @@ type FormToggleGroupProps<TFieldValues extends FieldValues> = ToggleButtonGroupP
 
 const FormToggleGroup = <TFieldValues extends FieldValues>({
   name,
-  warning,
   rules,
   onChangeCallback,
   label,
@@ -32,10 +25,7 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
   values,
   ...otherProps
 }: FormToggleGroupProps<TFieldValues>) => {
-  const {
-    control,
-    formState: {errors},
-  } = useFormContext<TFieldValues>();
+  const {control} = useFormContext<TFieldValues>();
   return (
     <>
       <Typography variant="subtitle1">{label}</Typography>
