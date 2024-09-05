@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
@@ -28,18 +29,27 @@ export default function Login() {
     state.setAuthorization,
   ]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    loginAPI(userName.toLowerCase().trim(), password)
-      .then((res) => {
-        setLoginError('');
-        setAuthorization(res.data);
-        setAuthenticated(true);
-        setLoginExpired(false);
-      })
-      .catch((err) => {
-        setLoginError(err.response.data.detail);
-      });
+  const loginMutation = useMutation({
+    mutationKey: ['login'],
+    mutationFn: loginAPI,
+  });
+
+  const handleSubmit = () => {
+    loginMutation.mutate(
+      {
+        username: userName,
+        password: password,
+      },
+      {
+        onSuccess: (res) => {
+          console.log(res);
+          setLoginError('');
+          setAuthorization(res.data);
+          setAuthenticated(true);
+          setLoginExpired(false);
+        },
+      }
+    );
   };
 
   const handlePassReset = () => {
@@ -87,13 +97,10 @@ export default function Login() {
           udstyr.
         </Typography>
         <Box
-          component="form"
           sx={{
             display: 'flex',
             flexDirection: 'column',
           }}
-          onSubmit={handleSubmit}
-          noValidate
         >
           <TextField
             variant="outlined"
@@ -153,7 +160,7 @@ export default function Login() {
             </Button>
           </Box>
           <Button
-            type="submit"
+            onClick={handleSubmit}
             fullWidth
             variant="contained"
             bttype="primary"
