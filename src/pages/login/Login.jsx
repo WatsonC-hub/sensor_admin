@@ -41,10 +41,9 @@ export default function Login() {
         password: password,
       },
       {
-        onSuccess: (res) => {
-          console.log(res);
+        onSuccess: (data) => {
           setLoginError('');
-          setAuthorization(res.data);
+          setAuthorization(data);
           setAuthenticated(true);
           setLoginExpired(false);
         },
