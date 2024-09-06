@@ -17,7 +17,7 @@ function SensorField() {
   const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
 
-  async function getData(labelid) {
+  async function getData(labelid: string) {
     const {data} = await apiClient.get(`/sensor_field/calypso_id/${labelid}`);
     return data;
   }
@@ -28,7 +28,7 @@ function SensorField() {
     setOpen(false);
   };
 
-  const handleScan = async (data) => {
+  const handleScan = async (data: any) => {
     const split = data['text'].split('/');
     const calypso_id = split[split.length - 1];
 
@@ -59,7 +59,7 @@ function SensorField() {
         });
       }
       handleClose();
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       toast.error(e.response?.data?.detail ? e.response?.data?.detail : 'Ukendt fejl', {
         autoClose: 2000,

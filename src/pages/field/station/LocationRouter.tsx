@@ -38,20 +38,22 @@ export default function LocationRouter() {
 
   useEffect(() => {
     if (data && data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
-      station(params.locid, data[0].ts_id, {replace: true});
+      station(params.locid ? parseInt(params.locid) : -1, data[0].ts_id, {replace: true});
       // navigate(`../location/${params.locid}/${data[0].ts_id}`, {
       //   replace: true,
       // });
     }
   }, [data]);
 
-  const {data: metadata} = useMetadata(params.ts_id);
+  const {data: metadata} = useMetadata(params.locid ? parseInt(params.locid) : -1);
 
-  const stamdata = data?.filter((elem) => elem.ts_id == params.ts_id)?.[0];
+  const stamdata = data?.filter(
+    (elem: {ts_id: number}) => params.ts_id && elem.ts_id == parseInt(params.ts_id)
+  )?.[0];
 
   let hasTimeseries = undefined;
   if (data && data.length > 0)
-    hasTimeseries = data && data.some((stamdata) => stamdata.ts_id !== null);
+    hasTimeseries = data && data.some((stamdata: {ts_id: number}) => stamdata.ts_id !== null);
 
   return (
     <MetadataContext.Provider value={metadata}>
@@ -74,7 +76,10 @@ export default function LocationRouter() {
             </Typography>
           </Tooltip>
           {hasTimeseries ? (
-            <MinimalSelect locid={params.locid} stationList={data} />
+            <MinimalSelect
+              locid={params.locid ? parseInt(params.locid) : undefined}
+              stationList={data}
+            />
           ) : hasTimeseries === false ? (
             'Ingen tidsserie på lokationen'
           ) : (
@@ -92,7 +97,7 @@ export default function LocationRouter() {
                     {
                       title: 'Til QA',
                       onClick: () => {
-                        adminKvalitetssikring(params.ts_id);
+                        adminKvalitetssikring(params.ts_id ? parseInt(params.ts_id) : -1);
                         // navigate(`/admin/kvalitetssikring/${params.ts_id}`);
                       },
                       icon: <AutoGraphIcon />,

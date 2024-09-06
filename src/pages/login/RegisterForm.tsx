@@ -7,12 +7,28 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
-import {Controller, FormProvider} from 'react-hook-form';
+import {Controller, FormProvider, UseFormReturn} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 
-const RegisterForm = ({onSubmitHandler, formMethods}) => {
+interface RegisterFormProps {
+  onSubmitHandler: () => void;
+  formMethods: UseFormReturn<
+    {
+      email: string;
+      firstName: string;
+      lastName: string;
+      checkedNews: boolean;
+      checkedTerms: boolean;
+      cvr: string;
+    },
+    any,
+    undefined
+  >;
+}
+
+const RegisterForm = ({onSubmitHandler, formMethods}: RegisterFormProps) => {
   const {
     control,
     formState: {errors},

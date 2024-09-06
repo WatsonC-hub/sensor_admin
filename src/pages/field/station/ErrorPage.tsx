@@ -3,7 +3,11 @@ import React from 'react';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
-const ErrorPage = ({error}) => {
+interface ErrorPageProps {
+  error: {message: string};
+}
+
+const ErrorPage = ({error}: ErrorPageProps) => {
   const {field} = useNavigationFunctions();
   return (
     <Box
@@ -11,7 +15,6 @@ const ErrorPage = ({error}) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        // justifyContent: 'center',
         height: '100vh',
       }}
     >
@@ -19,15 +22,8 @@ const ErrorPage = ({error}) => {
         Der er desværre sket en fejl
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Der er sket en fejl på siden.{' '}
-        <Link
-          component="button"
-          variant="body2"
-          onClick={
-            () => field()
-            // navigate('/field')
-          }
-        >
+        Der er sket en fejl på siden.
+        <Link component="button" variant="body2" onClick={() => field()}>
           Gå til forside
         </Link>
       </Typography>

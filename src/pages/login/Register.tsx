@@ -36,7 +36,22 @@ const RegisterSchema = z.object({
     errorMap: () => ({message: 'Du skal acceptere betingelserne for at oprette en konto'}),
   }),
   checkedNews: z.boolean().optional().default(false),
+  id: z.number().optional(),
+  org: z.number().optional(),
+  userName: z.string().optional(),
 });
+
+type newUserData = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  checkedNews: boolean;
+  checkedTerms: boolean;
+  cvr: string;
+  id?: number;
+  org?: number;
+  userName?: string;
+};
 
 export default function Register() {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -44,6 +59,14 @@ export default function Register() {
 
   const formMethods = useForm({
     resolver: zodResolver(RegisterSchema),
+    defaultValues: {
+      email: '',
+      firstName: '',
+      lastName: '',
+      checkedNews: false,
+      checkedTerms: false,
+      cvr: '',
+    },
   });
 
   const {getValues, handleSubmit} = formMethods;
@@ -101,12 +124,12 @@ export default function Register() {
     },
   });
 
-  const handleOpret = (values) => {
+  const handleOpret = () => {
     refetch();
     setOpenConfirmDialog(true);
   };
 
-  const handleConfirm = (values) => {
+  const handleConfirm = (values: newUserData) => {
     setOpenConfirmDialog(false);
     const payload = {
       aux: {

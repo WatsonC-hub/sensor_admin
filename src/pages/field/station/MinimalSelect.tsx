@@ -1,18 +1,28 @@
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
-const MinimalSelect = ({locid, stationList}) => {
+interface MinimalSelectProps {
+  locid: number | undefined;
+  stationList: Array<{
+    ts_id: number;
+    ts_name: string;
+    prefix: string;
+    tstype_name: string;
+  }>;
+}
+
+const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.ts_id ? false : true);
   const {station} = useNavigationFunctions();
 
-  const handleChange = (event) => {
-    station(locid, event.target.value, {replace: true});
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    station(locid, parseInt(event.target.value), {replace: true});
     // navigate(`../location/${locid}/${event.target.value}`, {
     //   replace: true,
     // });
@@ -34,14 +44,6 @@ const MinimalSelect = ({locid, stationList}) => {
   }, [params.ts_id]);
 
   const menuProps = {
-    anchorOrigin: {
-      vertical: 'bottom',
-      horizontal: 'left',
-    },
-    transformOrigin: {
-      vertical: 'top',
-      horizontal: 'left',
-    },
     PaperProps: {
       sx: {
         backgroundColor: 'primary.main',
@@ -53,7 +55,7 @@ const MinimalSelect = ({locid, stationList}) => {
   return (
     <Select
       MenuProps={menuProps}
-      value={hasTimeseries && stationList && params.ts_id ? parseInt(params.ts_id) : ''}
+      value={hasTimeseries && stationList && params.ts_id ? params.ts_id : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

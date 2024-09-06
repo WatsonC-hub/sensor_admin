@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import React, {useState} from 'react';
+import React, {FormEvent, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -28,7 +28,7 @@ export default function Login() {
     state.setAuthorization,
   ]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     loginAPI(userName.toLowerCase().trim(), password)
       .then((res) => {
@@ -131,7 +131,6 @@ export default function Login() {
             }}
           >
             <Button
-              variant="outlined"
               bttype="link"
               onClick={register}
               sx={{
@@ -142,7 +141,6 @@ export default function Login() {
               Opret konto
             </Button>
             <Button
-              variant="outlined"
               bttype="link"
               onClick={handleClickOpen}
               sx={{
@@ -156,7 +154,6 @@ export default function Login() {
           <Button
             type="submit"
             fullWidth
-            variant="contained"
             bttype="primary"
             disabled={userName === '' || password === ''}
           >
