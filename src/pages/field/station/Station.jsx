@@ -105,11 +105,11 @@ export default function Station({ts_id, stamdata}) {
     <Box
       display="flex"
       height={
-        ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'
+        ts_id === '' && stamdata && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'
       }
       flexDirection={'column'}
     >
-      {((!stamdata && ts_id === -1) || ts_id !== -1) && (
+      {((!stamdata && ts_id === '') || ts_id !== '') && (
         <>
           {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
             <Box sx={{marginBottom: 0.5, marginTop: 0.2}}>
@@ -130,7 +130,7 @@ export default function Station({ts_id, stamdata}) {
               alignSelf: 'center',
             }}
           >
-            {pageToShow === StationPages.PEJLING && ts_id !== -1 && (
+            {pageToShow === StationPages.PEJLING && ts_id !== '' && (
               <Pejling ts_id={ts_id} setDynamic={setDynamic} />
             )}
             {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
@@ -138,7 +138,7 @@ export default function Station({ts_id, stamdata}) {
         </>
       )}
 
-      {ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING && (
+      {ts_id === '' && stamdata && pageToShow === StationPages.PEJLING && (
         <Box
           display={'flex'}
           alignSelf={'center'}
@@ -163,7 +163,7 @@ export default function Station({ts_id, stamdata}) {
           <Button
             bttype="primary"
             onClick={() => {
-              createStamdata(ts_id !== -1 ? '2' : '1');
+              createStamdata(ts_id !== '' ? '2' : '1');
             }}
           >
             Opret tidsserie og/eller udstyr

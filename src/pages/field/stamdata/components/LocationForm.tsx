@@ -27,7 +27,7 @@ export default function LocationForm({mode, disable = false}: Props) {
     queryKey: ['dtm'],
     queryFn: () => getDTMQuota(getValues('location.x'), getValues('location.y')),
     refetchOnWindowFocus: false,
-    enabled: true,
+    enabled: !disable,
   });
 
   useEffect(() => {
@@ -50,7 +50,6 @@ export default function LocationForm({mode, disable = false}: Props) {
 
   const gridsize = mode === 'modal' ? 12 : 6;
   const superUser = authStore((store) => store.superUser);
-  console.log('metadata?.unit_uuid', metadata?.unit_uuid);
   return (
     // <FormProvider {...formMethods}>
     <Grid container spacing={2} alignItems="center">

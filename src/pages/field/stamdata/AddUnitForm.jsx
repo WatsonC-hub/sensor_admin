@@ -1,4 +1,14 @@
-import {CircularProgress, MenuItem, Typography} from '@mui/material';
+import {
+  CircularProgress,
+  MenuItem,
+  Typography,
+  FormControl,
+  FormLabel,
+  Radio,
+  FormControlLabel,
+  RadioGroup,
+  Box,
+} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -8,18 +18,25 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
-
-import OwnDatePicker from '../../../components/OwnDatePicker';
-import {stamdataStore} from '../../../state/store';
+import OwnDatePicker from '~/components/OwnDatePicker';
+import {useMetadata} from '~/hooks/query/useMetadata';
+import {authStore, stamdataStore} from '~/state/store';
 
 export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [inheritInvoice, setInheritInvoice] = useState(true);
+  const [invoiceData, setInvoiceData] = useState(null);
   const queryClient = useQueryClient();
+  const params = useParams();
 
+  const superUser = authStore((state) => state.superUser);
+  const {data: metadata} = useMetadata(params.ts_id);
   const {data: availableUnits, isLoading} = useQuery({
     queryKey: ['available_units'],
     queryFn: async () => {
@@ -102,26 +119,42 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
     });
   };
 
+  const handleAddUnit = (payload) => {
+    addUnit.mutate(payload, {
+      onSuccess: () => {
+        toast.success('Udstyr tilføjet');
+        setUdstyrDialogOpen(false);
+        setConfirmDialogOpen(false);
+      },
+    });
+  };
+
   let handleSave = () => null;
 
   if (mode === 'edit') {
-    handleSave = () => {
+    handleSave = async () => {
       let unit = availableUnits.find((x) => x.unit_uuid === unitData.uuid);
 
       if (!unit) return;
-
       const payload = {
         unit_uuid: unit.unit_uuid,
         startdate: moment(unitData.fra).toISOString(),
         enddate: moment('2099-01-01T12:00:00').toISOString(),
       };
+      if (superUser) {
+        const {data} = await apiClient.get(
+          `/sensor_field/stamdata/check-unit-invoice/${timeseries.ts_id}/${unit.unit_uuid}`
+        );
 
-      toast.promise(() => addUnit.mutateAsync(payload), {
-        pending: 'Tilføjer udstyr...',
-        success: 'Udstyr tilføjet',
-        error: 'Der skete en fejl',
-      });
-      setUdstyrDialogOpen(false);
+        if ('exists' in data && data.exists) {
+          handleAddUnit(payload);
+          return;
+        }
+        setInvoiceData(data);
+        setConfirmDialogOpen(true);
+      } else {
+        handleAddUnit(payload);
+      }
     };
   } else {
     handleSave = () => {
@@ -162,7 +195,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   }, [udstyrDialogOpen, setUnitData]);
 
   return (
-    <div>
+    <>
       <Dialog open={udstyrDialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
         {isLoading ? (
           <CircularProgress />
@@ -217,6 +250,22 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                 value={unitData.fra}
                 onChange={(date) => handleDateChange(date)}
               />
+              {/* {superUser && metadata?.unit_uuid && (
+              <Box>
+                <FormControl>
+                  <FormLabel id="inherit_invoice">Overtag fakturering</FormLabel>
+                  <RadioGroup
+                    aria-labelledby="inherit_invoice"
+                    name="inherit_invoice"
+                    value={inheritInvoice}
+                    onChange={(e) => setInheritInvoice(e.target.value)}
+                  >
+                    <FormControlLabel value={true} control={<Radio />} label="Ja" />
+                    <FormControlLabel value={false} control={<Radio />} label="Nej" />
+                  </RadioGroup>
+                </FormControl>
+              </Box>
+            )} */}
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose} bttype="tertiary">
@@ -233,6 +282,57 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
           </>
         )}
       </Dialog>
-    </div>
+      <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
+        <DialogContent>
+          <Typography>Følgende faktureringsinformation findes på tidligere enhed</Typography>
+          <Typography>
+            <strong>Terminal:</strong> {invoiceData?.terminal_id}
+          </Typography>
+          <Typography>
+            <strong>Pris pr måned:</strong> {invoiceData?.amount}
+          </Typography>
+          <Typography>
+            <strong>Subscription type:</strong> {invoiceData?.subscription_type}
+          </Typography>
+          <Typography>Vil du overføre fakturering til den nye enhed?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setConfirmDialogOpen(false);
+            }}
+            bttype="tertiary"
+          >
+            Annuller
+          </Button>
+          <Button
+            onClick={() =>
+              handleAddUnit({
+                unit_uuid: unitData?.uuid,
+                startdate: moment(unitData.fra).toISOString(),
+                enddate: moment('2099-01-01T12:00:00').toISOString,
+                inherit_invoice: false,
+              })
+            }
+            bttype="tertiary"
+          >
+            Nej
+          </Button>
+          <Button
+            onClick={() =>
+              handleAddUnit({
+                unit_uuid: unitData?.uuid,
+                startdate: moment(unitData.fra).toISOString(),
+                enddate: moment('2099-01-01T12:00:00').toISOString,
+                inherit_invoice: true,
+              })
+            }
+            bttype="primary"
+          >
+            Ja
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

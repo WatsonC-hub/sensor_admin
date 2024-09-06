@@ -121,7 +121,7 @@ export default function LocationRouter() {
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <Station ts_id={params.ts_id ? params.ts_id : -1} stamdata={stamdata} />
+          <Station ts_id={params.ts_id ? params.ts_id : ''} stamdata={stamdata} />
         </ErrorBoundary>
       </main>
     </MetadataContext.Provider>

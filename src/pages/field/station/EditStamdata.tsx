@@ -17,10 +17,11 @@ import {
   Divider,
   Grid,
   MenuItem,
-  Select,
   Tab,
   Typography,
   Tabs,
+  Select,
+  SelectChangeEvent,
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -29,11 +30,12 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
+import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
-import OwnDatePicker from '~/components/OwnDatePicker';
+import FormInput from '~/components/FormInput';
 import {tabsHeight} from '~/consts';
 import {StationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
@@ -45,44 +47,151 @@ import ReferenceForm from '~/pages/field/stamdata/components/ReferenceForm';
 import StamdataFooter from '~/pages/field/stamdata/components/StamdataFooter';
 import TimeseriesForm from '~/pages/field/stamdata/components/TimeseriesForm';
 import UnitForm from '~/pages/field/stamdata/components/UnitForm';
-import {stamdataStore} from '~/state/store';
+import {authStore, stamdataStore} from '~/state/store';
 
-const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, stationId}) => {
-  const [date, setdate] = useState(new Date());
+const unitEndSchema = z.object({
+  enddate: z.string(),
+  change_reason: z.number().optional(),
+  action: z.string().optional(),
+  comment: z.string().optional(),
+});
 
+type UnitEndFormValues = z.infer<typeof unitEndSchema>;
+
+interface UnitEndDateDialogProps {
+  openDialog: boolean;
+  setOpenDialog: (open: boolean) => void;
+  unit: any;
+  setUdstyrValue: (key: string, value: string) => void;
+  stationId: string;
+}
+
+type ChangeReason = {
+  id: number;
+  reason: string;
+  default_actions: string | null;
+};
+
+const UnitEndDateDialog = ({
+  openDialog,
+  setOpenDialog,
+  unit,
+  setUdstyrValue,
+  stationId,
+}: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
+  const superUser = authStore((store) => store.superUser);
 
-  const handleDateChange = (date) => {
-    setdate(date);
-  };
+  const {data: changeReasons} = useQuery<ChangeReason[]>({
+    queryKey: ['change_reasons'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
+      return data;
+    },
+  });
 
   const takeHomeMutation = useMutation({
-    mutationFn: async (payload) => {
-      const {data} = await apiClient.patch(
-        `/sensor_field/stamdata/unit_history/${stationId}/${unit.gid}`,
+    mutationFn: async (payload: UnitEndFormValues) => {
+      const {data} = await apiClient.post(
+        `/sensor_field/stamdata/unit_history/end/${stationId}/${unit.gid}`,
         payload
       );
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, {enddate}) => {
       setOpenDialog(false);
-      setUdstyrValue('slutdato', moment(date).format('YYYY-MM-DD HH:mm'));
+      setUdstyrValue('slutdato', moment(enddate).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
       queryClient.invalidateQueries({
         queryKey: ['udstyr', stationId],
       });
     },
-    onError: () => {
-      toast.error('Der skete en fejl');
+  });
+
+  const formMethods = useForm<UnitEndFormValues>({
+    resolver: zodResolver(unitEndSchema),
+    defaultValues: {
+      enddate: moment().toISOString(),
     },
   });
 
+  const submit = (values: UnitEndFormValues) => {
+    values.enddate = moment(values.enddate).toISOString();
+    takeHomeMutation.mutate(values);
+  };
+
   return (
     <Dialog open={openDialog}>
-      <DialogTitle>Angiv slutdato</DialogTitle>
-      <DialogContent>
-        <OwnDatePicker label="Fra" value={date} onChange={(date) => handleDateChange(date)} />
-        <DialogActions item xs={4} sm={2}>
+      <DialogTitle>Angiv information</DialogTitle>
+      <DialogContent
+        sx={{
+          width: 300,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1,
+        }}
+      >
+        <FormProvider {...formMethods}>
+          <FormInput
+            name="enddate"
+            label="Fra"
+            fullWidth
+            type="datetime-local"
+            required
+            inputProps={{
+              min: moment(unit?.startdate).format('YYYY-MM-DDTHH:mm'),
+            }}
+          />
+
+          {superUser && (
+            <>
+              <FormInput
+                name="change_reason"
+                fullWidth
+                select
+                label="Årsag"
+                placeholder="Vælg årsag"
+                onChangeCallback={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  const reason = changeReasons?.find(
+                    (reason) => reason.id === Number(e.target.value)
+                  );
+                  if (reason) {
+                    console.log('reason', reason);
+                    formMethods.setValue('action', reason.default_actions ?? 'DO_NOTHING');
+                  }
+                }}
+              >
+                {changeReasons?.map((reason) => (
+                  <MenuItem key={reason.id} value={reason.id}>
+                    {reason.reason}
+                  </MenuItem>
+                ))}
+              </FormInput>
+
+              <FormInput
+                name="action"
+                fullWidth
+                select
+                label="Handling"
+                placeholder="Handling"
+                // disabled={formMethods.watch('change_reason') !== 1}
+              >
+                <MenuItem value={'DO_NOTHING'}>Gør ingenting</MenuItem>
+                <MenuItem value={'CLOSE_UNIT_INVOICE'}>Luk enhed og fakturering</MenuItem>
+              </FormInput>
+
+              <FormInput
+                name="comment"
+                label="Kommentar"
+                fullWidth
+                multiline
+                rows={4}
+                placeholder="Skriv en kommentar"
+              />
+            </>
+          )}
+        </FormProvider>
+        <DialogActions>
           <Button
             bttype="tertiary"
             onClick={() => {
@@ -94,7 +203,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
           <Button
             bttype="primary"
             startIcon={<SaveIcon />}
-            onClick={() => takeHomeMutation.mutate({enddate: moment(date).toISOString()})}
+            onClick={formMethods.handleSubmit(submit)}
           >
             Gem
           </Button>
@@ -104,8 +213,21 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit, setUdstyrValue, sta
   );
 };
 
-const UdstyrReplace = ({stationId}) => {
-  const [selected, setselected] = useState('');
+type UnitHistory = {
+  calypso_id: number;
+  gid: number;
+  slutdato: string;
+  sensor_id: string;
+  sensorinfo: string;
+  ts_id: number;
+  uuid: string;
+  startdato: string;
+  terminal_id: string;
+  terminal_type: string;
+};
+
+const UdstyrReplace = ({stationId}: {stationId: string}) => {
+  const [selected, setselected] = useState<number | ''>('');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
@@ -116,7 +238,9 @@ const UdstyrReplace = ({stationId}) => {
 
   const formMethods = useFormContext();
 
-  const {data, isPending} = useQuery({
+  const {setValue} = formMethods;
+
+  const {data, isPending} = useQuery<UnitHistory[]>({
     queryKey: ['udstyr', stationId],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${stationId}`);
@@ -130,15 +254,17 @@ const UdstyrReplace = ({stationId}) => {
 
   useEffect(() => {
     if (data && data.length > 0) {
+      console.log('data', selected);
       onSelectionChange(data, selected === '' ? data[0].gid : selected);
     }
   }, [data]);
 
-  const onSelectionChange = (data, gid) => {
+  const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
     const unit = localUnit ?? data[0];
+    console.log('unitSelectChange', unit);
     setUnit(unit);
-    formMethods.setValue(
+    setValue(
       'unit',
       {
         gid: unit.gid,
@@ -151,8 +277,9 @@ const UdstyrReplace = ({stationId}) => {
     setselected(unit.gid);
   };
 
-  const handleChange = (event) => {
-    if (selected !== event.target.value) onSelectionChange(data, event.target.value);
+  const handleChange = (event: SelectChangeEvent<number | null>) => {
+    if (selected !== event.target.value && data)
+      onSelectionChange(data, Number(event.target.value));
   };
 
   return (
@@ -181,7 +308,7 @@ const UdstyrReplace = ({stationId}) => {
                       : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
 
                   return (
-                    <MenuItem id={item.gid} key={item.gid} value={item.gid}>
+                    <MenuItem id={item.gid.toString()} key={item.gid.toString()} value={item.gid}>
                       {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
                     </MenuItem>
                   );
@@ -234,7 +361,18 @@ const UdstyrReplace = ({stationId}) => {
   );
 };
 
-export default function EditStamdata({ts_id, metadata, canEdit}) {
+interface EditStamdataProps {
+  ts_id: string;
+  metadata: any;
+  canEdit: boolean;
+}
+
+type EditValues = z.infer<typeof metadataPutSchema>;
+type Location = EditValues['location'];
+type Timeseries = EditValues['timeseries'];
+type Unit = EditValues['unit'];
+
+export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataProps) {
   // const [selectedUnit, setSelectedUnit] = useState('');
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
@@ -272,7 +410,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   }, [ts_id, metadata?.calculated, tabValue]);
 
   const metadataEditTimeseriesMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: any) => {
       const {data: out} = await apiClient.put(
         `/sensor_field/stamdata/update_timeseries/${ts_id}`,
         data
@@ -282,7 +420,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   });
 
   const metadataEditLocationMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: any) => {
       const {data: out} = await apiClient.put(
         `/sensor_field/stamdata/update_location/${loc_id}`,
         data
@@ -297,7 +435,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
   });
 
   const metadataEditUnitMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: any) => {
       const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
       return out;
     },
@@ -307,50 +445,33 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
       });
     },
   });
+  let schema: typeof locationSchema | typeof timeseriesSchema | typeof metadataPutSchema;
+  schema = locationSchema;
 
-  let schema = locationSchema;
-  let schemaData;
-
-  schemaData = locationSchema.safeParse({
+  if (metadata && metadata.ts_id && !metadata.unit_uuid) {
+    schema = timeseriesSchema;
+  } else if (metadata && metadata.unit_uuid) {
+    schema = metadataPutSchema;
+  }
+  const schemaData = schema.safeParse({
     location: {
       ...metadata,
       initial_project_no: metadata?.projectno,
     },
+    timeseries: {
+      ...metadata,
+    },
+    unit: {
+      ...metadata,
+      gid: -1,
+      startdate: metadata.startdato,
+      enddate: metadata.slutdato,
+    },
   });
-
-  if (metadata && metadata.ts_id && !metadata.unit_uuid) {
-    schema = timeseriesSchema;
-    schemaData = timeseriesSchema.safeParse({
-      location: {
-        ...metadata,
-        initial_project_no: metadata?.projectno,
-      },
-      timeseries: {
-        ...metadata,
-      },
-    });
-  } else if (metadata && metadata.unit_uuid) {
-    schema = metadataPutSchema;
-    schemaData = metadataPutSchema.safeParse({
-      location: {
-        ...metadata,
-        initial_project_no: metadata?.projectno,
-      },
-      timeseries: {
-        ...metadata,
-      },
-      unit: {
-        ...metadata,
-        gid: -1,
-        startdate: metadata.startdato,
-        enddate: metadata.slutdato,
-      },
-    });
-  }
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: schemaData.data,
+    defaultValues: schemaData.success ? schemaData.data : {},
     mode: 'onTouched',
   });
 
@@ -359,50 +480,56 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
     reset,
     control,
     formState: {isSubmitting, dirtyFields},
+    watch,
   } = formMethods;
 
-  const resetFormData = () => {
-    let result;
+  const unit = watch('unit') as Unit;
 
-    result = schema.safeParse({
+  useEffect(() => {
+    console.log('unit', unit);
+  }, [unit]);
+
+  const resetFormData = () => {
+    const result = schema.safeParse({
       location: {
         ...metadata,
+        initial_project_no: metadata?.projectno,
       },
       timeseries: {
         ...metadata,
       },
       unit: {
-        ...getValues()?.unit,
         ...metadata,
         startdate: metadata?.startdato,
         enddate: metadata?.slutdato,
       },
     });
-
-    reset(result.data);
+    reset(result.success ? result.data : {});
   };
 
   useEffect(() => {
     resetFormData();
   }, [metadata]);
 
-  const handleUpdate = (type) => {
+  const handleUpdate = (type: 'location' | 'timeseries' | 'unit') => {
     if (type === 'location') {
-      const locationData = getValues('location');
+      const locationData = getValues('location') as Location;
       metadataEditLocationMutation.mutate(locationData, {
         onSuccess: () => {
           toast.success('Lokation er opdateret');
         },
       });
     } else if (type === 'timeseries') {
-      const timeseriesData = getValues('timeseries');
+      //@ts-expect-error - we know it's a timeseries
+      const timeseriesData = getValues('timeseries') as Timeseries;
       metadataEditTimeseriesMutation.mutate(timeseriesData, {
         onSuccess: () => {
           toast.success('Tidsserie er opdateret');
         },
       });
     } else {
-      const unitData = getValues('unit');
+      //@ts-expect-error - we know it's a unit
+      const unitData = getValues('unit') as Unit;
 
       metadataEditUnitMutation.mutate(
         {
@@ -413,29 +540,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
         {
           onSuccess: () => {
             toast.success('Udstyr er opdateret');
-          },
-          onError: (error) => {
-            if (error.response?.status !== 409) {
-              toast.error('Der skete en fejl');
-            } else {
-              toast.error(
-                <Box>
-                  Enheden overlapper med følgende periode
-                  <Box>
-                    {moment(error.response.data.detail.overlap[0].startdate).format(
-                      'YYYY-MM-DD HH:mm'
-                    )}{' '}
-                    -
-                    {moment(error.response.data.detail.overlap[0].enddate).format(
-                      'YYYY-MM-DD HH:mm'
-                    )}
-                  </Box>
-                </Box>,
-                {
-                  autoClose: false,
-                }
-              );
-            }
           },
         }
       );
@@ -477,7 +581,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="1"
-            disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+            disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
             icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -487,7 +591,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
           />
           <Tab
             value="2"
-            disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+            disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
             icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
             label={
               <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -529,7 +633,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             />
           </TabPanel>
           <TabPanel value={tabValue} index={'1'}>
-            <TimeseriesForm />
+            <TimeseriesForm mode="" />
             <StamdataFooter
               cancel={resetFormData}
               handleOpret={() => handleUpdate('timeseries')}
@@ -542,7 +646,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
             <UnitForm mode="edit" />
             <StamdataFooter
               cancel={resetFormData}
-              handleOpret={() => handleUpdate('udstyr')}
+              handleOpret={() => handleUpdate('unit')}
               saveTitle="Gem udstyr"
               disabled={isSubmitting || !('unit' in dirtyFields)}
             />
@@ -556,7 +660,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}) {
               }}
               visible={showForm === null ? 'visible' : 'hidden'}
             >
-              <ReferenceForm canEdit={canEdit} ts_id={ts_id} />
+              <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
             </FabWrapper>
           </TabPanel>
           {/* <TabPanel value={tabValue} index={'4'}>
