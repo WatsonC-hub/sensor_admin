@@ -1,8 +1,13 @@
 import {TextField} from '@mui/material';
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 
-const FormTextField = (props) => {
-  const {value, onChange, label, disabled, ...rest} = props;
+interface FormTextFieldProps {
+  value: string;
+  label: string;
+  disabled: boolean;
+}
+
+const FormTextField = ({value, label, disabled, ...rest}: FormTextFieldProps) => {
   return (
     <TextField
       sx={{
@@ -20,7 +25,6 @@ const FormTextField = (props) => {
       variant="outlined"
       id={label}
       value={value ?? ''}
-      onChange={onChange}
       label={label}
       InputLabelProps={{shrink: true}}
       fullWidth

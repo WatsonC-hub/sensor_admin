@@ -7,8 +7,12 @@ import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
 import FormTextField from '~/pages/field/stamdata/components/FormTextField';
 
-const TimeseriesTypeSelect = ({stationTypes}) => {
-  let menuItems = stationTypes
+interface TimeseriesTypeSelectProps {
+  stationTypes: Array<{tstype_id: number; tstype_name: string}>;
+}
+
+const TimeseriesTypeSelect = ({stationTypes}: TimeseriesTypeSelectProps) => {
+  const menuItems = stationTypes
     ?.filter((i) => i.tstype_id !== 0)
     ?.map((item) => (
       <MenuItem value={item.tstype_id} key={item.tstype_id}>
@@ -33,7 +37,11 @@ const TimeseriesTypeSelect = ({stationTypes}) => {
   );
 };
 
-export default function TimeseriesForm({mode}) {
+interface TimeseriesFormProps {
+  mode: string;
+}
+
+export default function TimeseriesForm({mode}: TimeseriesFormProps) {
   const {data: timeseries_types} = useQuery({
     queryKey: ['timeseries_types'],
     queryFn: async () => {
@@ -78,7 +86,11 @@ export default function TimeseriesForm({mode}) {
           <FormTextField
             disabled
             label="Tidsserie type"
-            value={timeseries_types?.filter((elem) => elem.tstype_id == tstype_id)[0]?.tstype_name}
+            value={
+              timeseries_types?.filter(
+                (elem: {tstype_id: number; tstype_name: string}) => elem.tstype_id == tstype_id
+              )[0]?.tstype_name
+            }
           />
         )}
       </Grid>

@@ -8,7 +8,15 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import LocationForm from '~/pages/field/stamdata/components/LocationForm';
 
-export default function AddLocationForm({locationDialogOpen, setLocationDialogOpen}) {
+interface AddLocationFormProps {
+  locationDialogOpen: boolean;
+  setLocationDialogOpen: (open: boolean) => void;
+}
+
+export default function AddLocationForm({
+  locationDialogOpen,
+  setLocationDialogOpen,
+}: AddLocationFormProps) {
   const handleSave = async () => {
     const result = await trigger('location');
     setLocationDialogOpen(!result);

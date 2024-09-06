@@ -5,7 +5,16 @@ import React from 'react';
 import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
 
-export default function LocationTypeSelect({disable}) {
+interface LocationTypeSelectProps {
+  disable: boolean;
+}
+
+type locationType = {
+  loctype_id: number;
+  loctypename: string;
+};
+
+export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
   const {data} = useQuery({
     queryKey: ['location_types'],
     queryFn: async () => {
@@ -32,7 +41,7 @@ export default function LocationTypeSelect({disable}) {
       <MenuItem value={-1} key={-1}>
         Vælg type
       </MenuItem>
-      {data?.map((item) => (
+      {data?.map((item: locationType) => (
         <MenuItem value={item.loctype_id} key={item.loctype_id}>
           {item.loctypename}
         </MenuItem>

@@ -7,7 +7,11 @@ import FormInput from '~/components/FormInput';
 import FormTextField from '~/pages/field/stamdata/components/FormTextField';
 import {stamdataStore} from '~/state/store';
 
-export default function UnitForm({mode}) {
+interface UnitFormProps {
+  mode: string;
+}
+
+export default function UnitForm({mode}: UnitFormProps) {
   const {watch, trigger, getFieldState} = useFormContext();
   const editMode = mode === 'edit';
 
