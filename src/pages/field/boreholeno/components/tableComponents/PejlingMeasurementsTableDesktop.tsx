@@ -33,7 +33,7 @@ export type Kontrol = {
 interface Props {
   data: Kontrol[];
   handleEdit: (kontrol: Kontrol) => void;
-  handleDelete: (gid: number | undefined) => void;
+  handleDelete: (gid: number) => void;
 }
 
 export default function PejlingMeasurementsTableDesktop({data, handleEdit, handleDelete}: Props) {

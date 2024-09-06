@@ -1,5 +1,4 @@
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
-import {useTheme} from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
@@ -16,7 +15,6 @@ import MinimalSelectBorehole from '~/pages/field/boreholeno/MinimalSelectBorehol
 export default function BoreholeRouter() {
   const [selectedItem, setSelectedItem] = useState(-1);
 
-  const theme = useTheme();
   const params = useParams();
   const navigate = useNavigate();
   const {boreholeIntake} = useNavigationFunctions();
@@ -32,7 +30,7 @@ export default function BoreholeRouter() {
   });
 
   useEffect(() => {
-    if (data) {
+    if (data && params.boreholeno && params.intakeno) {
       let intakeno = params.intakeno;
       if (intakeno) {
         setSelectedItem(parseInt(intakeno));
@@ -45,7 +43,7 @@ export default function BoreholeRouter() {
           // });
           boreholeIntake(params.boreholeno, intakeno, {replace: true});
         }
-        setSelectedItem(intakeno);
+        setSelectedItem(parseInt(intakeno));
       }
     }
   }, [data]);
@@ -53,7 +51,7 @@ export default function BoreholeRouter() {
   return (
     <>
       <CssBaseline />
-      <AppBar position="sticky" style={{backgroundColor: theme.palette.primary}}>
+      <AppBar position="sticky" style={{backgroundColor: 'primary'}}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -65,7 +63,7 @@ export default function BoreholeRouter() {
             <KeyboardBackspaceIcon />
           </IconButton>
           <MinimalSelectBorehole
-            boreholeno={params.boreholeno}
+            boreholeno={params.boreholeno ? params.boreholeno : ''}
             boreholenoList={data}
             selectedIntake={selectedItem}
             setSelectedItem={setSelectedItem}
@@ -79,7 +77,10 @@ export default function BoreholeRouter() {
           // padding: theme.spacing(0.5),
         }}
       >
-        <Boreholeno boreholeno={params.boreholeno} intakeno={params.intakeno} />
+        <Boreholeno
+          boreholeno={params.boreholeno ? params.boreholeno : '-1'}
+          intakeno={params.intakeno ? parseInt(params.intakeno) : -1}
+        />
       </main>
     </>
   );

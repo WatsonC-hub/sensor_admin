@@ -1,18 +1,31 @@
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {BoreholeData} from '~/types';
 
-const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedItem}) => {
+interface MinimalSelectProps {
+  boreholeno: string;
+  boreholenoList: Array<BoreholeData>;
+  selectedIntake: number;
+  setSelectedItem: (item: number) => void;
+}
+
+const MinimalSelect = ({
+  boreholeno,
+  boreholenoList,
+  selectedIntake,
+  setSelectedItem,
+}: MinimalSelectProps) => {
   const params = useParams();
 
   const [isOpen, setIsOpen] = useState(params.intakeno ? false : true);
   const {boreholeIntake} = useNavigationFunctions();
 
-  const handleChange = (event) => {
-    setSelectedItem(event.target.value);
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    setSelectedItem(event.target.value ? parseInt(event.target.value) : -1);
     // navigate(`../borehole/${boreholeno}/${event.target.value}`, {
     //   replace: true,
     // });
@@ -24,7 +37,7 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    if (selectedIntake !== '') {
+    if (selectedIntake !== -1) {
       setIsOpen(false);
     } else {
       setIsOpen(true);
@@ -33,14 +46,6 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
 
   // moves the menu below the select input
   const menuProps = {
-    anchorOrigin: {
-      vertical: 'bottom',
-      horizontal: 'left',
-    },
-    transformOrigin: {
-      vertical: 'top',
-      horizontal: 'left',
-    },
     PaperProps: {
       sx: {
         backgroundColor: 'primary.main',
@@ -51,7 +56,7 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
   return (
     <Select
       MenuProps={menuProps}
-      value={selectedIntake}
+      value={selectedIntake.toString()}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}
@@ -88,7 +93,6 @@ const MinimalSelect = ({boreholeno, boreholenoList, selectedIntake, setSelectedI
             </MenuItem>
           ))}
     </Select>
-    //</FormControl>
   );
 };
 

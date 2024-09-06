@@ -2,7 +2,7 @@ import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -21,8 +21,14 @@ import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
 import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingFormBorehole';
 import MaalepunktTable from '~/pages/field/boreholeno/MaalepunktTable';
 import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
+import {Kontrol, Maalepunkt, MaalepunktPost, MaalepunktTableData, Measurement} from '~/types';
 
-const Boreholeno = ({boreholeno, intakeno}) => {
+interface boreholenoProps {
+  boreholeno: string;
+  intakeno: number;
+}
+
+const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   const queryClient = useQueryClient();
   const [canEdit, setCanEdit] = useState(false);
   const [showForm, setShowForm] = useSearchParam('showForm');
@@ -52,7 +58,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     extrema: null,
   });
 
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [dataUri, setdataUri] = useState('');
   const [openSave, setOpenSave] = useState(false);
   const [activeImage, setActiveImage] = useState({
@@ -60,10 +66,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     type: boreholeno,
     comment: '',
     public: false,
-    date: () => moment().format('YYYY-MM-DDTHH:mm'),
+    date: moment().format('YYYY-MM-DDTHH:mm'),
   });
-
-  console.log(boreholeno, intakeno);
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
@@ -74,7 +78,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   });
 
   const [control, setcontrol] = useState([]);
-  const [dynamic, setDynamic] = useState([]);
+  const [dynamic, setDynamic] = useState<Array<string | number>>([]);
 
   const {data: measurements} = useQuery({
     queryKey: ['measurements', boreholeno, intakeno],
@@ -84,7 +88,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       );
       return data;
     },
-    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
     placeholderData: [],
   });
 
@@ -109,30 +113,30 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       );
       return data;
     },
-    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
     placeholderData: [],
   });
 
   useEffect(() => {
     if (watlevmp.length > 0) {
-      const elev = watlevmp.filter((e2) => {
+      const elev: number = watlevmp.filter((e2: Maalepunkt) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
           moment(pejlingData.timeofmeas) < moment(e2.enddate)
         );
       })[0]?.elevation;
 
-      let dynamicDate = pejlingData.timeofmeas;
-      let dynamicMeas = elev - pejlingData.disttowatertable_m;
+      const dynamicDate: string = pejlingData.timeofmeas;
+      const dynamicMeas: number = elev - pejlingData.disttowatertable_m;
       setDynamic([dynamicDate, dynamicMeas]);
     }
   }, [pejlingData, watlevmp]);
 
   useEffect(() => {
-    var ctrls = [];
+    let ctrls = [];
     if (watlevmp.length > 0) {
-      ctrls = measurements.map((e) => {
-        const elev = watlevmp.filter((e2) => {
+      ctrls = measurements.map((e: Measurement) => {
+        const elev = watlevmp.filter((e2: Maalepunkt) => {
           return (
             moment(e.timeofmeas) >= moment(e2.startdate) &&
             moment(e.timeofmeas) < moment(e2.enddate)
@@ -145,7 +149,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         };
       });
     } else {
-      ctrls = measurements?.map((elem) => {
+      ctrls = measurements?.map((elem: Measurement) => {
         return {...elem, waterlevel: elem.disttowatertable_m};
       });
     }
@@ -163,7 +167,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   };
 
   const addOrEditPejling = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: Kontrol) => {
       if (data.gid === -1) {
         await apiClient.post(`/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`, data);
       } else {
@@ -173,7 +177,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   });
 
   const handlePejlingSubmit = () => {
-    let payload = {...pejlingData};
+    const payload = {...pejlingData};
     if (payload.service) payload.pumpstop = null;
     addOrEditPejling.mutate(payload, {
       onSuccess: () => {
@@ -190,9 +194,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
       },
     });
   };
-
+  // infer usemutation type for LASTJUPITERMP.tsx
   const addOrEditWatlevmp = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: MaalepunktPost) => {
       if (data.gid === -1) {
         await apiClient.post(`/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`, data);
       } else {
@@ -202,7 +206,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
   });
 
   const handleMpSubmit = () => {
-    let payload = {...mpData};
+    const payload = {...mpData};
     addOrEditWatlevmp.mutate(payload, {
       onSuccess: () => {
         resetMpData();
@@ -218,16 +222,16 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     });
   };
 
-  const handleEdit = (type) => {
+  const handleEdit = (type: string) => {
     if (type === 'watlevmp') {
-      return (data) => {
+      return (data: MaalepunktTableData) => {
         data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
         setShowForm('true'); // update to use state machine¨
       };
     } else {
-      return (data) => {
+      return (data: Kontrol) => {
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
         setShowForm('true'); // update to use state machine¨
@@ -235,9 +239,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   };
 
-  const handleDelete = (type) => {
+  const handleDelete = (type: string) => {
     if (type === 'watlevmp') {
-      return (gid) => {
+      return (gid: number) => {
         apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['watlevmp', boreholeno],
@@ -247,7 +251,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
         });
       };
     } else {
-      return (gid) => {
+      return (gid: number) => {
         apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then(() => {
           queryClient.invalidateQueries({
             queryKey: ['measurements', boreholeno],
@@ -259,14 +263,14 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     }
   };
 
-  const changeActiveImageData = (field, value) => {
+  const changeActiveImageData = (field: string, value: string) => {
     setActiveImage({
       ...activeImage,
       [field]: value,
     });
   };
 
-  const convertBase64 = (file) => {
+  const convertBase64 = async (file: Blob) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
@@ -279,7 +283,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     });
   };
 
-  const handleSetDataURI = (datauri) => {
+  const handleSetDataURI = (datauri: string) => {
     setdataUri(datauri);
     setActiveImage({
       gid: -1,
@@ -291,16 +295,13 @@ const Boreholeno = ({boreholeno, intakeno}) => {
     setOpenSave(true);
   };
 
-  const handleFileRead = async (event) => {
+  const handleFileRead = async (event: ChangeEvent<HTMLInputElement>) => {
     setShowForm('true');
-    const file = event.target.files[0];
-    const base64 = await convertBase64(file);
-    handleSetDataURI(base64);
-  };
-
-  const handleFileInputClick = () => {
-    // Reset the file input value to allow re-triggering the change event
-    fileInputRef.current.value = null;
+    const fileList = event.target.files ?? null;
+    if (fileList && fileList.length > 0) {
+      const base64 = await convertBase64(fileList[0]);
+      handleSetDataURI(base64 as string);
+    }
   };
 
   return (
@@ -331,13 +332,12 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             formData={pejlingData}
             changeFormData={changePejlingData}
             handleSubmit={handlePejlingSubmit}
-            openAddMP={openAddMP}
             resetFormData={() => {
               resetPejlingData();
               setShowForm(null);
             }}
             mpData={watlevmp}
-            stamdata={stamdata}
+            openAddMP={openAddMP}
             lastMeasurementPump={
               measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
             }
@@ -368,9 +368,7 @@ const Boreholeno = ({boreholeno, intakeno}) => {
                 formData={mpData}
                 changeFormData={changeMpData}
                 handleSubmit={handleMpSubmit}
-                resetFormData={resetMpData}
                 handleCancel={handleMpCancel}
-                canEdit={true}
               />
             )}
           </Box>
@@ -389,9 +387,8 @@ const Boreholeno = ({boreholeno, intakeno}) => {
           >
             <MaalepunktTable
               watlevmp={watlevmp}
-              handleEdit={handleEdit('watlevmp')}
+              handleEdit={() => handleEdit('watlevmp')}
               handleDelete={handleDelete('watlevmp')}
-              canEdit={true}
             />
           </FabWrapper>
         )}
@@ -408,12 +405,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             }
           >
             <PejlingMeasurements
-              boreholeno={boreholeno}
-              intakeno={intakeno}
               measurements={measurements}
-              handleEdit={handleEdit('pejling')}
+              handleEdit={() => handleEdit('pejling')}
               handleDelete={handleDelete('pejling')}
-              canEdit={true}
             />
           </FabWrapper>
         )}
@@ -422,8 +416,9 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             icon={<AddAPhotoRounded />}
             text="Tilføj billede"
             onClick={() => {
-              fileInputRef.current.click();
+              fileInputRef.current && fileInputRef.current.click();
             }}
+            visible="true"
           >
             <Images
               type={'borehole'}
@@ -451,24 +446,12 @@ const Boreholeno = ({boreholeno, intakeno}) => {
             />
           </div>
         )}
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{display: 'none'}}
-          onChange={handleFileRead}
-          onClick={handleFileInputClick}
-        />
+        <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileRead} />
         {pageToShow === StationPages.STAMDATA && canEdit && (
           <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
         )}
       </Box>
-      <ActionAreaBorehole
-        setPageToShow={setPageToShow}
-        showForm={showForm}
-        setShowForm={setShowForm}
-        canEdit={canEdit}
-        fileInputRef={fileInputRef}
-      />
+      <ActionAreaBorehole canEdit={canEdit} />
     </Box>
   );
 };

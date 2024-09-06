@@ -10,14 +10,18 @@ import React from 'react';
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {StationPages} from '~/helpers/EnumHelper';
 import {useSearchParam} from '~/hooks/useSeachParam';
-const navIconStyle = (isSelected) => {
+const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'inherit';
 };
 
-export default function ActionArea({canEdit}) {
+interface ActionAreaProps {
+  canEdit: boolean;
+}
+
+export default function ActionArea({canEdit}: ActionAreaProps) {
   const [pageToShow, setPageToShow] = useSearchParam('page');
   const [showForm, setShowForm] = useSearchParam('showForm');
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: React.ChangeEvent<object>, newValue: string | null) => {
     setPageToShow(newValue);
     if (showForm !== null) {
       setShowForm(null);

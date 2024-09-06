@@ -36,7 +36,7 @@ type Stamdata = z.infer<typeof schema>;
 
 interface BoreholeStamdataProps {
   boreholeno: string;
-  intakeno: string;
+  intakeno: number;
   stamdata: Stamdata;
 }
 
@@ -152,8 +152,8 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
                 <Controller
                   name="groups"
                   control={formMethods.control}
-                  render={({field: {onChange, value}}) => (
-                    <LocationGroups value={value} setValue={onChange} />
+                  render={({field: {onChange, value, onBlur}}) => (
+                    <LocationGroups value={value} setValue={onChange} onBlur={onBlur} />
                   )}
                 />
               </Grid>

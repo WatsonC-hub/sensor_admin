@@ -1,13 +1,28 @@
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {UseMutationResult, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
+import {Maalepunkt, MaalepunktPost} from '~/types';
 
-const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddMPOpen}) => {
+interface JupiterMPProps {
+  boreholeno: string;
+  intakeno: number;
+  lastOurMP: Maalepunkt;
+  watlevmpMutate: UseMutationResult<void, Error, MaalepunktPost, unknown>;
+  setAddMPOpen: (open: string | null) => void;
+}
+
+const LastJupiterMP = ({
+  boreholeno,
+  intakeno,
+  lastOurMP,
+  watlevmpMutate,
+  setAddMPOpen,
+}: JupiterMPProps) => {
   const queryClient = useQueryClient();
   const {data, isLoading, isError, isSuccess} = useQuery({
     queryKey: ['last_jupiter_mp', boreholeno, intakeno],
@@ -17,7 +32,7 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddM
       );
       return data;
     },
-    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
   });
 
   const showQuickAdd = data
@@ -27,7 +42,7 @@ const LastJupiterMP = ({boreholeno, intakeno, lastOurMP, watlevmpMutate, setAddM
     : false;
 
   const handleQuickAdd = () => {
-    const payload = {
+    const payload: MaalepunktPost = {
       gid: -1,
       startdate: moment(data.startdate).toISOString(),
       enddate: moment('2099-01-01').toISOString(),

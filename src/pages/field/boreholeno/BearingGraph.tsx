@@ -6,6 +6,7 @@ import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {setGraphHeight} from '~/consts';
+import {Measurement} from '~/types';
 
 const selectorOptions = {
   buttons: [
@@ -115,18 +116,29 @@ const layout3 = {
   },
 };
 
-const TRACE_NAMES = {
-  0: 'Jupiter - i ro',
-  1: 'Jupiter - i drift',
-  null: 'Jupiter - ukendt årsag',
-};
+// const TRACE_NAMES = {
+//   0: 'Jupiter - i ro',
+//   1: 'Jupiter - i drift',
+// };
 
-function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
+interface PlotGraphProps {
+  jupiterData: {
+    data: {
+      situation: Array<number | null>;
+      x: Array<string>;
+      y: Array<number>;
+    };
+  };
+  ourData: Array<Measurement>;
+  dynamicMeasurement: Array<string | number> | undefined;
+}
+
+function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => d.waterlevel);
 
-  const [xDynamicMeasurement, setXDynamicMeasurement] = useState([]);
-  const [yDynamicMeasurement, setYDynamicMeasurement] = useState([]);
+  const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string | number>>([]);
+  const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<string | number>>([]);
 
   useEffect(() => {
     if (dynamicMeasurement !== undefined) {
@@ -143,15 +155,19 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
     const indexes = jupiterData?.data?.situation
       ?.map((situation, index) => situation === i && index)
       .filter((d) => d !== false);
-
     // get x and y values for each situation
     const x = indexes?.map((index) => jupiterData.data.x[index]);
     const y = indexes?.map((index) => jupiterData.data.y[index]);
 
+    let name = 'Jupiter - ukendt årsag';
+    if (i === 0) name = 'Jupiter - i ro';
+    else if (i === 1) name = 'Jupiter - i drift';
+
     return {
       x,
       y,
-      name: TRACE_NAMES[i],
+      // name: i ? (i in TRACE_NAMES ? TRACE_NAMES[i] : null) : null,
+      name: name,
       type: 'scattergl',
       line: {width: 2},
       mode: 'lines+markers',
@@ -161,45 +177,47 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
+  const data: any = [
+    ...jupiterTraces,
+    {
+      x: xOurData,
+      y: yOurData,
+      name: 'Calypso data',
+      type: 'scattergl',
+      mode: 'markers',
+      marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
+    },
+    {
+      x: xDynamicMeasurement,
+      y: yDynamicMeasurement,
+      name: '',
+      type: 'scattergl',
+      mode: 'markers',
+      showlegend: false,
+      marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
+    },
+  ];
+
+  const layout: any = matches
+    ? {
+        ...layout3,
+        yaxis: {
+          ...layout3.yaxis,
+          // title: "Vandstand",
+        },
+      }
+    : {
+        ...layout1,
+        yaxis: {
+          ...layout1.yaxis,
+          title: 'Vandstand',
+        },
+      };
+
   return (
     <Plot
-      data={[
-        ...jupiterTraces,
-        {
-          x: xOurData,
-          y: yOurData,
-          name: 'Calypso data',
-          type: 'scattergl',
-          mode: 'markers',
-          marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
-        },
-        {
-          x: xDynamicMeasurement,
-          y: yDynamicMeasurement,
-          name: '',
-          type: 'scattergl',
-          mode: 'markers',
-          showlegend: false,
-          marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
-        },
-      ]}
-      layout={
-        matches
-          ? {
-              ...layout3,
-              yaxis: {
-                ...layout3.yaxis,
-                // title: "Vandstand",
-              },
-            }
-          : {
-              ...layout1,
-              yaxis: {
-                ...layout1.yaxis,
-                title: 'Vandstand',
-              },
-            }
-      }
+      data={data}
+      layout={layout}
       config={{
         responsive: true,
         modeBarButtonsToRemove: [
@@ -219,7 +237,19 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}) {
   );
 }
 
-export default function BearingGraph({boreholeno, intakeno, measurements, dynamicMeasurement}) {
+interface BearingGraphProps {
+  boreholeno: string;
+  intakeno: number;
+  measurements: Array<Measurement>;
+  dynamicMeasurement: Array<string | number> | undefined;
+}
+
+export default function BearingGraph({
+  boreholeno,
+  intakeno,
+  measurements,
+  dynamicMeasurement,
+}: BearingGraphProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -231,7 +261,7 @@ export default function BearingGraph({boreholeno, intakeno, measurements, dynami
       );
       return data;
     },
-    enabled: boreholeno !== -1 && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
   });
 
   return (

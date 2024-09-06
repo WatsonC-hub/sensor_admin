@@ -1,7 +1,12 @@
 import {Card, CardContent, CardHeader} from '@mui/material';
 import React from 'react';
 
-const LastMPCard = ({title, children}) => {
+interface MPCardProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+const LastMPCard = ({title, children}: MPCardProps) => {
   return (
     <Card
       sx={{

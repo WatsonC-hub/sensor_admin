@@ -19,15 +19,15 @@ import CustomBottomNavigationActionLabel from './CustomLabel';
 
 interface NavigationItem {
   text: string;
-  value: string;
+  value: string | null;
   icon: React.ReactElement<SvgIconProps>;
   color: string;
-  isCalculated: boolean;
+  isCalculated?: boolean;
 }
 
 interface CustomBottomNavigationProps {
-  pageToShow: string;
-  onChange: (event: React.ChangeEvent<object>, newValue: string) => void;
+  pageToShow: string | null;
+  onChange: (event: React.ChangeEvent<object>, newValue: string | null) => void;
   items: NavigationItem[];
   canEdit?: boolean;
 }
@@ -53,7 +53,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   const visibleItems = items.slice(0, threshold);
   const hiddenItems = items.slice(threshold);
 
-  const handleMenuItemClick = (event: React.MouseEvent<HTMLElement>, value: string) => {
+  const handleMenuItemClick = (event: React.MouseEvent<HTMLElement>, value: string | null) => {
     onChange(event, value);
     handleMenuClose();
   };

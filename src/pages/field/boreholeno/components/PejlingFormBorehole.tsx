@@ -22,6 +22,20 @@ import React, {useEffect, useState} from 'react';
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {alertHeight} from '~/consts';
+import {Maalepunkt, PejlingItem} from '~/types';
+
+interface BoreholePejlingFormProps {
+  formData: PejlingItem;
+  changeFormData: (
+    key: string,
+    value: string | boolean | null
+  ) => (key: string, value: string) => void;
+  handleSubmit: () => void;
+  resetFormData: () => void;
+  mpData: Array<Maalepunkt>;
+  openAddMP: () => void;
+  lastMeasurementPump: boolean;
+}
 
 export default function PejlingFormBorehole({
   formData,
@@ -31,9 +45,9 @@ export default function PejlingFormBorehole({
   mpData,
   openAddMP,
   lastMeasurementPump,
-}) {
+}: BoreholePejlingFormProps) {
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
-  const [currentMP, setCurrentMP] = useState({
+  const [currentMP, setCurrentMP] = useState<{elevation: number | null; mp_description: string}>({
     elevation: null,
     mp_description: '',
   });
@@ -51,31 +65,29 @@ export default function PejlingFormBorehole({
 
   useEffect(() => {
     if (mpData.length > 0) {
-      var mp = mpData.filter((elem) => {
+      const mp: Array<Maalepunkt> = mpData.filter((elem) => {
         if (
           moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
           moment(formData.timeofmeas).isBefore(elem.enddate)
         ) {
-          console.log('true');
           return true;
         }
       });
-      console.log(mp);
       if (mp.length > 0) {
         setPejlingOutOfRange(false);
-        setCurrentMP(mp[0]);
+        setCurrentMP({elevation: mp[0].elevation, mp_description: mp[0].mp_description});
       } else {
         setPejlingOutOfRange(true);
       }
     }
   }, [formData.gid, mpData]);
 
-  const handleDateChange = (date) => {
+  const handleDateChange = (date: string) => {
     if (moment(date).isValid()) {
       changeFormData('timeofmeas', date);
     }
 
-    var mp = mpData?.filter((elem) => {
+    const mp = mpData?.filter((elem) => {
       if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
         return true;
       }
@@ -89,16 +101,10 @@ export default function PejlingFormBorehole({
     }
   };
 
-  const handleNotPossibleChange = (event) => {
+  const handleNotPossibleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNotPossible(event.target.checked);
     changeFormData('disttowatertable_m', null);
   };
-
-  console.log('submit', disableSubmit);
-  console.log('elevation', !(currentMP.elevation !== null || currentMP.elevation !== undefined));
-  console.log('pejlingoutofrange', pejlingOutOfRange);
-  console.log('formdata timeof meas', !formData.timeofmeas);
-  console.log('pumpstop', isPump && formData.pumpstop > formData.timeofmeas);
 
   return (
     <Card
@@ -109,6 +115,7 @@ export default function PejlingFormBorehole({
         textAlign: 'center',
         justifyContent: 'center',
         alignContent: 'center',
+        alignSelf: 'center',
       }}
     >
       <CardContent>
@@ -245,7 +252,7 @@ export default function PejlingFormBorehole({
                     </Typography>
                   }
                   value={formData.timeofmeas}
-                  onChange={(date) => handleDateChange(date)}
+                  onChange={(date: string) => handleDateChange(date)}
                   error={pejlingOutOfRange}
                   helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
                 />
@@ -279,14 +286,14 @@ export default function PejlingFormBorehole({
                           Tidspunkt for pumpestop
                         </Typography>
                       }
-                      error={formData.pumpstop > formData.timeofmeas}
+                      error={formData.pumpstop && formData.pumpstop > formData.timeofmeas}
                       helperText={
-                        formData.pumpstop > formData.timeofmeas
+                        formData.pumpstop && formData.pumpstop > formData.timeofmeas
                           ? 'Pumpestop skal være før pejletidspunkt'
                           : ''
                       }
                       value={formData.pumpstop}
-                      onChange={(date) => changeFormData('pumpstop', date)}
+                      onChange={(date: string) => changeFormData('pumpstop', date)}
                       disabled={!!formData.service}
                       max={formData.timeofmeas}
                     />
@@ -316,7 +323,7 @@ export default function PejlingFormBorehole({
                   onChange={(e) => changeFormData('comment', e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sm={2}>
+              <Grid item xs={12} sm={4}>
                 <Box display="flex" gap={1} justifyContent={{xs: 'flex-end', sm: 'center'}}>
                   <Button bttype="tertiary" onClick={resetFormData}>
                     Annuller
@@ -332,7 +339,10 @@ export default function PejlingFormBorehole({
                       !(currentMP.elevation !== null || currentMP.elevation !== undefined) ||
                       pejlingOutOfRange ||
                       !formData.timeofmeas ||
-                      (isPump && formData.pumpstop > formData.timeofmeas)
+                      (isPump &&
+                        formData.pumpstop !== null &&
+                        formData.pumpstop !== undefined &&
+                        formData.pumpstop > formData.timeofmeas)
                     }
                     startIcon={<SaveIcon />}
                   >

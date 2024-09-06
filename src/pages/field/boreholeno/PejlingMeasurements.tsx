@@ -3,23 +3,33 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import PejlingMeasurementsTableDesktop from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
 import PejlingMeasurementsTableMobile from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableMobile';
+import {Kontrol} from '~/types';
 
-export default function PejlingMeasurements(props) {
+interface PejlingProps {
+  measurements: Array<Kontrol>;
+  handleEdit: (measurement: Kontrol) => void;
+  handleDelete: (id: number) => void;
+}
+
+export default function PejlingMeasurements({
+  measurements,
+  handleEdit,
+  handleDelete,
+}: PejlingProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
   return matches ? (
     <PejlingMeasurementsTableMobile
-      data={props.measurements}
-      handleEdit={props.handleEdit}
-      handleDelete={props.handleDelete}
-      canEdit={props.canEdit}
+      data={measurements}
+      handleEdit={handleEdit}
+      handleDelete={handleDelete}
     />
   ) : (
     <PejlingMeasurementsTableDesktop
-      data={props.measurements}
-      handleEdit={props.handleEdit}
-      handleDelete={props.handleDelete}
+      data={measurements}
+      handleEdit={handleEdit}
+      handleDelete={handleDelete}
     />
   );
 }
