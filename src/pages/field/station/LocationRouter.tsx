@@ -45,7 +45,7 @@ export default function LocationRouter() {
     }
   }, [data]);
 
-  const {data: metadata} = useMetadata(params.locid ? parseInt(params.locid) : -1);
+  const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
   const stamdata = data?.filter(
     (elem: {ts_id: number}) => params.ts_id && elem.ts_id == parseInt(params.ts_id)

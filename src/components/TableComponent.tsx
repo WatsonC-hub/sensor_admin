@@ -3,7 +3,9 @@ import {Box, IconButton, Tooltip} from '@mui/material';
 // import {useAtom} from 'jotai';
 // import {RESET} from 'jotai/utils';
 import {
+  MRT_ColumnDef,
   MRT_GlobalFilterTextField,
+  MRT_RowData,
   MRT_ShowHideColumnsButton,
   MRT_ToggleFiltersButton,
   MaterialReactTable,
@@ -14,8 +16,14 @@ import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
+import {QATableType} from '~/types';
 
-const TableComponent = ({data, columns, ...rest}) => {
+interface TableComponentProps {
+  data: Array<QATableType>;
+  columns: MRT_ColumnDef<MRT_RowData>[];
+}
+
+const TableComponent = ({data, columns, ...rest}: TableComponentProps) => {
   const [stateAndHandlers, resetState] = useStatefullTableAtom('testtable');
   const {isTouch} = useBreakpoints();
 

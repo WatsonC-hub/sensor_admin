@@ -33,7 +33,7 @@ const MinimalSelect = ({
     setIsOpen(false);
   };
 
-  const handleClose = () => setIsOpen(false);
+  const handleClose = () => setIsOpen(selectedIntake !== -1 ? false : true);
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {

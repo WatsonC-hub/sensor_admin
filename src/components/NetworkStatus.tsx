@@ -19,7 +19,6 @@ const NetworkStatus = () => {
     toast.success('Online', {
       toastId: 'online',
       style: style,
-      newestOnTop: true,
     });
 
     // return null;
@@ -29,7 +28,6 @@ const NetworkStatus = () => {
       toastId: 'offline',
       style: style,
       autoClose: false,
-      newestOnTop: true,
     });
 
     // return <WifiOffIcon />;

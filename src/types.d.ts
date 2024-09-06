@@ -274,3 +274,10 @@ export type typeUnitPost = {
   startdate: string;
   enddate: string;
 };
+
+export type QATableType = {
+  ts_id: number;
+  calypso_id?: number;
+  ts_name: string;
+  tstype_name;
+};

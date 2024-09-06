@@ -5,7 +5,11 @@ import Fade from '@mui/material/Fade';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import * as React from 'react';
 
-export default function ScrollTop({threshold}) {
+interface ScrollTopProps {
+  threshold: number;
+}
+
+export default function ScrollTop({threshold}: ScrollTopProps) {
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: threshold,

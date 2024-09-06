@@ -25,7 +25,7 @@ export default function ScanComponent() {
     return <Navigate to="/field" replace={true} />;
   }
 
-  var redirect = '/field';
+  let redirect = '/field';
   if (data.loc_id) {
     if (data.ts_id) {
       redirect = `/field/location/${data.loc_id}/${data.ts_id}`;

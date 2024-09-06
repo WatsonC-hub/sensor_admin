@@ -1,9 +1,18 @@
-import {Card, CardContent, CardHeader, Typography} from '@mui/material';
+import {Card, CardContent, CardHeader, SvgIconTypeMap, SxProps, Typography} from '@mui/material';
+import {OverridableComponent} from '@mui/material/OverridableComponent';
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
 
-const ChoiseCard = ({navigateTo, title, text, icon: Icon, sx}) => {
-  let navigate = useNavigate();
+interface ChoiseCardProps {
+  navigateTo: string;
+  title: string;
+  text: string;
+  icon: OverridableComponent<SvgIconTypeMap<object, 'svg'>>;
+  sx: SxProps;
+}
+
+const ChoiseCard = ({navigateTo, title, text, icon: Icon, sx}: ChoiseCardProps) => {
+  const navigate = useNavigate();
   return (
     <Card
       sx={{

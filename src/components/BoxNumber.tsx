@@ -1,6 +1,11 @@
 import {Box} from '@mui/material';
+import {ReactNode} from 'react';
 
-const BoxNumber = ({children, ...rest}) => {
+interface BoxNumberProps {
+  children: ReactNode;
+}
+
+const BoxNumber = ({children, ...rest}: BoxNumberProps) => {
   return (
     <Box
       sx={{

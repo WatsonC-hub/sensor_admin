@@ -5,8 +5,21 @@ import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
+import {Maalepunkt} from '~/types';
 
-export default function MaalepunktForm({formData, changeFormData, handleSubmit, handleCancel}) {
+interface MaalepunktFormProps {
+  formData: Maalepunkt;
+  changeFormData: (key: string, value: any) => void;
+  handleSubmit: () => void;
+  handleCancel: () => void;
+}
+
+export default function MaalepunktForm({
+  formData,
+  changeFormData,
+  handleSubmit,
+  handleCancel,
+}: MaalepunktFormProps) {
   const [disableSubmit, setDisableSubmit] = useState(false);
 
   const handleClickSubmit = () => {
@@ -16,23 +29,23 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
     }, 2500);
   };
 
-  const handleStartdateChange = (date) => {
+  const handleStartdateChange = (date: string) => {
     if (moment(date).isValid()) {
       changeFormData('startdate', date);
     }
   };
 
-  const handleEnddateChange = (date) => {
+  const handleEnddateChange = (date: string) => {
     if (moment(date).isValid()) {
       changeFormData('enddate', date);
     }
   };
 
-  const handleCommentChange = (e) => {
+  const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     changeFormData('mp_description', e.target.value);
   };
 
-  const handleElevationChange = (e) => {
+  const handleElevationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     changeFormData('elevation', e.target.value);
   };
 
@@ -75,7 +88,7 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
             <OwnDatePicker
               label={'Start dato'}
               value={formData.startdate}
-              onChange={(date) => handleStartdateChange(date)}
+              onChange={(date: string) => handleStartdateChange(date)}
               fullWidth
             />
           </Grid>
@@ -84,7 +97,7 @@ export default function MaalepunktForm({formData, changeFormData, handleSubmit, 
               <OwnDatePicker
                 label={'Slut dato'}
                 value={formData.enddate}
-                onChange={(date) => handleEnddateChange(date)}
+                onChange={(date: string) => handleEnddateChange(date)}
                 fullWidth
               />
             </Grid>

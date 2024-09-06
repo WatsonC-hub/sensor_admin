@@ -261,7 +261,7 @@ export default function BearingGraph({
       );
       return data;
     },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
   });
 
   return (

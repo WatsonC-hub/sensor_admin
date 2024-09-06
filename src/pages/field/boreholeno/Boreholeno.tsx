@@ -40,6 +40,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       const {data} = await apiClient.get(`/auth/me/permissions`);
       return data;
     },
+    enabled: intakeno !== -1,
   });
 
   useEffect(() => {
@@ -69,6 +70,8 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
     date: moment().format('YYYY-MM-DDTHH:mm'),
   });
 
+  console.log(intakeno);
+
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: () => moment().format('YYYY-MM-DDTHH:mm'),
@@ -88,7 +91,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       );
       return data;
     },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
     placeholderData: [],
   });
 
@@ -103,6 +106,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: false,
+    enabled: boreholeno !== '-1' && intakeno !== -1,
   });
 
   const {data: watlevmp} = useQuery({
@@ -113,7 +117,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       );
       return data;
     },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
     placeholderData: [],
   });
 
