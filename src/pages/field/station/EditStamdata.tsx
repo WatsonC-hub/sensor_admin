@@ -72,6 +72,11 @@ type ChangeReason = {
   default_actions: string | null;
 };
 
+type Action = {
+  action: string;
+  label: string;
+};
+
 const UnitEndDateDialog = ({
   openDialog,
   setOpenDialog,
@@ -88,6 +93,16 @@ const UnitEndDateDialog = ({
       const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
       return data;
     },
+    enabled: superUser,
+  });
+
+  const {data: actions} = useQuery<Action[]>({
+    queryKey: ['actions'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit.uuid}`);
+      return data;
+    },
+    enabled: superUser && !!unit.uuid,
   });
 
   const takeHomeMutation = useMutation({
@@ -157,7 +172,13 @@ const UnitEndDateDialog = ({
                   );
                   if (reason) {
                     console.log('reason', reason);
-                    formMethods.setValue('action', reason.default_actions ?? 'DO_NOTHING');
+
+                    if (reason.default_actions?.includes('CLOSE')) {
+                      const action = actions?.find((action) => action.action.includes('CLOSE'));
+                      formMethods.setValue('action', action?.action);
+                    } else {
+                      formMethods.setValue('action', reason.default_actions ?? 'DO_NOTHING');
+                    }
                   }
                 }}
               >
@@ -176,8 +197,11 @@ const UnitEndDateDialog = ({
                 placeholder="Handling"
                 // disabled={formMethods.watch('change_reason') !== 1}
               >
-                <MenuItem value={'DO_NOTHING'}>Gør ingenting</MenuItem>
-                <MenuItem value={'CLOSE_UNIT_INVOICE'}>Luk enhed og fakturering</MenuItem>
+                {actions?.map((action) => (
+                  <MenuItem key={action.action} value={action.action}>
+                    {action.label}
+                  </MenuItem>
+                ))}
               </FormInput>
 
               <FormInput
@@ -480,14 +504,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     reset,
     control,
     formState: {isSubmitting, dirtyFields},
-    watch,
   } = formMethods;
-
-  const unit = watch('unit') as Unit;
-
-  useEffect(() => {
-    console.log('unit', unit);
-  }, [unit]);
 
   const resetFormData = () => {
     const result = schema.safeParse({
