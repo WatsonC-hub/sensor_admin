@@ -2,19 +2,7 @@ import {Grid} from '@mui/material';
 import React from 'react';
 
 import ImageCard from '~/components/ImageCard';
-
-type Image = {
-  gid: number;
-  loc_id?: number;
-  boreholeno: number;
-  title: string;
-  date: string;
-  public: boolean;
-  userid: number;
-  comment: string;
-  imageurl: string;
-  organisationid?: number;
-};
+import {Image} from '~/types';
 
 type ImageViewerProps = {
   images: Array<Image>;
@@ -23,6 +11,7 @@ type ImageViewerProps = {
 };
 
 function ImageViewer({images, deleteMutation, handleEdit}: ImageViewerProps) {
+  console.log(images);
   return (
     <Grid container spacing={3} alignItems="center" justifyContent="center">
       {images?.map((elem) => {

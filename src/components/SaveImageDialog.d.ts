@@ -10,7 +10,7 @@ export interface SaveImageDialogProps {
     // Add any other properties as needed
   };
   changeData: (field: string, value: any) => void;
-  id: string;
+  id: string | number;
   type: string;
   open: boolean;
   dataUri: string;

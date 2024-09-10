@@ -65,6 +65,7 @@ root.render(
                 borderRadius: '0.5rem',
                 margin: '0.5rem',
               }}
+              newestOnTop={true}
               limit={3}
               autoClose={2000}
               closeButton={false}

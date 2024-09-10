@@ -12,23 +12,12 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {authStore} from '~/state/store';
-
-export type Maalepunkt = {
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  organisationid: number;
-  organisationname: string;
-  mp_description: string;
-  gid: number;
-  ts_id: number;
-  userid: string;
-};
+import {MaalepunktTableData} from '~/types';
 
 interface Props {
-  data: Maalepunkt[];
-  handleEdit: (maalepuntk: Maalepunkt) => void;
-  handleDelete: (gid: number | undefined) => void;
+  data: MaalepunktTableData[];
+  handleEdit: (maalepuntk: MaalepunktTableData) => void;
+  handleDelete: (gid: number) => void;
 }
 
 export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}: Props) {
@@ -42,7 +31,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
+  const columns = useMemo<MRT_ColumnDef<MaalepunktTableData>[]>(
     () => [
       {
         accessorFn: (row) => (
@@ -78,9 +67,9 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
     ],
     []
   );
-  const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
+  const [tableState, reset] = useStatefullTableAtom<MaalepunktTableData>('MaalepunktTableState');
 
-  const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+  const options: Partial<MRT_TableOptions<MaalepunktTableData>> = {
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -98,7 +87,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
     },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<MaalepunktTableData>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 886)}>

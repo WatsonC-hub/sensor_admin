@@ -1,13 +1,10 @@
 import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
 
-import {AccessType} from '~/helpers/EnumHelper';
-
-import {Ressourcer} from './features/stamdata/components/stationDetails/multiselect/types';
-
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface Image {
+  type: string;
   gid: number;
   loc_id?: number;
   boreholeno: number;
@@ -78,6 +75,52 @@ export interface BoreholeData {
   groups: Group[];
 }
 
+export type Kontrol = {
+  comment: string;
+  gid: number;
+  disttowatertable_m: number;
+  timeofmeas: string;
+  useforcorrection: number;
+  pumpstop: string;
+  service: boolean;
+  organisationid: number;
+  organisationname: string;
+  uploaded_status: boolean;
+};
+
+export type Measurement = {
+  boreholeno: string;
+  intakeno: number;
+  timeofmeas: string;
+  disttowatertable_m: number;
+  deleted: boolean;
+  extrema: string | null;
+  gid: number;
+  last_uploaded: string;
+  organisationid: number;
+  organisationname: string;
+  pumpstop: string | null;
+  service: boolean;
+  updated_at: string;
+  uploaded_status: boolean;
+  useforcorrection: number;
+  userid: number;
+  uuid: string;
+  waterlevel?: boolean;
+};
+
+export type MaalepunktTableData = {
+  startdate: string;
+  enddate: string;
+  elevation: number;
+  organisationid: number;
+  organisationname: string;
+  mp_description: string;
+  gid: number;
+  ts_id: number;
+  userid: string;
+};
+
 export type Maalepunkt = {
   startdate: string;
   enddate: string;
@@ -86,6 +129,14 @@ export type Maalepunkt = {
   gid: number;
   ts_id: number;
   userid: string;
+};
+
+export type MaalepunktPost = {
+  startdate: string;
+  enddate: string;
+  elevation: number;
+  mp_description: string;
+  gid: number;
 };
 
 export type TilsynItem = {
@@ -112,6 +163,10 @@ export type PejlingItem = {
   measurement: number;
   timeofmeas: string;
   useforcorrection: number;
+  disttowatertable_m?: number | null;
+  pumpstop?: string | null;
+  extrema?: string | null;
+  service?: boolean;
 };
 
 export type Parking = {
@@ -172,20 +227,8 @@ export type ContactInfoOptions = {
 };
 
 export type StationDetails = {
-  // contactInfo: ContactInfo;
-  // accessKey: Array<string>;
   ressourcer: Array<Ressourcer>;
 };
-
-// export type Access = {
-//   id: number;
-//   navn: string;
-//   adgangstype: AccessType;
-//   loctype_name: number; //should be string later;
-//   projektnummer: number;
-//   x?: number;
-//   y?: number;
-// };
 
 export type Access = {
   id?: number;
@@ -206,4 +249,31 @@ export type AccessTable = {
   koden: string;
   kommentar: string;
   contact_name?: string;
+};
+
+export type Unit = {
+  terminal_type: string;
+  terminal_id: string;
+  sensor_id: string;
+  sensorinfo: string;
+  calypso_id: string;
+  batteriskift: string;
+  startdato: string;
+  slutdato: string;
+  uuid: string;
+  gid: number;
+  channel: string;
+};
+
+export type typeUnitPost = {
+  unit_uuid: string;
+  startdate: string;
+  enddate: string;
+};
+
+export type QATableType = {
+  ts_id: number;
+  calypso_id?: number;
+  ts_name: string;
+  tstype_name;
 };

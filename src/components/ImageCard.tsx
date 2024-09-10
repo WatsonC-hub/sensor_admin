@@ -15,7 +15,6 @@ import {toast} from 'react-toastify';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {authStore} from '~/state/store';
 import {Image} from '~/types';
 
 type ImageCardProps = {
@@ -29,12 +28,6 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
 
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}&height=${isMobile ? 300 : 640}`;
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [org_id] = authStore((state) => [state.org_id]);
-
-  const isBorehole =
-    image.boreholeno !== undefined &&
-    image.organisationid !== undefined &&
-    image.organisationid === org_id;
 
   function handleDelete() {
     toast.promise(
@@ -106,7 +99,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
           {image.comment}
         </Typography>
       </CardContent>
-      {(image.loc_id !== undefined || isBorehole) && (
+      {(image.loc_id || image.boreholeno) && (
         <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
           <Button
             disabled={deleteMutation.isPending}

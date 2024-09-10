@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 
-export const useSearchParam = (param: string, default_value?: string) => {
+export const useSearchParam = (param: string, default_value?: string | null) => {
   const navigate = useNavigate();
   const {search} = useLocation();
 
