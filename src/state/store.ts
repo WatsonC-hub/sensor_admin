@@ -119,23 +119,15 @@ type LocationState = {
     uuid: string;
     gid: number;
   };
-  stationDetails: {
-    contact_info: ContactInfo;
-    accessKey: Array<Access>;
-    ressourcer: Ressourcer[];
-  };
   resetLocation: () => void;
   resetTimeseries: () => void;
   resetUnit: () => void;
-  resetStationDetails: () => void;
   setLocation: (locationData: any) => void;
   setTimeseries: (timeseriesdata: any) => void;
   setUnit: (unitData: any) => void;
-  setStationDetails: (stationDetails: any) => void;
   setUnitValue: (key: string, value: any) => void;
   setLocationValue: (key: string, value: any) => void;
   setTimeseriesValue: (key: string, value: any) => void;
-  setStationDetailsValue: (key: string, value: any) => void;
 };
 
 const initialState = {
@@ -175,19 +167,6 @@ const initialState = {
     uuid: '',
     gid: -1,
   },
-  stationDetails: {
-    contact_info: {
-      id: '',
-      navn: '',
-      telefonnummer: -1,
-      email: '',
-      kommentar: '',
-      rolle: '',
-      user_id: '',
-    },
-    accessKey: [],
-    ressourcer: [],
-  },
 };
 
 const stamdataStore = create<LocationState>()(
@@ -196,7 +175,6 @@ const stamdataStore = create<LocationState>()(
     resetLocation: () => set({location: initialState.location}),
     resetTimeseries: () => set({timeseries: initialState.timeseries}),
     resetUnit: () => set({unit: initialState.unit}),
-    resetStationDetails: () => set({stationDetails: initialState.stationDetails}),
     setLocation: (locationData) =>
       set(
         {
@@ -255,18 +233,7 @@ const stamdataStore = create<LocationState>()(
         false,
         'setUnit'
       ),
-    setStationDetails: (stationDetails) =>
-      set(
-        {
-          stationDetails: {
-            contact_info: stationDetails.contact_info,
-            accessKey: stationDetails.accessKey,
-            ressourcer: stationDetails.ressourcer,
-          },
-        },
-        false,
-        'setStationDetails'
-      ),
+
     setUnitValue: (key, value) =>
       set(
         (state) => ({
@@ -299,17 +266,6 @@ const stamdataStore = create<LocationState>()(
         }),
         false,
         'setTimeseriesValue'
-      ),
-    setStationDetailsValue: (key, value) =>
-      set(
-        (state) => ({
-          stationDetails: {
-            ...state.stationDetails,
-            [key]: value,
-          },
-        }),
-        false,
-        'setStationDetailsValue'
       ),
   }))
 );

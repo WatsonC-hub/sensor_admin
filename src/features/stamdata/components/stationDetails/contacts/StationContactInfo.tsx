@@ -1,5 +1,6 @@
 import {MenuItem, Box, Collapse, Grid} from '@mui/material';
-import React from 'react';
+import React, {useEffect} from 'react';
+import {useFormContext} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
 import {ContactInfoRole} from '~/helpers/EnumHelper';
@@ -11,6 +12,17 @@ interface modalProps {
 }
 
 export default function StationContactInfo({modal, isUser, tableModal = false}: modalProps) {
+  const {watch, setValue, clearErrors} = useFormContext();
+
+  const rolle = watch('contact_info.rolle');
+
+  useEffect(() => {
+    if (rolle && rolle === 'Data Ejer') {
+      setValue('contact_info.contact_type', 'projekt');
+      clearErrors('contact_info.contact_type');
+    } else setValue('contact_info.contact_type', '-1');
+  }, [rolle]);
+
   return (
     <Box>
       <Collapse in={true} sx={{width: 'inherit'}}>
@@ -61,7 +73,7 @@ export default function StationContactInfo({modal, isUser, tableModal = false}: 
               label="Organisation"
               placeholder="Organisationen kontakten er tilknyttet..."
               fullWidth
-              disabled={isUser}
+              disabled={true}
               sx={{mb: 2}}
             />
           </Grid>
@@ -82,6 +94,26 @@ export default function StationContactInfo({modal, isUser, tableModal = false}: 
               <MenuItem value={ContactInfoRole.DataEjer}>Data Ejer</MenuItem>
               <MenuItem value={ContactInfoRole.kontakter}>Kontakt</MenuItem>
             </FormInput>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            {rolle && rolle !== '-1' && (
+              <FormInput
+                name="contact_info.contact_type"
+                label="Kontakt type"
+                placeholder="Er det en projekt eller lokationskontakt..."
+                disabled={tableModal}
+                select
+                required
+                fullWidth
+                sx={{mb: 2}}
+              >
+                <MenuItem value={'-1'} key={'-1'}>
+                  Vælg type
+                </MenuItem>
+                <MenuItem value={'lokation'}>Lokation</MenuItem>
+                <MenuItem value={'projekt'}>Projekt</MenuItem>
+              </FormInput>
+            )}
           </Grid>
           <Grid item xs={12} sm={12}>
             <FormInput

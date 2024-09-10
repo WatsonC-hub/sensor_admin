@@ -29,18 +29,29 @@ const locationSchema = z.object({
 });
 
 const stationDetailsSchema = z.object({
-  contact_info: z.object({
-    navn: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
-    telefonnummer: z.string().nullish(),
-    email: z
-      .string({required_error: 'Email feltet skal udfyldes'})
-      .email('Det skal være en valid email'),
-    kommentar: z.string().nullish(),
-    rolle: z
-      .string({required_error: 'Der skal vælges en værdi fra listen'})
-      .min(3, 'Der skal vælges en værdi fra listen'),
-    user_id: z.string().nullish(),
-  }),
+  contact_info: z
+    .object({
+      navn: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
+      telefonnummer: z.number().nullish(),
+      email: z
+        .string({required_error: 'Email feltet skal udfyldes'})
+        .email('Det skal være en valid email'),
+      kommentar: z.string().optional(),
+      rolle: z
+        .string({required_error: 'Der skal vælges en værdi fra listen'})
+        .min(3, 'Der skal vælges en værdi fra listen'),
+      user_id: z.string().nullish(),
+      contact_type: z.string().optional(),
+    })
+    .refine(
+      ({contact_type}) => {
+        return contact_type && contact_type.length > 2;
+      },
+      {
+        message: 'Der skal vælges en værdi fra listen',
+        path: ['contact_type'],
+      }
+    ),
   adgangsforhold: z
     .object({
       id: z.number().nullish(),

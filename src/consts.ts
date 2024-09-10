@@ -110,13 +110,14 @@ export const renderDetailStyle = {
 
 export const initialContactData = {
   navn: '',
-  telefonnummer: '',
+  telefonnummer: null,
   email: '',
   rolle: '-1',
   kommentar: '',
   user_id: null,
   org: '',
   relation_id: -1,
+  contact_type: '-1',
 };
 
 export const initialLocationAccessData = {

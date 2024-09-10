@@ -217,6 +217,7 @@ export type ContactTable = {
   user_id?: string | null;
   org: string;
   relation_id: number;
+  contact_type: string;
 };
 
 export type ContactInfoOptions = {

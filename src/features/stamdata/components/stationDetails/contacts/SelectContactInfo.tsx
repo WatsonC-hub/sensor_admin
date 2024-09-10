@@ -21,18 +21,16 @@ import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import {MetadataContext} from '~/state/contexts';
-import {stamdataStore} from '~/state/store';
 import {ContactInfo} from '~/types';
 
 import StationContactInfo from './StationContactInfo';
 
 const SelectContactInfo = () => {
-  const contact_info_id = stamdataStore((store) => store.stationDetails.contact_info.id);
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [search, setSearch] = useState<string>('');
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
 
-  const {getValues, trigger, setValue, clearErrors} = useFormContext();
+  const {getValues, trigger, setValue, clearErrors, watch} = useFormContext();
   const metadata = useContext(MetadataContext);
   const loc_id: number | undefined = metadata?.loc_id;
 
@@ -40,12 +38,14 @@ const SelectContactInfo = () => {
 
   const {data} = useSearchContact(search);
 
+  const contact_info_id = watch('contact_info.id');
   useEffect(() => {
     if (contact_info_id && data) {
       const contact_info = data.find((item: ContactInfo) => item.id === contact_info_id);
+      console.log(contact_info);
       if (contact_info) setValue('contact_info', contact_info);
     }
-  }, [contact_info_id, data, setValue]);
+  }, [data, setValue, contact_info_id]);
 
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -60,15 +60,22 @@ const SelectContactInfo = () => {
   const handleSave = async () => {
     const result = await trigger('contact_info');
     const details = getValues().contact_info;
+    console.log('saving...', result);
+
+    let tlf = null;
+    if (details.telefonnummer && details.telefonnummer !== '')
+      tlf = details.telefonnummer.toString();
     const test = {
       id: details.id ?? null,
       navn: details.navn,
-      telefonnummer: details.telefonnummer ?? null,
+      telefonnummer: tlf,
       email: details.email,
       kommentar: details.kommentar,
       rolle: details.rolle,
       user_id: details.user_id ?? null,
+      contact_type: details.contact_type,
     };
+    console.log(test);
     if (result) {
       const payload = {
         path: `${loc_id}`,
@@ -165,7 +172,17 @@ const SelectContactInfo = () => {
                   );
                   if (contactInfo) {
                     setSelectedContactInfo(contactInfo);
-                    setValue('contact_info', contactInfo);
+                    setValue('contact_info', {
+                      id: contactInfo.id,
+                      navn: contactInfo.navn,
+                      telefonnummer: contactInfo.telefonnummer
+                        ? parseInt(contactInfo.telefonnummer)
+                        : null,
+                      email: contactInfo.email,
+                      rolle: '-1',
+                      contact_type: '-1',
+                      kommentar: '',
+                    });
                   } else {
                     setValue('contact_info', initialContactData);
                     setSelectedContactInfo(null);

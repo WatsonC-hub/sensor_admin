@@ -34,13 +34,14 @@ const ContactInfo = () => {
       data: {
         id: contactInfo.id,
         navn: contactInfo.navn,
-        telefonnummer: contactInfo.telefonnummer ?? null,
+        telefonnummer: contactInfo.telefonnummer.toString() ?? null,
         email: contactInfo.email,
         rolle: contactInfo.rolle,
         kommentar: contactInfo.kommentar,
         org: contactInfo.org,
         user_id: contactInfo.user_id ?? null,
         relation_id: contactInfo.relation_id,
+        contact_type: contactInfo.contact_type,
       },
     };
 

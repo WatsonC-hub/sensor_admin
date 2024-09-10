@@ -64,6 +64,13 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
         size: 20,
       },
       {
+        header: 'Kontakt type',
+        id: 'contact_type',
+        accessorFn: (row) => (row.contact_type === 'projekt' ? 'Projekt' : 'Lokation'),
+        enableColumnActions: false,
+        size: 20,
+      },
+      {
         header: 'Email',
         accessorKey: 'email',
         size: 20,
@@ -155,6 +162,7 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
+          console.log(row.original);
           setValue('contact_info', row.original);
           setIsUser(row.original.org !== '');
           setOpenContactInfoDialog(true);
@@ -190,12 +198,13 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     const result = await trigger('contact_info');
 
     const details = getValues().contact_info;
+    if (result) {
+      editContact(details);
 
-    editContact(details);
-
-    setOpenContactInfoDialog(!result);
-    setIsUser(!result);
-    setValue('contact_info', initialContactData);
+      setOpenContactInfoDialog(!result);
+      setIsUser(!result);
+      setValue('contact_info', initialContactData);
+    }
   };
 
   return (
