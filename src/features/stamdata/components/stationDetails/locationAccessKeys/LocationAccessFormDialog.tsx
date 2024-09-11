@@ -189,6 +189,7 @@ const LocationAccessFormDialog = ({loc_id, editMode = false}: Props) => {
               <FormInput
                 name="adgangsforhold.kommentar"
                 label={'Kommentar'}
+                multiline
                 placeholder="F.eks. at det er tredje hænge lås eller det er koden til en dør..."
                 disabled={location_access_id && location_access_id !== -1 && !editMode}
                 fullWidth
