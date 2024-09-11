@@ -3,7 +3,7 @@ import {Link} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
-import {FieldError} from 'react-hook-form';
+import {FieldError, Noop} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
 import {authStore} from '~/state/store';
@@ -17,6 +17,7 @@ interface Project {
 interface LocationProjectsProps {
   value: string;
   setValue: (value: string) => void;
+  onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;
 }
@@ -26,7 +27,7 @@ const getLabel = (project: Project | null) => {
   return `${project.project_no} ${project.customer_name ? ' - ' + project.customer_name : ''} ${project.project_info ? ' - ' + project.project_info : ''}`;
 };
 
-const LocationProjects = ({value, setValue, error, disable}: LocationProjectsProps) => {
+const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationProjectsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_projects'],
     queryFn: async () => {
@@ -59,6 +60,7 @@ const LocationProjects = ({value, setValue, error, disable}: LocationProjectsPro
             <TextField
               {...params}
               fullWidth
+              onBlur={onBlur}
               InputLabelProps={{shrink: true}}
               variant="outlined"
               error={Boolean(error) && superUser}

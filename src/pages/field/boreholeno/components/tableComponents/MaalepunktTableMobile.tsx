@@ -19,23 +19,12 @@ import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {authStore} from '~/state/store';
-
-export type Maalepunkt = {
-  startdate: string;
-  enddate: string;
-  elevation: number;
-  organisationid: number;
-  organisationname: string;
-  mp_description: string;
-  gid: number;
-  ts_id: number;
-  userid: string;
-};
+import {MaalepunktTableData} from '~/types';
 
 interface Props {
-  data: Maalepunkt[];
-  handleEdit: (maalepunkt: Maalepunkt) => void;
-  handleDelete: (gid: number | undefined) => void;
+  data: MaalepunktTableData[];
+  handleEdit: (maalepunkt: MaalepunktTableData) => void;
+  handleDelete: (gid: number) => void;
 }
 
 export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: Props) {
@@ -48,7 +37,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
     setDialogOpen(true);
   };
 
-  const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
+  const columns = useMemo<MRT_ColumnDef<MaalepunktTableData>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -98,7 +87,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
     []
   );
 
-  const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+  const options: Partial<MRT_TableOptions<MaalepunktTableData>> = {
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
@@ -119,25 +108,16 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
         </Typography>
       </Box>
     ),
-    // muiTablePaperProps: {
-    //   sx: {
-    //     boxShadow: 'none',
-    //     p: 0,
-    //     margin: 'auto',
-    //     width: '100%',
-    //   },
-    // },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useTable<MaalepunktTableData>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
     <Box sx={setTableBoxStyle(320)} width={'100%'}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

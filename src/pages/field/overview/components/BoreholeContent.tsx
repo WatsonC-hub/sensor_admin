@@ -66,9 +66,9 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
           onClick={() => {
             borehole(data.boreholeno);
           }}
-          startIcon={<ShowChartRoundedIcon />}
+          startIcon={<PlaceIcon />}
         >
-          Boring
+          Lokalitet
         </Button>
       </Box> */}
     </>

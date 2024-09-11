@@ -1,9 +1,8 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DirectionsIcon from '@mui/icons-material/Directions';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StraightenIcon from '@mui/icons-material/Straighten';
-import DirectionsIcon from '@mui/icons-material/Directions';
-import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
-import {Box, IconButton, Tooltip, Typography, Divider} from '@mui/material';
+import {Box, Tooltip, Typography, Divider} from '@mui/material';
 import {
   MRT_ColumnDef,
   MRT_Row,
@@ -13,18 +12,17 @@ import {
 } from 'material-react-table';
 import moment from 'moment';
 import React, {useMemo} from 'react';
+
+import Button from '~/components/Button';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {calculateContentHeight, boreholeColors} from '~/consts';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import Button from '~/components/Button';
-
 import type {BoreholeData} from '~/types';
-import {calculateContentHeight} from '~/consts';
-import {boreholeColors} from '~/consts';
-import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 function statusIcon(row: BoreholeData) {
   let icon;

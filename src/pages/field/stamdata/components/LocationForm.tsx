@@ -4,14 +4,12 @@ import {useContext, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
+import {getDTMQuota} from '~/pages/field/fieldAPI';
+import LocationGroups from '~/pages/field/stamdata/components/LocationGroups';
+import LocationProjects from '~/pages/field/stamdata/components/LocationProjects';
+import LocationTypeSelect from '~/pages/field/stamdata/components/LocationTypeSelect';
 import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
-
-import {getDTMQuota} from '../../fieldAPI';
-
-import LocationGroups from './LocationGroups';
-import LocationProjects from './LocationProjects';
-import LocationTypeSelect from './LocationTypeSelect';
 
 interface Props {
   mode: 'modal' | 'normal';
@@ -82,8 +80,8 @@ export default function LocationForm({mode, disable = false}: Props) {
         <Controller
           name="location.groups"
           control={control}
-          render={({field: {onChange, value}}) => (
-            <LocationGroups value={value} setValue={onChange} disable={disable} />
+          render={({field: {onChange, value, onBlur}}) => (
+            <LocationGroups value={value} setValue={onChange} onBlur={onBlur} disable={disable} />
           )}
         />
       </Grid>
@@ -93,10 +91,11 @@ export default function LocationForm({mode, disable = false}: Props) {
             <Controller
               name="location.initial_project_no"
               control={control}
-              render={({field: {onChange, value}, fieldState: {error}}) => (
+              render={({field: {onChange, value, onBlur}, fieldState: {error}}) => (
                 <LocationProjects
                   value={value}
                   setValue={onChange}
+                  onBlur={onBlur}
                   error={error}
                   disable={
                     disable || (metadata?.unit_uuid !== null && metadata?.unit_uuid !== undefined)

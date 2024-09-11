@@ -33,7 +33,7 @@ export type Kontrol = {
 interface Props {
   data: Kontrol[];
   handleEdit: (kontrol: Kontrol) => void;
-  handleDelete: (gid: number | undefined) => void;
+  handleDelete: (gid: number) => void;
 }
 
 export default function PejlingMeasurementsTableDesktop({data, handleEdit, handleDelete}: Props) {
@@ -119,10 +119,9 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

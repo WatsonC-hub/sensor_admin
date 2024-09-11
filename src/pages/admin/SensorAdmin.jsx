@@ -3,11 +3,10 @@ import {Route, Routes} from 'react-router-dom';
 
 import UserAdmin from '~/pages/admin/brugerstyring/UserAdmin';
 import ConfigurationPage from '~/pages/admin/konfiguration/ConfigurationPage';
+import QualityAssurance from '~/pages/admin/kvalitetssikring/QualityAssurance';
+import QualityAssuranceOverview from '~/pages/admin/kvalitetssikring/QualityAssuranceOverview';
 import NotificationPage from '~/pages/admin/notifikationer/NotificationPage';
-
-import QualityAssurance from './kvalitetssikring/QualityAssurance';
-import QualityAssuranceOverview from './kvalitetssikring/QualityAssuranceOverview';
-import AdminChooser from './overview/AdminChooser';
+import AdminChooser from '~/pages/admin/overview/AdminChooser';
 
 const SensorAdmin = () => {
   return (

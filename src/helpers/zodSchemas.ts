@@ -1,6 +1,8 @@
 import moment from 'moment';
 import {z} from 'zod';
 
+import {AccessType} from './EnumHelper';
+
 const locationSchema = z.object({
   location: z.object({
     loc_id: z.number().optional(),
@@ -24,6 +26,80 @@ const locationSchema = z.object({
     loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
     initial_project_no: z.string().nullable(),
   }),
+});
+
+const stationDetailsSchema = z.object({
+  contact_info: z
+    .object({
+      navn: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
+      telefonnummer: z.number().nullish(),
+      email: z
+        .string({required_error: 'Email feltet skal udfyldes'})
+        .email('Det skal være en valid email'),
+      kommentar: z.string().optional(),
+      rolle: z
+        .string({required_error: 'Der skal vælges en værdi fra listen'})
+        .min(3, 'Der skal vælges en værdi fra listen'),
+      user_id: z.string().nullish(),
+      contact_type: z.string().optional(),
+    })
+    .refine(
+      ({contact_type}) => {
+        return contact_type && contact_type.length > 2;
+      },
+      {
+        message: 'Der skal vælges en værdi fra listen',
+        path: ['contact_type'],
+      }
+    ),
+  adgangsforhold: z
+    .object({
+      id: z.number().nullish(),
+      type: z
+        .string({required_error: 'En type skal vælges ud fra listen'})
+        .min(3, 'En type skal vælges ud fra listen'),
+      navn: z.string({required_error: 'Feltet skal udfyldes'}).min(1, 'Feltet skal udfyldes'),
+      contact_id: z.string().min(1, 'Feltet skal udfyldes').nullish(),
+      placering: z.string().optional().nullish(),
+      koden: z.string().optional().nullish(),
+      kommentar: z.string().optional(),
+    })
+    .refine(
+      ({placering, koden}) => placering === '' || koden === '',
+      ({type}) => {
+        if (type !== '-1' && type === AccessType.Key)
+          return {
+            message: 'Udleveres på adresse felt skal udfyldes',
+            path: ['placering'],
+          };
+        else
+          return {
+            message: 'Kode feltet skal udfyldes',
+            path: ['koden'],
+          };
+      }
+    ),
+  ressourcer: z
+    .array(
+      z.object({
+        id: z.number(),
+        navn: z.string(),
+        kategori: z.string(),
+        tstype_id: z
+          .number()
+          .array()
+          .nullable()
+          .transform((array) => array ?? []),
+        loctype_id: z
+          .number()
+          .array()
+          .nullable()
+          .transform((array) => array ?? []),
+        forudvalgt: z.boolean(),
+      })
+    )
+    .nullish()
+    .transform((ressourcer) => ressourcer ?? []),
 });
 
 const timeseriesSchema = locationSchema.extend({
@@ -132,4 +208,4 @@ const metadataPutSchema = metadataBaseSchema.extend({
 //     .optional(),
 // });
 
-export {locationSchema, timeseriesSchema, metadataPutSchema, metadataSchema};
+export {locationSchema, timeseriesSchema, metadataPutSchema, stationDetailsSchema, metadataSchema};

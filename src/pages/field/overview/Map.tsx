@@ -1,4 +1,5 @@
 import {Box, Typography} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 import {useAtom} from 'jotai';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
@@ -7,7 +8,7 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L, {LeafletMouseEvent} from 'leaflet';
 import '~/css/leaflet.css';
-import {useRef, useEffect, useState, SyntheticEvent, useCallback} from 'react';
+import {useRef, useEffect, useState, SyntheticEvent, useCallback, useMemo} from 'react';
 import {toast} from 'react-toastify';
 import utmObj from 'utm-latlng';
 
@@ -18,20 +19,19 @@ import DeleteAlert from '~/components/DeleteAlert';
 import {mapboxToken, boreholeColors} from '~/consts';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import {NotificationMap, useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import BoreholeActions from '~/pages/field/overview/components/BoreholeActions';
+import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
+import DrawerComponent from '~/pages/field/overview/components/DrawerComponent';
+import LegendContent from '~/pages/field/overview/components/LegendContent';
+import {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
+import SensorActions from '~/pages/field/overview/components/SensorActions';
+import SensorContent from '~/pages/field/overview/components/SensorContent';
 import {atomWithTimedStorage} from '~/state/atoms';
 import {stamdataStore, authStore, parkingStore} from '~/state/store';
 import {BoreholeMapData, LeafletMapRoute, Parking, PartialBy} from '~/types';
-
-import BoreholeActions from './components/BoreholeActions';
-import BoreholeContent from './components/BoreholeContent';
-import DrawerComponent from './components/DrawerComponent';
-import LegendContent from './components/LegendContent';
-import {getColor} from './components/NotificationIcon';
-import SearchAndFilterMap from './components/SearchAndFilterMap';
-import SensorActions from './components/SensorActions';
-import SensorContent from './components/SensorContent';
 
 const utm = new utmObj();
 
@@ -155,27 +155,7 @@ interface LocItems {
   group: string;
 }
 
-interface MapProps {
-  data: (NotificationMap | BoreholeMapData)[];
-  loading: boolean;
-}
-
-//@ts-expect-error We can modify the locale
-L.drawLocal = {
-  draw: {
-    handlers: {
-      polyline: {
-        tooltip: {
-          start: 'Klik for at starte',
-          cont: 'Klik næste punkt for at fortsætte',
-          end: 'Klik på sidste punkt for at afslutte',
-        },
-      },
-    },
-  },
-};
-
-function Map({data, loading}: MapProps) {
+function Map() {
   const {createStamdata} = useNavigationFunctions();
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.FeatureGroup | null>(null);
@@ -210,6 +190,23 @@ function Map({data, loading}: MapProps) {
     state.iotAccess,
     state.boreholeAccess,
   ]);
+
+  const {data: boreholeMapdata} = useQuery<BoreholeMapData[]>({
+    queryKey: ['borehole_map'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
+      return data;
+    },
+    enabled: boreholeAccess,
+  });
+
+  const {data: mapData} = useNotificationOverviewMap({
+    enabled: iotAccess,
+  });
+
+  const data = useMemo(() => {
+    return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
+  }, [mapData, boreholeMapdata]);
 
   const {
     get: {data: leafletMapRoutes},
@@ -265,7 +262,8 @@ function Map({data, loading}: MapProps) {
       '-', // this is a separator
       {
         text: 'Zoom ind',
-        callback: function () {
+        callback: function (e: any) {
+          console.log(e);
           if (mapRef && mapRef.current) mapRef.current.zoomIn();
         },
         icon: '/leaflet-images/zoom-in.png',
@@ -723,130 +721,20 @@ function Map({data, loading}: MapProps) {
 
     sorted.forEach((element) => {
       if ('locid' in element) {
-        const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
-        if (typeof coords != 'object') return;
-        const point: L.LatLngExpression = [coords.lat, coords.lng];
-        const marker = L.circleMarker(point, {
-          ...defaultCircleMarkerStyle,
-          interactive: true,
-          fillColor: getColor(element),
-          title: element.locname,
-          data: element,
-          contextmenu: true,
-        });
+        const marker = createLocationMarker(element);
 
-        let locationMenu = [
-          {
-            text: 'Opret tidsserie',
-            callback: () => {
-              setLocation({
-                loc_id: element.locid,
-                loc_name: element.locname,
-              });
-              createStamdata('1');
-            },
-            icon: '/leaflet-images/marker.png',
-          },
-          ...contextmenuItems.slice(1),
-        ];
-
-        if (superUser) {
-          locationMenu = [
-            ...locationMenu.slice(0, 1),
-            {
-              text: 'Tegn rute',
-              callback: () => {
-                if (mapRef && mapRef.current) {
-                  setSelectParking(element.locid);
-                  mutateLeafletMapRouteRef.current = true;
-
-                  mapRef.current.pm.enableDraw('Line');
-                }
-              },
-              icon: '/mapRoute.png',
-            },
-            {
-              text: 'Tilknyt parking',
-              callback: () => {
-                if (mapRef && mapRef.current)
-                  mapRef.current.getContainer().style.cursor = 'pointer';
-
-                setSelectParking(element.locid);
-                mutateParkingRef.current = true;
-                toast('Vælg parkering for at tilknytte den lokationen', {
-                  toastId: 'tilknytParking',
-                  type: 'info',
-                  autoClose: false,
-                  draggable: false,
-                  closeButton: (
-                    <div style={{alignSelf: 'center'}}>
-                      <Button
-                        bttype="tertiary"
-                        onClick={() => {
-                          setSelectParking(null);
-                          mutateParkingRef.current = false;
-                          toast.dismiss('tilknytParking');
-                          if (mapRef && mapRef.current)
-                            mapRef.current.getContainer().style.cursor = '';
-                        }}
-                      >
-                        <Typography>Annuller</Typography>
-                      </Button>
-                    </div>
-                  ),
-                });
-              },
-              icon: '/parking-icon.png',
-            },
-            ...locationMenu.slice(1),
-          ];
-        }
-
-        marker.bindContextMenu({
-          contextmenu: superUser,
-          contextmenuInheritItems: false,
-          contextmenuItems: [...locationMenu],
-        });
-
-        if (
-          element.obsNotifications.length > 0
-          // && element.obsNotifications[0].flag > element.flag
-        ) {
-          //  .log(element.obsNotifications[0]);
-          const smallMarker = L.circleMarker(point, {
-            ...defaultCircleMarkerStyle,
-            radius: defaultRadius + 4,
-            interactive: false,
-            fillOpacity: 1,
-            opacity: 1,
-            fillColor: getColor(element.obsNotifications[0]),
+        if (marker) {
+          marker.bindTooltip(element.locname, {
+            direction: 'top',
+            offset: [0, -10],
           });
+
           if (layerRef.current) {
-            smallMarker.addTo(layerRef.current);
+            marker.addTo(layerRef.current);
           }
         }
-
-        marker.bindTooltip(element.locname, {
-          direction: 'top',
-          offset: [0, -10],
-        });
-
-        if (layerRef.current) {
-          marker.addTo(layerRef.current);
-        }
       } else {
-        const point: L.LatLngExpression = [element.latitude, element.longitude];
-
-        const maxStatus = Math.max(...element.status);
-
-        const marker = L.marker(point, {
-          icon: leafletIcons[maxStatus],
-          interactive: true,
-          riseOnHover: true,
-          title: element.boreholeno,
-          data: element,
-          contextmenu: true,
-        });
+        const marker = createBoreholeMarker(element);
 
         marker.bindTooltip(element.boreholeno, {
           direction: 'top',
@@ -862,7 +750,7 @@ function Map({data, loading}: MapProps) {
     if (zoom !== null && pan !== null) {
       mapRef.current?.setView(pan, zoom);
     } else {
-      if (layerRef.current?.getBounds().isValid() && !loading) {
+      if (layerRef.current?.getBounds().isValid()) {
         mapRef.current?.fitBounds(layerRef.current.getBounds());
       }
     }
@@ -874,15 +762,30 @@ function Map({data, loading}: MapProps) {
         if (value.sensor) {
           // @ts-expect-error Getlayers returns markers
           const markers: L.Marker[] = layerRef.current.getLayers();
-          for (let i = 0; i < markers.length; i++) {
-            if (markers[i].options.title == value.name) {
-              markers[i].openPopup();
-              mapRef.current?.flyTo(markers[i].getLatLng(), 14, {
-                animate: false,
-              });
-              markers[i].fire('click');
-              setSelectedMarker(markers[i].options.data);
-              break;
+          const marker = markers.find((marker) => marker.options.title == value.name);
+
+          if (marker) {
+            console.log('already exists');
+            marker.openPopup();
+            mapRef.current?.flyTo(marker.getLatLng(), 14, {
+              animate: false,
+            });
+            marker.fire('click');
+            setSelectedMarker(marker.options.data);
+          } else {
+            const newData = mapData?.find((item) => item.locname == value.name);
+            if (newData) {
+              const hiddenMarker = createLocationMarker(newData);
+              setFilteredData((prev) => [...prev, newData]);
+              setSelectedMarker(newData);
+              if (hiddenMarker) {
+                // hightlightedMarker = marker;
+                hiddenMarker.openPopup();
+                mapRef.current?.flyTo(hiddenMarker.getLatLng(), 14, {
+                  animate: false,
+                });
+                hiddenMarker.fire('click');
+              }
             }
           }
         } else {
@@ -893,21 +796,7 @@ function Map({data, loading}: MapProps) {
 
               const point: L.LatLngExpression = [element.latitude, element.longitude];
 
-              const maxStatus = Math.max(...element.status);
-
-              const icon = L.divIcon({
-                className: 'custom-div-icon',
-                html: L.Util.template(boreholeSVG, {color: boreholeColors[maxStatus].color}),
-                iconSize: [24, 24],
-                iconAnchor: [12, 24],
-              });
-
-              const marker = L.marker(point, {
-                icon: icon,
-                title: element.boreholeno,
-                data: element,
-                contextmenu: true,
-              });
+              const marker = createBoreholeMarker(element);
 
               marker.on('add', function () {
                 mapRef.current?.flyTo(point, 16, {
@@ -940,7 +829,7 @@ function Map({data, loading}: MapProps) {
     if (data && 'boreholeno' in data) return <BoreholeActions data={data} />;
   };
 
-  const deleteParking = (parking_id: number | undefined) => {
+  const deleteParking = (parking_id: string | undefined) => {
     if (parking_id) {
       const payload = {
         path: parking_id.toString(),
@@ -958,7 +847,7 @@ function Map({data, loading}: MapProps) {
     }
   };
 
-  const deleteRoute = (route_id: number | undefined) => {
+  const deleteRoute = (route_id: string | undefined) => {
     if (mutateLeafletMapRouteRef.current && mutateLeafletMapRouteRef.current !== null && route_id) {
       const payload = {
         path: mutateLeafletMapRouteRef.current.toString() + '/' + route_id,
@@ -967,14 +856,136 @@ function Map({data, loading}: MapProps) {
     }
   };
 
+  const createBoreholeMarker = (element: BoreholeMapData) => {
+    const point: L.LatLngExpression = [element.latitude, element.longitude];
+
+    const maxStatus = Math.max(...element.status);
+
+    const marker = L.marker(point, {
+      icon: leafletIcons[maxStatus],
+      interactive: true,
+      riseOnHover: true,
+      title: element.boreholeno,
+      data: element,
+      contextmenu: true,
+    });
+
+    return marker;
+  };
+
+  const createLocationMarker = (element: NotificationMap) => {
+    const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
+    if (typeof coords != 'object') return;
+    const point: L.LatLngExpression = [coords.lat, coords.lng];
+    const marker = L.circleMarker(point, {
+      ...defaultCircleMarkerStyle,
+      interactive: true,
+      fillColor: getColor(element),
+      title: element.locname,
+      data: element,
+      contextmenu: true,
+    });
+
+    let locationMenu = [
+      {
+        text: 'Opret tidsserie',
+        callback: () => {
+          setLocation({
+            loc_id: element.locid,
+            loc_name: element.locname,
+          });
+          createStamdata('1');
+        },
+        icon: '/leaflet-images/marker.png',
+      },
+      ...contextmenuItems.slice(1),
+    ];
+
+    if (superUser) {
+      locationMenu = [
+        ...locationMenu.slice(0, 1),
+        {
+          text: 'Tegn rute',
+          callback: () => {
+            if (mapRef && mapRef.current) {
+              setSelectParking(element.locid);
+              mutateLeafletMapRouteRef.current = true;
+
+              mapRef.current.pm.enableDraw('Line');
+            }
+          },
+          icon: '/mapRoute.png',
+        },
+        {
+          text: 'Tilknyt parking',
+          callback: () => {
+            if (mapRef && mapRef.current) mapRef.current.getContainer().style.cursor = 'pointer';
+
+            setSelectParking(element.locid);
+            mutateParkingRef.current = true;
+            toast('Vælg parkering for at tilknytte den lokationen', {
+              toastId: 'tilknytParking',
+              type: 'info',
+              autoClose: false,
+              draggable: false,
+              closeButton: (
+                <div style={{alignSelf: 'center'}}>
+                  <Button
+                    bttype="tertiary"
+                    onClick={() => {
+                      setSelectParking(null);
+                      mutateParkingRef.current = false;
+                      toast.dismiss('tilknytParking');
+                      if (mapRef && mapRef.current) mapRef.current.getContainer().style.cursor = '';
+                    }}
+                  >
+                    <Typography>Annuller</Typography>
+                  </Button>
+                </div>
+              ),
+            });
+          },
+          icon: '/parking-icon.png',
+        },
+        ...locationMenu.slice(1),
+      ];
+    }
+
+    marker.bindContextMenu({
+      contextmenu: superUser,
+      contextmenuInheritItems: false,
+      contextmenuItems: [...locationMenu],
+    });
+
+    if (
+      element.obsNotifications.length > 0
+      // && element.obsNotifications[0].flag > element.flag
+    ) {
+      //  .log(element.obsNotifications[0]);
+      const smallMarker = L.circleMarker(point, {
+        ...defaultCircleMarkerStyle,
+        radius: defaultRadius + 4,
+        interactive: false,
+        fillOpacity: 1,
+        opacity: 1,
+        fillColor: getColor(element.obsNotifications[0]),
+      });
+      if (layerRef.current) {
+        smallMarker.addTo(layerRef.current);
+      }
+    }
+
+    return marker;
+  };
+
   return (
     <>
       <DeleteAlert
         measurementId={deleteId}
         dialogOpen={displayDelete}
         onOkDelete={(id) => {
-          if (type === 'parkering') deleteParking(id);
-          else if (type === 'rute') deleteRoute(id);
+          if (type === 'parkering') deleteParking(id?.toString());
+          else if (type === 'rute') deleteRoute(id?.toString());
         }}
         setDialogOpen={setDisplayDelete}
         title={deleteTitle}
@@ -988,7 +999,7 @@ function Map({data, loading}: MapProps) {
         handleOpret={() => null}
       />
       <SearchAndFilterMap
-        data={loading ? [] : data}
+        data={data}
         setData={setFilteredData}
         handleSearchSelect={handleSearchSelect}
       />

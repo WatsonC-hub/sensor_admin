@@ -4,11 +4,10 @@ import {ErrorBoundary} from 'react-error-boundary';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
+import LoadingSkeleton from '~/LoadingSkeleton';
+import Redirecter from '~/Redirecter';
 import {authStore} from '~/state/store';
-
-import LoadingSkeleton from './LoadingSkeleton';
-import Redirecter from './Redirecter';
-import UnAuntenticatedApp from './UnauthenticatedApp';
+import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 function App() {
   const [loading, setLoading] = useState(true);

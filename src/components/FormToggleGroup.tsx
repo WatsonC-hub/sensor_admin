@@ -32,10 +32,8 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
       <Controller
         control={control}
         name={name}
-        // defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
         rules={rules}
         render={({field: {value, onChange, ref, name}}) => {
-          // console.log('value', value);
           return (
             <ToggleButtonGroup
               ref={ref}

@@ -15,13 +15,12 @@ import {tabsHeight} from '~/consts';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
+import LocationForm from '~/pages/field/stamdata/components/LocationForm';
+import StamdataFooter from '~/pages/field/stamdata/components/StamdataFooter';
+import TimeseriesForm from '~/pages/field/stamdata/components/TimeseriesForm';
+import UnitForm from '~/pages/field/stamdata/components/UnitForm';
 import {stamdataStore} from '~/state/store';
-
-import AddUnitForm from './AddUnitForm';
-import LocationForm from './components/LocationForm';
-import StamdataFooter from './components/StamdataFooter';
-import TimeseriesForm from './components/TimeseriesForm';
-import UnitForm from './components/UnitForm';
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;
@@ -81,6 +80,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
     getValues,
     setValue,
     trigger,
+    control,
   } = formMethods;
 
   useEffect(() => {

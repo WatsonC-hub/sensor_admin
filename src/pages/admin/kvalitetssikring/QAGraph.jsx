@@ -15,10 +15,9 @@ import {useControlData} from '~/hooks/query/useControlData';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
+import GraphActions from '~/pages/admin/kvalitetssikring/GraphActions';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
-
-import GraphActions from './GraphActions';
 
 const selectorOptions = {
   buttons: [

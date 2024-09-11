@@ -6,6 +6,7 @@ import {
   LocationOnRounded,
   ShowChartRounded,
   StraightenRounded,
+  SettingsPhoneRounded,
 } from '@mui/icons-material';
 import SaveIcon from '@mui/icons-material/Save';
 import {
@@ -37,6 +38,7 @@ import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import FormInput from '~/components/FormInput';
 import {tabsHeight} from '~/consts';
+import StationDetails from '~/features/stamdata/components/StationDetails';
 import {StationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -265,9 +267,7 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
     store.setUnit,
   ]);
 
-  const formMethods = useFormContext();
-
-  const {setValue} = formMethods;
+  const {setValue} = useFormContext();
 
   const {data, isPending} = useQuery<UnitHistory[]>({
     queryKey: ['udstyr', stationId],
@@ -475,6 +475,18 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   let schema: typeof locationSchema | typeof timeseriesSchema | typeof metadataPutSchema;
   schema = locationSchema;
 
+  // if (metadata && metadata.ressourcer && metadata.ressourcer.length > 0) {
+  //   schema = stationDetailsSchema;
+  //   schemaData = stationDetailsSchema.safeParse({
+  //     location: {
+  //       ...metadata,
+  //     },
+  //     stationDetails: {
+  //       ...metadata,
+  //     },
+  //   });
+  // }
+
   if (metadata && metadata.ts_id && !metadata.unit_uuid) {
     schema = timeseriesSchema;
   } else if (metadata && metadata.unit_uuid) {
@@ -496,6 +508,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     },
   });
 
+  // console.log(schemaData);
+  // console.log(metadata);
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: schemaData.success ? schemaData.data : {},
@@ -503,10 +517,10 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   });
 
   const {
+    formState: {dirtyFields, isSubmitting},
     getValues,
     reset,
     control,
-    formState: {isSubmitting, dirtyFields},
   } = formMethods;
 
   const resetFormData = () => {
@@ -523,6 +537,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
         startdate: metadata?.startdato,
         enddate: metadata?.slutdato,
       },
+      // stationDetails: {
+      //   ...metadata,
+      // },
     });
     reset(result.success ? result.data : {});
   };
@@ -563,82 +580,82 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   };
 
   return (
-    <FormProvider {...formMethods}>
-      <Box
+    <Box
+      sx={{
+        boxShadow: 2,
+        margin: 'auto',
+        width: {xs: window.innerWidth, md: 1080},
+        height: '100%',
+      }}
+    >
+      <Tabs
+        value={tabValue ?? '0'}
+        onChange={(_, newValue) => setTabValue(newValue)}
+        variant={matches ? 'scrollable' : 'fullWidth'}
+        aria-label="simple tabs example"
+        scrollButtons="auto"
         sx={{
-          boxShadow: 2,
-          margin: 'auto',
-          width: {xs: window.innerWidth, md: 1080},
-          height: '100%',
+          '& .MuiTab-root': {
+            height: tabsHeight,
+            minHeight: tabsHeight,
+          },
+          marginTop: 1,
         }}
       >
-        <Tabs
-          value={tabValue ?? '0'}
-          onChange={(_, newValue) => setTabValue(newValue)}
-          variant={matches ? 'scrollable' : 'fullWidth'}
-          aria-label="simple tabs example"
-          scrollButtons="auto"
-          sx={{
-            '& .MuiTab-root': {
-              height: tabsHeight,
-              minHeight: tabsHeight,
-            },
-            marginTop: 1,
-          }}
-        >
-          <Tab
-            value="0"
-            icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Lokation
-              </Typography>
-            }
-          />
-          <Tab
-            value="1"
-            disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
-            icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Tidsserie
-              </Typography>
-            }
-          />
-          <Tab
-            value="2"
-            disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
-            icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                Udstyr
-              </Typography>
-            }
-          />
-          <Tab
-            value="3"
-            disabled={!metadata || (metadata && metadata.tstype_id !== 1)}
-            icon={
-              <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
-            }
-            label={
-              <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
-                Reference
-              </Typography>
-            }
-          />
-          {/* <Tab
-            value="4"
-            icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
-            label={
-              <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
-                Kontakt
-              </Typography>
-            }
-          /> */}
-        </Tabs>
-        <Divider />
-        <Box>
+        <Tab
+          value="0"
+          icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+              Lokation
+            </Typography>
+          }
+        />
+        <Tab
+          value="1"
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
+          icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+              Tidsserie
+            </Typography>
+          }
+        />
+        <Tab
+          value="2"
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
+          icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
+              Udstyr
+            </Typography>
+          }
+        />
+        <Tab
+          value="3"
+          disabled={!metadata || (metadata && metadata.tstype_id !== 1)}
+          icon={
+            <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
+          }
+          label={
+            <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
+              Reference
+            </Typography>
+          }
+        />
+        <Tab
+          value="4"
+          icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
+          label={
+            <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
+              Stationsinformation
+            </Typography>
+          }
+        />
+      </Tabs>
+      <Divider />
+      <Box>
+        <FormProvider {...formMethods}>
           <TabPanel value={tabValue} index={'0'}>
             <LocationForm mode="normal" />
             <StamdataFooter
@@ -679,12 +696,12 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
               <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
             </FabWrapper>
           </TabPanel>
-          {/* <TabPanel value={tabValue} index={'4'}>
-            Kontaktinformation
-          </TabPanel> */}
-        </Box>
-        {import.meta.env.DEV && <DevTool control={control} />}
+        </FormProvider>
+        <TabPanel value={tabValue} index={'4'}>
+          <StationDetails mode={'normal'} />
+        </TabPanel>
       </Box>
-    </FormProvider>
+      {import.meta.env.DEV && <DevTool control={control} />}
+    </Box>
   );
 }

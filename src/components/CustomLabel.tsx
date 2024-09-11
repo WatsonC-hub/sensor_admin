@@ -2,7 +2,6 @@ import {Typography, SvgIcon, TypographyProps, SvgIconProps} from '@mui/material'
 import React from 'react';
 
 interface CustomLabelProps {
-  value: string;
   text: string;
   icon: React.ReactElement<SvgIconProps>;
   color?: string;

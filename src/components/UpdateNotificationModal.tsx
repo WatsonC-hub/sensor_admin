@@ -6,10 +6,9 @@ import {useForm, FormProvider} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
 import {Notification} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
-
-import FormInput from './FormInput';
 
 interface Props {
   open: boolean;

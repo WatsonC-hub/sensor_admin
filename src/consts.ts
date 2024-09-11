@@ -89,6 +89,7 @@ export const setTableBoxStyle = (pixelToSubtract: number) => {
     flexDirection: 'column',
     height: calculateContentHeight(pixelToSubtract),
     minHeight: '300px',
+    maxWidth: '100vw',
   };
   return sx;
 };
@@ -105,6 +106,27 @@ export const renderDetailStyle = {
   borderTopRightRadius: '20px',
   borderBottomLeftRadius: '15px',
   borderBottomRightRadius: '15px',
+};
+
+export const initialContactData = {
+  navn: '',
+  telefonnummer: null,
+  email: '',
+  rolle: '-1',
+  kommentar: '',
+  user_id: null,
+  org: '',
+  relation_id: -1,
+  contact_type: '-1',
+};
+
+export const initialLocationAccessData = {
+  navn: '',
+  type: '-1',
+  contact_id: null,
+  placering: '',
+  koden: '',
+  kommentar: '',
 };
 
 export const httpStatusDescriptions = {

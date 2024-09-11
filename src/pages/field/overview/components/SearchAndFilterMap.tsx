@@ -16,11 +16,10 @@ import React, {useState, useRef, SyntheticEvent, MouseEventHandler, useEffect} f
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
+import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {authStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
-
-import {Filter, defaultMapFilter} from './filter_consts';
 
 interface LocItems {
   name: string;
