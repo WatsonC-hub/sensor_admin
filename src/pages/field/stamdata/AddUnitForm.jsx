@@ -6,11 +6,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {set} from 'lodash';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -18,7 +16,6 @@ import Autocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
-import {useMetadata} from '~/hooks/query/useMetadata';
 import {authStore, stamdataStore} from '~/state/store';
 
 export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {

@@ -87,6 +87,20 @@ const UnitEndDateDialog = ({
   const queryClient = useQueryClient();
   const superUser = authStore((store) => store.superUser);
 
+  const formMethods = useForm<UnitEndFormValues>({
+    resolver: zodResolver(unitEndSchema),
+    defaultValues: {
+      enddate: moment().toISOString(),
+    },
+  });
+
+  const handleClose = () => {
+    setOpenDialog(false);
+    formMethods.reset({
+      enddate: moment().toISOString(),
+    });
+  };
+
   const {data: changeReasons} = useQuery<ChangeReason[]>({
     queryKey: ['change_reasons'],
     queryFn: async () => {
@@ -97,12 +111,12 @@ const UnitEndDateDialog = ({
   });
 
   const {data: actions} = useQuery<Action[]>({
-    queryKey: ['actions'],
+    queryKey: ['actions', unit?.uuid],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit.uuid}`);
       return data;
     },
-    enabled: superUser && !!unit.uuid,
+    enabled: superUser && !!unit?.uuid,
   });
 
   const takeHomeMutation = useMutation({
@@ -114,19 +128,12 @@ const UnitEndDateDialog = ({
       return data;
     },
     onSuccess: (_, {enddate}) => {
-      setOpenDialog(false);
+      handleClose();
       setUdstyrValue('slutdato', moment(enddate).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
       queryClient.invalidateQueries({
         queryKey: ['udstyr', stationId],
       });
-    },
-  });
-
-  const formMethods = useForm<UnitEndFormValues>({
-    resolver: zodResolver(unitEndSchema),
-    defaultValues: {
-      enddate: moment().toISOString(),
     },
   });
 
@@ -153,8 +160,13 @@ const UnitEndDateDialog = ({
             fullWidth
             type="datetime-local"
             required
+            warning={(value) => {
+              if (moment(value) < moment(unit?.startdato)) {
+                return 'Vælg dato efter startdato';
+              }
+            }}
             inputProps={{
-              min: moment(unit?.startdate).format('YYYY-MM-DDTHH:mm'),
+              min: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
             }}
           />
 
@@ -171,8 +183,6 @@ const UnitEndDateDialog = ({
                     (reason) => reason.id === Number(e.target.value)
                   );
                   if (reason) {
-                    console.log('reason', reason);
-
                     if (reason.default_actions?.includes('CLOSE')) {
                       const action = actions?.find((action) => action.action.includes('CLOSE'));
                       formMethods.setValue('action', action?.action);
@@ -216,12 +226,7 @@ const UnitEndDateDialog = ({
           )}
         </FormProvider>
         <DialogActions>
-          <Button
-            bttype="tertiary"
-            onClick={() => {
-              setOpenDialog(false);
-            }}
-          >
+          <Button bttype="tertiary" onClick={handleClose}>
             Annuller
           </Button>
           <Button
@@ -278,7 +283,6 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
 
   useEffect(() => {
     if (data && data.length > 0) {
-      console.log('data', selected);
       onSelectionChange(data, selected === '' ? data[0].gid : selected);
     }
   }, [data]);
@@ -286,7 +290,6 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
   const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
     const unit = localUnit ?? data[0];
-    console.log('unitSelectChange', unit);
     setUnit(unit);
     setValue(
       'unit',
@@ -296,7 +299,7 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
         startdate: moment(unit.startdato).format('YYYY-MM-DDTHH:mm'),
         enddate: moment(unit.slutdato).format('YYYY-MM-DDTHH:mm'),
       },
-      {shouldValidate: true, shouldDirty: false}
+      {shouldValidate: true, shouldDirty: true}
     );
     setselected(unit.gid);
   };
@@ -523,10 +526,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     });
     reset(result.success ? result.data : {});
   };
-
-  useEffect(() => {
-    resetFormData();
-  }, [metadata]);
 
   const handleUpdate = (type: 'location' | 'timeseries' | 'unit') => {
     if (type === 'location') {
