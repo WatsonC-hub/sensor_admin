@@ -21,6 +21,8 @@ interface LocationGroupsProps {
   onBlur: Noop;
   label?: string;
   disable?: boolean;
+  disableLink?: boolean;
+  creatable?: boolean;
 }
 
 const LocationGroups = ({
@@ -29,6 +31,8 @@ const LocationGroups = ({
   onBlur,
   label = 'Gruppering',
   disable = false,
+  disableLink = false,
+  creatable = true,
 }: LocationGroupsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_groups'],
@@ -37,6 +41,7 @@ const LocationGroups = ({
       return data;
     },
   });
+
   return (
     <Autocomplete
       sx={{
@@ -69,35 +74,49 @@ const LocationGroups = ({
         if (option.id === '') {
           return `ny - ${option.group_name}`;
         }
-
-        return `${option.id.slice(0, 4)} - ${option.group_name}`;
+        return `${option.group_name}`;
+        // return `${option.id.slice(0, 4)} - ${option.group_name}`;
       }}
       isOptionEqualToValue={(option, value) => {
         return option.id === value.id;
       }}
       renderTags={(value, getTagProps) => {
-        return value.map((option, index) => (
-          <Chip
-            variant="outlined"
-            label={
-              <Button bttype="link" href={getGroupLink(option.id)} target="_blank">
-                <Typography display="inline" variant="body2" color="grey.400">
-                  {option.id === '' ? 'ny' : option.id.slice(0, 4)} -{' '}
-                </Typography>
-                <Typography display="inline" variant="body2">
-                  {option.group_name}
-                </Typography>
-              </Button>
-            }
-            {...getTagProps({index})}
-            key={index}
-          />
-        ));
+        return value.map((option, index) => {
+          const content = (
+            <>
+              <Typography display="inline" variant="body2" color="grey.400">
+                {option.id === '' && 'Ny - '}
+              </Typography>
+              <Typography display="inline" variant="body2">
+                {option.group_name}
+              </Typography>
+            </>
+          );
+
+          if (disableLink) {
+            return (
+              <Chip variant="outlined" label={content} {...getTagProps({index})} key={index} />
+            );
+          }
+
+          return (
+            <Chip
+              variant="outlined"
+              label={
+                <Button bttype="link" href={getGroupLink(option.id)} target="_blank">
+                  {content}
+                </Button>
+              }
+              {...getTagProps({index})}
+              key={index}
+            />
+          );
+        });
       }}
       renderOption={(props, option) => (
         <li {...props}>
           <Typography display="inline" variant="body2" color="grey.400">
-            {option.id === '' ? 'Opret' : option.id.slice(0, 4)} -
+            {option.id === '' && 'Opret - '}
           </Typography>
           <Typography display="inline" variant="body2">
             {option.group_name}
@@ -132,7 +151,8 @@ const LocationGroups = ({
         const {inputValue} = params;
         // Suggest the creation of a new value
         const isExisting = options.some((option) => inputValue === option.group_name);
-        if (inputValue !== '' && !isExisting) {
+
+        if (creatable && inputValue !== '' && !isExisting) {
           filtered.push({
             id: '',
             group_name: inputValue,

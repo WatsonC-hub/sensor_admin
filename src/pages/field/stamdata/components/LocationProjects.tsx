@@ -1,6 +1,6 @@
-import {Typography} from '@mui/material';
-import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
-import Chip from '@mui/material/Chip';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import {Link} from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import {useQuery} from '@tanstack/react-query';
 import {FieldError, Noop} from 'react-hook-form';
@@ -10,9 +10,9 @@ import {authStore} from '~/state/store';
 
 interface Project {
   project_no: string;
+  customer_name: string | null;
+  project_info: string | null;
 }
-
-const filter = createFilterOptions<string>();
 
 interface LocationProjectsProps {
   value: string;
@@ -22,7 +22,12 @@ interface LocationProjectsProps {
   disable?: boolean;
 }
 
-const LocationProjects = ({value, setValue, onBlur, error, disable}: LocationProjectsProps) => {
+const getLabel = (project: Project | null) => {
+  if (!project) return '';
+  return `${project.project_no} ${project.customer_name ? ' - ' + project.customer_name : ''} ${project.project_info ? ' - ' + project.project_info : ''}`;
+};
+
+const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationProjectsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_projects'],
     queryFn: async () => {
@@ -33,89 +38,93 @@ const LocationProjects = ({value, setValue, onBlur, error, disable}: LocationPro
     },
   });
 
-  const superUser = authStore().superUser;
+  const superUser = authStore((store) => store.superUser);
+
+  const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 
   return (
     <>
-      <Autocomplete
-        //   freeSolo
-        forcePopupIcon={false}
-        value={value ?? ''}
-        onChange={(event, newValue) => {
-          setValue(newValue ? newValue : '');
-        }}
-        id="tags-standard"
-        options={(options && options.map((option) => option.project_no)) ?? []}
-        disabled={disable}
-        getOptionLabel={(option) => {
-          return `${option}`;
-        }}
-        renderTags={(value, getTagProps) => {
-          return value.map((option, index) => (
-            <Chip
+      {disable == false && (
+        <Autocomplete
+          forcePopupIcon={false}
+          value={selectedValue}
+          onChange={(event, newValue) => {
+            setValue(newValue ? newValue.project_no : '');
+          }}
+          id="tags-standard"
+          options={options ?? []}
+          disabled={disable}
+          getOptionLabel={getLabel}
+          isOptionEqualToValue={(option, value) => option.project_no === value.project_no}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              fullWidth
+              onBlur={onBlur}
+              InputLabelProps={{shrink: true}}
               variant="outlined"
-              label={
-                <>
-                  <Typography display="inline" variant="body2">
-                    {option}
-                  </Typography>
-                </>
-              }
-              {...getTagProps({index})}
-              key={index}
+              error={Boolean(error) && superUser}
+              helperText={Boolean(error) && superUser && error?.message}
+              label="Projektnummer"
+              placeholder="Vælg projektnummer..."
+              sx={{
+                pb: 0,
+                '& .MuiInputBase-input.Mui-disabled': {
+                  WebkitTextFillColor: '#000000',
+                },
+                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+                '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+                '& .MuiOutlinedInput-root': {
+                  '& > fieldset': {borderColor: 'primary.main'},
+                },
+                '.MuiFormHelperText-root': {
+                  position: 'absolute',
+                  top: '90%',
+                },
+              }}
             />
-          ));
-        }}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <Typography display="inline" variant="body2">
-              {option}
-            </Typography>
-          </li>
-        )}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            fullWidth
-            InputLabelProps={{shrink: true}}
-            onBlur={onBlur}
-            variant="outlined"
-            error={Boolean(error) && superUser}
-            helperText={Boolean(error) && superUser && error?.message}
-            label="Projekt nummer"
-            placeholder="Vælg projekt nummer..."
-            sx={{
-              pb: 0,
-              '& .MuiInputBase-input.Mui-disabled': {
-                WebkitTextFillColor: '#000000',
-              },
-              '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-              '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-              '& .MuiOutlinedInput-root': {
-                '& > fieldset': {borderColor: 'primary.main'},
-              },
-              '.MuiFormHelperText-root': {
-                position: 'absolute',
-                top: '90%',
-              },
-            }}
-          />
-        )}
-        filterOptions={(options, params) => {
-          const filtered = filter(options, params);
-          const {inputValue} = params;
-
-          const isExisting = options.some((option) => inputValue === option);
-          if (inputValue !== '' && !isExisting) {
-            filtered.push(inputValue);
-          }
-
-          return filtered;
-        }}
-        selectOnFocus
-        clearOnBlur
-        handleHomeEndKeys
-      />
+          )}
+          selectOnFocus
+          clearOnBlur
+          handleHomeEndKeys
+        />
+      )}
+      {disable == true && (
+        <TextField
+          fullWidth
+          InputLabelProps={{shrink: true}}
+          variant="outlined"
+          label="Projektnummer"
+          value={getLabel(selectedValue)}
+          disabled
+          InputProps={{
+            endAdornment: (
+              <Link
+                href={`https://www.watsonc.dk/calypso/projekt/?project=${selectedValue?.project_no}`}
+                target="_blank"
+                rel="noopener"
+              >
+                <OpenInNewIcon />
+              </Link>
+            ),
+          }}
+          sx={{
+            pb: 0,
+            '& .MuiInputBase-input.Mui-disabled': {
+              WebkitTextFillColor: '#000000',
+            },
+            '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+            '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+            '& .MuiOutlinedInput-root': {
+              '& > fieldset': {borderColor: 'primary.main'},
+            },
+            '.MuiFormHelperText-root': {
+              position: 'absolute',
+              top: '90%',
+            },
+          }}
+        />
+      )}
     </>
   );
 };

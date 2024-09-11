@@ -1,4 +1,5 @@
-import {CircularProgress, MenuItem, Typography} from '@mui/material';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import {CircularProgress, MenuItem, Typography, Box, IconButton} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -11,14 +12,22 @@ import {useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import Autocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
+import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
-import {stamdataStore} from '~/state/store';
+import {authStore, stamdataStore} from '~/state/store';
 
 export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tstype_id, mode}) {
   const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(null);
   const queryClient = useQueryClient();
+  const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
+  // const params = useParams();
 
+  const superUser = authStore((state) => state.superUser);
+  // const {data: metadata} = useMetadata(params.ts_id);
   const {data: availableUnits, isLoading} = useQuery({
     queryKey: ['available_units'],
     queryFn: async () => {
@@ -43,7 +52,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   const formMethods = useFormContext();
 
   const [unitData, setUnitData] = useState({
-    calypso_id: -1,
+    calypso_id: '',
     sensor_id: '',
     uuid: '',
     fra: new Date(),
@@ -78,12 +87,18 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
         (unit.calypso_id === id || unit.terminal_id === id) && unit.sensortypeid === tstype_id
     );
 
-  const handleCalypsoId = (event) => {
-    setUnitData({
-      ...unitData,
-      calypso_id: event.target.value,
-      uuid: '',
-    });
+  const handleCalypsoIdNew = (option) => {
+    console.log('option', option);
+    if (option == null) {
+      setUnitData((currentUnit) => ({...currentUnit, calypso_id: '', uuid: ''}));
+      return;
+    }
+    setUnitData((currentUnit) => ({...currentUnit, calypso_id: option.value, uuid: ''}));
+
+    const sensors = sensorsForCalyspoId(option.value);
+    if (sensors.length === 1) {
+      setUnitData((currentUnit) => ({...currentUnit, uuid: sensors[0].unit_uuid}));
+    }
   };
 
   const handleSensorUUID = (event) => {
@@ -101,26 +116,42 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
     });
   };
 
+  const handleAddUnit = (payload) => {
+    addUnit.mutate(payload, {
+      onSuccess: () => {
+        toast.success('Udstyr tilføjet');
+        setUdstyrDialogOpen(false);
+        setConfirmDialogOpen(false);
+      },
+    });
+  };
+
   let handleSave = () => null;
 
   if (mode === 'edit') {
-    handleSave = () => {
+    handleSave = async () => {
       let unit = availableUnits.find((x) => x.unit_uuid === unitData.uuid);
 
       if (!unit) return;
-
       const payload = {
         unit_uuid: unit.unit_uuid,
         startdate: moment(unitData.fra).toISOString(),
         enddate: moment('2099-01-01T12:00:00').toISOString(),
       };
+      if (superUser) {
+        const {data} = await apiClient.get(
+          `/sensor_field/stamdata/check-unit-invoice/${timeseries.ts_id}/${unit.unit_uuid}`
+        );
 
-      toast.promise(() => addUnit.mutateAsync(payload), {
-        pending: 'Tilføjer udstyr...',
-        success: 'Udstyr tilføjet',
-        error: 'Der skete en fejl',
-      });
-      setUdstyrDialogOpen(false);
+        if ('exists' in data && data.exists) {
+          handleAddUnit(payload);
+          return;
+        }
+        setInvoiceData(data);
+        setConfirmDialogOpen(true);
+      } else {
+        handleAddUnit(payload);
+      }
     };
   } else {
     handleSave = () => {
@@ -161,7 +192,33 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
   }, [udstyrDialogOpen, setUnitData]);
 
   return (
-    <div>
+    <>
+      {openCaptureDialog && (
+        <CaptureDialog
+          open={openCaptureDialog}
+          handleClose={() => setOpenCaptureDialog(false)}
+          handleScan={(data) => {
+            const split = data['text'].split('/');
+            const calypso_id = parseInt(split[split.length - 1]);
+
+            if (isNaN(calypso_id)) {
+              toast.error('Ugyldigt Calypso ID');
+              setOpenCaptureDialog(false);
+              return;
+            }
+            const exists = uniqueCalypsoIds.includes(calypso_id);
+
+            if (!exists) {
+              toast.error(`Ingen tilgængelige enheder med Calypso ID: ${calypso_id}`);
+              setOpenCaptureDialog(false);
+              return;
+            }
+
+            handleCalypsoIdNew({value: calypso_id, label: calypso_id});
+            setOpenCaptureDialog(false);
+          }}
+        />
+      )}
       <Dialog open={udstyrDialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
         {isLoading ? (
           <CircularProgress />
@@ -174,7 +231,35 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                   * ingen enheder der passer til tidsserietypen er tilgængelig
                 </Typography>
               )}
-              <TextField
+
+              <Box
+                display={'flex'}
+                flexDirection={'row'}
+                justifyContent={'space-between'}
+                alignItems={'center'}
+              >
+                <Autocomplete
+                  id="calypso_id"
+                  label="Calypso ID"
+                  labelKey="label"
+                  placeholder="Søg Calypso ID"
+                  options={uniqueCalypsoIds.map((option) => ({
+                    value: option,
+                    label: option,
+                  }))}
+                  selectValue={
+                    unitData.calypso_id
+                      ? {value: unitData.calypso_id, label: unitData.calypso_id}
+                      : null
+                  }
+                  onChange={handleCalypsoIdNew}
+                />
+                <IconButton color="inherit" onClick={() => setOpenCaptureDialog(true)} size="large">
+                  <QrCodeScannerIcon />
+                </IconButton>
+              </Box>
+
+              {/* <TextField
                 select
                 margin="dense"
                 value={unitData.calypso_id}
@@ -191,7 +276,8 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                     {option}
                   </MenuItem>
                 ))}
-              </TextField>
+              </TextField> */}
+
               <TextField
                 select
                 margin="dense"
@@ -216,6 +302,22 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                 value={unitData.fra}
                 onChange={(date) => handleDateChange(date)}
               />
+              {/* {superUser && metadata?.unit_uuid && (
+              <Box>
+                <FormControl>
+                  <FormLabel id="inherit_invoice">Overtag fakturering</FormLabel>
+                  <RadioGroup
+                    aria-labelledby="inherit_invoice"
+                    name="inherit_invoice"
+                    value={inheritInvoice}
+                    onChange={(e) => setInheritInvoice(e.target.value)}
+                  >
+                    <FormControlLabel value={true} control={<Radio />} label="Ja" />
+                    <FormControlLabel value={false} control={<Radio />} label="Nej" />
+                  </RadioGroup>
+                </FormControl>
+              </Box>
+            )} */}
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose} bttype="tertiary">
@@ -232,6 +334,57 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
           </>
         )}
       </Dialog>
-    </div>
+      <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
+        <DialogContent>
+          <Typography>Følgende faktureringsinformation findes på tidligere enhed</Typography>
+          <Typography>
+            <strong>Terminal:</strong> {invoiceData?.terminal_id}
+          </Typography>
+          <Typography>
+            <strong>Pris pr måned:</strong> {invoiceData?.amount}
+          </Typography>
+          <Typography>
+            <strong>Subscription type:</strong> {invoiceData?.subscription_type}
+          </Typography>
+          <Typography>Vil du overføre fakturering til den nye enhed?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setConfirmDialogOpen(false);
+            }}
+            bttype="tertiary"
+          >
+            Annuller
+          </Button>
+          <Button
+            onClick={() =>
+              handleAddUnit({
+                unit_uuid: unitData?.uuid,
+                startdate: moment(unitData.fra).toISOString(),
+                enddate: moment('2099-01-01T12:00:00').toISOString,
+                inherit_invoice: false,
+              })
+            }
+            bttype="tertiary"
+          >
+            Nej
+          </Button>
+          <Button
+            onClick={() =>
+              handleAddUnit({
+                unit_uuid: unitData?.uuid,
+                startdate: moment(unitData.fra).toISOString(),
+                enddate: moment('2099-01-01T12:00:00').toISOString,
+                inherit_invoice: true,
+              })
+            }
+            bttype="primary"
+          >
+            Ja
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

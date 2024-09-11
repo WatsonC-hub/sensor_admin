@@ -52,8 +52,6 @@ function App() {
       </>
     );
   }
-
-  console.log('App');
   return (
     <ErrorBoundary
       FallbackComponent={() => (
@@ -64,7 +62,7 @@ function App() {
           </Typography>
         </>
       )}
-      onError={(error, componentStack) => {
+      onError={(error) => {
         if (error.message.includes('Failed to fetch dynamically imported module')) {
           // window.location.reload(true);
         }

@@ -1,15 +1,11 @@
 import {DevTool} from '@hookform/devtools';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {BuildRounded, LocationOnRounded, ShowChartRounded} from '@mui/icons-material';
-import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
-import {Grid, TextField, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import {Grid, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
-import {FormProvider, useForm, useFormContext} from 'react-hook-form';
+import React, {useEffect} from 'react';
+import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -19,132 +15,12 @@ import {tabsHeight} from '~/consts';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
-import AddLocationForm from '~/pages/field/stamdata/AddLocationForm';
 import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
 import LocationForm from '~/pages/field/stamdata/components/LocationForm';
 import StamdataFooter from '~/pages/field/stamdata/components/StamdataFooter';
 import TimeseriesForm from '~/pages/field/stamdata/components/TimeseriesForm';
 import UnitForm from '~/pages/field/stamdata/components/UnitForm';
 import {stamdataStore} from '~/state/store';
-
-function LocationChooser({setLocationDialogOpen, setSelectedLoc, selectedLoc, locations}) {
-  const formMethods = useFormContext();
-
-  // console.log(selectedLoc);
-
-  console.log(stamdataStore().location);
-
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
-
-  const populateFormData = (locData) => {
-    setSelectedLoc(locData);
-    if (locData) {
-      reset({
-        location: {
-          loc_id: locData.loc_id,
-          loc_name: locData.loc_name,
-          mainloc: locData.mainloc,
-          subloc: locData.subloc,
-          subsubloc: locData.subsubloc,
-          groups: locData.groups,
-          x: locData.x,
-          y: locData.y,
-          terrainqual: locData.terrainqual,
-          terrainlevel: locData.terrainlevel,
-          description: locData.description,
-          loctype_id: locData.loctype_id,
-          initial_project_no: locData.initial_project_no,
-        },
-      });
-    } else {
-      reset({
-        location: {
-          loc_name: '',
-          mainloc: '',
-          subloc: '',
-          subsubloc: '',
-          x: 0,
-          y: 0,
-          groups: [],
-          terrainqual: '',
-          terrainlevel: 0,
-          description: '',
-          loctype_id: -1,
-          initial_project_no: '',
-        },
-      });
-    }
-  };
-
-  const locationSelector = (
-    <>
-      <Grid item xs={matches ? 12 : 6} md={6} sm={matches ? 6 : 12}>
-        <Box
-          sx={
-            matches
-              ? {
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'end',
-                  justifyContent: 'start',
-                }
-              : {
-                  display: 'flex',
-                  alignItems: 'center',
-                  align: 'center',
-                  justifyContent: 'start',
-                }
-          }
-        >
-          {/* {matches ? '' : <Typography>Lokation</Typography>} */}
-
-          <Autocomplete
-            value={selectedLoc}
-            options={locations ? locations : []}
-            getOptionLabel={(option) => option.loc_name}
-            isOptionEqualToValue={(option, value) => option.loc_name === value.loc_name}
-            renderInput={(params) => (
-              <TextField {...params} size="small" variant="outlined" placeholder="Vælg lokation" />
-            )}
-            disableClearable={matches}
-            style={matches ? {width: '100%'} : {width: 200, marginLeft: '12px'}}
-            onChange={(event, value) => {
-              populateFormData(value);
-            }}
-          />
-
-          <Button
-            size="small"
-            color="primary"
-            bttype="primary"
-            sx={matches ? {ml: 1} : {textTransform: 'none', ml: '12px'}}
-            startIcon={<AddLocationAltIcon />}
-            onClick={() => setLocationDialogOpen(true)}
-          >
-            Opret lokation
-          </Button>
-        </Box>
-      </Grid>
-    </>
-  );
-
-  return locationSelector;
-}
-
-function Location({setLocationDialogOpen, setSelectedLoc, selectedLoc, locations}) {
-  return (
-    <Grid container>
-      <LocationChooser
-        setLocationDialogOpen={setLocationDialogOpen}
-        setSelectedLoc={setSelectedLoc}
-        selectedLoc={selectedLoc}
-        locations={locations}
-      />
-      <LocationForm disable />
-    </Grid>
-  );
-}
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;
@@ -166,12 +42,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const {field, location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
-  const [locationDialogOpen, setLocationDialogOpen] = React.useState(
-    store.location.x ? (store.location.loc_id ? false : true) : false
-  );
-
-  console.log(locationDialogOpen);
-
   const {data: locations} = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
@@ -179,9 +49,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
       return data;
     },
   });
-
-  const loc_id = stamdataStore((store) => store.location.loc_id);
-  const [selectedLoc, setSelectedLoc] = useState(null);
 
   useEffect(() => {
     return () => {
@@ -193,7 +60,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
 
-  console.log(store);
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -214,20 +80,19 @@ export default function OpretStamdata({setAddStationDisabled}) {
     getValues,
     setValue,
     trigger,
-    control,
   } = formMethods;
 
   useEffect(() => {
-    if (loc_id != undefined && locations != undefined) {
+    if (store.location.loc_id != undefined && locations != undefined) {
       setValue(
         'location',
-        locations.find((item) => item.loc_id === loc_id)
+        locations.find((item) => item.loc_id === store.location.loc_id)
       );
     }
-  }, [loc_id, locations]);
+  }, [store.location.loc_id, locations]);
 
-  console.log(getValues());
   const watchtstype_id = watch('timeseries.tstype_id');
+  const loc_id = watch('location.loc_id');
 
   const stamdataNewMutation = useMutation({
     mutationFn: async (data) => {
@@ -308,10 +173,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const handleTimeseriesOpret = async () => {
     const locationValid = await trigger('location');
     const timeseriesValid = await trigger('timeseries');
-
-    console.log(getValues('location'));
-    console.log(locationValid);
-    console.log(timeseriesValid);
 
     let form = null;
     if (locationValid && timeseriesValid) {
@@ -401,7 +262,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
       );
     }
   };
-
   return (
     <>
       <NavBar />
@@ -460,12 +320,9 @@ export default function OpretStamdata({setAddStationDisabled}) {
             }}
           >
             <TabPanel value={tabValue} index={'0'}>
-              <Location
-                setLocationDialogOpen={setLocationDialogOpen}
-                setSelectedLoc={setSelectedLoc}
-                selectedLoc={selectedLoc}
-                locations={locations}
-              />
+              <Grid container>
+                <LocationForm disable={loc_id == null ? false : true} />
+              </Grid>
               <StamdataFooter
                 cancel={cancel}
                 nextTab={nextTab}
@@ -510,11 +367,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 )}
               </Box>
               <UnitForm mode="add" />
-              <StamdataFooter
-                cancel={cancel}
-                disabled={!('unit' in dirtyFields)}
-                handleOpret={handleUnitOpret}
-              />
+              <StamdataFooter cancel={cancel} disabled={false} handleOpret={handleUnitOpret} />
             </TabPanel>
           </Box>
 
@@ -523,11 +376,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
             setUdstyrDialogOpen={setUdstyrDialogOpen}
             tstype_id={watchtstype_id}
           />
-          <AddLocationForm
-            locationDialogOpen={locationDialogOpen}
-            setLocationDialogOpen={setLocationDialogOpen}
-          />
-          <DevTool control={control} />
+          <DevTool control={formMethods.control} />
         </FormProvider>
       </div>
     </>

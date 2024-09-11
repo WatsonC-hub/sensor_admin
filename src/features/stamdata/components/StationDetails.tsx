@@ -15,7 +15,7 @@ import TransferList from './stationDetails/multiselect/TransferList';
 
 type Props = {
   mode: string;
-  disable: boolean;
+  disable?: boolean;
 };
 
 const data = {
@@ -24,7 +24,7 @@ const data = {
   ressourcer: [],
 };
 
-const StationDetails = ({mode, disable}: Props) => {
+const StationDetails = ({mode, disable = false}: Props) => {
   const {isMobile} = useBreakpoints();
   const superUser = authStore().superUser;
   const schema = stationDetailsSchema;

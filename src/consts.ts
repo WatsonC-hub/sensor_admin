@@ -128,3 +128,18 @@ export const initialLocationAccessData = {
   koden: '',
   kommentar: '',
 };
+
+export const httpStatusDescriptions = {
+  '200': 'OK - Anmodningen lykkedes',
+  '201': 'Oprettet - Ressource blev oprettet',
+  '204': 'Ingen indhold - Ingen indhold at sende',
+  '400': 'Ugyldig anmodning - Tjek dine data',
+  '401': 'Kunne ikke autentificere - Tjek dine loginoplysninger',
+  '403': 'Du har ikke rettigheder til denne ressource',
+  '404': 'Ressource blev ikke fundet',
+  '422': 'Data kunne ikke valideres korrekt',
+  '500': 'Intern serverfejl - Noget gik galt på serveren',
+  '502': 'Forkert svar fra serveren',
+  '503': 'Service utilgængelig - Serveren er midlertidigt nede',
+  '504': 'Forbindelsen tog for lang tid',
+};

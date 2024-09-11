@@ -8,6 +8,7 @@ type FormToggleGroupProps<TFieldValues extends FieldValues> = ToggleButtonGroupP
   children?: React.ReactNode;
   rules?: any;
   label: string;
+  noSelectValue?: any;
   values: {
     label: string | React.ReactNode;
     value: any;
@@ -20,6 +21,7 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
   rules,
   onChangeCallback,
   label,
+  noSelectValue,
   values,
   ...otherProps
 }: FormToggleGroupProps<TFieldValues>) => {
@@ -46,12 +48,17 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
                   if (onChangeCallback) {
                     onChangeCallback(value);
                   }
+                } else if (noSelectValue) {
+                  onChange(noSelectValue);
+                  if (onChangeCallback) {
+                    onChangeCallback(noSelectValue);
+                  }
                 }
               }}
               {...otherProps}
             >
               {values.map((val) => (
-                <ToggleButton key={val.value} value={val.value}>
+                <ToggleButton key={val.value} value={val.value} sx={{px: 2}}>
                   {val.label}
                 </ToggleButton>
               ))}

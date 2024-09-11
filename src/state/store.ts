@@ -139,7 +139,7 @@ const initialState = {
     x: 0,
     y: 0,
     groups: [],
-    terrainqual: '',
+    terrainqual: 'DTM',
     terrainlevel: 0,
     description: '',
     loctype_id: -1,

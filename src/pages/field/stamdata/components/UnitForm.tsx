@@ -69,7 +69,7 @@ export default function UnitForm({mode}: UnitFormProps) {
             type="datetime-local"
             required
             inputProps={{
-              min: moment(startdate).format('YYYY-MM-DDTHH:mm:ss'),
+              min: moment(startdate).format('YYYY-MM-DDTHH:mm'),
             }}
           />
         )}
