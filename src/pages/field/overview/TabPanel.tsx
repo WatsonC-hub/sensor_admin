@@ -3,7 +3,7 @@ import React, {ReactNode} from 'react';
 
 interface TabPanelProps {
   children: ReactNode;
-  value: string;
+  value: string | null;
   index: string;
 }
 
