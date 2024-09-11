@@ -242,6 +242,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
                   id="calypso_id"
                   label="Calypso ID"
                   labelKey="label"
+                  placeholder="Søg Calypso ID"
                   options={uniqueCalypsoIds.map((option) => ({
                     value: option,
                     label: option,

@@ -80,7 +80,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
     getValues,
     setValue,
     trigger,
-    control,
   } = formMethods;
 
   useEffect(() => {
