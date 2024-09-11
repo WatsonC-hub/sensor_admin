@@ -3,7 +3,6 @@ import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 
 export const useMetadata = (ts_id: number) => {
-  console.log(ts_id);
   const get = useQuery({
     queryKey: ['metadata', ts_id],
     queryFn: async () => {

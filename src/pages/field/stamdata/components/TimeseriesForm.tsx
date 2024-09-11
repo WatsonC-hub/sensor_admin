@@ -55,7 +55,6 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
   const loc_name = watch('location.loc_name');
   const tstype_id = watch('timeseries.tstype_id');
 
-  console.log(loc_name);
   useEffect(() => {
     if (mode === 'add' && tstype_id !== 1) {
       unregister('watlevmp');

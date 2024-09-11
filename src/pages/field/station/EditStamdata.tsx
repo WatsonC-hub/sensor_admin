@@ -324,7 +324,11 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
             {data && data.length > 0 ? (
               <Select
                 id="udstyr_select"
-                value={selected}
+                value={
+                  data.map((item) => item.gid).includes(selected == '' ? 0 : selected)
+                    ? selected
+                    : ''
+                }
                 onChange={handleChange}
                 className="swiper-no-swiping"
               >
@@ -508,8 +512,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     },
   });
 
-  // console.log(schemaData);
-  // console.log(metadata);
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: schemaData.success ? schemaData.data : {},
@@ -525,6 +527,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
 
   const resetFormData = () => {
     const result = schema.safeParse({
+      ...getValues(),
       location: {
         ...metadata,
         initial_project_no: metadata?.projectno,
@@ -532,17 +535,18 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
       timeseries: {
         ...metadata,
       },
-      unit: {
-        ...metadata,
-        startdate: metadata?.startdato,
-        enddate: metadata?.slutdato,
-      },
       // stationDetails: {
       //   ...metadata,
       // },
     });
     reset(result.success ? result.data : {});
   };
+
+  useEffect(() => {
+    if (metadata) {
+      resetFormData();
+    }
+  }, [ts_id]);
 
   const handleUpdate = (type: 'location' | 'timeseries' | 'unit') => {
     if (type === 'location') {
