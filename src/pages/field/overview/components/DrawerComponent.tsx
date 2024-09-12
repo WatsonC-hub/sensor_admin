@@ -40,17 +40,6 @@ const DrawerComponent = ({
     }
   }, [header]);
 
-  // useEffect(() => {
-  //   if (triggerOpenDrawer) {
-  //     setOpen('half');
-  //   }
-  // }, [triggerOpenDrawer]);
-  // useEffect(() => {
-  //   if (triggerCloseDrawer) {
-  //     setOpen('closed');
-  //   }
-  // }, [triggerCloseDrawer]);
-
   return (
     <>
       <CssBaseline />
@@ -91,26 +80,34 @@ const DrawerComponent = ({
             alignItems: 'center',
             height: drawerBleeding,
             pl: 2,
+            cursor: 'pointer',
+          }}
+          onClick={() => {
+            if (enableFull) {
+              setOpen((prev) => (prev === 'full' ? 'half' : 'full'));
+            } else {
+              setOpen((prev) => (prev === 'closed' ? 'half' : 'closed'));
+            }
           }}
         >
           <Typography variant={isTouch ? 'body1' : 'h6'} sx={{p: 0}}>
             {header}
           </Typography>
-          <Box display="flex">
-            <IconButton
-              onClick={() => setOpen((prev) => (prev === 'closed' ? 'half' : 'closed'))}
-              color="primary"
-            >
-              {open != 'closed' ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-            </IconButton>
-            {enableFull && (
+          <Box p={1}>
+            {open == 'full' || (open == 'half' && !enableFull) ? (
+              <ExpandLessIcon />
+            ) : (
+              <ExpandMoreIcon />
+            )}
+
+            {/* {enableFull && (
               <IconButton
                 onClick={() => setOpen((prev) => (prev === 'full' ? 'half' : 'full'))}
                 color="primary"
               >
                 {open == 'full' ? <CloseFullscreenIcon /> : <OpenInFullIcon />}
               </IconButton>
-            )}
+            )} */}
           </Box>
         </Box>
         <Box
