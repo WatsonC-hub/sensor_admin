@@ -299,7 +299,7 @@ const NavBar = () => {
           </Typography>
         )}
         <Box>
-          {adminAccess && <NavBarNotifications />}
+          {/* {adminAccess && <NavBarNotifications />} */}
           <NavBarMenu
             items={[
               {
@@ -358,7 +358,7 @@ const NavBar = () => {
         <Typography variant="h4">Admin</Typography>
 
         <Box>
-          {adminAccess && <NavBarNotifications />}
+          {/* {adminAccess && <NavBarNotifications />} */}
           <NavBarMenu
             items={[
               {

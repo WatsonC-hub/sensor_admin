@@ -1,5 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -8,22 +8,15 @@ const TOAST_ID = 'correct-toast';
 
 export const useCorrectData = (ts_id: number, queryKey: string) => {
   const queryClient = useQueryClient();
-
+  const [refetchInterval, setRefetchInterval] = useState<number | false>(false);
   // TODO: Check me
-  const {
-    data: pollData,
-    dataUpdatedAt,
-    refetch,
-  } = useQuery({
+  const {data: pollData, dataUpdatedAt} = useQuery({
     queryKey: ['pollData', ts_id],
     queryFn: async () => {
       const {status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
       return status;
     },
-    enabled: false,
-    refetchInterval: (query) => {
-      return query.state.data === 204 ? 100 : false;
-    },
+    refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -31,6 +24,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
 
   useEffect(() => {
     if (pollData === 200) {
+      setRefetchInterval(false);
       queryClient.invalidateQueries({queryKey: [queryKey, ts_id]});
       toast.update(TOAST_ID, {
         render: 'Genberegnet',
@@ -61,8 +55,12 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
       return res;
     },
     onSuccess: () => {
-      refetch();
+      // refetch();
+      setRefetchInterval(1000);
       //handleXRangeChange({'xaxis.range[0]': undefined});
+    },
+    onError: () => {
+      setRefetchInterval(false);
     },
   });
 
