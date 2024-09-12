@@ -1,9 +1,7 @@
 import {Global} from '@emotion/react';
-import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
-import {Typography, Box, Drawer, IconButton} from '@mui/material';
+import {Typography, Box, Drawer} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import React, {useEffect, useState} from 'react';
 
