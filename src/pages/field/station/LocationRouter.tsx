@@ -47,13 +47,19 @@ export default function LocationRouter() {
 
   const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
-  const stamdata = data?.filter(
-    (elem: {ts_id: number}) => params.ts_id && elem.ts_id == parseInt(params.ts_id)
-  )?.[0];
-
   let hasTimeseries = undefined;
   if (data && data.length > 0)
     hasTimeseries = data && data.some((stamdata: {ts_id: number}) => stamdata.ts_id !== null);
+  let stamdata = undefined;
+  if (hasTimeseries) {
+    stamdata = data?.filter(
+      (elem: {ts_id: number}) => params.ts_id && elem.ts_id == parseInt(params.ts_id)
+    )?.[0];
+  } else {
+    stamdata = data?.[0];
+  }
+
+  console.log('metadata', hasTimeseries);
 
   return (
     <MetadataContext.Provider value={metadata}>
