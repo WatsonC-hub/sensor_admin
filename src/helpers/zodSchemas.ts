@@ -4,7 +4,7 @@ import {z} from 'zod';
 const locationSchema = z.object({
   location: z.object({
     loc_id: z.number().optional(),
-    loc_name: z.string({required_error: 'Lokationsnavn skal udfyldes'}),
+    loc_name: z.string().min(1, 'Lokationsnavn skal udfyldes'),
     mainloc: z.string().nullish(),
     subloc: z.string().nullish(),
     subsubloc: z.string().nullish(),
@@ -42,23 +42,12 @@ const metadataBaseSchema = timeseriesSchema.extend({
 });
 
 const metadataSchema = metadataBaseSchema.extend({
-  location: locationSchema.shape.location.extend({
-    initial_project_no: z
-      .string()
-      .nullable()
-      .refine(
-        (val) => {
-          if (val === null) return true;
-          else return val.length >= 1;
-        },
-        {message: 'Vælg venligst et projekt nummer'}
-      ),
-  }),
   timeseries: metadataBaseSchema.shape.timeseries.extend({
     tstype_id: z.number({required_error: 'Vælg tidsserietype'}).gte(1, {
       message: 'Vælg tidsserietype',
     }),
   }),
+
   watlevmp: z
     .object({
       elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
