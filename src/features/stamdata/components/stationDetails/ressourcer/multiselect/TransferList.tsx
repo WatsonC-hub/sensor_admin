@@ -9,15 +9,14 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {Noop, useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
+import {SubmitHandler, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import type {
   MultiSelectProps,
   Ressourcer,
-} from '~/features/stamdata/components/stationDetails/multiselect/types';
+} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {CategoryType} from '~/helpers/EnumHelper';
 
 function not(a: Ressourcer[], b: Ressourcer[]) {
@@ -49,18 +48,10 @@ function categoryNot(a: Array<Ressourcer>, b: Array<Ressourcer>) {
 interface TransferListProps extends MultiSelectProps {
   value: Array<Ressourcer>;
   setValue: (ressourcer: Array<Ressourcer>) => void;
-  onBlur: Noop;
+  loc_id: string;
 }
 
-export default function TranserList({value, setValue, onBlur}: TransferListProps) {
-  const params = useParams();
-  const loc_id = params.locid;
-  const {
-    get: {data: options},
-    post: postRessourcer,
-    relation: {data: related},
-  } = useRessourcer(parseInt(loc_id!));
-
+export default function TranserList({value, setValue, loc_id}: TransferListProps) {
   const {trigger} = useFormContext();
   const [checked, setChecked] = useState<Ressourcer[]>([]);
   const [selected, setSelected] = useState<Ressourcer[]>(value);
@@ -72,6 +63,13 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
     )
   );
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
+  const {handleSubmit, getValues} = useFormContext();
+
+  const {
+    get: {data: options},
+    post: postRessourcer,
+    relation: {data: related},
+  } = useRessourcer(parseInt(loc_id!));
 
   useEffect(() => {
     if (value && value.length > 0) {
@@ -81,11 +79,11 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
   }, [value]);
 
   useEffect(() => {
-    if (value && options && options.length > 0 && !related) {
+    if (value && options && options.length > 0) {
       setSelectedCategory([...new Set([...value.map((ressource) => ressource.kategori)])]);
       setSelected(value);
     }
-  }, [options, related, value]);
+  }, [options, value]);
 
   useEffect(() => {
     if (related && related.length > 0) {
@@ -110,7 +108,7 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
       : [];
 
   const leftChecked = intersection(checked, left);
-  const rightChecked = intersection(checked, selected);
+  const rightChecked = intersection(checked, selected ?? []);
 
   const handleToggle = (ressource: Ressourcer) => () => {
     const currentIndex = checked.map((option) => option.id).indexOf(ressource.id);
@@ -124,14 +122,6 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
 
     setChecked(newChecked);
   };
-
-  // const handleAllRight = () => {
-  //   setSelected(options ?? []);
-  //   setValue(options ?? []);
-  //   setSelectedCategory([
-  //     ...new Set(options ? options.map((ressource) => ressource.kategori) : []),
-  //   ]);
-  // };
 
   const handleCheckedRight = () => {
     setSelected(selected.concat(leftChecked));
@@ -151,23 +141,15 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
     handleSave(not(selected, rightChecked));
   };
 
-  // const handleAllLeft = () => {
-  //   setSelected([]);
-  //   setValue([]);
-  //   setSelectedCategory([]);
-  // };
-
   const handleSave = async (ressourcer: Array<Ressourcer>) => {
-    const result = await trigger('ressourcer');
-    if (ressourcer && result) {
-      const payload = {
-        path: `${loc_id}`,
-        data: {
-          ressourcer: ressourcer,
-        },
-      };
-      postRessourcer.mutate(payload);
-    }
+    console.log(ressourcer);
+    const payload = {
+      path: `${loc_id}`,
+      data: {
+        ressourcer: ressourcer,
+      },
+    };
+    postRessourcer.mutate(payload);
   };
 
   const handleClick = (collapsedCategory: string) => {
@@ -180,7 +162,7 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
 
   const customList = (items: Ressourcer[], categoryList: Array<string>, title: string) => {
     return (
-      <Paper sx={{width: 300, height: 400, overflow: 'auto', boxShadow: 3}}>
+      <Paper sx={{width: 300, boxShadow: 3}}>
         <Box display={'flex'} flexDirection={'column'}>
           <Typography align="center" variant="h5" m={0.5}>
             {title}
@@ -192,7 +174,12 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
               dense
               component="div"
               role="list"
-              sx={{bgcolor: 'Background.paper'}}
+              sx={{
+                bgcolor: 'Background.paper',
+                height: 400,
+                overflow: 'auto',
+                scrollbarGutter: 'stable',
+              }}
             >
               {categoryList &&
                 categoryList.length > 0 &&
@@ -212,17 +199,18 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
                     );
                     const labelId = `transfer-list-item-${category}-label`;
                     return (
-                      <Box gap={1} display={'flex'} flexDirection={'column'} key={category + 'box'}>
+                      <Box gap={0} display={'flex'} flexDirection={'column'} key={category + 'box'}>
                         <ListItemText id={labelId} onClick={() => handleClick(category)}>
                           <Typography
                             ml={2}
                             fontWeight={'bold'}
                             display={'flex'}
                             flexDirection={'row'}
+                            justifyContent={'space-between'}
                           >
                             {category}
                             {title !== 'Udvalgt' && (
-                              <>{collapsed.includes(category) ? <ExpandMore /> : <ExpandLess />}</>
+                              <>{collapsed.includes(category) ? <ExpandLess /> : <ExpandMore />}</>
                             )}
                           </Typography>
                         </ListItemText>
@@ -240,11 +228,10 @@ export default function TranserList({value, setValue, onBlur}: TransferListProps
                                   key={ressource.navn}
                                   role="listitem"
                                   onClick={handleToggle(ressource)}
-                                  sx={{'&:hover': {bgcolor: 'grey.200'}, padding: 0.5}}
+                                  sx={{'&:hover': {bgcolor: 'grey.200'}, py: 0.0}}
                                 >
                                   <ListItemIcon sx={{mr: -1.5}} key={ressource.id}>
                                     <Checkbox
-                                      onBlur={onBlur}
                                       checked={
                                         checked
                                           .map((option) => option.navn)

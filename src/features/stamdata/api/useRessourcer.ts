@@ -2,7 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {Ressourcer} from '~/features/stamdata/components/stationDetails/multiselect/types';
+import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 
 interface RessourcerBase {
   path: string;

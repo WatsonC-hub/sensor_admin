@@ -180,9 +180,10 @@ const UnitEndDateDialog = ({
                 select
                 label="Årsag"
                 placeholder="Vælg årsag"
-                onChangeCallback={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                onChangeCallback={(e) => {
                   const reason = changeReasons?.find(
-                    (reason) => reason.id === Number(e.target.value)
+                    (reason) =>
+                      reason.id === Number((e as React.ChangeEvent<HTMLInputElement>).target.value)
                   );
                   if (reason) {
                     if (reason.default_actions?.includes('CLOSE')) {

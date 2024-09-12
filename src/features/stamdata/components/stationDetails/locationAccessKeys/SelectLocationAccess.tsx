@@ -13,7 +13,7 @@ type Props = {
 const SelectLocationAccess = ({loc_id}: Props) => {
   const [selected, setSelected] = useState<Access | null>(null);
   const [search, setSearch] = useState<string>('');
-  const {setValue} = useFormContext();
+  const {reset} = useFormContext();
   const {useSearchLocationAccess} = useLocationAccess(loc_id);
 
   const {data} = useSearchLocationAccess(search);
@@ -23,7 +23,6 @@ const SelectLocationAccess = ({loc_id}: Props) => {
       sx={{mt: 1}}
       options={data ?? []}
       value={selected ?? null}
-      disableCloseOnSelect
       inputValue={search}
       getOptionLabel={(option) => {
         return `${option.navn}`;
@@ -59,8 +58,8 @@ const SelectLocationAccess = ({loc_id}: Props) => {
       onChange={(event, newValue) => {
         setSelected(newValue);
         if (newValue) {
-          setValue('adgangsforhold', newValue);
-        } else setValue('adgangsforhold', initialLocationAccessData);
+          reset(newValue);
+        } else reset(initialLocationAccessData);
       }}
       onInputChange={(event, value) => {
         setSearch(value);

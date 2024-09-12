@@ -1,5 +1,3 @@
-import {Noop} from 'react-hook-form';
-
 export type Ressourcer = {
   id: number;
   navn: string;
@@ -17,5 +15,4 @@ export type Option = {
 export type MultiSelectProps = {
   value: Ressourcer[];
   setValue: (value: Ressourcer[]) => void;
-  onBlur: Noop;
 };

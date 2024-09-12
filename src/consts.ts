@@ -109,21 +109,21 @@ export const renderDetailStyle = {
 };
 
 export const initialContactData = {
+  id: '',
   navn: '',
   telefonnummer: null,
   email: '',
-  rolle: '-1',
-  kommentar: '',
+  contact_role: -1,
+  comment: '',
   user_id: null,
-  org: '',
-  relation_id: -1,
   contact_type: '-1',
 };
 
 export const initialLocationAccessData = {
+  id: -1,
   navn: '',
   type: '-1',
-  contact_id: null,
+  contact_id: undefined,
   placering: '',
   koden: '',
   kommentar: '',

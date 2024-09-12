@@ -1,18 +1,20 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import {startCase} from 'lodash';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
-import {useFormContext} from 'react-hook-form';
+import {SubmitHandler, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {initialContactData} from '~/consts';
-import {ContactInfoRole, MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
+
+import {InferContactInfoTable} from '../zodSchemas';
 
 import StationContactInfo from './StationContactInfo';
 
@@ -34,7 +36,11 @@ const onDeleteBtnClick = (
 const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   const [contactID, setContactID] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const {setValue, trigger, getValues, clearErrors} = useFormContext();
+  const {
+    reset,
+    handleSubmit,
+    formState: {dirtyFields},
+  } = useFormContext<InferContactInfoTable>();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
@@ -45,28 +51,28 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
         header: 'Navn',
         accessorKey: 'navn',
         enableColumnActions: false,
-        size: 20,
+        size: 120,
       },
       {
         header: 'Rolle',
-        id: 'rolle',
+        id: 'contact_role_name',
         enableColumnActions: false,
-        accessorFn: (row) => {
-          switch (row.rolle) {
-            case ContactInfoRole.DataEjer:
-              return ContactInfoRole.DataEjer;
-            case ContactInfoRole.kontakter:
-              return ContactInfoRole.kontakter;
-            default:
-              return '';
-          }
-        },
+        accessorFn: (row) => row.contact_role_name,
         size: 20,
       },
       {
         header: 'Kontakt type',
         id: 'contact_type',
-        accessorFn: (row) => (row.contact_type === 'projekt' ? 'Projekt' : 'Lokation'),
+        accessorFn: (row) => {
+          switch (row.contact_type) {
+            case ContactInfoType.Lokation:
+              return startCase(ContactInfoType.Lokation);
+            case ContactInfoType.Projekt:
+              return startCase(ContactInfoType.Projekt);
+            default:
+              return '';
+          }
+        },
         enableColumnActions: false,
         size: 20,
       },
@@ -90,7 +96,7 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
       },
       {
         header: 'Kommentar',
-        accessorKey: 'kommentar',
+        accessorKey: 'comment',
         size: 20,
         enableColumnActions: false,
       },
@@ -108,18 +114,9 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
       },
       {
         header: 'Rolle',
-        id: 'rolle',
+        id: 'contact_role_name',
         enableColumnActions: false,
-        accessorFn: (row) => {
-          switch (row.rolle) {
-            case ContactInfoRole.DataEjer:
-              return ContactInfoRole.DataEjer;
-            case ContactInfoRole.kontakter:
-              return ContactInfoRole.kontakter;
-            default:
-              return '';
-          }
-        },
+        accessorFn: (row) => row.contact_role_name,
         size: 20,
       },
     ],
@@ -143,7 +140,12 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
             onClick: (e) => {
               console.log((e!.target as HTMLElement).ondblclick);
               if ((e.target as HTMLElement).innerText) {
-                setValue('contact_info', row.original);
+                reset({
+                  ...row.original,
+                  telefonnummer: row.original.telefonnummer
+                    ? parseInt(row.original.telefonnummer)
+                    : null,
+                });
                 table.setEditingRow(row);
               }
             },
@@ -157,13 +159,16 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
       );
     },
     onEditingRowCancel: () => {
-      setValue('contact_info', null);
+      reset();
     },
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
           console.log(row.original);
-          setValue('contact_info', row.original);
+          reset({
+            ...row.original,
+            telefonnummer: row.original.telefonnummer ? parseInt(row.original.telefonnummer) : null,
+          });
           setIsUser(row.original.org !== '');
           setOpenContactInfoDialog(true);
         }}
@@ -188,23 +193,18 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   );
 
   const handleClose = () => {
-    setValue('contact_info', initialContactData);
     setOpenContactInfoDialog(false);
-    clearErrors('contact_info');
+    reset();
     setIsUser(false);
   };
 
-  const handleSave = async () => {
-    const result = await trigger('contact_info');
-
-    const details = getValues().contact_info;
-    if (result) {
-      editContact(details);
-
-      setOpenContactInfoDialog(!result);
-      setIsUser(!result);
-      setValue('contact_info', initialContactData);
-    }
+  const handleSave: SubmitHandler<InferContactInfoTable> = async (details) => {
+    editContact({
+      ...details,
+      telefonnummer: details.telefonnummer ? details.telefonnummer.toString() : null,
+    });
+    setOpenContactInfoDialog(false);
+    setIsUser(false);
   };
 
   return (
@@ -230,7 +230,13 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
           <Button onClick={handleClose} bttype="tertiary">
             Annuller
           </Button>
-          <Button onClick={handleSave} bttype="primary">
+          <Button
+            disabled={
+              !(dirtyFields.contact_role || dirtyFields.comment || dirtyFields.contact_type)
+            }
+            onClick={handleSubmit(handleSave, (error) => console.log(error))}
+            bttype="primary"
+          >
             Ændre kontakt
           </Button>
         </DialogActions>

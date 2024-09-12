@@ -1,16 +1,17 @@
-import {Autocomplete, TextField, TextFieldProps} from '@mui/material';
+import {Autocomplete, AutocompleteProps, TextField, TextFieldProps} from '@mui/material';
 import React from 'react';
 
 export const isString = (item: any): item is string => {
   return typeof item === 'string';
 };
 
-type AutoCompleteFieldProps<T> = TextFieldProps & {
+type AutoCompleteFieldProps<T> = Omit<AutocompleteProps<T, false, false, false>, 'renderInput'> & {
   selectValue: T;
   onChange: (value: T | null) => void;
   labelKey: keyof T;
   options: T[];
   error?: string | undefined;
+  textFieldsProps: Partial<TextFieldProps>;
 };
 
 const ExtendedAutocomplete = <T extends object>({
@@ -19,7 +20,8 @@ const ExtendedAutocomplete = <T extends object>({
   options,
   labelKey,
   error,
-  ...otherProps
+  textFieldsProps,
+  ...autocompleteProps
 }: AutoCompleteFieldProps<T>): React.ReactElement => {
   return (
     <Autocomplete<T>
@@ -38,7 +40,7 @@ const ExtendedAutocomplete = <T extends object>({
       renderInput={(params) => (
         <TextField
           {...params}
-          {...otherProps}
+          {...textFieldsProps}
           fullWidth
           margin="dense"
           InputLabelProps={{shrink: true}}
@@ -62,6 +64,7 @@ const ExtendedAutocomplete = <T extends object>({
           }}
         />
       )}
+      {...autocompleteProps}
     />
   );
 };

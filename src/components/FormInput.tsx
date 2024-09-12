@@ -1,5 +1,6 @@
 import {TextField, TextFieldProps} from '@mui/material';
 import moment from 'moment';
+import {ChangeEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
 
 type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
@@ -8,7 +9,7 @@ type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   children?: React.ReactNode;
   rules?: any;
   transform?: (value: any) => any;
-  onChangeCallback?: (value: any) => void;
+  onChangeCallback?: (value: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   type?: string;
 };
 
@@ -35,6 +36,7 @@ const FormInput = <TFieldValues extends FieldValues>({
     <Controller
       control={control}
       name={name}
+      key={name}
       // defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
       rules={rules}
       render={({field: {value, onChange, onBlur, ref, name}}) => {

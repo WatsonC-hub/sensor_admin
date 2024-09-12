@@ -1,7 +1,7 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
-import {useFormContext} from 'react-hook-form';
+import {SubmitHandler, useFormContext} from 'react-hook-form';
 import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
@@ -14,6 +14,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {AccessTable} from '~/types';
+
+import {AdgangsforholdTable} from '../zodSchemas';
 
 import LocationAccessFormDialog from './LocationAccessFormDialog';
 
@@ -35,13 +37,18 @@ const onDeleteBtnClick = (
 const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Props) => {
   const [locationAccessID, setLocationAccessID] = useState<number>();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const {setValue, trigger, getValues, watch, clearErrors} = useFormContext();
+  const {
+    watch,
+    reset,
+    handleSubmit,
+    formState: {dirtyFields},
+  } = useFormContext<AdgangsforholdTable>();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const params = useParams();
   const loc_id = parseInt(params.locid!);
   const {isMobile} = useBreakpoints();
 
-  const navnLabel = watch('adgangsforhold.type');
+  const navnLabel = watch('type');
   const columns = useMemo<MRT_ColumnDef<AccessTable>[]>(
     () => [
       {
@@ -149,7 +156,7 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
             onClick: (e) => {
               console.log((e.target as HTMLElement).innerText);
               if ((e.target as HTMLElement).innerText) {
-                setValue('adgangsforhold', row.original);
+                reset(row.original);
                 table.setEditingRow(row);
               }
             },
@@ -163,12 +170,12 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
       );
     },
     onEditingRowCancel: () => {
-      setValue('adgangsforhold', null);
+      reset(initialLocationAccessData);
     },
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          setValue('adgangsforhold', row.original);
+          reset(row.original);
           setOpenContactInfoDialog(true);
         }}
         onDeleteBtnClick={() => {
@@ -192,20 +199,15 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
   );
 
   const handleClose = () => {
-    setValue('adgangsforhold', {});
-    clearErrors('adgangsforhold');
+    reset(initialLocationAccessData);
     setOpenContactInfoDialog(false);
   };
 
-  const handleSave = async () => {
-    const result = await trigger('adgangsforhold');
-
-    const details = getValues().adgangsforhold;
-
+  const handleSave: SubmitHandler<AdgangsforholdTable> = async (details) => {
     editLocationAccess(details);
 
-    setOpenContactInfoDialog(!result);
-    setValue('adgangsforhold', initialLocationAccessData);
+    setOpenContactInfoDialog(false);
+    reset(initialLocationAccessData);
   };
 
   return (
@@ -230,8 +232,12 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
           <Button onClick={handleClose} bttype="tertiary">
             Annuller
           </Button>
-          <Button onClick={handleSave} bttype="primary">
-            Ændre {navnLabel && navnLabel.toLowerCase()}
+          <Button
+            disabled={JSON.stringify(dirtyFields) === '{}'}
+            onClick={handleSubmit(handleSave, (error) => console.log(error))}
+            bttype="primary"
+          >
+            Ændre {navnLabel && navnLabel !== '-1' && navnLabel.toLowerCase()}
           </Button>
         </DialogActions>
       </Dialog>

@@ -193,11 +193,12 @@ export type ContactInfo = {
   navn: string;
   telefonnummer?: string | null;
   email: string;
-  kommentar?: string;
-  rolle: string;
+  comment?: string;
+  contact_role: number;
   user_id?: string | null;
   loc_id?: number;
   org?: str;
+  contact_type: string;
 };
 
 export type baseContactInfo = {
@@ -210,14 +211,15 @@ export type baseContactInfo = {
 export type ContactTable = {
   id: string;
   navn: string;
-  telefonnummer: string;
+  telefonnummer: string | null;
   email: string;
-  rolle: ContactInfoRole;
-  kommentar: string;
+  contact_role: number;
+  comment?: string;
   user_id?: string | null;
   org: string;
   relation_id: number;
   contact_type: string;
+  contact_role_name?: string;
 };
 
 export type ContactInfoOptions = {
@@ -234,7 +236,7 @@ export type StationDetails = {
 export type Access = {
   id?: number;
   navn?: string;
-  type?: AccessType;
+  type?: string;
   placering?: string;
   koden?: string;
   contact_id?: string | null;
@@ -244,9 +246,9 @@ export type Access = {
 export type AccessTable = {
   id: number;
   navn: string;
-  type: AccessType;
+  type: string;
   placering: string;
-  contact_id: ContactInfo;
+  contact_id: string;
   koden: string;
   kommentar: string;
   contact_name?: string;

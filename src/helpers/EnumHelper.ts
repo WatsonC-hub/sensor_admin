@@ -35,3 +35,8 @@ export enum ContactInfoRole {
   DataEjer = 'Data Ejer',
   kontakter = 'Adgangskontakt',
 }
+
+export enum ContactInfoType {
+  Lokation = 'lokation',
+  Projekt = 'projekt',
+}

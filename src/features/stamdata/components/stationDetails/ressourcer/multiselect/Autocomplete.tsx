@@ -5,30 +5,28 @@ import TextField from '@mui/material/TextField';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import type {
   MultiSelectProps,
   Ressourcer,
-} from '~/features/stamdata/components/stationDetails/multiselect/types';
+} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
   value: Array<Ressourcer>;
   setValue: (value: Array<Ressourcer>) => void;
+  loc_id: string;
 }
 
-export default function CheckboxesTags({value, setValue, onBlur, ...props}: CheckboxesTagsProps) {
-  const params = useParams();
-  const loc_id = params.locid;
-  const [selected, setSelected] = useState(value);
+export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTagsProps) {
   const {
     get: {data: options},
     post: postRessourcer,
     relation: {data: related},
-  } = useRessourcer(parseInt(loc_id!));
+  } = useRessourcer(parseInt(loc_id));
 
+  const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
   const {
     trigger,
     watch,
@@ -100,7 +98,7 @@ export default function CheckboxesTags({value, setValue, onBlur, ...props}: Chec
             options={
               (options && options.sort((a, b) => b.kategori.localeCompare(a.kategori))) ?? []
             }
-            value={selected ?? []}
+            value={selected}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
             PopperComponent={(props) => <Popper {...props} placement="top" />}
@@ -147,41 +145,14 @@ export default function CheckboxesTags({value, setValue, onBlur, ...props}: Chec
             disableCloseOnSelect
             getOptionLabel={(option) => option.navn}
             isOptionEqualToValue={(option, value) => option.id === value.id}
-            // renderOption={(props, option, {selected}) => (
-            //   <List
-            //     disablePadding
-            //     dense
-            //     component="div"
-            //     role="list"
-            //     sx={{bgcolor: 'Background.paper'}}
-            //   >
-            //     <li {...props}>
-            //       <Collapse
-            //         key={option.kategori}
-            //         in={collapsed.includes(option.kategori)}
-            //         timeout="auto"
-            //         unmountOnExit
-            //       >
-            //         <Checkbox
-            //           icon={icon}
-            //           checkedIcon={checkedIcon}
-            //           style={{marginRight: 8}}
-            //           checked={selected}
-            //         />
-            //         {option.navn}
-            //       </Collapse>
-            //     </li>
-            //   </List>
-            // )}
             style={{maxWidth: 500}}
             renderInput={(params) => (
-              <TextField onBlur={onBlur} {...params} label="Huskeliste" placeholder="Udvalgt" />
+              <TextField {...params} label="Huskeliste" placeholder="Udvalgt" />
             )}
-            onChange={(event, newValue) => {
+            onChange={(event, newValue: Ressourcer[]) => {
               setSelected(newValue);
               setValue(newValue);
             }}
-            {...props}
           />
           <Button bttype="primary" onClick={handleSave} sx={{mt: 5}}>
             Gem huskeliste

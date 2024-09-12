@@ -2,9 +2,6 @@ import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 
-import {Ressourcer} from '~/features/stamdata/components/stationDetails/multiselect/types';
-import {Access, ContactInfo} from '~/types';
-
 type AuthState = {
   authenticated: boolean;
   user_id: number | null;
