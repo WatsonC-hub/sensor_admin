@@ -552,6 +552,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   const handleUpdate = (type: 'location' | 'timeseries' | 'unit') => {
     if (type === 'location') {
       const locationData = getValues('location') as Location;
+      console.log(locationData);
       metadataEditLocationMutation.mutate(locationData, {
         onSuccess: () => {
           toast.success('Lokation er opdateret');

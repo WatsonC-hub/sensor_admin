@@ -120,6 +120,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
     addUnit.mutate(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
+        queryClient.invalidateQueries(['metadata', timeseries.ts_id]);
         setUdstyrDialogOpen(false);
         setConfirmDialogOpen(false);
       },
@@ -143,7 +144,7 @@ export default function AddUnitForm({udstyrDialogOpen, setUdstyrDialogOpen, tsty
           `/sensor_field/stamdata/check-unit-invoice/${timeseries.ts_id}/${unit.unit_uuid}`
         );
 
-        if ('exists' in data && data.exists) {
+        if ('ignoreInvoice' in data && data.ignoreInvoice) {
           handleAddUnit(payload);
           return;
         }

@@ -15,7 +15,7 @@ interface Project {
 }
 
 interface LocationProjectsProps {
-  value: string;
+  value: string | null;
   setValue: (value: string) => void;
   onBlur: Noop;
   error: FieldError | undefined;
@@ -49,7 +49,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
           forcePopupIcon={false}
           value={selectedValue}
           onChange={(event, newValue) => {
-            setValue(newValue ? newValue.project_no : '');
+            setValue(newValue ? newValue.project_no : null);
           }}
           id="tags-standard"
           options={options ?? []}
