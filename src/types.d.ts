@@ -280,3 +280,12 @@ export type QATableType = {
   ts_name: string;
   tstype_name;
 };
+
+export type BatteryStatusType = {
+  current_bat: number;
+  usage_pr_day: number;
+  battery_percentage: number | null;
+  estimated_no_battery: string;
+  startdate: string;
+  enddate: string;
+};

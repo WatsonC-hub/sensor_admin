@@ -36,6 +36,7 @@ export default function Station({ts_id, stamdata}) {
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
   const store = stamdataStore();
+
   useEffect(() => {
     if (stamdata) {
       store.setLocation(stamdata);

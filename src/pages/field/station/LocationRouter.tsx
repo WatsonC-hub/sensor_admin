@@ -13,6 +13,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {apiClient} from '~/apiClient';
 import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
+import BatteryStatus from '~/features/station/components/BatteryStatus';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import ErrorPage from '~/pages/field/station/ErrorPage';
@@ -59,8 +60,6 @@ export default function LocationRouter() {
     stamdata = data?.[0];
   }
 
-  console.log('metadata', hasTimeseries);
-
   return (
     <MetadataContext.Provider value={metadata}>
       <CssBaseline />
@@ -93,6 +92,7 @@ export default function LocationRouter() {
           )}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          <BatteryStatus ts_id={params.ts_id ? params.ts_id : ''} />
           <HomeButton />
           {adminAccess && <NotificationList />}
           <NavBarMenu
