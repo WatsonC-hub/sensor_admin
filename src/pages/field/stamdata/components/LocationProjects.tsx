@@ -16,7 +16,7 @@ interface Project {
 
 interface LocationProjectsProps {
   value: string | null;
-  setValue: (value: string) => void;
+  setValue: (value: string | null) => void;
   onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;

@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {Controller, useFormContext, get} from 'react-hook-form';
 
 import Button from '~/components/Button';
@@ -224,7 +224,9 @@ export default function PejlingForm({
                   sx={{
                     mb: 2,
                   }}
-                  onChangeCallback={(e) => handleDateChange(e.target.value)}
+                  onChangeCallback={(e) =>
+                    handleDateChange((e as ChangeEvent<HTMLTextAreaElement>).target.value)
+                  }
                   // error={pejlingOutOfRange}
                   // warning={() => (pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : '')}
                 />

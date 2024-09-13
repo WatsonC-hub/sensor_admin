@@ -18,7 +18,7 @@ const filter = createFilterOptions<Group>({
 interface LocationGroupsProps {
   value: Array<Group> | undefined | null;
   setValue: (value: Array<Group>) => void;
-  onBlur: Noop;
+  onBlur?: Noop;
   label?: string;
   disable?: boolean;
   disableLink?: boolean;

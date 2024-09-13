@@ -1,6 +1,6 @@
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {useContext, useEffect} from 'react';
+import {ChangeEvent, useContext, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
@@ -179,7 +179,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           }}
           disabled={disable}
           onChangeCallback={(e) => {
-            if (e.target.value === 'DTM') {
+            if ((e as ChangeEvent<HTMLTextAreaElement>).target.value === 'DTM') {
               refetchDTM();
             }
           }}
