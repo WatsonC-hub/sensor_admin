@@ -78,7 +78,7 @@ export const useTilsyn = () => {
         };
       });
     },
-    enabled: ts_id !== -1 && ts_id !== null,
+    enabled: ts_id !== undefined && ts_id !== 0 && ts_id !== null,
   });
 
   const post = useMutation({

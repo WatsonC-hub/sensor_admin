@@ -7,7 +7,7 @@ import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -95,7 +95,14 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     },
   };
 
-  const table = useTable<TilsynItem>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<TilsynItem>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.TABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>

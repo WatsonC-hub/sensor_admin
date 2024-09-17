@@ -183,15 +183,16 @@ export const useTable = <TData extends MRT_RowData>(
   options: Partial<MRT_TableOptions<TData>>,
   tableState: Partial<MRT_TableOptions<TData>> | undefined,
   type: string = TableTypes.LIST,
-  merge_method: string = MergeType.RECURSIVEMERGE
+  merge_method: string | undefined
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
 
-  let tableOptions: Partial<MRT_TableOptions<TData>>;
+  let tableOptions: Partial<MRT_TableOptions<TData>> = options;
 
   if (merge_method === MergeType.SHALLOWMERGE)
     tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
-  else tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+  else if (merge_method === MergeType.RECURSIVEMERGE)
+    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
   const table = useMaterialReactTable({
     columns,

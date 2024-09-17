@@ -1,5 +1,5 @@
 import {Autocomplete, TextField, Typography} from '@mui/material';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {initialLocationAccessData} from '~/consts';
@@ -8,15 +8,24 @@ import {Access} from '~/types';
 
 type Props = {
   loc_id: number | undefined;
+  createNew: boolean;
 };
 
-const SelectLocationAccess = ({loc_id}: Props) => {
+const SelectLocationAccess = ({loc_id, createNew}: Props) => {
   const [selected, setSelected] = useState<Access | null>(null);
   const [search, setSearch] = useState<string>('');
   const {reset} = useFormContext();
   const {useSearchLocationAccess} = useLocationAccess(loc_id);
 
   const {data} = useSearchLocationAccess(search);
+
+  useEffect(() => {
+    console.log(createNew);
+    if (!createNew) {
+      setSelected(null);
+      setSearch('');
+    }
+  }, [createNew]);
 
   return (
     <Autocomplete

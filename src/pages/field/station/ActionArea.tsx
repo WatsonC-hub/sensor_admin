@@ -30,7 +30,6 @@ export default function ActionArea({isCalculated, ts_id, stamdata}: ActionAreaPr
       setShowForm(null);
     }
   };
-  console.log(ts_id);
   const navigationItems = [];
   if (ts_id.toString() !== '' || !stamdata) {
     navigationItems.push(

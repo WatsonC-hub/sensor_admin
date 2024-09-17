@@ -10,7 +10,7 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -83,7 +83,14 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<Maalepunkt>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.TABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>

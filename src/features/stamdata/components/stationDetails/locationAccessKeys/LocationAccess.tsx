@@ -148,7 +148,7 @@ const LocationAccess = () => {
                 >
                   <DialogTitle id="form-dialog-title">Vælg nøgle eller kode</DialogTitle>
                   <DialogContent>
-                    <SelectLocationAccess loc_id={loc_id} />
+                    <SelectLocationAccess loc_id={loc_id} createNew={createNew} />
                     <Grid item my={1}>
                       <Divider
                         sx={{bgcolor: 'primary.main', paddingTop: 0.1, paddingBottom: 0.1}}

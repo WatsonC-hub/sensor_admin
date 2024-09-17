@@ -9,6 +9,7 @@ import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import {StationPages} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import ActionArea from '~/pages/field/station/ActionArea';
@@ -28,6 +29,7 @@ export default function Station({ts_id, stamdata}) {
   const [dataUri, setdataUri] = useState('');
   const [openSave, setOpenSave] = useState(false);
   const {createStamdata} = useNavigationFunctions();
+  const {isMobile} = useBreakpoints();
   const [activeImage, setActiveImage] = useState({
     gid: -1,
     type: params.locid,
@@ -128,6 +130,7 @@ export default function Station({ts_id, stamdata}) {
               display: 'flex',
               flexDirection: 'column',
               maxWidth: '1080px',
+              width: isMobile ? '100%' : '',
               alignSelf: 'center',
             }}
           >

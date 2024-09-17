@@ -151,11 +151,14 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
               <Button
                 bttype="primary"
                 onClick={() => {
-                  createNew ? reset(initialContactData) : '';
+                  if (createNew) {
+                    reset(initialContactData);
+                    setSelectedContactInfo(null);
+                  }
                   setCreateNew(!createNew);
                 }}
               >
-                {createNew ? 'Annuller' : 'Påbegynd'} oprettelse af kontakt
+                {createNew ? 'Annuller oprettelse af' : 'Opret'} kontakt
               </Button>
             </Grid>
             <Grid item xs={12} sm={12}>

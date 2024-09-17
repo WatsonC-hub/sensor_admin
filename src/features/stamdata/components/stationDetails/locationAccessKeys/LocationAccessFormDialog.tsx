@@ -21,7 +21,7 @@ type Props = {
 
 const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreateNew}: Props) => {
   const {control, watch} = useFormContext<AdgangsForhold>();
-  const {reset} = useFormContext<AdgangsForhold>();
+  const {reset, setValue} = useFormContext<AdgangsForhold>();
 
   const {
     get_all: {data: contacts},
@@ -38,7 +38,10 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
             <Button
               bttype="primary"
               onClick={() => {
-                createNew ? reset(initialLocationAccessData) : '';
+                if (createNew) {
+                  reset(initialLocationAccessData);
+                  setValue('id', null);
+                }
                 setCreateNew && setCreateNew(!createNew);
               }}
             >

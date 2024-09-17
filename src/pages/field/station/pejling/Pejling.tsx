@@ -2,7 +2,7 @@ import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';
@@ -26,7 +26,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
-
   const initialData = {
     gid: -1,
     timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
@@ -37,6 +36,9 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const formMethods = useForm<PejlingItem>({
     defaultValues: initialData,
   });
+  // /latest_measurement/{ts_id}
+
+  const {reset, getValues} = formMethods;
 
   const handlePejlingSubmit = (values: PejlingItem) => {
     console.log(values);
@@ -58,7 +60,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
 
   const handleEdit = (data: PejlingItem) => {
     data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-    formMethods.reset(data);
+    reset(data);
     setShowForm('true');
   };
 
@@ -76,12 +78,12 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   };
 
   const resetFormData = () => {
-    formMethods.reset(initialData);
+    reset(initialData);
     setShowForm(null);
   };
 
   useEffect(() => {
-    if (showForm && formMethods.getValues('gid') === -1) formMethods.reset(initialData);
+    if (showForm && getValues('gid') === -1) reset(initialData);
   }, [showForm]);
 
   useEffect(() => {
@@ -100,7 +102,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
       visible={showForm === null ? 'visible' : 'hidden'}
     >
       <FormProvider {...formMethods}>
-        <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+        <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
           {showForm === 'true' && (
             <PejlingForm
               isWaterlevel={isWaterlevel}
@@ -115,6 +117,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             canEdit={canEdit}
+            ts_id={ts_id}
           />
         </Box>
       </FormProvider>

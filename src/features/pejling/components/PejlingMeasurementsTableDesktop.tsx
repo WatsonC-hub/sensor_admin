@@ -6,7 +6,7 @@ import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle, correction_map} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -88,10 +88,17 @@ export default function PejlingMeasurementsTableDesktop({
     },
   };
 
-  const table = useTable<PejlingItem>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<PejlingItem>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.TABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
-    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
+    <Box sx={setTableBoxStyle(isTablet ? 496 : 696)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

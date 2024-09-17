@@ -79,7 +79,7 @@ export const useRessourcer = (loc_id: number | undefined) => {
       queryClient.invalidateQueries({
         queryKey: ['ressourcer', loc_id],
       });
-      toast.success('Ressourcer gemt');
+      toast.success('Huskeliste gemt');
     },
   });
 
@@ -92,14 +92,14 @@ export const useRessourcer = (loc_id: number | undefined) => {
       queryClient.invalidateQueries({
         queryKey: ['ressourcer', loc_id],
       });
-      toast.success('Ressourcer ændret');
+      toast.success('Huskeliste ændret');
     },
   });
 
   const del = useMutation({
     ...ressourcerDelOptions,
     onSuccess: () => {
-      toast.success('Ressourcer slettet');
+      toast.success('Huskeliste slettet');
       queryClient.invalidateQueries({
         queryKey: ['ressourcer'],
       });

@@ -289,3 +289,14 @@ export type BatteryStatusType = {
   startdate: string;
   enddate: string;
 };
+
+export type LatestMeasurement = {
+  timeofmeas: string;
+  rawMeasurement: number;
+  measurement: number;
+};
+
+export type LatestCalculatedMeasurement = {
+  timeofmeas: string;
+  measurement: number;
+};

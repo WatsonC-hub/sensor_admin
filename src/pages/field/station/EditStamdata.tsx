@@ -508,8 +508,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     unit: {
       ...metadata,
       gid: -1,
-      startdate: metadata.startdato,
-      enddate: metadata.slutdato,
+      startdate: metadata && metadata.startdato,
+      enddate: metadata && metadata.slutdato,
     },
   });
 
