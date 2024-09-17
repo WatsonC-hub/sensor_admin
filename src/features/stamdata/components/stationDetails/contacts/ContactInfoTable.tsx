@@ -154,7 +154,7 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     renderEditRowDialogContent: () => {
       return (
         <Box py={4} px={2} boxShadow={6}>
-          <StationContactInfo modal={true} isUser={true} tableModal={true} />
+          <StationContactInfo isEditing={true} isUser={true} tableModal={true} />
         </Box>
       );
     },
@@ -224,7 +224,7 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
       >
         <DialogTitle id="form-dialog-title">Ændre kontakt information</DialogTitle>
         <DialogContent>
-          <StationContactInfo modal={true} isUser={isUser} />
+          <StationContactInfo isEditing={true} isUser={isUser} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} bttype="tertiary">

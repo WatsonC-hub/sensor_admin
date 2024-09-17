@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid} from '@mui/material';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {useParams} from 'react-router-dom';
 
@@ -24,6 +24,7 @@ const LocationAccess = () => {
   const {isTablet} = useBreakpoints();
   const params = useParams();
   const loc_id = parseInt(params.locid!);
+  const [createNew, setCreateNew] = useState<boolean>(false);
 
   const {
     get: {data: locationAccess},
@@ -38,12 +39,13 @@ const LocationAccess = () => {
     mode: 'onSubmit',
   });
 
-  const {clearErrors, handleSubmit, reset} = formMethods;
+  const {clearErrors, handleSubmit, reset, watch} = formMethods;
 
   const handleClose = () => {
     reset(initialLocationAccessData);
     clearErrors();
     setOpenDialog(false);
+    setCreateNew(false);
   };
 
   const handleSave: SubmitHandler<AdgangsForhold> = async (values) => {
@@ -64,6 +66,7 @@ const LocationAccess = () => {
       onSuccess: () => {
         reset();
         setOpenDialog(false);
+        setCreateNew(false);
       },
     });
   };
@@ -77,11 +80,6 @@ const LocationAccess = () => {
   };
 
   const handleEdit = async (locationAccess: AccessTable) => {
-    // const contact = locationAccess.contact_id;
-    // let id = '';
-    // if (typeof contact === 'string') id = contact;
-    // else if (typeof contact === 'object' && contact.id) id = contact.id;
-
     const payload = {
       path: `${locationAccess.id}`,
       data: {
@@ -101,6 +99,18 @@ const LocationAccess = () => {
       },
     });
   };
+
+  const id = watch('id');
+
+  useEffect(() => {
+    if (id) {
+      console.log(id);
+      setCreateNew(true);
+    } else {
+      setCreateNew(false);
+    }
+  }, [id]);
+
   return (
     <Grid container spacing={1} my={1} justifyContent="center" alignItems="center">
       <FormProvider {...formMethods}>
@@ -129,35 +139,41 @@ const LocationAccess = () => {
               />
             </Grid>
             <Grid item xs={12} sm={12}>
-              <Dialog
-                open={openDialog}
-                onClose={handleClose}
-                aria-labelledby="form-dialog-title"
-                fullWidth
-              >
-                <DialogTitle id="form-dialog-title">Vælg nøgle eller kode</DialogTitle>
-                <DialogContent>
-                  <SelectLocationAccess loc_id={loc_id} />
-                  <Grid item my={1}>
-                    <Divider
-                      sx={{bgcolor: 'secondary.light', paddingTop: 0.1, paddingBottom: 0.1}}
+              {openDialog && (
+                <Dialog
+                  open={openDialog}
+                  onClose={handleClose}
+                  aria-labelledby="form-dialog-title"
+                  fullWidth
+                >
+                  <DialogTitle id="form-dialog-title">Vælg nøgle eller kode</DialogTitle>
+                  <DialogContent>
+                    <SelectLocationAccess loc_id={loc_id} />
+                    <Grid item my={1}>
+                      <Divider
+                        sx={{bgcolor: 'primary.main', paddingTop: 0.1, paddingBottom: 0.1}}
+                      />
+                    </Grid>
+                    <LocationAccessFormDialog
+                      loc_id={loc_id}
+                      createNew={createNew}
+                      setCreateNew={setCreateNew}
                     />
-                  </Grid>
-                  <LocationAccessFormDialog loc_id={loc_id} />
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClose} bttype="tertiary">
-                    Annuller
-                  </Button>
-                  <Button
-                    onClick={handleSubmit(handleSave, (error) => console.log(error))}
-                    bttype="primary"
-                    startIcon={<Save />}
-                  >
-                    Gem
-                  </Button>
-                </DialogActions>
-              </Dialog>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} bttype="tertiary">
+                      Annuller
+                    </Button>
+                    <Button
+                      onClick={handleSubmit(handleSave, (error) => console.log(error))}
+                      bttype="primary"
+                      startIcon={<Save />}
+                    >
+                      Gem
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              )}
             </Grid>
           </>
         )}

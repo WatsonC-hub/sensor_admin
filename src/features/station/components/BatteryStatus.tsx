@@ -35,6 +35,15 @@ const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
   let icon;
   let tooltipText = '';
 
+  const currentDate = moment();
+  const estimatedDate = moment(battery_status?.estimated_no_battery);
+
+  const years = estimatedDate.diff(currentDate, 'years');
+  currentDate.add(years, 'years');
+  const months = estimatedDate.diff(currentDate, 'months');
+  currentDate.add(months, 'months');
+  const days = estimatedDate.diff(currentDate, 'days');
+
   if (
     battery_status &&
     (battery_status.battery_percentage == null ||
@@ -45,8 +54,26 @@ const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
     icon = <BatteryAlert />;
   }
 
+  let text = '';
+  if (years !== 0) {
+    text += years + ' år';
+  }
+
+  let monthText = 'måned';
+  if (months > 1) monthText = 'måneder';
+  if (months !== 0 && days === 0) {
+    text += ' og ' + months + ' måeneder';
+  } else if (months !== 0) {
+    text += ' ' + months + ' ' + monthText;
+  }
+
+  let dayText = 'dag';
+  if (days > 1) dayText = 'dage';
+  if (days !== 0) {
+    text += ' og ' + days + ' ' + dayText;
+  }
   if (battery_status && battery_status.battery_percentage !== null) {
-    tooltipText = Math.trunc(battery_status.battery_percentage * 100).toString() + '%';
+    tooltipText = 'Estimeret levetid: ' + text;
     switch (true) {
       case battery_status.battery_percentage < 0.142:
         icon = <Battery1Bar />;
@@ -71,9 +98,8 @@ const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
     }
   }
 
-  console.log(battery_status);
   return (
-    <div>
+    <div style={{height: 24}}>
       {battery_status && (
         <Tooltip arrow title={tooltipText} enterTouchDelay={0}>
           {icon!}

@@ -8,6 +8,7 @@ import {
   Grid,
   Typography,
   Divider,
+  Collapse,
 } from '@mui/material';
 import React, {useContext, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
@@ -35,6 +36,8 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const {reset, handleSubmit} = useFormContext<InferContactInfo>();
   const metadata = useContext(MetadataContext);
   const loc_id: number | undefined = metadata?.loc_id;
+  const [createNew, setCreateNew] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const {useSearchContact, post: postContact} = useContactInfo(loc_id);
 
@@ -43,6 +46,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const handleClose = () => {
     reset(initialContactData);
     setSelectedContactInfo(null);
+    setCreateNew(false);
     setOpen(false);
   };
 
@@ -65,6 +69,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
       onSuccess: () => {
         reset();
         setSelectedContactInfo(null);
+        setCreateNew(false);
       },
     });
 
@@ -85,11 +90,13 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                   if (option == null) {
                     setSelectedContactInfo(null);
                     reset(initialContactData);
+                    setCreateNew(false);
                     return;
                   }
                   if ('id' in option) {
                     console.log(option);
                     setSelectedContactInfo(option);
+                    setCreateNew(true);
                     reset({
                       ...option,
                       telefonnummer: option.telefonnummer ? parseInt(option.telefonnummer) : null,
@@ -138,15 +145,29 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
               />
             </Grid>
             <Grid item mt={1}>
-              <Divider sx={{bgcolor: 'secondary.light', paddingTop: 0.1, paddingBottom: 0.1}} />
+              <Divider
+                sx={{bgcolor: 'primary.main', paddingTop: 0.1, paddingBottom: 0.1, marginBottom: 1}}
+              />
+              <Button
+                bttype="primary"
+                onClick={() => {
+                  createNew ? reset(initialContactData) : '';
+                  setCreateNew(!createNew);
+                }}
+              >
+                {createNew ? 'Annuller' : 'Påbegynd'} oprettelse af kontakt
+              </Button>
             </Grid>
             <Grid item xs={12} sm={12}>
-              <StationContactInfo
-                modal={false}
-                isUser={
-                  selectedContactInfo && selectedContactInfo.org && selectedContactInfo.org !== ''
-                }
-              />
+              <Collapse in={createNew}>
+                <StationContactInfo
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing}
+                  isUser={
+                    selectedContactInfo && selectedContactInfo.org && selectedContactInfo.org !== ''
+                  }
+                />
+              </Collapse>
             </Grid>
           </DialogContent>
           <DialogActions>

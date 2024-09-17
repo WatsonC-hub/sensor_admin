@@ -6,9 +6,7 @@ const contact_info = z.object({
   id: z.string().nullish(),
   navn: z.string({required_error: 'Navn på kontakten skal udfyldes'}),
   telefonnummer: z.number().nullish(),
-  email: z
-    .string({required_error: 'Email feltet skal udfyldes'})
-    .email('Det skal være en valid email'),
+  email: z.union([z.string().email('Det skal være en valid email'), z.literal('')]),
   comment: z.string().optional(),
   contact_role: z.number().gt(-1, 'Der skal vælges en værdi fra listen'),
   user_id: z.string().nullish(),

@@ -1,5 +1,7 @@
-import {MenuItem, Grid} from '@mui/material';
+import {Call} from '@mui/icons-material';
+import {MenuItem, Grid, InputAdornment, IconButton} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
@@ -9,7 +11,8 @@ import {ContactInfoType} from '~/helpers/EnumHelper';
 import {InferContactInfo} from '../zodSchemas';
 
 interface ModalProps {
-  modal: boolean;
+  isEditing: boolean;
+  setIsEditing?: (isEditing: boolean) => void;
   tableModal?: boolean;
   isUser: boolean;
 }
@@ -20,9 +23,14 @@ type ContactRole = {
   default_type?: 'lokation' | 'projekt';
 };
 
-export default function StationContactInfo({modal, isUser, tableModal = false}: ModalProps) {
-  const {setValue} = useFormContext<InferContactInfo>();
-
+export default function StationContactInfo({
+  isEditing,
+  setIsEditing,
+  isUser,
+  tableModal = false,
+}: ModalProps) {
+  const {setValue, getValues, watch} = useFormContext<InferContactInfo>();
+  const regEx = new RegExp(/(?:(?:00|\+)?45)?\d{8}/);
   const {data: contactRoles} = useQuery({
     queryKey: ['contact_roles'],
     queryFn: async () => {
@@ -34,6 +42,16 @@ export default function StationContactInfo({modal, isUser, tableModal = false}: 
     },
   });
 
+  const id = setIsEditing && watch('id');
+  const telefonnummer = watch('telefonnummer');
+
+  useEffect(() => {
+    if (setIsEditing) {
+      if (id) setIsEditing(true);
+      else setIsEditing(false);
+    }
+  }, [id]);
+
   return (
     <Grid container spacing={1} my={1}>
       <Grid item xs={12} sm={6}>
@@ -43,7 +61,7 @@ export default function StationContactInfo({modal, isUser, tableModal = false}: 
           placeholder="Navn på kontakten..."
           required
           fullWidth
-          disabled={modal || isUser}
+          disabled={isEditing || isUser}
           sx={{
             mb: 2,
           }}
@@ -55,9 +73,8 @@ export default function StationContactInfo({modal, isUser, tableModal = false}: 
           label="Email"
           placeholder="Email på kontakten..."
           type={'email'}
-          required
           fullWidth
-          disabled={modal || isUser}
+          disabled={isEditing || isUser}
           sx={{
             mb: 2,
           }}
@@ -70,7 +87,21 @@ export default function StationContactInfo({modal, isUser, tableModal = false}: 
           placeholder="Telefonnummer..."
           type={'number'}
           fullWidth
-          disabled={modal || isUser}
+          disabled={isEditing || isUser}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  disabled={!telefonnummer || !regEx.test(telefonnummer.toString())}
+                  onClick={() => {
+                    window.location.href = `tel:${getValues('telefonnummer')}`;
+                  }}
+                >
+                  <Call />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
           sx={{
             mb: 2,
           }}
