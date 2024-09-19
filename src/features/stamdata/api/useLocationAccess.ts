@@ -70,12 +70,12 @@ export const useLocationAccess = (loc_id: number | undefined) => {
         let data;
         if (searchString === '') {
           const response = await apiClient.get<Array<Access>>(
-            `/sensor_field/stamdata/relevant_location_access/${loc_id}`
+            `/sensor_field/stamdata/location_access/relevant_location_access/${loc_id}`
           );
           data = response.data;
         } else {
           const response = await apiClient.get<Array<Access>>(
-            `/sensor_field/stamdata/search_location_access/${loc_id}/${searchString}`
+            `/sensor_field/stamdata/location_access/search_location_access/${loc_id}/${searchString}`
           );
           data = response.data;
         }

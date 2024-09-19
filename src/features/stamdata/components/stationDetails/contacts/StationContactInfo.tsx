@@ -35,7 +35,7 @@ export default function StationContactInfo({
     queryKey: ['contact_roles'],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<ContactRole>>(
-        `/sensor_field/stamdata/contact_roles`
+        `/sensor_field/stamdata/contact/contact_roles`
       );
 
       return data;
