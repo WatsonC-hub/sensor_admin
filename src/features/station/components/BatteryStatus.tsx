@@ -8,12 +8,13 @@ import {
   BatteryAlert,
   BatteryFull,
 } from '@mui/icons-material';
-import {Tooltip} from '@mui/material';
+import {Box, Tooltip} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import React from 'react';
 
 import {apiClient} from '~/apiClient';
+import BatteryIndicator from '~/components/BatteryIndicator';
 import {BatteryStatusType} from '~/types';
 
 type BatteryStatusProps = {
@@ -32,7 +33,6 @@ const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== '',
   });
 
-  let icon;
   let tooltipText = '';
 
   const currentDate = moment();
@@ -51,7 +51,6 @@ const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
       moment(battery_status.enddate).toISOString() <= moment().toISOString())
   ) {
     tooltipText = 'Batteri status er ikke tilgængeligt';
-    icon = <BatteryAlert />;
   }
 
   let text = '';
@@ -62,50 +61,25 @@ const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
   let monthText = 'måned';
   if (months > 1) monthText = 'måneder';
   if (months !== 0 && days === 0) {
-    text += ' og ' + months + ' måeneder';
+    text += ' og ' + months + ' måneder';
   } else if (months !== 0) {
     text += ' ' + months + ' ' + monthText;
   }
 
-  let dayText = 'dag';
-  if (days > 1) dayText = 'dage';
-  if (days !== 0) {
-    text += ' og ' + days + ' ' + dayText;
-  }
-  if (battery_status && battery_status.battery_percentage !== null) {
-    tooltipText = 'Estimeret levetid: ' + text;
-    switch (true) {
-      case battery_status.battery_percentage < 0.142:
-        icon = <Battery1Bar />;
-        break;
-      case battery_status.battery_percentage < 0.285:
-        icon = <Battery2Bar />;
-        break;
-      case battery_status.battery_percentage < 0.428:
-        icon = <Battery3Bar />;
-        break;
-      case battery_status.battery_percentage < 0.571:
-        icon = <Battery4Bar />;
-        break;
-      case battery_status.battery_percentage < 0.714:
-        icon = <Battery5Bar />;
-        break;
-      case battery_status.battery_percentage < 0.857:
-        icon = <Battery6Bar />;
-        break;
-      default:
-        icon = <BatteryFull />;
-    }
+  if (battery_status?.battery_percentage != null) {
+    tooltipText = `Procent: ${(battery_status?.battery_percentage * 100).toFixed()} %\nEstimeret levetid: ${text}`;
   }
 
   return (
-    <div style={{height: 24}}>
+    <>
       {battery_status && (
-        <Tooltip arrow title={tooltipText} enterTouchDelay={0}>
-          {icon!}
+        <Tooltip arrow title={<Box whiteSpace="pre-line">{tooltipText}</Box>} enterTouchDelay={0}>
+          <Box height="24px">
+            <BatteryIndicator percentage={(battery_status.battery_percentage ?? 0) * 100} />
+          </Box>
         </Tooltip>
       )}
-    </div>
+    </>
   );
 };
 
