@@ -30,12 +30,11 @@ export default function PejlingMeasurements({
   const {data: latestMeasurement} = useQuery({
     queryKey: ['latest_measurement', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<LatestMeasurement>(
-        `/sensor_field/station/latest_measurement/${ts_id}`
-      );
-      // .catch((error) => {
-      //   return error.response;
-      // });
+      const {data} = await apiClient
+        .get<LatestMeasurement>(`/sensor_field/station/latest_measurement/${ts_id}`)
+        .catch((error) => {
+          return error.response;
+        });
       console.log(data);
       return data;
     },
