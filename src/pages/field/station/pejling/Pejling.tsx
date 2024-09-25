@@ -2,7 +2,7 @@ import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';

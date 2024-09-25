@@ -5,6 +5,7 @@ import {
   MRT_ExpandButton,
   MaterialReactTable,
 } from 'material-react-table';
+import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -21,6 +22,7 @@ interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
+  error?: string;
 }
 
 export default function PejlingMeasurementsTableMobile({
@@ -28,6 +30,7 @@ export default function PejlingMeasurementsTableMobile({
   handleEdit,
   handleDelete,
   canEdit,
+  error,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
@@ -93,6 +96,7 @@ export default function PejlingMeasurementsTableMobile({
   );
 
   const options: Partial<MRT_TableOptions<PejlingItem>> = {
+    localization: error ? {noRecordsToDisplay: error} : MRT_Localization_DA,
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         {row.original.comment && (

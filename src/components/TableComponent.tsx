@@ -26,10 +26,9 @@ interface TableComponentProps {
 const TableComponent = ({data, columns, ...rest}: TableComponentProps) => {
   const [stateAndHandlers, resetState] = useStatefullTableAtom('testtable');
   const {isTouch} = useBreakpoints();
-
   const table = useMaterialReactTable({
     columns,
-    data,
+    data: data ?? [],
     ...rest,
     localization: MRT_Localization_DA,
     ...stateAndHandlers,

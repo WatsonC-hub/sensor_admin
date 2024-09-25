@@ -153,7 +153,7 @@ const AlgorithmCard = ({algorithm}) => {
             Tilbage til standard
           </Button>
           <Button
-            bttype="secondary"
+            bttype="primary"
             onClick={formMethods.handleSubmit(handleSubmit)}
             disabled={
               submitData.isLoading || revertToDefaults.isLoading || !formMethods.formState.isDirty

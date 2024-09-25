@@ -17,7 +17,7 @@ import React, {useMemo} from 'react';
 import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight} from '~/consts';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -308,7 +308,14 @@ export default function StationTable({data}: Props) {
     // }),
   };
 
-  const table = useTable<TableData>(columns, data, options, tableState, TableTypes.STATIONTABLE);
+  const table = useTable<TableData>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.STATIONTABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box

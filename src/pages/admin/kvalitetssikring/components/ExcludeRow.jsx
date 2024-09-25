@@ -2,12 +2,13 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Button, Divider, Grid, Typography} from '@mui/material';
+import {Box, Divider, Grid, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
+import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useExclude} from '~/hooks/query/useExclude';
@@ -70,7 +71,6 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
       <Box
         key={index}
         display="flex"
-        justifyContent="space-between"
         flexDirection={'row'}
         alignItems="center"
         border={1}
@@ -78,90 +78,103 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
         borderColor="grey.500"
         p={1}
       >
-        <Grid container width="70%">
-          <Grid item xs={12} sm={12}>
-            <Typography>Tidsinterval:</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormInput
-              name="startdate"
-              label="Fra"
-              fullWidth
-              type="datetime-local"
-              required
-              disabled={!editMode}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormInput
-              name="enddate"
-              label="Til"
-              fullWidth
-              type="datetime-local"
-              required
-              disabled={!editMode}
-            />
+        <Grid container gap={1}>
+          <Grid item xs={12} sm={12} alignSelf={'center'}>
+            <Box
+              alignItems={'center'}
+              alignSelf={'center'}
+              display="flex"
+              flexDirection="row"
+              gap={1}
+            >
+              <Typography>Tidsinterval:</Typography>
+              <FormInput
+                name="startdate"
+                label="Fra"
+                type="datetime-local"
+                fullWidth
+                required
+                disabled={!editMode}
+              />
+              -
+              <FormInput
+                name="enddate"
+                label="Til"
+                type="datetime-local"
+                fullWidth
+                required
+                disabled={!editMode}
+              />
+            </Box>
           </Grid>
           {isWithYValues && (
             <>
-              <Grid item xs={12} sm={6}>
-                <FormInput
-                  name="min_value"
-                  label="Min værdi"
-                  fullWidth
-                  type="number"
-                  required
-                  disabled={!editMode}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormInput
-                  name="max_value"
-                  label="Max værdi"
-                  fullWidth
-                  type="number"
-                  required
-                  disabled={!editMode}
-                />
+              <Grid item xs={12} sm={12}>
+                <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
+                  <FormInput
+                    name="min_value"
+                    label="Min værdi"
+                    fullWidth
+                    type="number"
+                    required
+                    style={{alignSelf: 'center'}}
+                    disabled={!editMode}
+                  />
+                  -
+                  <FormInput
+                    name="max_value"
+                    label="Max værdi"
+                    fullWidth
+                    type="number"
+                    required
+                    disabled={!editMode}
+                  />
+                </Box>
               </Grid>
             </>
           )}
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={12}>
             <FormInput name="comment" label="Kommentar" multiline rows={2} disabled={!editMode} />
           </Grid>
-        </Grid>
-        <Box display="flex" flexDirection="column" gap={1} minWidth="97.02px">
-          {editMode ? (
-            <Button
-              color="success"
-              variant="contained"
-              size="small"
-              onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
-              startIcon={<SaveIcon />}
-            >
-              Gem
-            </Button>
-          ) : (
-            <Button
-              color="secondary"
-              variant="contained"
-              size="small"
-              onClick={() => setEditMode(true)}
-              startIcon={<EditIcon />}
-            >
-              Rediger
-            </Button>
-          )}
-          <Button
-            color="error"
-            variant="contained"
-            size="small"
-            onClick={() => setConfirmDelete(true)}
-            startIcon={<DeleteIcon />}
+          <Grid
+            item
+            xs={12}
+            sm={12}
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'end'}
           >
-            Slet
-          </Button>
-        </Box>
+            <Box display="flex" flexDirection="row" alignSelf={'end'} gap={1}>
+              <Button
+                bttype="tertiary"
+                size="small"
+                onClick={() => setConfirmDelete(true)}
+                startIcon={<DeleteIcon />}
+              >
+                Slet
+              </Button>
+              {editMode ? (
+                <Button
+                  bttype="primary"
+                  size="small"
+                  onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
+                  startIcon={<SaveIcon />}
+                >
+                  Gem
+                </Button>
+              ) : (
+                <Button
+                  bttype="primary"
+                  size="small"
+                  onClick={() => setEditMode(true)}
+                  startIcon={<EditIcon />}
+                >
+                  Rediger
+                </Button>
+              )}
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
       <Divider
         sx={{

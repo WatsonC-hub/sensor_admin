@@ -292,11 +292,6 @@ export type BatteryStatusType = {
 
 export type LatestMeasurement = {
   timeofmeas: string;
-  rawMeasurement: number;
-  measurement: number;
-};
-
-export type LatestCalculatedMeasurement = {
-  timeofmeas: string;
+  rawMeasurement: number | null;
   measurement: number;
 };

@@ -26,6 +26,8 @@ export default function QAHistory() {
     refetchOnMount: false,
   });
 
+  console.log(data);
+
   if (isLoading)
     return (
       <Box>

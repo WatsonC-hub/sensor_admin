@@ -2,19 +2,22 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Button, Divider, Grid, Typography} from '@mui/material';
+import {Box, Divider, Grid} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
+import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const YRangeRow = ({data, index}) => {
   const [editMode, setEditMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const {post, del} = useYRangeMutations();
+  const {isMobile} = useBreakpoints();
 
   const schema = z.object({
     mincutoff: z.number(),
@@ -55,19 +58,15 @@ const YRangeRow = ({data, index}) => {
         key={index}
         display="flex"
         justifyContent="space-between"
-        flexDirection={'row'}
+        flexDirection={isMobile ? 'column' : 'row'}
         alignItems="center"
         border={1}
         borderRadius={1}
         borderColor="grey.500"
         p={1}
       >
-        <Grid container width="70%">
-          <Grid item xs={12} sm={12}>
-            <Typography>Tidsinterval:</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
+        <Grid container width="70%" gap={1}>
+          <Grid item xs={12} sm={5}>
             <FormInput
               name="mincutoff"
               label="Nedre grænse"
@@ -77,7 +76,7 @@ const YRangeRow = ({data, index}) => {
               disabled={!editMode}
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={5}>
             <FormInput
               name="maxcutoff"
               label="Øvre grænse"
@@ -88,11 +87,18 @@ const YRangeRow = ({data, index}) => {
             />
           </Grid>
         </Grid>
-        <Box display="flex" flexDirection="column" gap={1} minWidth="97.02px">
+        <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1} minWidth="97.02px">
+          <Button
+            bttype="tertiary"
+            size="small"
+            onClick={() => setConfirmDelete(true)}
+            startIcon={<DeleteIcon />}
+          >
+            Slet
+          </Button>
           {editMode ? (
             <Button
-              color="success"
-              variant="contained"
+              bttype="primary"
               size="small"
               onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
               startIcon={<SaveIcon />}
@@ -101,8 +107,7 @@ const YRangeRow = ({data, index}) => {
             </Button>
           ) : (
             <Button
-              color="secondary"
-              variant="contained"
+              bttype="primary"
               size="small"
               onClick={() => setEditMode(true)}
               startIcon={<EditIcon />}
@@ -110,15 +115,6 @@ const YRangeRow = ({data, index}) => {
               Rediger
             </Button>
           )}
-          <Button
-            color="error"
-            variant="contained"
-            size="small"
-            onClick={() => setConfirmDelete(true)}
-            startIcon={<DeleteIcon />}
-          >
-            Slet
-          </Button>
         </Box>
       </Box>
       <Divider />

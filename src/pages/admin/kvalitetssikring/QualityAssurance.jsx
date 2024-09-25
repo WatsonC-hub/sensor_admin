@@ -7,7 +7,6 @@ import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
-import HandleNowButton from '~/pages/admin/kvalitetssikring/components/HandleNowButton';
 import QAGraph from '~/pages/admin/kvalitetssikring/QAGraph';
 import QAHistory from '~/pages/admin/kvalitetssikring/QAHistory';
 import {MetadataContext} from '~/state/contexts';
@@ -52,17 +51,15 @@ const QualityAssurance = () => {
           {!isTouch && (
             <>
               <Grid item xs={12} sm={2} pl={1}>
-                {/* <AnnotationConfiguration stationId={params.ts_id} /> */}
                 <DataToShow />
+                {/* <AnnotationConfiguration stationId={params.ts_id} /> */}
               </Grid>
-              <Grid item xs={12} sm={6} pr={1}>
-                <Typography variant="h6">Datajusteringer</Typography>
-                <QAHistory />
-              </Grid>
+
               <Grid item xs={12} md={6}>
-                <Box display="flex" gap={1}>
-                  <Typography variant="h6">Detektionsalgoritmer</Typography>
-                  <HandleNowButton />
+                <Box mx={1} display="flex" gap={1}>
+                  <Typography alignSelf={'center'} variant="h6">
+                    Detektionsalgoritmer
+                  </Typography>
                 </Box>
                 <Algorithms />
               </Grid>
@@ -90,7 +87,6 @@ const QualityAssurance = () => {
             </TabPanel>
 
             <TabPanel value={tabValue} index={2}>
-              <HandleNowButton />
               <Algorithms />
             </TabPanel>
           </>

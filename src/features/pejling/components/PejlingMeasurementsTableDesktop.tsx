@@ -1,5 +1,6 @@
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
+import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
@@ -19,6 +20,7 @@ interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
+  error?: string;
 }
 
 export default function PejlingMeasurementsTableDesktop({
@@ -26,6 +28,7 @@ export default function PejlingMeasurementsTableDesktop({
   handleEdit,
   handleDelete,
   canEdit,
+  error,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
@@ -71,6 +74,7 @@ export default function PejlingMeasurementsTableDesktop({
   const [tableState, reset] = useStatefullTableAtom<PejlingItem>('PejlingTableState');
 
   const options: Partial<MRT_TableOptions<PejlingItem>> = {
+    localization: error ? {noRecordsToDisplay: error} : MRT_Localization_DA,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions

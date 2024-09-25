@@ -12,7 +12,6 @@ import {
   AppBar,
   Badge,
   Box,
-  Button,
   IconButton,
   ListItemIcon,
   Menu,
@@ -39,6 +38,8 @@ import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
+
+import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const [resetState] = authStore((state) => [state.resetState]);
@@ -166,7 +167,7 @@ export const NavBarMenu = ({
   return (
     <>
       {highligtFirst && items != undefined && items.length > 0 && (
-        <Button variant="contained" onClick={items?.[0].onClick} startIcon={items?.[0].icon}>
+        <Button bttype={'primary'} onClick={items?.[0].onClick} startIcon={items?.[0].icon}>
           {items?.[0].title}
         </Button>
       )}

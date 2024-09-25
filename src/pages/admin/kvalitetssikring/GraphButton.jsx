@@ -1,8 +1,10 @@
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {Box, Button, Tooltip} from '@mui/material';
+import {Box, Tooltip} from '@mui/material';
 import React from 'react';
 
-const GraphButton = ({onClick, icon, disabled, children, infotext, enableTooltip}) => {
+import Button from '~/components/Button';
+
+const GraphButton = ({onClick, icon, disabled, children, infotext, enableTooltip, bttype}) => {
   const showTooltip = enableTooltip === undefined ? !disabled : enableTooltip;
   return (
     <Box
@@ -15,7 +17,7 @@ const GraphButton = ({onClick, icon, disabled, children, infotext, enableTooltip
     >
       <Button
         startIcon={icon}
-        color="primary"
+        bttype={bttype}
         variant="contained"
         onClick={onClick}
         disabled={disabled}

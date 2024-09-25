@@ -19,12 +19,16 @@ const Algorithms = () => {
 
   return (
     <>
-      <Grid container sx={{borderRadius: 2, border: 2, borderColor: 'primary.main'}}>
-        {data?.map((algorithm) => (
+      <Grid
+        container
+        sx={data && data.length > 0 && {borderRadius: 2, border: 2, borderColor: 'primary.main'}}
+      >
+        {/* {data?.map((algorithm) => (
           <Grid key={algorithm.name} item xs={12} sm={6}>
             <AlgorithmCard algorithm={algorithm} />
           </Grid>
-        ))}
+        ))} */}
+        {data && data.length > 0 && <AlgorithmCard algorithm={data[data.length - 1]} />}
       </Grid>
     </>
   );

@@ -10,10 +10,10 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
 import {stamdataStore} from '~/state/store';
-import {LatestCalculatedMeasurement, LatestMeasurement} from '~/types';
+import {LatestMeasurement} from '~/types';
 
 type LatestMeasurementMobileProps = {
-  latestMeasurement: Array<LatestMeasurement | LatestCalculatedMeasurement> | undefined;
+  latestMeasurement: Array<LatestMeasurement> | undefined;
   ts_id: number;
 };
 
@@ -21,7 +21,7 @@ const LatestMeasurementMobile = ({latestMeasurement, ts_id}: LatestMeasurementMo
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
-  const columns = useMemo<MRT_ColumnDef<LatestMeasurement | LatestCalculatedMeasurement>[]>(
+  const columns = useMemo<MRT_ColumnDef<LatestMeasurement>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -46,7 +46,7 @@ const LatestMeasurementMobile = ({latestMeasurement, ts_id}: LatestMeasurementMo
             </Box>
 
             <Typography margin="0 auto" color="white">
-              {'rawMeasurement' in row.original
+              {row.original.rawMeasurement
                 ? limitDecimalNumbers(row.original.rawMeasurement) + unit
                 : ' - '}
             </Typography>
@@ -76,8 +76,11 @@ const LatestMeasurementMobile = ({latestMeasurement, ts_id}: LatestMeasurementMo
     [unit, ts_id]
   );
 
-  const options: Partial<MRT_TableOptions<LatestMeasurement | LatestCalculatedMeasurement>> = {
-    localization: MRT_Localization_DA,
+  const options: Partial<MRT_TableOptions<LatestMeasurement>> = {
+    localization:
+      latestMeasurement && latestMeasurement.length > 0 && 'detail' in latestMeasurement[0]
+        ? {noRecordsToDisplay: latestMeasurement[0].detail as string}
+        : MRT_Localization_DA,
     positionExpandColumn: 'last',
     positionActionsColumn: 'last',
     enableColumnActions: false,
@@ -101,9 +104,11 @@ const LatestMeasurementMobile = ({latestMeasurement, ts_id}: LatestMeasurementMo
     },
   };
 
-  const table = useTable<LatestMeasurement | LatestCalculatedMeasurement>(
+  const table = useTable<LatestMeasurement>(
     columns,
-    latestMeasurement,
+    latestMeasurement && latestMeasurement.length > 0 && 'detail' in latestMeasurement[0]
+      ? []
+      : latestMeasurement,
     options,
     undefined,
     TableTypes.LIST,

@@ -19,11 +19,6 @@ const GraphActions = () => {
   return (
     <>
       <Box
-        bgcolor="secondary.main" // Use your secondary background color
-        borderRadius={4} // Adjust the radius as needed
-        border={2}
-        borderColor={'primary.main'}
-        padding={2} // Add padding to the toolbar
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -32,7 +27,11 @@ const GraphActions = () => {
         alignSelf={'center'}
       >
         <Tooltip
-          title={isDisabled ? 'ℹ️ Vælg punkter med værktøj først' : ''}
+          title={
+            isDisabled
+              ? 'ℹ️ Anvend først "Markere punkter" knappen før du kan bruge disse knapper'
+              : ''
+          }
           enterTouchDelay={0}
           componentsProps={{
             tooltip: {
@@ -52,22 +51,25 @@ const GraphActions = () => {
           >
             <GraphButton
               icon={<BackspaceIcon />}
+              bttype={'primary'}
               disabled={isDisabled}
               onClick={() => setOpenModal('exclude')}
-              infotext={'Marker punkter som skal fjernes fra grafen'}
+              infotext={'Brug denne knap for at fjerne de markerede punkter på grafen'}
             >
               Fjern punkter
             </GraphButton>
             <GraphButton
               disabled={isDisabled}
+              bttype={'primary'}
               icon={<DensityLargeIcon />}
               onClick={() => setOpenModal('yrange')}
-              infotext={'Brug box værktøj til at definere et y-interval som skal være gyldigt'}
+              infotext={'Brug denne knap for at markere y-intervallet som gyldigt'}
             >
               Valide værdier
             </GraphButton>
             <GraphButton
               enableTooltip={!isDisabled}
+              bttype={'primary'}
               disabled={isDisabled || !isOnlyOnePoint}
               icon={
                 <ShowChartIcon
@@ -78,7 +80,7 @@ const GraphActions = () => {
               }
               onClick={() => setOpenModal('level_correction')}
               infotext={
-                'Vælg ét punkt som bliver korrigeret til at have samme værdi som det forrige punkt'
+                'Det vælgte punkt vil blive korrigeret til at have samme værdi som det forrige punkt'
               }
             >
               Korriger spring

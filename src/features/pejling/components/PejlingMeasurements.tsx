@@ -2,13 +2,11 @@ import {Typography} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
-import {useContext} from 'react';
 
 import {apiClient} from '~/apiClient';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
 import PejlingMeasurementsTableMobile from '~/features/pejling/components/PejlingMeasurementsTableMobile';
-import {MetadataContext} from '~/state/contexts';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
 import LatestMeasurementMobile from './LatestMeasurementMobile';
@@ -29,20 +27,15 @@ export default function PejlingMeasurements({
 }: PejlingMeasurementsProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
-  const metadata = useContext(MetadataContext);
-
-  let calculated = false;
-  if (metadata && 'calculated' in metadata) calculated = metadata.calculated as boolean;
-
-  // const latestMeasurement = undefined;
   const {data: latestMeasurement} = useQuery({
     queryKey: ['latest_measurement', ts_id],
     queryFn: async () => {
-      console.log(metadata);
-      console.log(ts_id);
-      const {data} = await apiClient.get<LatestMeasurement>(
-        `/sensor_field/station/latest_measurement/${ts_id}/${calculated}`
-      );
+      const {data} = await apiClient
+        .get<LatestMeasurement>(`/sensor_field/station/latest_measurement/${ts_id}`)
+        .catch((error) => {
+          return error.response;
+        });
+      console.log(data);
       return data;
     },
     staleTime: 10,
