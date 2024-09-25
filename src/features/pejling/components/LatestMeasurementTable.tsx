@@ -36,7 +36,9 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
         header: 'Rå værdi',
         id: 'rawMeasurement',
         accessorFn: (row) =>
-          row.rawMeasurement ? limitDecimalNumbers(row.rawMeasurement) + unit : '-',
+          row.rawMeasurement && row.rawMeasurementUnit
+            ? limitDecimalNumbers(row.rawMeasurement) + ' ' + row.rawMeasurementUnit
+            : '-',
         size: 120,
       },
       {

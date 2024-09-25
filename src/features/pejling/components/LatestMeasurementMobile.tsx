@@ -46,8 +46,10 @@ const LatestMeasurementMobile = ({latestMeasurement, ts_id}: LatestMeasurementMo
             </Box>
 
             <Typography margin="0 auto" color="white">
-              {row.original.rawMeasurement
-                ? limitDecimalNumbers(row.original.rawMeasurement) + unit
+              {row.original.rawMeasurement && row.original.rawMeasurementUnit
+                ? limitDecimalNumbers(row.original.rawMeasurement) +
+                  ' ' +
+                  row.original.rawMeasurementUnit
                 : ' - '}
             </Typography>
 

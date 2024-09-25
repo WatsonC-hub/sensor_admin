@@ -294,4 +294,5 @@ export type LatestMeasurement = {
   timeofmeas: string;
   rawMeasurement: number | null;
   measurement: number;
+  rawMeasurementUnit: string | null;
 };
