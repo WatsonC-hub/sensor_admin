@@ -1,4 +1,4 @@
-import {Call} from '@mui/icons-material';
+import {Call, Email} from '@mui/icons-material';
 import {MenuItem, Grid, InputAdornment, IconButton} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useEffect} from 'react';
@@ -75,6 +75,19 @@ export default function StationContactInfo({
           type={'email'}
           fullWidth
           disabled={isEditing || isUser}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => {
+                    window.location.href = `mailto:${getValues('email')}`;
+                  }}
+                >
+                  {tableModal && <Email />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
           sx={{
             mb: 2,
           }}
@@ -97,7 +110,7 @@ export default function StationContactInfo({
                     window.location.href = `tel:${getValues('telefonnummer')}`;
                   }}
                 >
-                  <Call />
+                  {tableModal && <Call />}
                 </IconButton>
               </InputAdornment>
             ),

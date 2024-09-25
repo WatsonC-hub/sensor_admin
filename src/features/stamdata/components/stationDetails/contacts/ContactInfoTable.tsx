@@ -78,7 +78,8 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
       },
       {
         header: 'Email',
-        accessorKey: 'email',
+        id: 'email',
+        accessorFn: (row) => <a href={'mailto:' + row.email}>{row.email}</a>,
         size: 20,
         enableColumnActions: false,
       },

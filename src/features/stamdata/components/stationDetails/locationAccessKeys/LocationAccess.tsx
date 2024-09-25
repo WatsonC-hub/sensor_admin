@@ -103,7 +103,7 @@ const LocationAccess = () => {
   const id = watch('id');
 
   useEffect(() => {
-    if (id) {
+    if (id === -1) {
       console.log(id);
       setCreateNew(true);
     } else {
