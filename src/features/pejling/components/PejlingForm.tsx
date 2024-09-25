@@ -30,7 +30,7 @@ import {Maalepunkt, PejlingItem} from '~/types';
 // - Find ud af om textfield skal have grøn outline
 
 interface PejlingFormProps {
-  handleSubmit: (data: any) => void;
+  submit: (data: any) => void;
   resetFormData: () => void;
   isWaterlevel: boolean;
   isFlow: boolean;
@@ -39,7 +39,7 @@ interface PejlingFormProps {
 }
 
 export default function PejlingForm({
-  handleSubmit,
+  submit,
   resetFormData,
   isWaterlevel,
   isFlow,
@@ -51,20 +51,28 @@ export default function PejlingForm({
   const {
     get: {data: mpData},
   } = useMaalepunkt();
-  const formMethods = useFormContext<PejlingItem>();
+  const {
+    watch,
+    getValues,
+    control,
+    setError,
+    clearErrors,
+    setValue,
+    handleSubmit,
+    formState: {errors},
+  } = useFormContext<PejlingItem>();
 
   const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
 
   const [notPossible, setNotPossible] = useState(false);
   const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
-  const measurement = formMethods.watch('measurement');
-
+  const measurement = watch('measurement');
   useEffect(() => {
     if (mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
         if (
-          moment(formMethods.getValues('timeofmeas')).isSameOrAfter(elem.startdate) &&
-          moment(formMethods.getValues('timeofmeas')).isBefore(elem.enddate)
+          moment(getValues('timeofmeas')).isSameOrAfter(elem.startdate) &&
+          moment(getValues('timeofmeas')).isBefore(elem.enddate)
         ) {
           return true;
         }
@@ -78,7 +86,7 @@ export default function PejlingForm({
 
       if (tstype_id) {
         if (internalCurrentMP) {
-          const dynamicDate = formMethods.getValues('timeofmeas');
+          const dynamicDate = getValues('timeofmeas');
           const dynamicMeas = internalCurrentMP.elevation - Number(measurement);
           setDynamic([dynamicDate, dynamicMeas]);
         } else {
@@ -86,7 +94,7 @@ export default function PejlingForm({
         }
       }
     } else if (tstype_id !== 1) {
-      const dynamicDate = formMethods.getValues('timeofmeas');
+      const dynamicDate = getValues('timeofmeas');
       const dynamicMeas = Number(measurement);
       setDynamic([dynamicDate, dynamicMeas]);
     }
@@ -101,9 +109,9 @@ export default function PejlingForm({
       });
       if (mp.length > 0) {
         setCurrentMP(mp[0]);
-        formMethods.clearErrors('timeofmeas');
+        clearErrors('timeofmeas');
       } else {
-        formMethods.setError('timeofmeas', {
+        setError('timeofmeas', {
           type: 'outOfRange',
           message: 'Tidspunkt er uden for et målepunkt',
         });
@@ -113,16 +121,15 @@ export default function PejlingForm({
 
   const handleNotPossibleChange = () => {
     setNotPossible(!notPossible);
-    formMethods.setValue('measurement', 0);
+    setValue('measurement', 0);
   };
 
-  const pejlingOutOfRange = get(formMethods.formState.errors, 'timeofmeas')?.type == 'outOfRange';
+  const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
 
   return (
     <Card
       style={{marginBottom: 25}}
       sx={{
-        width: {xs: '100%', sm: '60%'},
         marginLeft: {xs: '0%'},
         textAlign: 'center',
         justifyContent: 'center',
@@ -132,7 +139,7 @@ export default function PejlingForm({
     >
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
-          {formMethods.getValues('gid') !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
+          {getValues('gid') !== -1 ? 'Opdater kontrol' : 'Indberet kontrol'}
         </Typography>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
           {isWaterlevel && mpData !== undefined && mpData.length < 1 ? (
@@ -234,7 +241,7 @@ export default function PejlingForm({
               {(isWaterlevel || isFlow) && (
                 <Grid item xs={12} sm={12}>
                   <Controller
-                    control={formMethods.control}
+                    control={control}
                     name="useforcorrection"
                     rules={{required: true}}
                     render={({field}) => {
@@ -311,11 +318,11 @@ export default function PejlingForm({
               </Button>
               <Button
                 bttype="primary"
-                onClick={formMethods.handleSubmit(handleSubmit)}
+                onClick={handleSubmit(submit)}
                 disabled={
                   pejlingOutOfRange ||
                   (isWaterlevel && currentMP === null) ||
-                  formMethods.getValues('useforcorrection').toString() == '-1'
+                  getValues('useforcorrection').toString() == '-1'
                 }
                 startIcon={<SaveIcon />}
               >

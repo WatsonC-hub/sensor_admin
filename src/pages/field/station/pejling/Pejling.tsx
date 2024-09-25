@@ -92,6 +92,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     }
   }, [ts_id]);
 
+  console.log(showForm);
   return (
     <FabWrapper
       icon={<AddCircle />}
@@ -107,7 +108,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
             <PejlingForm
               isWaterlevel={isWaterlevel}
               openAddMP={openAddMP}
-              handleSubmit={handlePejlingSubmit}
+              submit={handlePejlingSubmit}
               resetFormData={resetFormData}
               isFlow={isFlow}
               setDynamic={setDynamic}

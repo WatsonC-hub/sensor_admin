@@ -15,7 +15,7 @@ interface TilsynFormPops {
 }
 
 export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops) {
-  const formMethods = useFormContext<TilsynItem>();
+  const {getValues, control, handleSubmit} = useFormContext<TilsynItem>();
   return (
     <Card
       style={{marginBottom: 25}}
@@ -29,7 +29,7 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
     >
       <CardContent>
         <Typography gutterBottom variant="h5" component="h2">
-          {formMethods.getValues('gid') !== -1 ? 'Opdater tilsyn' : 'Indberet tilsyn'}
+          {getValues('gid') !== -1 ? 'Opdater tilsyn' : 'Indberet tilsyn'}
         </Typography>
         <Grid container spacing={3} alignItems="center" justifyContent="center">
           <Grid item xs={12} sm={7}>
@@ -46,7 +46,7 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
           </Grid>
           <Grid item xs={12} sm={7}>
             <Controller
-              control={formMethods.control}
+              control={control}
               name="batteriskift"
               rules={{required: false}}
               render={({field}) => {
@@ -71,7 +71,7 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
               }}
             />
             <Controller
-              control={formMethods.control}
+              control={control}
               name="tilsyn"
               rules={{required: false}}
               render={({field}) => {
@@ -116,7 +116,7 @@ export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops
               </Button>
               <Button
                 bttype="primary"
-                onClick={formMethods.handleSubmit(handleServiceSubmit)}
+                onClick={handleSubmit(handleServiceSubmit)}
                 startIcon={<SaveIcon />}
               >
                 Gem

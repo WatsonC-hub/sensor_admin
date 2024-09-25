@@ -35,14 +35,11 @@ export default function PejlingMeasurements({
         .catch((error) => {
           return error.response;
         });
-      console.log(data);
       return data;
     },
     staleTime: 10,
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
   });
-  console.log(latestMeasurement);
-
   const {
     get: {data: measurements},
   } = usePejling();

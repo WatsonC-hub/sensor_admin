@@ -130,7 +130,7 @@ export default function Station({ts_id, stamdata}) {
               display: 'flex',
               flexDirection: 'column',
               maxWidth: '1080px',
-              width: isMobile ? '100%' : '',
+              width: isMobile ? '100%' : 'fit-content',
               alignSelf: 'center',
             }}
           >
