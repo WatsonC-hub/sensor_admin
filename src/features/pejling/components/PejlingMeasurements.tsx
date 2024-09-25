@@ -30,17 +30,19 @@ export default function PejlingMeasurements({
   const {data: latestMeasurement} = useQuery({
     queryKey: ['latest_measurement', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient
-        .get<LatestMeasurement>(`/sensor_field/station/latest_measurement/${ts_id}`)
-        .catch((error) => {
-          return error.response;
-        });
+      const {data} = await apiClient.get<LatestMeasurement>(
+        `/sensor_field/station/latest_measurement/${ts_id}`
+      );
+      // .catch((error) => {
+      //   return error.response;
+      // });
       console.log(data);
       return data;
     },
     staleTime: 10,
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
   });
+  console.log(latestMeasurement);
 
   const {
     get: {data: measurements},
@@ -50,7 +52,7 @@ export default function PejlingMeasurements({
     <>
       <Typography variant="h6">Seneste Måling</Typography>
       <LatestMeasurementMobile
-        latestMeasurement={latestMeasurement ? [latestMeasurement] : []}
+        latestMeasurement={typeof latestMeasurement === 'object' ? [latestMeasurement] : []}
         ts_id={ts_id}
       />
       <Typography variant="h6">Kontrol pejlinger</Typography>
@@ -64,7 +66,7 @@ export default function PejlingMeasurements({
   ) : (
     <>
       <LatestMeasurementTable
-        latestMeasurement={latestMeasurement ? [latestMeasurement] : []}
+        latestMeasurement={typeof latestMeasurement === 'object' ? [latestMeasurement] : []}
         ts_id={ts_id}
       />
       <PejlingMeasurementsTableDesktop

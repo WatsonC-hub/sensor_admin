@@ -21,6 +21,8 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
+  console.log(latestMeasurement);
+
   const columns = useMemo<MRT_ColumnDef<LatestMeasurement>[]>(
     () => [
       {
