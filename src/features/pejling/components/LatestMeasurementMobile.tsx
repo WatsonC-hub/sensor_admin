@@ -54,7 +54,9 @@ const LatestMeasurementMobile = ({latestMeasurement, ts_id}: LatestMeasurementMo
             </Typography>
 
             <Typography margin="0 auto" color="white">
-              {limitDecimalNumbers(row.original.measurement) + unit}
+              {row.original.measurement
+                ? limitDecimalNumbers(row.original.measurement) + unit
+                : '-'}
             </Typography>
             <Box marginLeft={'auto'}>
               <IconButton

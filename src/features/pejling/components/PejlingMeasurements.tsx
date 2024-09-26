@@ -9,7 +9,6 @@ import PejlingMeasurementsTableDesktop from '~/features/pejling/components/Pejli
 import PejlingMeasurementsTableMobile from '~/features/pejling/components/PejlingMeasurementsTableMobile';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
-import LatestMeasurementMobile from './LatestMeasurementMobile';
 import LatestMeasurementTable from './LatestMeasurementTable';
 
 interface PejlingMeasurementsProps {
@@ -47,7 +46,11 @@ export default function PejlingMeasurements({
   return matches ? (
     <>
       <Typography variant="h6">Seneste Måling</Typography>
-      <LatestMeasurementMobile
+      {/* <LatestMeasurementMobile
+        latestMeasurement={typeof latestMeasurement === 'object' ? [latestMeasurement] : []}
+        ts_id={ts_id}
+      /> */}
+      <LatestMeasurementTable
         latestMeasurement={typeof latestMeasurement === 'object' ? [latestMeasurement] : []}
         ts_id={ts_id}
       />

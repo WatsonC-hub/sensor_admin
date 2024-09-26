@@ -1,13 +1,3 @@
-import {
-  Battery1Bar,
-  Battery2Bar,
-  Battery3Bar,
-  Battery4Bar,
-  Battery5Bar,
-  Battery6Bar,
-  BatteryAlert,
-  BatteryFull,
-} from '@mui/icons-material';
 import {Box, Tooltip} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';

@@ -21,8 +21,6 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
-  console.log(latestMeasurement);
-
   const columns = useMemo<MRT_ColumnDef<LatestMeasurement>[]>(
     () => [
       {
@@ -30,23 +28,33 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
         id: 'timeofmeas',
         accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
         sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
-        size: 160,
+        size: 80,
       },
       {
         header: 'Rå værdi',
         id: 'rawMeasurement',
-        accessorFn: (row) =>
-          row.rawMeasurement && row.rawMeasurementUnit
-            ? limitDecimalNumbers(row.rawMeasurement) + ' ' + row.rawMeasurementUnit
-            : '-',
-        size: 120,
+        Cell: ({row}) => {
+          return (
+            <>
+              <span style={{display: 'inline-block'}}>
+                {row.original.rawMeasurement
+                  ? limitDecimalNumbers(row.original.rawMeasurement)
+                  : ' - '}{' '}
+              </span>
+              {row.original.rawMeasurement && (
+                <span style={{display: 'inline-block'}}> {row.original.rawMeasurementUnit}</span>
+              )}
+            </>
+          );
+        },
+        size: 90,
       },
       {
         header: 'Værdi',
         id: 'measurement',
-        accessorFn: (row) => limitDecimalNumbers(row.measurement) + unit,
+        accessorFn: (row) => (row.measurement ? limitDecimalNumbers(row.measurement) + unit : '-'),
         enableColumnFilter: false,
-        size: 120,
+        size: 90,
       },
     ],
     [unit]
@@ -79,6 +87,7 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
       sx: {
         m: 0,
         py: 0,
+        whiteSpace: 'pre-line',
       },
     },
     renderRowActions: () => (
@@ -100,8 +109,9 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
     renderBottomToolbar: false,
     displayColumnDefOptions: {
       'mrt-row-actions': {
-        size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
+        size: 0, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
         grow: false,
+        header: '',
         muiTableHeadCellProps: {
           align: 'right',
         },
@@ -129,6 +139,7 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
         display: 'flex',
         flexDirection: 'column',
         maxWidth: '100vw',
+        width: '100%',
         mb: 1,
       }}
     >
