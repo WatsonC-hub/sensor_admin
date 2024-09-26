@@ -6,10 +6,10 @@ import {
   MRT_TableOptions,
   MaterialReactTable,
 } from 'material-react-table';
-import {useMemo, useState} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {renderDetailStyle, setTableBoxStyle} from '~/consts';
+import {renderDetailStyle} from '~/consts';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -26,11 +26,16 @@ interface Props {
 export default function TilsynTableMobile({data, handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
+  const [height, setHeight] = useState<number>();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
+
+  useEffect(() => {
+    if (data) setHeight(data.length > 10 ? 10 * 60 : data.length * 60);
+  }, [data]);
 
   const columns = useMemo<MRT_ColumnDef<TilsynItem>[]>(
     () => [
@@ -122,7 +127,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
   );
 
   return (
-    <Box sx={setTableBoxStyle(320)}>
+    <Box height={height}>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}

@@ -6,10 +6,10 @@ import {
   MaterialReactTable,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {setTableBoxStyle, renderDetailStyle, correction_map} from '~/consts';
+import {renderDetailStyle, correction_map} from '~/consts';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -35,6 +35,7 @@ export default function PejlingMeasurementsTableMobile({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const [height, setHeight] = useState<number>();
 
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
@@ -42,6 +43,10 @@ export default function PejlingMeasurementsTableMobile({
     setMpId(id);
     setDialogOpen(true);
   };
+
+  useEffect(() => {
+    if (data) setHeight(data.length > 10 ? 10 * 60 : data.length * 60);
+  }, [data]);
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
@@ -126,8 +131,11 @@ export default function PejlingMeasurementsTableMobile({
     MergeType.RECURSIVEMERGE
   );
 
+  console.log(height);
+
   return (
-    <Box sx={setTableBoxStyle(330)}>
+    // <Box sx={setTableBoxStyle(0)}>
+    <Box height={height}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
@@ -135,5 +143,6 @@ export default function PejlingMeasurementsTableMobile({
       />
       <MaterialReactTable table={table} />
     </Box>
+    // </Box>
   );
 }
