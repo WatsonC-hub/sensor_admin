@@ -1,4 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 
@@ -43,6 +44,7 @@ export const useImageUpload = (endpoint) => {
       queryClient.invalidateQueries({
         queryKey: ['images'],
       });
+      toast.success('Billedet er blevet gemt');
     },
   });
 
@@ -57,6 +59,7 @@ export const useImageUpload = (endpoint) => {
       queryClient.invalidateQueries({
         queryKey: ['images'],
       });
+      toast.success('Ændringerne er blevet gemt');
     },
   });
 
@@ -68,6 +71,11 @@ export const useImageUpload = (endpoint) => {
       return res;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['images'],
+      });
+    },
+    onError: () => {
       queryClient.invalidateQueries({
         queryKey: ['images'],
       });
