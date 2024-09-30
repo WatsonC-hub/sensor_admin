@@ -13,6 +13,8 @@ import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import LocationRouter from '~/pages/field/station/LocationRouter';
 import {captureDialogAtom} from '~/state/atoms';
 
+import Opgave from './opgave/Opgave';
+
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
@@ -79,6 +81,7 @@ function SensorField() {
           path="stamdata"
           element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
         />
+        <Route path="opgave" element={<Opgave />} />
         <Route path="/:labelid" element={<ScanComponent />} />
         <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeRouter />} />
         <Route path="borehole/:boreholeno" element={<BoreholeRouter />} />

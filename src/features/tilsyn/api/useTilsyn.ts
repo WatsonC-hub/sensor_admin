@@ -60,26 +60,26 @@ export const tilsynDelOptions = {
   },
 };
 
+export const tilsynGetOptions = (ts_id: number) => ({
+  queryKey: ['service', ts_id],
+  queryFn: async () => {
+    const {data} = await apiClient.get<Array<TilsynItem>>(`/sensor_field/station/service/${ts_id}`);
+
+    return data.map((m) => {
+      return {
+        ...m,
+        dato: moment(m.dato).format('YYYY-MM-DDTHH:mm'),
+      };
+    });
+  },
+  enabled: ts_id !== undefined && ts_id !== 0 && ts_id !== null,
+});
+
 export const useTilsyn = () => {
   const queryClient = useQueryClient();
 
   const ts_id = stamdataStore((store) => store.timeseries.ts_id);
-  const get = useQuery({
-    queryKey: ['service', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<TilsynItem>>(
-        `/sensor_field/station/service/${ts_id}`
-      );
-
-      return data.map((m) => {
-        return {
-          ...m,
-          dato: moment(m.dato).format('YYYY-MM-DDTHH:mm'),
-        };
-      });
-    },
-    enabled: ts_id !== undefined && ts_id !== 0 && ts_id !== null,
-  });
+  const get = useQuery(tilsynGetOptions(ts_id));
 
   const post = useMutation({
     ...tilsynPostOptions,
