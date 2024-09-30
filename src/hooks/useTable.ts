@@ -208,7 +208,6 @@ export const useTable = <TData extends MRT_RowData>(
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
 
-  console.log(state);
   if (merge_method === MergeType.SHALLOWMERGE)
     tableOptions = assign({}, getOptions<TData>(breakpoints, type), options, {
       initialState: {
