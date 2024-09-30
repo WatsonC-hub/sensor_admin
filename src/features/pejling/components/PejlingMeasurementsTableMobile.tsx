@@ -134,15 +134,15 @@ export default function PejlingMeasurementsTableMobile({
   console.log(height);
 
   return (
-    // <Box sx={setTableBoxStyle(0)}>
-    <Box height={height}>
+    <>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => handleDelete(mpId)}
       />
-      <MaterialReactTable table={table} />
-    </Box>
-    // </Box>
+      <Box>
+        <MaterialReactTable table={table} />
+      </Box>
+    </>
   );
 }

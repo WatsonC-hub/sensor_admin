@@ -1,10 +1,11 @@
 import {BatteryAlertRounded, RemoveRedEyeRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -22,16 +23,11 @@ interface Props {
 export default function TilsynTableDesktop({data, handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [height, setHeight] = useState<number>();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
-
-  useEffect(() => {
-    if (data) setHeight((data.length > 10 ? 10 * 65 : data.length * 65) + 56 + 71 + 56);
-  }, [data]);
 
   const columns = useMemo<MRT_ColumnDef<TilsynItem>[]>(
     () => [
@@ -108,7 +104,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
   );
 
   return (
-    <Box height={height}>
+    <Box sx={setTableBoxStyle(636)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

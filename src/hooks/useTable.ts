@@ -39,10 +39,10 @@ const getOptions = <TData extends MRT_RowData>(
     paginationDisplayMode: 'pages',
     muiTablePaperProps: {
       sx: {
-        // width: '100%',
-        // flex: '1 1 0',
-        // display: 'flex',
-        // flexFlow: 'column',
+        width: '100%',
+        flex: '1 1 0',
+        display: 'flex',
+        flexFlow: 'column',
         boxShadow: breakpoints.isMobile ? 'none' : '1',
       },
     },
@@ -64,12 +64,12 @@ const getOptions = <TData extends MRT_RowData>(
         },
       },
     },
-    // muiTableContainerProps: {
-    //   sx: {
-    //     flex: '1 1 0',
-    //     height: 'inherit',
-    //   },
-    // },
+    muiTableContainerProps: {
+      sx: {
+        flex: '1 1 0',
+        height: 'inherit',
+      },
+    },
     muiBottomToolbarProps: {
       sx: {
         boxShadow: 'none',
@@ -77,7 +77,7 @@ const getOptions = <TData extends MRT_RowData>(
     },
   };
 
-  const mobileListOptions: Partial<MRT_TableOptions<TData>> = merge({}, globalOptions, {
+  const mobileListOptions: Partial<MRT_TableOptions<TData>> = assign({}, globalOptions, {
     enableTableFooter: false,
     enableTableHead: false,
     enableTopToolbar: false,
@@ -90,6 +90,16 @@ const getOptions = <TData extends MRT_RowData>(
         border: 'none',
         backgroundColor: 'grey.300',
         alignContent: 'space-between',
+      },
+    },
+    muiTableContainerProps: undefined,
+    muiTablePaperProps: {
+      sx: {
+        // width: '100%',
+        // flex: '1 1 0',
+        // display: 'flex',
+        // flexFlow: 'column',
+        boxShadow: breakpoints.isMobile ? 'none' : '1',
       },
     },
     muiTableBodyRowProps: ({row}) => {
@@ -190,27 +200,27 @@ export const useTable = <TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
   data: TData[] | undefined,
   options: Partial<MRT_TableOptions<TData>>,
-  tableState: Partial<MRT_TableOptions<TData>> | undefined,
+  state: Partial<MRT_TableOptions<TData>> | undefined,
   type: string = TableTypes.LIST,
   merge_method: string | undefined
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
-  const state: Partial<MRT_TableOptions<TData>> = merge({}, tableState, {
-    state: {isLoading: data === undefined, showSkeletons: data === undefined},
-  });
 
+  console.log(state);
   if (merge_method === MergeType.SHALLOWMERGE)
     tableOptions = assign({}, getOptions<TData>(breakpoints, type), options, {
       initialState: {
         isLoading: data === undefined,
+        showSkeletons: data === undefined,
       },
     });
   else if (merge_method === MergeType.RECURSIVEMERGE)
     tableOptions = merge({}, getOptions<TData>(breakpoints, type), options, {
       initialState: {
         isLoading: data === undefined,
+        showSkeletons: data === undefined,
       },
     });
 
@@ -219,6 +229,11 @@ export const useTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
+    state: {
+      ...state?.state,
+      isLoading: data === undefined,
+      showSkeletons: data === undefined,
+    },
   });
 
   return table;

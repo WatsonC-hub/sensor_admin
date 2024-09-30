@@ -1,11 +1,11 @@
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {correction_map} from '~/consts';
+import {correction_map, setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -32,7 +32,6 @@ export default function PejlingMeasurementsTableDesktop({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  const [height, setHeight] = useState<number>();
 
   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 
@@ -40,10 +39,6 @@ export default function PejlingMeasurementsTableDesktop({
     setMpId(id);
     setDialogOpen(true);
   };
-
-  useEffect(() => {
-    if (data) setHeight((data.length > 10 ? 10 * 65 : data.length * 65) + 56 + 71 + 56);
-  }, [data]);
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
@@ -105,7 +100,7 @@ export default function PejlingMeasurementsTableDesktop({
   );
 
   return (
-    <Box height={height}>
+    <Box sx={setTableBoxStyle(715)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
