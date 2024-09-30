@@ -58,26 +58,28 @@ export const pejlingDelOptions = {
   },
 };
 
+export const pejlingGetOptions = (ts_id: number) => ({
+  queryKey: ['measurements', ts_id],
+  queryFn: async () => {
+    const {data} = await apiClient.get<Array<PejlingItem>>(
+      `/sensor_field/station/measurements/${ts_id}`
+    );
+
+    return data.map((m) => {
+      return {
+        ...m,
+        timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss'),
+      };
+    });
+  },
+  enabled: ts_id !== -1 && ts_id !== null,
+});
+
 export const usePejling = () => {
   const queryClient = useQueryClient();
 
   const ts_id = stamdataStore((store) => store.timeseries.ts_id);
-  const get = useQuery({
-    queryKey: ['measurements', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<PejlingItem>>(
-        `/sensor_field/station/measurements/${ts_id}`
-      );
-
-      return data.map((m) => {
-        return {
-          ...m,
-          timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss'),
-        };
-      });
-    },
-    enabled: ts_id !== -1 && ts_id !== null,
-  });
+  const get = useQuery(pejlingGetOptions(ts_id));
 
   const post = useMutation({
     ...pejlingPostOptions,
