@@ -33,13 +33,16 @@ const getOptions = <TData extends MRT_RowData>(
       shape: 'rounded',
       variant: 'outlined',
     },
+    muiSkeletonProps: {
+      animation: 'wave',
+    },
     paginationDisplayMode: 'pages',
     muiTablePaperProps: {
       sx: {
-        width: '100%',
-        flex: '1 1 0',
-        display: 'flex',
-        flexFlow: 'column',
+        // width: '100%',
+        // flex: '1 1 0',
+        // display: 'flex',
+        // flexFlow: 'column',
         boxShadow: breakpoints.isMobile ? 'none' : '1',
       },
     },
@@ -61,12 +64,12 @@ const getOptions = <TData extends MRT_RowData>(
         },
       },
     },
-    muiTableContainerProps: {
-      sx: {
-        flex: '1 1 0',
-        height: 'inherit',
-      },
-    },
+    // muiTableContainerProps: {
+    //   sx: {
+    //     flex: '1 1 0',
+    //     height: 'inherit',
+    //   },
+    // },
     muiBottomToolbarProps: {
       sx: {
         boxShadow: 'none',
@@ -89,22 +92,28 @@ const getOptions = <TData extends MRT_RowData>(
         alignContent: 'space-between',
       },
     },
-    muiTableBodyRowProps: {
+    muiTableBodyRowProps: ({row}) => {
       // The following styling is neccessary to make sure the detail panel look as a part of the row. The purpose of the styling is to shift the detail panel upwards so that it aligns with the row.
-      sx: {
-        display: 'table-row !important',
-        border: 'none',
-        backgroundColor: 'grey.300',
-        background: 'grey.300',
-        mt: -7.7,
-        px: 2,
-        mx: -2,
-        transition: 'transform 0.2s',
-        borderTopLeftRadius: '20px',
-        borderTopRightRadius: '20px',
-        borderBottomLeftRadius: '15px',
-        borderBottomRightRadius: '15px',
-      },
+      return {
+        sx: {
+          display: 'table-row !important',
+          border: 'none',
+          backgroundColor: 'grey.300',
+          background: 'grey.300',
+          mt: -7.7,
+          px: 2,
+          mx: -2,
+          transition: 'transform 0.2s',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          borderBottomLeftRadius: '15px',
+          borderBottomRightRadius: '15px',
+          userSelect: 'none',
+        },
+        onClick: () => {
+          row.toggleExpanded(!row.getIsExpanded());
+        },
+      };
     },
     muiTableProps: {
       sx: {
@@ -188,20 +197,28 @@ export const useTable = <TData extends MRT_RowData>(
   const breakpoints = useBreakpoints();
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
+  const state: Partial<MRT_TableOptions<TData>> = merge({}, tableState, {
+    state: {isLoading: data === undefined, showSkeletons: data === undefined},
+  });
 
   if (merge_method === MergeType.SHALLOWMERGE)
-    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options, {
+      initialState: {
+        isLoading: data === undefined,
+      },
+    });
   else if (merge_method === MergeType.RECURSIVEMERGE)
-    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options, {
+      initialState: {
+        isLoading: data === undefined,
+      },
+    });
 
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
-    initialState: {
-      isLoading: data === undefined,
-    },
     ...tableOptions,
-    ...tableState,
+    ...state,
   });
 
   return table;

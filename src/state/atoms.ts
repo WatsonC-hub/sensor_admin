@@ -1,6 +1,7 @@
 import {atom} from 'jotai';
 import {atomWithStorage, atomFamily} from 'jotai/utils';
 import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
+import {merge} from 'lodash';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
@@ -64,19 +65,15 @@ function createPartialTimedStorage<T>(
       } catch {
         return initialValue;
       }
-      if (parsedValue?.timestamp && Date.now() - parsedValue.timestamp > timeout_ms) {
-        return initialValue;
-      }
-      const isOutdated = parsedValue?.timestamp && Date.now() - parsedValue.timestamp > timeout_ms;
-      const value = parsedValue?.value ?? initialValue;
-
-      if (isOutdated) {
+      const value = merge({}, initialValue, parsedValue?.value ?? {});
+      if (parsedValue?.timestamp && Date.now() - parsedValue.timestamp < timeout_ms) {
         const newValue = {...value};
         for (const partialKey of partialKeys) {
           newValue[partialKey] = initialValue[partialKey];
         }
         return newValue;
       }
+
       return value;
     },
     setItem(key, value) {
