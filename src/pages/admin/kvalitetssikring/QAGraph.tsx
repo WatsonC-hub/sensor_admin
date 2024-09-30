@@ -4,6 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
+import {Layout, ModeBarButtonAny, RangeSelector, RangeSelectorButton} from 'plotly.js';
 import React, {useContext, useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
@@ -18,10 +19,11 @@ import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
+import {QaGraphData, QaGraphLabel} from '~/types';
 
 import QAHistory from './QAHistory';
 
-const selectorOptions = {
+const selectorOptions: Partial<RangeSelector> = {
   buttons: [
     {
       step: 'day',
@@ -45,15 +47,15 @@ const selectorOptions = {
       step: 'all',
       label: 'Alt',
     },
-  ],
+  ] as Array<Partial<RangeSelectorButton>>,
 };
 
-const desktopLayout = {
+const desktopLayout: Partial<Layout> = {
   xaxis: {
     rangeselector: selectorOptions,
     /*rangeslider: {},*/
     autorange: true,
-    type: 'date',
+    type: 'date' as Plotly.AxisType,
     //range:["2020-12-01T00:00:00", A],
     //domain: [0, 0.97],
     showline: true,
@@ -75,7 +77,7 @@ const desktopLayout = {
     showline: false,
     showgrid: false,
     overlaying: 'y',
-    side: 'right',
+    side: 'right' as const,
     fixedrange: true,
   },
 
@@ -96,9 +98,9 @@ const desktopLayout = {
     size: 12,
     color: 'rgb(0, 0, 0)',
   },
-};
+} as const;
 
-const mobileLayout = {
+const mobileLayout: Partial<Layout> = {
   modebar: {
     orientation: 'v',
   },
@@ -106,15 +108,11 @@ const mobileLayout = {
   xaxis: {
     rangeselector: selectorOptions,
     autorange: true,
-    type: 'date',
-    margin: {
-      t: 0,
-    },
+    type: 'date' as Plotly.AxisType,
   },
 
   yaxis: {
     showline: true,
-    y: 1,
     title: {
       text: '',
       font: {size: 12},
@@ -140,15 +138,15 @@ const mobileLayout = {
   },
 };
 
-const LABEL_COLORS = {
-  null: '#666666',
+const LABEL_COLORS: Record<number, string> = {
+  0: '#666666',
   1: '#00FF00',
   2: '#0000FF',
   3: '#FF0000',
 };
 
-const transformQAData = (data) => {
-  var shapelist = data?.map((d) => {
+const transformQAData = (data: Array<QaGraphLabel>) => {
+  const shapelist = data.map((d) => {
     if (d.enddate == null) {
       return {
         type: 'line',
@@ -158,7 +156,7 @@ const transformQAData = (data) => {
         y1: 1,
         yref: 'paper',
         line: {
-          color: LABEL_COLORS[d.label_id],
+          color: LABEL_COLORS[d.label_id ?? 0],
           width: 1.5,
           dash: 'dot',
         },
@@ -172,7 +170,7 @@ const transformQAData = (data) => {
         y0: 0,
         y1: 1,
         yref: 'paper',
-        fillcolor: LABEL_COLORS[d.label_id],
+        fillcolor: LABEL_COLORS[d.label_id ?? 0],
         opacity: 0.6,
         line: {
           width: 0,
@@ -182,8 +180,8 @@ const transformQAData = (data) => {
     }
   });
 
-  var annotateList = data
-    ?.sort((a, b) => moment(a.startdate) - moment(b.startdate))
+  const annotateList = data
+    ?.sort((a, b) => moment(a.startdate).diff(moment(b.startdate)))
     .map((d, index) => {
       let y;
       switch (index % 4) {
@@ -234,21 +232,42 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
-function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorrection}) {
+interface PlotGraphProps {
+  qaData: Array<QaGraphLabel>;
+  ts_id: number;
+  initiateSelect: boolean;
+  setInitiateSelect: (select: boolean) => void;
+  levelCorrection: boolean;
+}
+
+function PlotGraph({
+  qaData,
+  ts_id,
+  initiateSelect,
+  setInitiateSelect,
+  levelCorrection,
+}: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [layout, setLayout] = useState(matches ? mobileLayout : desktopLayout);
+  const [layout, setLayout] = useState<Partial<Layout>>(matches ? mobileLayout : desktopLayout);
   const metadata = useContext(MetadataContext);
   const dataToShow = useAtomValue(dataToShowAtom);
+
+  const loc_name = metadata && 'loc_name' in metadata ? metadata.loc_name : '';
+  const tstype_name = metadata && 'tstype_name' in metadata ? metadata.tstype_name : '';
+  const unit = metadata && 'unit' in metadata ? metadata.unit : '';
+  const ts_name = metadata && 'ts_name' in metadata ? metadata.ts_name : '';
+
   const queryClient = useQueryClient();
 
-  const fullData = queryClient.getQueryData(['graphData', ts_id, initRange]);
+  const fullData = queryClient.getQueryData<QaGraphData>(['graphData', ts_id, initRange]);
 
   console.log(fullData);
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
+  const {data: graphData} = useGraphData({ts_id, xRange});
 
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],
@@ -296,14 +315,19 @@ function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorre
     }
   }, [initiateSelect]);
 
-  const handlePlotlySelected = (eventData) => {
+  const handlePlotlySelected = (eventData: any) => {
     if (eventData === undefined) {
       return;
     } else {
-      eventData.points = eventData?.points?.map((pt) => {
+      eventData.points = eventData?.points?.map((pt: any) => {
         return {x: pt.x, y: pt.y};
       });
-      if (levelCorrection && eventData.points.length > 0 && eventData.points.length === 1) {
+      if (
+        graphData &&
+        levelCorrection &&
+        eventData.points.length > 0 &&
+        eventData.points.length === 1
+      ) {
         const prevIndex =
           graphData.x
             .map((x) => moment(x).toISOString())
@@ -325,7 +349,7 @@ function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorre
     };
   }, []);
 
-  const handleRelayout = (e) => {
+  const handleRelayout = (e: any) => {
     console.log(e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
@@ -361,8 +385,6 @@ function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorre
     }
   };
 
-  const {data: graphData} = useGraphData(ts_id, xRange);
-
   console.log(graphData);
 
   const xControl = controlData?.map((d) => d.timeofmeas);
@@ -392,30 +414,32 @@ function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorre
 
   const {mutation: rerunQAMutation} = useRunQA(ts_id);
 
-  var rerunButton = {
+  const rerunButton = {
     name: 'Genberegn data',
+    title: 'Genberegn data',
     icon: rerunIcon,
     click: function () {
-      correctMutation.mutate({});
+      correctMutation.mutate();
     },
   };
 
-  var rerunQAButton = {
+  const rerunQAButton: ModeBarButtonAny = {
     name: 'Genberegn QA',
+    title: 'Genberegn QA',
     icon: rerunQAIcon,
     click: function () {
       // toastId.current = toast.loading('Genkører kvalitetssikring...');
-      rerunQAMutation.mutate({});
+      rerunQAMutation.mutate();
     },
   };
 
   const [qaShapes, qaAnnotate] = transformQAData(qaData);
 
-  let shapes = [];
-  let annotations = [];
+  let shapes: Array<object> = [];
+  let annotations: Array<object> = [];
 
   Object.keys(dataToShow).forEach((key) => {
-    if (dataToShow[key] === false) return;
+    if (!Object.keys(dataToShow).some((value) => value === key)) return;
 
     switch (key) {
       case 'Valide værdier':
@@ -524,14 +548,13 @@ function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorre
   return (
     <Plot
       onSelected={handlePlotlySelected}
-      id="qagraph"
       divId="qagraphDiv"
       onRelayout={handleRelayout}
       data={[
         {
           x: graphData?.x,
           y: graphData?.y,
-          name: metadata?.loc_name + ' ' + metadata?.ts_name,
+          name: loc_name + ' ' + ts_name,
           type: 'scattergl',
           line: {width: 2},
           mode: 'lines+markers',
@@ -585,8 +608,8 @@ function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorre
         annotations: annotations,
         uirevision: 'true',
         yaxis: {
-          title: `${metadata?.tstype_name} [${metadata?.unit}]`,
-          font: {size: matches ? 6 : 12},
+          title: `${tstype_name} [${unit}]`,
+          // font: {size: matches ? 6 : 12},
         },
       }}
       config={{
@@ -606,7 +629,11 @@ function PlotGraph({qaData, ts_id, initiateSelect, setInitiateSelect, levelCorre
   );
 }
 
-export default function QAGraph({stationId}) {
+interface QAGraphProps {
+  stationId: number;
+}
+
+export default function QAGraph({stationId}: QAGraphProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const [initiateSelect, setInitiateSelect] = useState(false);
@@ -615,12 +642,17 @@ export default function QAGraph({stationId}) {
   const {data: qaData} = useQuery({
     queryKey: ['qa_labels', stationId],
     queryFn: async ({signal}) => {
-      const {data} = await apiClient.get(`/sensor_admin/qa_labels/${stationId}`, {
-        signal,
-      });
+      const {data} = await apiClient.get<Array<QaGraphLabel>>(
+        `/sensor_admin/qa_labels/${stationId}`,
+        {
+          signal,
+        }
+      );
       return data;
     },
   });
+
+  console.log(qaData);
 
   return (
     <Box display="flex" flexDirection="column">
@@ -636,7 +668,7 @@ export default function QAGraph({stationId}) {
       >
         <PlotGraph
           key={'plotgraph' + stationId}
-          qaData={qaData}
+          qaData={qaData ?? []}
           ts_id={stationId}
           initiateSelect={initiateSelect}
           setInitiateSelect={setInitiateSelect}

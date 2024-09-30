@@ -296,3 +296,79 @@ export type LatestMeasurement = {
   measurement: number;
   rawMeasurementUnit: string | null;
 };
+
+export type QaAlgorithms = {
+  gid: number;
+  algorithm: string;
+  parameters: Record<string, any>;
+  name: string | null;
+  days_to_include: number | null;
+  active: boolean;
+  exclude: Array<number> | null;
+  parameter_values: Record<string, any>;
+};
+
+export type QaAlgorithmParameters = {
+  label: string;
+  type: string;
+  shape: Record<string, any>;
+  min: number;
+  max: number;
+  name: string;
+};
+
+export type QaAlgorithmsPut = {
+  algorithm: string;
+  parameters: Record<string, any>;
+};
+
+export type LevelCorrection = {
+  gid: number;
+  ts_id: number;
+  updated_at: string;
+  userid: number;
+  date: string;
+  comment: string;
+};
+
+export type DataExclude = {
+  gid: number;
+  ts_id: number;
+  updated_at: string;
+  userid: number;
+  min_value: number;
+  max_value: number;
+  startdate: string;
+  enddate: string;
+  comment: string;
+};
+
+export type MinMaxCutoff = {
+  gid: number;
+  ts_id: number;
+  updated_at: string;
+  userid: number;
+  mincutoff: number;
+  maxcutoff: number;
+};
+
+export type QaAllData = {
+  levelcorrection: Array<LevelCorrection>;
+  min_max_cutoff: MinMaxCutoff | null;
+  dataexclude: Array<DataExclude>;
+};
+
+export type QaGraphData = {
+  x: Array<string>;
+  y: Array<number>;
+};
+
+export type QaGraphLabel = {
+  gid: number;
+  ts_id: number;
+  startdate: string;
+  enddate: string;
+  algorithm: string;
+  label_id: number;
+  name: string;
+};
