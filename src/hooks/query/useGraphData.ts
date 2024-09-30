@@ -3,12 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {QaGraphData} from '~/types';
 
-interface useGraphDataProps {
-  ts_id: number;
-  xRange: Array<string>;
-}
-
-export const useGraphData = ({ts_id, xRange}: useGraphDataProps) => {
+export const useGraphData = (ts_id: number, xRange: Array<string>) => {
   const query = useQuery({
     queryKey: ['graphData', ts_id, xRange],
     queryFn: async () => {
