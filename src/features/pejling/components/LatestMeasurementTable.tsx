@@ -5,7 +5,11 @@ import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo} from 'react';
 import {toast} from 'react-toastify';
 
-import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {
+  convertDateWithTimeStamp,
+  limitDecimalNumbers,
+  splitTimeFromDate,
+} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
@@ -26,9 +30,22 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
       {
         header: 'Dato',
         id: 'timeofmeas',
-        accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
+        accessorFn: (row) => {
+          // convertDateWithTimeStamp(row.timeofmeas);
+          splitTimeFromDate(row.timeofmeas);
+        },
         sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
         size: 80,
+        Cell: ({row}) => {
+          const dateArray: Array<string> = splitTimeFromDate(row.original.timeofmeas);
+
+          return (
+            <>
+              <span style={{display: 'inline-block'}}>{dateArray[0]}</span>{' '}
+              <span style={{display: 'inline-block'}}> {dateArray[1]}</span>
+            </>
+          );
+        },
       },
       {
         header: 'Rå værdi',
@@ -39,8 +56,8 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
               <span style={{display: 'inline-block'}}>
                 {row.original.rawMeasurement
                   ? limitDecimalNumbers(row.original.rawMeasurement)
-                  : ' - '}{' '}
-              </span>
+                  : ' - '}
+              </span>{' '}
               {row.original.rawMeasurement && (
                 <span style={{display: 'inline-block'}}> {row.original.rawMeasurementUnit}</span>
               )}
@@ -52,9 +69,17 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
       {
         header: 'Værdi',
         id: 'measurement',
-        accessorFn: (row) => (row.measurement ? limitDecimalNumbers(row.measurement) + unit : '-'),
-        enableColumnFilter: false,
         size: 90,
+        Cell: ({row}) => {
+          return (
+            <>
+              <span style={{display: 'inline-block'}}>
+                {row.original.measurement ? limitDecimalNumbers(row.original.measurement) : ' - '}
+              </span>{' '}
+              {row.original.measurement && <span style={{display: 'inline-block'}}> {unit}</span>}
+            </>
+          );
+        },
       },
     ],
     [unit]

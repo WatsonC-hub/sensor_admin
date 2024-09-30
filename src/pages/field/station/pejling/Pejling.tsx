@@ -1,16 +1,20 @@
 import {AddCircle} from '@mui/icons-material';
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
+import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
+import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';
+import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
-import {PejlingItem} from '~/types';
+import {LatestMeasurement, PejlingItem} from '~/types';
 
 type Props = {
   ts_id: number;
@@ -26,6 +30,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
+  const {isMobile} = useBreakpoints();
   const initialData = {
     gid: -1,
     timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
@@ -39,6 +44,20 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   // /latest_measurement/{ts_id}
 
   const {reset, getValues} = formMethods;
+
+  const {data: latestMeasurement} = useQuery({
+    queryKey: ['latest_measurement', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient
+        .get<LatestMeasurement>(`/sensor_field/station/latest_measurement/${ts_id}`)
+        .catch((error) => {
+          return error.response;
+        });
+      return data;
+    },
+    staleTime: 10,
+    enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
+  });
 
   const handlePejlingSubmit = (values: PejlingItem) => {
     console.log(values);
@@ -102,6 +121,11 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
       }}
       visible={showForm === null ? 'visible' : 'hidden'}
     >
+      {isMobile && <Typography variant="h6">Seneste Måling</Typography>}
+      <LatestMeasurementTable
+        latestMeasurement={typeof latestMeasurement === 'object' ? [latestMeasurement] : []}
+        ts_id={ts_id}
+      />
       <FormProvider {...formMethods}>
         <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
           {showForm === 'true' && (
@@ -118,7 +142,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             canEdit={canEdit}
-            ts_id={ts_id}
           />
         </Box>
       </FormProvider>
