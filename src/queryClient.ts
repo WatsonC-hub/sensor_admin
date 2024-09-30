@@ -7,8 +7,6 @@ import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
 
-//{"detail":[{"type":"string_too_short","loc":["body","ahhasd"],"msg":"String should have at least 10 characters","input":"hej","ctx":{"min_length":10}},{"type":"missing","loc":["body","fasdas"],"msg":"Field required","input":{"loc_id":753,"loc_name":"Throughflow_3","mainloc":"Vaarstvej2","subloc":"Vaarstvej","subsubloc":"mainloc","groups":null,"x":561895,"y":6315704,"terrainqual":"DTM","terrainlevel":16.512,"description":"Fugtighed","loctype_id":7,"initial_project_no":"19.0001","ahhasd":"hej"}}]}
-
 type ErrorDetail = {
   type: string;
   loc: string[];
