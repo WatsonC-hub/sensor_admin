@@ -2,157 +2,34 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
+import {Layout} from 'plotly.js';
 import {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {correction_map, setGraphHeight} from '~/consts';
+import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
 import {usePejling} from '~/features/pejling/api/usePejling';
+import {MergeType} from '~/helpers/EnumHelper';
 import {downloadIcon, makeLinkIcon, rawDataIcon, rerunIcon} from '~/helpers/plotlyIcons';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {stamdataStore} from '~/state/store';
+import {PejlingItem} from '~/types';
 
-const selectorOptions = {
-  buttons: [
-    {
-      step: 'day',
-      stepmode: 'backward',
-      count: 7,
-      label: '1 uge',
-    },
-    {
-      step: 'month',
-      stepmode: 'backward',
-      count: 1,
-      label: '1 måned',
-    },
-    {
-      step: 'year',
-      stepmode: 'backward',
-      count: 1,
-      label: '1 år',
-    },
+// const initRange = [
+//   moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+//   moment().format('YYYY-MM-DDTHH:mm'),
+// ];
 
-    {
-      step: 'all',
-      label: 'Alt',
-    },
-  ],
-};
+interface PlotGraphProps {
+  ts_id: number;
+  controlData: Array<PejlingItem & {waterlevel: number | null}>;
+  dynamicMeasurement: Record<string, number>;
+}
 
-const desktopLayout = {
-  xaxis: {
-    rangeselector: selectorOptions,
-    autorange: true,
-    type: 'date',
-    showline: true,
-    domain: [0, 0.97],
-  },
-  yaxis: {
-    title: {
-      text: '',
-      font: {size: 12},
-    },
-    showline: true,
-  },
-  yaxis2: {
-    showgrid: false,
-    overlaying: 'y',
-    side: 'right',
-    position: 0.9,
-    anchor: 'x',
-    visible: false,
-    title: {
-      text: '',
-      font: {
-        size: 12,
-      },
-    },
-  },
-
-  showlegend: true,
-  legend: {
-    x: 0,
-    y: -0.15,
-    orientation: 'h',
-  },
-  margin: {
-    // l: 70,
-    r: 0,
-    // b: 30,
-    t: 10,
-    pad: 4,
-  },
-  font: {
-    size: 12,
-    color: 'rgb(0, 0, 0)',
-  },
-};
-
-const mobileLayout = {
-  modebar: {
-    orientation: 'v',
-  },
-  //autosize: true,
-  xaxis: {
-    rangeselector: selectorOptions,
-    autorange: true,
-    type: 'date',
-    margin: {
-      t: 0,
-    },
-    domain: [0, 0.97],
-  },
-
-  yaxis: {
-    showline: true,
-    y: 1,
-    title: {
-      text: '',
-      font: {size: 12},
-    },
-  },
-  yaxis2: {
-    showgrid: false,
-    overlaying: 'y',
-    side: 'right',
-    position: 0.9,
-    anchor: 'x',
-    visible: false,
-    title: {
-      font: {
-        size: 12,
-      },
-    },
-  },
-
-  showlegend: false,
-  legend: {
-    x: 0,
-    y: -0.15,
-    orientation: 'h',
-  },
-  margin: {
-    l: 50,
-    r: 30,
-    b: 40,
-    t: 0,
-    pad: 4,
-  },
-  font: {
-    size: 12,
-    color: 'rgb(0, 0, 0)',
-  },
-};
-
-const initRange = [
-  moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
-  moment().format('YYYY-MM-DDTHH:mm'),
-];
-
-function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
+function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
     state.timeseries.unit,
@@ -165,12 +42,47 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
     moment().format('YYYY-MM-DDTHH:mm'),
   ]);
-  const [layout, setLayout] = useState(
-    matches ? structuredClone(mobileLayout) : structuredClone(desktopLayout)
-  );
-  const [showRawData, setShowRawData] = useState(false);
 
-  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
+  const [showRawData, setShowRawData] = useState(false);
+  const layout: Partial<Layout> = matches
+    ? {
+        xaxis: {
+          domain: [0, 0.97],
+        },
+        yaxis2: {
+          showgrid: false,
+          overlaying: 'y',
+          side: 'right',
+          position: 0.9,
+          anchor: 'x',
+          visible: false,
+          title: {
+            font: {
+              size: 12,
+            },
+          },
+        },
+        showlegend: false,
+      }
+    : {
+        xaxis: {
+          domain: [0, 0.97],
+        },
+        yaxis2: {
+          position: 0.9,
+          anchor: 'x',
+          visible: false,
+          title: {
+            text: '',
+            font: {
+              size: 12,
+            },
+          },
+        },
+      };
+  const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
+
+  const {data: graphData, refetch: refetchData} = useGraphData({ts_id, xRange});
   const {data: rawData, refetch: fetchRaw} = useQuery({
     queryKey: ['rawdata', ts_id],
     queryFn: async () => {
@@ -185,12 +97,12 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   });
 
   useEffect(() => {
-    refetchData([ts_id, xRange]);
+    // refetchData([ts_id, xRange]);
   }, [ts_id, xRange, refetchData]);
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
-  const handleRelayout = (e) => {
+  const handleRelayout = (e: any) => {
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange([
         moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
@@ -200,12 +112,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     }
 
     if (e['dragmode']) {
-      setLayout((prev) => {
-        return {
-          ...prev,
-          dragmode: e['dragmode'],
-        };
-      });
+      setLayout({dragmode: e['dragmode']});
     }
 
     if (e['xaxis.range[0]'] !== undefined) {
@@ -227,10 +134,11 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
   // const stationtype = graphData?.[0] ? graphData[0].properties.parameter : "";
 
-  var downloadButton = {
+  const downloadButton = {
+    title: 'Download data',
     name: 'Download data',
     icon: downloadIcon,
-    click: function (gd) {
+    click: function (gd: any) {
       console.log(gd);
       // var rows = gd.data[0].x.map((elem, idx) => [
       //   moment(elem).format('YYYY-MM-DD HH:mm'),
@@ -241,19 +149,21 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     },
   };
 
-  var rerunButton = {
+  const rerunButton = {
+    title: 'Download data',
     name: 'Genberegn data',
     icon: rerunIcon,
     click: function () {
       // toastId.current = toast.loading('Genberegner...');
-      correctMutation.mutate({});
+      correctMutation.mutate();
     },
   };
 
-  var getRawData = {
+  const getRawData = {
+    title: 'Download data',
     name: 'Hent rådata',
     icon: rawDataIcon,
-    click: function (gd) {
+    click: function (gd: any) {
       fetchRaw();
       gd.layout = {
         ...gd.layout,
@@ -267,17 +177,18 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     },
   };
 
-  var makeLinkButton = {
+  const makeLinkButton = {
+    title: 'Download data',
     name: 'Ekstern link',
     icon: makeLinkIcon,
     click: function () {
-      var ts_id = window.location.href.split('/').at(-1).split('#').at(0);
+      const ts_id = window.location.href.split('/').at(-1)?.split('#').at(0);
 
-      var link = document.createElement('a');
+      const link = document.createElement('a');
       if (link.download !== undefined) {
         // feature detection
         // Browsers that support HTML5 download attribute
-        var url =
+        const url =
           'https://watsonc.dk/calypso/timeseries_plot.html?&ts_id=' + ts_id + '&pejling=true';
         link.setAttribute('href', url);
         link.setAttribute('target', '_blank');
@@ -295,7 +206,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
     <>
       <Plot
         // key={ts_id}
-        id={`graph_${ts_id}`}
         divId={`graph_${ts_id}`}
         data={[
           {
@@ -305,7 +215,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
             type: 'scatter',
             line: {width: 2},
             mode: 'lines',
-            marker: {symbol: '100', size: '3', color: '#177FC1'},
+            marker: {symbol: '100', size: 3, color: '#177FC1'},
           },
           {
             x: showRawData ? rawData?.x : [],
@@ -315,7 +225,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
             yaxis: 'y2',
             line: {width: 2},
             mode: 'lines',
-            marker: {symbol: '100', size: '3'},
+            marker: {symbol: '100', size: 3},
           },
           {
             x: xControl,
@@ -326,7 +236,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
             text: textControl,
             marker: {
               symbol: '200',
-              size: '8',
+              size: 8,
               color: '#177FC1',
               line: {color: 'rgb(0,0,0)', width: 1},
             },
@@ -338,11 +248,11 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
             type: 'scatter',
             mode: 'markers',
             showlegend: false,
-            marker: {symbol: '50', size: '8', color: 'rgb(0,120,109)'},
+            marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
           },
         ]}
         layout={{
-          ...layout,
+          ...mergedLayout,
           uirevision: 'true',
           yaxis: {
             title: `${stationtype} [${unit}]`,
@@ -367,10 +277,15 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}) {
   );
 }
 
-export default function BearingGraph({stationId, dynamicMeasurement}) {
+interface BearingGraphProps {
+  stationId: number;
+  dynamicMeasurement: Record<string, number>;
+}
+
+export default function BearingGraph({stationId, dynamicMeasurement}: BearingGraphProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [control, setControl] = useState([]);
+  const [control, setControl] = useState<Array<PejlingItem & {waterlevel: number | null}>>();
 
   const {
     get: {data: watlevmp},
@@ -380,19 +295,19 @@ export default function BearingGraph({stationId, dynamicMeasurement}) {
   } = usePejling();
 
   useEffect(() => {
-    var ctrls = [];
-    if (watlevmp?.length > 0) {
-      ctrls = measurements?.map((e) => {
-        const elev = watlevmp?.filter((e2) => {
+    let ctrls: Array<PejlingItem & {waterlevel: number | null}> = [];
+    if (measurements && watlevmp && watlevmp.length > 0) {
+      ctrls = measurements.map((e) => {
+        const elev = watlevmp.filter((e2) => {
           return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
-        })[0]?.elevation;
+        })[0].elevation;
         return {
           ...e,
           waterlevel: e.measurement != null ? elev - e.measurement : null,
         };
       });
-    } else {
-      ctrls = measurements?.map((elem) => {
+    } else if (measurements) {
+      ctrls = measurements.map((elem) => {
         return {...elem, waterlevel: elem.measurement};
       });
     }
@@ -409,7 +324,7 @@ export default function BearingGraph({stationId, dynamicMeasurement}) {
       <PlotGraph
         key={stationId}
         ts_id={stationId}
-        controlData={control}
+        controlData={control ? control : []}
         dynamicMeasurement={dynamicMeasurement}
       />
     </div>

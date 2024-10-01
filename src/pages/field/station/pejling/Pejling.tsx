@@ -111,7 +111,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     }
   }, [ts_id]);
 
-  console.log(showForm);
   return (
     <FabWrapper
       icon={<AddCircle />}
