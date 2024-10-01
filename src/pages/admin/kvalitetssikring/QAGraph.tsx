@@ -267,7 +267,7 @@ function PlotGraph({
   console.log(fullData);
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
-  const {data: graphData} = useGraphData({ts_id, xRange});
+  const {data: graphData} = useGraphData(ts_id, xRange);
 
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],
