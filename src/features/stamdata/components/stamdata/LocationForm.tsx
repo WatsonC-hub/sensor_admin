@@ -4,10 +4,10 @@ import {ChangeEvent, useContext, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
+import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
+import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
+import LocationTypeSelect from '~/features/stamdata/components/stamdata/LocationTypeSelect';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
-import LocationGroups from '~/pages/field/stamdata/components/LocationGroups';
-import LocationProjects from '~/pages/field/stamdata/components/LocationProjects';
-import LocationTypeSelect from '~/pages/field/stamdata/components/LocationTypeSelect';
 import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
 

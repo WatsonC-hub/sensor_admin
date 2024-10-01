@@ -37,18 +37,18 @@ import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import FormInput from '~/components/FormInput';
+import StamdataFooter from '~/components/StamdataFooter';
 import {tabsHeight} from '~/consts';
+import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
+import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
+import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
+import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
+import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {StationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import TabPanel from '~/pages/field/overview/TabPanel';
-import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
-import LocationForm from '~/pages/field/stamdata/components/LocationForm';
-import ReferenceForm from '~/pages/field/stamdata/components/ReferenceForm';
-import StamdataFooter from '~/pages/field/stamdata/components/StamdataFooter';
-import TimeseriesForm from '~/pages/field/stamdata/components/TimeseriesForm';
-import UnitForm from '~/pages/field/stamdata/components/UnitForm';
 import {authStore, stamdataStore} from '~/state/store';
 
 const unitEndSchema = z.object({

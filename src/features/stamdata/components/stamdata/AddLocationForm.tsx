@@ -6,7 +6,7 @@ import React from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
-import LocationForm from '~/pages/field/stamdata/components/LocationForm';
+import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 
 interface AddLocationFormProps {
   locationDialogOpen: boolean;

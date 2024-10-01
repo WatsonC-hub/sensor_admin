@@ -12,7 +12,7 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
-import LocationGroups from '~/pages/field/stamdata/components/LocationGroups';
+import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 
 const schema = z.object({
   calypso_id: z.number().int().min(1).optional().nullish(),

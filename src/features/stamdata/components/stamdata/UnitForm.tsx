@@ -4,7 +4,7 @@ import React, {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
-import FormTextField from '~/pages/field/stamdata/components/FormTextField';
+import FormTextField from '~/components/FormTextField';
 import {stamdataStore} from '~/state/store';
 
 interface UnitFormProps {

@@ -9,7 +9,7 @@ import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import LocationGroups from '~/pages/field/stamdata/components/LocationGroups';
+import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {authStore} from '~/state/store';
 
 interface FilterOptionsProps {

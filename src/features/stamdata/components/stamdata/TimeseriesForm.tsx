@@ -5,7 +5,7 @@ import {useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
-import FormTextField from '~/pages/field/stamdata/components/FormTextField';
+import FormTextField from '~/components/FormTextField';
 
 interface TimeseriesTypeSelectProps {
   stationTypes: Array<{tstype_id: number; tstype_name: string}>;
