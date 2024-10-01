@@ -45,7 +45,6 @@ const ContactInfo = () => {
   };
 
   const handleEdit = (contactInfo: ContactTable) => {
-    console.log('Editing...', contactInfo);
     const payload = {
       path: `${loc_id}`,
       data: {

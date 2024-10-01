@@ -73,48 +73,59 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
                     name="contact_id"
                     control={control}
                     render={({field: {onChange, value}, fieldState: {error}}) => (
-                      <ExtendedAutocomplete<baseContactInfo>
-                        options={contacts ?? []}
-                        labelKey="navn"
-                        error={error?.message}
-                        disabled={location_access_id !== -1 && !editMode}
-                        onChange={(option) => {
-                          if (option == null) {
-                            onChange(null);
-                            return;
+                      <>
+                        {/* {value && ( */}
+                        <ExtendedAutocomplete<baseContactInfo>
+                          options={contacts ?? []}
+                          labelKey="navn"
+                          error={error?.message}
+                          disabled={location_access_id !== -1 && !editMode}
+                          onChange={(option) => {
+                            if (option == null) {
+                              onChange(null);
+                              return;
+                            }
+                            if ('id' in option) {
+                              onChange(option.id);
+                            }
+                          }}
+                          selectValue={
+                            contacts.find((item) => item.id === value) ?? {
+                              id: '-1',
+                              navn: '',
+                              email: '',
+                            }
                           }
-                          if ('id' in option) {
-                            onChange(option.id);
-                          }
-                        }}
-                        selectValue={contacts.find((item) => item.id == value)!}
-                        filterOptions={(options, params) => {
-                          const {inputValue} = params;
+                          filterOptions={(options, params) => {
+                            const {inputValue} = params;
 
-                          const filter = options.filter(
-                            (option) =>
-                              option.navn.includes(inputValue) || option.email.includes(inputValue)
-                          );
+                            const filter = options.filter(
+                              (option) =>
+                                option.navn.includes(inputValue) ||
+                                option.email.includes(inputValue)
+                            );
 
-                          return filter;
-                        }}
-                        renderOption={(props, option) => {
-                          return (
-                            <li {...props} key={option.id}>
-                              <Box display={'flex'} flexDirection={'column'}>
-                                <Typography>{option.navn}</Typography>
-                                <Box display={'flex'} flexDirection={'row'} mx={2} gap={1}>
-                                  <Typography variant="body2">{option.email}</Typography>
+                            return filter;
+                          }}
+                          renderOption={(props, option) => {
+                            return (
+                              <li {...props} key={option.id}>
+                                <Box display={'flex'} flexDirection={'column'}>
+                                  <Typography>{option.navn}</Typography>
+                                  <Box display={'flex'} flexDirection={'row'} mx={2} gap={1}>
+                                    <Typography variant="body2">{option.email}</Typography>
+                                  </Box>
                                 </Box>
-                              </Box>
-                            </li>
-                          );
-                        }}
-                        textFieldsProps={{
-                          label: 'Kontakt',
-                          placeholder: 'Vælg kontakt',
-                        }}
-                      />
+                              </li>
+                            );
+                          }}
+                          textFieldsProps={{
+                            label: 'Kontakt',
+                            placeholder: 'Vælg kontakt',
+                          }}
+                        />
+                        {/* )} */}
+                      </>
                     )}
                   />
                 </Grid>

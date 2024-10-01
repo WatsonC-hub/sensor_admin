@@ -94,7 +94,6 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                     return;
                   }
                   if ('id' in option) {
-                    console.log(option);
                     setSelectedContactInfo(option);
                     setCreateNew(true);
                     reset({

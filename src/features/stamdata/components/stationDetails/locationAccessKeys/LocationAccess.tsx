@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid} from '@mui/material';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {useParams} from 'react-router-dom';
 
@@ -39,7 +39,7 @@ const LocationAccess = () => {
     mode: 'onSubmit',
   });
 
-  const {clearErrors, handleSubmit, reset, watch} = formMethods;
+  const {clearErrors, handleSubmit, reset} = formMethods;
 
   const handleClose = () => {
     reset(initialLocationAccessData);
@@ -100,17 +100,6 @@ const LocationAccess = () => {
     });
   };
 
-  const id = watch('id');
-
-  useEffect(() => {
-    if (id === -1) {
-      console.log(id);
-      setCreateNew(true);
-    } else {
-      setCreateNew(false);
-    }
-  }, [id]);
-
   return (
     <Grid container spacing={1} my={1} justifyContent="center" alignItems="center">
       <FormProvider {...formMethods}>
@@ -148,7 +137,11 @@ const LocationAccess = () => {
                 >
                   <DialogTitle id="form-dialog-title">Vælg nøgle eller kode</DialogTitle>
                   <DialogContent>
-                    <SelectLocationAccess loc_id={loc_id} createNew={createNew} />
+                    <SelectLocationAccess
+                      loc_id={loc_id}
+                      createNew={createNew}
+                      setCreateNew={setCreateNew}
+                    />
                     <Grid item my={1}>
                       <Divider
                         sx={{bgcolor: 'primary.main', paddingTop: 0.1, paddingBottom: 0.1}}

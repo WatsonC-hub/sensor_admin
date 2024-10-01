@@ -9,9 +9,10 @@ import {Access} from '~/types';
 type Props = {
   loc_id: number | undefined;
   createNew: boolean;
+  setCreateNew: (createNew: boolean) => void;
 };
 
-const SelectLocationAccess = ({loc_id, createNew}: Props) => {
+const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
   const [selected, setSelected] = useState<Access | null>(null);
   const [search, setSearch] = useState<string>('');
   const {reset} = useFormContext();
@@ -20,7 +21,6 @@ const SelectLocationAccess = ({loc_id, createNew}: Props) => {
   const {data} = useSearchLocationAccess(search);
 
   useEffect(() => {
-    console.log(createNew);
     if (!createNew) {
       setSelected(null);
       setSearch('');
@@ -68,7 +68,11 @@ const SelectLocationAccess = ({loc_id, createNew}: Props) => {
         setSelected(newValue);
         if (newValue) {
           reset(newValue);
-        } else reset(initialLocationAccessData);
+          setCreateNew(true);
+        } else {
+          setCreateNew(false);
+          reset(initialLocationAccessData);
+        }
       }}
       onInputChange={(event, value) => {
         setSearch(value);

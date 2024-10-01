@@ -142,7 +142,6 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
         ? {}
         : {
             onClick: (e) => {
-              console.log((e!.target as HTMLElement).ondblclick);
               if ((e.target as HTMLElement).innerText) {
                 reset({
                   ...row.original,
@@ -168,7 +167,6 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          console.log(row.original);
           reset({
             ...row.original,
             telefonnummer: row.original.telefonnummer ? parseInt(row.original.telefonnummer) : null,
@@ -184,6 +182,19 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     ),
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
+    },
+    displayColumnDefOptions: {
+      'mrt-row-actions': {
+        size: 0, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
+        grow: false,
+        header: '',
+        muiTableHeadCellProps: {
+          align: 'right',
+        },
+        muiTableBodyCellProps: {
+          align: 'right',
+        },
+      },
     },
   };
 
