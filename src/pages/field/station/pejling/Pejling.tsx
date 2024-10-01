@@ -135,6 +135,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
               resetFormData={resetFormData}
               isFlow={isFlow}
               setDynamic={setDynamic}
+              latestMeasurement={latestMeasurement}
             />
           )}
           <PejlingMeasurements
