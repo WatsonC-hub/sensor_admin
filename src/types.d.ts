@@ -254,26 +254,6 @@ export type AccessTable = {
   contact_name?: string;
 };
 
-export type Unit = {
-  terminal_type: string;
-  terminal_id: string;
-  sensor_id: string;
-  sensorinfo: string;
-  calypso_id: string;
-  batteriskift: string;
-  startdato: string;
-  slutdato: string;
-  uuid: string;
-  gid: number;
-  channel: string;
-};
-
-export type typeUnitPost = {
-  unit_uuid: string;
-  startdate: string;
-  enddate: string;
-};
-
 export type QATableType = {
   ts_id: number;
   calypso_id?: number;
