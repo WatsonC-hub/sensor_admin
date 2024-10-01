@@ -5,11 +5,7 @@ import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo} from 'react';
 import {toast} from 'react-toastify';
 
-import {
-  convertDateWithTimeStamp,
-  limitDecimalNumbers,
-  splitTimeFromDate,
-} from '~/helpers/dateConverter';
+import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';

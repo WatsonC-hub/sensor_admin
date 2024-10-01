@@ -1,6 +1,7 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import {startCase} from 'lodash';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
 
@@ -19,7 +20,7 @@ import {InferContactInfoTable} from '../zodSchemas';
 import StationContactInfo from './StationContactInfo';
 
 type Props = {
-  data: Array<ContactTable> | undefined;
+  data: Array<ContactTable>;
   delContact: (relation_id: number) => void;
   editContact: (ContactInfo: ContactTable) => void;
 };
@@ -127,6 +128,8 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   const [tableState, resetState] = useStatefullTableAtom<ContactTable>('ContactTableState');
 
   const options: Partial<MRT_TableOptions<ContactTable>> = {
+    localization:
+      'detail' in data ? {noRecordsToDisplay: data.detail as string} : MRT_Localization_DA,
     enableTopToolbar: false,
     enablePagination: false,
     enableRowActions: true,

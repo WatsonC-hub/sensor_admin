@@ -133,7 +133,7 @@ const LocationAccess = () => {
 
             <Grid item xs={12} sm={12}>
               <LocationAccessTable
-                data={locationAccess}
+                data={typeof locationAccess === 'object' ? locationAccess : []}
                 editLocationAccess={handleEdit}
                 delLocationAccess={handleDelete}
               />
