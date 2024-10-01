@@ -480,18 +480,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   let schema: typeof locationSchema | typeof timeseriesSchema | typeof metadataPutSchema;
   schema = locationSchema;
 
-  // if (metadata && metadata.ressourcer && metadata.ressourcer.length > 0) {
-  //   schema = stationDetailsSchema;
-  //   schemaData = stationDetailsSchema.safeParse({
-  //     location: {
-  //       ...metadata,
-  //     },
-  //     stationDetails: {
-  //       ...metadata,
-  //     },
-  //   });
-  // }
-
   if (metadata && metadata.ts_id && !metadata.unit_uuid) {
     schema = timeseriesSchema;
   } else if (metadata && metadata.unit_uuid) {
@@ -513,7 +501,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     },
   });
 
-  const formMethods = useForm({
+  const formMethods = useForm<EditValues>({
     resolver: zodResolver(schema),
     defaultValues: schemaData.success ? schemaData.data : {},
     mode: 'onTouched',
@@ -536,9 +524,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
       timeseries: {
         ...metadata,
       },
-      // stationDetails: {
-      //   ...metadata,
-      // },
     });
     reset(result.success ? result.data : {});
   };
@@ -547,19 +532,17 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     if (metadata) {
       resetFormData();
     }
-  }, [ts_id]);
+  }, [ts_id, metadata]);
 
   const handleUpdate = (type: 'location' | 'timeseries' | 'unit') => {
     if (type === 'location') {
       const locationData = getValues('location') as Location;
-      console.log(locationData);
       metadataEditLocationMutation.mutate(locationData, {
         onSuccess: () => {
           toast.success('Lokation er opdateret');
         },
       });
     } else if (type === 'timeseries') {
-      //@ts-expect-error - we know it's a timeseries
       const timeseriesData = getValues('timeseries') as Timeseries;
       metadataEditTimeseriesMutation.mutate(timeseriesData, {
         onSuccess: () => {
@@ -567,7 +550,6 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
         },
       });
     } else {
-      //@ts-expect-error - we know it's a unit
       const unitData = getValues('unit') as Unit;
 
       metadataEditUnitMutation.mutate(

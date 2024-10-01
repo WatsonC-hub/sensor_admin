@@ -50,6 +50,7 @@ const metadataSchema = metadataBaseSchema.extend({
 
   watlevmp: z
     .object({
+      startdate: z.string().optional(),
       elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
       description: z
         .string({required_error: 'Beskrivelse skal udfyldes'})

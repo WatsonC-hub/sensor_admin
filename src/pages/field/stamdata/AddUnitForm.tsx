@@ -50,9 +50,7 @@ export default function AddUnitForm({
     post: addUnit,
   } = useUnit();
 
-  console.log(isLoading);
-
-  const formMethods = useFormContext();
+  const {trigger, setValue} = useFormContext();
 
   const [unitData, setUnitData] = useState({
     calypso_id: '',
@@ -119,7 +117,7 @@ export default function AddUnitForm({
   };
 
   const handleDateChange = (date: Date) => {
-    formMethods.trigger('unit');
+    trigger('unit');
     setUnitData({
       ...unitData,
       fra: date,
@@ -174,8 +172,8 @@ export default function AddUnitForm({
 
       if (!unit) return;
 
-      formMethods.trigger('unit');
-      formMethods.setValue('unit', {
+      trigger('unit');
+      setValue('unit', {
         unit_uuid: unit.unit_uuid,
         startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
       });

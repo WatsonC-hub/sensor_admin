@@ -352,3 +352,19 @@ export type QaGraphLabel = {
   label_id: number;
   name: string;
 };
+
+export type FieldLocation = {
+  loc_id?: number;
+  loc_name: string;
+  mainloc: string;
+  subloc: string;
+  subsubloc: string;
+  x: number;
+  y: number;
+  groups: string[];
+  terrainqual: string;
+  terrainlevel: number;
+  description: string;
+  loctype_id: number;
+  initial_project_no: string | null;
+};
