@@ -1,6 +1,7 @@
 import {AddCircle} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import {AxiosError} from 'axios';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
@@ -48,12 +49,13 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const {data: latestMeasurement} = useQuery({
     queryKey: ['latest_measurement', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient
-        .get<LatestMeasurement>(`/sensor_field/station/latest_measurement/${ts_id}`)
+      const result = await apiClient
+        .get<LatestMeasurement | AxiosError>(`/sensor_field/station/latest_measurement/${ts_id}`)
         .catch((error) => {
           return error.response;
         });
-      return data;
+
+      return result?.data;
     },
     staleTime: 10,
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
@@ -111,7 +113,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     }
   }, [ts_id]);
 
-  console.log(showForm);
   return (
     <FabWrapper
       icon={<AddCircle />}
@@ -136,6 +137,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
               resetFormData={resetFormData}
               isFlow={isFlow}
               setDynamic={setDynamic}
+              latestMeasurement={latestMeasurement}
             />
           )}
           <PejlingMeasurements

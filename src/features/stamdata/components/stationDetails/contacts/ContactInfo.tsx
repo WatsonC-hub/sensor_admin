@@ -45,7 +45,6 @@ const ContactInfo = () => {
   };
 
   const handleEdit = (contactInfo: ContactTable) => {
-    console.log('Editing...', contactInfo);
     const payload = {
       path: `${loc_id}`,
       data: {
@@ -96,7 +95,7 @@ const ContactInfo = () => {
         </Grid>
         <Grid item xs={12} sm={12}>
           <ContactInfoTable
-            data={contactTableInfo}
+            data={typeof contactTableInfo === 'object' ? contactTableInfo : []}
             delContact={handleDelete}
             editContact={handleEdit}
           />

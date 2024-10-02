@@ -6,11 +6,11 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import CaptureDialog from '~/components/CaptureDialog';
 import ScanComponent from '~/components/ScanComponent';
+import LocationRouter from '~/features/station/components/LocationRouter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
 import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
-import LocationRouter from '~/pages/field/station/LocationRouter';
 import {captureDialogAtom} from '~/state/atoms';
 
 import Opgave from './opgave/Opgave';

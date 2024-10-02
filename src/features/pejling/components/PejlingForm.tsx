@@ -23,9 +23,10 @@ import {Controller, useFormContext, get} from 'react-hook-form';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {alertHeight, correction_map} from '~/consts';
+import {limitDecimalNumbers} from '~/helpers/dateConverter';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {stamdataStore} from '~/state/store';
-import {Maalepunkt, PejlingItem} from '~/types';
+import {LatestMeasurement, Maalepunkt, PejlingItem} from '~/types';
 // TODO
 // - Find ud af om textfield skal have grøn outline
 
@@ -36,6 +37,7 @@ interface PejlingFormProps {
   isFlow: boolean;
   openAddMP: () => void;
   setDynamic: (dynamic: Array<unknown>) => void;
+  latestMeasurement: LatestMeasurement | undefined;
 }
 
 export default function PejlingForm({
@@ -45,6 +47,7 @@ export default function PejlingForm({
   isFlow,
   openAddMP,
   setDynamic,
+  latestMeasurement,
 }: PejlingFormProps) {
   const store = stamdataStore();
   const tstype_id = store.timeseries.tstype_id;
@@ -67,6 +70,7 @@ export default function PejlingForm({
   const [notPossible, setNotPossible] = useState(false);
   const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
   const measurement = watch('measurement');
+  const [elevationDiff, setElevationDiff] = useState<number | null>(null);
   useEffect(() => {
     if (mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
@@ -89,14 +93,22 @@ export default function PejlingForm({
           const dynamicDate = getValues('timeofmeas');
           const dynamicMeas = internalCurrentMP.elevation - Number(measurement);
           setDynamic([dynamicDate, dynamicMeas]);
+          const latestmeas =
+            latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
+          setElevationDiff(dynamicMeas - latestmeas);
+          console.log(dynamicMeas, latestMeasurement?.measurement);
         } else {
           setDynamic([]);
+          setElevationDiff(null);
         }
       }
     } else if (tstype_id !== 1) {
       const dynamicDate = getValues('timeofmeas');
       const dynamicMeas = Number(measurement);
       setDynamic([dynamicDate, dynamicMeas]);
+      const latestmeas =
+        latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
+      setElevationDiff(dynamicMeas - latestmeas);
     }
   }, [mpData, measurement, tstype_id]);
 
@@ -208,6 +220,15 @@ export default function PejlingForm({
                         </Typography>
                       ) : (
                         <>
+                          {latestMeasurement && latestMeasurement.measurement && elevationDiff ? (
+                            <Typography>
+                              Differens til seneste måling: {limitDecimalNumbers(elevationDiff)} m
+                            </Typography>
+                          ) : (
+                            <Typography>
+                              Differens kan ikke beregnes uden en seneste værdi
+                            </Typography>
+                          )}
                           <Typography>
                             Målepunkt: {currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
                           </Typography>

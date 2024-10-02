@@ -1,14 +1,17 @@
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
+import {Layout, RangeSelector, RangeSelectorButton} from 'plotly.js';
 import React, {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {setGraphHeight} from '~/consts';
+import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
+import {MergeType} from '~/helpers/EnumHelper';
 import {Measurement} from '~/types';
 
-const selectorOptions = {
+const selectorOptions: Partial<RangeSelector> = {
   buttons: [
     {
       step: 'day',
@@ -32,17 +35,14 @@ const selectorOptions = {
       step: 'all',
       label: 'Alt',
     },
-  ],
+  ] as Array<RangeSelectorButton>,
 };
 
-const layout1 = {
+const layout1: Partial<Layout> = {
   xaxis: {
     rangeselector: selectorOptions,
-    /*rangeslider: {},*/
     autorange: true,
     type: 'date',
-    //range:["2020-12-01T00:00:00", A],
-    //domain: [0, 0.97],
     showline: true,
   },
 
@@ -74,7 +74,7 @@ const layout1 = {
   },
 };
 
-const layout3 = {
+const layout3: Partial<Layout> = {
   modebar: {
     orientation: 'v',
   },
@@ -83,14 +83,10 @@ const layout3 = {
     rangeselector: selectorOptions,
     autorange: true,
     type: 'date',
-    margin: {
-      t: 0,
-    },
   },
 
   yaxis: {
     showline: true,
-    y: 1,
     title: {
       text: '',
       font: {size: 12},
@@ -134,11 +130,23 @@ interface PlotGraphProps {
 }
 
 function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => d.waterlevel);
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string | number>>([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<string | number>>([]);
+
+  const layout2 = matches
+    ? {
+        showlegend: false,
+      }
+    : {
+        yaxis2: {},
+      };
+
+  const [mergedLayout] = usePlotlyLayout(MergeType.SHALLOWMERGE, layout2);
 
   useEffect(() => {
     if (dynamicMeasurement !== undefined) {
@@ -156,9 +164,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
       ?.map((situation, index) => situation === i && index)
       .filter((d) => d !== false);
     // get x and y values for each situation
-    //@ts-ignore
     const x = indexes?.map((index) => jupiterData.data.x[index]);
-    //@ts-ignore
     const y = indexes?.map((index) => jupiterData.data.y[index]);
 
     let name = 'Jupiter - ukendt årsag';
@@ -176,8 +182,6 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
       marker: {symbol: '100', size: '8'},
     };
   });
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const data: any = [
     ...jupiterTraces,
@@ -200,16 +204,16 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
     },
   ];
 
-  const layout: any = matches
+  const layout: Partial<Layout> = matches
     ? {
-        ...layout3,
+        ...mergedLayout,
         yaxis: {
           ...layout3.yaxis,
           // title: "Vandstand",
         },
       }
     : {
-        ...layout1,
+        ...mergedLayout,
         yaxis: {
           ...layout1.yaxis,
           title: 'Vandstand',

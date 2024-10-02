@@ -1,3 +1,5 @@
+import {RangeSelector, RangeSelectorButton, Layout} from 'plotly.js';
+
 export const mapboxToken: string =
   'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3ZxMDhmMGV3bDNzbHE1YTZneGFtMSJ9.-IVlITKrk0DjTghXVnlGiQ';
 
@@ -142,4 +144,108 @@ export const httpStatusDescriptions = {
   '502': 'Forkert svar fra serveren',
   '503': 'Service utilgængelig - Serveren er midlertidigt nede',
   '504': 'Forbindelsen tog for lang tid',
+};
+
+const selectorOptions: Partial<RangeSelector> = {
+  buttons: [
+    {
+      step: 'day',
+      stepmode: 'backward',
+      count: 7,
+      label: '1 uge',
+    },
+    {
+      step: 'year',
+      stepmode: 'backward',
+      count: 1,
+      label: '1 år',
+    },
+    {
+      step: 'month',
+      stepmode: 'backward',
+      count: 1,
+      label: '1 måned',
+    },
+    {
+      step: 'all',
+      label: 'Alt',
+    },
+  ] as Array<Partial<RangeSelectorButton>>,
+};
+
+export const desktopLayout: Partial<Layout> = {
+  xaxis: {
+    rangeselector: selectorOptions,
+    autorange: true,
+    type: 'date',
+    showline: true,
+  },
+  yaxis: {
+    title: {
+      text: '',
+      font: {size: 12},
+    },
+    showline: true,
+  },
+  yaxis2: {
+    showgrid: false,
+    overlaying: 'y',
+    side: 'right',
+    title: {
+      font: {
+        size: 12,
+      },
+    },
+  },
+  showlegend: true,
+  legend: {
+    x: 0,
+    y: -0.15,
+    orientation: 'h',
+  },
+  margin: {
+    // l: 70,
+    r: 0,
+    // b: 30,
+    t: 10,
+    pad: 4,
+  },
+  font: {
+    size: 12,
+    color: 'rgb(0, 0, 0)',
+  },
+};
+
+export const mobileLayout: Partial<Layout> = {
+  modebar: {
+    orientation: 'v',
+  },
+  xaxis: {
+    rangeselector: selectorOptions,
+    autorange: true,
+    type: 'date' as Plotly.AxisType,
+  },
+  yaxis: {
+    showline: true,
+    title: {
+      text: '',
+      font: {size: 12},
+    },
+  },
+  legend: {
+    x: 0,
+    y: -0.15,
+    orientation: 'h',
+  },
+  margin: {
+    l: 50,
+    r: 30,
+    b: 40,
+    t: 0,
+    pad: 4,
+  },
+  font: {
+    size: 12,
+    color: 'rgb(0, 0, 0)',
+  },
 };

@@ -8,14 +8,14 @@ import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
+import ActionArea from '~/features/station/components/ActionArea';
+import BearingGraph from '~/features/station/components/BearingGraph';
 import {StationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
-import ActionArea from '~/pages/field/station/ActionArea';
-import BearingGraph from '~/pages/field/station/BearingGraph';
-import EditStamdata from '~/pages/field/station/EditStamdata';
 import Pejling from '~/pages/field/station/pejling/Pejling';
+import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {stamdataStore} from '~/state/store';
 

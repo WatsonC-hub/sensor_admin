@@ -4,27 +4,33 @@ import {BuildRounded, LocationOnRounded, ShowChartRounded} from '@mui/icons-mate
 import {Grid, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect} from 'react';
+import React, {ReactNode, useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
+import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
+import StamdataFooter from '~/components/StamdataFooter';
 import {tabsHeight} from '~/consts';
+import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
+import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
+import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
+import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {metadataSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
-import AddUnitForm from '~/pages/field/stamdata/AddUnitForm';
-import LocationForm from '~/pages/field/stamdata/components/LocationForm';
-import StamdataFooter from '~/pages/field/stamdata/components/StamdataFooter';
-import TimeseriesForm from '~/pages/field/stamdata/components/TimeseriesForm';
-import UnitForm from '~/pages/field/stamdata/components/UnitForm';
 import {stamdataStore} from '~/state/store';
+import {FieldLocation} from '~/types';
 
-function TabPanel(props) {
-  const {children, value, index, ...other} = props;
+interface TabPanelProps {
+  value: string | null;
+  index: string;
+  children: ReactNode;
+}
 
+function TabPanel({value, index, children, ...other}: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -38,14 +44,23 @@ function TabPanel(props) {
   );
 }
 
-export default function OpretStamdata({setAddStationDisabled}) {
+interface OpretStamdataProps {
+  setAddStationDisabled: (value: boolean) => void;
+}
+
+type CreateValues = z.infer<typeof metadataSchema>;
+type Timeseries = CreateValues['timeseries'];
+type Unit = CreateValues['unit'];
+type Watlevmp = CreateValues['watlevmp'];
+
+export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
   const {field, location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const {data: locations} = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_field/stamdata/locations');
+      const {data} = await apiClient.get<Array<FieldLocation>>('/sensor_field/stamdata/locations');
       return data;
     },
   });
@@ -59,7 +74,6 @@ export default function OpretStamdata({setAddStationDisabled}) {
   }, []);
 
   const [tabValue, setTabValue] = useSearchParam('tab', '0');
-
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -69,6 +83,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       timeseries: {
         tstype_id: -1,
       },
+      watlevmp: {},
     },
     mode: 'onTouched',
   });
@@ -84,10 +99,8 @@ export default function OpretStamdata({setAddStationDisabled}) {
 
   useEffect(() => {
     if (store.location.loc_id != undefined && locations != undefined) {
-      setValue(
-        'location',
-        locations.find((item) => item.loc_id === store.location.loc_id)
-      );
+      const location = locations.find((item) => item.loc_id === store.location.loc_id);
+      if (location) setValue('location', location);
     }
   }, [store.location.loc_id, locations]);
 
@@ -95,14 +108,19 @@ export default function OpretStamdata({setAddStationDisabled}) {
   const loc_id = watch('location.loc_id');
 
   const stamdataNewMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: {
+      location: FieldLocation;
+      timeseries: Timeseries;
+      unit: Unit;
+      watlevmp?: Watlevmp;
+    }) => {
       const {data: out} = await apiClient.post(`/sensor_field/stamdata/`, data);
       return out;
     },
   });
 
   const stamdataNewLocationMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: {location: FieldLocation}) => {
       const {data: out} = await apiClient.post(
         `/sensor_field/stamdata/create_location`,
         data.location
@@ -112,7 +130,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
   });
 
   const stamdataNewTimeseriesMutation = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: {
+      location: FieldLocation;
+      timeseries: Timeseries;
+      watlevmp?: Watlevmp;
+    }) => {
       const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_timeseries`, data);
       return out;
     },
@@ -137,7 +159,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
   };
 
   const nextTab = () => {
-    if (tabValue !== '3') setTabValue((parseInt(tabValue) + 1).toString());
+    if (tabValue && tabValue !== '3') setTabValue((parseInt(tabValue) + 1).toString());
   };
 
   useEffect(() => {
@@ -171,7 +193,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
       watlevmpValid = await trigger('watlevmp');
     }
 
-    let form = null;
+    let form: {location: FieldLocation; timeseries: Timeseries; watlevmp?: Watlevmp};
     if (locationValid && timeseriesValid && watlevmpValid) {
       form = {
         location: {
@@ -183,9 +205,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
       };
 
       if (isWaterlevel) {
+        const watlevmp = getValues('watlevmp') as Watlevmp;
         form['watlevmp'] = {
           startdate: moment().format('YYYY-MM-DD'),
-          ...getValues('watlevmp'),
+          description: watlevmp?.description ?? '',
+          elevation: watlevmp?.elevation ?? 0,
         };
       }
 
@@ -201,7 +225,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
     const locationValid = await trigger('location');
     const timeseriesValid = await trigger('timeseries');
 
-    let form = null;
+    let form: {location: FieldLocation; timeseries: Timeseries; unit: Unit; watlevmp?: Watlevmp};
     if (locationValid && timeseriesValid) {
       form = {
         location: {
@@ -218,9 +242,11 @@ export default function OpretStamdata({setAddStationDisabled}) {
       };
 
       if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
+        const watlevmp = getValues('watlevmp') as Watlevmp;
         form['watlevmp'] = {
           startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
-          ...getValues()?.watlevmp,
+          description: watlevmp?.description ?? '',
+          elevation: watlevmp?.elevation ?? 0,
         };
       }
 
@@ -301,7 +327,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
           >
             <TabPanel value={tabValue} index={'0'}>
               <Grid container>
-                <LocationForm disable={loc_id == null ? false : true} />
+                <LocationForm disable={loc_id == null ? false : true} mode={'normal'} />
               </Grid>
               <StamdataFooter
                 cancel={cancel}
@@ -340,7 +366,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
                 >
                   {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
                 </Button>
-                {errors?.unit && (
+                {errors && 'unit' in errors && (
                   <Typography variant="caption" color="error">
                     Vælg udstyr først
                   </Typography>
@@ -355,6 +381,7 @@ export default function OpretStamdata({setAddStationDisabled}) {
             udstyrDialogOpen={udstyrDialogOpen}
             setUdstyrDialogOpen={setUdstyrDialogOpen}
             tstype_id={watchtstype_id}
+            mode="normal"
           />
           <DevTool control={formMethods.control} />
         </FormProvider>

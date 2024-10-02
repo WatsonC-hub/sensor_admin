@@ -1,4 +1,5 @@
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -56,11 +57,15 @@ export const useContactInfo = (loc_id: number | undefined) => {
   const get = useQuery({
     queryKey: ['contact_info'],
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<ContactTable>>(
-        `/sensor_field/stamdata/contact/contact_info/${loc_id}`
-      );
+      const result = await apiClient
+        .get<
+          Array<ContactTable> | AxiosError
+        >(`/sensor_field/stamdata/contact/contact_info/${loc_id}`)
+        .catch((error) => {
+          return error.response;
+        });
 
-      return data;
+      return result?.data;
     },
     enabled: loc_id !== undefined && loc_id !== null,
   });

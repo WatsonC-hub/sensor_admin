@@ -1,5 +1,6 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
 import {useParams} from 'react-router-dom';
@@ -20,7 +21,7 @@ import {AdgangsforholdTable} from '../zodSchemas';
 import LocationAccessFormDialog from './LocationAccessFormDialog';
 
 type Props = {
-  data: Array<AccessTable> | undefined;
+  data: Array<AccessTable>;
   delLocationAccess: (location_access_id: number | undefined) => void;
   editLocationAccess: (LocationAccess: AccessTable) => void;
 };
@@ -137,6 +138,8 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
   const [tableState, resetState] = useStatefullTableAtom<AccessTable>('ContactTableState');
 
   const options: Partial<MRT_TableOptions<AccessTable>> = {
+    localization:
+      'detail' in data ? {noRecordsToDisplay: data.detail as string} : MRT_Localization_DA,
     enableTopToolbar: false,
     enablePagination: false,
     enableRowActions: true,
@@ -154,7 +157,6 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
           }
         : {
             onClick: (e) => {
-              console.log((e.target as HTMLElement).innerText);
               if ((e.target as HTMLElement).innerText) {
                 reset(row.original);
                 table.setEditingRow(row);
@@ -186,6 +188,19 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     ),
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
+    },
+    displayColumnDefOptions: {
+      'mrt-row-actions': {
+        size: 0, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
+        grow: false,
+        header: '',
+        muiTableHeadCellProps: {
+          align: 'right',
+        },
+        muiTableBodyCellProps: {
+          align: 'right',
+        },
+      },
     },
   };
 
