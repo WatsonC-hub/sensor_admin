@@ -4,7 +4,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
-import {Layout, ModeBarButtonAny, RangeSelector, RangeSelectorButton} from 'plotly.js';
+import {Layout, RangeSelector, RangeSelectorButton} from 'plotly.js';
 import React, {useContext, useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 
@@ -264,10 +264,9 @@ function PlotGraph({
 
   const fullData = queryClient.getQueryData<QaGraphData>(['graphData', ts_id, initRange]);
 
-  console.log(fullData);
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
-  const {data: graphData} = useGraphData({ts_id, xRange});
+  const {data: graphData} = useGraphData(ts_id, xRange);
 
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],
@@ -385,8 +384,6 @@ function PlotGraph({
     }
   };
 
-  console.log(graphData);
-
   const xControl = controlData?.map((d) => d.timeofmeas);
   const yControl = controlData?.map((d) => d.measurement);
   const textControl = controlData?.map((d) => {
@@ -423,12 +420,13 @@ function PlotGraph({
     },
   };
 
-  const rerunQAButton: ModeBarButtonAny = {
+  const rerunQAButton = {
     name: 'Genberegn QA',
     title: 'Genberegn QA',
     icon: rerunQAIcon,
     click: function () {
-      // toastId.current = toast.loading('Genkører kvalitetssikring...');
+      console.log('hej');
+      console.log(rerunQAMutation);
       rerunQAMutation.mutate();
     },
   };
@@ -651,8 +649,6 @@ export default function QAGraph({stationId}: QAGraphProps) {
       return data;
     },
   });
-
-  console.log(qaData);
 
   return (
     <Box display="flex" flexDirection="column">

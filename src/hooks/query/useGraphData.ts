@@ -14,9 +14,6 @@ export const useGraphData = (ts_id: number, xRange: Array<string>) => {
           limit: 4000,
         },
       });
-      // if (data === null) {
-      //   return [];
-      // }
       return data ?? [];
     },
     // keepPreviousData: true,

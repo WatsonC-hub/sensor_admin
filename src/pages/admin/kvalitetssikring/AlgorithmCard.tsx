@@ -1,10 +1,16 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import {Card, CardActions, CardContent, CardHeader} from '@mui/material';
-import {useQueryClient} from '@tanstack/react-query';
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Checkbox,
+  FormControlLabel,
+  Typography,
+} from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
-import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {Controller, FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {useParams} from 'react-router-dom';
-import {toast} from 'react-toastify';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
@@ -23,32 +29,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
 
   console.log(qaAlgorithm);
 
-  const queryClient = useQueryClient();
-  const {put: submitData, revert: revertToDefaults} = useAlgorithms();
-
-  // const submitData = useMutation({
-  //   mutationFn: async (data: QaAlgorithmsPut) => {
-  //     const {data: response} = await apiClient.put<QaAlgorithmsPut>(
-  //       `/sensor_admin/algorithms/${params.ts_id}`,
-  //       data
-  //     );
-  //     return response;
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['algorithms', params.ts_id],
-  //     });
-  //   },
-  // });
-
-  // const revertToDefaults = useMutation({
-  //   mutationFn: async () => {
-  //     const {data: response} = await apiClient.delete(
-  //       `/sensor_admin/algorithms/${params.ts_id}/${qaAlgorithm.algorithm}`
-  //     );
-  //     return response;
-  //   },
-  // });
+  const {put: submitData, revert: revertToDefaults} = useAlgorithms(params.ts_id);
 
   const handleRevert = () => {
     setDeleteDialogOpen(true);
@@ -59,37 +40,19 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       path: `${params.ts_id}`,
       data: {
         algorithm: qaAlgorithm.algorithm,
-        parameters: data,
+        parameters: data.parameters,
+        disabled: data.disabled,
       },
     };
-    toast.promise(() => submitData.mutateAsync(payload), {
-      pending: 'Gemmer indstillinger',
-      success: 'Indstillinger gemt',
-      error: 'Der skete en fejl',
-    });
+    submitData.mutate(payload);
   };
 
   const handleOkDelete = () => {
     const payload = {
-      path: `${params.ts_id}`,
+      path: `${params.ts_id}/${qaAlgorithm.algorithm}`,
       data: {algorithm: qaAlgorithm.algorithm},
     };
-    toast.promise(
-      () =>
-        revertToDefaults.mutateAsync(payload, {
-          onSuccess: () => {
-            console.log(['algorithms', params.ts_id]);
-            queryClient.invalidateQueries({
-              queryKey: ['algorithms', params.ts_id],
-            });
-          },
-        }),
-      {
-        pending: 'Nulstiller indstillinger',
-        success: 'Indstillinger nulstillet',
-        error: 'Der skete en fejl',
-      }
-    );
+    revertToDefaults.mutate(payload);
   };
 
   // const schema = useMemo(() => {
@@ -122,18 +85,24 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   //   return schema;
   // }, [qaAlgorithm]);
   const schema = useMemo(() => {
-    const schema = z.object({});
+    const schema = z.object({
+      disabled: z.boolean(),
+      parameters: z.object({}),
+    });
 
     qaAlgorithm?.parameters?.forEach((option) => {
       if (option.type === 'number') {
-        schema.shape[option.name] = z
+        //@ts-expect-error zod types are not correct
+        schema.shape.parameters.shape[option.name] = z
           .number()
           .min(option.min, {message: `Skal være større end ${option.min}`})
           .max(option.max, {message: `Skal være mindre end ${option.max}`});
       } else if (option.type === 'string') {
-        schema.shape[option.name] = z.string();
+        //@ts-expect-error zod types are not correct
+        schema.shape.parameters.shape[option.name] = z.string();
       } else if (option.type === 'boolean') {
-        schema.shape[option.name] = z.boolean();
+        //@ts-expect-error zod types are not correct
+        schema.shape.parameters.shape[option.name] = z.boolean();
       }
     });
 
@@ -141,8 +110,12 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   }, [qaAlgorithm]);
 
   let defaultValues;
-  const schemaData = schema && schema.safeParse(qaAlgorithm.parameter_values);
-
+  const schemaData =
+    schema &&
+    schema.safeParse({
+      disabled: qaAlgorithm.disabled,
+      parameters: qaAlgorithm.parameter_values,
+    });
   if (schemaData.success) defaultValues = schemaData.data;
   const formMethods = useForm<QaAlgorithmsPut>({
     resolver: zodResolver(schema),
@@ -152,8 +125,14 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   const {reset, handleSubmit} = formMethods;
 
   useEffect(() => {
+    const schemaData =
+      schema &&
+      schema.safeParse({
+        disabled: qaAlgorithm.disabled,
+        parameters: qaAlgorithm.parameter_values,
+      });
     if (schemaData.success) reset(schemaData.data);
-  }, [qaAlgorithm]);
+  }, [qaAlgorithm, reset, schema]);
 
   return (
     <>
@@ -189,10 +168,32 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                   fullWidth
                   type={option.type}
                   label={option.label}
-                  name={option.name}
+                  name={`parameters.${option.name}`}
                 />
               );
             })}
+            <FormControlLabel
+              control={
+                <Controller
+                  control={formMethods.control}
+                  name="disabled"
+                  render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
+                />
+              }
+              label={
+                <Typography
+                  variant="body1"
+                  component="span"
+                  sx={{
+                    display: 'flex',
+                    gap: 1,
+                    alignItems: 'center',
+                  }}
+                >
+                  Deaktiveret
+                </Typography>
+              }
+            />
           </FormProvider>
         </CardContent>
         <CardActions sx={{justifyContent: 'center', alignContent: 'center', p: 1, m: 0}}>

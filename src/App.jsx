@@ -35,7 +35,7 @@ function App() {
       ele.classList.add('available');
       setTimeout(() => {
         // remove from DOM
-        ele.outerHTML = '';
+        // ele.outerHTML = '';
       }, 2000);
     }
   }, []);

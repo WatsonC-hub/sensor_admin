@@ -17,6 +17,7 @@ interface AlgorithmsPut extends AlgorithmsBase {
   data: {
     algorithm: string;
     parameters: Record<string, any>;
+    disabled: boolean;
   };
 }
 
@@ -64,7 +65,7 @@ export const algorithmsRevertOptions = {
 export const useAlgorithms = (ts_id: string | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: ['algorithms'],
+    queryKey: ['algorithms', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<QaAlgorithms>>(`/sensor_admin/algorithms/${ts_id}`);
       return data;
@@ -84,7 +85,7 @@ export const useAlgorithms = (ts_id: string | undefined) => {
     ...algorithmsPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['algorithms'],
+        queryKey: ['algorithms', ts_id],
       });
       toast.success('Algorithms ændret');
     },
@@ -94,7 +95,7 @@ export const useAlgorithms = (ts_id: string | undefined) => {
     onSuccess: () => {
       toast.success('Algorithms slettet');
       queryClient.invalidateQueries({
-        queryKey: ['algorithms'],
+        queryKey: ['algorithms', ts_id],
       });
     },
   });
@@ -103,6 +104,9 @@ export const useAlgorithms = (ts_id: string | undefined) => {
     ...algorithmsRevertOptions,
     onSuccess: () => {
       toast.success('Algoritme nulstillet');
+      queryClient.invalidateQueries({
+        queryKey: ['algorithms', ts_id],
+      });
     },
   });
 

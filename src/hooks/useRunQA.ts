@@ -1,35 +1,33 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {useRef, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 
-export const useRunQA = (ts_id) => {
-  const queryClient = useQueryClient();
-  const toastId = useRef(null);
+const TOAST_ID = 'qa-toast';
 
+export const useRunQA = (ts_id: number) => {
+  const queryClient = useQueryClient();
+  const [refetchInterval, setRefetchInterval] = useState<number | false>(false);
   // TODO: Check me
-  const {data: qaPoll, refetch} = useQuery({
+  const {data: pollData, dataUpdatedAt} = useQuery({
     queryKey: ['pollQA', ts_id],
     queryFn: async () => {
       const {status} = await apiClient.get(`/sensor_admin/rerun_qa/poll/${ts_id}`);
       return status;
     },
     enabled: true,
-    refetchInterval: (query) => {
-      return query.state.data === 204 ? 1000 : false;
-    },
+    refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
   });
 
   useEffect(() => {
-    if (qaPoll === 200) {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_labels', ts_id],
-      });
-      toast.update(toastId.current, {
+    if (pollData === 200) {
+      setRefetchInterval(false);
+      queryClient.invalidateQueries({queryKey: ['qa_labels', ts_id]});
+      toast.update(TOAST_ID, {
         render: 'Genberegnet',
         type: 'success',
         isLoading: false,
@@ -40,16 +38,17 @@ export const useRunQA = (ts_id) => {
         hideProgressBar: false,
       });
     }
-  }, [qaPoll]);
+  }, [pollData, queryClient, ts_id, dataUpdatedAt]);
 
   const rerunQAMutation = useMutation({
     mutationFn: async (data) => {
-      toastId.current = toast('Genberegner QA...', {
-        type: toast.TYPE.INFO,
+      toast('Genberegner QA...', {
+        toastId: TOAST_ID,
+        type: 'info',
         isLoading: true,
         autoClose: false,
-        closeOnClick: false,
-        draggable: false,
+        closeOnClick: true,
+        draggable: true,
         progress: undefined,
         hideProgressBar: true,
       });
@@ -57,10 +56,11 @@ export const useRunQA = (ts_id) => {
       return res;
     },
     onSuccess: () => {
-      setTimeout(() => {
-        refetch();
-      }, 5000);
+      setRefetchInterval(1000);
       //handleXRangeChange({'xaxis.range[0]': undefined});
+    },
+    onError: () => {
+      setRefetchInterval(false);
     },
   });
 

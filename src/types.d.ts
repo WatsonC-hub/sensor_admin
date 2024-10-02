@@ -297,21 +297,28 @@ export type LatestMeasurement = {
   rawMeasurementUnit: string | null;
 };
 
+// type AlgorithmParams = {
+//   type: 'number' | 'string' | 'boolean';
+//   name: string;
+//   min: number;
+//   max: number;
+// };
+
 export type QaAlgorithms = {
   gid: number;
   algorithm: string;
-  parameters: Record<string, any>;
+  parameters: QaAlgorithmParameters[];
   name: string | null;
   days_to_include: number | null;
   active: boolean;
   exclude: Array<number> | null;
   parameter_values: Record<string, any>;
+  disabled: boolean;
 };
 
 export type QaAlgorithmParameters = {
   label: string;
-  type: string;
-  shape: Record<string, any>;
+  type: 'number' | 'string' | 'boolean';
   min: number;
   max: number;
   name: string;
@@ -320,6 +327,7 @@ export type QaAlgorithmParameters = {
 export type QaAlgorithmsPut = {
   algorithm: string;
   parameters: Record<string, any>;
+  disabled: boolean;
 };
 
 export type LevelCorrection = {

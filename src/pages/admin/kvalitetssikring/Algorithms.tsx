@@ -30,12 +30,11 @@ const Algorithms = () => {
           data && data.length > 0 ? {borderRadius: 2, border: 2, borderColor: 'primary.main'} : {}
         }
       >
-        {/* {data?.map((algorithm) => (
+        {data?.map((algorithm) => (
           <Grid key={algorithm.name} item xs={12} sm={6}>
-            <AlgorithmCard algorithm={algorithm} />
+            <AlgorithmCard qaAlgorithm={algorithm} />
           </Grid>
-        ))} */}
-        {data && data.length > 0 && <AlgorithmCard qaAlgorithm={data[data.length - 1]} />}
+        ))}
       </Grid>
     </>
   );
