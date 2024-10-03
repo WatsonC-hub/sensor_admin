@@ -66,6 +66,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+    localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
