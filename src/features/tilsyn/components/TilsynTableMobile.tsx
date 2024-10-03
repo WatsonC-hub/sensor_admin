@@ -98,6 +98,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
   );
 
   const options: Partial<MRT_TableOptions<TilsynItem>> = {
+    localization: {noRecordsToDisplay: 'Ingen tilsyn at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>

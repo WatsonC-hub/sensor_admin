@@ -39,6 +39,9 @@ const LocationAccess = () => {
     mode: 'onSubmit',
   });
 
+  // console.log(locationAccess);
+  // if (!locationAccess) return;
+
   const {clearErrors, handleSubmit, reset} = formMethods;
 
   const handleClose = () => {
@@ -122,7 +125,7 @@ const LocationAccess = () => {
 
             <Grid item xs={12} sm={12}>
               <LocationAccessTable
-                data={typeof locationAccess === 'object' ? locationAccess : []}
+                data={locationAccess}
                 editLocationAccess={handleEdit}
                 delLocationAccess={handleDelete}
               />

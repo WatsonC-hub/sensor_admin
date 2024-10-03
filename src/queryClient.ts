@@ -1,6 +1,6 @@
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
 import {MutationCache, QueryClient} from '@tanstack/react-query';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -13,6 +13,12 @@ type ErrorDetail = {
   msg: string;
   input: unknown;
 };
+
+type ErrorResponse = {
+  detail: ErrorDetail | string;
+};
+
+export type APIError = AxiosError<ErrorResponse>;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -38,7 +44,8 @@ const queryClient = new QueryClient({
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {
-        const detail = error.response?.data.detail;
+        const localError = error as APIError;
+        const detail = localError.response?.data.detail;
         if (detail) {
           console.log('detail', detail);
           if (typeof detail === 'string') {
@@ -61,13 +68,12 @@ const queryClient = new QueryClient({
           return;
         }
 
-        const status = error.response?.status.toString();
+        const status = localError.response?.status.toString();
 
         if (status && status in httpStatusDescriptions) {
           toast.error(httpStatusDescriptions[status as keyof typeof httpStatusDescriptions]);
           return;
         }
-
         toast.error('Der skete en fejl');
       }
     },

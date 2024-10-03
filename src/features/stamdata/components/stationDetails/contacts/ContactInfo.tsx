@@ -1,13 +1,13 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {Box, Grid, useMediaQuery, useTheme} from '@mui/material';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
-import {MetadataContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
 import {contact_info} from '../zodSchemas';
@@ -16,9 +16,11 @@ import ContactInfoTable from './ContactInfoTable';
 import SelectContactInfo from './SelectContactInfo';
 
 const ContactInfo = () => {
-  const metadata = useContext(MetadataContext);
+  const params = useParams();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
-  const loc_id: number | undefined = metadata?.loc_id;
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const loc_id: number | undefined = parseInt(params.locid!);
   const {
     get: {data: contactTableInfo},
     del: deleteContact,
@@ -32,9 +34,6 @@ const ContactInfo = () => {
   });
 
   const {reset} = formMethods;
-
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleDelete = (relation_id: number) => {
     const payload = {
@@ -95,7 +94,7 @@ const ContactInfo = () => {
         </Grid>
         <Grid item xs={12} sm={12}>
           <ContactInfoTable
-            data={typeof contactTableInfo === 'object' ? contactTableInfo : []}
+            data={contactTableInfo}
             delContact={handleDelete}
             editContact={handleEdit}
           />

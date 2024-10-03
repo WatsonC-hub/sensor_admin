@@ -21,7 +21,7 @@ import {AdgangsforholdTable} from '../zodSchemas';
 import LocationAccessFormDialog from './LocationAccessFormDialog';
 
 type Props = {
-  data: Array<AccessTable>;
+  data: Array<AccessTable> | undefined;
   delLocationAccess: (location_access_id: number | undefined) => void;
   editLocationAccess: (LocationAccess: AccessTable) => void;
 };
@@ -138,8 +138,10 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
   const [tableState, resetState] = useStatefullTableAtom<AccessTable>('ContactTableState');
 
   const options: Partial<MRT_TableOptions<AccessTable>> = {
-    localization:
-      'detail' in data ? {noRecordsToDisplay: data.detail as string} : MRT_Localization_DA,
+    localization: {
+      ...MRT_Localization_DA,
+      noRecordsToDisplay: 'Ingen nøgle eller kode er tilknyttet denne lokation',
+    },
     enableTopToolbar: false,
     enablePagination: false,
     enableRowActions: true,

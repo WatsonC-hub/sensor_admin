@@ -20,7 +20,7 @@ import {InferContactInfoTable} from '../zodSchemas';
 import StationContactInfo from './StationContactInfo';
 
 type Props = {
-  data: Array<ContactTable>;
+  data: Array<ContactTable> | undefined;
   delContact: (relation_id: number) => void;
   editContact: (ContactInfo: ContactTable) => void;
 };
@@ -128,8 +128,10 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   const [tableState, resetState] = useStatefullTableAtom<ContactTable>('ContactTableState');
 
   const options: Partial<MRT_TableOptions<ContactTable>> = {
-    localization:
-      'detail' in data ? {noRecordsToDisplay: data.detail as string} : MRT_Localization_DA,
+    localization: {
+      ...MRT_Localization_DA,
+      noRecordsToDisplay: 'Ingen kontakter er tilknyttet denne lokation eller projekt',
+    },
     enableTopToolbar: false,
     enablePagination: false,
     enableRowActions: true,

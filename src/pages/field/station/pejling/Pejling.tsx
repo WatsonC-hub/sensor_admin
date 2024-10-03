@@ -13,12 +13,21 @@ import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import {APIError} from '~/queryClient';
 import {stamdataStore} from '~/state/store';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
 type Props = {
   ts_id: number;
   setDynamic: (dynamic: Array<unknown>) => void;
+};
+
+const initialData = {
+  gid: -1,
+  timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
+  measurement: 0,
+  useforcorrection: 0,
+  comment: '',
 };
 
 const Pejling = ({ts_id, setDynamic}: Props) => {
@@ -31,17 +40,10 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
   const {isMobile} = useBreakpoints();
-  const initialData = {
-    gid: -1,
-    timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
-    measurement: 0,
-    useforcorrection: 0,
-    comment: '',
-  };
+
   const formMethods = useForm<PejlingItem>({
     defaultValues: initialData,
   });
-  // /latest_measurement/{ts_id}
 
   const {reset, getValues} = formMethods;
 
@@ -49,7 +51,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     data: latestMeasurement,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<LatestMeasurement, APIError>({
     queryKey: ['latest_measurement', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get<LatestMeasurement>(
@@ -61,6 +63,16 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     staleTime: 10,
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
   });
+
+  useEffect(() => {
+    if (showForm && getValues('gid') === -1) reset(initialData);
+  }, [showForm]);
+
+  useEffect(() => {
+    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
+      setShowForm(null);
+    }
+  }, [ts_id]);
 
   const handlePejlingSubmit = (values: PejlingItem) => {
     console.log(values);
@@ -104,16 +116,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     setShowForm(null);
   };
 
-  useEffect(() => {
-    if (showForm && getValues('gid') === -1) reset(initialData);
-  }, [showForm]);
-
-  useEffect(() => {
-    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
-      setShowForm(null);
-    }
-  }, [ts_id]);
-
   return (
     <FabWrapper
       icon={<AddCircle />}
@@ -125,9 +127,13 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     >
       {isMobile && <Typography variant="h6">Seneste Måling</Typography>}
       <LatestMeasurementTable
-        latestMeasurement={latestMeasurement ?? undefined}
+        latestMeasurement={latestMeasurement}
         ts_id={ts_id}
-        errorMessage={isError ? error?.message : undefined}
+        errorMessage={
+          isError && typeof error?.response?.data.detail == 'string'
+            ? error?.response?.data.detail
+            : undefined
+        }
       />
       <FormProvider {...formMethods}>
         <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>

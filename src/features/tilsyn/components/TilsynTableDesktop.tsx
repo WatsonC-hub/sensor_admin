@@ -77,6 +77,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
   );
   const [tableState, reset] = useStatefullTableAtom<TilsynItem>('TilsynTableState');
   const options: Partial<MRT_TableOptions<TilsynItem>> = {
+    localization: {noRecordsToDisplay: 'Ingen tilsyn at vise'},
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions

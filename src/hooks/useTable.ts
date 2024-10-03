@@ -207,21 +207,10 @@ export const useTable = <TData extends MRT_RowData>(
   const breakpoints = useBreakpoints();
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
-
   if (merge_method === MergeType.SHALLOWMERGE)
-    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options, {
-      initialState: {
-        isLoading: data === undefined,
-        showSkeletons: data === undefined,
-      },
-    });
+    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
   else if (merge_method === MergeType.RECURSIVEMERGE)
-    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options, {
-      initialState: {
-        isLoading: data === undefined,
-        showSkeletons: data === undefined,
-      },
-    });
+    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
   const table = useMaterialReactTable({
     columns,
