@@ -140,11 +140,9 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
         <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
           {showForm === 'true' && (
             <PejlingForm
-              isWaterlevel={isWaterlevel}
               openAddMP={openAddMP}
               submit={handlePejlingSubmit}
               resetFormData={resetFormData}
-              isFlow={isFlow}
               setDynamic={setDynamic}
               latestMeasurement={latestMeasurement}
             />

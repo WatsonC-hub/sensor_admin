@@ -29,8 +29,6 @@ import WaterlevelAlert from './WaterlevelAlert';
 interface PejlingFormProps {
   submit: (data: any) => void;
   resetFormData: () => void;
-  isWaterlevel: boolean;
-  isFlow: boolean;
   openAddMP: () => void;
   setDynamic: (dynamic: Array<unknown>) => void;
   latestMeasurement: LatestMeasurement | undefined;
@@ -39,14 +37,15 @@ interface PejlingFormProps {
 export default function PejlingForm({
   submit,
   resetFormData,
-  isWaterlevel,
-  isFlow,
   openAddMP,
   setDynamic,
   latestMeasurement,
 }: PejlingFormProps) {
   const store = stamdataStore();
   const tstype_id = store.timeseries.tstype_id;
+  const isWaterlevel = tstype_id === 1;
+  const isFlow = tstype_id === 2;
+
   const {
     get: {data: mpData},
   } = useMaalepunkt();
