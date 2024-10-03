@@ -15,6 +15,7 @@ import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useGraphData} from '~/hooks/query/useGraphData';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
@@ -629,13 +630,22 @@ function PlotGraph({
 
 interface QAGraphProps {
   stationId: number;
+  initiateSelect: boolean;
+  levelCorrection: boolean;
+  setInitiateSelect: (value: boolean) => void;
+  setLevelCorrection: (value: boolean) => void;
 }
 
-export default function QAGraph({stationId}: QAGraphProps) {
+export default function QAGraph({
+  stationId,
+  initiateSelect,
+  setInitiateSelect,
+  levelCorrection,
+  setLevelCorrection,
+}: QAGraphProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [initiateSelect, setInitiateSelect] = useState(false);
-  const [levelCorrection, setLevelCorrection] = useState(false);
+  const {isMobile} = useBreakpoints();
 
   const {data: qaData} = useQuery({
     queryKey: ['qa_labels', stationId],
@@ -677,18 +687,22 @@ export default function QAGraph({stationId}: QAGraphProps) {
         justifyContent={'space-between'}
         gap={2}
       >
-        <Grid item xs={12} xl={5}>
-          <Box display={'flex'} flexDirection={'column'}>
-            <Typography variant="h6">Datajusteringer</Typography>
-            <QAHistory />
-          </Box>
-        </Grid>
-        <Grid item xs={12} xl={7}>
-          <StepWizard
-            setInitiateSelect={setInitiateSelect}
-            setLevelCorrection={setLevelCorrection}
-          />
-        </Grid>
+        {!isMobile && (
+          <>
+            <Grid item xs={12} xl={5}>
+              <Box display={'flex'} flexDirection={'column'}>
+                <Typography variant="h6">Datajusteringer</Typography>
+                <QAHistory />
+              </Box>
+            </Grid>
+            <Grid item xs={12} xl={7}>
+              <StepWizard
+                setInitiateSelect={setInitiateSelect}
+                setLevelCorrection={setLevelCorrection}
+              />
+            </Grid>
+          </>
+        )}
       </Box>
     </Box>
   );

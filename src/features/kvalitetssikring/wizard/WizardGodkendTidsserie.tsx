@@ -1,7 +1,6 @@
 import {Save} from '@mui/icons-material';
-import {Box, CardContent, TextField, Typography} from '@mui/material';
+import {Box, CardContent, Typography} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {useContext} from 'react';
 import {toast} from 'react-toastify';
 
@@ -49,7 +48,7 @@ const WizardGodkendTidsserie = ({setStep}: WizardGodkendTidsserieProps) => {
           alignSelf={'center'}
           gap={1}
         >
-          <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
+          {/* <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
             <Typography>Tidsinterval:</Typography>
             <TextField value={moment().format('YYYY-MM-DD HH:mm')} type="datetime-local" />
             -
@@ -61,7 +60,7 @@ const WizardGodkendTidsserie = ({setStep}: WizardGodkendTidsserieProps) => {
             placeholder="Kommentar"
             multiline
             rows={3}
-          />
+          /> */}
           <Box display={'flex'} flexDirection={'row'} alignSelf={'center'} gap={1}>
             <Button
               bttype="tertiary"
@@ -83,7 +82,7 @@ const WizardGodkendTidsserie = ({setStep}: WizardGodkendTidsserieProps) => {
                 setStep(0);
               }}
             >
-              Gem
+              Færdighåndteret til nu
             </Button>
           </Box>
         </Box>

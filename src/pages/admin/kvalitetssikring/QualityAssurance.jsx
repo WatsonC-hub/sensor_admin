@@ -1,8 +1,9 @@
 import {Box, Grid, Tab, Tabs, Typography} from '@mui/material';
-import React from 'react';
+import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
 
 import NavBar from '~/components/NavBar';
+import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
@@ -32,6 +33,8 @@ const QualityAssurance = () => {
 
   const {isTouch} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
+  const [initiateSelect, setInitiateSelect] = useState(false);
+  const [levelCorrection, setLevelCorrection] = useState(false);
 
   const {data} = useMetadata(params.ts_id);
 
@@ -45,7 +48,13 @@ const QualityAssurance = () => {
       <Box m={1}>
         <Grid container>
           <Grid item xs={12} md={10}>
-            <QAGraph stationId={params.ts_id} />
+            <QAGraph
+              stationId={params.ts_id}
+              initiateSelect={initiateSelect}
+              setInitiateSelect={setInitiateSelect}
+              levelCorrection={levelCorrection}
+              setLevelCorrection={setLevelCorrection}
+            />
           </Grid>
 
           {!isTouch && (
@@ -74,9 +83,11 @@ const QualityAssurance = () => {
               onChange={handleChange}
               variant="fullWidth"
               aria-label="simple tabs example"
+              scrollButtons="auto"
             >
               <Tab label="Vis data" />
               <Tab label="Datajustering" />
+              <Tab label="Wizard" />
               <Tab label="Detektion" />
             </Tabs>
             <TabPanel value={tabValue} index={0}>
@@ -85,8 +96,13 @@ const QualityAssurance = () => {
             <TabPanel value={tabValue} index={1}>
               <QAHistory />
             </TabPanel>
-
             <TabPanel value={tabValue} index={2}>
+              <StepWizard
+                setInitiateSelect={setInitiateSelect}
+                setLevelCorrection={setLevelCorrection}
+              />
+            </TabPanel>
+            <TabPanel value={tabValue} index={3}>
               <Algorithms />
             </TabPanel>
           </>
