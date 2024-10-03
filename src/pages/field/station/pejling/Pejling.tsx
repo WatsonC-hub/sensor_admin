@@ -46,16 +46,18 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
 
   const {reset, getValues} = formMethods;
 
-  const {data: latestMeasurement} = useQuery({
+  const {
+    data: latestMeasurement,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['latest_measurement', ts_id],
     queryFn: async () => {
-      const result = await apiClient
-        .get<LatestMeasurement | AxiosError>(`/sensor_field/station/latest_measurement/${ts_id}`)
-        .catch((error) => {
-          return error.response;
-        });
+      const {data} = await apiClient.get<LatestMeasurement>(
+        `/sensor_field/station/latest_measurement/${ts_id}`
+      );
 
-      return result?.data;
+      return data;
     },
     staleTime: 10,
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
@@ -124,8 +126,9 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     >
       {isMobile && <Typography variant="h6">Seneste Måling</Typography>}
       <LatestMeasurementTable
-        latestMeasurement={typeof latestMeasurement === 'object' ? [latestMeasurement] : []}
+        latestMeasurement={latestMeasurement ?? undefined}
         ts_id={ts_id}
+        errorMessage={isError ? error?.message : undefined}
       />
       <FormProvider {...formMethods}>
         <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>

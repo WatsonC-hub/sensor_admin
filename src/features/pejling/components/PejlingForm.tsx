@@ -205,7 +205,33 @@ export default function PejlingForm({
               </Grid>
               {isWaterlevel && (
                 <>
-                  <Grid item xs={12} sm={7}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={7}
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                      gap: 2,
+                    }}
+                  >
+                    <Alert
+                      severity={elevationDiff && elevationDiff > 0.1 ? 'warning' : 'info'}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      {latestMeasurement && latestMeasurement.measurement && elevationDiff ? (
+                        <Typography>
+                          Forskel til seneste måling: {limitDecimalNumbers(elevationDiff)} m
+                        </Typography>
+                      ) : (
+                        <Typography>Forskel kan ikke beregnes uden en seneste værdi</Typography>
+                      )}
+                    </Alert>
                     <Alert
                       severity={pejlingOutOfRange ? 'error' : 'info'}
                       sx={{
@@ -220,15 +246,6 @@ export default function PejlingForm({
                         </Typography>
                       ) : (
                         <>
-                          {latestMeasurement && latestMeasurement.measurement && elevationDiff ? (
-                            <Typography>
-                              Differens til seneste måling: {limitDecimalNumbers(elevationDiff)} m
-                            </Typography>
-                          ) : (
-                            <Typography>
-                              Differens kan ikke beregnes uden en seneste værdi
-                            </Typography>
-                          )}
                           <Typography>
                             Målepunkt: {currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
                           </Typography>

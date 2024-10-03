@@ -1,23 +1,28 @@
 import {Update} from '@mui/icons-material';
-import {Box, IconButton} from '@mui/material';
+import {Box, IconButton, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo} from 'react';
 import {toast} from 'react-toastify';
 
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
 import {stamdataStore} from '~/state/store';
 import {LatestMeasurement} from '~/types';
 
 type LatestMeasurementTableProps = {
-  latestMeasurement: Array<LatestMeasurement> | undefined;
+  latestMeasurement: LatestMeasurement | undefined;
   ts_id: number;
+  errorMessage: string | undefined;
 };
 
-const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTableProps) => {
+const LatestMeasurementTable = ({
+  latestMeasurement,
+  ts_id,
+  errorMessage,
+}: LatestMeasurementTableProps) => {
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
@@ -82,10 +87,7 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
   );
 
   const options: Partial<MRT_TableOptions<LatestMeasurement>> = {
-    localization:
-      latestMeasurement && latestMeasurement.length > 0 && 'detail' in latestMeasurement[0]
-        ? {noRecordsToDisplay: latestMeasurement[0].detail as string}
-        : MRT_Localization_DA,
+    localization: errorMessage ? {noRecordsToDisplay: errorMessage} : MRT_Localization_DA,
     positionExpandColumn: 'last',
     positionActionsColumn: 'last',
     enableRowActions: true,
@@ -126,7 +128,11 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
         <Update />
       </IconButton>
     ),
-    renderTopToolbar: false,
+    renderTopToolbar: (
+      <Typography variant="body1" p={1}>
+        Seneste Måling
+      </Typography>
+    ),
     renderBottomToolbar: false,
     displayColumnDefOptions: {
       'mrt-row-actions': {
@@ -145,25 +151,15 @@ const LatestMeasurementTable = ({latestMeasurement, ts_id}: LatestMeasurementTab
 
   const table = useTable<LatestMeasurement>(
     columns,
-    latestMeasurement && latestMeasurement.length > 0 && 'detail' in latestMeasurement[0]
-      ? []
-      : latestMeasurement,
+    latestMeasurement ? [latestMeasurement] : [],
     options,
     undefined,
     TableTypes.TABLE,
-    undefined
+    MergeType.SHALLOWMERGE
   );
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        maxWidth: '100vw',
-        width: '100%',
-        mb: 1,
-      }}
-    >
+    <Box>
       <MaterialReactTable table={table} />
     </Box>
   );

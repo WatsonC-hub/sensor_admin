@@ -202,7 +202,7 @@ export const useTable = <TData extends MRT_RowData>(
   options: Partial<MRT_TableOptions<TData>>,
   state: Partial<MRT_TableOptions<TData>> | undefined,
   type: string = TableTypes.LIST,
-  merge_method: string | undefined
+  merge_method: string | undefined = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
 
