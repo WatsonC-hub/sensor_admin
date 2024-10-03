@@ -34,7 +34,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const store = stamdataStore();
   const [canEdit] = useState(true);
   const isWaterlevel = store.timeseries?.tstype_id === 1;
-  const isFlow = store.timeseries?.tstype_id === 2;
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
