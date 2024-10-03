@@ -1,7 +1,6 @@
 import {AddCircle} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {AxiosError} from 'axios';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
