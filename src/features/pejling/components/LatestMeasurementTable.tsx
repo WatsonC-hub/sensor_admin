@@ -153,7 +153,7 @@ const LatestMeasurementTable = ({
 
   const table = useTable<LatestMeasurement>(
     columns,
-    latestMeasurement ? (errorMessage ? [] : [latestMeasurement]) : undefined,
+    latestMeasurement ? (errorMessage ? [] : [latestMeasurement]) : [],
     options,
     undefined,
     TableTypes.TABLE,

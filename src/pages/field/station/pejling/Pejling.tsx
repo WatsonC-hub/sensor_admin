@@ -71,6 +71,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   useEffect(() => {
     if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
       setShowForm(null);
+      reset(initialData);
     }
   }, [ts_id]);
 
