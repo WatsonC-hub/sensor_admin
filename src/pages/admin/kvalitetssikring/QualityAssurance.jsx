@@ -31,7 +31,7 @@ function TabPanel(props) {
 const QualityAssurance = () => {
   let params = useParams();
 
-  const {isTouch, isLaptop} = useBreakpoints();
+  const {isTouch, isLaptop, isLargeLaptop} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
   const [initiateSelect, setInitiateSelect] = useState(false);
   const [levelCorrection, setLevelCorrection] = useState(false);
@@ -78,12 +78,15 @@ const QualityAssurance = () => {
                     xs={12}
                     sm={12}
                     md={isLaptop ? 12 : 6}
-                    lg={isLaptop ? 12 : 4}
-                    xl={isLaptop ? 12 : 4}
+                    lg={isLaptop ? 12 : 3.5}
+                    xl={isLaptop ? 12 : 3}
                   >
-                    <Box display={'flex'} flexDirection={'column'}>
-                      <Typography variant="h6">Datajusteringer</Typography>
-                      <QAHistory />
+                    <Box display={'flex'} flexDirection={'column'} gap={1}>
+                      <Typography variant="h5">Datajustering</Typography>
+                      <StepWizard
+                        setInitiateSelect={setInitiateSelect}
+                        setLevelCorrection={setLevelCorrection}
+                      />
                     </Box>
                   </Grid>
                   <Grid
@@ -91,13 +94,18 @@ const QualityAssurance = () => {
                     xs={12}
                     sm={12}
                     md={isLaptop ? 12 : 6}
-                    lg={isLaptop ? 12 : 3.5}
-                    xl={isLaptop ? 12 : 3}
+                    lg={isLaptop ? 12 : 4}
+                    xl={isLaptop ? 12 : 4}
                   >
-                    <StepWizard
-                      setInitiateSelect={setInitiateSelect}
-                      setLevelCorrection={setLevelCorrection}
-                    />
+                    <Box
+                      display={'flex'}
+                      flexDirection={'column'}
+                      borderRadius={6}
+                      mx={isLargeLaptop ? 2 : 1}
+                    >
+                      <Typography variant="h5">Aktive justeringer</Typography>
+                      <QAHistory />
+                    </Box>
                   </Grid>
                   <Grid
                     item
@@ -107,10 +115,8 @@ const QualityAssurance = () => {
                     xl={isLaptop ? 12 : 5}
                     direction={'column'}
                   >
-                    <Box mx={1} display="flex" gap={1}>
-                      <Typography alignSelf={'center'} variant="h6">
-                        Detektionsalgoritmer
-                      </Typography>
+                    <Box mx={1} display="flex" flexDirection={'column'} gap={1}>
+                      <Typography variant="h5">Automatiske fejlhåndteringsalgoritmer</Typography>
                     </Box>
                     <Algorithms />
                   </Grid>

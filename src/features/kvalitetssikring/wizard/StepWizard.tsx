@@ -2,8 +2,6 @@ import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material';
 import {Box, Button, CardActions, MobileStepper, Card, CardContent, useTheme} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 
-import useBreakpoints from '~/hooks/useBreakpoints';
-
 import WizardFjernPunkter from './WizardFjernPunkter';
 import WizardGodkendTidsserie from './WizardGodkendTidsserie';
 import WizardIntro from './WizardIntro';
@@ -19,7 +17,6 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const [nextStep, setNextStep] = useState<number | null>(null);
-  const {isLargeLaptop} = useBreakpoints();
 
   const handleBack = () => {
     setActiveStep(0);
@@ -34,7 +31,7 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
   }, [nextStep, activeStep]);
 
   return (
-    <Box height={'fit-content'} alignItems={'center'} my={3} py={1.5}>
+    <Box height={'fit-content'} alignItems={'center'}>
       <Card
         raised={true}
         sx={{
@@ -44,7 +41,6 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
           flexDirection: 'column',
           flex: '1 0 auto',
           borderRadius: 4,
-          mx: isLargeLaptop ? 2 : 1,
         }}
         elevation={12}
       >

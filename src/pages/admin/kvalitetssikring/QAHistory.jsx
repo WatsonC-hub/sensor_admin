@@ -1,4 +1,4 @@
-import {Box, Skeleton, Typography} from '@mui/material';
+import {Box, Card, CardContent, Skeleton, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {useContext} from 'react';
 
@@ -12,7 +12,6 @@ import {MetadataContext} from '~/state/contexts';
 
 export default function QAHistory() {
   const metadata = useContext(MetadataContext);
-
   const {data, isLoading} = useQuery({
     queryKey: ['qa_all', metadata?.ts_id],
     queryFn: async () => {
@@ -57,13 +56,18 @@ export default function QAHistory() {
     );
 
   return (
-    <>
-      <Box display={'flex'} flexDirection={'column'} gap={0.5} m={1}>
+    <Card raised sx={{borderRadius: 4, my: 1, '& .MuiCardContent-root': {'&:last-child': {p: 0}}}}>
+      <CardContent sx={{p: 0}}>
         <QAAccordion number={1} title="Fjernede tidsintervaller">
           {data?.dataexclude
             .filter((elem) => (elem.min_value == null) & (elem.max_value == null))
             .map((item, index) => (
-              <ExcludeRow key={item.gid} data={item} index={index} />
+              <ExcludeRow
+                key={item.gid}
+                data={item}
+                index={index}
+                LastElement={data?.dataexclude.length - 1 === index}
+              />
             ))}
           {data?.dataexclude.filter((elem) => (elem.min_value == null) & (elem.max_value == null))
             .length == 0 && <Typography>Ingen fjernede tidsintervaller</Typography>}
@@ -71,7 +75,12 @@ export default function QAHistory() {
 
         <QAAccordion number={2} title="Korriger spring">
           {data?.levelcorrection.map((item, index) => (
-            <LevelCorrectionRow key={item.gid} data={item} index={index} />
+            <LevelCorrectionRow
+              key={item.gid}
+              data={item}
+              index={index}
+              LastElement={data?.levelcorrection.length - 1 === index}
+            />
           ))}
           {data?.levelcorrection.length == 0 && <Typography>Ingen spring korrektioner</Typography>}
         </QAAccordion>
@@ -82,7 +91,13 @@ export default function QAHistory() {
           {data?.dataexclude
             .filter((elem) => (elem.min_value != null) | (elem.max_value != null))
             .map((item, index) => (
-              <ExcludeRow key={item.gid} data={item} index={index} isWithYValues />
+              <ExcludeRow
+                key={item.gid}
+                data={item}
+                index={index}
+                isWithYValues
+                LastElement={data?.dataexclude.length - 1 === index}
+              />
             ))}
           {data?.dataexclude.filter((elem) => (elem.min_value != null) | (elem.max_value != null))
             .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}
@@ -95,7 +110,7 @@ export default function QAHistory() {
           )}
         </QAAccordion>
         {/* <QAAccordion number={5} title="Spikes"></QAAccordion> */}
-      </Box>
-    </>
+      </CardContent>
+    </Card>
   );
 }

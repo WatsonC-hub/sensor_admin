@@ -11,13 +11,9 @@ const BoxNumber = ({children, ...rest}: BoxNumberProps) => {
       sx={{
         width: '20px',
         height: '20px',
-        border: '1px solid',
-        borderRadius: '50%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white',
-        backgroundColor: 'info.main',
+        alignContent: 'center',
         marginRight: '10px',
         ...rest,
       }}

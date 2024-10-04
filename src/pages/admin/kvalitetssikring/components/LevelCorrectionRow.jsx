@@ -12,13 +12,11 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
-const LevelCorrectionRow = ({data, index}) => {
+const LevelCorrectionRow = ({data, index, LastElement}) => {
   const [editMode, setEditMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const {put, del} = useLevelCorrection();
-  const {isMobile} = useBreakpoints();
 
   const schema = z.object({
     date: z
@@ -61,10 +59,8 @@ const LevelCorrectionRow = ({data, index}) => {
       <Box
         key={index}
         display="flex"
-        justifyContent="space-between"
-        flexDirection={isMobile ? 'column' : 'row'}
+        flexDirection={'row'}
         alignItems="center"
-        border={1}
         borderRadius={1}
         borderColor="grey.500"
         p={1}
@@ -100,14 +96,20 @@ const LevelCorrectionRow = ({data, index}) => {
             justifyContent={'end'}
           >
             <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1} minWidth="97.02px">
-              <Button
-                bttype="tertiary"
-                size="small"
-                onClick={() => setConfirmDelete(true)}
-                startIcon={<DeleteIcon />}
-              >
-                Slet
-              </Button>
+              {editMode ? (
+                <Button bttype="tertiary" size="small" onClick={() => setEditMode(false)}>
+                  Annuller
+                </Button>
+              ) : (
+                <Button
+                  bttype="tertiary"
+                  size="small"
+                  onClick={() => setConfirmDelete(true)}
+                  startIcon={<DeleteIcon />}
+                >
+                  Slet
+                </Button>
+              )}
               {editMode ? (
                 <Button
                   bttype="primary"
@@ -131,7 +133,7 @@ const LevelCorrectionRow = ({data, index}) => {
           </Grid>
         </Grid>
       </Box>
-      <Divider />
+      {!LastElement && <Divider />}
       <DeleteAlert
         title="Vil du slette spring korrektionen?"
         dialogOpen={confirmDelete}

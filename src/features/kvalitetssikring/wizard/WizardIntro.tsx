@@ -32,9 +32,6 @@ const WizardIntro = ({setValue}: WizardIntroProps) => {
         }}
       >
         <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'} gap={1}>
-          <Typography variant="h5" fontWeight={'bold'} alignSelf={'center'}>
-            Datajustering
-          </Typography>
           <Typography>
             Denne guide er lavet med henblik på at hjælpe dig med at kvalitetssikre.
           </Typography>
