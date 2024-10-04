@@ -31,7 +31,7 @@ function TabPanel(props) {
 const QualityAssurance = () => {
   let params = useParams();
 
-  const {isTouch} = useBreakpoints();
+  const {isTouch, isLaptop, isMonitor} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
   const [initiateSelect, setInitiateSelect] = useState(false);
   const [levelCorrection, setLevelCorrection] = useState(false);
@@ -46,7 +46,7 @@ const QualityAssurance = () => {
     <MetadataContext.Provider value={data}>
       <NavBar />
       <Box m={1}>
-        <Grid container>
+        <Grid container gap={1}>
           <Grid item xs={12} md={10}>
             <QAGraph
               stationId={params.ts_id}
@@ -56,24 +56,68 @@ const QualityAssurance = () => {
               setLevelCorrection={setLevelCorrection}
             />
           </Grid>
-
-          {!isTouch && (
-            <>
-              <Grid item xs={12} sm={2} pl={1}>
-                <DataToShow />
-                {/* <AnnotationConfiguration stationId={params.ts_id} /> */}
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <Box mx={1} display="flex" gap={1}>
-                  <Typography alignSelf={'center'} variant="h6">
-                    Detektionsalgoritmer
-                  </Typography>
-                </Box>
-                <Algorithms />
-              </Grid>
-            </>
-          )}
+          <Grid item xs={12} sm={1}>
+            {!isTouch && <DataToShow />}
+          </Grid>
+          <Grid item xs={12} sm={12}>
+            <Box
+              display={'flex'}
+              flexDirection={isTouch ? 'column-reverse' : 'row'}
+              justifyContent={'space-between'}
+              gap={2}
+            >
+              {!isTouch && (
+                <Grid
+                  container
+                  display={'flex'}
+                  flexDirection={'row'}
+                  justifyContent={'space-evenly'}
+                >
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={isLaptop ? 12 : 6}
+                    lg={isLaptop ? 12 : 4}
+                    xl={isLaptop ? 12 : 4}
+                  >
+                    <Box display={'flex'} flexDirection={'column'}>
+                      <Typography variant="h6">Datajusteringer</Typography>
+                      <QAHistory />
+                    </Box>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={isLaptop ? 12 : 6}
+                    lg={isLaptop ? 12 : 3.5}
+                    xl={isLaptop ? 12 : 3.5}
+                  >
+                    <StepWizard
+                      setInitiateSelect={setInitiateSelect}
+                      setLevelCorrection={setLevelCorrection}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    md={isLaptop ? 12 : 12}
+                    lg={isLaptop ? 12 : 4.5}
+                    xl={isLaptop ? 12 : 4}
+                    direction={'column'}
+                  >
+                    <Box mx={1} display="flex" gap={1}>
+                      <Typography alignSelf={'center'} variant="h6">
+                        Detektionsalgoritmer
+                      </Typography>
+                    </Box>
+                    <Algorithms />
+                  </Grid>
+                </Grid>
+              )}
+            </Box>
+          </Grid>
         </Grid>
 
         {isTouch && (

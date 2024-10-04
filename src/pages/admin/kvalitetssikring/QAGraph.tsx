@@ -22,6 +22,7 @@ import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 import {QaGraphData, QaGraphLabel} from '~/types';
 
+import DataToShow from './components/DataToShow';
 import QAHistory from './QAHistory';
 
 const selectorOptions: Partial<RangeSelector> = {
@@ -350,7 +351,7 @@ function PlotGraph({
   }, []);
 
   const handleRelayout = (e: any) => {
-    console.log(e);
+    // console.log(e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
@@ -641,11 +642,9 @@ export default function QAGraph({
   initiateSelect,
   setInitiateSelect,
   levelCorrection,
-  setLevelCorrection,
 }: QAGraphProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const {isMobile} = useBreakpoints();
 
   const {data: qaData} = useQuery({
     queryKey: ['qa_labels', stationId],
@@ -681,29 +680,6 @@ export default function QAGraph({
           levelCorrection={levelCorrection}
         />
       </div>
-      <Box
-        display={'flex'}
-        flexDirection={matches ? 'column-reverse' : 'row'}
-        justifyContent={'space-between'}
-        gap={2}
-      >
-        {!isMobile && (
-          <>
-            <Grid item xs={12} xl={5}>
-              <Box display={'flex'} flexDirection={'column'}>
-                <Typography variant="h6">Datajusteringer</Typography>
-                <QAHistory />
-              </Box>
-            </Grid>
-            <Grid item xs={12} xl={7}>
-              <StepWizard
-                setInitiateSelect={setInitiateSelect}
-                setLevelCorrection={setLevelCorrection}
-              />
-            </Grid>
-          </>
-        )}
-      </Box>
     </Box>
   );
 }

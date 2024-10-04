@@ -24,14 +24,9 @@ const Algorithms = () => {
 
   return (
     <>
-      <Grid
-        container
-        sx={
-          data && data.length > 0 ? {borderRadius: 2, border: 2, borderColor: 'primary.main'} : {}
-        }
-      >
+      <Grid container>
         {data?.map((algorithm) => (
-          <Grid key={algorithm.name} item xs={12} sm={6}>
+          <Grid key={algorithm.name} item xs={12} sm={6} direction={'row'}>
             <AlgorithmCard qaAlgorithm={algorithm} />
           </Grid>
         ))}

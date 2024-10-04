@@ -26,8 +26,6 @@ export default function QAHistory() {
     refetchOnMount: false,
   });
 
-  console.log(data);
-
   if (isLoading)
     return (
       <Box>
@@ -60,7 +58,7 @@ export default function QAHistory() {
 
   return (
     <>
-      <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+      <Box display={'flex'} flexDirection={'column'} gap={0.5} m={1}>
         <QAAccordion number={1} title="Fjernede tidsintervaller">
           {data?.dataexclude
             .filter((elem) => (elem.min_value == null) & (elem.max_value == null))

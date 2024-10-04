@@ -35,10 +35,10 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
     <Box
       maxWidth={isMobile ? '100%' : 1000}
       height={'fit-content'}
+      alignItems={'center'}
       minHeight={500}
-      my={2}
+      my={3}
       py={1.5}
-      alignSelf={'start'}
     >
       <Card
         raised={true}
@@ -48,7 +48,9 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
           display: 'flex',
           flexDirection: 'column',
           flex: '1 0 auto',
+          borderRadius: 4,
         }}
+        elevation={12}
       >
         <CardContent sx={{height: '95%'}}>
           <Box width={'inherit'} height={'inherit'}>
