@@ -1,3 +1,4 @@
+import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
@@ -55,10 +56,10 @@ const LevelCorrectionModal = ({onClose}) => {
       />
       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} m={1} gap={1}>
         <Button bttype="tertiary" onClick={onClose}>
-          Fortryd
+          Annuller
         </Button>
-        <Button bttype="primary" onClick={handleSubmit} color="secondary">
-          Korriger spring
+        <Button bttype="primary" onClick={handleSubmit} startIcon={<Save />} color="secondary">
+          Gem
         </Button>
       </Box>
     </div>

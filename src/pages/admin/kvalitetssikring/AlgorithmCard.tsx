@@ -1,4 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
+import {Save} from '@mui/icons-material';
 import {
   Card,
   CardActions,
@@ -26,7 +27,6 @@ interface AlgorithCardProps {
 const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   const params = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
   // console.log(qaAlgorithm);
 
   const {put: submitData, revert: revertToDefaults} = useAlgorithms(params.ts_id);
@@ -179,6 +179,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           <Button
             bttype="primary"
             onClick={handleSubmit(submit)}
+            startIcon={<Save />}
             disabled={
               submitData.isPending || revertToDefaults.isPending || !formMethods.formState.isDirty
             }

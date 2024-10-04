@@ -1,4 +1,4 @@
-import {Typography, Box, Grid} from '@mui/material';
+import {Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
@@ -10,20 +10,15 @@ import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {setGraphHeight} from '~/consts';
-import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
 import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useGraphData} from '~/hooks/query/useGraphData';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 import {QaGraphData, QaGraphLabel} from '~/types';
-
-import DataToShow from './components/DataToShow';
-import QAHistory from './QAHistory';
 
 const selectorOptions: Partial<RangeSelector> = {
   buttons: [

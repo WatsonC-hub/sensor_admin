@@ -31,7 +31,7 @@ function TabPanel(props) {
 const QualityAssurance = () => {
   let params = useParams();
 
-  const {isTouch, isLaptop, isMonitor} = useBreakpoints();
+  const {isTouch, isLaptop} = useBreakpoints();
   const [tabValue, setTabValue] = React.useState(0);
   const [initiateSelect, setInitiateSelect] = useState(false);
   const [levelCorrection, setLevelCorrection] = useState(false);
@@ -92,7 +92,7 @@ const QualityAssurance = () => {
                     sm={12}
                     md={isLaptop ? 12 : 6}
                     lg={isLaptop ? 12 : 3.5}
-                    xl={isLaptop ? 12 : 3.5}
+                    xl={isLaptop ? 12 : 3}
                   >
                     <StepWizard
                       setInitiateSelect={setInitiateSelect}
@@ -104,7 +104,7 @@ const QualityAssurance = () => {
                     xs={12}
                     md={isLaptop ? 12 : 12}
                     lg={isLaptop ? 12 : 4.5}
-                    xl={isLaptop ? 12 : 4}
+                    xl={isLaptop ? 12 : 5}
                     direction={'column'}
                   >
                     <Box mx={1} display="flex" gap={1}>

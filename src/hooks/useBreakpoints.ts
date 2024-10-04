@@ -11,7 +11,8 @@ export default function useBreakpoints() {
   const isLaptop = useMediaQuery(theme.breakpoints.between('laptop', 'desktop'));
   const isMonitor = useMediaQuery(theme.breakpoints.up('desktop'));
 
+  const isLargeLaptop = useMediaQuery(theme.breakpoints.between('desktop', 'xl'));
   const isTouch = useMediaQuery(theme.breakpoints.down('laptop'));
 
-  return {isMobile, isTablet, isLaptop, isTouch, isMonitor};
+  return {isMobile, isTablet, isLaptop, isTouch, isMonitor, isLargeLaptop};
 }

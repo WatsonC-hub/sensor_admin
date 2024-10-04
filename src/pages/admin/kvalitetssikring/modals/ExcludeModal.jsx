@@ -1,3 +1,5 @@
+import {Save} from '@mui/icons-material';
+// import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import {Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
@@ -17,7 +19,6 @@ const ExcludeModal = ({onClose}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onAccept();
-    onClose();
   };
 
   const x0 = moment(selection?.selections?.[0]?.x0);
@@ -47,37 +48,51 @@ const ExcludeModal = ({onClose}) => {
 
   return (
     <div>
-      <Box display={'flex'} flexDirection={'column'} alignItems={'start'} gap={1}>
-        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
-          <Typography variant="h6">Tidsinterval:</Typography>
+      <Box display={'flex'} flexDirection={'column'} alignItems={'center'} gap={2}>
+        <Box
+          display={'flex'}
+          flexDirection={'row'}
+          flexWrap={'wrap'}
+          justifyContent={'center'}
+          alignItems={'center'}
+          gap={2}
+        >
           <TextField
             value={startDate.format('YYYY-MM-DD HH:mm')}
+            label="Dato fra"
             type="datetime-local"
             onChange={(event) => {
               setStartDate(moment(event.target.value));
             }}
           />
-          -
           <TextField
             value={endDate.format('YYYY-MM-DD HH:mm')}
+            label="Dato til"
             type="datetime-local"
             onChange={(event) => {
               setEndDate(moment(event.target.value));
             }}
           />
         </Box>
-        <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
-          <Typography variant="h6">Værdi-interval:</Typography>
+        <Box
+          display={'flex'}
+          flexDirection={'row'}
+          flexWrap={'wrap'}
+          justifyContent={'center'}
+          alignItems={'center'}
+          gap={2}
+        >
           <TextField
             value={startValue}
+            label={'start interval'}
             type="number"
             onChange={(event) => {
               setStartValue(event.target.value);
             }}
           />
-          -
           <TextField
             value={endValue}
+            label={'slut interval'}
             type="number"
             onChange={(event) => {
               setEndValue(event.target.value);
@@ -113,11 +128,16 @@ const ExcludeModal = ({onClose}) => {
         <Typography gutterBottom>Ekskluderer {selection.points.length} punkter</Typography>
       )}
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-        <Button bttype="tertiary" onClick={onClose} sx={{marginRight: 1}}>
-          Fortryd
+        <Button
+          bttype="tertiary"
+          // startIcon={<KeyboardReturnIcon />}
+          onClick={onClose}
+          sx={{marginRight: 1}}
+        >
+          Annuller
         </Button>
-        <Button bttype="primary" onClick={handleSubmit} color="secondary">
-          Ekskluder
+        <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
+          Gem
         </Button>
       </Box>
     </div>

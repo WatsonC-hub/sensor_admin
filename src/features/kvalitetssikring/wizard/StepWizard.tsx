@@ -17,12 +17,14 @@ interface StepWizardProps {
 
 const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) => {
   const theme = useTheme();
-  const {isMobile} = useBreakpoints();
   const [activeStep, setActiveStep] = React.useState(0);
   const [nextStep, setNextStep] = useState<number | null>(null);
+  const {isLargeLaptop} = useBreakpoints();
 
   const handleBack = () => {
     setActiveStep(0);
+    setInitiateSelect(false);
+    setLevelCorrection(false);
   };
 
   useEffect(() => {
@@ -32,14 +34,7 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
   }, [nextStep, activeStep]);
 
   return (
-    <Box
-      maxWidth={isMobile ? '100%' : 1000}
-      height={'fit-content'}
-      alignItems={'center'}
-      minHeight={500}
-      my={3}
-      py={1.5}
-    >
+    <Box height={'fit-content'} alignItems={'center'} my={3} py={1.5}>
       <Card
         raised={true}
         sx={{
@@ -49,6 +44,7 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
           flexDirection: 'column',
           flex: '1 0 auto',
           borderRadius: 4,
+          mx: isLargeLaptop ? 2 : 1,
         }}
         elevation={12}
       >
@@ -69,10 +65,9 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
         </CardContent>
         <CardActions sx={{marginTop: 'auto', justifySelf: 'end', alignSelf: 'center'}}>
           <MobileStepper
-            steps={5}
+            steps={0}
             position="static"
             activeStep={activeStep}
-            sx={{maxWidth: 400, flexGrow: 1}}
             nextButton={<div></div>}
             backButton={
               <Button size="small" onClick={handleBack} disabled={activeStep === 0}>

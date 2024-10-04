@@ -1,3 +1,4 @@
+import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
@@ -77,10 +78,10 @@ const YRangeModal = ({onClose}) => {
       </Box>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
         <Button bttype="tertiary" onClick={onClose} sx={{marginRight: 1}}>
-          Fortryd
+          Annuller
         </Button>
-        <Button bttype="primary" onClick={handleSubmit} color="secondary">
-          Bekræft
+        <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
+          Gem
         </Button>
       </Box>
     </div>

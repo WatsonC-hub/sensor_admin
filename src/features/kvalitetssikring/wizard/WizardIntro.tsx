@@ -3,7 +3,6 @@ import {
   CardContent,
   FormControl,
   FormControlLabel,
-  FormLabel,
   Radio,
   RadioGroup,
   Typography,
@@ -34,7 +33,7 @@ const WizardIntro = ({setValue}: WizardIntroProps) => {
       >
         <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'} gap={1}>
           <Typography variant="h5" fontWeight={'bold'} alignSelf={'center'}>
-            Introduktion
+            Datajustering
           </Typography>
           <Typography>
             Denne guide er lavet med henblik på at hjælpe dig med at kvalitetssikre.
@@ -45,7 +44,6 @@ const WizardIntro = ({setValue}: WizardIntroProps) => {
         </Box>
         <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
           <FormControl>
-            <FormLabel id="demo-controlled-radio-buttons-group">Kvalitetssikring</FormLabel>
             <RadioGroup
               aria-labelledby="demo-controlled-radio-buttons-group"
               name="controlled-radio-buttons-group"

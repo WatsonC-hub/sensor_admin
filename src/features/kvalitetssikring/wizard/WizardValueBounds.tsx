@@ -27,7 +27,7 @@ const WizardValueBounds = ({setStep, setInitiateSelect}: WizardValueBoundsProps)
       >
         <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'}>
           <Typography alignSelf={'center'} variant="h5" component="h2" fontWeight={'bold'}>
-            Øvre og nedre grænser af valide værdigrænser
+            Øvre og nedre værdigrænser
           </Typography>
           <Typography sx={{wordWrap: 'break-word'}}>
             På denne side af guiden kan du definere de øvre og nedre grænseværdier. Kun punkter
@@ -43,7 +43,7 @@ const WizardValueBounds = ({setStep, setInitiateSelect}: WizardValueBoundsProps)
               setInitiateSelect(true);
             }}
           >
-            Markér valide grænseværdier
+            Markér grænseværdier
           </Button>
         </Box>
         <Box alignSelf={'center'}>

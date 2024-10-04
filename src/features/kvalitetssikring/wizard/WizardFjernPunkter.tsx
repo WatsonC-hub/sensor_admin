@@ -1,4 +1,4 @@
-import BackspaceIcon from '@mui/icons-material/Backspace';
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
@@ -37,7 +37,7 @@ const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProp
         </Box>
         <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
           <Button
-            startIcon={<BackspaceIcon />}
+            startIcon={<HighlightAltIcon />}
             bttype={'primary'}
             disabled={false}
             onClick={() => {

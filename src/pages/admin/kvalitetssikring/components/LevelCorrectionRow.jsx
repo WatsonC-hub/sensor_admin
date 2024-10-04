@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Divider, Grid, Typography} from '@mui/material';
+import {Box, Divider, Grid} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
@@ -78,7 +78,6 @@ const LevelCorrectionRow = ({data, index}) => {
               flexDirection="row"
               gap={1}
             >
-              <Typography>Tidspunkt:</Typography>
               <FormInput
                 name="date"
                 label="Dato"

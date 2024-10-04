@@ -1,4 +1,4 @@
-import ShowChartIcon from '@mui/icons-material/ShowChart';
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
@@ -37,7 +37,7 @@ const WizardKorrigerSpring = ({setStep, setInitiateSelect}: WizardKorrigerSpring
         </Box>
         <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
           <Button
-            startIcon={<ShowChartIcon />}
+            startIcon={<HighlightAltIcon />}
             bttype={'primary'}
             disabled={false}
             onClick={() => {
