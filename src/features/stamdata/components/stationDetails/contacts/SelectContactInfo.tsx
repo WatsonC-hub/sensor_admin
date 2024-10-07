@@ -110,7 +110,8 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
 
                   const filter = options.filter(
                     (option) =>
-                      option.navn.includes(inputValue) || option.email.includes(inputValue)
+                      option.navn.toLowerCase().includes(inputValue.toLowerCase()) ||
+                      option.email.toLowerCase().includes(inputValue.toLowerCase())
                   );
 
                   return filter;
