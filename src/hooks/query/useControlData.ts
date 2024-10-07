@@ -12,7 +12,7 @@ export const useControlData = (ts_id: number) => {
       );
       return data;
     },
-    enabled: typeof ts_id == 'number',
+    enabled: ts_id !== null && ts_id !== undefined,
     refetchInterval: false,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
