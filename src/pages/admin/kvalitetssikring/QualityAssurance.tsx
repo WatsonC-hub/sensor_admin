@@ -19,7 +19,6 @@ interface TabPanelProps {
 }
 
 function TabPanel({children, value, index, ...other}: TabPanelProps) {
-  console.log(other);
   return (
     <div
       role="tabpanel"

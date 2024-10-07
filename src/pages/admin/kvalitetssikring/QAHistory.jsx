@@ -87,7 +87,7 @@ export default function QAHistory() {
         <QAAccordion number={3} title="Kotesætning">
           <Typography>Her fungerer kotesætning</Typography>
         </QAAccordion>
-        <QAAccordion number={3} title="Fjernede datapunkter">
+        <QAAccordion number={4} title="Fjernede datapunkter">
           {data?.dataexclude
             .filter((elem) => (elem.min_value != null) | (elem.max_value != null))
             .map((item, index) => (
@@ -102,7 +102,7 @@ export default function QAHistory() {
           {data?.dataexclude.filter((elem) => (elem.min_value != null) | (elem.max_value != null))
             .length == 0 && <Typography>Ingen fjernede datapunkter</Typography>}
         </QAAccordion>
-        <QAAccordion number={4} title="Valide værdier">
+        <QAAccordion number={5} title="Valide værdier">
           {data?.min_max_cutoff ? (
             <YRangeRow data={data.min_max_cutoff} />
           ) : (
