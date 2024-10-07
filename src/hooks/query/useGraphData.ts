@@ -3,9 +3,9 @@ import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {QaGraphData} from '~/types';
 
-export const useGraphData = (ts_id: number, xRange: Array<string>, useQA: boolean) => {
+export const useGraphData = (ts_id: number, xRange: Array<string>) => {
   const query = useQuery({
-    queryKey: ['graphData', ts_id, xRange, useQA],
+    queryKey: ['graphData', ts_id, xRange],
     queryFn: async () => {
       const {data} = await apiClient.get<QaGraphData>(`/data/timeseriesV2/${ts_id}`, {
         params: {
@@ -16,8 +16,7 @@ export const useGraphData = (ts_id: number, xRange: Array<string>, useQA: boolea
       });
       return data ?? [];
     },
-    enabled: useQA && ts_id !== null && ts_id !== undefined,
-    // keepPreviousData: true,
+    enabled: ts_id !== null && ts_id !== undefined,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: false,

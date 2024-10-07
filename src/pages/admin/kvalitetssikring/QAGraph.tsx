@@ -1,4 +1,3 @@
-import {Box} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
@@ -14,6 +13,7 @@ import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useGraphData} from '~/hooks/query/useGraphData';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
@@ -259,16 +259,11 @@ function PlotGraph({
 
   const queryClient = useQueryClient();
 
-  const fullData = queryClient.getQueryData<QaGraphData>([
-    'graphData',
-    ts_id,
-    initRange,
-    dataToShow.QA,
-  ]);
+  const fullData = queryClient.getQueryData<QaGraphData>(['graphData', ts_id, initRange]);
 
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
-  const {data: graphData} = useGraphData(ts_id, xRange, dataToShow.QA);
+  const {data: graphData} = useGraphData(ts_id, xRange);
 
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],
@@ -427,7 +422,6 @@ function PlotGraph({
     title: 'Genberegn QA',
     icon: rerunQAIcon,
     click: function () {
-      console.log('hej');
       console.log(rerunQAMutation);
       rerunQAMutation.mutate();
     },
@@ -438,10 +432,9 @@ function PlotGraph({
   let shapes: Array<object> = [];
   let annotations: Array<object> = [];
 
-  Object.keys(dataToShow).forEach((key) => {
-    if (!Object.keys(dataToShow).some((value) => value === key)) return;
-
-    switch (key) {
+  Object.entries(dataToShow).forEach((entry) => {
+    if (entry[1] == false) return;
+    switch (entry[0]) {
       case 'Valide værdier':
         shapes = [
           ...shapes,
@@ -643,8 +636,9 @@ export default function QAGraph({
   setInitiateSelect,
   levelCorrection,
 }: QAGraphProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  // const theme = useTheme();
+  // const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const {isTouch} = useBreakpoints();
 
   const {data: qaData} = useQuery({
     queryKey: ['qa_labels', stationId],
@@ -660,26 +654,24 @@ export default function QAGraph({
   });
 
   return (
-    <Box display="flex" flexDirection="column">
-      <div
-        style={{
-          width: '100%',
-          height: setGraphHeight(matches),
-          // marginBottom: '10px',
-          // marginTop: '-10px',
-          paddingTop: '5px',
-          border: '2px solid gray',
-        }}
-      >
-        <PlotGraph
-          key={'plotgraph' + stationId}
-          qaData={qaData ?? []}
-          ts_id={stationId}
-          initiateSelect={initiateSelect}
-          setInitiateSelect={setInitiateSelect}
-          levelCorrection={levelCorrection}
-        />
-      </div>
-    </Box>
+    <div
+      style={{
+        width: '100%',
+        height: setGraphHeight(isTouch),
+        // marginBottom: '10px',
+        // marginTop: '-10px',
+        paddingTop: '5px',
+        border: '2px solid gray',
+      }}
+    >
+      <PlotGraph
+        key={'plotgraph' + stationId}
+        qaData={qaData ?? []}
+        ts_id={stationId}
+        initiateSelect={initiateSelect}
+        setInitiateSelect={setInitiateSelect}
+        levelCorrection={levelCorrection}
+      />
+    </div>
   );
 }

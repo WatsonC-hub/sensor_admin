@@ -3,12 +3,10 @@ import React from 'react';
 import {useParams} from 'react-router-dom';
 
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 
 const Algorithms = () => {
   const params = useParams();
-  const {isLargeLaptop} = useBreakpoints();
   const {
     get: {data},
   } = useAlgorithms(params.ts_id);
@@ -25,18 +23,17 @@ const Algorithms = () => {
 
   return (
     <>
-      <Grid container>
+      <Grid
+        container
+        direction={'row'}
+        justifyContent={data && data.length < 4 ? 'center' : 'start'}
+      >
         {data?.map((algorithm) => (
-          <Grid
-            key={algorithm.name}
-            item
-            xs={12}
-            sm={6}
-            md={isLargeLaptop ? 12 : 6}
-            direction={'row'}
-          >
-            <AlgorithmCard qaAlgorithm={algorithm} />
-          </Grid>
+          <>
+            <Grid key={algorithm.name} item mobile={12} tablet={6} laptop={4} desktop={3} xl={3}>
+              <AlgorithmCard qaAlgorithm={algorithm} />
+            </Grid>
+          </>
         ))}
       </Grid>
     </>

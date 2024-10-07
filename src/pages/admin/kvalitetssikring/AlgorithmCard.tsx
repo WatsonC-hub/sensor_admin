@@ -1,6 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
@@ -125,12 +126,51 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
         }}
         elevation={12}
       >
-        <CardHeader title={qaAlgorithm.name} sx={{justifySelf: 'start'}} />
+        <CardHeader
+          title={
+            <Box>
+              <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+                <Typography variant={'h4'}>{qaAlgorithm.name}</Typography>
+                <FormControlLabel
+                  control={
+                    <Controller
+                      control={formMethods.control}
+                      name="disabled"
+                      render={({field: {value, ...field}}) => (
+                        <Checkbox {...field} checked={!!value} />
+                      )}
+                    />
+                  }
+                  label={
+                    <Typography
+                      variant="body1"
+                      component="span"
+                      sx={{
+                        display: 'flex',
+                        gap: 1,
+                        alignItems: 'center',
+                      }}
+                    >
+                      Deaktiveret
+                    </Typography>
+                  }
+                  sx={{
+                    m: 0,
+                  }}
+                />
+              </Box>
+              <Typography p={0} m={0} variant="caption">
+                {qaAlgorithm.description}
+              </Typography>
+            </Box>
+          }
+          sx={{p: 1}}
+        />
         <CardContent
           sx={{
             p: 1,
             m: 0,
-            marginTop: 'auto',
+            marginBottom: 'auto',
           }}
         >
           <FormProvider {...formMethods}>
@@ -147,29 +187,6 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                 </>
               );
             })}
-
-            <FormControlLabel
-              control={
-                <Controller
-                  control={formMethods.control}
-                  name="disabled"
-                  render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
-                />
-              }
-              label={
-                <Typography
-                  variant="body1"
-                  component="span"
-                  sx={{
-                    display: 'flex',
-                    gap: 1,
-                    alignItems: 'center',
-                  }}
-                >
-                  Deaktiveret
-                </Typography>
-              }
-            />
           </FormProvider>
         </CardContent>
         <CardActions sx={{justifyContent: 'center', marginTop: 'auto', p: 1, m: 0}}>
