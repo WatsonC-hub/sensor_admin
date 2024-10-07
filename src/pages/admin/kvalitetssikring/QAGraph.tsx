@@ -259,11 +259,16 @@ function PlotGraph({
 
   const queryClient = useQueryClient();
 
-  const fullData = queryClient.getQueryData<QaGraphData>(['graphData', ts_id, initRange]);
+  const fullData = queryClient.getQueryData<QaGraphData>([
+    'graphData',
+    ts_id,
+    initRange,
+    dataToShow.QA,
+  ]);
 
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
-  const {data: graphData} = useGraphData(ts_id, xRange);
+  const {data: graphData} = useGraphData(ts_id, xRange, dataToShow.QA);
 
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],

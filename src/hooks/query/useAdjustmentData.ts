@@ -10,7 +10,7 @@ export const useAdjustmentData = (ts_id: number) => {
       const {data} = await apiClient.get<QaAllData>(`/sensor_admin/qa_all/${ts_id}`);
       return data;
     },
-    enabled: typeof ts_id == 'number',
+    enabled: ts_id !== null && ts_id !== undefined,
     refetchInterval: false,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
