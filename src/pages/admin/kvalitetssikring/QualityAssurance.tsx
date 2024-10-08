@@ -39,6 +39,7 @@ const QualityAssurance = () => {
   const [tabValue, setTabValue] = React.useState(0);
   const [initiateSelect, setInitiateSelect] = useState(false);
   const [levelCorrection, setLevelCorrection] = useState(false);
+  const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useState(false);
 
   const {data} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
@@ -48,7 +49,7 @@ const QualityAssurance = () => {
 
   useEffect(() => {
     setTabValue(0);
-  }, [isTouch]);
+  }, [isMobile]);
 
   if (!isMobile) {
     return (
@@ -59,6 +60,8 @@ const QualityAssurance = () => {
         setInitiateSelect={setInitiateSelect}
         levelCorrection={levelCorrection}
         setLevelCorrection={setLevelCorrection}
+        initiateConfirmTimeseries={initiateConfirmTimeseries}
+        setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
       >
         <Grid item tablet={1}>
           <DataToShow />
@@ -83,6 +86,8 @@ const QualityAssurance = () => {
                     <StepWizard
                       setInitiateSelect={setInitiateSelect}
                       setLevelCorrection={setLevelCorrection}
+                      initiateConfirmTimeseries={initiateConfirmTimeseries}
+                      setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
                     />
                   </Box>
                 </Grid>
@@ -113,6 +118,8 @@ const QualityAssurance = () => {
       setInitiateSelect={setInitiateSelect}
       levelCorrection={levelCorrection}
       setLevelCorrection={setLevelCorrection}
+      initiateConfirmTimeseries={initiateConfirmTimeseries}
+      setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
     >
       <Box boxShadow={4} borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
         <Tabs
@@ -139,6 +146,8 @@ const QualityAssurance = () => {
             <StepWizard
               setInitiateSelect={setInitiateSelect}
               setLevelCorrection={setLevelCorrection}
+              initiateConfirmTimeseries={initiateConfirmTimeseries}
+              setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
             />
           </TabPanel>
           <TabPanel value={tabValue} index={3}>
@@ -160,6 +169,8 @@ interface LayoutProps {
   levelCorrection: boolean;
   setLevelCorrection: (value: boolean) => void;
   children: ReactNode;
+  initiateConfirmTimeseries: boolean;
+  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
 const Layout = ({
@@ -169,6 +180,8 @@ const Layout = ({
   setInitiateSelect,
   levelCorrection,
   setLevelCorrection,
+  initiateConfirmTimeseries,
+  setInitiateConfirmTimeseries,
   children,
 }: LayoutProps) => {
   return (
@@ -182,6 +195,8 @@ const Layout = ({
             setInitiateSelect={setInitiateSelect}
             levelCorrection={levelCorrection}
             setLevelCorrection={setLevelCorrection}
+            initiateConfirmTimeseries={initiateConfirmTimeseries}
+            setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
           />
         </Grid>
         {children}

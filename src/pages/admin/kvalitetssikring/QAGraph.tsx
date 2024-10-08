@@ -235,6 +235,8 @@ interface PlotGraphProps {
   initiateSelect: boolean;
   setInitiateSelect: (select: boolean) => void;
   levelCorrection: boolean;
+  initiateConfirmTimeseries: boolean;
+  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
 function PlotGraph({
@@ -243,6 +245,8 @@ function PlotGraph({
   initiateSelect,
   setInitiateSelect,
   levelCorrection,
+  initiateConfirmTimeseries,
+  setInitiateConfirmTimeseries,
 }: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
@@ -605,6 +609,12 @@ function PlotGraph({
           // font: {size: matches ? 6 : 12},
         },
       }}
+      onClick={(e) => {
+        if (initiateConfirmTimeseries) {
+          setSelection({points: e.points});
+          console.log(e);
+        }
+      }}
       config={{
         // showTips: false,
         responsive: true,
@@ -626,8 +636,10 @@ interface QAGraphProps {
   stationId: number;
   initiateSelect: boolean;
   levelCorrection: boolean;
+  initiateConfirmTimeseries: boolean;
   setInitiateSelect: (value: boolean) => void;
   setLevelCorrection: (value: boolean) => void;
+  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
 export default function QAGraph({
@@ -635,6 +647,8 @@ export default function QAGraph({
   initiateSelect,
   setInitiateSelect,
   levelCorrection,
+  initiateConfirmTimeseries,
+  setInitiateConfirmTimeseries,
 }: QAGraphProps) {
   // const theme = useTheme();
   // const matches = useMediaQuery(theme.breakpoints.down('md'));
@@ -671,6 +685,8 @@ export default function QAGraph({
         initiateSelect={initiateSelect}
         setInitiateSelect={setInitiateSelect}
         levelCorrection={levelCorrection}
+        initiateConfirmTimeseries={initiateConfirmTimeseries}
+        setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
       />
     </div>
   );

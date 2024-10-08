@@ -2,18 +2,25 @@ import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material';
 import {Box, Button, CardActions, MobileStepper, Card, CardContent, useTheme} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 
-import WizardFjernPunkter from './WizardFjernPunkter';
-import WizardGodkendTidsserie from './WizardGodkendTidsserie';
+import WizardConfirmTimeseries from './WizardConfirmTimeseries';
+import WizardDataExclude from './WizardExcludeData';
 import WizardIntro from './WizardIntro';
-import WizardKorrigerSpring from './WizardKorrigerSpring';
+import WizardLevelCorrection from './WizardLevelCorrection';
 import WizardValueBounds from './WizardValueBounds';
 
 interface StepWizardProps {
   setInitiateSelect: (initiateSelect: boolean) => void;
   setLevelCorrection: (levelCorrection: boolean) => void;
+  initiateConfirmTimeseries: boolean;
+  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
-const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) => {
+const StepWizard = ({
+  setInitiateSelect,
+  setLevelCorrection,
+  initiateConfirmTimeseries,
+  setInitiateConfirmTimeseries,
+}: StepWizardProps) => {
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const [nextStep, setNextStep] = useState<number | null>(null);
@@ -47,15 +54,24 @@ const StepWizard = ({setInitiateSelect, setLevelCorrection}: StepWizardProps) =>
         <CardContent sx={{height: '95%'}}>
           <Box width={'inherit'} height={'inherit'}>
             {activeStep === 0 && <WizardIntro setValue={setActiveStep} />}
-            {activeStep === 1 && <WizardGodkendTidsserie setStep={setActiveStep} />}
+            {activeStep === 1 && (
+              <WizardConfirmTimeseries
+                setStep={setActiveStep}
+                initiateConfirmTimeseries={initiateConfirmTimeseries}
+                setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
+              />
+            )}
             {activeStep === 2 && (
-              <WizardFjernPunkter setStep={setActiveStep} setInitiateSelect={setInitiateSelect} />
+              <WizardDataExclude setStep={setActiveStep} setInitiateSelect={setInitiateSelect} />
             )}
             {activeStep === 3 && (
               <WizardValueBounds setStep={setActiveStep} setInitiateSelect={setInitiateSelect} />
             )}
             {activeStep === 4 && (
-              <WizardKorrigerSpring setStep={setActiveStep} setInitiateSelect={setInitiateSelect} />
+              <WizardLevelCorrection
+                setStep={setActiveStep}
+                setInitiateSelect={setInitiateSelect}
+              />
             )}
           </Box>
         </CardContent>

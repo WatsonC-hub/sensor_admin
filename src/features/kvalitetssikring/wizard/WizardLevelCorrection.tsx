@@ -4,18 +4,17 @@ import {useAtomValue} from 'jotai';
 import React from 'react';
 
 import Button from '~/components/Button';
-import ExcludeModal from '~/pages/admin/kvalitetssikring/modals/ExcludeModal';
+import LevelCorrectionModal from '~/pages/admin/kvalitetssikring/modals/LevelCorrectionModal';
 import {qaSelection} from '~/state/atoms';
 
-type WizardFjernPunkterProps = {
+type WizardLevelCorrectionProps = {
   setStep: (value: number) => void;
   setInitiateSelect: (initiateSelect: boolean) => void;
 };
 
-const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProps) => {
+const WizardLevelCorrection = ({setStep, setInitiateSelect}: WizardLevelCorrectionProps) => {
   const selection = useAtomValue(qaSelection);
 
-  console.log(selection);
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
       <CardContent
@@ -28,11 +27,12 @@ const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProp
       >
         <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'}>
           <Typography alignSelf={'center'} variant="h5" component="h2" fontWeight={'bold'}>
-            Fjern punkter fra tidsserien
+            Korriger spring
           </Typography>
           <Typography sx={{wordWrap: 'break-word'}}>
-            På denne side af guiden har du mulighed for at fjerne punkter som du mener der er fejl
-            i. Tryk på knappen nedenfor og derefter marker området på grafen som skal fjernes.
+            På denne side af guiden kan du rette en specifik hændelse i tidsserien, f.eks. en
+            unaturlig spike eller et niveauspring. Tryk på knappen, og markér venligst ét punkt på
+            grafen, som du ønsker at rette, for at starte behandlingen.
           </Typography>
         </Box>
         <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
@@ -44,22 +44,24 @@ const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProp
               setInitiateSelect(true);
             }}
           >
-            Markér punkter
+            Markér et punkt
           </Button>
         </Box>
         <Box alignSelf={'center'}>
-          {'range' in selection && (
-            <ExcludeModal
-              onClose={() => {
-                setInitiateSelect(false);
-                setStep(0);
-              }}
-            />
-          )}
+          {'range' in selection &&
+            'points' in selection &&
+            (selection.points as Array<{x: string; y: number}>).length === 2 && (
+              <LevelCorrectionModal
+                onClose={() => {
+                  setInitiateSelect(false);
+                  setStep(0);
+                }}
+              />
+            )}
         </Box>
       </CardContent>
     </Box>
   );
 };
 
-export default WizardFjernPunkter;
+export default WizardLevelCorrection;
