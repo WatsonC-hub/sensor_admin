@@ -3,10 +3,10 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 
-interface CertifyQa {
+export interface CertifyQa {
   id?: number;
   date: string;
-  qa_stamp: string;
+  level: number;
   comment?: string;
 }
 
@@ -27,7 +27,7 @@ export const certifyQaPostOptions = {
   mutationKey: ['certifyQa_post'],
   mutationFn: async (mutation_data: CertifyQaPost) => {
     const {path, data} = mutation_data;
-    const {data: result} = await apiClient.post(`/sensor_admin/qa_handled/${path}`, data);
+    const {data: result} = await apiClient.post(`/sensor_admin/certify_quality/${path}`, data);
     return result;
   },
 };
@@ -51,25 +51,24 @@ export const certifyQaDelOptions = {
   },
 };
 
-export const useCertifyQa = (ts_id: number | undefined, qa_stamp: string | undefined) => {
+export const useCertifyQa = (ts_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: ['certifyQa', ts_id, qa_stamp],
+    queryKey: ['certifyQa', ts_id],
     queryFn: async () => {
-      console.log(qa_stamp);
-      const {data} = await apiClient.get<CertifyQa>(
-        `/sensor_admin/certified_quality/${ts_id}/${qa_stamp}`
+      const {data} = await apiClient.get<Array<CertifyQa>>(
+        `/sensor_admin/certified_quality/${ts_id}`
       );
       return data;
     },
-    enabled: ts_id !== undefined && qa_stamp !== undefined,
+    enabled: ts_id !== undefined,
   });
 
   const post = useMutation({
     ...certifyQaPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['certifyQa', ts_id, qa_stamp],
+        queryKey: ['certifyQa', ts_id],
       });
       toast.success('Kvalitetsstempel gemt');
     },
@@ -79,7 +78,7 @@ export const useCertifyQa = (ts_id: number | undefined, qa_stamp: string | undef
     ...certifyQaPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['certifyQa', ts_id, qa_stamp],
+        queryKey: ['certifyQa', ts_id],
       });
       toast.success('Kvalitetsstempel ændret');
     },
@@ -89,7 +88,7 @@ export const useCertifyQa = (ts_id: number | undefined, qa_stamp: string | undef
     ...certifyQaDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['certifyQa', ts_id, qa_stamp],
+        queryKey: ['certifyQa', ts_id],
       });
       toast.success('Kvalitetsstempel slettet');
     },

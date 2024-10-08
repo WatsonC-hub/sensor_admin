@@ -52,10 +52,10 @@ const WizardLevelCorrection = ({setStep, setInitiateSelect}: WizardLevelCorrecti
             'points' in selection &&
             (selection.points as Array<{x: string; y: number}>).length === 2 && (
               <LevelCorrectionModal
-                onClose={() => {
-                  setInitiateSelect(false);
-                  setStep(0);
-                }}
+              // onClose={() => {
+              //   setInitiateSelect(false);
+              //   setStep(0);
+              // }}
               />
             )}
         </Box>

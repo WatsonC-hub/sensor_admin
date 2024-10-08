@@ -172,6 +172,7 @@ export const dataToShowAtom = atom({
   QA: true,
   Kontrolmålinger: true,
   Nedbør: false,
+  // 'Kvalitets stempel': false,
   'Korrigerede spring': false,
   'Valide værdier': false,
   'Fjernet data': false,

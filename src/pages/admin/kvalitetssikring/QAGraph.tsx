@@ -9,6 +9,7 @@ import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {setGraphHeight} from '~/consts';
+import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
@@ -246,7 +247,7 @@ function PlotGraph({
   setInitiateSelect,
   levelCorrection,
   initiateConfirmTimeseries,
-  setInitiateConfirmTimeseries,
+  // setInitiateConfirmTimeseries,
 }: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
@@ -268,6 +269,10 @@ function PlotGraph({
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
   const {data: graphData} = useGraphData(ts_id, xRange);
+
+  const {
+    get: {data: certifedData},
+  } = useCertifyQa(ts_id);
 
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],
@@ -529,6 +534,25 @@ function PlotGraph({
               showarrow: false,
               text: 'Korrigeret spring',
               y: 0.3 + (index % 4) * 0.1,
+            };
+          }) ?? []),
+        ];
+        break;
+      case 'Kvalitets stempel':
+        shapes = [
+          ...shapes,
+          ...(certifedData?.map((data) => {
+            return {
+              type: 'line',
+              x0: moment(data.date).format('YYYY-MM-DD HH:mm'),
+              x1: moment(data.date).format('YYYY-MM-DD HH:mm'),
+              y0: 0,
+              y1: 1,
+              yref: 'paper',
+              line: {
+                color: theme.palette.error.main,
+                width: 1.5,
+              },
             };
           }) ?? []),
         ];

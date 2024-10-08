@@ -50,10 +50,10 @@ const WizardDataExclude = ({setStep, setInitiateSelect}: WizardDataExcludeProps)
         <Box alignSelf={'center'}>
           {'range' in selection && (
             <ExcludeModal
-              onClose={() => {
-                setInitiateSelect(false);
-                setStep(0);
-              }}
+            // onClose={() => {
+            //   setInitiateSelect(false);
+            //   setStep(0);
+            // }}
             />
           )}
         </Box>

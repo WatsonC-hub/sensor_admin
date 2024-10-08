@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import AdsClickIcon from '@mui/icons-material/AdsClick';
 // import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import {Box, CardContent, MenuItem, TextField, Typography} from '@mui/material';
+import {Box, CardContent, TextField, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {PlotDatum} from 'plotly.js';
@@ -12,12 +12,12 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import {QaStampLevel} from '~/helpers/EnumHelper';
+// import {QaStampLevel} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
-import {useCertifyQa} from '../api/useCertifyQa';
+import {CertifyQa, useCertifyQa} from '../api/useCertifyQa';
 
 interface WizardConfirmTimeseriesProps {
   setStep: (value: number) => void;
@@ -28,19 +28,19 @@ interface WizardConfirmTimeseriesProps {
 const schema = z.object({
   id: z.number().optional(),
   date: z.string(),
-  qa_stamp: z.string(),
-  comment: z.string().optional(),
+  level: z.number(),
+  // comment: z.string().optional(),
 });
 
 type CertifyQaValues = z.infer<typeof schema>;
 
 const WizardConfirmTimeseries = ({
-  setStep,
+  // setStep,
   initiateConfirmTimeseries,
   setInitiateConfirmTimeseries,
 }: WizardConfirmTimeseriesProps) => {
   const metadata = useContext(MetadataContext);
-  const [qaStamp, setQaStamp] = useState<string | undefined>(undefined);
+  const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
   const {isMobile} = useBreakpoints();
   const selection = useAtomValue(qaSelection);
   const [disabled, setDisabled] = useState(false);
@@ -49,21 +49,30 @@ const WizardConfirmTimeseries = ({
   const {
     get: {data: qaData},
     post: postQaData,
-  } = useCertifyQa(metadata?.ts_id, qaStamp);
+  } = useCertifyQa(metadata?.ts_id);
 
+  const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
+
+  console.log(qaData);
   // console.log(qaData);
 
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      level: 1,
+    },
   });
 
-  const {watch, handleSubmit, setValue} = formMethods;
+  const {watch, handleSubmit, setValue, reset} = formMethods;
 
-  const qaStampWatch = watch('qa_stamp');
+  const qaStampWatch = watch('level');
 
   useEffect(() => {
-    if (qaStampWatch !== qaStamp) setQaStamp(qaStampWatch);
-  }, [qaStampWatch, qaStamp]);
+    if (qaStampWatch !== qaStamp) {
+      setQaStamp(qaStampWatch);
+      setSelectedQaData(qaData?.find((qa) => qa.level === qaStampWatch));
+    }
+  }, [qaStampWatch, qaStamp, qaData]);
 
   useEffect(() => {
     console.log(initiateConfirmTimeseries);
@@ -82,11 +91,7 @@ const WizardConfirmTimeseries = ({
       path: `${metadata?.ts_id}`,
       data: certifyQa,
     };
-    postQaData.mutateAsync(payload, {
-      onSuccess: () => {
-        setStep(0);
-      },
-    });
+    postQaData.mutateAsync(payload);
   };
 
   return (
@@ -138,8 +143,12 @@ const WizardConfirmTimeseries = ({
               gap={1}
             >
               <TextField
-                value={qaData ? moment(qaData.date).format('YYYY-MM-DD HH:mm') : undefined}
-                type={qaData ? 'datetime-local' : undefined}
+                value={
+                  selectedQaData
+                    ? moment(selectedQaData.date).format('YYYY-MM-DD HH:mm')
+                    : undefined
+                }
+                type={selectedQaData ? 'datetime-local' : undefined}
                 variant="outlined"
                 label={'Sidst godkendt'}
                 placeholder="Fra start"
@@ -162,7 +171,7 @@ const WizardConfirmTimeseries = ({
                 }}
               />
             </Box>
-            <FormInput
+            {/* <FormInput
               name="qa_stamp"
               label="Kvalitetsniveau"
               placeholder="Kvalitetsniveau..."
@@ -194,13 +203,13 @@ const WizardConfirmTimeseries = ({
                 minWidth: 218,
                 width: isMobile ? '100%' : 400,
               }}
-            />
+            /> */}
 
             <Box display={'flex'} flexDirection={'row'} alignSelf={'center'} gap={1}>
               <Button
                 bttype="tertiary"
                 onClick={() => {
-                  setStep(0);
+                  reset();
                   setInitiateConfirmTimeseries(false);
                 }}
               >

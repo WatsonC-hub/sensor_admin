@@ -11,7 +11,7 @@ import {useExclude} from '~/hooks/query/useExclude';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
-const ExcludeModal = ({onClose}) => {
+const ExcludeModal = () => {
   const [radio, setRadio] = useState('selected');
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
@@ -131,7 +131,7 @@ const ExcludeModal = ({onClose}) => {
         <Button
           bttype="tertiary"
           // startIcon={<KeyboardReturnIcon />}
-          onClick={onClose}
+          // onClick={onClose}
           sx={{marginRight: 1}}
         >
           Annuller
