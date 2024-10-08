@@ -9,7 +9,6 @@ import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {authStore} from '~/state/store';
 
@@ -21,8 +20,6 @@ export default function Login() {
   const [passReset, setPassReset] = useState('');
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
-  const {register} = useNavigationFunctions();
-
   const [setAuthenticated, setLoginExpired, setAuthorization] = authStore((state) => [
     state.setAuthenticated,
     state.setLoginExpired,
@@ -32,6 +29,11 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationKey: ['login'],
     mutationFn: loginAPI,
+  });
+
+  const passwordResetMutation = useMutation({
+    mutationKey: ['resetPassword'],
+    mutationFn: resetPassword,
   });
 
   const handleSubmit = () => {
@@ -52,14 +54,18 @@ export default function Login() {
   };
 
   const handlePassReset = () => {
-    resetPassword({email: passReset})
-      .then(() => {
-        setPassResetErr(false);
-        handleEmailSent();
-      })
-      .catch(() => {
-        setPassResetErr(true);
-      });
+    passwordResetMutation.mutate(
+      {email: passReset},
+      {
+        onSuccess: () => {
+          setPassResetErr(false);
+          handleEmailSent();
+        },
+        onError: () => {
+          setPassResetErr(true);
+        },
+      }
+    );
   };
 
   const handleEmailSent = () => {
@@ -137,7 +143,10 @@ export default function Login() {
           >
             <Button
               bttype="link"
-              onClick={register}
+              onClick={() => {
+                const currentUrl = window.location.href;
+                window.open(`https://admin.watsonc.dk/register?redirect=${currentUrl}`, '_blank');
+              }}
               sx={{
                 m: 0,
                 p: 0,

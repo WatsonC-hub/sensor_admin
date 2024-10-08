@@ -14,8 +14,11 @@ const getCvr = (cvr) => axios.get(`${userEndpoint}/core/org/bycvr/${cvr}`);
 
 const createUser = (payload) => axios.post(`${userEndpoint}calypso/user`, payload);
 
-const resetPassword = (passReset) =>
-  axios.post(`${userEndpoint}core/user/forgotpassword`, passReset);
+const resetPassword = async (body) => {
+  const currentUrl = window.location.href;
+  const {data} = await apiClient.post(`/admin/forgot-password?redirect=${currentUrl}`, body);
+  return data;
+};
 
 const loginAPI = async (inputdata) => {
   const formData = new FormData();
