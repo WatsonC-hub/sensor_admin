@@ -158,31 +158,25 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
     }
   }, [dynamicMeasurement]);
 
-  //Det kan godt build uden ts expect error
-  console.log(jupiterData);
-  const jupiterTraces = Object.entries({
-    'Jupiter - ukendt årsag': null,
-    'Jupiter - i ro': 0,
-    'Jupiter - i drift': 1,
-  }).map((i) => {
+  const jupiterTraces = [null, 0, 1].map((i) => {
     // get indexes where data.situation is 0, 1 or null
     const indexes = jupiterData?.data?.situation
-      ?.map((situation, index) => situation === i[1] && index)
+      ?.map((situation, index) => situation === i && index)
       .filter((d) => d !== false);
     // get x and y values for each situation
-    console.log(i, indexes);
+    // @ts-expect-error - indexes is not null
     const x = indexes?.map((index) => jupiterData.data.x[index]);
     const y = indexes?.map((index) => jupiterData.data.y[index]);
 
-    // let name = ;
-    // if (i[1] === 0) name = ;
-    // else if (i[1] === 1) name = ;
-    // console.log(i, x, y);
+    let name = 'Jupiter - ukendt årsag';
+    if (i === 0) name = 'Jupiter - i ro';
+    else if (i === 1) name = 'Jupiter - i drift';
+
     return {
       x,
       y,
       // name: i ? (i in TRACE_NAMES ? TRACE_NAMES[i] : null) : null,
-      name: i[0],
+      name: name,
       type: 'scattergl',
       line: {width: 2},
       mode: 'lines+markers',
