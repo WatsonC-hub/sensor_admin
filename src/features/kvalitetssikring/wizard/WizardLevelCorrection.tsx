@@ -1,4 +1,4 @@
-import ShowChartIcon from '@mui/icons-material/ShowChart';
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
@@ -7,12 +7,12 @@ import Button from '~/components/Button';
 import LevelCorrectionModal from '~/pages/admin/kvalitetssikring/modals/LevelCorrectionModal';
 import {qaSelection} from '~/state/atoms';
 
-type WizardKorrigerSpringProps = {
+type WizardLevelCorrectionProps = {
   setStep: (value: number) => void;
   setInitiateSelect: (initiateSelect: boolean) => void;
 };
 
-const WizardKorrigerSpring = ({setStep, setInitiateSelect}: WizardKorrigerSpringProps) => {
+const WizardLevelCorrection = ({setInitiateSelect}: WizardLevelCorrectionProps) => {
   const selection = useAtomValue(qaSelection);
 
   return (
@@ -37,7 +37,7 @@ const WizardKorrigerSpring = ({setStep, setInitiateSelect}: WizardKorrigerSpring
         </Box>
         <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
           <Button
-            startIcon={<ShowChartIcon />}
+            startIcon={<HighlightAltIcon />}
             bttype={'primary'}
             disabled={false}
             onClick={() => {
@@ -52,10 +52,10 @@ const WizardKorrigerSpring = ({setStep, setInitiateSelect}: WizardKorrigerSpring
             'points' in selection &&
             (selection.points as Array<{x: string; y: number}>).length === 2 && (
               <LevelCorrectionModal
-                onClose={() => {
-                  setInitiateSelect(false);
-                  setStep(0);
-                }}
+              // onClose={() => {
+              //   setInitiateSelect(false);
+              //   setStep(0);
+              // }}
               />
             )}
         </Box>
@@ -64,4 +64,4 @@ const WizardKorrigerSpring = ({setStep, setInitiateSelect}: WizardKorrigerSpring
   );
 };
 
-export default WizardKorrigerSpring;
+export default WizardLevelCorrection;

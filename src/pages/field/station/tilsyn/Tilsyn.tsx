@@ -32,10 +32,10 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   };
 
   const formMethods = useForm<TilsynItem>({
-    defaultValues: {
-      ...initialData,
-    },
+    defaultValues: initialData,
   });
+
+  const {reset, getValues} = formMethods;
 
   const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn();
 
@@ -68,7 +68,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   };
 
   const handleEdit = (data: TilsynItem) => {
-    formMethods.reset(data, {keepDirty: true});
+    reset(data, {keepDirty: true});
     setShowForm('true');
   };
 
@@ -84,17 +84,21 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   };
 
   const resetFormData = () => {
-    formMethods.reset(initialData);
+    reset(initialData);
     setShowForm(null);
   };
 
   useEffect(() => {
-    if (showForm && formMethods.getValues('gid') === -1) formMethods.reset(initialData);
+    if (showForm && getValues('gid') === -1) {
+      console.log('resetting');
+      reset(initialData);
+    }
   }, [showForm]);
 
   useEffect(() => {
     if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
       setShowForm(null);
+      reset(initialData);
     }
   }, [ts_id]);
 

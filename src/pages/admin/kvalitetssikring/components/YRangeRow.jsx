@@ -11,13 +11,11 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
 const YRangeRow = ({data, index}) => {
   const [editMode, setEditMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const {post, del} = useYRangeMutations();
-  const {isMobile} = useBreakpoints();
 
   const schema = z.object({
     mincutoff: z.number(),
@@ -58,44 +56,49 @@ const YRangeRow = ({data, index}) => {
         key={index}
         display="flex"
         justifyContent="space-between"
-        flexDirection={isMobile ? 'column' : 'row'}
+        flexDirection={'column'}
         alignItems="center"
-        border={1}
         borderRadius={1}
         borderColor="grey.500"
         p={1}
       >
-        <Grid container width="70%" gap={1}>
-          <Grid item xs={12} sm={5}>
-            <FormInput
-              name="mincutoff"
-              label="Nedre grænse"
-              fullWidth
-              type="number"
-              required
-              disabled={!editMode}
-            />
-          </Grid>
-          <Grid item xs={12} sm={5}>
-            <FormInput
-              name="maxcutoff"
-              label="Øvre grænse"
-              fullWidth
-              type="number"
-              required
-              disabled={!editMode}
-            />
+        <Grid container>
+          <Grid item xs={12} sm={12}>
+            <Box display={'flex'} flexDirection={'row'} gap={1}>
+              <FormInput
+                name="mincutoff"
+                label="Nedre grænse"
+                fullWidth
+                type="number"
+                required
+                disabled={!editMode}
+              />
+              <FormInput
+                name="maxcutoff"
+                label="Øvre grænse"
+                fullWidth
+                type="number"
+                required
+                disabled={!editMode}
+              />
+            </Box>
           </Grid>
         </Grid>
-        <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1} minWidth="97.02px">
-          <Button
-            bttype="tertiary"
-            size="small"
-            onClick={() => setConfirmDelete(true)}
-            startIcon={<DeleteIcon />}
-          >
-            Slet
-          </Button>
+        <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1}>
+          {editMode ? (
+            <Button bttype="tertiary" size="small" onClick={() => setEditMode(false)}>
+              Annuller
+            </Button>
+          ) : (
+            <Button
+              bttype="tertiary"
+              size="small"
+              onClick={() => setConfirmDelete(true)}
+              startIcon={<DeleteIcon />}
+            >
+              Slet
+            </Button>
+          )}
           {editMode ? (
             <Button
               bttype="primary"

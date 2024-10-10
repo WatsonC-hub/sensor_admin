@@ -5,8 +5,6 @@ const Rect = ({index, steps}: {index: number; steps: number}) => {
   const placement = incr + incr * steps - index * incr;
   const height = 5;
 
-  console.log(placement);
-
   return (
     <path
       d={`M46 ${placement}c0 1.1-.9 2-2 2H20c-1.1 0-2-.9-2-2v-${height}c0-1.1.9-2 2-2h24c1.1 0 2 .9 2 2v4`}

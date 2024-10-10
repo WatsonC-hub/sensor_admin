@@ -94,6 +94,7 @@ export default function AddUnitForm({
   ) => {
     console.log('option', option);
     if (option == null) {
+      console.log(option);
       setUnitData((currentUnit) => ({...currentUnit, calypso_id: '', uuid: ''}));
       return;
     }

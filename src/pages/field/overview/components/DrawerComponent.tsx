@@ -28,7 +28,7 @@ const DrawerComponent = ({
   actions,
 }: DrawerComponentProps) => {
   const [open, setOpen] = useState<'closed' | 'half' | 'full'>(
-    isMarkerSelected ? 'half' : 'closed'
+    isMarkerSelected ? 'full' : 'closed'
   );
   const {isTouch} = useBreakpoints();
 
@@ -93,9 +93,9 @@ const DrawerComponent = ({
           </Typography>
           <Box p={1}>
             {open == 'full' || (open == 'half' && !enableFull) ? (
-              <ExpandLessIcon />
-            ) : (
               <ExpandMoreIcon />
+            ) : (
+              <ExpandLessIcon />
             )}
 
             {/* {enableFull && (

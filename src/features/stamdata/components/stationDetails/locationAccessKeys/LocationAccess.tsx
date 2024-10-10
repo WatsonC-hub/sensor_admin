@@ -9,15 +9,15 @@ import {useParams} from 'react-router-dom';
 import Button from '~/components/Button';
 import {initialLocationAccessData} from '~/consts';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
+import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
+import LocationAccessTable from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessTable';
+import SelectLocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/SelectLocationAccess';
+import {
+  adgangsforhold,
+  AdgangsForhold,
+} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {Access, AccessTable} from '~/types';
-
-import {adgangsforhold} from '../zodSchemas';
-import type {AdgangsForhold} from '../zodSchemas';
-
-import LocationAccessFormDialog from './LocationAccessFormDialog';
-import LocationAccessTable from './LocationAccessTable';
-import SelectLocationAccess from './SelectLocationAccess';
 
 const LocationAccess = () => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -27,7 +27,6 @@ const LocationAccess = () => {
   const [createNew, setCreateNew] = useState<boolean>(false);
 
   const {
-    get: {data: locationAccess},
     post: postLocationAccess,
     put: editLocationAccess,
     del: delLocationAccess,
@@ -38,6 +37,9 @@ const LocationAccess = () => {
     defaultValues: initialLocationAccessData,
     mode: 'onSubmit',
   });
+
+  // console.log(locationAccess);
+  // if (!locationAccess) return;
 
   const {clearErrors, handleSubmit, reset} = formMethods;
 
@@ -122,7 +124,6 @@ const LocationAccess = () => {
 
             <Grid item xs={12} sm={12}>
               <LocationAccessTable
-                data={typeof locationAccess === 'object' ? locationAccess : []}
                 editLocationAccess={handleEdit}
                 delLocationAccess={handleDelete}
               />

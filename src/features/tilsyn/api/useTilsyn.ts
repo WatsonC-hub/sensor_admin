@@ -1,8 +1,8 @@
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {GetQueryOptions} from '~/queryClient';
 import {stamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
 
@@ -60,17 +60,22 @@ export const tilsynDelOptions = {
   },
 };
 
-export const tilsynGetOptions = (ts_id: number) => ({
+export const tilsynGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> => ({
   queryKey: ['service', ts_id],
   queryFn: async () => {
-    const {data} = await apiClient.get<Array<TilsynItem>>(`/sensor_field/station/service/${ts_id}`);
-
-    return data.map((m) => {
-      return {
-        ...m,
-        dato: moment(m.dato).format('YYYY-MM-DDTHH:mm'),
-      };
-    });
+    // try {
+    const {data} = await apiClient.get<TData>(`/sensor_field/station/service/${ts_id}`);
+    return data;
+    // return data.map((m) => {
+    //   return {
+    //     ...m,
+    //   //     dato: moment(m.dato).format('YYYY-MM-DDTHH:mm'),
+    //   //   };
+    //   // });
+    // } catch (error) {
+    //   console.log((error as AxiosError).response?.data.detail);
+    //   return null;
+    // }
   },
   enabled: ts_id !== undefined && ts_id !== 0 && ts_id !== null,
 });
@@ -79,7 +84,7 @@ export const useTilsyn = () => {
   const queryClient = useQueryClient();
 
   const ts_id = stamdataStore((store) => store.timeseries.ts_id);
-  const get = useQuery(tilsynGetOptions(ts_id));
+  const get = useQuery(tilsynGetOptions<Array<TilsynItem>>(ts_id));
 
   const post = useMutation({
     ...tilsynPostOptions,

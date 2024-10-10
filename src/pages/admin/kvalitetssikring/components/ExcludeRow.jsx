@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Divider, Grid, Typography} from '@mui/material';
+import {Box, Divider, Grid} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
@@ -12,11 +12,13 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useExclude} from '~/hooks/query/useExclude';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
-const ExcludeRow = ({data, index, isWithYValues}) => {
+const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
   const [editMode, setEditMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const {put, del} = useExclude();
+  const {isTouch, isLaptop} = useBreakpoints();
 
   const schema = z.object({
     startdate: z
@@ -73,7 +75,6 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
         display="flex"
         flexDirection={'row'}
         alignItems="center"
-        border={1}
         borderRadius={1}
         borderColor="grey.500"
         p={1}
@@ -84,24 +85,20 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
               alignItems={'center'}
               alignSelf={'center'}
               display="flex"
-              flexDirection="row"
+              flexDirection={isLaptop || isTouch ? 'column' : 'row'}
               gap={1}
             >
-              <Typography>Tidsinterval:</Typography>
               <FormInput
                 name="startdate"
                 label="Fra"
                 type="datetime-local"
-                fullWidth
                 required
                 disabled={!editMode}
               />
-              -
               <FormInput
                 name="enddate"
                 label="Til"
                 type="datetime-local"
-                fullWidth
                 required
                 disabled={!editMode}
               />
@@ -145,14 +142,20 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
             justifyContent={'end'}
           >
             <Box display="flex" flexDirection="row" alignSelf={'end'} gap={1}>
-              <Button
-                bttype="tertiary"
-                size="small"
-                onClick={() => setConfirmDelete(true)}
-                startIcon={<DeleteIcon />}
-              >
-                Slet
-              </Button>
+              {editMode ? (
+                <Button bttype="tertiary" size="small" onClick={() => setEditMode(false)}>
+                  Annuller
+                </Button>
+              ) : (
+                <Button
+                  bttype="tertiary"
+                  size="small"
+                  onClick={() => setConfirmDelete(true)}
+                  startIcon={<DeleteIcon />}
+                >
+                  Slet
+                </Button>
+              )}
               {editMode ? (
                 <Button
                   bttype="primary"
@@ -176,13 +179,15 @@ const ExcludeRow = ({data, index, isWithYValues}) => {
           </Grid>
         </Grid>
       </Box>
-      <Divider
-        sx={{
-          mt: 1,
-          mb: 1,
-          borderBottomWidth: 2,
-        }}
-      />
+      {!LastElement && (
+        <Divider
+          sx={{
+            mt: 1,
+            mb: 1,
+            borderBottomWidth: 2,
+          }}
+        />
+      )}
       <DeleteAlert
         title="Vil du slette ekskluderingen?"
         dialogOpen={confirmDelete}

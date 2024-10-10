@@ -1,6 +1,11 @@
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {MutationCache, QueryClient} from '@tanstack/react-query';
-import axios from 'axios';
+import {
+  MutationCache,
+  QueryClient,
+  UseMutationOptions,
+  UseQueryOptions,
+} from '@tanstack/react-query';
+import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -14,13 +19,25 @@ type ErrorDetail = {
   input: unknown;
 };
 
+type ErrorResponse = {
+  detail: ErrorDetail | string;
+};
+
+export type APIError = AxiosError<ErrorResponse>;
+
+export type GetQueryOptions<TData> = UseQueryOptions<TData, APIError>;
+export type MutationQueryOptions = UseMutationOptions;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       networkMode: 'offlineFirst',
       retry: (failureCount, error) => {
         if (axios.isAxiosError(error)) {
-          if (error.response?.status === 401 || error.response?.status === 404) {
+          if (error.response?.status == undefined) {
+            return false;
+          }
+          if (![500, 501, 502, 503].includes(error.response?.status)) {
             return false;
           }
         }
@@ -38,7 +55,8 @@ const queryClient = new QueryClient({
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {
-        const detail = error.response?.data.detail;
+        const localError = error as APIError;
+        const detail = localError.response?.data.detail;
         if (detail) {
           console.log('detail', detail);
           if (typeof detail === 'string') {
@@ -61,13 +79,12 @@ const queryClient = new QueryClient({
           return;
         }
 
-        const status = error.response?.status.toString();
+        const status = localError.response?.status.toString();
 
         if (status && status in httpStatusDescriptions) {
           toast.error(httpStatusDescriptions[status as keyof typeof httpStatusDescriptions]);
           return;
         }
-
         toast.error('Der skete en fejl');
       }
     },

@@ -277,16 +277,7 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
       return data;
     },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchIntervalInBackground: false,
-    refetchOnReconnect: false,
   });
-
-  useEffect(() => {
-    if (data && data.length > 0) {
-      onSelectionChange(data, selected === '' ? data[0].gid : selected);
-    }
-  }, [data]);
 
   const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
@@ -306,9 +297,14 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
   };
 
   const handleChange = (event: SelectChangeEvent<number | null>) => {
-    if (selected !== event.target.value && data)
-      onSelectionChange(data, Number(event.target.value));
+    if (selected !== event.target.value && data) setselected(Number(event.target.value));
   };
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      onSelectionChange(data, selected === '' ? data[0].gid : selected);
+    }
+  }, [data, selected]);
 
   return (
     <>

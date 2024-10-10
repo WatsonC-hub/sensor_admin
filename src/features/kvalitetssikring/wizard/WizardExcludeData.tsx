@@ -1,4 +1,4 @@
-import BackspaceIcon from '@mui/icons-material/Backspace';
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
@@ -7,12 +7,12 @@ import Button from '~/components/Button';
 import ExcludeModal from '~/pages/admin/kvalitetssikring/modals/ExcludeModal';
 import {qaSelection} from '~/state/atoms';
 
-type WizardFjernPunkterProps = {
+type WizardDataExcludeProps = {
   setStep: (value: number) => void;
   setInitiateSelect: (initiateSelect: boolean) => void;
 };
 
-const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProps) => {
+const WizardDataExclude = ({setInitiateSelect}: WizardDataExcludeProps) => {
   const selection = useAtomValue(qaSelection);
 
   console.log(selection);
@@ -37,7 +37,7 @@ const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProp
         </Box>
         <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
           <Button
-            startIcon={<BackspaceIcon />}
+            startIcon={<HighlightAltIcon />}
             bttype={'primary'}
             disabled={false}
             onClick={() => {
@@ -50,10 +50,10 @@ const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProp
         <Box alignSelf={'center'}>
           {'range' in selection && (
             <ExcludeModal
-              onClose={() => {
-                setInitiateSelect(false);
-                setStep(0);
-              }}
+            // onClose={() => {
+            //   setInitiateSelect(false);
+            //   setStep(0);
+            // }}
             />
           )}
         </Box>
@@ -62,4 +62,4 @@ const WizardFjernPunkter = ({setStep, setInitiateSelect}: WizardFjernPunkterProp
   );
 };
 
-export default WizardFjernPunkter;
+export default WizardDataExclude;

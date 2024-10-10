@@ -1,4 +1,3 @@
-import {Typography, Box, Grid} from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
@@ -10,18 +9,17 @@ import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
 import {setGraphHeight} from '~/consts';
-import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
+import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useGraphData} from '~/hooks/query/useGraphData';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 import {QaGraphData, QaGraphLabel} from '~/types';
-
-import QAHistory from './QAHistory';
 
 const selectorOptions: Partial<RangeSelector> = {
   buttons: [
@@ -238,6 +236,8 @@ interface PlotGraphProps {
   initiateSelect: boolean;
   setInitiateSelect: (select: boolean) => void;
   levelCorrection: boolean;
+  initiateConfirmTimeseries: boolean;
+  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
 function PlotGraph({
@@ -246,6 +246,8 @@ function PlotGraph({
   initiateSelect,
   setInitiateSelect,
   levelCorrection,
+  initiateConfirmTimeseries,
+  // setInitiateConfirmTimeseries,
 }: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
@@ -268,6 +270,10 @@ function PlotGraph({
   const {data: controlData} = useControlData(ts_id);
   const {data: graphData} = useGraphData(ts_id, xRange);
 
+  const {
+    get: {data: certifedData},
+  } = useCertifyQa(ts_id);
+
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],
     queryFn: async () => {
@@ -275,9 +281,7 @@ function PlotGraph({
       return data;
     },
     enabled: dataToShow['Fjernet data'],
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   const {data: precipitation_data} = useQuery({
@@ -291,9 +295,7 @@ function PlotGraph({
       return data;
     },
     enabled: dataToShow['Nedbør'] && fullData !== undefined,
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   useEffect(() => {
@@ -349,7 +351,7 @@ function PlotGraph({
   }, []);
 
   const handleRelayout = (e: any) => {
-    console.log(e);
+    // console.log(e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
@@ -425,7 +427,6 @@ function PlotGraph({
     title: 'Genberegn QA',
     icon: rerunQAIcon,
     click: function () {
-      console.log('hej');
       console.log(rerunQAMutation);
       rerunQAMutation.mutate();
     },
@@ -436,10 +437,9 @@ function PlotGraph({
   let shapes: Array<object> = [];
   let annotations: Array<object> = [];
 
-  Object.keys(dataToShow).forEach((key) => {
-    if (!Object.keys(dataToShow).some((value) => value === key)) return;
-
-    switch (key) {
+  Object.entries(dataToShow).forEach((entry) => {
+    if (entry[1] == false) return;
+    switch (entry[0]) {
       case 'Valide værdier':
         shapes = [
           ...shapes,
@@ -534,6 +534,25 @@ function PlotGraph({
           }) ?? []),
         ];
         break;
+      case 'Kvalitets stempel':
+        shapes = [
+          ...shapes,
+          ...(certifedData?.map((data) => {
+            return {
+              type: 'line',
+              x0: moment(data.date).format('YYYY-MM-DD HH:mm'),
+              x1: moment(data.date).format('YYYY-MM-DD HH:mm'),
+              y0: 0,
+              y1: 1,
+              yref: 'paper',
+              line: {
+                color: theme.palette.error.main,
+                width: 1.5,
+              },
+            };
+          }) ?? []),
+        ];
+        break;
       case 'QA':
         shapes = [...shapes, ...(qaShapes ?? [])];
         annotations = [...annotations, ...(qaAnnotate ?? [])];
@@ -610,6 +629,12 @@ function PlotGraph({
           // font: {size: matches ? 6 : 12},
         },
       }}
+      onClick={(e) => {
+        if (initiateConfirmTimeseries) {
+          setSelection({points: e.points});
+          console.log(e);
+        }
+      }}
       config={{
         // showTips: false,
         responsive: true,
@@ -629,13 +654,25 @@ function PlotGraph({
 
 interface QAGraphProps {
   stationId: number;
+  initiateSelect: boolean;
+  levelCorrection: boolean;
+  initiateConfirmTimeseries: boolean;
+  setInitiateSelect: (value: boolean) => void;
+  setLevelCorrection: (value: boolean) => void;
+  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
-export default function QAGraph({stationId}: QAGraphProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [initiateSelect, setInitiateSelect] = useState(false);
-  const [levelCorrection, setLevelCorrection] = useState(false);
+export default function QAGraph({
+  stationId,
+  initiateSelect,
+  setInitiateSelect,
+  levelCorrection,
+  initiateConfirmTimeseries,
+  setInitiateConfirmTimeseries,
+}: QAGraphProps) {
+  // const theme = useTheme();
+  // const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const {isTouch} = useBreakpoints();
 
   const {data: qaData} = useQuery({
     queryKey: ['qa_labels', stationId],
@@ -651,45 +688,26 @@ export default function QAGraph({stationId}: QAGraphProps) {
   });
 
   return (
-    <Box display="flex" flexDirection="column">
-      <div
-        style={{
-          width: '100%',
-          height: setGraphHeight(matches),
-          // marginBottom: '10px',
-          // marginTop: '-10px',
-          paddingTop: '5px',
-          border: '2px solid gray',
-        }}
-      >
-        <PlotGraph
-          key={'plotgraph' + stationId}
-          qaData={qaData ?? []}
-          ts_id={stationId}
-          initiateSelect={initiateSelect}
-          setInitiateSelect={setInitiateSelect}
-          levelCorrection={levelCorrection}
-        />
-      </div>
-      <Box
-        display={'flex'}
-        flexDirection={matches ? 'column-reverse' : 'row'}
-        justifyContent={'space-between'}
-        gap={2}
-      >
-        <Grid item xs={12} xl={5}>
-          <Box display={'flex'} flexDirection={'column'}>
-            <Typography variant="h6">Datajusteringer</Typography>
-            <QAHistory />
-          </Box>
-        </Grid>
-        <Grid item xs={12} xl={7}>
-          <StepWizard
-            setInitiateSelect={setInitiateSelect}
-            setLevelCorrection={setLevelCorrection}
-          />
-        </Grid>
-      </Box>
-    </Box>
+    <div
+      style={{
+        width: '100%',
+        height: setGraphHeight(isTouch),
+        // marginBottom: '10px',
+        // marginTop: '-10px',
+        paddingTop: '5px',
+        border: '2px solid gray',
+      }}
+    >
+      <PlotGraph
+        key={'plotgraph' + stationId}
+        qaData={qaData ?? []}
+        ts_id={stationId}
+        initiateSelect={initiateSelect}
+        setInitiateSelect={setInitiateSelect}
+        levelCorrection={levelCorrection}
+        initiateConfirmTimeseries={initiateConfirmTimeseries}
+        setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
+      />
+    </div>
   );
 }

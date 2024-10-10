@@ -1,4 +1,5 @@
 // A hook that returns whether the current screen size is mobile, tablet or desktop.
+import {UseQueryResult} from '@tanstack/react-query';
 import {merge, assign} from 'lodash';
 import {
   type MRT_RowData,
@@ -8,10 +9,12 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
+import {useMemo} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {APIError} from '~/queryClient';
 
 const getOptions = <TData extends MRT_RowData>(
   breakpoints: ReturnType<typeof useBreakpoints>,
@@ -198,7 +201,7 @@ const getOptions = <TData extends MRT_RowData>(
 
 export const useTable = <TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
-  data: TData[] | undefined,
+  data: TData[] | undefined | null,
   options: Partial<MRT_TableOptions<TData>>,
   state: Partial<MRT_TableOptions<TData>> | undefined,
   type: string = TableTypes.LIST,
@@ -207,21 +210,10 @@ export const useTable = <TData extends MRT_RowData>(
   const breakpoints = useBreakpoints();
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
-
   if (merge_method === MergeType.SHALLOWMERGE)
-    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options, {
-      initialState: {
-        isLoading: data === undefined,
-        showSkeletons: data === undefined,
-      },
-    });
+    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
   else if (merge_method === MergeType.RECURSIVEMERGE)
-    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options, {
-      initialState: {
-        isLoading: data === undefined,
-        showSkeletons: data === undefined,
-      },
-    });
+    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
   const table = useMaterialReactTable({
     columns,
@@ -232,6 +224,53 @@ export const useTable = <TData extends MRT_RowData>(
       ...state?.state,
       isLoading: data === undefined,
       showSkeletons: data === undefined,
+    },
+  });
+
+  return table;
+};
+
+export const useQueryTable = <TData extends MRT_RowData>(
+  columns: MRT_ColumnDef<TData>[],
+  queryResult: UseQueryResult<TData[], APIError>,
+  options: Partial<MRT_TableOptions<TData>>,
+  state: Partial<MRT_TableOptions<TData>> | undefined,
+  type: string = TableTypes.LIST,
+  merge_method: string | undefined = MergeType.RECURSIVEMERGE
+): MRT_TableInstance<TData> => {
+  const breakpoints = useBreakpoints();
+
+  const {data, isFetched, error} = queryResult;
+
+  const tableOptions = useMemo(() => {
+    let tableOptions: Partial<MRT_TableOptions<TData>> = options;
+    if (merge_method === MergeType.SHALLOWMERGE)
+      tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+    else if (merge_method === MergeType.RECURSIVEMERGE)
+      tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+
+    return tableOptions;
+  }, [options, breakpoints, merge_method, type]);
+
+  console.log(error);
+  if (error != null) {
+    if (tableOptions.localization) {
+      tableOptions.localization.noRecordsToDisplay =
+        typeof error.response?.data.detail == 'string'
+          ? error.response?.data.detail
+          : tableOptions.localization.noRecordsToDisplay;
+    }
+  }
+
+  const table = useMaterialReactTable({
+    columns,
+    data: data ?? [],
+    ...tableOptions,
+    ...state,
+    state: {
+      ...state?.state,
+      isLoading: data === undefined && !isFetched,
+      showSkeletons: data === undefined && !isFetched,
     },
   });
 

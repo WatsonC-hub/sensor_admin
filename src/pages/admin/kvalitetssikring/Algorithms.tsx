@@ -7,7 +7,6 @@ import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 
 const Algorithms = () => {
   const params = useParams();
-
   const {
     get: {data},
   } = useAlgorithms(params.ts_id);
@@ -26,14 +25,15 @@ const Algorithms = () => {
     <>
       <Grid
         container
-        sx={
-          data && data.length > 0 ? {borderRadius: 2, border: 2, borderColor: 'primary.main'} : {}
-        }
+        direction={'row'}
+        justifyContent={data && data.length < 4 ? 'center' : 'start'}
       >
         {data?.map((algorithm) => (
-          <Grid key={algorithm.name} item xs={12} sm={6}>
-            <AlgorithmCard qaAlgorithm={algorithm} />
-          </Grid>
+          <>
+            <Grid key={algorithm.name} item mobile={12} tablet={6} laptop={4} desktop={3} xl={3}>
+              <AlgorithmCard qaAlgorithm={algorithm} />
+            </Grid>
+          </>
         ))}
       </Grid>
     </>

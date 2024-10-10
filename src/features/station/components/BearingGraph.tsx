@@ -82,7 +82,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
       };
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
-  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
+  const {data: graphData} = useGraphData(ts_id, xRange);
   const {data: rawData, refetch: fetchRaw} = useQuery({
     queryKey: ['rawdata', ts_id],
     queryFn: async () => {
@@ -95,10 +95,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
     enabled: false,
     placeholderData: [],
   });
-
-  useEffect(() => {
-    // refetchData([ts_id, xRange]);
-  }, [ts_id, xRange, refetchData]);
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
@@ -150,7 +146,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   };
 
   const rerunButton = {
-    title: 'Download data',
+    title: 'Genberegn data',
     name: 'Genberegn data',
     icon: rerunIcon,
     click: function () {
@@ -160,7 +156,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   };
 
   const getRawData = {
-    title: 'Download data',
+    title: 'Hent rå data',
     name: 'Hent rådata',
     icon: rawDataIcon,
     click: function (gd: any) {
@@ -178,7 +174,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   };
 
   const makeLinkButton = {
-    title: 'Download data',
+    title: 'Ekstern data',
     name: 'Ekstern link',
     icon: makeLinkIcon,
     click: function () {
@@ -300,7 +296,7 @@ export default function BearingGraph({stationId, dynamicMeasurement}: BearingGra
       ctrls = measurements.map((e) => {
         const elev = watlevmp.filter((e2) => {
           return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
-        })[0].elevation;
+        })[0]?.elevation;
         return {
           ...e,
           waterlevel: e.measurement != null ? elev - e.measurement : null,

@@ -164,9 +164,7 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
       ?.map((situation, index) => situation === i && index)
       .filter((d) => d !== false);
     // get x and y values for each situation
-    //@ts-expect-error - indexes is not null
     const x = indexes?.map((index) => jupiterData.data.x[index]);
-    //@ts-expect-error - indexes is not null
     const y = indexes?.map((index) => jupiterData.data.y[index]);
 
     let name = 'Jupiter - ukendt årsag';

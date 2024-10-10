@@ -1,39 +1,37 @@
 import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
-import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {correction_map, setTableBoxStyle} from '~/consts';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
-  data: PejlingItem[] | undefined;
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
-  error?: string;
 }
 
 export default function PejlingMeasurementsTableDesktop({
-  data,
   handleEdit,
   handleDelete,
   canEdit,
-  error,
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
 
   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
+
+  const {get} = usePejling();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -72,7 +70,6 @@ export default function PejlingMeasurementsTableDesktop({
   const [tableState, reset] = useStatefullTableAtom<PejlingItem>('PejlingTableState');
 
   const options: Partial<MRT_TableOptions<PejlingItem>> = {
-    localization: error ? {noRecordsToDisplay: error} : MRT_Localization_DA,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -90,9 +87,9 @@ export default function PejlingMeasurementsTableDesktop({
     },
   };
 
-  const table = useTable<PejlingItem>(
+  const table = useQueryTable<PejlingItem>(
     columns,
-    data,
+    get,
     options,
     tableState,
     TableTypes.TABLE,

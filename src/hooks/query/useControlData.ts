@@ -12,11 +12,8 @@ export const useControlData = (ts_id: number) => {
       );
       return data;
     },
-    enabled: typeof ts_id == 'number',
-    refetchInterval: false,
-    refetchIntervalInBackground: false,
+    enabled: ts_id !== null && ts_id !== undefined,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
   });
 
   return query;

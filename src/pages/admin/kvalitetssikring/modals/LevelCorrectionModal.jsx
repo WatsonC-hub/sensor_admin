@@ -1,3 +1,4 @@
+import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
@@ -9,14 +10,14 @@ import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
-const LevelCorrectionModal = ({onClose}) => {
+const LevelCorrectionModal = () => {
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
   const metadata = useContext(MetadataContext);
   const handleSubmit = (e) => {
     e.preventDefault();
     onAccept();
-    onClose();
+    // onClose();
   };
 
   const prevY = selection?.points?.[0]?.y?.toFixed(4);
@@ -54,11 +55,9 @@ const LevelCorrectionModal = ({onClose}) => {
         rows={3}
       />
       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} m={1} gap={1}>
-        <Button bttype="tertiary" onClick={onClose}>
-          Fortryd
-        </Button>
-        <Button bttype="primary" onClick={handleSubmit} color="secondary">
-          Korriger spring
+        <Button bttype="tertiary">Annuller</Button>
+        <Button bttype="primary" onClick={handleSubmit} startIcon={<Save />} color="secondary">
+          Gem
         </Button>
       </Box>
     </div>

@@ -6,23 +6,24 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
+import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
 
 interface Props {
-  data: TilsynItem[] | undefined;
   handleEdit: (tilsyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
-export default function TilsynTableDesktop({data, handleEdit, handleDelete, canEdit}: Props) {
+export default function TilsynTableDesktop({handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
+  const {get} = useTilsyn();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -77,6 +78,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
   );
   const [tableState, reset] = useStatefullTableAtom<TilsynItem>('TilsynTableState');
   const options: Partial<MRT_TableOptions<TilsynItem>> = {
+    localization: {noRecordsToDisplay: 'Ingen tilsyn at vise'},
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -94,9 +96,9 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     },
   };
 
-  const table = useTable<TilsynItem>(
+  const table = useQueryTable<TilsynItem>(
     columns,
-    data,
+    get,
     options,
     tableState,
     TableTypes.TABLE,

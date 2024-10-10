@@ -4,12 +4,10 @@ import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {useParams} from 'react-router-dom';
 
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
+import Autocomplete from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
+import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
+import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
-
-import {ressourcer} from '../zodSchemas';
-
-import Autocomplete from './multiselect/Autocomplete';
-import TransferList from './multiselect/TransferList';
 
 const Huskeliste = () => {
   const params = useParams();

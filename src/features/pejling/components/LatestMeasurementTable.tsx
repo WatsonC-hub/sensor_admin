@@ -32,7 +32,6 @@ const LatestMeasurementTable = ({
         header: 'Dato',
         id: 'timeofmeas',
         accessorFn: (row) => {
-          // convertDateWithTimeStamp(row.timeofmeas);
           splitTimeFromDate(row.timeofmeas);
         },
         sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
@@ -87,14 +86,17 @@ const LatestMeasurementTable = ({
   );
 
   const options: Partial<MRT_TableOptions<LatestMeasurement>> = {
-    localization: errorMessage ? {noRecordsToDisplay: errorMessage} : MRT_Localization_DA,
+    localization: {
+      ...MRT_Localization_DA,
+      noRecordsToDisplay: errorMessage ?? MRT_Localization_DA.noRecordsToDisplay,
+    },
     positionExpandColumn: 'last',
     positionActionsColumn: 'last',
     enableRowActions: true,
     enableColumnActions: false,
     enableColumnFilters: false,
     enablePagination: false,
-    enableSorting: false,
+    enableSorting: true,
     enableTableFooter: false,
     enableStickyHeader: false,
     enableGlobalFilterRankedResults: false,
@@ -117,8 +119,8 @@ const LatestMeasurementTable = ({
       <IconButton
         sx={{p: 0.5, marginRight: 0.5}}
         edge="end"
-        onClick={() => {
-          queryClient.invalidateQueries({
+        onClick={async () => {
+          await queryClient.invalidateQueries({
             queryKey: ['latest_measurement', ts_id],
           });
           toast.success('Genindlæst seneste måling');
@@ -151,7 +153,7 @@ const LatestMeasurementTable = ({
 
   const table = useTable<LatestMeasurement>(
     columns,
-    latestMeasurement ? [latestMeasurement] : [],
+    latestMeasurement ? (errorMessage ? [] : [latestMeasurement]) : [],
     options,
     undefined,
     TableTypes.TABLE,
@@ -159,7 +161,7 @@ const LatestMeasurementTable = ({
   );
 
   return (
-    <Box>
+    <Box mb={1}>
       <MaterialReactTable table={table} />
     </Box>
   );

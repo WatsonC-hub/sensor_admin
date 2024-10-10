@@ -294,6 +294,7 @@ export type QaAlgorithms = {
   exclude: Array<number> | null;
   parameter_values: Record<string, any>;
   disabled: boolean;
+  description: string;
 };
 
 export type QaAlgorithmParameters = {

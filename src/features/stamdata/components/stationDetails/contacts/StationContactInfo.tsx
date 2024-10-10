@@ -6,9 +6,8 @@ import {useFormContext} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
+import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {ContactInfoType} from '~/helpers/EnumHelper';
-
-import {InferContactInfo} from '../zodSchemas';
 
 interface ModalProps {
   isEditing: boolean;

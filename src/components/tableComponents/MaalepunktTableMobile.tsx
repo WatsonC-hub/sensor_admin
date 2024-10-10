@@ -92,6 +92,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
   );
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+    localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
