@@ -121,7 +121,7 @@ const getOptions = <TData extends MRT_RowData>(
           borderTopRightRadius: '20px',
           borderBottomLeftRadius: '15px',
           borderBottomRightRadius: '15px',
-          userSelect: 'none',
+          userSelect: 'text',
         },
         onClick: () => {
           row.toggleExpanded(!row.getIsExpanded());
