@@ -82,7 +82,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
       };
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
-  const {data: graphData, refetch: refetchData} = useGraphData(ts_id, xRange);
+  const {data: graphData} = useGraphData(ts_id, xRange);
   const {data: rawData, refetch: fetchRaw} = useQuery({
     queryKey: ['rawdata', ts_id],
     queryFn: async () => {
@@ -95,10 +95,6 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
     enabled: false,
     placeholderData: [],
   });
-
-  useEffect(() => {
-    // refetchData([ts_id, xRange]);
-  }, [ts_id, xRange, refetchData]);
 
   const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
 
