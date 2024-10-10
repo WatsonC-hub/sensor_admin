@@ -11,10 +11,7 @@ export const useAdjustmentData = (ts_id: number) => {
       return data;
     },
     enabled: ts_id !== null && ts_id !== undefined,
-    refetchInterval: false,
-    refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   return query;

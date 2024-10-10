@@ -70,7 +70,6 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
       });
       return data;
     },
-    refetchOnReconnect: false,
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
     staleTime: 10,

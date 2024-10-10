@@ -160,7 +160,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   };
 
   const getRawData = {
-    title: 'Hent data',
+    title: 'Hent rå data',
     name: 'Hent rådata',
     icon: rawDataIcon,
     click: function (gd: any) {

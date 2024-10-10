@@ -10,10 +10,7 @@ export const useMetadata = (ts_id: number) => {
       return data;
     },
     enabled: ts_id !== undefined && ts_id !== -1,
-    refetchInterval: false,
-    refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   return get;

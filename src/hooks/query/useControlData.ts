@@ -13,10 +13,7 @@ export const useControlData = (ts_id: number) => {
       return data;
     },
     enabled: ts_id !== null && ts_id !== undefined,
-    refetchInterval: false,
-    refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
   });
 
   return query;

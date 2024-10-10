@@ -18,8 +18,6 @@ export const useGraphData = (ts_id: number, xRange: Array<string>) => {
     },
     enabled: ts_id !== null && ts_id !== undefined,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchInterval: false,
   });
 
   return query;
