@@ -158,19 +158,19 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
     }
   }, [dynamicMeasurement]);
 
-  const jupiterTraces = [null, 0, 1].map((i) => {
+  const jupiterTraces = [null, 0, 1].map((situation) => {
     // get indexes where data.situation is 0, 1 or null
     const indexes = jupiterData?.data?.situation
-      ?.map((situation, index) => situation === i && index)
-      .filter((d) => d !== false);
+      ?.map((innersituation, index) => ({isSituation: innersituation == situation, index: index}))
+      .filter((d) => d.isSituation !== false)
+      .map((item) => item.index);
     // get x and y values for each situation
-    // @ts-expect-error - indexes is not null
     const x = indexes?.map((index) => jupiterData.data.x[index]);
     const y = indexes?.map((index) => jupiterData.data.y[index]);
 
     let name = 'Jupiter - ukendt årsag';
-    if (i === 0) name = 'Jupiter - i ro';
-    else if (i === 1) name = 'Jupiter - i drift';
+    if (situation === 0) name = 'Jupiter - i ro';
+    else if (situation === 1) name = 'Jupiter - i drift';
 
     return {
       x,
