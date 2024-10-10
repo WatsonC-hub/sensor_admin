@@ -20,7 +20,6 @@ const WaterlevelAlert = ({
   koteTitle,
   hide,
 }: Props) => {
-  console.log(hide);
   return (
     <Grid
       item

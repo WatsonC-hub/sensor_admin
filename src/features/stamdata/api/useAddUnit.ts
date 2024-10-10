@@ -52,7 +52,6 @@ export const unitPutOptions = {
   mutationKey: ['unit_put'],
   mutationFn: async (mutation_data: UnitPut) => {
     const {path, data} = mutation_data;
-    console.log('path', path, 'data', data);
     const {data: result} = await apiClient.put(
       `//${path}`,
       data

@@ -11,7 +11,6 @@ type ImageViewerProps = {
 };
 
 function ImageViewer({images, deleteMutation, handleEdit}: ImageViewerProps) {
-  console.log(images);
   return (
     <Grid container spacing={3} alignItems="center" justifyContent="center">
       {images?.map((elem) => {

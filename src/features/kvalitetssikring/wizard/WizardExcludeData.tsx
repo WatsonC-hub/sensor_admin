@@ -15,7 +15,6 @@ type WizardDataExcludeProps = {
 const WizardDataExclude = ({setInitiateSelect}: WizardDataExcludeProps) => {
   const selection = useAtomValue(qaSelection);
 
-  console.log(selection);
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
       <CardContent

@@ -263,7 +263,6 @@ function Map() {
       {
         text: 'Zoom ind',
         callback: function (e: any) {
-          console.log(e);
           if (mapRef && mapRef.current) mapRef.current.zoomIn();
         },
         icon: '/leaflet-images/zoom-in.png',
@@ -765,7 +764,6 @@ function Map() {
           const marker = markers.find((marker) => marker.options.title == value.name);
 
           if (marker) {
-            console.log('already exists');
             marker.openPopup();
             mapRef.current?.flyTo(marker.getLatLng(), 14, {
               animate: false,

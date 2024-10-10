@@ -142,7 +142,6 @@ export default function TranserList({value, setValue, loc_id}: TransferListProps
   };
 
   const handleSave = async (ressourcer: Array<Ressourcer>) => {
-    console.log(ressourcer);
     const payload = {
       path: `${loc_id}`,
       data: {

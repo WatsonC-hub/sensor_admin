@@ -121,7 +121,7 @@ const getOptions = <TData extends MRT_RowData>(
           borderTopRightRadius: '20px',
           borderBottomLeftRadius: '15px',
           borderBottomRightRadius: '15px',
-          userSelect: 'none',
+          userSelect: 'text',
         },
         onClick: () => {
           row.toggleExpanded(!row.getIsExpanded());
@@ -252,7 +252,6 @@ export const useQueryTable = <TData extends MRT_RowData>(
     return tableOptions;
   }, [options, breakpoints, merge_method, type]);
 
-  console.log(error);
   if (error != null) {
     if (tableOptions.localization) {
       tableOptions.localization.noRecordsToDisplay =

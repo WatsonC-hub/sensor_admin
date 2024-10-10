@@ -25,7 +25,6 @@ export const leafletMapRoutePostOptions = {
   mutationKey: ['leaflet_map_route_post'],
   mutationFn: async (mutation_data: LeafletMapRoutePost) => {
     const {path, data} = mutation_data;
-    console.log('data', data, 'path', path);
     const {data: result} = await apiClient.post(`/sensor_field/leaflet_map_route/${path}`, data);
     return result;
   },
@@ -35,7 +34,6 @@ export const leafletMapRoutePutOptions = {
   mutationKey: ['leaflet_map_route_put'],
   mutationFn: async (mutation_data: LeafletMapRoutePut) => {
     const {path, data} = mutation_data;
-    console.log('path', path, 'data', data);
     const {data: result} = await apiClient.put(`/sensor_field/leaflet_map_route/${path}`, data);
     return result;
   },

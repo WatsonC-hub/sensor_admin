@@ -1,6 +1,3 @@
-//TaskSupervision
-//taskManagement
-//opgaveStyring
 import {useQueries} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
@@ -38,11 +35,6 @@ export const useTaskManagement = ({loc_ids}: TaskManagement) => {
     getService: {data: serviceData},
     getPejling: {data: pejlingData},
   } = useLocationData(get);
-
-  console.log(data);
-  console.log(get);
-  console.log(serviceData);
-  console.log(pejlingData);
 
   return {get};
 };

@@ -92,9 +92,7 @@ export default function AddUnitForm({
   const handleCalypsoIdNew = (
     option: {value: string; label: string} | SyntheticEvent<Element> | null
   ) => {
-    console.log('option', option);
     if (option == null) {
-      console.log(option);
       setUnitData((currentUnit) => ({...currentUnit, calypso_id: '', uuid: ''}));
       return;
     }

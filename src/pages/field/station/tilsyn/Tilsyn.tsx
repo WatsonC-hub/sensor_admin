@@ -47,7 +47,6 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
         resetFormData();
       },
       onError: (error: Error) => {
-        console.log(error);
         toast.error('Der skete en fejl');
       },
     };
@@ -90,7 +89,6 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
 
   useEffect(() => {
     if (showForm && getValues('gid') === -1) {
-      console.log('resetting');
       reset(initialData);
     }
   }, [showForm]);

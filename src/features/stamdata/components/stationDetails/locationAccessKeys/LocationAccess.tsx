@@ -38,9 +38,6 @@ const LocationAccess = () => {
     mode: 'onSubmit',
   });
 
-  // console.log(locationAccess);
-  // if (!locationAccess) return;
-
   const {clearErrors, handleSubmit, reset} = formMethods;
 
   const handleClose = () => {

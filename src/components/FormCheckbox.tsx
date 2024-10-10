@@ -32,7 +32,6 @@ const FormCheckbox = <TFieldValues extends FieldValues>({
           // defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
           rules={rules}
           render={({field: {value, onChange, ref, name}}) => {
-            // console.log('value', value);
             return (
               <Checkbox
                 {...otherProps}

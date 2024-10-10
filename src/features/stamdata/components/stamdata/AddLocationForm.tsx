@@ -20,11 +20,9 @@ export default function AddLocationForm({
   const handleSave = async () => {
     const result = await trigger('location');
     setLocationDialogOpen(!result);
-    console.log(getFieldState('location'));
-    console.log(getValues().location);
   };
 
-  const {reset, trigger, getFieldState, getValues} = useFormContext();
+  const {reset, trigger} = useFormContext();
 
   const handleClose = () => {
     reset({
