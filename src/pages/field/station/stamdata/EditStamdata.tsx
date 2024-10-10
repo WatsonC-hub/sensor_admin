@@ -277,9 +277,6 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
       return data;
     },
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchIntervalInBackground: false,
-    refetchOnReconnect: false,
   });
 
   useEffect(() => {
