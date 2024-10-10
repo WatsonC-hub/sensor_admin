@@ -46,7 +46,10 @@ const WaterlevelAlert = ({
             Forskel til seneste måling: {limitDecimalNumbers(elevationDiff)} m
           </Typography>
         ) : (
-          <Typography>Forskel kan ikke beregnes uden en seneste værdi</Typography>
+          <Typography>
+            Forskel kan ikke beregnes uden en seneste værdi eller hvis pejlingen ligger udenfor et
+            målepunkt
+          </Typography>
         )}
       </Alert>
       <Alert

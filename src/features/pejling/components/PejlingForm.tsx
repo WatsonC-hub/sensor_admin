@@ -91,7 +91,7 @@ export default function PejlingForm({
             latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
           setElevationDiff(dynamicMeas - latestmeas);
           const diff = moment(dynamicDate).diff(moment(latestMeasurement?.timeofmeas), 'days');
-          setHide(diff > 1);
+          setHide(Math.abs(diff) > 1);
           console.log(dynamicMeas, latestMeasurement?.measurement);
         } else {
           setDynamic([]);
@@ -169,7 +169,9 @@ export default function PejlingForm({
         </Grid>
         {isWaterlevel && (
           <WaterlevelAlert
-            latestMeasurementSeverity={elevationDiff && elevationDiff > 0.1 ? 'warning' : 'info'}
+            latestMeasurementSeverity={
+              (elevationDiff && elevationDiff > 0.1) || !latestMeasurement ? 'warning' : 'info'
+            }
             hide={hide}
             MPTitle={currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
             koteTitle={pejlingOutOfRange || currentMP == null ? '' : currentMP.elevation}
