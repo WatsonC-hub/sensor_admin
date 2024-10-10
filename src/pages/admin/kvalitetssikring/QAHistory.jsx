@@ -20,9 +20,7 @@ export default function QAHistory() {
     },
     enabled: typeof metadata?.ts_id == 'number',
     refetchInterval: null,
-    refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   if (isLoading)

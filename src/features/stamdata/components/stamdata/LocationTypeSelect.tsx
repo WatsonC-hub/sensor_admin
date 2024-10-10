@@ -21,9 +21,7 @@ export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
       const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
       return data;
     },
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   return (

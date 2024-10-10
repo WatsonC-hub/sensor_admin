@@ -19,8 +19,6 @@ export const useRunQA = (ts_id: number) => {
     enabled: true,
     refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
   });
 
   useEffect(() => {

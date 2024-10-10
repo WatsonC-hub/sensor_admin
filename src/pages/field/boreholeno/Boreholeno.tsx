@@ -104,8 +104,6 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       return data;
     },
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchInterval: false,
     enabled: boreholeno !== '-1' && intakeno !== -1,
   });
 

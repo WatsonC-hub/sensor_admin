@@ -18,8 +18,6 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
     },
     refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
   });
 
   useEffect(() => {

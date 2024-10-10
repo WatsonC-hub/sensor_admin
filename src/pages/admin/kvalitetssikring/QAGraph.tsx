@@ -281,9 +281,7 @@ function PlotGraph({
       return data;
     },
     enabled: dataToShow['Fjernet data'],
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   const {data: precipitation_data} = useQuery({
@@ -297,9 +295,7 @@ function PlotGraph({
       return data;
     },
     enabled: dataToShow['Nedbør'] && fullData !== undefined,
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
   });
 
   useEffect(() => {
