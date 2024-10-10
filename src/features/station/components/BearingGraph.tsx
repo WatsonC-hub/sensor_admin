@@ -150,7 +150,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   };
 
   const rerunButton = {
-    title: 'Download data',
+    title: 'Genberegn data',
     name: 'Genberegn data',
     icon: rerunIcon,
     click: function () {
@@ -160,7 +160,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   };
 
   const getRawData = {
-    title: 'Download data',
+    title: 'Hent data',
     name: 'Hent rådata',
     icon: rawDataIcon,
     click: function (gd: any) {
@@ -178,7 +178,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   };
 
   const makeLinkButton = {
-    title: 'Download data',
+    title: 'Ekstern data',
     name: 'Ekstern link',
     icon: makeLinkIcon,
     click: function () {
