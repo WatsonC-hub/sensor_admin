@@ -26,7 +26,7 @@ type ImageCardProps = {
 function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
   const {isMobile} = useBreakpoints();
 
-  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}&height=${isMobile ? 300 : 640}`;
+  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
   const [dialogOpen, setDialogOpen] = useState(false);
 
   function handleDelete() {
@@ -50,10 +50,8 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         justifyContent: 'center',
         flexDirection: 'column ',
         borderRadius: 5,
-        minWidth: 300,
-        minHeight: 300,
-        // maxWidth: 640,
-        // maxHeight: 640,
+        width: 'fit-content',
+        height: 'fit-content',
       }}
     >
       <DeleteAlert
@@ -62,25 +60,14 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <CardMedia>
-        <img
-          src={imageUrl}
-          alt={image.title}
-          height={isMobile ? 300 : 640}
-          width={isMobile ? 300 : 640}
-          loading="lazy"
-          style={{
-            objectFit: 'cover',
-            width: '100%',
-            height: '100%',
-          }}
-        />
+      <CardMedia sx={{margin: 'auto'}}>
+        <img src={imageUrl} alt={image.title} loading="lazy" />
       </CardMedia>
       <CardContent
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          flexGrow: 1,
+          // flexGrow: 1,
         }}
       >
         <Typography variant="body2" color="textSecondary" align="right" component="p">
@@ -92,7 +79,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
           component="p"
           sx={{
             minHeight: {md: '60px'},
-            flexGrow: 1,
+            // flexGrow: 1,
           }}
         >
           {image.comment}
