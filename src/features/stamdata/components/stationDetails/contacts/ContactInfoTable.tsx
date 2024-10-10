@@ -4,23 +4,22 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
+import {InferContactInfoTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {ContactInfoType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {ContactTable} from '~/types';
 
-import {InferContactInfoTable} from '../zodSchemas';
-
-import StationContactInfo from './StationContactInfo';
-
 type Props = {
-  data: Array<ContactTable> | undefined;
   delContact: (relation_id: number) => void;
   editContact: (ContactInfo: ContactTable) => void;
 };
@@ -34,7 +33,8 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const ContactInfoTable = ({data, delContact, editContact}: Props) => {
+const ContactInfoTable = ({delContact, editContact}: Props) => {
+  const params = useParams();
   const [contactID, setContactID] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
@@ -45,6 +45,9 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
+  const loc_id: number | undefined = parseInt(params.locid!);
+
+  const {get} = useContactInfo(loc_id);
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
@@ -200,9 +203,9 @@ const ContactInfoTable = ({data, delContact, editContact}: Props) => {
     },
   };
 
-  const table = useTable<ContactTable>(
+  const table = useQueryTable<ContactTable>(
     isMobile ? mobileColumns : columns,
-    data,
+    get,
     options,
     tableState,
     TableTypes.TABLE,

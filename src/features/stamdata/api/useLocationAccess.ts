@@ -2,6 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {GetQueryOptions} from '~/queryClient';
 import {Access, AccessTable} from '~/types';
 
 interface LocationAccessBase {
@@ -49,19 +50,21 @@ export const locationAccessDelOptions = {
   },
 };
 
+export const LocationAccessGetOptions = <TData>(
+  loc_id: number | undefined
+): GetQueryOptions<TData> => ({
+  queryKey: ['location_access', loc_id],
+  queryFn: async () => {
+    const {data} = await apiClient.get<TData>(`/sensor_field/stamdata/location_access/${loc_id}`);
+
+    return data;
+  },
+  enabled: loc_id !== undefined && loc_id !== null,
+});
+
 export const useLocationAccess = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
-  const get = useQuery({
-    queryKey: ['location_access', loc_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<AccessTable>>(
-        `/sensor_field/stamdata/location_access/${loc_id}`
-      );
-
-      return data;
-    },
-    enabled: loc_id !== undefined && loc_id !== null,
-  });
+  const get = useQuery(LocationAccessGetOptions<Array<AccessTable>>(loc_id));
 
   const useSearchLocationAccess = (searchString: string) => {
     const searched_location_access = useQuery({

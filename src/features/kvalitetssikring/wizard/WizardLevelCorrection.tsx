@@ -12,7 +12,7 @@ type WizardLevelCorrectionProps = {
   setInitiateSelect: (initiateSelect: boolean) => void;
 };
 
-const WizardLevelCorrection = ({setStep, setInitiateSelect}: WizardLevelCorrectionProps) => {
+const WizardLevelCorrection = ({setInitiateSelect}: WizardLevelCorrectionProps) => {
   const selection = useAtomValue(qaSelection);
 
   return (

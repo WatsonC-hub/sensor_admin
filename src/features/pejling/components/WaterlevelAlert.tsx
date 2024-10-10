@@ -5,6 +5,7 @@ import {limitDecimalNumbers} from '~/helpers/dateConverter';
 
 type Props = {
   latestMeasurementSeverity: 'warning' | 'info';
+  hide: boolean;
   MPTitle: string;
   koteTitle: string | number;
   elevationDiff: number | undefined;
@@ -17,7 +18,9 @@ const WaterlevelAlert = ({
   latestMeasurementSeverity,
   MPTitle,
   koteTitle,
+  hide,
 }: Props) => {
+  console.log(hide);
   return (
     <Grid
       item
@@ -33,7 +36,7 @@ const WaterlevelAlert = ({
       <Alert
         severity={latestMeasurementSeverity}
         sx={{
-          display: 'flex',
+          display: hide ? 'none' : 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         }}

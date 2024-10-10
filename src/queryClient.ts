@@ -1,5 +1,10 @@
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {MutationCache, QueryClient} from '@tanstack/react-query';
+import {
+  MutationCache,
+  QueryClient,
+  UseMutationOptions,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
@@ -20,13 +25,19 @@ type ErrorResponse = {
 
 export type APIError = AxiosError<ErrorResponse>;
 
+export type GetQueryOptions<TData> = UseQueryOptions<TData, APIError>;
+export type MutationQueryOptions = UseMutationOptions;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       networkMode: 'offlineFirst',
       retry: (failureCount, error) => {
         if (axios.isAxiosError(error)) {
-          if (error.response?.status === 401 || error.response?.status === 404) {
+          if (error.response?.status == undefined) {
+            return false;
+          }
+          if (![500, 501, 502, 503].includes(error.response?.status)) {
             return false;
           }
         }

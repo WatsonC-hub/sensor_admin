@@ -65,7 +65,9 @@ export default function PejlingForm({
   const [notPossible, setNotPossible] = useState(false);
   const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
   const measurement = watch('measurement');
+  const date = watch('timeofmeas');
   const [elevationDiff, setElevationDiff] = useState<number>();
+  const [hide, setHide] = useState<boolean>(false);
 
   useEffect(() => {
     if (mpData !== undefined && mpData.length > 0) {
@@ -82,12 +84,14 @@ export default function PejlingForm({
 
       if (tstype_id) {
         if (internalCurrentMP) {
-          const dynamicDate = getValues('timeofmeas');
+          const dynamicDate = date;
           const dynamicMeas = internalCurrentMP.elevation - Number(measurement);
           setDynamic([dynamicDate, dynamicMeas]);
           const latestmeas =
             latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
           setElevationDiff(dynamicMeas - latestmeas);
+          const diff = moment(dynamicDate).diff(moment(latestMeasurement?.timeofmeas), 'days');
+          setHide(diff > 1);
           console.log(dynamicMeas, latestMeasurement?.measurement);
         } else {
           setDynamic([]);
@@ -101,7 +105,7 @@ export default function PejlingForm({
         latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
       setElevationDiff(dynamicMeas - latestmeas);
     }
-  }, [mpData, measurement, tstype_id]);
+  }, [mpData, measurement, date, tstype_id]);
 
   const handleDateChange = (date: string) => {
     if (isWaterlevel && mpData !== undefined) {
@@ -166,6 +170,7 @@ export default function PejlingForm({
         {isWaterlevel && (
           <WaterlevelAlert
             latestMeasurementSeverity={elevationDiff && elevationDiff > 0.1 ? 'warning' : 'info'}
+            hide={hide}
             MPTitle={currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
             koteTitle={pejlingOutOfRange || currentMP == null ? '' : currentMP.elevation}
             elevationDiff={elevationDiff}

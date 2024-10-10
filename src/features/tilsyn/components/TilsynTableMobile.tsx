@@ -10,23 +10,23 @@ import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle} from '~/consts';
+import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
 
 interface Props {
-  data: TilsynItem[] | undefined;
   handleEdit: (tilyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
-export default function TilsynTableMobile({data, handleEdit, handleDelete, canEdit}: Props) {
+export default function TilsynTableMobile({handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-
+  const {get} = useTilsyn();
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
@@ -113,9 +113,9 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     ),
   };
 
-  const table = useTable<TilsynItem>(
+  const table = useQueryTable<TilsynItem>(
     columns,
-    data,
+    get,
     options,
     undefined,
     TableTypes.LIST,

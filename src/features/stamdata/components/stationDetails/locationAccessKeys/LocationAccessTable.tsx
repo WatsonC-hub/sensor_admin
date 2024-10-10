@@ -9,19 +9,17 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {initialLocationAccessData} from '~/consts';
+import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
+import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
+import {AdgangsforholdTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {AccessType, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {AccessTable} from '~/types';
 
-import {AdgangsforholdTable} from '../zodSchemas';
-
-import LocationAccessFormDialog from './LocationAccessFormDialog';
-
 type Props = {
-  data: Array<AccessTable> | undefined;
   delLocationAccess: (location_access_id: number | undefined) => void;
   editLocationAccess: (LocationAccess: AccessTable) => void;
 };
@@ -35,7 +33,7 @@ const onDeleteBtnClick = (
   setDialogOpen(true);
 };
 
-const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Props) => {
+const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => {
   const [locationAccessID, setLocationAccessID] = useState<number>();
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
@@ -48,6 +46,8 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
   const params = useParams();
   const loc_id = parseInt(params.locid!);
   const {isMobile} = useBreakpoints();
+
+  const {get} = useLocationAccess(loc_id);
 
   const navnLabel = watch('type');
   const columns = useMemo<MRT_ColumnDef<AccessTable>[]>(
@@ -206,9 +206,9 @@ const LocationAccessTable = ({data, delLocationAccess, editLocationAccess}: Prop
     },
   };
 
-  const table = useTable<AccessTable>(
+  const table = useQueryTable<AccessTable>(
     isMobile ? mobileColumns : columns,
-    data,
+    get,
     options,
     tableState,
     TableTypes.TABLE,

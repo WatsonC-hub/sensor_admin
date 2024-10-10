@@ -8,12 +8,10 @@ import {useParams} from 'react-router-dom';
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
+import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
+import {contact_info} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {ContactTable} from '~/types';
-
-import {contact_info} from '../zodSchemas';
-
-import ContactInfoTable from './ContactInfoTable';
-import SelectContactInfo from './SelectContactInfo';
 
 const ContactInfo = () => {
   const params = useParams();
@@ -21,11 +19,7 @@ const ContactInfo = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const loc_id: number | undefined = parseInt(params.locid!);
-  const {
-    get: {data: contactTableInfo},
-    del: deleteContact,
-    put: editContact,
-  } = useContactInfo(loc_id);
+  const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
 
   const formMethods = useForm({
     resolver: zodResolver(contact_info),
@@ -93,11 +87,7 @@ const ContactInfo = () => {
           )}
         </Grid>
         <Grid item xs={12} sm={12}>
-          <ContactInfoTable
-            data={contactTableInfo}
-            delContact={handleDelete}
-            editContact={handleEdit}
-          />
+          <ContactInfoTable delContact={handleDelete} editContact={handleEdit} />
         </Grid>
       </Grid>
     </FormProvider>

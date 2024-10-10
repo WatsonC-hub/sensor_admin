@@ -5,34 +5,29 @@ import {
   MRT_ExpandButton,
   MaterialReactTable,
 } from 'material-react-table';
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle, correction_map} from '~/consts';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
-  data: PejlingItem[] | undefined;
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({
-  data,
-  handleEdit,
-  handleDelete,
-  canEdit,
-}: Props) {
+export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  const [height, setHeight] = useState<number>();
+  // const [height, setHeight] = useState<number>();
 
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
@@ -41,9 +36,11 @@ export default function PejlingMeasurementsTableMobile({
     setDialogOpen(true);
   };
 
-  useEffect(() => {
-    if (data) setHeight(data.length > 10 ? 10 * 60 : data.length * 60);
-  }, [data]);
+  const {get} = usePejling();
+
+  // useEffect(() => {
+  //   if (data) setHeight(data.length > 10 ? 10 * 60 : data.length * 60);
+  // }, [data]);
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
@@ -119,16 +116,16 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useTable<PejlingItem>(
+  const table = useQueryTable<PejlingItem>(
     columns,
-    data,
+    get,
     options,
     undefined,
     TableTypes.LIST,
     MergeType.RECURSIVEMERGE
   );
 
-  console.log(height);
+  // console.log(height);
 
   return (
     <>

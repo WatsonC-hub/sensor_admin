@@ -2,6 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {GetQueryOptions} from '~/queryClient';
 import {baseContactInfo, ContactInfo, ContactTable} from '~/types';
 
 interface ContactInfoBase {
@@ -51,19 +52,23 @@ export const contactInfoDelOptions = {
   },
 };
 
+export const ContactInfoGetOptions = <TData>(
+  loc_id: number | undefined
+): GetQueryOptions<TData> => ({
+  queryKey: ['contact_info'],
+  queryFn: async () => {
+    const {data} = await apiClient.get<TData>(
+      `/sensor_field/stamdata/contact/contact_info/${loc_id}`
+    );
+
+    return data;
+  },
+  enabled: loc_id !== undefined && loc_id !== null,
+});
+
 export const useContactInfo = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
-  const get = useQuery({
-    queryKey: ['contact_info'],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<ContactTable>>(
-        `/sensor_field/stamdata/contact/contact_info/${loc_id}`
-      );
-
-      return data;
-    },
-    enabled: loc_id !== undefined && loc_id !== null,
-  });
+  const get = useQuery(ContactInfoGetOptions<Array<ContactTable>>(loc_id));
 
   const get_all = useQuery({
     queryKey: ['all_contact_info'],

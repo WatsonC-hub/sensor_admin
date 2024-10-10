@@ -12,7 +12,7 @@ type WizardDataExcludeProps = {
   setInitiateSelect: (initiateSelect: boolean) => void;
 };
 
-const WizardDataExclude = ({setStep, setInitiateSelect}: WizardDataExcludeProps) => {
+const WizardDataExclude = ({setInitiateSelect}: WizardDataExcludeProps) => {
   const selection = useAtomValue(qaSelection);
 
   console.log(selection);

@@ -17,12 +17,10 @@ import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
+import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {MetadataContext} from '~/state/contexts';
 import {ContactInfo} from '~/types';
-
-import {InferContactInfo} from '../zodSchemas';
-
-import StationContactInfo from './StationContactInfo';
 
 interface SelectContactInfoProps {
   open: boolean;

@@ -1,11 +1,10 @@
 import {Grid, Typography} from '@mui/material';
 import React from 'react';
 
+import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
+import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
+import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 import {authStore} from '~/state/store';
-
-import ContactInfo from './stationDetails/contacts/ContactInfo';
-import LocationAccess from './stationDetails/locationAccessKeys/LocationAccess';
-import Huskeliste from './stationDetails/ressourcer/Huskeliste';
 
 type Props = {
   mode: string;

@@ -7,10 +7,9 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {initialLocationAccessData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import {AdgangsForhold} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {AccessType} from '~/helpers/EnumHelper';
 import {baseContactInfo} from '~/types';
-
-import {AdgangsForhold} from '../zodSchemas';
 
 type Props = {
   loc_id: number | undefined;
