@@ -90,7 +90,6 @@ export default function OverviewPage() {
     };
   }
 
-  console.log('overview page render');
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
       <NavBar />

@@ -22,8 +22,6 @@ const SensorContent = ({data}: SensorContentProps) => {
     .filter((item, index, self) => index === self.findIndex((t) => t.stationid === item.stationid))
     .filter((item) => item.stationid !== null);
 
-  console.log(unique_stations);
-
   return (
     <>
       <Box

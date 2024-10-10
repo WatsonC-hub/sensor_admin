@@ -39,7 +39,6 @@ export const algorithmsPutOptions = {
   mutationKey: ['algorithms_put'],
   mutationFn: async (mutation_data: AlgorithmsPut) => {
     const {path, data} = mutation_data;
-    console.log('path', path, 'data', data);
     const {data: result} = await apiClient.put(`/sensor_admin/algorithms/${path}`, data);
     return result;
   },

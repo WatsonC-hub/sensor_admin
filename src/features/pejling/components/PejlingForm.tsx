@@ -92,7 +92,6 @@ export default function PejlingForm({
           setElevationDiff(dynamicMeas - latestmeas);
           const diff = moment(dynamicDate).diff(moment(latestMeasurement?.timeofmeas), 'days');
           setHide(Math.abs(diff) > 1);
-          console.log(dynamicMeas, latestMeasurement?.measurement);
         } else {
           setDynamic([]);
         }

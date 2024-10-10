@@ -70,8 +70,6 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
     date: moment().format('YYYY-MM-DDTHH:mm'),
   });
 
-  console.log(intakeno);
-
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: () => moment().format('YYYY-MM-DDTHH:mm'),

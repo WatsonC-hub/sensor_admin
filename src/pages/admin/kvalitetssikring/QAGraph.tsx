@@ -337,8 +337,6 @@ function PlotGraph({
         const prevValue = graphData.y.at(prevIndex);
 
         eventData.points = [{x: prevDate, y: prevValue}, ...eventData.points];
-        console.log(eventData.points);
-        console.log(graphData);
       }
       setSelection(eventData);
     }
@@ -351,7 +349,6 @@ function PlotGraph({
   }, []);
 
   const handleRelayout = (e: any) => {
-    // console.log(e);
     if (e['xaxis.autorange'] == true || e['autosize'] == true) {
       setXRange(initRange);
       return;
@@ -362,7 +359,6 @@ function PlotGraph({
     }
 
     if (e['dragmode']) {
-      console.log(e);
       if (e['dragmode'] === 'select') setInitiateSelect(true);
       setLayout((prev) => {
         return {
@@ -427,7 +423,6 @@ function PlotGraph({
     title: 'Genberegn QA',
     icon: rerunQAIcon,
     click: function () {
-      console.log(rerunQAMutation);
       rerunQAMutation.mutate();
     },
   };
@@ -632,7 +627,6 @@ function PlotGraph({
       onClick={(e) => {
         if (initiateConfirmTimeseries) {
           setSelection({points: e.points});
-          console.log(e);
         }
       }}
       config={{

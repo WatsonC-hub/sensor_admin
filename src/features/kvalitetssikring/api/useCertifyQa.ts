@@ -36,7 +36,6 @@ export const certifyQaPutOptions = {
   mutationKey: ['certifyQa_put'],
   mutationFn: async (mutation_data: CertifyQaPut) => {
     const {path, data} = mutation_data;
-    console.log('path', path, 'data', data);
     const {data: result} = await apiClient.put(`//${path}`, data);
     return result;
   },

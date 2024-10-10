@@ -28,7 +28,6 @@ interface AlgorithCardProps {
 const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   const params = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  // console.log(qaAlgorithm);
 
   const {put: submitData, revert: revertToDefaults} = useAlgorithms(params.ts_id);
 

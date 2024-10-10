@@ -125,8 +125,6 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
     MergeType.RECURSIVEMERGE
   );
 
-  // console.log(height);
-
   return (
     <>
       <DeleteAlert

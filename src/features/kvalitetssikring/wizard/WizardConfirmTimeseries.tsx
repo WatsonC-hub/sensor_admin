@@ -53,9 +53,6 @@ const WizardConfirmTimeseries = ({
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
 
-  console.log(qaData);
-  // console.log(qaData);
-
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -75,18 +72,14 @@ const WizardConfirmTimeseries = ({
   }, [qaStampWatch, qaStamp, qaData]);
 
   useEffect(() => {
-    console.log(initiateConfirmTimeseries);
-    console.log('points' in selection);
     setDisabled(!initiateConfirmTimeseries || !true);
     if ('points' in selection) {
       const x = (selection.points as Array<PlotDatum>)[0].x;
-      console.log(x);
       if (x) setValue('date', moment(x.toString()).format('YYYY-MM-DD HH:mm'));
     }
   }, [initiateConfirmTimeseries, selection]);
 
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
-    console.log(certifyQa);
     const payload = {
       path: `${metadata?.ts_id}`,
       data: certifyQa,

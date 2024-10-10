@@ -38,7 +38,6 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
   const ressourcer = watch('ressourcer');
 
   useEffect(() => {
-    console.log(value);
     if (value && value.length > 0) {
       setSelected(value);
     }
@@ -65,11 +64,8 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
 
   const handleSave = async () => {
     const result = await trigger('ressourcer');
-    console.log(result);
-    console.log(errors);
-    console.log(ressourcer);
+
     if (ressourcer && result) {
-      console.log(ressourcer);
       const payload = {
         path: `${loc_id}`,
         data: {

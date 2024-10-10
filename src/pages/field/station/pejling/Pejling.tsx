@@ -75,7 +75,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   }, [ts_id]);
 
   const handlePejlingSubmit = (values: PejlingItem) => {
-    console.log(values);
     const payload = {
       data: {
         ...values,
