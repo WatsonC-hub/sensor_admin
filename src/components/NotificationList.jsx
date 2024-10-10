@@ -60,7 +60,12 @@ const NotificationList = () => {
     });
   };
 
-  const onstation = data?.filter((elem) => elem.locid == params.locid && elem.opgave != null);
+  let loc_id = params.locid;
+  if (loc_id == undefined) {
+    loc_id = data.filter((elem) => elem.stationid == params.ts_id)[0]?.locid;
+  }
+
+  const onstation = data?.filter((elem) => elem.locid == loc_id && elem.opgave != null);
   const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
     onstation?.filter((elem) => elem.notification_id != 0),
