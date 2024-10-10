@@ -71,7 +71,7 @@ export const pejlingGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> 
     //   };
     // });
   },
-  enabled: ts_id !== -1 && ts_id !== null,
+  enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
 });
 
 export const usePejling = () => {
