@@ -412,39 +412,39 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           </FabWrapper>
         )}
         {pageToShow === StationPages.BILLEDER && (
-          <FabWrapper
-            icon={<AddAPhotoRounded />}
-            text="Tilføj billede"
-            onClick={() => {
-              fileInputRef.current && fileInputRef.current.click();
-            }}
-            visible="true"
-          >
-            <Images
-              type={'borehole'}
-              typeId={boreholeno}
-              setOpenSave={setOpenSave}
-              setActiveImage={setActiveImage}
-              setShowForm={setShowForm}
-            />
-          </FabWrapper>
-        )}
-        {pageToShow === StationPages.BILLEDER && (
-          <div>
-            <SaveImageDialog
-              activeImage={activeImage}
-              changeData={changeActiveImageData}
-              id={boreholeno}
-              type={'borehole'}
-              open={openSave}
-              dataUri={dataUri}
-              handleCloseSave={() => {
-                setOpenSave(false);
-                setdataUri('');
-                setShowForm(null);
+          <Box>
+            <FabWrapper
+              icon={<AddAPhotoRounded />}
+              text="Tilføj billede"
+              onClick={() => {
+                fileInputRef.current && fileInputRef.current.click();
               }}
-            />
-          </div>
+              visible="true"
+            >
+              <Images
+                type={'borehole'}
+                typeId={boreholeno}
+                setOpenSave={setOpenSave}
+                setActiveImage={setActiveImage}
+                setShowForm={setShowForm}
+              />
+            </FabWrapper>
+            <div>
+              <SaveImageDialog
+                activeImage={activeImage}
+                changeData={changeActiveImageData}
+                id={boreholeno}
+                type={'borehole'}
+                open={openSave}
+                dataUri={dataUri}
+                handleCloseSave={() => {
+                  setOpenSave(false);
+                  setdataUri('');
+                  setShowForm(null);
+                }}
+              />
+            </div>
+          </Box>
         )}
         <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileRead} />
         {pageToShow === StationPages.STAMDATA && canEdit && (

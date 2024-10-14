@@ -21,7 +21,7 @@ export interface Notification {
   notification_id: number;
   status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
-  projectno: string;
+  projectno: string | null;
   is_customer_service: boolean;
   active: boolean;
   notify_type: 'primary' | 'obs' | 'station' | null;
@@ -90,6 +90,7 @@ export const useNotificationOverviewMap = (
           sortByNotifyType,
           (item) => (item.status ? item.status : ''),
           (item) => item.flag,
+          (item) => (item.projectno ? item.projectno : ''),
         ])
       );
 
