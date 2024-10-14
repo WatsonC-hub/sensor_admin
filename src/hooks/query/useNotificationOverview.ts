@@ -5,10 +5,10 @@ import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 
 export interface Notification {
-  locname: string;
-  locid: number;
-  stationname: string;
-  stationid: number;
+  loc_name: string;
+  loc_id: number;
+  ts_name: string;
+  ts_id: number;
   x: number;
   y: number;
   longitude: number;
@@ -95,7 +95,7 @@ export const useNotificationOverviewMap = (
       );
 
       const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
-        const existing = acc.find((accItem) => accItem.locid === item.locid);
+        const existing = acc.find((accItem) => accItem.loc_id === item.loc_id);
 
         if (existing) {
           if (item.notify_type === 'obs') {

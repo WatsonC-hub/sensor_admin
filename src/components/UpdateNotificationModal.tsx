@@ -30,7 +30,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
-      ts_id: notification.stationid,
+      ts_id: notification.ts_id,
       notification_id: notification.notification_id,
       status: 'POSTPONED',
       enddate: notification.enddate,
