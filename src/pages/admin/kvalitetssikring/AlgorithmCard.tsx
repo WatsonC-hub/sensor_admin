@@ -128,8 +128,13 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
         <CardHeader
           title={
             <Box>
-              <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-                <Typography variant={'h4'}>{qaAlgorithm.name}</Typography>
+              <Box
+                display={'flex'}
+                flexDirection={'row'}
+                justifyContent={'space-between'}
+                alignItems={'center'}
+              >
+                <Typography variant={'h5'}>{qaAlgorithm.name}</Typography>
                 <FormControlLabel
                   control={
                     <Controller
@@ -158,7 +163,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
                   }}
                 />
               </Box>
-              <Typography p={0} m={0} variant="caption">
+              <Typography fontSize={13} variant="body2">
                 {qaAlgorithm.description}
               </Typography>
             </Box>
@@ -175,15 +180,13 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           <FormProvider {...formMethods}>
             {qaAlgorithm?.parameters?.map((option: QaAlgorithmParameters) => {
               return (
-                <>
-                  <FormInput
-                    key={option.name}
-                    fullWidth
-                    type={option.type}
-                    label={option.label}
-                    name={`parameters.${option.name}`}
-                  />
-                </>
+                <FormInput
+                  key={option.name}
+                  fullWidth
+                  type={option.type}
+                  label={option.label}
+                  name={`parameters.${option.name}`}
+                />
               );
             })}
           </FormProvider>

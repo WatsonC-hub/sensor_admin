@@ -34,7 +34,7 @@ export default function DeleteAlert({
   };
 
   return (
-    <div>
+    <>
       <Dialog
         open={dialogOpen}
         onClose={handleClose}
@@ -52,6 +52,6 @@ export default function DeleteAlert({
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 }

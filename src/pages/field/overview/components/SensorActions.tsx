@@ -31,7 +31,7 @@ const SensorActions = ({data}: Props) => {
         bttype="primary"
         color="primary"
         onClick={() => {
-          location(data.locid);
+          location(data.loc_id);
         }}
         startIcon={<LocationOnRounded />}
       >

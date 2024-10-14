@@ -62,10 +62,10 @@ const NotificationList = () => {
 
   let loc_id = params.locid;
   if (loc_id == undefined) {
-    loc_id = data.filter((elem) => elem.stationid == params.ts_id)[0]?.locid;
+    loc_id = data.filter((elem) => elem.ts_id == params.ts_id)[0]?.loc_id;
   }
 
-  const onstation = data?.filter((elem) => elem.locid == loc_id && elem.opgave != null);
+  const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
   const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
     onstation?.filter((elem) => elem.notification_id != 0),
@@ -125,7 +125,7 @@ const NotificationList = () => {
         </MenuItem>
         {isPending && <MenuItem>Indlæser...</MenuItem>}
         {notifications?.map((notification, index) => {
-          const splitted = notification.stationname.split(notification.locname);
+          const splitted = notification.ts_name.split(notification.loc_name);
           return (
             <MenuItem key={index} sx={{gap: 0.5}}>
               <ListItemIcon

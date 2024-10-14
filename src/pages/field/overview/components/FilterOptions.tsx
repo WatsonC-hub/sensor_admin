@@ -7,9 +7,9 @@ import {useForm, FormProvider, Controller} from 'react-hook-form';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
+import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {authStore} from '~/state/store';
 
 interface FilterOptionsProps {
