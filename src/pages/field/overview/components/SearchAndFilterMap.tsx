@@ -16,11 +16,10 @@ import React, {useState, useRef, SyntheticEvent, MouseEventHandler, useEffect} f
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
+import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {authStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
-
-import {Filter, defaultMapFilter} from './filter_consts';
 
 interface LocItems {
   name: string;
@@ -102,7 +101,7 @@ const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter)
   let filteredData = data;
 
   filteredData = filteredData.filter((elem): elem is NotificationMap =>
-    'locid' in elem ? filterSensor(elem, filter.sensor) : true
+    'notification_id' in elem ? filterSensor(elem, filter.sensor) : true
   );
 
   filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
@@ -147,10 +146,11 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
       const filteredSensor = data
         .filter(
           (elem): elem is NotificationMap =>
-            'locid' in elem && elem.locname.toLowerCase().includes(search_string?.toLowerCase())
+            'notification_id' in elem &&
+            elem.loc_name.toLowerCase().includes(search_string?.toLowerCase())
         )
         .map((elem) => {
-          return {name: elem.locname, sensor: true, group: 'IoT'};
+          return {name: elem.loc_name, sensor: true, group: 'IoT'};
         })
         .sort((a, b) => a.name.localeCompare(b.name));
 

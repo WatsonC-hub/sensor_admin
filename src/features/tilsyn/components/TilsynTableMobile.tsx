@@ -9,24 +9,24 @@ import {
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {renderDetailStyle, setTableBoxStyle} from '~/consts';
+import {renderDetailStyle} from '~/consts';
+import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
 
 interface Props {
-  data: TilsynItem[] | undefined;
   handleEdit: (tilyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
-export default function TilsynTableMobile({data, handleEdit, handleDelete, canEdit}: Props) {
+export default function TilsynTableMobile({handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-
+  const {get} = useTilsyn();
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
@@ -98,6 +98,7 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
   );
 
   const options: Partial<MRT_TableOptions<TilsynItem>> = {
+    localization: {noRecordsToDisplay: 'Ingen tilsyn at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
@@ -112,15 +113,22 @@ export default function TilsynTableMobile({data, handleEdit, handleDelete, canEd
     ),
   };
 
-  const table = useTable<TilsynItem>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useQueryTable<TilsynItem>(
+    columns,
+    get,
+    options,
+    undefined,
+    TableTypes.LIST,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
-    <Box sx={setTableBoxStyle(320)}>
+    <Box>
       <DeleteAlert
         measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

@@ -3,11 +3,10 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 
+import ChoiseCard from '~/components/ChoiseCard';
 import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {authStore} from '~/state/store';
-
-import ChoiseCard from '../../../components/ChoiseCard';
 
 const AdminChooser = () => {
   const adminAccess = authStore((state) => state.adminAccess);

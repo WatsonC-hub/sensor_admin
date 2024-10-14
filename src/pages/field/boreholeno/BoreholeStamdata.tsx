@@ -12,7 +12,7 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
-import LocationGroups from '~/pages/field/stamdata/components/LocationGroups';
+import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 
 const schema = z.object({
   calypso_id: z.number().int().min(1).optional().nullish(),
@@ -36,7 +36,7 @@ type Stamdata = z.infer<typeof schema>;
 
 interface BoreholeStamdataProps {
   boreholeno: string;
-  intakeno: string;
+  intakeno: number;
   stamdata: Stamdata;
 }
 
@@ -152,8 +152,8 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
                 <Controller
                   name="groups"
                   control={formMethods.control}
-                  render={({field: {onChange, value}}) => (
-                    <LocationGroups value={value} setValue={onChange} />
+                  render={({field: {onChange, value, onBlur}}) => (
+                    <LocationGroups value={value} setValue={onChange} onBlur={onBlur} />
                   )}
                 />
               </Grid>

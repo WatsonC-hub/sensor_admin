@@ -6,10 +6,9 @@ import {useForm, FormProvider} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
 import {Notification} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
-
-import FormInput from './FormInput';
 
 interface Props {
   open: boolean;
@@ -31,7 +30,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
-      ts_id: notification.stationid,
+      ts_id: notification.ts_id,
       notification_id: notification.notification_id,
       status: 'POSTPONED',
       enddate: notification.enddate,

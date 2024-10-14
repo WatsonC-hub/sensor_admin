@@ -3,21 +3,20 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {
   checkEndDateIsUnset,
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 import {Maalepunkt} from '~/types';
-
-import RenderInternalActions from './RenderInternalActions';
 
 interface Props {
   data: Maalepunkt[] | undefined;
@@ -67,6 +66,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const [tableState, reset] = useStatefullTableAtom<Maalepunkt>('MaalepunktTableState');
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+    localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -84,15 +84,21 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useTable<Maalepunkt>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.TABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

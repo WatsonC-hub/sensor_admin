@@ -4,25 +4,23 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {setTableBoxStyle, correction_map} from '~/consts';
+import {correction_map, setTableBoxStyle} from '~/consts';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
-  data: PejlingItem[] | undefined;
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
 export default function PejlingMeasurementsTableDesktop({
-  data,
   handleEdit,
   handleDelete,
   canEdit,
@@ -30,9 +28,10 @@ export default function PejlingMeasurementsTableDesktop({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  const {isTablet} = useBreakpoints();
 
   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
+
+  const {get} = usePejling();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -88,15 +87,21 @@ export default function PejlingMeasurementsTableDesktop({
     },
   };
 
-  const table = useTable<PejlingItem>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useQueryTable<PejlingItem>(
+    columns,
+    get,
+    options,
+    tableState,
+    TableTypes.TABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
-    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
+    <Box sx={setTableBoxStyle(715)}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

@@ -1,5 +1,6 @@
 // A hook that returns whether the current screen size is mobile, tablet or desktop.
-import {merge} from 'lodash';
+import {UseQueryResult} from '@tanstack/react-query';
+import {merge, assign} from 'lodash';
 import {
   type MRT_RowData,
   type MRT_TableOptions,
@@ -8,10 +9,12 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
+import {useMemo} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {APIError} from '~/queryClient';
 
 const getOptions = <TData extends MRT_RowData>(
   breakpoints: ReturnType<typeof useBreakpoints>,
@@ -32,6 +35,9 @@ const getOptions = <TData extends MRT_RowData>(
       color: 'primary',
       shape: 'rounded',
       variant: 'outlined',
+    },
+    muiSkeletonProps: {
+      animation: 'wave',
     },
     paginationDisplayMode: 'pages',
     muiTablePaperProps: {
@@ -74,7 +80,7 @@ const getOptions = <TData extends MRT_RowData>(
     },
   };
 
-  const mobileListOptions: Partial<MRT_TableOptions<TData>> = merge({}, globalOptions, {
+  const mobileListOptions: Partial<MRT_TableOptions<TData>> = assign({}, globalOptions, {
     enableTableFooter: false,
     enableTableHead: false,
     enableTopToolbar: false,
@@ -89,22 +95,38 @@ const getOptions = <TData extends MRT_RowData>(
         alignContent: 'space-between',
       },
     },
-    muiTableBodyRowProps: {
-      // The following styling is neccessary to make sure the detail panel look as a part of the row. The purpose of the styling is to shift the detail panel upwards so that it aligns with the row.
+    muiTableContainerProps: undefined,
+    muiTablePaperProps: {
       sx: {
-        display: 'table-row !important',
-        border: 'none',
-        backgroundColor: 'grey.300',
-        background: 'grey.300',
-        mt: -7.7,
-        px: 2,
-        mx: -2,
-        transition: 'transform 0.2s',
-        borderTopLeftRadius: '20px',
-        borderTopRightRadius: '20px',
-        borderBottomLeftRadius: '15px',
-        borderBottomRightRadius: '15px',
+        // width: '100%',
+        // flex: '1 1 0',
+        // display: 'flex',
+        // flexFlow: 'column',
+        boxShadow: breakpoints.isMobile ? 'none' : '1',
       },
+    },
+    muiTableBodyRowProps: ({row}) => {
+      // The following styling is neccessary to make sure the detail panel look as a part of the row. The purpose of the styling is to shift the detail panel upwards so that it aligns with the row.
+      return {
+        sx: {
+          display: 'table-row !important',
+          border: 'none',
+          backgroundColor: 'grey.300',
+          background: 'grey.300',
+          mt: -7.7,
+          px: 2,
+          mx: -2,
+          transition: 'transform 0.2s',
+          borderTopLeftRadius: '20px',
+          borderTopRightRadius: '20px',
+          borderBottomLeftRadius: '15px',
+          borderBottomRightRadius: '15px',
+          userSelect: 'text',
+        },
+        onClick: () => {
+          row.toggleExpanded(!row.getIsExpanded());
+        },
+      };
     },
     muiTableProps: {
       sx: {
@@ -147,6 +169,12 @@ const getOptions = <TData extends MRT_RowData>(
       'mrt-row-actions': {
         size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
         grow: false,
+        muiTableHeadCellProps: {
+          align: 'right',
+        },
+        muiTableBodyCellProps: {
+          align: 'right',
+        },
       },
     },
     initialState: {
@@ -173,23 +201,76 @@ const getOptions = <TData extends MRT_RowData>(
 
 export const useTable = <TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
-  data: TData[] | undefined,
+  data: TData[] | undefined | null,
   options: Partial<MRT_TableOptions<TData>>,
-  tableState: Partial<MRT_TableOptions<TData>> | undefined,
-  type: string = TableTypes.LIST
+  state: Partial<MRT_TableOptions<TData>> | undefined,
+  type: string = TableTypes.LIST,
+  merge_method: string | undefined = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
 
-  const tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+  let tableOptions: Partial<MRT_TableOptions<TData>> = options;
+  if (merge_method === MergeType.SHALLOWMERGE)
+    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+  else if (merge_method === MergeType.RECURSIVEMERGE)
+    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
-    initialState: {
-      isLoading: data === undefined,
-    },
     ...tableOptions,
-    ...tableState,
+    ...state,
+    state: {
+      ...state?.state,
+      isLoading: data === undefined,
+      showSkeletons: data === undefined,
+    },
+  });
+
+  return table;
+};
+
+export const useQueryTable = <TData extends MRT_RowData>(
+  columns: MRT_ColumnDef<TData>[],
+  queryResult: UseQueryResult<TData[], APIError>,
+  options: Partial<MRT_TableOptions<TData>>,
+  state: Partial<MRT_TableOptions<TData>> | undefined,
+  type: string = TableTypes.LIST,
+  merge_method: string | undefined = MergeType.RECURSIVEMERGE
+): MRT_TableInstance<TData> => {
+  const breakpoints = useBreakpoints();
+
+  const {data, isFetched, error} = queryResult;
+
+  const tableOptions = useMemo(() => {
+    let tableOptions: Partial<MRT_TableOptions<TData>> = options;
+    if (merge_method === MergeType.SHALLOWMERGE)
+      tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+    else if (merge_method === MergeType.RECURSIVEMERGE)
+      tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+
+    return tableOptions;
+  }, [options, breakpoints, merge_method, type]);
+
+  if (error != null) {
+    if (tableOptions.localization) {
+      tableOptions.localization.noRecordsToDisplay =
+        typeof error.response?.data.detail == 'string'
+          ? error.response?.data.detail
+          : tableOptions.localization.noRecordsToDisplay;
+    }
+  }
+
+  const table = useMaterialReactTable({
+    columns,
+    data: data ?? [],
+    ...tableOptions,
+    ...state,
+    state: {
+      ...state?.state,
+      isLoading: data === undefined && !isFetched,
+      showSkeletons: data === undefined && !isFetched,
+    },
   });
 
   return table;

@@ -4,33 +4,32 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
+import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {TilsynItem} from '~/types';
 
-import RenderInternalActions from '../../../components/tableComponents/RenderInternalActions';
-
 interface Props {
-  data: TilsynItem[] | undefined;
   handleEdit: (tilsyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
-export default function TilsynTableDesktop({data, handleEdit, handleDelete, canEdit}: Props) {
+export default function TilsynTableDesktop({handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const {isTablet} = useBreakpoints();
+  const {get} = useTilsyn();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
+
   const columns = useMemo<MRT_ColumnDef<TilsynItem>[]>(
     () => [
       {
@@ -79,6 +78,7 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
   );
   const [tableState, reset] = useStatefullTableAtom<TilsynItem>('TilsynTableState');
   const options: Partial<MRT_TableOptions<TilsynItem>> = {
+    localization: {noRecordsToDisplay: 'Ingen tilsyn at vise'},
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -96,15 +96,21 @@ export default function TilsynTableDesktop({data, handleEdit, handleDelete, canE
     },
   };
 
-  const table = useTable<TilsynItem>(columns, data, options, tableState, TableTypes.TABLE);
+  const table = useQueryTable<TilsynItem>(
+    columns,
+    get,
+    options,
+    tableState,
+    TableTypes.TABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
-    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
+    <Box sx={setTableBoxStyle(636)}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

@@ -11,16 +11,12 @@ const QAAccordion = ({children, number, title, accordionProps}) => {
     <Accordion disableGutters {...accordionProps}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
         id="panel1a-header"
         sx={{
-          backgroundColor: 'primary.light',
-          color: 'primary.contrastText',
+          backgroundColor: 'rgba(0, 0, 0, .04)',
         }}
       >
-        <BoxNumber>
-          <Typography>{number}</Typography>
-        </BoxNumber>
+        <BoxNumber>{<Typography>{number}</Typography>}</BoxNumber>
         <Typography>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>

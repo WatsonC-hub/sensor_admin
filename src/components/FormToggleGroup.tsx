@@ -1,15 +1,6 @@
-import {
-  Checkbox,
-  CheckboxProps,
-  FormControlLabel,
-  ToggleButtonGroupProps,
-  IconProps,
-  ToggleButtonGroup,
-  Typography,
-  ToggleButton,
-} from '@mui/material';
+import {ToggleButtonGroupProps, ToggleButtonGroup, Typography, ToggleButton} from '@mui/material';
 import React from 'react';
-import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
+import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 
 type FormToggleGroupProps<TFieldValues extends FieldValues> = ToggleButtonGroupProps & {
   name: Path<TFieldValues>;
@@ -17,6 +8,7 @@ type FormToggleGroupProps<TFieldValues extends FieldValues> = ToggleButtonGroupP
   children?: React.ReactNode;
   rules?: any;
   label: string;
+  noSelectValue?: any;
   values: {
     label: string | React.ReactNode;
     value: any;
@@ -26,27 +18,22 @@ type FormToggleGroupProps<TFieldValues extends FieldValues> = ToggleButtonGroupP
 
 const FormToggleGroup = <TFieldValues extends FieldValues>({
   name,
-  warning,
   rules,
   onChangeCallback,
   label,
+  noSelectValue,
   values,
   ...otherProps
 }: FormToggleGroupProps<TFieldValues>) => {
-  const {
-    control,
-    formState: {errors},
-  } = useFormContext<TFieldValues>();
+  const {control} = useFormContext<TFieldValues>();
   return (
     <>
       <Typography variant="subtitle1">{label}</Typography>
       <Controller
         control={control}
         name={name}
-        // defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
         rules={rules}
         render={({field: {value, onChange, ref, name}}) => {
-          // console.log('value', value);
           return (
             <ToggleButtonGroup
               ref={ref}
@@ -61,12 +48,17 @@ const FormToggleGroup = <TFieldValues extends FieldValues>({
                   if (onChangeCallback) {
                     onChangeCallback(value);
                   }
+                } else if (noSelectValue) {
+                  onChange(noSelectValue);
+                  if (onChangeCallback) {
+                    onChangeCallback(noSelectValue);
+                  }
                 }
               }}
               {...otherProps}
             >
               {values.map((val) => (
-                <ToggleButton key={val.value} value={val.value}>
+                <ToggleButton key={val.value} value={val.value} sx={{px: 2}}>
                   {val.label}
                 </ToggleButton>
               ))}

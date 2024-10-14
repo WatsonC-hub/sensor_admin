@@ -2,11 +2,12 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Button, Divider, Grid, Typography} from '@mui/material';
+import {Box, Divider, Grid} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
+import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
@@ -55,44 +56,52 @@ const YRangeRow = ({data, index}) => {
         key={index}
         display="flex"
         justifyContent="space-between"
-        flexDirection={'row'}
+        flexDirection={'column'}
         alignItems="center"
-        border={1}
         borderRadius={1}
         borderColor="grey.500"
         p={1}
       >
-        <Grid container width="70%">
+        <Grid container>
           <Grid item xs={12} sm={12}>
-            <Typography>Tidsinterval:</Typography>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <FormInput
-              name="mincutoff"
-              label="Nedre grænse"
-              fullWidth
-              type="number"
-              required
-              disabled={!editMode}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormInput
-              name="maxcutoff"
-              label="Øvre grænse"
-              fullWidth
-              type="number"
-              required
-              disabled={!editMode}
-            />
+            <Box display={'flex'} flexDirection={'row'} gap={1}>
+              <FormInput
+                name="mincutoff"
+                label="Nedre grænse"
+                fullWidth
+                type="number"
+                required
+                disabled={!editMode}
+              />
+              <FormInput
+                name="maxcutoff"
+                label="Øvre grænse"
+                fullWidth
+                type="number"
+                required
+                disabled={!editMode}
+              />
+            </Box>
           </Grid>
         </Grid>
-        <Box display="flex" flexDirection="column" gap={1} minWidth="97.02px">
+        <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1}>
+          {editMode ? (
+            <Button bttype="tertiary" size="small" onClick={() => setEditMode(false)}>
+              Annuller
+            </Button>
+          ) : (
+            <Button
+              bttype="tertiary"
+              size="small"
+              onClick={() => setConfirmDelete(true)}
+              startIcon={<DeleteIcon />}
+            >
+              Slet
+            </Button>
+          )}
           {editMode ? (
             <Button
-              color="success"
-              variant="contained"
+              bttype="primary"
               size="small"
               onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
               startIcon={<SaveIcon />}
@@ -101,8 +110,7 @@ const YRangeRow = ({data, index}) => {
             </Button>
           ) : (
             <Button
-              color="secondary"
-              variant="contained"
+              bttype="primary"
               size="small"
               onClick={() => setEditMode(true)}
               startIcon={<EditIcon />}
@@ -110,15 +118,6 @@ const YRangeRow = ({data, index}) => {
               Rediger
             </Button>
           )}
-          <Button
-            color="error"
-            variant="contained"
-            size="small"
-            onClick={() => setConfirmDelete(true)}
-            startIcon={<DeleteIcon />}
-          >
-            Slet
-          </Button>
         </Box>
       </Box>
       <Divider />

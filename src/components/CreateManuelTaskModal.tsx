@@ -6,10 +6,9 @@ import {useParams} from 'react-router-dom';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-
-import FormInput from './FormInput';
 
 interface Props {
   open: boolean;

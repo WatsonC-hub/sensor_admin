@@ -8,30 +8,26 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {setTableBoxStyle, renderDetailStyle, correction_map} from '~/consts';
+import {renderDetailStyle, correction_map} from '~/consts';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
-  data: PejlingItem[] | undefined;
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
   canEdit: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({
-  data,
-  handleEdit,
-  handleDelete,
-  canEdit,
-}: Props) {
+export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete, canEdit}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  // const [height, setHeight] = useState<number>();
 
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
@@ -39,6 +35,12 @@ export default function PejlingMeasurementsTableMobile({
     setMpId(id);
     setDialogOpen(true);
   };
+
+  const {get} = usePejling();
+
+  // useEffect(() => {
+  //   if (data) setHeight(data.length > 10 ? 10 * 60 : data.length * 60);
+  // }, [data]);
 
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
@@ -55,6 +57,7 @@ export default function PejlingMeasurementsTableMobile({
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
+            sx={{width: '100%'}}
             gap={1}
             height={26}
           >
@@ -92,6 +95,7 @@ export default function PejlingMeasurementsTableMobile({
   );
 
   const options: Partial<MRT_TableOptions<PejlingItem>> = {
+    localization: {noRecordsToDisplay: 'Ingen kontrolmålinger at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         {row.original.comment && (
@@ -112,17 +116,25 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useTable<PejlingItem>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useQueryTable<PejlingItem>(
+    columns,
+    get,
+    options,
+    undefined,
+    TableTypes.LIST,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
-    <Box sx={setTableBoxStyle(320)}>
+    <>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
-      <MaterialReactTable table={table} />
-    </Box>
+      <Box>
+        <MaterialReactTable table={table} />
+      </Box>
+    </>
   );
 }

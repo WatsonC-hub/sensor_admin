@@ -9,11 +9,8 @@ export const useMetadata = (ts_id: number) => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata/${ts_id}`);
       return data;
     },
-    enabled: ts_id !== undefined,
-    refetchInterval: false,
-    refetchIntervalInBackground: false,
+    enabled: ts_id !== undefined && ts_id !== -1,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
   });
 
   return get;

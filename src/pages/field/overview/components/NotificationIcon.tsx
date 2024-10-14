@@ -38,7 +38,7 @@ const flagStyling = (iconDetails: IconDetails) => {
 const CircleBox = ({
   children,
   sx,
-  padding = '0.2em',
+  padding = '0.0em',
 }: {
   children: React.ReactNode;
   sx?: Omit<BoxProps['sx'], 'textAlign' | 'fontSize'>;
@@ -114,8 +114,10 @@ export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.notification_id == 12) return '#334FFF';
   if ([13, 75, 76].includes(iconDetails?.notification_id ?? 0)) return '#9F2B68';
   if (iconDetails?.active === false || iconDetails?.active === null) return '#C0C0C0';
+  // if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
+  if (iconDetails?.color) return iconDetails?.color;
   if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
-  else return iconDetails?.color ?? '#4caf50';
+  return '#4caf50';
 };
 
 const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {
@@ -193,6 +195,9 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
           icon = <HeightIcon sx={defaultStyling} />;
           break;
         case 76:
+          icon = <HeightIcon sx={defaultStyling} />;
+          break;
+        case 141:
           icon = <HeightIcon sx={defaultStyling} />;
           break;
       }

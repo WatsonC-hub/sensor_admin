@@ -15,7 +15,6 @@ import {toast} from 'react-toastify';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {authStore} from '~/state/store';
 import {Image} from '~/types';
 
 type ImageCardProps = {
@@ -27,25 +26,18 @@ type ImageCardProps = {
 function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
   const {isMobile} = useBreakpoints();
 
-  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 640}&height=${isMobile ? 300 : 640}`;
+  const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [org_id] = authStore((state) => [state.org_id]);
-
-  const isBorehole =
-    image.boreholeno !== undefined &&
-    image.organisationid !== undefined &&
-    image.organisationid === org_id;
 
   function handleDelete() {
-    toast.promise(
-      () =>
-        deleteMutation.mutateAsync({
-          path: `${image.loc_id !== undefined ? image.loc_id : image.boreholeno}/${image.gid}`,
-        }),
+    deleteMutation.mutateAsync(
       {
-        pending: 'Sletter billedet',
-        success: 'Billedet blev slettet',
-        error: 'Der skete en fejl',
+        path: `${image.loc_id !== undefined ? image.loc_id : image.boreholeno}/${image.gid}`,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Billedet er blevet slettet');
+        },
       }
     );
   }
@@ -58,10 +50,8 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         justifyContent: 'center',
         flexDirection: 'column ',
         borderRadius: 5,
-        minWidth: 300,
-        minHeight: 300,
-        // maxWidth: 640,
-        // maxHeight: 640,
+        width: 'fit-content',
+        height: 'fit-content',
       }}
     >
       <DeleteAlert
@@ -70,25 +60,20 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <CardMedia>
-        <img
-          src={imageUrl}
-          alt={image.title}
-          height={isMobile ? 300 : 640}
-          width={isMobile ? 300 : 640}
-          loading="lazy"
-          style={{
-            objectFit: 'cover',
-            width: '100%',
-            height: '100%',
-          }}
-        />
+      <CardMedia
+        sx={{
+          margin: 'auto',
+          height: isMobile ? '300px' : '480px',
+          width: isMobile ? '300px' : '480px',
+        }}
+      >
+        <img src={imageUrl} alt={image.title} loading="lazy" />
       </CardMedia>
       <CardContent
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          flexGrow: 1,
+          // flexGrow: 1,
         }}
       >
         <Typography variant="body2" color="textSecondary" align="right" component="p">
@@ -100,13 +85,13 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
           component="p"
           sx={{
             minHeight: {md: '60px'},
-            flexGrow: 1,
+            // flexGrow: 1,
           }}
         >
           {image.comment}
         </Typography>
       </CardContent>
-      {(image.loc_id !== undefined || isBorehole) && (
+      {(image.loc_id || image.boreholeno) && (
         <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
           <Button
             disabled={deleteMutation.isPending}

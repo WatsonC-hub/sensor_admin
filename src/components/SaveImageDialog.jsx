@@ -13,9 +13,8 @@ import React from 'react';
 import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
+import OwnDatePicker from '~/components/OwnDatePicker';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
-
-import OwnDatePicker from './OwnDatePicker';
 
 function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
   const theme = useTheme();
@@ -57,15 +56,10 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         },
       };
 
-      toast.promise(() => editImage.mutateAsync(payload), {
-        pending: 'Gemmer billede',
-        success: {
-          render() {
-            handleCloseSave();
-            return 'Billede gemt';
-          },
+      editImage.mutateAsync(payload, {
+        onSuccess: () => {
+          handleCloseSave();
         },
-        error: 'Der skete en fejl',
       });
     }
   }

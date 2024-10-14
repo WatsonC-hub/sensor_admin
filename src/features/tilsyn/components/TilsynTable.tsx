@@ -2,12 +2,9 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
 
+import TilsynTableDesktop from '~/features/tilsyn/components/TilsynTableDesktop';
+import TilsynTableMobile from '~/features/tilsyn/components/TilsynTableMobile';
 import {TilsynItem} from '~/types';
-
-import {useTilsyn} from '../api/useTilsyn';
-
-import TilsynTableDesktop from './TilsynTableDesktop';
-import TilsynTableMobile from './TilsynTableMobile';
 
 interface TilsynTableProps {
   handleEdit: (data: TilsynItem) => void;
@@ -19,23 +16,9 @@ export default function TilsynTable({handleEdit, handleDelete, canEdit}: TilsynT
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const {
-    get: {data: tilsynList},
-  } = useTilsyn();
-
   return matches ? (
-    <TilsynTableMobile
-      data={tilsynList}
-      handleEdit={handleEdit}
-      handleDelete={handleDelete}
-      canEdit={canEdit}
-    />
+    <TilsynTableMobile handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
   ) : (
-    <TilsynTableDesktop
-      data={tilsynList}
-      handleEdit={handleEdit}
-      handleDelete={handleDelete}
-      canEdit={canEdit}
-    />
+    <TilsynTableDesktop handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
   );
 }

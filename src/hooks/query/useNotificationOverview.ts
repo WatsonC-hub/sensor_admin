@@ -5,10 +5,10 @@ import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 
 export interface Notification {
-  locname: string;
-  locid: number;
-  stationname: string;
-  stationid: number;
+  loc_name: string;
+  loc_id: number;
+  ts_name: string;
+  ts_id: number;
   x: number;
   y: number;
   longitude: number;
@@ -21,7 +21,7 @@ export interface Notification {
   notification_id: number;
   status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
-  projectno: string;
+  projectno: string | null;
   is_customer_service: boolean;
   active: boolean;
   notify_type: 'primary' | 'obs' | 'station' | null;
@@ -70,7 +70,6 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
       });
       return data;
     },
-    refetchOnReconnect: false,
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
     staleTime: 10,
@@ -91,11 +90,12 @@ export const useNotificationOverviewMap = (
           sortByNotifyType,
           (item) => (item.status ? item.status : ''),
           (item) => item.flag,
+          (item) => (item.projectno ? item.projectno : ''),
         ])
       );
 
       const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
-        const existing = acc.find((accItem) => accItem.locid === item.locid);
+        const existing = acc.find((accItem) => accItem.loc_id === item.loc_id);
 
         if (existing) {
           if (item.notify_type === 'obs') {

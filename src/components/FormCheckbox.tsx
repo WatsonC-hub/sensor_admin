@@ -1,5 +1,5 @@
 import {Checkbox, CheckboxProps, FormControlLabel} from '@mui/material';
-import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
+import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 
 type FormCheckboxProps<TFieldValues extends FieldValues> = CheckboxProps & {
   name: Path<TFieldValues>;
@@ -20,10 +20,7 @@ const FormCheckbox = <TFieldValues extends FieldValues>({
   includeInderterminate = false,
   ...otherProps
 }: FormCheckboxProps<TFieldValues>) => {
-  const {
-    control,
-    formState: {errors},
-  } = useFormContext<TFieldValues>();
+  const {control} = useFormContext<TFieldValues>();
 
   return (
     <FormControlLabel
@@ -35,7 +32,6 @@ const FormCheckbox = <TFieldValues extends FieldValues>({
           // defaultvalue={get(defaultValues, name) === undefined ? '' : get(defaultValues, name)}
           rules={rules}
           render={({field: {value, onChange, ref, name}}) => {
-            // console.log('value', value);
             return (
               <Checkbox
                 {...otherProps}

@@ -19,24 +19,12 @@ import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {authStore, stamdataStore} from '~/state/store';
-
-export type Kontrol = {
-  comment: string;
-  gid: number;
-  disttowatertable_m: number;
-  timeofmeas: string;
-  useforcorrection: number;
-  pumpstop: string;
-  service: boolean;
-  organisationid: number;
-  organisationname: string;
-  uploaded_status: boolean;
-};
+import {Kontrol} from '~/types';
 
 interface Props {
   data: Kontrol[];
   handleEdit: (kontrol: Kontrol) => void;
-  handleDelete: (gid: number | undefined) => void;
+  handleDelete: (gid: number) => void;
 }
 
 export default function PejlingMeasurementsTableMobile({data, handleEdit, handleDelete}: Props) {
@@ -157,7 +145,7 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
         measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

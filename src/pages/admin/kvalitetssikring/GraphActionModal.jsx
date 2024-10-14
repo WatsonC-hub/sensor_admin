@@ -1,8 +1,8 @@
 import React from 'react';
 
-import ExcludeModal from './modals/ExcludeModal';
-import LevelCorrectionModal from './modals/LevelCorrectionModal';
-import YRangeModal from './modals/YRangeModal';
+import ExcludeModal from '~/pages/admin/kvalitetssikring/modals/ExcludeModal';
+import LevelCorrectionModal from '~/pages/admin/kvalitetssikring/modals/LevelCorrectionModal';
+import YRangeModal from '~/pages/admin/kvalitetssikring/modals/YRangeModal';
 
 const GraphActionModal = ({modal, closeModal}) => {
   switch (modal) {

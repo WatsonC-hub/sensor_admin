@@ -36,7 +36,6 @@ export const parkeringPutOptions = {
   mutationKey: ['parkering_put'],
   mutationFn: async (mutation_data: ParkeringPut) => {
     const {path, data} = mutation_data;
-    console.log('path', path, 'data', data);
     const {data: result} = await apiClient.put(`/sensor_field/stamdata/parking/${path}`, data);
     return result;
   },

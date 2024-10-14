@@ -8,13 +8,14 @@ import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
+import ActionArea from '~/features/station/components/ActionArea';
+import BearingGraph from '~/features/station/components/BearingGraph';
 import {StationPages} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
-import ActionArea from '~/pages/field/station/ActionArea';
-import BearingGraph from '~/pages/field/station/BearingGraph';
-import EditStamdata from '~/pages/field/station/EditStamdata';
 import Pejling from '~/pages/field/station/pejling/Pejling';
+import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {stamdataStore} from '~/state/store';
 
@@ -28,6 +29,7 @@ export default function Station({ts_id, stamdata}) {
   const [dataUri, setdataUri] = useState('');
   const [openSave, setOpenSave] = useState(false);
   const {createStamdata} = useNavigationFunctions();
+  const {isMobile} = useBreakpoints();
   const [activeImage, setActiveImage] = useState({
     gid: -1,
     type: params.locid,
@@ -36,6 +38,7 @@ export default function Station({ts_id, stamdata}) {
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
   const store = stamdataStore();
+
   useEffect(() => {
     if (stamdata) {
       store.setLocation(stamdata);
@@ -105,11 +108,11 @@ export default function Station({ts_id, stamdata}) {
     <Box
       display="flex"
       height={
-        ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'
+        ts_id === '' && stamdata && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'
       }
       flexDirection={'column'}
     >
-      {((!stamdata && ts_id === -1) || ts_id !== -1) && (
+      {((!stamdata && ts_id === '') || ts_id !== '') && (
         <>
           {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
             <Box sx={{marginBottom: 0.5, marginTop: 0.2}}>
@@ -127,10 +130,11 @@ export default function Station({ts_id, stamdata}) {
               display: 'flex',
               flexDirection: 'column',
               maxWidth: '1080px',
+              width: isMobile ? '100%' : 'fit-content',
               alignSelf: 'center',
             }}
           >
-            {pageToShow === StationPages.PEJLING && ts_id !== -1 && (
+            {pageToShow === StationPages.PEJLING && ts_id !== '' && (
               <Pejling ts_id={ts_id} setDynamic={setDynamic} />
             )}
             {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
@@ -138,7 +142,7 @@ export default function Station({ts_id, stamdata}) {
         </>
       )}
 
-      {ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING && (
+      {ts_id === '' && stamdata && pageToShow === StationPages.PEJLING && (
         <Box
           display={'flex'}
           alignSelf={'center'}
@@ -163,7 +167,7 @@ export default function Station({ts_id, stamdata}) {
           <Button
             bttype="primary"
             onClick={() => {
-              createStamdata(ts_id !== -1 ? '2' : '1');
+              createStamdata(ts_id !== '' ? '2' : '1');
             }}
           >
             Opret tidsserie og/eller udstyr

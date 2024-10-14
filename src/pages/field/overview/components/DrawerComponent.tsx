@@ -1,9 +1,7 @@
 import {Global} from '@emotion/react';
-import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
-import {Typography, Box, Drawer, IconButton} from '@mui/material';
+import {Typography, Box, Drawer} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import React, {useEffect, useState} from 'react';
 
@@ -30,7 +28,7 @@ const DrawerComponent = ({
   actions,
 }: DrawerComponentProps) => {
   const [open, setOpen] = useState<'closed' | 'half' | 'full'>(
-    isMarkerSelected ? 'half' : 'closed'
+    isMarkerSelected ? 'full' : 'closed'
   );
   const {isTouch} = useBreakpoints();
 
@@ -39,17 +37,6 @@ const DrawerComponent = ({
       setOpen('half');
     }
   }, [header]);
-
-  // useEffect(() => {
-  //   if (triggerOpenDrawer) {
-  //     setOpen('half');
-  //   }
-  // }, [triggerOpenDrawer]);
-  // useEffect(() => {
-  //   if (triggerCloseDrawer) {
-  //     setOpen('closed');
-  //   }
-  // }, [triggerCloseDrawer]);
 
   return (
     <>
@@ -91,26 +78,34 @@ const DrawerComponent = ({
             alignItems: 'center',
             height: drawerBleeding,
             pl: 2,
+            cursor: 'pointer',
+          }}
+          onClick={() => {
+            if (enableFull) {
+              setOpen((prev) => (prev === 'full' ? 'half' : 'full'));
+            } else {
+              setOpen((prev) => (prev === 'closed' ? 'half' : 'closed'));
+            }
           }}
         >
           <Typography variant={isTouch ? 'body1' : 'h6'} sx={{p: 0}}>
             {header}
           </Typography>
-          <Box display="flex">
-            <IconButton
-              onClick={() => setOpen((prev) => (prev === 'closed' ? 'half' : 'closed'))}
-              color="primary"
-            >
-              {open != 'closed' ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-            </IconButton>
-            {enableFull && (
+          <Box p={1}>
+            {open == 'full' || (open == 'half' && !enableFull) ? (
+              <ExpandMoreIcon />
+            ) : (
+              <ExpandLessIcon />
+            )}
+
+            {/* {enableFull && (
               <IconButton
                 onClick={() => setOpen((prev) => (prev === 'full' ? 'half' : 'full'))}
                 color="primary"
               >
                 {open == 'full' ? <CloseFullscreenIcon /> : <OpenInFullIcon />}
               </IconButton>
-            )}
+            )} */}
           </Box>
         </Box>
         <Box

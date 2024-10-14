@@ -4,11 +4,10 @@ import {ErrorBoundary} from 'react-error-boundary';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
+import LoadingSkeleton from '~/LoadingSkeleton';
+import Redirecter from '~/Redirecter';
 import {authStore} from '~/state/store';
-
-import LoadingSkeleton from './LoadingSkeleton';
-import Redirecter from './Redirecter';
-import UnAuntenticatedApp from './UnauthenticatedApp';
+import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -36,7 +35,7 @@ function App() {
       ele.classList.add('available');
       setTimeout(() => {
         // remove from DOM
-        ele.outerHTML = '';
+        // ele.outerHTML = '';
       }, 2000);
     }
   }, []);
@@ -53,8 +52,6 @@ function App() {
       </>
     );
   }
-
-  console.log('App');
   return (
     <ErrorBoundary
       FallbackComponent={() => (
@@ -65,7 +62,7 @@ function App() {
           </Typography>
         </>
       )}
-      onError={(error, componentStack) => {
+      onError={(error) => {
         if (error.message.includes('Failed to fetch dynamically imported module')) {
           // window.location.reload(true);
         }

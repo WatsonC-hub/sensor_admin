@@ -15,7 +15,7 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
@@ -92,6 +92,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
   );
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
+    localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
         <Typography>
@@ -108,25 +109,23 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
         </Typography>
       </Box>
     ),
-    // muiTablePaperProps: {
-    //   sx: {
-    //     boxShadow: 'none',
-    //     p: 0,
-    //     margin: 'auto',
-    //     width: '100%',
-    //   },
-    // },
   };
 
-  const table = useTable<Maalepunkt>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useTable<Maalepunkt>(
+    columns,
+    data,
+    options,
+    undefined,
+    TableTypes.LIST,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box sx={setTableBoxStyle(320)} width={'100%'}>
       <DeleteAlert
-        measurementId={mpId}
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
-        onOkDelete={handleDelete}
+        onOkDelete={() => handleDelete(mpId)}
       />
       <MaterialReactTable table={table} />
     </Box>

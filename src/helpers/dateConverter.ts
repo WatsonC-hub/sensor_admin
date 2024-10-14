@@ -38,10 +38,17 @@ const limitDecimalNumbers = (value: number) => {
     : value;
 };
 
+const splitTimeFromDate = (dateString: string) => {
+  const date = moment(dateString).format('DD-MM-YYYY HH:mm');
+  const time = date.split(' ');
+  return time;
+};
+
 export {
   convertDate,
   checkEndDateIsUnset,
   convertDateWithTimeStamp,
   calculatePumpstop,
   limitDecimalNumbers,
+  splitTimeFromDate,
 };
