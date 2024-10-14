@@ -101,7 +101,7 @@ const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter)
   let filteredData = data;
 
   filteredData = filteredData.filter((elem): elem is NotificationMap =>
-    'locid' in elem ? filterSensor(elem, filter.sensor) : true
+    'notification_id' in elem ? filterSensor(elem, filter.sensor) : true
   );
 
   filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
@@ -146,10 +146,11 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
       const filteredSensor = data
         .filter(
           (elem): elem is NotificationMap =>
-            'locid' in elem && elem.locname.toLowerCase().includes(search_string?.toLowerCase())
+            'notification_id' in elem &&
+            elem.loc_name.toLowerCase().includes(search_string?.toLowerCase())
         )
         .map((elem) => {
-          return {name: elem.locname, sensor: true, group: 'IoT'};
+          return {name: elem.loc_name, sensor: true, group: 'IoT'};
         })
         .sort((a, b) => a.name.localeCompare(b.name));
 

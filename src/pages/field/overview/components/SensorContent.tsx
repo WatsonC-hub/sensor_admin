@@ -19,9 +19,8 @@ const SensorContent = ({data}: SensorContentProps) => {
   const all_notifications = [data, ...data.otherNotifications];
 
   const unique_stations = all_notifications
-    .filter((item, index, self) => index === self.findIndex((t) => t.stationid === item.stationid))
-    .filter((item) => item.stationid !== null);
-
+    .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
+    .filter((item) => item.ts_id !== null);
   return (
     <>
       <Box
@@ -32,8 +31,7 @@ const SensorContent = ({data}: SensorContentProps) => {
         }}
       >
         {unique_stations.map((notification, index) => {
-          notification.notification_id;
-          const splitted = notification.stationname.split(notification.locname);
+          const splitted = notification.ts_name.split(notification.loc_name);
           return (
             <Box
               key={index}
@@ -45,7 +43,7 @@ const SensorContent = ({data}: SensorContentProps) => {
             >
               <Button
                 bttype="link"
-                onClick={() => station(notification.locid, notification.stationid)}
+                onClick={() => station(notification.loc_id, notification.ts_id)}
               >
                 {splitted[splitted.length - 1].replace('-', '').trim()}
               </Button>
@@ -73,7 +71,7 @@ const SensorContent = ({data}: SensorContentProps) => {
               .filter((item) => item.opgave !== null)
               .map((notification, index) => {
                 notification.notification_id;
-                const splitted = notification.stationname.split(notification.locname);
+                const splitted = notification.ts_name.split(notification.loc_name);
                 return (
                   <Box
                     key={index}
@@ -87,9 +85,9 @@ const SensorContent = ({data}: SensorContentProps) => {
                       bttype="link"
                       onClick={() => {
                         if (qaNotifications.includes(notification.notification_id)) {
-                          adminKvalitetssikring(notification.stationid);
+                          adminKvalitetssikring(notification.ts_id);
                         } else {
-                          station(notification.locid, notification.stationid);
+                          station(notification.loc_id, notification.ts_id);
                         }
                       }}
                     >

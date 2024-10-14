@@ -29,11 +29,9 @@ const Algorithms = () => {
         justifyContent={data && data.length < 4 ? 'center' : 'start'}
       >
         {data?.map((algorithm) => (
-          <>
-            <Grid key={algorithm.name} item mobile={12} tablet={6} laptop={4} desktop={3} xl={3}>
-              <AlgorithmCard qaAlgorithm={algorithm} />
-            </Grid>
-          </>
+          <Grid key={algorithm.name} item mobile={12} tablet={6} laptop={4} desktop={4} xl={4}>
+            <AlgorithmCard qaAlgorithm={algorithm} />
+          </Grid>
         ))}
       </Grid>
     </>
