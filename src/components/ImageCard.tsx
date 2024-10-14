@@ -60,7 +60,13 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         setDialogOpen={setDialogOpen}
         onOkDelete={handleDelete}
       />
-      <CardMedia sx={{margin: 'auto'}}>
+      <CardMedia
+        sx={{
+          margin: 'auto',
+          height: isMobile ? '300px' : '480px',
+          width: isMobile ? '300px' : '480px',
+        }}
+      >
         <img src={imageUrl} alt={image.title} loading="lazy" />
       </CardMedia>
       <CardContent
