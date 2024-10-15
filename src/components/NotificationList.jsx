@@ -1,4 +1,4 @@
-import {Edit} from '@mui/icons-material';
+import {Assignment, Edit} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -10,7 +10,7 @@ import {useParams} from 'react-router-dom';
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/components/UpdateNotificationModal';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
-import {useTaskMutation} from '~/hooks/query/useTaskMutation';
+import {useTasks} from '~/hooks/query/useTasks';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 
 // Mock data for notifications
@@ -20,7 +20,10 @@ const NotificationList = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
 
-  const {markAsDone} = useTaskMutation();
+  const {
+    get: {data: tasks},
+    markAsDone,
+  } = useTasks();
   const params = useParams();
 
   const {data, isPending} = useNotificationOverview();
@@ -97,6 +100,7 @@ const NotificationList = () => {
       >
         <Badge
           badgeContent={notifications?.length}
+          anchorOrigin={{vertical: 'top', horizontal: 'right'}}
           sx={{
             '& .MuiBadge-badge': {
               // color: 'grey.800',
@@ -104,7 +108,19 @@ const NotificationList = () => {
             },
           }}
         >
-          <NotificationsIcon />
+          {' '}
+          <Badge
+            badgeContent={tasks?.length}
+            anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+            sx={{
+              '& .MuiBadge-badge': {
+                // color: 'grey.800',
+                backgroundColor: '#1798e9',
+              },
+            }}
+          >
+            <NotificationsIcon />
+          </Badge>
         </Badge>
       </IconButton>
       <Menu
@@ -144,7 +160,7 @@ const NotificationList = () => {
                 }
               />
               {/* <Typography variant="caption">{}</Typography> */}
-              {notification.notification_id == 0 && (
+              {/* {notification.notification_id == 0 && (
                 <IconButton
                   sx={{
                     pointerEvents: 'auto',
@@ -154,7 +170,7 @@ const NotificationList = () => {
                 >
                   <DoneIcon />
                 </IconButton>
-              )}
+              )} */}
               <IconButton
                 sx={{
                   pointerEvents: 'auto',
@@ -162,6 +178,41 @@ const NotificationList = () => {
                 aria-label="Edit task"
                 onClick={() => {
                   setSelectedNotification(notification);
+                  openUpdateModal();
+                }}
+              >
+                <Edit />
+              </IconButton>
+            </MenuItem>
+          );
+        })}
+        {tasks?.map((task, index) => {
+          return (
+            <MenuItem key={index} sx={{gap: 0.5}}>
+              <ListItemIcon
+                sx={{
+                  fontSize: '1.5rem',
+                }}
+              >
+                <Assignment />
+              </ListItemIcon>
+              <ListItemText primary={task.opgave} secondary={task.created_at.slice(0, 10)} />
+              <IconButton
+                sx={{
+                  pointerEvents: 'auto',
+                }}
+                aria-label="Mark as done"
+                onClick={() => handleMarkAsDone(task)}
+              >
+                <DoneIcon />
+              </IconButton>
+              <IconButton
+                sx={{
+                  pointerEvents: 'auto',
+                }}
+                aria-label="Edit task"
+                onClick={() => {
+                  setSelectedNotification(task);
                   openUpdateModal();
                 }}
               >

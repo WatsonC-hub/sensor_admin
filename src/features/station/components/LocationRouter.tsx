@@ -46,7 +46,15 @@ export default function LocationRouter() {
     }
   }, [data]);
 
-  const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
+  const {data: metadata, isFetched} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
+
+  useEffect(() => {
+    if (params.loc_id == undefined && isFetched) {
+      station(metadata?.loc_id ? metadata.loc_id : -1, metadata?.ts_id ? metadata.ts_id : -1, {
+        replace: true,
+      });
+    }
+  }, [metadata]);
 
   let hasTimeseries = undefined;
   if (data && data.length > 0)
