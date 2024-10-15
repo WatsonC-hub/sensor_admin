@@ -40,7 +40,10 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn();
 
   const handleServiceSubmit = (values: TilsynItem) => {
-    const tilsyn = {...values, user_id: sessionStorage.getItem('user')};
+    const tilsyn = {
+      ...values,
+      dato: moment(values.dato).toISOString(),
+    };
 
     const mutationOptions = {
       onSuccess: () => {
