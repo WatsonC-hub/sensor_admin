@@ -3,7 +3,6 @@ import {Box} from '@mui/material';
 import moment from 'moment';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
-import {toast} from 'react-toastify';
 
 import FabWrapper from '~/components/FabWrapper';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
@@ -48,9 +47,6 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
     const mutationOptions = {
       onSuccess: () => {
         resetFormData();
-      },
-      onError: (error: Error) => {
-        toast.error('Der skete en fejl');
       },
     };
 
