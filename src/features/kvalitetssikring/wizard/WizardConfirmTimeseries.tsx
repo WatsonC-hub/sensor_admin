@@ -25,12 +25,23 @@ interface WizardConfirmTimeseriesProps {
   setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
-const schema = z.object({
-  id: z.number().optional(),
-  date: z.string(),
-  level: z.number(),
-  // comment: z.string().optional(),
-});
+const schema = z
+  .object({
+    id: z.number().optional(),
+    startDate: z.string().optional(),
+    date: z.string(),
+    level: z.number(),
+    // comment: z.string().optional(),
+  })
+  .refine(
+    ({date, startDate}) => {
+      return !startDate || (startDate && startDate < date);
+    },
+    {
+      path: ['date'],
+      message: 'Dato må ikke være tidligere end sidst godkendt',
+    }
+  );
 
 type CertifyQaValues = z.infer<typeof schema>;
 
@@ -53,14 +64,17 @@ const WizardConfirmTimeseries = ({
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
 
+  console.log(selectedQaData);
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
     defaultValues: {
+      startDate: selectedQaData?.date,
       level: 1,
     },
+    mode: 'onTouched',
   });
 
-  const {watch, handleSubmit, setValue, reset} = formMethods;
+  const {watch, handleSubmit, setValue, reset, getValues} = formMethods;
 
   const qaStampWatch = watch('level');
 
@@ -79,13 +93,22 @@ const WizardConfirmTimeseries = ({
     }
   }, [initiateConfirmTimeseries, selection]);
 
+  useEffect(() => {
+    if (selectedQaData) {
+      setValue('startDate', selectedQaData.date);
+    }
+  }, [selectedQaData]);
+
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
+    console.log(certifyQa);
     const payload = {
       path: `${metadata?.ts_id}`,
       data: certifyQa,
     };
     postQaData.mutateAsync(payload);
   };
+
+  console.log(getValues());
 
   return (
     <FormProvider {...formMethods}>
@@ -135,12 +158,13 @@ const WizardConfirmTimeseries = ({
               justifyContent={isMobile ? 'start' : 'center'}
               gap={1}
             >
-              <TextField
-                value={
-                  selectedQaData
-                    ? moment(selectedQaData.date).format('YYYY-MM-DD HH:mm')
-                    : undefined
-                }
+              <FormInput
+                // value={
+                //   selectedQaData
+                //     ? moment(selectedQaData.date).format('YYYY-MM-DD HH:mm')
+                //     : undefined
+                // }
+                name={'startDate'}
                 type={selectedQaData ? 'datetime-local' : undefined}
                 variant="outlined"
                 label={'Sidst godkendt'}
@@ -198,7 +222,7 @@ const WizardConfirmTimeseries = ({
               }}
             /> */}
 
-            <Box display={'flex'} flexDirection={'row'} alignSelf={'center'} gap={1}>
+            <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
               <Button
                 bttype="tertiary"
                 onClick={() => {
@@ -208,7 +232,13 @@ const WizardConfirmTimeseries = ({
               >
                 Annuller
               </Button>
-              <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit(handleSave)}>
+              <Button
+                bttype="primary"
+                startIcon={<Save />}
+                onClick={handleSubmit(handleSave, (e) => {
+                  console.log(e);
+                })}
+              >
                 Godkend
               </Button>
             </Box>
