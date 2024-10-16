@@ -6,7 +6,7 @@ import {apiClient} from '~/apiClient';
 
 const TOAST_ID = 'qa-toast';
 
-export const useRunQA = (ts_id: number) => {
+export const useRunQA = (ts_id: number | undefined) => {
   const queryClient = useQueryClient();
   const [refetchInterval, setRefetchInterval] = useState<number | false>(false);
   // TODO: Check me
@@ -16,7 +16,7 @@ export const useRunQA = (ts_id: number) => {
       const {status} = await apiClient.get(`/sensor_admin/rerun_qa/poll/${ts_id}`);
       return status;
     },
-    enabled: true,
+    enabled: true && ts_id !== undefined,
     refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
   });

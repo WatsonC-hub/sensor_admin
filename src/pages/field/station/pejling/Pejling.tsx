@@ -124,7 +124,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
       }}
       visible={showForm === null ? 'visible' : 'hidden'}
     >
-      {isMobile && <Typography variant="h6">Seneste Måling</Typography>}
       <LatestMeasurementTable
         latestMeasurement={latestMeasurement}
         ts_id={ts_id}

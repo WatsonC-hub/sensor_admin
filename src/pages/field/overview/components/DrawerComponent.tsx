@@ -50,6 +50,7 @@ const DrawerComponent = ({
             // transition that opens the drawer
             transition: 'height 0.2s ease-in-out',
             width: isTouch ? '100%' : '50%',
+            maxWidth: '800px',
             margin: 'auto',
           },
         }}

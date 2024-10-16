@@ -89,7 +89,7 @@ export const setTableBoxStyle = (pixelToSubtract: number) => {
     flexDirection: 'column',
     height: calculateContentHeight(pixelToSubtract),
     minHeight: '500px',
-    maxWidth: '100vw',
+    maxWidth: '1280px',
   };
   return sx;
 };
@@ -153,16 +153,16 @@ const selectorOptions: Partial<RangeSelector> = {
       label: '1 uge',
     },
     {
-      step: 'year',
-      stepmode: 'backward',
-      count: 1,
-      label: '1 år',
-    },
-    {
       step: 'month',
       stepmode: 'backward',
       count: 1,
       label: '1 måned',
+    },
+    {
+      step: 'year',
+      stepmode: 'backward',
+      count: 1,
+      label: '1 år',
     },
     {
       step: 'all',
@@ -173,7 +173,8 @@ const selectorOptions: Partial<RangeSelector> = {
 
 export const desktopLayout: Partial<Layout> = {
   xaxis: {
-    rangeselector: selectorOptions,
+    domain: [0, 0.97],
+    // rangeselector: selectorOptions,
     autorange: true,
     type: 'date',
     showline: true,

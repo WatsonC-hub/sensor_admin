@@ -1,140 +1,20 @@
 import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
-import {Layout, RangeSelector, RangeSelectorButton} from 'plotly.js';
 import React, {useContext, useEffect, useState} from 'react';
-import Plot from 'react-plotly.js';
 
 import {apiClient} from '~/apiClient';
+import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
-import {rerunIcon, rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useCorrectData} from '~/hooks/useCorrectData';
-import {useRunQA} from '~/hooks/useRunQA';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 import {QaGraphData, QaGraphLabel} from '~/types';
-
-const selectorOptions: Partial<RangeSelector> = {
-  buttons: [
-    {
-      step: 'day',
-      stepmode: 'backward',
-      count: 7,
-      label: '1 uge',
-    },
-    {
-      step: 'year',
-      stepmode: 'backward',
-      count: 1,
-      label: '1 år',
-    },
-    {
-      step: 'month',
-      stepmode: 'backward',
-      count: 1,
-      label: '1 måned',
-    },
-    {
-      step: 'all',
-      label: 'Alt',
-    },
-  ] as Array<Partial<RangeSelectorButton>>,
-};
-
-const desktopLayout: Partial<Layout> = {
-  xaxis: {
-    rangeselector: selectorOptions,
-    /*rangeslider: {},*/
-    autorange: true,
-    type: 'date' as Plotly.AxisType,
-    //range:["2020-12-01T00:00:00", A],
-    //domain: [0, 0.97],
-    showline: true,
-  },
-
-  //xaxis: {domain: [0, 0.9]},
-  yaxis: {
-    title: {
-      text: '',
-      font: {size: 12},
-    },
-    showline: true,
-  },
-  yaxis2: {
-    title: {
-      text: 'Nedbør [mm]',
-      font: {size: 12},
-    },
-    showline: false,
-    showgrid: false,
-    overlaying: 'y',
-    side: 'right' as const,
-    fixedrange: true,
-  },
-
-  showlegend: true,
-  legend: {
-    x: 0,
-    y: -0.15,
-    orientation: 'h',
-  },
-  margin: {
-    // l: 70,
-    r: 0,
-    // b: 30,
-    t: 10,
-    pad: 4,
-  },
-  font: {
-    size: 12,
-    color: 'rgb(0, 0, 0)',
-  },
-} as const;
-
-const mobileLayout: Partial<Layout> = {
-  modebar: {
-    orientation: 'v',
-  },
-  //autosize: true,
-  xaxis: {
-    rangeselector: selectorOptions,
-    autorange: true,
-    type: 'date' as Plotly.AxisType,
-  },
-
-  yaxis: {
-    showline: true,
-    title: {
-      text: '',
-      font: {size: 12},
-    },
-  },
-
-  showlegend: true,
-  legend: {
-    x: 0,
-    y: -0.15,
-    orientation: 'h',
-  },
-  margin: {
-    l: 50,
-    r: 30,
-    b: 40,
-    t: 0,
-    pad: 4,
-  },
-  font: {
-    size: 12,
-    color: 'rgb(0, 0, 0)',
-  },
-};
 
 const LABEL_COLORS: Record<number, string> = {
   0: '#666666',
@@ -251,12 +131,9 @@ function PlotGraph({
 }: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [layout, setLayout] = useState<Partial<Layout>>(matches ? mobileLayout : desktopLayout);
   const metadata = useContext(MetadataContext);
   const dataToShow = useAtomValue(dataToShowAtom);
-
+  const theme = useTheme();
   const loc_name = metadata && 'loc_name' in metadata ? metadata.loc_name : '';
   const tstype_name = metadata && 'tstype_name' in metadata ? metadata.tstype_name : '';
   const unit = metadata && 'unit' in metadata ? metadata.unit : '';
@@ -298,25 +175,8 @@ function PlotGraph({
     refetchOnWindowFocus: false,
   });
 
-  useEffect(() => {
-    if (initiateSelect) {
-      setLayout((prev) => {
-        return {
-          ...prev,
-          dragmode: 'select',
-        };
-      });
-    } else {
-      setLayout((prev) => {
-        return {
-          ...prev,
-          dragmode: 'zoom',
-        };
-      });
-    }
-  }, [initiateSelect]);
-
   const handlePlotlySelected = (eventData: any) => {
+    console.log(eventData);
     if (eventData === undefined) {
       return;
     } else {
@@ -349,37 +209,11 @@ function PlotGraph({
   }, []);
 
   const handleRelayout = (e: any) => {
-    if (e['xaxis.autorange'] == true || e['autosize'] == true) {
-      setXRange(initRange);
-      return;
-    }
-
+    console.log(e);
     if (e['selections'] && e['selections'].length === 0) {
       setSelection({});
     }
-
-    if (e['dragmode']) {
-      if (e['dragmode'] === 'select') setInitiateSelect(true);
-      setLayout((prev) => {
-        return {
-          ...prev,
-          dragmode: e['dragmode'],
-        };
-      });
-    }
-
-    if (e['xaxis.range[0]'] !== undefined) {
-      let x0 = moment(e['xaxis.range[0]']);
-      let x1 = moment(e['xaxis.range[1]']);
-
-      const daysdiff = x1.diff(x0, 'days');
-
-      x0 = x0.subtract(daysdiff * 0.2, 'days');
-      x1 = x1.add(daysdiff * 0.2, 'days');
-
-      setXRange([x0.format('YYYY-MM-DDTHH:mm'), x1.format('YYYY-MM-DDTHH:mm')]);
-      return;
-    }
+    if (e['dragmode'] === 'select') setInitiateSelect(true);
   };
 
   const xControl = controlData?.map((d) => d.timeofmeas);
@@ -404,28 +238,6 @@ function PlotGraph({
         return 'Korrektion';
     }
   });
-
-  const {mutation: correctMutation} = useCorrectData(ts_id, 'graphData');
-
-  const {mutation: rerunQAMutation} = useRunQA(ts_id);
-
-  const rerunButton = {
-    name: 'Genberegn data',
-    title: 'Genberegn data',
-    icon: rerunIcon,
-    click: function () {
-      correctMutation.mutate();
-    },
-  };
-
-  const rerunQAButton = {
-    name: 'Genberegn QA',
-    title: 'Genberegn QA',
-    icon: rerunQAIcon,
-    click: function () {
-      rerunQAMutation.mutate();
-    },
-  };
 
   const [qaShapes, qaAnnotate] = transformQAData(qaData);
 
@@ -556,92 +368,95 @@ function PlotGraph({
         break;
     }
   });
+  const data = [
+    {
+      x: graphData?.x,
+      y: graphData?.y,
+      name: loc_name + ' ' + ts_name,
+      type: 'scattergl',
+      line: {width: 2},
+      mode: 'lines+markers',
+      marker: {symbol: '100', size: '3', color: '#177FC1'},
+    },
+    ...(dataToShow?.Kontrolmålinger
+      ? [
+          {
+            x: xControl,
+            y: yControl,
+            name: 'Kontrolpejlinger',
+            type: 'scattergl',
+            mode: 'markers',
+            text: textControl,
+            marker: {
+              symbol: '200',
+              size: '8',
+              color: '#177FC1',
+              line: {color: 'rgb(0,0,0)', width: 1},
+            },
+          },
+        ]
+      : []),
+    ...(dataToShow?.['Fjernet data']
+      ? [
+          {
+            x: removed_data?.timeofmeas,
+            y: removed_data?.measurement,
+            text: removed_data?.label,
+            name: 'Fjernet data',
+            type: 'scattergl',
+            line: {width: 2},
+            mode: 'markers',
+            marker: {symbol: '100', size: '3', color: theme.palette.error.main},
+          },
+        ]
+      : []),
+    ...(dataToShow?.['Nedbør']
+      ? [
+          {
+            ...precipitation_data?.trace,
+            ...precipitation_data?.data,
+            yaxis: 'y2',
+          },
+        ]
+      : []),
+  ];
+
+  const layout = {
+    shapes: shapes,
+    annotations: annotations,
+    uirevision: Math.random(),
+    yaxis: {
+      title: `${tstype_name} [${unit}]`,
+      // font: {size: matches ? 6 : 12},
+    },
+    yaxis2: {
+      title: {
+        text: 'Nedbør [mm]',
+        font: {size: 12},
+      },
+      showline: false,
+      showgrid: false,
+    },
+  };
+
+  console.log(removed_data);
 
   return (
-    <Plot
-      onSelected={handlePlotlySelected}
-      divId="qagraphDiv"
-      onRelayout={handleRelayout}
-      data={[
-        {
-          x: graphData?.x,
-          y: graphData?.y,
-          name: loc_name + ' ' + ts_name,
-          type: 'scattergl',
-          line: {width: 2},
-          mode: 'lines+markers',
-          marker: {symbol: '100', size: '3', color: '#177FC1'},
-        },
-        ...(dataToShow?.Kontrolmålinger
-          ? [
-              {
-                x: xControl,
-                y: yControl,
-                name: 'Kontrolpejlinger',
-                type: 'scattergl',
-                mode: 'markers',
-                text: textControl,
-                marker: {
-                  symbol: '200',
-                  size: '8',
-                  color: '#177FC1',
-                  line: {color: 'rgb(0,0,0)', width: 1},
-                },
-              },
-            ]
-          : []),
-        ...(dataToShow?.['Fjernet data']
-          ? [
-              {
-                x: removed_data?.timeofmeas,
-                y: removed_data?.measurement,
-                text: removed_data?.label,
-                name: 'Fjernet data',
-                type: 'scattergl',
-                line: {width: 2},
-                mode: 'markers',
-                marker: {symbol: '100', size: '3', color: theme.palette.error.main},
-              },
-            ]
-          : []),
-        ...(dataToShow?.['Nedbør']
-          ? [
-              {
-                ...precipitation_data?.trace,
-                ...precipitation_data?.data,
-                yaxis: 'y2',
-              },
-            ]
-          : []),
-      ]}
-      layout={{
-        ...layout,
-        shapes: shapes,
-        annotations: annotations,
-        uirevision: 'true',
-        yaxis: {
-          title: `${tstype_name} [${unit}]`,
-          // font: {size: matches ? 6 : 12},
+    <PlotlyGraph
+      plotEventProps={{
+        onSelected: handlePlotlySelected,
+        onRelayout: handleRelayout,
+        onClick: (e) => {
+          if (initiateConfirmTimeseries) {
+            setSelection({points: e.points});
+          }
         },
       }}
-      onClick={(e) => {
-        if (initiateConfirmTimeseries) {
-          setSelection({points: e.points});
-        }
-      }}
-      config={{
-        // showTips: false,
-        responsive: true,
-        modeBarButtons: [
-          [rerunQAButton, rerunButton],
-          ['select2d', 'zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
-        ],
-
-        displaylogo: false,
-        displayModeBar: true,
-      }}
-      useResizeHandler={true}
-      style={{width: '100%', height: '100%'}}
+      initiateSelect={initiateSelect}
+      layout={layout}
+      plotModebarButtons={['rerun', 'rerunQa', 'select2d']}
+      data={data}
+      setXRange={setXRange}
     />
   );
 }
@@ -684,12 +499,7 @@ export default function QAGraph({
   return (
     <div
       style={{
-        width: '100%',
         height: setGraphHeight(isTouch),
-        // marginBottom: '10px',
-        // marginTop: '-10px',
-        paddingTop: '5px',
-        border: '2px solid gray',
       }}
     >
       <PlotGraph

@@ -1,4 +1,4 @@
-import {Box, Grid, Tab, Tabs, Typography} from '@mui/material';
+import {Box, Divider, Grid, Tab, Tabs, Typography} from '@mui/material';
 import React, {ReactNode, SyntheticEvent, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
@@ -189,15 +189,23 @@ const Layout = ({
       <NavBar />
       <Grid container gap={1}>
         <Grid item mobile={12} tablet={9} laptop={10}>
-          <QAGraph
-            stationId={ts_id}
-            initiateSelect={initiateSelect}
-            setInitiateSelect={setInitiateSelect}
-            levelCorrection={levelCorrection}
-            setLevelCorrection={setLevelCorrection}
-            initiateConfirmTimeseries={initiateConfirmTimeseries}
-            setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
-          />
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            gap={5}
+            sx={{marginBottom: 0.5, marginTop: 0.2}}
+          >
+            <QAGraph
+              stationId={ts_id}
+              initiateSelect={initiateSelect}
+              setInitiateSelect={setInitiateSelect}
+              levelCorrection={levelCorrection}
+              setLevelCorrection={setLevelCorrection}
+              initiateConfirmTimeseries={initiateConfirmTimeseries}
+              setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
+            />
+            <Divider />
+          </Box>
         </Grid>
         {children}
       </Grid>

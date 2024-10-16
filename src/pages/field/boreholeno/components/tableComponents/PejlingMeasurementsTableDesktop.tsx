@@ -10,7 +10,7 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -94,7 +94,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
     ],
     [unit]
   );
-  const [tableState, reset] = useStatefullTableAtom<Kontrol>('MaalepunktTableState');
+  const [tableState, reset] = useStatefullTableAtom<Kontrol>('boreholePejlingTableState');
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
     enableRowActions: true,
@@ -114,7 +114,21 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
     },
   };
 
-  const table = useTable<Kontrol>(columns, data, options, tableState, TableTypes.TABLE);
+  // columns,
+  // get,
+  // options,
+  // tableState,
+  // TableTypes.TABLE,
+  // MergeType.RECURSIVEMERGE
+
+  const table = useTable<Kontrol>(
+    columns,
+    data,
+    options,
+    tableState,
+    TableTypes.TABLE,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>

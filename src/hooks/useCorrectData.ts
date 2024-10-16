@@ -6,7 +6,7 @@ import {apiClient} from '~/apiClient';
 
 const TOAST_ID = 'correct-toast';
 
-export const useCorrectData = (ts_id: number, queryKey: string) => {
+export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
   const queryClient = useQueryClient();
   const [refetchInterval, setRefetchInterval] = useState<number | false>(false);
   // TODO: Check me
@@ -18,6 +18,7 @@ export const useCorrectData = (ts_id: number, queryKey: string) => {
     },
     refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
+    enabled: ts_id !== undefined,
   });
 
   useEffect(() => {

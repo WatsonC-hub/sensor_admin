@@ -293,7 +293,6 @@ export default function StationTable({data}: Props) {
     },
     muiTableBodyCellProps: {
       sx: {
-        px: 0.5,
         flex: '0 0 auto',
         fontSize: '0.8rem',
         textWrap: 'wrap',
@@ -321,12 +320,11 @@ export default function StationTable({data}: Props) {
     <Box
       justifyContent={'center'}
       alignSelf={'center'}
-      p={1}
       sx={{
         display: 'flex',
         flexDirection: 'column',
         height: calculateContentHeight(160),
-        minWidth: '50%',
+        minWidth: '1080px',
         width: '100%',
         maxWidth: '1080px',
         justifySelf: 'center',

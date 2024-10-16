@@ -113,9 +113,19 @@ export default function Station({ts_id, stamdata}) {
       flexDirection={'column'}
     >
       {((!stamdata && ts_id === '') || ts_id !== '') && (
-        <>
+        <Box
+          display={'flex'}
+          flexDirection={'column'}
+          justifyContent={'space-between'}
+          sx={{marginBottom: 0.5, marginTop: 0.2}}
+        >
           {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
-            <Box sx={{marginBottom: 0.5, marginTop: 0.2}}>
+            <Box
+              display={'flex'}
+              flexDirection={'column'}
+              gap={5}
+              sx={{marginBottom: 0.5, marginTop: 0.2}}
+            >
               <BearingGraph
                 stationId={ts_id}
                 dynamicMeasurement={
@@ -127,8 +137,6 @@ export default function Station({ts_id, stamdata}) {
           )}
           <Box
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
               maxWidth: '1080px',
               width: isMobile ? '100%' : 'fit-content',
               alignSelf: 'center',
@@ -139,7 +147,7 @@ export default function Station({ts_id, stamdata}) {
             )}
             {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
           </Box>
-        </>
+        </Box>
       )}
 
       {ts_id === '' && stamdata && pageToShow === StationPages.PEJLING && (

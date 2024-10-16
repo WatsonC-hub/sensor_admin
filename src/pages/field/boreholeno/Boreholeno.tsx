@@ -307,7 +307,12 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   return (
     <Box display="flex" height={'max-content'} flexDirection={'column'}>
       {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
-        <Box>
+        <Box
+          display={'flex'}
+          flexDirection={'column'}
+          gap={5}
+          sx={{marginBottom: 0.5, marginTop: 0.2}}
+        >
           <BearingGraph
             boreholeno={boreholeno}
             intakeno={intakeno}
@@ -323,7 +328,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          maxWidth: '1080px',
+          maxWidth: '1280px',
           alignSelf: isMobile ? '' : 'center',
         }}
       >
