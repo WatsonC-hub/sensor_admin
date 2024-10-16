@@ -1,7 +1,6 @@
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
-import {qaNotifications} from '~/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';

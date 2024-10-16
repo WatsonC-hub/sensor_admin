@@ -1,6 +1,9 @@
 import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material';
 import {Box, Button, CardActions, MobileStepper, Card, CardContent, useTheme} from '@mui/material';
+import {useSetAtom} from 'jotai';
 import React, {useEffect, useState} from 'react';
+
+import {qaSelection} from '~/state/atoms';
 
 import WizardConfirmTimeseries from './WizardConfirmTimeseries';
 import WizardDataExclude from './WizardExcludeData';
@@ -24,11 +27,14 @@ const StepWizard = ({
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
   const [nextStep, setNextStep] = useState<number | null>(null);
+  const setSelection = useSetAtom(qaSelection);
 
   const handleBack = () => {
     setActiveStep(0);
     setInitiateSelect(false);
+    setInitiateConfirmTimeseries(false);
     setLevelCorrection(false);
+    setSelection({});
   };
 
   useEffect(() => {

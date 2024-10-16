@@ -3,6 +3,7 @@ import {atomWithStorage, atomFamily} from 'jotai/utils';
 import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
 import {merge} from 'lodash';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
+import {PlotDatum} from 'plotly.js';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {
@@ -121,7 +122,7 @@ export const atomWithTimedStorage = <T>(key: string, initialValue: T, timeout_ms
 
 export const captureDialogAtom = atom(false);
 
-export const qaSelection = atom({});
+export const qaSelection = atom<{points?: PlotDatum[]}>({});
 
 export const statefullTableAtomFamily = atomFamily(
   (key: string) =>

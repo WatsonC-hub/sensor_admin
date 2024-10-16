@@ -28,8 +28,6 @@ export const boreholeColors: Record<
   },
 };
 
-export const qaNotifications = [12, 13, 75, 76];
-
 // Colors ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF']
 export const sensorColors: Record<
   number,

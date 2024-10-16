@@ -77,9 +77,9 @@ const YRangeModal = ({onClose}) => {
         </Box>
       </Box>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-        <Button bttype="tertiary" onClick={onClose} sx={{marginRight: 1}}>
+        {/* <Button bttype="tertiary" onClick={onClose} sx={{marginRight: 1}}>
           Annuller
-        </Button>
+        </Button> */}
         <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
           Gem
         </Button>

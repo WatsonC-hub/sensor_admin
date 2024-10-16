@@ -128,14 +128,14 @@ const ExcludeModal = () => {
         <Typography gutterBottom>Ekskluderer {selection.points.length} punkter</Typography>
       )}
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-        <Button
+        {/* <Button
           bttype="tertiary"
           // startIcon={<KeyboardReturnIcon />}
           // onClick={onClose}
           sx={{marginRight: 1}}
         >
           Annuller
-        </Button>
+        </Button> */}
         <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
           Gem
         </Button>

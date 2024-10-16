@@ -55,7 +55,7 @@ const LevelCorrectionModal = () => {
         rows={3}
       />
       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} m={1} gap={1}>
-        <Button bttype="tertiary">Annuller</Button>
+        {/* <Button bttype="tertiary">Annuller</Button> */}
         <Button bttype="primary" onClick={handleSubmit} startIcon={<Save />} color="secondary">
           Gem
         </Button>

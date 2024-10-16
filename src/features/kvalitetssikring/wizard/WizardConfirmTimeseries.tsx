@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import AdsClickIcon from '@mui/icons-material/AdsClick';
 // import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import {Box, CardContent, TextField, Typography} from '@mui/material';
+import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {PlotDatum} from 'plotly.js';
@@ -87,11 +87,16 @@ const WizardConfirmTimeseries = ({
 
   useEffect(() => {
     setDisabled(!initiateConfirmTimeseries || !true);
-    if ('points' in selection) {
-      const x = (selection.points as Array<PlotDatum>)[0].x;
+  }, [initiateConfirmTimeseries]);
+
+  useEffect(() => {
+    if (selection.points && selection.points.length > 0) {
+      const x = selection.points[0].x;
       if (x) setValue('date', moment(x.toString()).format('YYYY-MM-DD HH:mm'));
+    } else {
+      setValue('date', '');
     }
-  }, [initiateConfirmTimeseries, selection]);
+  }, [selection]);
 
   useEffect(() => {
     if (selectedQaData) {
@@ -107,9 +112,6 @@ const WizardConfirmTimeseries = ({
     };
     postQaData.mutateAsync(payload);
   };
-
-  console.log(getValues());
-
   return (
     <FormProvider {...formMethods}>
       <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
@@ -223,7 +225,7 @@ const WizardConfirmTimeseries = ({
             /> */}
 
             <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
-              <Button
+              {/* <Button
                 bttype="tertiary"
                 onClick={() => {
                   reset();
@@ -231,7 +233,7 @@ const WizardConfirmTimeseries = ({
                 }}
               >
                 Annuller
-              </Button>
+              </Button> */}
               <Button
                 bttype="primary"
                 startIcon={<Save />}
