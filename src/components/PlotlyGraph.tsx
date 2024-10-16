@@ -41,6 +41,8 @@ interface PlotlyGraphProps {
   plotModebarButtons: Array<Plotly.ModeBarButton | DefinedModebarButtons>;
   initiateSelect?: boolean;
   layout: Partial<Layout>;
+  shapes?: Layout['shapes'];
+  annotations?: Layout['annotations'];
   data: Array<Partial<PlotData>>;
   setXRange?: (range: Array<string>) => void;
   showRaw?: () => void;
@@ -51,6 +53,8 @@ export default function PlotlyGraph({
   plotModebarButtons,
   initiateSelect,
   layout,
+  shapes = [],
+  annotations = [],
   data,
   setXRange,
   showRaw,
@@ -158,7 +162,15 @@ export default function PlotlyGraph({
       },
     };
     if (setXRange != undefined) {
-      setXRange(range);
+      let x0 = moment(range[0]);
+      let x1 = moment(range[1]);
+
+      const daysdiff = x1.diff(x0, 'days');
+
+      x0 = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days');
+      x1 = x1.add(Math.max(daysdiff * 0.2, 1), 'days');
+
+      setXRange([x0.format('YYYY-MM-DD'), x1.format('YYYY-MM-DD')]);
     }
     setLayout(layout);
   };
@@ -282,7 +294,11 @@ export default function PlotlyGraph({
         divId="qagraphDiv"
         onRelayout={handleRelayout}
         data={data}
-        layout={mergedLayout}
+        layout={{
+          ...mergedLayout,
+          shapes: shapes,
+          annotations: annotations,
+        }}
         config={{
           // showTips: false,
           responsive: true,

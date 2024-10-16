@@ -2,7 +2,7 @@ import {useTheme} from '@mui/material/styles';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
@@ -239,135 +239,139 @@ function PlotGraph({
     }
   });
 
-  const [qaShapes, qaAnnotate] = transformQAData(qaData);
+  const [shapes, annotations] = useMemo(() => {
+    const [qaShapes, qaAnnotate] = transformQAData(qaData);
+    let shapes: Array<object> = [];
+    let annotations: Array<object> = [];
 
-  let shapes: Array<object> = [];
-  let annotations: Array<object> = [];
+    Object.entries(dataToShow).forEach((entry) => {
+      if (entry[1] == false) return;
+      switch (entry[0]) {
+        case 'Valide værdier':
+          shapes = [
+            ...shapes,
+            ...(adjustmentData?.min_max_cutoff
+              ? [
+                  {
+                    type: 'line',
+                    x0: 0,
+                    x1: 1,
+                    y0: adjustmentData?.min_max_cutoff?.mincutoff,
+                    y1: adjustmentData?.min_max_cutoff?.mincutoff,
+                    xref: 'paper',
+                    line: {
+                      color: theme.palette.success.main,
+                      width: 1.5,
+                    },
+                  },
+                  {
+                    type: 'line',
+                    x0: 0,
+                    x1: 1,
+                    y0: adjustmentData?.min_max_cutoff?.maxcutoff,
+                    y1: adjustmentData?.min_max_cutoff?.maxcutoff,
+                    xref: 'paper',
+                    line: {
+                      color: theme.palette.success.main,
+                      width: 1.5,
+                    },
+                  },
+                ]
+              : []),
+          ];
+          annotations = [
+            ...annotations,
+            ...(adjustmentData?.min_max_cutoff
+              ? [
+                  {
+                    xref: 'paper',
+                    yref: 'y',
+                    x: 0,
+                    xanchor: 'left',
+                    yanchor: 'bottom',
+                    showarrow: false,
+                    text: 'Maksimal værdi',
+                    y: adjustmentData?.min_max_cutoff?.mincutoff,
+                  },
+                  {
+                    xref: 'paper',
+                    yref: 'y',
+                    x: 0,
+                    xanchor: 'left',
+                    yanchor: 'bottom',
+                    showarrow: false,
+                    text: 'Minimal værdi',
+                    y: adjustmentData?.min_max_cutoff?.maxcutoff,
+                  },
+                ]
+              : []),
+          ];
+          break;
+        case 'Korrigerede spring':
+          shapes = [
+            ...shapes,
+            ...(adjustmentData?.levelcorrection?.map((d) => {
+              return {
+                type: 'line',
+                x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                y0: 0,
+                y1: 1,
+                yref: 'paper',
+                line: {
+                  color: theme.palette.error.main,
+                  width: 1.5,
+                },
+              };
+            }) ?? []),
+          ];
+          annotations = [
+            ...annotations,
+            ...(adjustmentData?.levelcorrection?.map((d, index) => {
+              return {
+                xref: 'x',
+                yref: 'paper',
+                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                xanchor: 'left',
+                yanchor: 'bottom',
+                showarrow: false,
+                text: 'Korrigeret spring',
+                y: 0.3 + (index % 4) * 0.1,
+              };
+            }) ?? []),
+          ];
+          break;
+        case 'Kvalitets stempel':
+          shapes = [
+            ...shapes,
+            ...(certifedData?.map((data) => {
+              return {
+                type: 'line',
+                x0: moment(data.date).format('YYYY-MM-DD HH:mm'),
+                x1: moment(data.date).format('YYYY-MM-DD HH:mm'),
+                y0: 0,
+                y1: 1,
+                yref: 'paper',
+                line: {
+                  color: theme.palette.error.main,
+                  width: 1.5,
+                },
+              };
+            }) ?? []),
+          ];
+          break;
+        case 'QA':
+          shapes = [...shapes, ...(qaShapes ?? [])];
+          annotations = [...annotations, ...(qaAnnotate ?? [])];
+          break;
+        default:
+          break;
+      }
+    });
 
-  Object.entries(dataToShow).forEach((entry) => {
-    if (entry[1] == false) return;
-    switch (entry[0]) {
-      case 'Valide værdier':
-        shapes = [
-          ...shapes,
-          ...(adjustmentData?.min_max_cutoff
-            ? [
-                {
-                  type: 'line',
-                  x0: 0,
-                  x1: 1,
-                  y0: adjustmentData?.min_max_cutoff?.mincutoff,
-                  y1: adjustmentData?.min_max_cutoff?.mincutoff,
-                  xref: 'paper',
-                  line: {
-                    color: theme.palette.success.main,
-                    width: 1.5,
-                  },
-                },
-                {
-                  type: 'line',
-                  x0: 0,
-                  x1: 1,
-                  y0: adjustmentData?.min_max_cutoff?.maxcutoff,
-                  y1: adjustmentData?.min_max_cutoff?.maxcutoff,
-                  xref: 'paper',
-                  line: {
-                    color: theme.palette.success.main,
-                    width: 1.5,
-                  },
-                },
-              ]
-            : []),
-        ];
-        annotations = [
-          ...annotations,
-          ...(adjustmentData?.min_max_cutoff
-            ? [
-                {
-                  xref: 'paper',
-                  yref: 'y',
-                  x: 0,
-                  xanchor: 'left',
-                  yanchor: 'bottom',
-                  showarrow: false,
-                  text: 'Maksimal værdi',
-                  y: adjustmentData?.min_max_cutoff?.mincutoff,
-                },
-                {
-                  xref: 'paper',
-                  yref: 'y',
-                  x: 0,
-                  xanchor: 'left',
-                  yanchor: 'bottom',
-                  showarrow: false,
-                  text: 'Minimal værdi',
-                  y: adjustmentData?.min_max_cutoff?.maxcutoff,
-                },
-              ]
-            : []),
-        ];
-        break;
-      case 'Korrigerede spring':
-        shapes = [
-          ...shapes,
-          ...(adjustmentData?.levelcorrection?.map((d) => {
-            return {
-              type: 'line',
-              x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
-              x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
-              y0: 0,
-              y1: 1,
-              yref: 'paper',
-              line: {
-                color: theme.palette.error.main,
-                width: 1.5,
-              },
-            };
-          }) ?? []),
-        ];
-        annotations = [
-          ...annotations,
-          ...(adjustmentData?.levelcorrection?.map((d, index) => {
-            return {
-              xref: 'x',
-              yref: 'paper',
-              x: moment(d.date).format('YYYY-MM-DD HH:mm'),
-              xanchor: 'left',
-              yanchor: 'bottom',
-              showarrow: false,
-              text: 'Korrigeret spring',
-              y: 0.3 + (index % 4) * 0.1,
-            };
-          }) ?? []),
-        ];
-        break;
-      case 'Kvalitets stempel':
-        shapes = [
-          ...shapes,
-          ...(certifedData?.map((data) => {
-            return {
-              type: 'line',
-              x0: moment(data.date).format('YYYY-MM-DD HH:mm'),
-              x1: moment(data.date).format('YYYY-MM-DD HH:mm'),
-              y0: 0,
-              y1: 1,
-              yref: 'paper',
-              line: {
-                color: theme.palette.error.main,
-                width: 1.5,
-              },
-            };
-          }) ?? []),
-        ];
-        break;
-      case 'QA':
-        shapes = [...shapes, ...(qaShapes ?? [])];
-        annotations = [...annotations, ...(qaAnnotate ?? [])];
-        break;
-      default:
-        break;
-    }
-  });
+    return [shapes, annotations];
+  }, [dataToShow, adjustmentData, certifedData, qaData]);
+
   const data = [
     {
       x: graphData?.x,
@@ -422,9 +426,6 @@ function PlotGraph({
   ];
 
   const layout = {
-    shapes: shapes,
-    annotations: annotations,
-    uirevision: Math.random(),
     yaxis: {
       title: `${tstype_name} [${unit}]`,
       // font: {size: matches ? 6 : 12},
@@ -439,8 +440,6 @@ function PlotGraph({
     },
   };
 
-  console.log(removed_data);
-
   return (
     <PlotlyGraph
       plotEventProps={{
@@ -453,6 +452,8 @@ function PlotGraph({
         },
       }}
       initiateSelect={initiateSelect}
+      shapes={shapes}
+      annotations={annotations}
       layout={layout}
       plotModebarButtons={['rerun', 'rerunQa', 'select2d']}
       data={data}

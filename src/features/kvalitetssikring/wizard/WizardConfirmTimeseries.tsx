@@ -5,7 +5,6 @@ import AdsClickIcon from '@mui/icons-material/AdsClick';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
-import {PlotDatum} from 'plotly.js';
 import React, {useContext, useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
@@ -74,7 +73,7 @@ const WizardConfirmTimeseries = ({
     mode: 'onTouched',
   });
 
-  const {watch, handleSubmit, setValue, reset, getValues} = formMethods;
+  const {watch, handleSubmit, setValue} = formMethods;
 
   const qaStampWatch = watch('level');
 

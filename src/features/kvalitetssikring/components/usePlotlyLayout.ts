@@ -1,7 +1,7 @@
 import {useMediaQuery, useTheme} from '@mui/material';
 import {assign, merge} from 'lodash';
 import {Layout} from 'plotly.js';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 import {mobileLayout, desktopLayout} from '~/consts';
 import {MergeType} from '~/helpers/EnumHelper';
@@ -28,6 +28,10 @@ const usePlotlyLayout = (mergeType: MergeType, layout?: Partial<Layout>) => {
   const [mergedLayout, setMergedLayout] = useState<Partial<Layout>>(
     mergeLayout(default_layout, layout ?? {}, mergeType)
   );
+
+  // useEffect(() => {
+  //   setMergedLayout((prev) => mergeLayout(prev, layout ?? {}, MergeType.RECURSIVEMERGE));
+  // }, [layout, mergeType]);
 
   const setLayout = (layout: Partial<Layout>) => {
     const merged = mergeLayout(mergedLayout, layout, mergeType);
