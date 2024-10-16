@@ -84,7 +84,7 @@ const SensorContent = ({data}: SensorContentProps) => {
                     <Button
                       bttype="link"
                       onClick={() => {
-                        if (qaNotifications.includes(notification.notification_id)) {
+                        if (notification.isqa) {
                           adminKvalitetssikring(notification.ts_id);
                         } else {
                           station(notification.loc_id, notification.ts_id);

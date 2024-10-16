@@ -62,7 +62,7 @@ const NotificationList = () => {
 
   let loc_id = params.locid;
   if (loc_id == undefined) {
-    loc_id = data.filter((elem) => elem.ts_id == params.ts_id)[0]?.loc_id;
+    loc_id = data?.filter((elem) => elem.ts_id == params.ts_id)[0]?.loc_id;
   }
 
   const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);

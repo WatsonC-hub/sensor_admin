@@ -25,6 +25,7 @@ export interface Notification {
   is_customer_service: boolean;
   active: boolean;
   notify_type: 'primary' | 'obs' | 'station' | null;
+  isqa: boolean;
   groups: Group[];
 }
 

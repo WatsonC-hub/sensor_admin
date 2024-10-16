@@ -92,6 +92,7 @@ type IconDetails = {
   active?: boolean;
   status?: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   notify_type?: 'obs' | 'station' | 'primary' | null;
+  isqa?: boolean;
 };
 
 type IconDetailsWithTooltip = IconDetails & {
@@ -112,7 +113,6 @@ export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.notify_type === 'station') return '#4caf50';
   if (iconDetails?.status == 'POSTPONED') return '#4caf50';
   if (iconDetails?.notification_id == 12) return '#334FFF';
-  if ([13, 75, 76].includes(iconDetails?.notification_id ?? 0)) return '#9F2B68';
   if (iconDetails?.active === false || iconDetails?.active === null) return '#C0C0C0';
   // if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
   if (iconDetails?.color) return iconDetails?.color;
@@ -198,6 +198,9 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
           icon = <HeightIcon sx={defaultStyling} />;
           break;
         case 141:
+          icon = <HeightIcon sx={defaultStyling} />;
+          break;
+        case 174:
           icon = <HeightIcon sx={defaultStyling} />;
           break;
       }
