@@ -56,7 +56,7 @@ const StamdataFooter = ({cancel, nextTab, handleOpret, disabled, type, saveTitle
             endIcon={<ArrowForwardIcon fontSize="small" />}
           >
             <Box display="flex" alignItems="center">
-              Videre
+              Videre til {type === 'lokation' ? 'tidsserie' : 'udstyr'}
             </Box>
           </Button>
         )}
@@ -67,7 +67,7 @@ const StamdataFooter = ({cancel, nextTab, handleOpret, disabled, type, saveTitle
           startIcon={<SaveIcon />}
           sx={{marginRight: 1}}
         >
-          {saveTitle ?? 'Gem'}
+          {saveTitle ?? 'Gem & afslut'}
         </Button>
       </Box>
     </footer>

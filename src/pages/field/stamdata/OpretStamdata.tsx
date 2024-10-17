@@ -1,11 +1,12 @@
 import {DevTool} from '@hookform/devtools';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {BuildRounded, LocationOnRounded, ShowChartRounded} from '@mui/icons-material';
+import {BuildRounded, Error, LocationOnRounded, ShowChartRounded} from '@mui/icons-material';
 import {Grid, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {ReactNode, useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
+import {useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
 
@@ -18,7 +19,7 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
-import {metadataSchema} from '~/helpers/zodSchemas';
+import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
@@ -54,9 +55,11 @@ type Unit = CreateValues['unit'];
 type Watlevmp = CreateValues['watlevmp'];
 
 export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
-  const {field, location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
+  const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
+  const navigate = useNavigate();
+
   const {data: locations} = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
@@ -84,13 +87,16 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
         tstype_id: -1,
       },
       watlevmp: {},
+      unit: {
+        startdate: '',
+        unit_uuid: '',
+      },
     },
     mode: 'onTouched',
   });
 
   const {
     formState: {errors, dirtyFields},
-    reset,
     watch,
     getValues,
     setValue,
@@ -142,46 +148,91 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
   useEffect(() => {
     store.resetUnit();
-    reset((formValues) => {
-      return {
-        ...formValues,
-        unit: {
-          startdate: '',
-          unit_uuid: '',
-        },
-      };
+    setValue('unit', {
+      startdate: '',
+      unit_uuid: '',
     });
+    trigger('unit');
   }, [watchtstype_id]);
 
   const cancel = () => {
-    field();
+    navigate(-1);
     setAddStationDisabled(false);
   };
 
-  const nextTab = () => {
-    if (tabValue && tabValue !== '3') setTabValue((parseInt(tabValue) + 1).toString());
+  const nextTab = async () => {
+    let valid = false;
+
+    if (tabValue === '0') {
+      valid = await trigger('location');
+    } else if (tabValue === '1') {
+      valid = await trigger('timeseries');
+      const isWaterlevel = getValues()?.timeseries.tstype_id === 1;
+      if (isWaterlevel) valid = await trigger('watlevmp');
+    }
+
+    if (tabValue && tabValue !== '3' && valid) setTabValue((parseInt(tabValue) + 1).toString());
   };
 
   useEffect(() => {
     if (tabValue === null && getValues().location.loc_id) setTabValue('1');
   }, [tabValue]);
 
-  const handleLocationOpret = async () => {
-    const locationValid = await trigger('location');
-    if (locationValid) {
-      const location = {
-        location: {
-          ...getValues().location,
-          // initial_project_no: getValues().location.projectno,
-        },
-      };
+  const showErrorMessage = (updateType?: string) => {
+    console.log(getValues('location'));
+    console.log(locationSchema);
+    let result = locationSchema.safeParse({
+      location: getValues('location'),
+    });
 
-      stamdataNewLocationMutation.mutate(location, {
-        onSuccess: (data) => {
-          locationNavigate(data.loc_id);
+    if (updateType === 'timeseries') {
+      const isWaterlevel = getValues()?.timeseries.tstype_id === 1;
+      result = timeseriesSchema.safeParse({
+        location: getValues('location'),
+        timeseries: getValues('timeseries'),
+        watlevmp: isWaterlevel ? getValues('watlevmp') : undefined,
+      });
+    } else if (updateType === 'unit') {
+      result = metadataSchema.safeParse(getValues());
+    }
+
+    if (!result.success) {
+      console.log(result);
+      const errorMessage = result.error.issues.map((error) => error.message).join('\n');
+      console.log(errorMessage);
+      toast.error(errorMessage, {
+        toastId: 'fejlVedOpretStamdata',
+        style: {
+          width: '20%',
+          minWidth: '300px',
+          marginRight: '0%',
+          whiteSpace: 'pre-line',
         },
+        autoClose: 5000,
       });
     }
+  };
+
+  const handleLocationOpret = async () => {
+    const locationValid = await trigger('location');
+
+    if (!locationValid) {
+      showErrorMessage();
+      return;
+    }
+
+    const location = {
+      location: {
+        ...getValues().location,
+        // initial_project_no: getValues().location.projectno,
+      },
+    };
+
+    stamdataNewLocationMutation.mutate(location, {
+      onSuccess: (data) => {
+        locationNavigate(data.loc_id);
+      },
+    });
   };
 
   const handleTimeseriesOpret = async () => {
@@ -193,44 +244,54 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       watlevmpValid = await trigger('watlevmp');
     }
 
-    let form: {location: FieldLocation; timeseries: Timeseries; watlevmp?: Watlevmp};
-    if (locationValid && timeseriesValid && watlevmpValid) {
-      form = {
-        location: {
-          ...getValues().location,
-        },
-        timeseries: {
-          ...getValues().timeseries,
-        },
-      };
-
-      if (isWaterlevel) {
-        const watlevmp = getValues('watlevmp') as Watlevmp;
-        form['watlevmp'] = {
-          startdate: moment().format('YYYY-MM-DD'),
-          description: watlevmp?.description ?? '',
-          elevation: watlevmp?.elevation ?? 0,
-        };
-      }
-
-      stamdataNewTimeseriesMutation.mutate(form, {
-        onSuccess: (data) => {
-          stationNavigate(data.loc_id, data.ts_id);
-        },
-      });
+    if (!locationValid || !timeseriesValid || !watlevmpValid) {
+      showErrorMessage('timeseries');
+      return;
     }
+
+    const form: {location: FieldLocation; timeseries: Timeseries; watlevmp?: Watlevmp} = {
+      location: {
+        ...getValues().location,
+      },
+      timeseries: {
+        ...getValues().timeseries,
+      },
+    };
+
+    if (isWaterlevel) {
+      const watlevmp = getValues('watlevmp') as Watlevmp;
+      form['watlevmp'] = {
+        startdate: moment().format('YYYY-MM-DD'),
+        description: watlevmp?.description ?? '',
+        elevation: watlevmp?.elevation ?? 0,
+      };
+    }
+
+    stamdataNewTimeseriesMutation.mutate(form, {
+      onSuccess: (data) => {
+        stationNavigate(data.loc_id, data.ts_id);
+      },
+    });
   };
 
   const handleUnitOpret = async () => {
     const locationValid = await trigger('location');
     const timeseriesValid = await trigger('timeseries');
+    const isWaterlevel = getValues()?.timeseries.tstype_id === 1;
+    let watlevmpValid = true;
+    if (isWaterlevel) {
+      watlevmpValid = await trigger('watlevmp');
+    }
 
-    let form: {location: FieldLocation; timeseries: Timeseries; unit: Unit; watlevmp?: Watlevmp};
-    if (locationValid && timeseriesValid) {
-      form = {
+    if (!locationValid || !timeseriesValid || !watlevmpValid) {
+      showErrorMessage('unit');
+      return;
+    }
+
+    const form: {location: FieldLocation; timeseries: Timeseries; unit: Unit; watlevmp?: Watlevmp} =
+      {
         location: {
           ...getValues().location,
-          // initial_project_no: getValues().location.projectno,
         },
         timeseries: {
           ...getValues().timeseries,
@@ -241,33 +302,33 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
         },
       };
 
-      if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
-        const watlevmp = getValues('watlevmp') as Watlevmp;
-        form['watlevmp'] = {
-          startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
-          description: watlevmp?.description ?? '',
-          elevation: watlevmp?.elevation ?? 0,
-        };
-      }
-
-      let text = 'lokation, tidsserie og udstyr';
-      if (!form.location.loc_id) text = 'udstyr';
-
-      await toast.promise(
-        () =>
-          stamdataNewMutation.mutateAsync(form, {
-            onSuccess: (data) => {
-              stationNavigate(data.loc_id, data.ts_id);
-            },
-          }),
-        {
-          pending: 'Opretter ' + text + '' + '...',
-          success: text + ' oprettet!',
-          error: 'Noget gik galt!',
-        }
-      );
+    if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
+      const watlevmp = getValues('watlevmp') as Watlevmp;
+      form['watlevmp'] = {
+        startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
+        description: watlevmp?.description ?? '',
+        elevation: watlevmp?.elevation ?? 0,
+      };
     }
+
+    let text = 'lokation, tidsserie og udstyr';
+    if (!form.location.loc_id) text = 'udstyr';
+
+    await toast.promise(
+      () =>
+        stamdataNewMutation.mutateAsync(form, {
+          onSuccess: (data) => {
+            stationNavigate(data.loc_id, data.ts_id);
+          },
+        }),
+      {
+        pending: 'Opretter ' + text + '' + '...',
+        success: text + ' oprettet!',
+        error: 'Noget gik galt!',
+      }
+    );
   };
+
   return (
     <>
       <NavBar />
@@ -290,7 +351,13 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
           >
             <Tab
               value="0"
-              icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
+              icon={
+                'location' in errors ? (
+                  <Error sx={{marginTop: 1, color: '#d32f2f'}} />
+                ) : (
+                  <LocationOnRounded sx={{marginTop: 1}} fontSize="small" />
+                )
+              }
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
                   Lokation
@@ -299,7 +366,13 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
             />
             <Tab
               value="1"
-              icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
+              icon={
+                'timeseries' in errors || 'watlevmp' in errors ? (
+                  <Error sx={{marginTop: 1, color: '#d32f2f'}} />
+                ) : (
+                  <ShowChartRounded sx={{marginTop: 1}} fontSize="small" />
+                )
+              }
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
                   Tidsserie
@@ -373,7 +446,11 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
                 )}
               </Box>
               <UnitForm mode="add" />
-              <StamdataFooter cancel={cancel} disabled={false} handleOpret={handleUnitOpret} />
+              <StamdataFooter
+                cancel={cancel}
+                disabled={'unit' in getValues() && getValues('unit.unit_uuid') === ''}
+                handleOpret={handleUnitOpret}
+              />
             </TabPanel>
           </Box>
 

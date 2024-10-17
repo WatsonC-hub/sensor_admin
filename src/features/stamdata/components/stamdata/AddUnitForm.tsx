@@ -1,3 +1,4 @@
+import {Save} from '@mui/icons-material';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import {CircularProgress, MenuItem, Typography, Box, IconButton} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
@@ -171,7 +172,6 @@ export default function AddUnitForm({
 
       if (!unit) return;
 
-      trigger('unit');
       setValue('unit', {
         unit_uuid: unit.unit_uuid,
         startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
@@ -303,9 +303,10 @@ export default function AddUnitForm({
               <Button
                 onClick={handleSave}
                 bttype="primary"
+                startIcon={mode === 'edit' ? <Save /> : undefined}
                 disabled={unitData.calypso_id === '-1' || unitData.uuid === ''}
               >
-                Tilføj
+                {mode === 'edit' ? 'Gem' : 'tilføj'}
               </Button>
             </DialogActions>
           </>

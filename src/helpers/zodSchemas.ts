@@ -22,7 +22,7 @@ const locationSchema = z.object({
     terrainlevel: z.number().nullish(),
     description: z.string().nullish(),
     loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
-    initial_project_no: z.string().nullable(),
+    initial_project_no: z.string().nullish(),
   }),
 });
 
@@ -32,6 +32,15 @@ const timeseriesSchema = locationSchema.extend({
     sensor_depth_m: z.number().nullish(),
     tstype_id: z.number(),
   }),
+  watlevmp: z
+    .object({
+      startdate: z.string().optional(),
+      elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
+      description: z
+        .string({required_error: 'Beskrivelse skal udfyldes'})
+        .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
+    })
+    .optional(),
 });
 
 const metadataBaseSchema = timeseriesSchema.extend({
@@ -47,16 +56,6 @@ const metadataSchema = metadataBaseSchema.extend({
       message: 'Vælg tidsserietype',
     }),
   }),
-
-  watlevmp: z
-    .object({
-      startdate: z.string().optional(),
-      elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
-      description: z
-        .string({required_error: 'Beskrivelse skal udfyldes'})
-        .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
-    })
-    .optional(),
 });
 
 const metadataPutSchema = metadataBaseSchema.extend({
