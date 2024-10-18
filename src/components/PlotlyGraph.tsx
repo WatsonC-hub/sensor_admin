@@ -44,6 +44,7 @@ interface PlotlyGraphProps {
   shapes?: Layout['shapes'];
   annotations?: Layout['annotations'];
   data: Array<Partial<PlotData>>;
+  xRange?: Array<string>;
   setXRange?: (range: Array<string>) => void;
   showRaw?: () => void;
 }
@@ -56,6 +57,7 @@ export default function PlotlyGraph({
   shapes = [],
   annotations = [],
   data,
+  xRange,
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
@@ -78,9 +80,20 @@ export default function PlotlyGraph({
     staleTime: 10,
     enabled: metadata?.ts_id !== undefined && metadata?.ts_id !== null && metadata?.ts_id !== -1,
   });
+  useEffect(() => {
+    if (xRange != undefined) {
+      const layout = {
+        xaxis: {
+          autorange: false,
+          range: xRange,
+        },
+      };
+
+      setLayout(layout);
+    }
+  }, [xRange]);
 
   useEffect(() => {
-    console.log(initiateSelect);
     if (initiateSelect) {
       setLayout({dragmode: 'select'});
     } else {
@@ -89,8 +102,6 @@ export default function PlotlyGraph({
   }, [initiateSelect]);
 
   const handleRelayout = (e: any) => {
-    console.log('e', e);
-
     const doubleclick = e['xaxis.autorange'] === true && e['yaxis.autorange'] === true;
 
     if (doubleclick) {
@@ -105,74 +116,61 @@ export default function PlotlyGraph({
     }
 
     if (setXRange && e['xaxis.range[0]'] !== undefined) {
-      let x0 = moment(e['xaxis.range[0]']);
-      let x1 = moment(e['xaxis.range[1]']);
-
-      const daysdiff = x1.diff(x0, 'days');
-
-      x0 = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days');
-      x1 = x1.add(Math.max(daysdiff * 0.2, 1), 'days');
-
-      setXRange([x0.format('YYYY-MM-DD'), x1.format('YYYY-MM-DD')]);
+      setXRange([e['xaxis.range[0]'], e['xaxis.range[1]']]);
 
       return;
     }
   };
 
   const graphLayout = (type: string) => {
-    let dates: {firstDate: string | undefined; lastDate: string | undefined};
+    const flatArray = data
+      .filter((data) => data.yaxis != 'y2')
+      .flatMap((array) => {
+        if (array.x == undefined) {
+          return [];
+        }
+        return array.x.length > 0 ? [array.x[0], array.x[array.x.length - 1]] : [];
+      });
+
     if (edgeDates != undefined) {
-      dates = edgeDates;
-    } else {
-      const sortedFlatArray = data
-        .flatMap((array) => {
-          if (array.x == undefined) {
-            return [];
-          }
-          return array.x.length > 0 ? [array.x[0], array.x[array.x.length - 1]] : [];
-        })
-        .sort() as Array<string>;
-
-      dates = {
-        firstDate: sortedFlatArray[0],
-        lastDate: sortedFlatArray[sortedFlatArray.length - 1],
-      };
+      flatArray.push(edgeDates.firstDate);
+      flatArray.push(edgeDates.lastDate);
     }
-
-    let range: Array<string> = [];
-    const lastDate = moment(dates.lastDate).format('YYYY-MM-DDTHH:mm');
-    if (type === 'all') {
-      const startDate = moment(dates.firstDate).format('YYYY-MM-DDTHH:mm');
-      range = [startDate, lastDate];
-    } else if (type === 'year') {
-      const x = moment(dates.lastDate).subtract(1, 'year').format('YYYY-MM-DDTHH:mm');
-      range = [x, lastDate];
-    } else if (type === 'month') {
-      const x = moment(dates.lastDate).subtract(1, 'month').format('YYYY-MM-DDTHH:mm');
-      range = [x, lastDate];
-    } else if (type === 'week') {
-      const x = moment(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
-      range = [x, lastDate];
-    }
-
-    const layout = {
-      xaxis: {
-        autorange: false,
-        range: range,
-      },
+    const sortedFlatArray = flatArray.sort() as string[];
+    const dates: {firstDate: string; lastDate: string} = {
+      firstDate: sortedFlatArray[0],
+      lastDate: sortedFlatArray[sortedFlatArray.length - 1],
     };
-    if (setXRange != undefined) {
-      let x0 = moment(range[0]);
-      let x1 = moment(range[1]);
 
-      const daysdiff = x1.diff(x0, 'days');
-
-      x0 = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days');
-      x1 = x1.add(Math.max(daysdiff * 0.2, 1), 'days');
-
-      setXRange([x0.format('YYYY-MM-DD'), x1.format('YYYY-MM-DD')]);
+    if (dates.firstDate && dates.lastDate) {
+      let range: Array<string> = [];
+      const lastDate = moment(dates.lastDate).format('YYYY-MM-DDTHH:mm');
+      if (type === 'all') {
+        const startDate = moment(dates.firstDate).format('YYYY-MM-DDTHH:mm');
+        range = [startDate, lastDate];
+      } else if (type === 'year') {
+        const x = moment(dates.lastDate).subtract(1, 'year').format('YYYY-MM-DDTHH:mm');
+        range = [x, lastDate];
+      } else if (type === 'month') {
+        const x = moment(dates.lastDate).subtract(1, 'month').format('YYYY-MM-DDTHH:mm');
+        range = [x, lastDate];
+      } else if (type === 'week') {
+        const x = moment(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
+        range = [x, lastDate];
+      }
+      if (setXRange != undefined) {
+        setXRange(range);
+      }
+      if (xRange == undefined) {
+        const layout = {
+          xaxis: {
+            autorange: false,
+            range: range,
+          },
+        };
+        setLayout(layout);
+      }
     }
-    setLayout(layout);
   };
 
   const rerunButton = {
@@ -301,6 +299,7 @@ export default function PlotlyGraph({
         }}
         config={{
           // showTips: false,
+          doubleClick: false,
           responsive: true,
           modeBarButtons: [
             buttonsToShow,
@@ -308,6 +307,17 @@ export default function PlotlyGraph({
           ],
           displaylogo: false,
           displayModeBar: true,
+        }}
+        onDoubleClick={() => {
+          graphLayout('all');
+          setLayout({
+            yaxis: {
+              autorange: true,
+            },
+            yaxis2: {
+              autorange: true,
+            },
+          });
         }}
         onClick={plotEventProps && plotEventProps.onClick}
         useResizeHandler={true}

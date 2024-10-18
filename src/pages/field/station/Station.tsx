@@ -1,7 +1,7 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import {Alert, Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {ChangeEvent, createRef, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
@@ -9,7 +9,7 @@ import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
-import BearingGraph from '~/features/station/components/BearingGraph';
+import PlotGraph from '~/features/station/components/StationGraph';
 import {StationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -19,14 +19,19 @@ import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {stamdataStore} from '~/state/store';
 
-export default function Station({ts_id, stamdata}) {
-  let params = useParams();
+interface StationProps {
+  ts_id: number;
+  stamdata: any;
+}
+
+export default function Station({ts_id, stamdata}: StationProps) {
+  const params = useParams();
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [pageToShow, setPageToShow] = useSearchParam('page', null);
-  const [dynamic, setDynamic] = useState([]);
+  const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
   const [canEdit] = useState(true);
-  const fileInputRef = useRef(null);
-  const [dataUri, setdataUri] = useState('');
+  const fileInputRef = createRef<HTMLInputElement>();
+  const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
   const [openSave, setOpenSave] = useState(false);
   const {createStamdata} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
@@ -53,14 +58,14 @@ export default function Station({ts_id, stamdata}) {
   }, [stamdata]);
   const isCalculated = stamdata ? stamdata?.calculated : false;
 
-  const changeActiveImageData = (field, value) => {
+  const changeActiveImageData = (field: string, value: string) => {
     setActiveImage({
       ...activeImage,
       [field]: value,
     });
   };
 
-  const convertBase64 = (file) => {
+  const convertBase64 = (file: File) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
@@ -70,10 +75,10 @@ export default function Station({ts_id, stamdata}) {
       fileReader.onerror = (error) => {
         reject(error);
       };
-    });
+    }) as Promise<string | ArrayBuffer | null>;
   };
 
-  const handleSetDataURI = (datauri) => {
+  const handleSetDataURI = (datauri: string | ArrayBuffer | null) => {
     setdataUri(datauri);
     setActiveImage({
       gid: -1,
@@ -85,15 +90,18 @@ export default function Station({ts_id, stamdata}) {
     setOpenSave(true);
   };
 
-  const handleFileRead = async (event) => {
+  const handleFileRead = async (event: ChangeEvent<HTMLInputElement>) => {
     setShowForm('true');
-    const file = event.target.files[0];
-    const base64 = await convertBase64(file);
-    handleSetDataURI(base64);
+    if (event && event.target.files) {
+      const file = event.target.files[0];
+      const base64 = await convertBase64(file);
+      handleSetDataURI(base64);
+    }
   };
 
   const handleFileInputClick = () => {
-    if (openSave !== true) fileInputRef.current.value = null;
+    if (openSave !== true && fileInputRef.current && 'value' in fileInputRef.current)
+      fileInputRef.current.value = '';
   };
 
   useEffect(() => {
@@ -108,11 +116,11 @@ export default function Station({ts_id, stamdata}) {
     <Box
       display="flex"
       height={
-        ts_id === '' && stamdata && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'
+        ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'
       }
       flexDirection={'column'}
     >
-      {((!stamdata && ts_id === '') || ts_id !== '') && (
+      {((!stamdata && ts_id === -1) || ts_id !== -1) && (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -126,8 +134,8 @@ export default function Station({ts_id, stamdata}) {
               gap={5}
               sx={{marginBottom: 0.5, marginTop: 0.2}}
             >
-              <BearingGraph
-                stationId={ts_id}
+              <PlotGraph
+                ts_id={ts_id}
                 dynamicMeasurement={
                   pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
                 }
@@ -142,7 +150,7 @@ export default function Station({ts_id, stamdata}) {
               alignSelf: 'center',
             }}
           >
-            {pageToShow === StationPages.PEJLING && ts_id !== '' && (
+            {pageToShow === StationPages.PEJLING && ts_id !== -1 && (
               <Pejling ts_id={ts_id} setDynamic={setDynamic} />
             )}
             {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
@@ -150,7 +158,7 @@ export default function Station({ts_id, stamdata}) {
         </Box>
       )}
 
-      {ts_id === '' && stamdata && pageToShow === StationPages.PEJLING && (
+      {ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING && (
         <Box
           display={'flex'}
           alignSelf={'center'}
@@ -175,7 +183,7 @@ export default function Station({ts_id, stamdata}) {
           <Button
             bttype="primary"
             onClick={() => {
-              createStamdata(ts_id !== '' ? '2' : '1');
+              createStamdata(ts_id !== -1 ? '2' : '1');
             }}
           >
             Opret tidsserie og/eller udstyr
@@ -190,14 +198,15 @@ export default function Station({ts_id, stamdata}) {
         <Box>
           <FabWrapper
             icon={<AddAPhotoRounded />}
+            visible="visible"
             text={'Tilføj ' + StationPages.BILLEDER}
             onClick={() => {
-              fileInputRef.current.click();
+              if (fileInputRef.current) fileInputRef.current.click();
             }}
           >
             <Images
               type={'station'}
-              typeId={params.locid}
+              typeId={params.locid ?? ''}
               setOpenSave={setOpenSave}
               setActiveImage={setActiveImage}
               setShowForm={setShowForm}
@@ -206,7 +215,7 @@ export default function Station({ts_id, stamdata}) {
           <SaveImageDialog
             activeImage={activeImage}
             changeData={changeActiveImageData}
-            id={params.locid}
+            id={params.locid ?? ''}
             type={'station'}
             open={openSave}
             dataUri={dataUri}

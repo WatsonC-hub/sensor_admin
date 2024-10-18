@@ -8,9 +8,10 @@ import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
-import QAGraph from '~/pages/admin/kvalitetssikring/QAGraph';
 import QAHistory from '~/pages/admin/kvalitetssikring/QAHistory';
 import {MetadataContext} from '~/state/contexts';
+
+import PlotGraph from './QAGraph';
 
 interface TabPanelProps {
   children: ReactNode;
@@ -59,9 +60,7 @@ const QualityAssurance = () => {
         initiateSelect={initiateSelect}
         setInitiateSelect={setInitiateSelect}
         levelCorrection={levelCorrection}
-        setLevelCorrection={setLevelCorrection}
         initiateConfirmTimeseries={initiateConfirmTimeseries}
-        setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
       >
         <Grid item tablet={1}>
           <DataToShow />
@@ -117,9 +116,7 @@ const QualityAssurance = () => {
       initiateSelect={initiateSelect}
       setInitiateSelect={setInitiateSelect}
       levelCorrection={levelCorrection}
-      setLevelCorrection={setLevelCorrection}
       initiateConfirmTimeseries={initiateConfirmTimeseries}
-      setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
     >
       <Box boxShadow={4} borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
         <Tabs
@@ -167,10 +164,8 @@ interface LayoutProps {
   initiateSelect: boolean;
   setInitiateSelect: (value: boolean) => void;
   levelCorrection: boolean;
-  setLevelCorrection: (value: boolean) => void;
   children: ReactNode;
   initiateConfirmTimeseries: boolean;
-  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
 const Layout = ({
@@ -179,9 +174,7 @@ const Layout = ({
   initiateSelect,
   setInitiateSelect,
   levelCorrection,
-  setLevelCorrection,
   initiateConfirmTimeseries,
-  setInitiateConfirmTimeseries,
   children,
 }: LayoutProps) => {
   return (
@@ -195,14 +188,12 @@ const Layout = ({
             gap={5}
             sx={{marginBottom: 0.5, marginTop: 0.2}}
           >
-            <QAGraph
-              stationId={ts_id}
+            <PlotGraph
+              ts_id={ts_id}
               initiateSelect={initiateSelect}
               setInitiateSelect={setInitiateSelect}
               levelCorrection={levelCorrection}
-              setLevelCorrection={setLevelCorrection}
               initiateConfirmTimeseries={initiateConfirmTimeseries}
-              setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
             />
             <Divider />
           </Box>

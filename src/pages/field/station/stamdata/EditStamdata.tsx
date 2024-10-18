@@ -65,7 +65,7 @@ interface UnitEndDateDialogProps {
   setOpenDialog: (open: boolean) => void;
   unit: any;
   setUdstyrValue: (key: string, value: string) => void;
-  stationId: string;
+  stationId: number;
 }
 
 type ChangeReason = {
@@ -258,7 +258,7 @@ type UnitHistory = {
   terminal_type: string;
 };
 
-const UdstyrReplace = ({stationId}: {stationId: string}) => {
+const UdstyrReplace = ({stationId}: {stationId: number}) => {
   const [selected, setselected] = useState<number | ''>('');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
@@ -390,7 +390,7 @@ const UdstyrReplace = ({stationId}: {stationId: string}) => {
 };
 
 interface EditStamdataProps {
-  ts_id: string;
+  ts_id: number;
   metadata: any;
   canEdit: boolean;
 }
@@ -412,11 +412,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
 
   const loc_id = metadata?.loc_id;
   useEffect(() => {
-    if (
-      pageToShow === StationPages.STAMDATA &&
-      parseInt(ts_id) !== prev_ts_id &&
-      prev_ts_id !== 0
-    ) {
+    if (pageToShow === StationPages.STAMDATA && ts_id !== prev_ts_id && prev_ts_id !== 0) {
       setPageToShow(StationPages.STAMDATA);
       setShowForm(null);
     }
@@ -597,7 +593,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
         />
         <Tab
           value="1"
-          disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
           icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -607,7 +603,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
         />
         <Tab
           value="2"
-          disabled={!metadata || (metadata && (metadata.calculated || ts_id === ''))}
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
           icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>

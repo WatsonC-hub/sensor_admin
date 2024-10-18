@@ -13,7 +13,7 @@ export interface SaveImageDialogProps {
   id: string | number;
   type: string;
   open: boolean;
-  dataUri: string;
+  dataUri: string | ArrayBuffer | null;
   handleCloseSave: () => void;
 }
 

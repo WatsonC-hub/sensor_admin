@@ -1,9 +1,7 @@
 import {Box} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import {Layout} from 'plotly.js';
+import {Layout, PlotData} from 'plotly.js';
 import {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
@@ -23,17 +21,16 @@ const initRange = [
 
 interface PlotGraphProps {
   ts_id: number;
-  controlData: Array<PejlingItem & {waterlevel: number | null}>;
-  dynamicMeasurement: Record<string, number>;
+  dynamicMeasurement: Array<string | number> | undefined;
 }
 
-function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
+export default function PlotGraph({ts_id, dynamicMeasurement}: PlotGraphProps) {
   const [name, unit, stationtype] = stamdataStore((state) => [
     state.location.loc_name + ' ' + state.timeseries.ts_name,
     state.timeseries.unit,
     state.timeseries.tstype_name,
   ]);
-  const {isTouch} = useBreakpoints();
+  const {isTouch, isMobile} = useBreakpoints();
   const [xRange, setXRange] = useState(initRange);
 
   const [showRawData, setShowRawData] = useState(false);
@@ -53,6 +50,16 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
       };
 
   const {data: graphData} = useGraphData(ts_id, xRange);
+  const [controlData, setControlData] =
+    useState<Array<PejlingItem & {waterlevel: number | null}>>();
+
+  const {
+    get: {data: watlevmp},
+  } = useMaalepunkt();
+  const {
+    get: {data: measurements},
+  } = usePejling();
+
   const {data: rawData, refetch: fetchRaw} = useQuery({
     queryKey: ['rawdata', ts_id],
     queryFn: async () => {
@@ -70,7 +77,7 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
   const yControl = controlData?.map((d) => d.waterlevel);
   const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
 
-  const data = [
+  const data: Array<Partial<PlotData>> = [
     {
       x: graphData?.x,
       y: graphData?.y,
@@ -105,46 +112,16 @@ function PlotGraph({ts_id, controlData, dynamicMeasurement}: PlotGraphProps) {
       },
     },
     {
-      x: [dynamicMeasurement?.[0]],
-      y: [dynamicMeasurement?.[1]],
+      x: dynamicMeasurement ? [dynamicMeasurement?.[0]] : [],
+      y: dynamicMeasurement ? [dynamicMeasurement?.[1]] : [],
       name: '',
+      uid: 'dynamic',
       type: 'scatter',
       mode: 'markers',
       showlegend: false,
       marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
     },
   ];
-
-  return (
-    <PlotlyGraph
-      plotModebarButtons={['link', 'raw', 'rerun', 'download']}
-      layout={layout}
-      data={data}
-      setXRange={setXRange}
-      showRaw={() => {
-        fetchRaw();
-        setShowRawData(true);
-      }}
-    />
-  );
-}
-
-interface BearingGraphProps {
-  stationId: number;
-  dynamicMeasurement: Record<string, number>;
-}
-
-export default function BearingGraph({stationId, dynamicMeasurement}: BearingGraphProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const [control, setControl] = useState<Array<PejlingItem & {waterlevel: number | null}>>();
-
-  const {
-    get: {data: watlevmp},
-  } = useMaalepunkt();
-  const {
-    get: {data: measurements},
-  } = usePejling();
 
   useEffect(() => {
     let ctrls: Array<PejlingItem & {waterlevel: number | null}> = [];
@@ -163,20 +140,34 @@ export default function BearingGraph({stationId, dynamicMeasurement}: BearingGra
         return {...elem, waterlevel: elem.measurement};
       });
     }
-    setControl(ctrls);
+    setControlData(ctrls);
   }, [watlevmp, measurements]);
+
+  useEffect(() => {
+    if (dynamicMeasurement?.[0] != undefined) {
+      setXRange([
+        moment(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DD'),
+        moment(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DD'),
+      ]);
+    }
+  }, [dynamicMeasurement?.[0]]);
 
   return (
     <Box
       style={{
-        height: setGraphHeight(matches),
+        height: setGraphHeight(isMobile),
       }}
     >
-      <PlotGraph
-        key={stationId}
-        ts_id={stationId}
-        controlData={control ? control : []}
-        dynamicMeasurement={dynamicMeasurement}
+      <PlotlyGraph
+        plotModebarButtons={['link', 'raw', 'rerun', 'download']}
+        layout={layout}
+        data={data}
+        xRange={xRange}
+        setXRange={setXRange}
+        showRaw={() => {
+          fetchRaw();
+          setShowRawData(true);
+        }}
       />
     </Box>
   );

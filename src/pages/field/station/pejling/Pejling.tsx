@@ -1,5 +1,5 @@
 import {AddCircle} from '@mui/icons-material';
-import {Box, Typography} from '@mui/material';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
@@ -11,7 +11,6 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {APIError} from '~/queryClient';
 import {stamdataStore} from '~/state/store';
@@ -19,7 +18,7 @@ import {LatestMeasurement, PejlingItem} from '~/types';
 
 type Props = {
   ts_id: number;
-  setDynamic: (dynamic: Array<unknown>) => void;
+  setDynamic: (dynamic: Array<string | number> | undefined) => void;
 };
 
 const initialData = {
@@ -38,7 +37,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
-  const {isMobile} = useBreakpoints();
 
   const formMethods = useForm<PejlingItem>({
     defaultValues: initialData,

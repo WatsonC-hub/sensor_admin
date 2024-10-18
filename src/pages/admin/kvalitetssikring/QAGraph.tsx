@@ -111,23 +111,19 @@ const initRange = [
 ];
 
 interface PlotGraphProps {
-  qaData: Array<QaGraphLabel>;
   ts_id: number;
   initiateSelect: boolean;
   setInitiateSelect: (select: boolean) => void;
   levelCorrection: boolean;
   initiateConfirmTimeseries: boolean;
-  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
-function PlotGraph({
-  qaData,
+export default function PlotGraph({
   ts_id,
   initiateSelect,
   setInitiateSelect,
   levelCorrection,
   initiateConfirmTimeseries,
-  // setInitiateConfirmTimeseries,
 }: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
@@ -138,6 +134,7 @@ function PlotGraph({
   const tstype_name = metadata && 'tstype_name' in metadata ? metadata.tstype_name : '';
   const unit = metadata && 'unit' in metadata ? metadata.unit : '';
   const ts_name = metadata && 'ts_name' in metadata ? metadata.ts_name : '';
+  const {isTouch} = useBreakpoints();
 
   const queryClient = useQueryClient();
 
@@ -151,6 +148,16 @@ function PlotGraph({
     get: {data: certifedData},
   } = useCertifyQa(ts_id);
 
+  const {data: qaData} = useQuery({
+    queryKey: ['qa_labels', ts_id],
+    queryFn: async ({signal}) => {
+      const {data} = await apiClient.get<Array<QaGraphLabel>>(`/sensor_admin/qa_labels/${ts_id}`, {
+        signal,
+      });
+      return data;
+    },
+  });
+
   const {data: removed_data} = useQuery({
     queryKey: ['removed_data', ts_id],
     queryFn: async () => {
@@ -160,6 +167,8 @@ function PlotGraph({
     enabled: dataToShow['Fjernet data'],
     refetchOnWindowFocus: false,
   });
+
+  console.log(removed_data);
 
   const {data: precipitation_data} = useQuery({
     queryKey: ['precipitation_data', ts_id],
@@ -240,7 +249,7 @@ function PlotGraph({
   });
 
   const [shapes, annotations] = useMemo(() => {
-    const [qaShapes, qaAnnotate] = transformQAData(qaData);
+    const [qaShapes, qaAnnotate] = transformQAData(qaData ?? []);
     let shapes: Array<object> = [];
     let annotations: Array<object> = [];
 
@@ -441,77 +450,28 @@ function PlotGraph({
   };
 
   return (
-    <PlotlyGraph
-      plotEventProps={{
-        onSelected: handlePlotlySelected,
-        onRelayout: handleRelayout,
-        onClick: (e) => {
-          if (initiateConfirmTimeseries) {
-            setSelection({points: e.points});
-          }
-        },
-      }}
-      initiateSelect={initiateSelect}
-      shapes={shapes}
-      annotations={annotations}
-      layout={layout}
-      plotModebarButtons={['rerun', 'rerunQa', 'select2d']}
-      data={data}
-      setXRange={setXRange}
-    />
-  );
-}
-
-interface QAGraphProps {
-  stationId: number;
-  initiateSelect: boolean;
-  levelCorrection: boolean;
-  initiateConfirmTimeseries: boolean;
-  setInitiateSelect: (value: boolean) => void;
-  setLevelCorrection: (value: boolean) => void;
-  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
-}
-
-export default function QAGraph({
-  stationId,
-  initiateSelect,
-  setInitiateSelect,
-  levelCorrection,
-  initiateConfirmTimeseries,
-  setInitiateConfirmTimeseries,
-}: QAGraphProps) {
-  // const theme = useTheme();
-  // const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const {isTouch} = useBreakpoints();
-
-  const {data: qaData} = useQuery({
-    queryKey: ['qa_labels', stationId],
-    queryFn: async ({signal}) => {
-      const {data} = await apiClient.get<Array<QaGraphLabel>>(
-        `/sensor_admin/qa_labels/${stationId}`,
-        {
-          signal,
-        }
-      );
-      return data;
-    },
-  });
-
-  return (
     <div
       style={{
         height: setGraphHeight(isTouch),
       }}
     >
-      <PlotGraph
-        key={'plotgraph' + stationId}
-        qaData={qaData ?? []}
-        ts_id={stationId}
+      <PlotlyGraph
+        plotEventProps={{
+          onSelected: handlePlotlySelected,
+          onRelayout: handleRelayout,
+          onClick: (e) => {
+            if (initiateConfirmTimeseries) {
+              setSelection({points: e.points});
+            }
+          },
+        }}
         initiateSelect={initiateSelect}
-        setInitiateSelect={setInitiateSelect}
-        levelCorrection={levelCorrection}
-        initiateConfirmTimeseries={initiateConfirmTimeseries}
-        setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
+        shapes={shapes}
+        annotations={annotations}
+        layout={layout}
+        plotModebarButtons={['rerun', 'rerunQa', 'select2d']}
+        data={data}
+        setXRange={setXRange}
       />
     </div>
   );

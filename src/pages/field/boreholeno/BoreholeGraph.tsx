@@ -10,19 +10,27 @@ import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import {Measurement} from '~/types';
 
-interface PlotGraphProps {
-  jupiterData: {
-    data: {
-      situation: Array<number | null>;
-      x: Array<string>;
-      y: Array<number>;
-    };
+type JupiterData = {
+  data: {
+    situation: Array<number | null>;
+    x: Array<string>;
+    y: Array<number>;
   };
+};
+
+interface PlotGraphProps {
+  boreholeno: string;
+  intakeno: number;
   ourData: Array<Measurement>;
   dynamicMeasurement: Array<string | number> | undefined;
 }
 
-function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
+export default function PlotGraph({
+  ourData,
+  dynamicMeasurement,
+  boreholeno,
+  intakeno,
+}: PlotGraphProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const xOurData = ourData?.map((d) => d.timeofmeas);
@@ -30,6 +38,17 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string | number>>([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<string | number>>([]);
+
+  const {data: jupiterData} = useQuery({
+    queryKey: ['jupiter_waterlevel', boreholeno, intakeno],
+    queryFn: async () => {
+      const {data} = await apiClient.get<JupiterData>(
+        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
+    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
+  });
 
   useEffect(() => {
     if (dynamicMeasurement !== undefined) {
@@ -48,8 +67,8 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
       .filter((d) => d.isSituation !== false)
       .map((item) => item.index);
     // get x and y values for each situation
-    const x = indexes?.map((index) => jupiterData.data.x[index]);
-    const y = indexes?.map((index) => jupiterData.data.y[index]);
+    const x = jupiterData ? indexes?.map((index) => jupiterData.data.x[index]) : [];
+    const y = jupiterData ? indexes?.map((index) => jupiterData.data.y[index]) : [];
 
     let name = 'Jupiter - ukendt årsag';
     if (situation === 0) name = 'Jupiter - i ro';
@@ -100,36 +119,6 @@ function PlotGraph({jupiterData, ourData, dynamicMeasurement}: PlotGraphProps) {
         yaxis2: {},
       };
 
-  return <PlotlyGraph plotModebarButtons={['toImage']} layout={layout} data={data} />;
-}
-
-interface BearingGraphProps {
-  boreholeno: string;
-  intakeno: number;
-  measurements: Array<Measurement>;
-  dynamicMeasurement: Array<string | number> | undefined;
-}
-
-export default function BearingGraph({
-  boreholeno,
-  intakeno,
-  measurements,
-  dynamicMeasurement,
-}: BearingGraphProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
-
-  const {data} = useQuery({
-    queryKey: ['jupiter_waterlevel', boreholeno, intakeno],
-    queryFn: async () => {
-      const {data} = await apiClient.get(
-        `/sensor_field/borehole/jupiter/measurements/${boreholeno}/${intakeno}`
-      );
-      return data;
-    },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
-  });
-
   return (
     <Box
       style={{
@@ -137,11 +126,7 @@ export default function BearingGraph({
         height: setGraphHeight(matches),
       }}
     >
-      <PlotGraph
-        jupiterData={data}
-        ourData={measurements}
-        dynamicMeasurement={dynamicMeasurement}
-      />
+      <PlotlyGraph plotModebarButtons={['toImage']} layout={layout} data={data} />;
     </Box>
   );
 }

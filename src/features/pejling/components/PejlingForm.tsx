@@ -30,7 +30,7 @@ interface PejlingFormProps {
   submit: (data: any) => void;
   resetFormData: () => void;
   openAddMP: () => void;
-  setDynamic: (dynamic: Array<unknown>) => void;
+  setDynamic: (dynamic: Array<string | number>) => void;
   latestMeasurement: LatestMeasurement | undefined;
 }
 

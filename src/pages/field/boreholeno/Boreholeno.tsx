@@ -15,7 +15,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import ActionAreaBorehole from '~/pages/field/boreholeno/ActionAreaBorehole';
-import BearingGraph from '~/pages/field/boreholeno/BearingGraph';
+import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import BoreholeStamdata from '~/pages/field/boreholeno/BoreholeStamdata';
 import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
 import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingFormBorehole';
@@ -60,7 +60,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [dataUri, setdataUri] = useState('');
+  const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
   const [openSave, setOpenSave] = useState(false);
   const [activeImage, setActiveImage] = useState({
     gid: -1,
@@ -78,7 +78,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
     mp_description: '',
   });
 
-  const [control, setcontrol] = useState([]);
+  const [control, setcontrol] = useState();
   const [dynamic, setDynamic] = useState<Array<string | number>>([]);
 
   const {data: measurements} = useQuery({
@@ -270,7 +270,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
     });
   };
 
-  const convertBase64 = async (file: Blob) => {
+  const convertBase64 = async (file: File) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
@@ -280,10 +280,10 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       fileReader.onerror = (error) => {
         reject(error);
       };
-    });
+    }) as Promise<string | ArrayBuffer | null>;
   };
 
-  const handleSetDataURI = (datauri: string) => {
+  const handleSetDataURI = (datauri: string | ArrayBuffer | null) => {
     setdataUri(datauri);
     setActiveImage({
       gid: -1,
@@ -297,11 +297,16 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
 
   const handleFileRead = async (event: ChangeEvent<HTMLInputElement>) => {
     setShowForm('true');
-    const fileList = event.target.files ?? null;
-    if (fileList && fileList.length > 0) {
+    const fileList = event.target.files;
+    if (event && fileList) {
       const base64 = await convertBase64(fileList[0]);
-      handleSetDataURI(base64 as string);
+      handleSetDataURI(base64);
     }
+  };
+
+  const handleFileInputClick = () => {
+    if (openSave !== true && fileInputRef.current && 'value' in fileInputRef.current)
+      fileInputRef.current.value = '';
   };
 
   return (
@@ -313,10 +318,10 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           gap={5}
           sx={{marginBottom: 0.5, marginTop: 0.2}}
         >
-          <BearingGraph
+          <PlotGraph
             boreholeno={boreholeno}
             intakeno={intakeno}
-            measurements={control}
+            ourData={control ?? []}
             dynamicMeasurement={
               pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
             }
@@ -416,46 +421,53 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             />
           </FabWrapper>
         )}
-        {pageToShow === StationPages.BILLEDER && (
-          <Box>
-            <FabWrapper
-              icon={<AddAPhotoRounded />}
-              text="Tilføj billede"
-              onClick={() => {
-                fileInputRef.current && fileInputRef.current.click();
-              }}
-              visible="true"
-            >
-              <Images
-                type={'borehole'}
-                typeId={boreholeno}
-                setOpenSave={setOpenSave}
-                setActiveImage={setActiveImage}
-                setShowForm={setShowForm}
-              />
-            </FabWrapper>
-            <div>
-              <SaveImageDialog
-                activeImage={activeImage}
-                changeData={changeActiveImageData}
-                id={boreholeno}
-                type={'borehole'}
-                open={openSave}
-                dataUri={dataUri}
-                handleCloseSave={() => {
-                  setOpenSave(false);
-                  setdataUri('');
-                  setShowForm(null);
-                }}
-              />
-            </div>
-          </Box>
-        )}
-        <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileRead} />
         {pageToShow === StationPages.STAMDATA && canEdit && (
           <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
         )}
       </Box>
+
+      {pageToShow === StationPages.BILLEDER && (
+        <Box>
+          <FabWrapper
+            icon={<AddAPhotoRounded />}
+            text="Tilføj billede"
+            onClick={() => {
+              fileInputRef.current && fileInputRef.current.click();
+            }}
+            visible="true"
+          >
+            <Images
+              type={'borehole'}
+              typeId={boreholeno}
+              setOpenSave={setOpenSave}
+              setActiveImage={setActiveImage}
+              setShowForm={setShowForm}
+            />
+          </FabWrapper>
+          <div>
+            <SaveImageDialog
+              activeImage={activeImage}
+              changeData={changeActiveImageData}
+              id={boreholeno}
+              type={'borehole'}
+              open={openSave}
+              dataUri={dataUri}
+              handleCloseSave={() => {
+                setOpenSave(false);
+                setdataUri('');
+                setShowForm(null);
+              }}
+            />
+          </div>
+        </Box>
+      )}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{display: 'none'}}
+        onChange={handleFileRead}
+        onClick={handleFileInputClick}
+      />
       <ActionAreaBorehole canEdit={canEdit} />
     </Box>
   );
