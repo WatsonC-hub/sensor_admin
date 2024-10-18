@@ -9,11 +9,12 @@ import {qaSelection} from '~/state/atoms';
 
 type WizardLevelCorrectionProps = {
   setStep: (value: number) => void;
-  setInitiateSelect: (initiateSelect: boolean) => void;
+  setInitiateConfirmTimeseries: (initiateConfirmTimeseries: boolean) => void;
 };
 
-const WizardLevelCorrection = ({setInitiateSelect}: WizardLevelCorrectionProps) => {
+const WizardLevelCorrection = ({setInitiateConfirmTimeseries}: WizardLevelCorrectionProps) => {
   const selection = useAtomValue(qaSelection);
+  console.log(selection);
 
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
@@ -41,23 +42,21 @@ const WizardLevelCorrection = ({setInitiateSelect}: WizardLevelCorrectionProps) 
             bttype={'primary'}
             disabled={false}
             onClick={() => {
-              setInitiateSelect(true);
+              setInitiateConfirmTimeseries(true);
             }}
           >
             Markér et punkt
           </Button>
         </Box>
         <Box alignSelf={'center'}>
-          {'range' in selection &&
-            'points' in selection &&
-            (selection.points as Array<{x: string; y: number}>).length === 2 && (
-              <LevelCorrectionModal
-              // onClose={() => {
-              //   setInitiateSelect(false);
-              //   setStep(0);
-              // }}
-              />
-            )}
+          {'points' in selection && (
+            <LevelCorrectionModal
+            // onClose={() => {
+            //   setInitiateSelect(false);
+            //   setStep(0);
+            // }}
+            />
+          )}
         </Box>
       </CardContent>
     </Box>

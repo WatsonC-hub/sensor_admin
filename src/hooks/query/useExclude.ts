@@ -11,8 +11,8 @@ interface ExcludeBase {
 
 interface ExcludePost extends ExcludeBase {
   data: {
-    minvalue: number | null;
-    maxvalue: number | null;
+    min_value: number | null;
+    max_value: number | null;
     startdate: string | null;
     enddate: string | null;
     comment: string;
@@ -22,8 +22,8 @@ interface ExcludePost extends ExcludeBase {
 interface ExcludePut extends ExcludePost {
   data: {
     gid: number;
-    minvalue: number | null;
-    maxvalue: number | null;
+    min_value: number | null;
+    max_value: number | null;
     startdate: string | null;
     enddate: string | null;
     comment: string;

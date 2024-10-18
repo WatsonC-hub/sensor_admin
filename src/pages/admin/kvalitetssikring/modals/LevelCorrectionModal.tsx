@@ -14,16 +14,20 @@ const LevelCorrectionModal = () => {
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
   const metadata = useContext(MetadataContext);
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onAccept();
     // onClose();
   };
-
-  const prevY = selection?.points?.[0]?.y?.toFixed(4);
-  const prevX = moment(selection?.points?.[0]?.x);
-  const y = selection?.points?.[1]?.y?.toFixed(4);
-  const x = moment(selection?.points?.[1]?.x);
+  const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';
+  const prevY = (
+    selection?.points?.[0]?.data?.y[selection?.points?.[0]?.pointIndex - 1] as number
+  )?.toFixed(4);
+  const prevX = moment(
+    selection?.points?.[0]?.data?.x[selection?.points?.[0]?.pointIndex - 1] as string
+  );
+  const y = (selection?.points?.[0]?.y as number)?.toFixed(4);
+  const x = moment(selection?.points?.[0]?.x);
 
   const {post: levelCorrectionMutation} = useLevelCorrection();
 
@@ -40,10 +44,11 @@ const LevelCorrectionModal = () => {
         Korrigerer grafen fremadrettet ved at sætte det følgende punkt lig med det forrige punkt
       </Typography>
       <Typography gutterBottom>
-        <b>Forrige datapunkt:</b> {prevX.format('YYYY-MM-DD HH:mm')} - {prevY} {metadata?.unit}
+        <b>Forrige datapunkt:</b> {prevX.format('YYYY-MM-DD HH:mm')} - {prevY + ' '}
+        {unit}
       </Typography>
       <Typography gutterBottom>
-        <b>Nuværende datapunkt:</b> {x.format('YYYY-MM-DD HH:mm')} - {y} {metadata?.unit}
+        <b>Nuværende datapunkt:</b> {x.format('YYYY-MM-DD HH:mm')} - {y + ' '} {unit}
       </Typography>
       <TextField
         label="Kommentar"

@@ -9,19 +9,20 @@ import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
-const YRangeModal = ({onClose}) => {
+const YRangeModal = () => {
   const selection = useAtomValue(qaSelection);
-  const y1 = selection?.selections?.[0]?.y1;
-  const y0 = selection?.selections?.[0]?.y0;
+  const y1 = selection?.selections?.[0]?.y1 as number;
+  const y0 = selection?.selections?.[0]?.y0 as number;
 
   const [minY, setMinY] = useState(Math.min(y1, y0).toFixed(4));
   const [maxY, setMaxY] = useState(Math.max(y1, y0).toFixed(4));
   const metadata = useContext(MetadataContext);
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onAccept();
-    onClose();
+    // onClose();
   };
+  const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';
 
   const {post: yRangeMutation} = useYRangeMutations();
 
@@ -45,7 +46,7 @@ const YRangeModal = ({onClose}) => {
         my={1}
       >
         <Typography variant="h6" gutterBottom={true}>
-          Område: {metadata?.unit}
+          Område: {unit}
         </Typography>
         <Box
           display={'flex'}
@@ -73,7 +74,6 @@ const YRangeModal = ({onClose}) => {
             onChange={(e) => setMaxY(e.target.value)}
             sx={{maxWidth: '120px'}}
           />
-          <Typography gutterBottom> {metadata?.unit}</Typography>
         </Box>
       </Box>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>

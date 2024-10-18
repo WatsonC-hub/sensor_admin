@@ -16,15 +16,15 @@ const ExcludeModal = () => {
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
   const metadata = useContext(MetadataContext);
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onAccept();
   };
 
-  const x0 = moment(selection?.selections?.[0]?.x0);
-  const x1 = moment(selection?.selections?.[0]?.x1);
-  const y0 = selection?.selections?.[0]?.y0;
-  const y1 = selection?.selections?.[0]?.y1;
+  const x0 = moment(selection?.range?.x[0]);
+  const x1 = moment(selection?.range?.x[1]);
+  const y0 = selection?.range ? selection?.range.y[0] : 0;
+  const y1 = selection?.range ? selection?.range.y[1] : 0;
 
   const [startDate, setStartDate] = useState(moment.min(x0, x1));
   const [endDate, setEndDate] = useState(moment.max(x0, x1));
@@ -125,7 +125,7 @@ const ExcludeModal = () => {
         </RadioGroup>
       </FormControl>
       {radio == 'selected' && (
-        <Typography gutterBottom>Ekskluderer {selection.points.length} punkter</Typography>
+        <Typography gutterBottom>Ekskluderer {selection.points?.length} punkter</Typography>
       )}
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
         {/* <Button

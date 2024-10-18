@@ -218,8 +218,8 @@ export default function PlotGraph({
   }, []);
 
   const handleRelayout = (e: any) => {
-    console.log(e);
     if (e['selections'] && e['selections'].length === 0) {
+      console.log(e);
       setSelection({});
     }
     if (e['dragmode'] === 'select') setInitiateSelect(true);
@@ -460,6 +460,7 @@ export default function PlotGraph({
           onSelected: handlePlotlySelected,
           onRelayout: handleRelayout,
           onClick: (e) => {
+            console.log(initiateConfirmTimeseries);
             if (initiateConfirmTimeseries) {
               setSelection({points: e.points});
             }

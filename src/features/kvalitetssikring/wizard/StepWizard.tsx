@@ -76,7 +76,7 @@ const StepWizard = ({
             {activeStep === 4 && (
               <WizardLevelCorrection
                 setStep={setActiveStep}
-                setInitiateSelect={setInitiateSelect}
+                setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
               />
             )}
           </Box>
