@@ -9,25 +9,22 @@ interface ExcludeBase {
   data?: any;
 }
 
+export type ExcludeData = {
+  ts_id?: number;
+  gid?: number;
+  min_value: number | null;
+  max_value: number | null;
+  startdate: string | null;
+  enddate: string | null;
+  comment: string;
+};
+
 interface ExcludePost extends ExcludeBase {
-  data: {
-    min_value: number | null;
-    max_value: number | null;
-    startdate: string | null;
-    enddate: string | null;
-    comment: string;
-  };
+  data: ExcludeData;
 }
 
 interface ExcludePut extends ExcludePost {
-  data: {
-    gid: number;
-    min_value: number | null;
-    max_value: number | null;
-    startdate: string | null;
-    enddate: string | null;
-    comment: string;
-  };
+  data: ExcludeData;
 }
 
 export const excludePostOptions = {

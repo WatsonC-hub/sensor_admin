@@ -1,14 +1,20 @@
 import {useAutoAnimate} from '@formkit/auto-animate/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {Accordion, AccordionDetails, AccordionSummary, Box, Typography} from '@mui/material';
-import React from 'react';
+import React, {ReactNode} from 'react';
 
 import BoxNumber from '~/components/BoxNumber';
 
-const QAAccordion = ({children, number, title, accordionProps}) => {
+interface QaAccordionProps {
+  children: ReactNode;
+  number: number;
+  title: string;
+}
+
+const QAAccordion = ({children, number, title}: QaAccordionProps) => {
   const [parent] = useAutoAnimate();
   return (
-    <Accordion disableGutters {...accordionProps}>
+    <Accordion disableGutters>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         id="panel1a-header"

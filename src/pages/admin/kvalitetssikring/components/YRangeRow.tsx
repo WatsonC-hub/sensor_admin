@@ -12,7 +12,17 @@ import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 
-const YRangeRow = ({data, index}) => {
+type YRangeData = {
+  ts_id: number;
+  mincutoff: number;
+  maxcutoff: number;
+};
+
+interface YRangeRowProps {
+  data: YRangeData;
+}
+
+const YRangeRow = ({data}: YRangeRowProps) => {
   const [editMode, setEditMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const {post, del} = useYRangeMutations();
@@ -27,12 +37,18 @@ const YRangeRow = ({data, index}) => {
     defaultValues: data,
   });
 
+  const {
+    reset,
+    handleSubmit,
+    formState: {dirtyFields},
+  } = formMethods;
+
   useEffect(() => {
-    formMethods.reset(data);
+    reset(data);
   }, [data]);
 
-  const handleSubmit = (values) => {
-    if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
+  const submit = (values: YRangeData) => {
+    if (Object.keys(dirtyFields).length > 0) {
       post.mutate({
         path: `${data.ts_id}`,
         data: {
@@ -53,7 +69,6 @@ const YRangeRow = ({data, index}) => {
   return (
     <FormProvider {...formMethods}>
       <Box
-        key={index}
         display="flex"
         justifyContent="space-between"
         flexDirection={'column'}
@@ -86,7 +101,14 @@ const YRangeRow = ({data, index}) => {
         </Grid>
         <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1}>
           {editMode ? (
-            <Button bttype="tertiary" size="small" onClick={() => setEditMode(false)}>
+            <Button
+              bttype="tertiary"
+              size="small"
+              onClick={() => {
+                setEditMode(false);
+                reset(data);
+              }}
+            >
               Annuller
             </Button>
           ) : (
@@ -103,7 +125,7 @@ const YRangeRow = ({data, index}) => {
             <Button
               bttype="primary"
               size="small"
-              onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
+              onClick={handleSubmit(submit, (values) => console.log(values))}
               startIcon={<SaveIcon />}
             >
               Gem

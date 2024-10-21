@@ -11,31 +11,27 @@ import * as z from 'zod';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
-import {useExclude} from '~/hooks/query/useExclude';
-import useBreakpoints from '~/hooks/useBreakpoints';
+import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
+import {LevelCorrection} from '~/types';
 
-const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
+interface LevelCorrectionRowProps {
+  data: LevelCorrection;
+  index: number;
+  lastElement: boolean;
+}
+
+const LevelCorrectionRow = ({data, index, lastElement}: LevelCorrectionRowProps) => {
   const [editMode, setEditMode] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const {put, del} = useExclude();
-  const {isTouch, isLaptop} = useBreakpoints();
+  const {put, del} = useLevelCorrection();
 
   const schema = z.object({
-    startdate: z
-      .string()
-      .min(1, {message: 'Dato ugyldig'})
-      .transform((value) => moment(value).toISOString()),
-    enddate: z
+    date: z
       .string()
       .min(1, {message: 'Dato ugyldig'})
       .transform((value) => moment(value).toISOString()),
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
   });
-
-  if (isWithYValues) {
-    schema.shape.min_value = z.number();
-    schema.shape.max_value = z.number();
-  }
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
@@ -43,19 +39,22 @@ const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
   });
 
   useEffect(() => {
-    formMethods.reset(data);
+    reset(data);
   }, [data]);
 
-  const handleSubmit = (values) => {
-    if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
+  const {
+    reset,
+    handleSubmit,
+    formState: {dirtyFields},
+  } = formMethods;
+
+  const submit = (values: LevelCorrection) => {
+    if (Object.keys(dirtyFields).length > 0) {
       put.mutate({
         path: `${data.ts_id}/${data.gid}`,
         data: {
-          startdate: values.startdate,
-          enddate: values.enddate,
+          date: values.date,
           comment: values.comment,
-          min_value: values.min_value,
-          max_value: values.max_value,
         },
       });
     }
@@ -79,58 +78,26 @@ const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
         borderColor="grey.500"
         p={1}
       >
-        <Grid container gap={1}>
-          <Grid item xs={12} sm={12} alignSelf={'center'}>
+        <Grid container>
+          <Grid item xs={12} xl={5} alignSelf={'center'}>
             <Box
               alignItems={'center'}
-              alignSelf={'center'}
+              justifySelf={'center'}
               display="flex"
-              flexDirection={isLaptop || isTouch ? 'column' : 'row'}
+              flexDirection="row"
               gap={1}
             >
               <FormInput
-                name="startdate"
-                label="Fra"
-                type="datetime-local"
-                required
-                disabled={!editMode}
-              />
-              <FormInput
-                name="enddate"
-                label="Til"
+                name="date"
+                label="Dato"
+                fullWidth
                 type="datetime-local"
                 required
                 disabled={!editMode}
               />
             </Box>
           </Grid>
-          {isWithYValues && (
-            <>
-              <Grid item xs={12} sm={12}>
-                <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-                  <FormInput
-                    name="min_value"
-                    label="Min værdi"
-                    fullWidth
-                    type="number"
-                    required
-                    style={{alignSelf: 'center'}}
-                    disabled={!editMode}
-                  />
-                  -
-                  <FormInput
-                    name="max_value"
-                    label="Max værdi"
-                    fullWidth
-                    type="number"
-                    required
-                    disabled={!editMode}
-                  />
-                </Box>
-              </Grid>
-            </>
-          )}
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12} xl={7}>
             <FormInput name="comment" label="Kommentar" multiline rows={2} disabled={!editMode} />
           </Grid>
           <Grid
@@ -141,9 +108,16 @@ const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
             flexDirection={'column'}
             justifyContent={'end'}
           >
-            <Box display="flex" flexDirection="row" alignSelf={'end'} gap={1}>
+            <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1} minWidth="97.02px">
               {editMode ? (
-                <Button bttype="tertiary" size="small" onClick={() => setEditMode(false)}>
+                <Button
+                  bttype="tertiary"
+                  size="small"
+                  onClick={() => {
+                    setEditMode(false);
+                    reset(data);
+                  }}
+                >
                   Annuller
                 </Button>
               ) : (
@@ -160,7 +134,7 @@ const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
                 <Button
                   bttype="primary"
                   size="small"
-                  onClick={formMethods.handleSubmit(handleSubmit, (values) => console.log(values))}
+                  onClick={handleSubmit(submit, (values) => console.log(values))}
                   startIcon={<SaveIcon />}
                 >
                   Gem
@@ -179,17 +153,9 @@ const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
           </Grid>
         </Grid>
       </Box>
-      {!LastElement && (
-        <Divider
-          sx={{
-            mt: 1,
-            mb: 1,
-            borderBottomWidth: 2,
-          }}
-        />
-      )}
+      {!lastElement && <Divider />}
       <DeleteAlert
-        title="Vil du slette ekskluderingen?"
+        title="Vil du slette spring korrektionen?"
         dialogOpen={confirmDelete}
         setDialogOpen={setConfirmDelete}
         onOkDelete={handleDelete}
@@ -198,4 +164,4 @@ const ExcludeRow = ({data, index, isWithYValues, LastElement}) => {
   );
 };
 
-export default ExcludeRow;
+export default LevelCorrectionRow;
