@@ -67,7 +67,13 @@ export default function QAHistory() {
                 key={item.gid}
                 data={item}
                 index={index}
-                lastElement={data?.dataexclude.length - 1 === index}
+                lastElement={
+                  data?.dataexclude.filter(
+                    (elem: ExcludeData) => elem.min_value == null && elem.max_value == null
+                  ).length -
+                    1 ===
+                  index
+                }
               />
             ))}
           {data?.dataexclude.filter(
@@ -98,7 +104,13 @@ export default function QAHistory() {
                 data={item}
                 index={index}
                 isWithYValues
-                lastElement={data?.dataexclude.length - 1 === index}
+                lastElement={
+                  data?.dataexclude.filter(
+                    (elem: ExcludeData) => elem.min_value != null || elem.max_value != null
+                  ).length -
+                    1 ===
+                  index
+                }
               />
             ))}
           {data?.dataexclude.filter(
