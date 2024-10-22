@@ -4,6 +4,7 @@ import {Layout} from 'plotly.js';
 import {useState} from 'react';
 
 import {MergeType} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 /**
  * For nu er mergetype required. Det kan være at den måske skal være optional i fremtiden
  * Måske skal der også være andre kriterier?
@@ -92,9 +93,8 @@ const mergeLayout = (layout1: Partial<Layout>, layout2: Partial<Layout>, mergeTy
 };
 
 const usePlotlyLayout = (mergeType: MergeType, layout?: Partial<Layout>) => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const default_layout = matches ? mobileLayout : desktopLayout;
+  const {isMobile} = useBreakpoints();
+  const default_layout = isMobile ? mobileLayout : desktopLayout;
 
   const [mergedLayout, setMergedLayout] = useState<Partial<Layout>>(
     mergeLayout(default_layout, layout ?? {}, mergeType)

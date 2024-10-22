@@ -14,6 +14,7 @@ import {useTheme} from '@mui/material/styles';
 import React from 'react';
 
 import {StationPages} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 import CustomBottomNavigationActionLabel from './CustomLabel';
 
@@ -46,8 +47,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   items,
   canEdit,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const {isMobile} = useBreakpoints();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const threshold = isMobile ? 4 : items.length;
   const visibleItems = items.slice(0, threshold);

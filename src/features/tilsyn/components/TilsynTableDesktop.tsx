@@ -37,6 +37,7 @@ export default function TilsynTableDesktop({handleEdit, handleDelete, canEdit}: 
         id: 'dato',
         accessorFn: (row) => convertDateWithTimeStamp(row.dato),
         sortingFn: (a, b) => (a.original.dato > b.original.dato ? 1 : -1),
+        size: 150,
       },
       {
         accessorFn: (row) => row,
@@ -106,7 +107,7 @@ export default function TilsynTableDesktop({handleEdit, handleDelete, canEdit}: 
   );
 
   return (
-    <Box sx={setTableBoxStyle(636)}>
+    <Box sx={setTableBoxStyle(680)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

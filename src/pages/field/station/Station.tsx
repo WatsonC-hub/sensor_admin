@@ -34,7 +34,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
   const [openSave, setOpenSave] = useState(false);
   const {createStamdata} = useNavigationFunctions();
-  const {isMobile} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
   const [activeImage, setActiveImage] = useState({
     gid: -1,
     type: params.locid,
@@ -146,7 +146,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
           <Box
             sx={{
               maxWidth: '1080px',
-              width: isMobile ? '100%' : 'fit-content',
+              width: isTouch ? '100%' : 'fit-content',
               alignSelf: 'center',
             }}
           >
@@ -196,22 +196,20 @@ export default function Station({ts_id, stamdata}: StationProps) {
       )}
       {pageToShow === StationPages.BILLEDER && (
         <Box>
+          <Images
+            type={'station'}
+            typeId={params.locid ?? ''}
+            setOpenSave={setOpenSave}
+            setActiveImage={setActiveImage}
+            setShowForm={setShowForm}
+          />
           <FabWrapper
             icon={<AddAPhotoRounded />}
-            visible="visible"
             text={'Tilføj ' + StationPages.BILLEDER}
             onClick={() => {
               if (fileInputRef.current) fileInputRef.current.click();
             }}
-          >
-            <Images
-              type={'station'}
-              typeId={params.locid ?? ''}
-              setOpenSave={setOpenSave}
-              setActiveImage={setActiveImage}
-              setShowForm={setShowForm}
-            />
-          </FabWrapper>
+          />
           <SaveImageDialog
             activeImage={activeImage}
             changeData={changeActiveImageData}

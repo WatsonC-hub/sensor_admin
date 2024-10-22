@@ -1,5 +1,3 @@
-import {RangeSelector, RangeSelectorButton, Layout} from 'plotly.js';
-
 export const mapboxToken: string =
   'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3ZxMDhmMGV3bDNzbHE1YTZneGFtMSJ9.-IVlITKrk0DjTghXVnlGiQ';
 
@@ -89,7 +87,6 @@ export const setTableBoxStyle = (pixelToSubtract: number) => {
     flexDirection: 'column',
     height: calculateContentHeight(pixelToSubtract),
     minHeight: '500px',
-    maxWidth: '1280px',
   };
   return sx;
 };

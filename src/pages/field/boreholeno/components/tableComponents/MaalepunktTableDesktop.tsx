@@ -8,7 +8,6 @@ import {setTableBoxStyle} from '~/consts';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {authStore} from '~/state/store';
@@ -24,7 +23,6 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const org_id = authStore((store) => store.org_id);
-  const {isTablet} = useBreakpoints();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -90,7 +88,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
   const table = useTable<MaalepunktTableData>(columns, data, options, tableState, TableTypes.TABLE);
 
   return (
-    <Box sx={setTableBoxStyle(isTablet ? 436 : 886)}>
+    <Box sx={setTableBoxStyle(886)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

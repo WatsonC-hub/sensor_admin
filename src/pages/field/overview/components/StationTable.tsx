@@ -299,12 +299,6 @@ export default function StationTable({data}: Props) {
       },
     },
     positionExpandColumn: 'last',
-    // muiExpandButtonProps: ({row, table}) => ({
-    //   sx: {
-    //     px: 0,
-    //   },
-    //   size: 'small',
-    // }),
   };
 
   const table = useTable<TableData>(

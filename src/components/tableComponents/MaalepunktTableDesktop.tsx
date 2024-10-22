@@ -12,7 +12,6 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {stamdataStore} from '~/state/store';
@@ -29,7 +28,6 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  const {isTablet} = useBreakpoints();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -94,7 +92,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
   );
 
   return (
-    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
+    <Box sx={setTableBoxStyle(636)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

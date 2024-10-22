@@ -1,10 +1,11 @@
-import {Box, useMediaQuery, useTheme} from '@mui/material';
+import {Box} from '@mui/material';
 import moment from 'moment';
 
 import MaalepunktForm from '~/components/MaalepunktForm';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
@@ -14,8 +15,7 @@ interface Props {
 }
 
 export default function ReferenceForm({canEdit, ts_id}: Props) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
@@ -97,7 +97,7 @@ export default function ReferenceForm({canEdit, ts_id}: Props) {
         </Box>
       )}
       <Box display="flex" justifyContent={{sm: 'center'}}>
-        {matches ? (
+        {isMobile ? (
           <MaalepunktTableMobile
             data={watlevmp}
             handleEdit={handleEdit}

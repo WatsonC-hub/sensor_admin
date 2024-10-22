@@ -1,9 +1,8 @@
 import {Typography} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
 import PejlingMeasurementsTableMobile from '~/features/pejling/components/PejlingMeasurementsTableMobile';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {PejlingItem} from '~/types';
 
 interface PejlingMeasurementsProps {
@@ -17,10 +16,9 @@ export default function PejlingMeasurements({
   handleDelete,
   canEdit,
 }: PejlingMeasurementsProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const {isMobile} = useBreakpoints();
 
-  return matches ? (
+  return isMobile ? (
     <>
       <Typography variant="h6">Kontrol pejlinger</Typography>
       <PejlingMeasurementsTableMobile

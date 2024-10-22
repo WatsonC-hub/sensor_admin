@@ -31,9 +31,9 @@ interface boreholenoProps {
 const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   const queryClient = useQueryClient();
   const [canEdit, setCanEdit] = useState(false);
+  const {isMobile, isTouch} = useBreakpoints();
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [pageToShow, setPageToShow] = useSearchParam('page', null);
-  const {isMobile} = useBreakpoints();
   const {data: permissions} = useQuery({
     queryKey: ['borehole_permissions'],
     queryFn: async () => {
@@ -334,7 +334,8 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           display: 'flex',
           flexDirection: 'column',
           maxWidth: '1280px',
-          alignSelf: isMobile ? '' : 'center',
+          width: isTouch ? '100%' : 'fit-content',
+          alignSelf: 'center',
         }}
       >
         {pageToShow === StationPages.PEJLING && showForm === 'true' && (
@@ -384,42 +385,48 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           </Box>
         )}
         {pageToShow === StationPages.MAALEPUNKT && (
-          <FabWrapper
-            icon={<AddCircle />}
-            text="Tilføj målepunkt"
-            onClick={() => {
-              setShowForm('true');
-              resetMpData();
-            }}
-            visible={
-              pageToShow === StationPages.MAALEPUNKT && showForm === null ? 'visible' : 'hidden'
-            }
-          >
+          <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <MaalepunktTable
               watlevmp={watlevmp}
               handleEdit={() => handleEdit('watlevmp')}
               handleDelete={handleDelete('watlevmp')}
             />
-          </FabWrapper>
+            <FabWrapper
+              icon={<AddCircle />}
+              text="Tilføj målepunkt"
+              onClick={() => {
+                setShowForm('true');
+                resetMpData();
+              }}
+              sx={{
+                visibility:
+                  pageToShow === StationPages.MAALEPUNKT && showForm === null
+                    ? 'visible'
+                    : 'hidden',
+              }}
+            />
+          </Box>
         )}
         {pageToShow === null && (
-          <FabWrapper
-            icon={<AddCircle />}
-            text="Tilføj pejling"
-            onClick={() => {
-              resetPejlingData();
-              setShowForm('true');
-            }}
-            visible={
-              pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden'
-            }
-          >
+          <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <PejlingMeasurements
               measurements={measurements}
               handleEdit={() => handleEdit('pejling')}
               handleDelete={handleDelete('pejling')}
             />
-          </FabWrapper>
+            <FabWrapper
+              icon={<AddCircle />}
+              text="Tilføj pejling"
+              onClick={() => {
+                resetPejlingData();
+                setShowForm('true');
+              }}
+              sx={{
+                visibility:
+                  pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden',
+              }}
+            />
+          </Box>
         )}
         {pageToShow === StationPages.STAMDATA && canEdit && (
           <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
@@ -428,22 +435,20 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
 
       {pageToShow === StationPages.BILLEDER && (
         <Box>
+          <Images
+            type={'borehole'}
+            typeId={boreholeno}
+            setOpenSave={setOpenSave}
+            setActiveImage={setActiveImage}
+            setShowForm={setShowForm}
+          />
           <FabWrapper
             icon={<AddAPhotoRounded />}
             text="Tilføj billede"
             onClick={() => {
               fileInputRef.current && fileInputRef.current.click();
             }}
-            visible="true"
-          >
-            <Images
-              type={'borehole'}
-              typeId={boreholeno}
-              setOpenSave={setOpenSave}
-              setActiveImage={setActiveImage}
-              setShowForm={setShowForm}
-            />
-          </FabWrapper>
+          />
           <div>
             <SaveImageDialog
               activeImage={activeImage}

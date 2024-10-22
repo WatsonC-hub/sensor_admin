@@ -11,6 +11,7 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {APIError} from '~/queryClient';
 import {stamdataStore} from '~/state/store';
@@ -37,6 +38,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const [, setPageToShow] = useSearchParam('page');
   const [, setTabValue] = useSearchParam('tab');
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
+  const {isTouch, isLaptop} = useBreakpoints();
 
   const formMethods = useForm<PejlingItem>({
     defaultValues: initialData,
@@ -114,14 +116,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   };
 
   return (
-    <FabWrapper
-      icon={<AddCircle />}
-      text="Tilføj kontrol"
-      onClick={() => {
-        setShowForm('true');
-      }}
-      visible={showForm === null ? 'visible' : 'hidden'}
-    >
+    <Box mx={1}>
       <LatestMeasurementTable
         latestMeasurement={latestMeasurement}
         ts_id={ts_id}
@@ -142,14 +137,26 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
               latestMeasurement={latestMeasurement}
             />
           )}
-          <PejlingMeasurements
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            canEdit={canEdit}
-          />
         </Box>
       </FormProvider>
-    </FabWrapper>
+      <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+        <PejlingMeasurements
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          canEdit={canEdit}
+        />
+        <FabWrapper
+          icon={<AddCircle />}
+          text="Tilføj kontrol"
+          onClick={() => {
+            setShowForm('true');
+          }}
+          sx={{
+            visibility: showForm === null ? 'visible' : 'hidden',
+          }}
+        ></FabWrapper>
+      </Box>
+    </Box>
   );
 };
 

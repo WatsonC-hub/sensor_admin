@@ -1,7 +1,4 @@
-import {Box} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-
+import useBreakpoints from '~/hooks/useBreakpoints';
 import MaalepunktTableDesktop from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/pages/field/boreholeno/components/tableComponents/MaalepunktTableMobile';
 import {MaalepunktTableData} from '~/types';
@@ -17,26 +14,23 @@ export default function MaalepunktTable({
   handleEdit,
   handleDelete,
 }: MaalepunktTableProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const {isMobile} = useBreakpoints();
 
   return (
     <>
-      <Box display="flex" justifyContent={{sm: 'center'}}>
-        {matches ? (
-          <MaalepunktTableMobile
-            data={watlevmp}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-          />
-        ) : (
-          <MaalepunktTableDesktop
-            data={watlevmp}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-          />
-        )}
-      </Box>
+      {isMobile ? (
+        <MaalepunktTableMobile
+          data={watlevmp}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ) : (
+        <MaalepunktTableDesktop
+          data={watlevmp}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      )}
     </>
   );
 }

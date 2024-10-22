@@ -11,8 +11,8 @@ import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
-import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
+import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 
 const schema = z.object({
   calypso_id: z.number().int().min(1).optional().nullish(),
@@ -126,7 +126,6 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
       )}
       <Card
         sx={{
-          width: {xs: window.innerWidth, md: 1080},
           textAlign: 'center',
           justifyContent: 'center',
           alignContent: 'center',

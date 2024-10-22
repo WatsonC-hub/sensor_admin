@@ -1,9 +1,8 @@
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
 
 import TilsynTableDesktop from '~/features/tilsyn/components/TilsynTableDesktop';
 import TilsynTableMobile from '~/features/tilsyn/components/TilsynTableMobile';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {TilsynItem} from '~/types';
 
 interface TilsynTableProps {
@@ -13,10 +12,9 @@ interface TilsynTableProps {
 }
 
 export default function TilsynTable({handleEdit, handleDelete, canEdit}: TilsynTableProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const {isMobile} = useBreakpoints();
 
-  return matches ? (
+  return isMobile ? (
     <TilsynTableMobile handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
   ) : (
     <TilsynTableDesktop handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />

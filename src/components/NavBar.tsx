@@ -17,8 +17,6 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQueryClient} from '@tanstack/react-query';
 import {useSetAtom} from 'jotai';
 import {useState, ReactNode, useContext, MouseEventHandler} from 'react';
@@ -213,10 +211,9 @@ export const NavBarMenu = ({
 };
 
 const Logo = () => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const {isMobile} = useBreakpoints();
 
-  return matches ? <SmallLogo /> : <LogoSvg />;
+  return isMobile ? <SmallLogo /> : <LogoSvg />;
 };
 
 const GoBack = () => {

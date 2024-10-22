@@ -665,16 +665,17 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
             />
           </TabPanel>
           <TabPanel value={tabValue} index={'3'}>
+            <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
             <FabWrapper
               icon={<AddCircle />}
               text="Tilføj målepunkt"
               onClick={() => {
                 setShowForm('true');
               }}
-              visible={showForm === null ? 'visible' : 'hidden'}
-            >
-              <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
-            </FabWrapper>
+              sx={{
+                visibility: showForm === null ? 'visible' : 'hidden',
+              }}
+            />
           </TabPanel>
         </FormProvider>
         <TabPanel value={tabValue} index={'4'}>

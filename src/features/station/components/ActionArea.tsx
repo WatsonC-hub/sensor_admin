@@ -34,7 +34,7 @@ export default function ActionArea({isCalculated, ts_id, stamdata}: ActionAreaPr
   if (ts_id.toString() !== '' || !stamdata) {
     navigationItems.push(
       {
-        text: 'Pejling',
+        text: 'Kontrol',
         value: StationPages.PEJLING,
         icon: <AddCircle />,
         color: navIconStyle(pageToShow === null),

@@ -45,11 +45,13 @@ export default function PejlingMeasurementsTableDesktop({
         sortingFn: (a, b) => (a.original.timeofmeas > b.original.timeofmeas ? 1 : -1),
         id: 'timeofmeas',
         header: 'Dato',
+        size: 150,
       },
       {
         accessorFn: (row) => limitDecimalNumbers(row.measurement),
         header: unit,
         id: 'measurement',
+        size: 140,
       },
       {
         accessorFn: (row) =>
@@ -97,7 +99,7 @@ export default function PejlingMeasurementsTableDesktop({
   );
 
   return (
-    <Box sx={setTableBoxStyle(715)}>
+    <Box sx={setTableBoxStyle(710)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

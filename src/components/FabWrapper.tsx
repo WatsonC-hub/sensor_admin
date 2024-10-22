@@ -1,12 +1,12 @@
-import {Fab, SvgIconProps, Typography} from '@mui/material';
-import React from 'react';
+import {Fab, FabProps, SvgIconProps, Typography} from '@mui/material';
+import React, {ReactNode} from 'react';
 
-interface Props {
-  children: React.ReactNode;
+import useBreakpoints from '~/hooks/useBreakpoints';
+
+interface Props extends Omit<FabProps, 'variant'> {
   text: string;
   icon: React.ReactElement<SvgIconProps>;
   onClick: () => void;
-  visible: string;
 }
 
 const fabTextStyle = {
@@ -14,10 +14,10 @@ const fabTextStyle = {
   textTransform: 'initial',
 };
 
-const FabWrapper = ({children, text, icon, onClick, visible}: Props) => {
+const FabWrapper = ({text, icon, onClick, ...otherProps}: Props) => {
+  const {isTouch} = useBreakpoints();
   return (
     <div>
-      {children}
       <Fab
         color="secondary"
         aria-label="add"
@@ -26,17 +26,15 @@ const FabWrapper = ({children, text, icon, onClick, visible}: Props) => {
           position: 'fixed',
           bottom: 65,
           right: 20,
-          width: 200,
+          width: isTouch ? 75 : 200,
           height: 60,
           borderRadius: 4.5,
           color: 'white',
-          visibility: visible,
+          ...otherProps.sx,
         }}
       >
-        <>
-          {icon}
-          <Typography sx={fabTextStyle}>{text}</Typography>
-        </>
+        {icon}
+        {!isTouch && <Typography sx={fabTextStyle}>{text}</Typography>}
       </Fab>
     </div>
   );

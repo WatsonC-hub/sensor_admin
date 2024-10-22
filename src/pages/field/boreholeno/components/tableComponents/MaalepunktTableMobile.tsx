@@ -8,7 +8,7 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {renderDetailStyle, setTableBoxStyle} from '~/consts';
+import {renderDetailStyle} from '~/consts';
 import {
   convertDate,
   checkEndDateIsUnset,
@@ -71,15 +71,17 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
               {checkEndDateIsUnset(row.original.enddate) ? 'Nu' : convertDate(row.original.enddate)}
             </Typography>
 
-            <RenderActions
-              handleEdit={() => {
-                handleEdit(row.original);
-              }}
-              onDeleteBtnClick={() => {
-                onDeleteBtnClick(row.original.gid);
-              }}
-              canEdit={row.original.organisationid == org_id}
-            />
+            <Box marginLeft={'auto'}>
+              <RenderActions
+                handleEdit={() => {
+                  handleEdit(row.original);
+                }}
+                onDeleteBtnClick={() => {
+                  onDeleteBtnClick(row.original.gid);
+                }}
+                canEdit={row.original.organisationid == org_id}
+              />
+            </Box>
           </Box>
         ),
       },
@@ -113,7 +115,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
   const table = useTable<MaalepunktTableData>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
-    <Box sx={setTableBoxStyle(320)} width={'100%'}>
+    <Box width={'100%'}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

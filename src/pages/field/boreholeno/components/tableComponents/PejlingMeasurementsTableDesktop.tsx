@@ -12,7 +12,6 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {authStore, stamdataStore} from '~/state/store';
@@ -41,7 +40,6 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const org_id = authStore((store) => store.org_id);
-  const {isTablet} = useBreakpoints();
 
   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 
@@ -114,13 +112,6 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
     },
   };
 
-  // columns,
-  // get,
-  // options,
-  // tableState,
-  // TableTypes.TABLE,
-  // MergeType.RECURSIVEMERGE
-
   const table = useTable<Kontrol>(
     columns,
     data,
@@ -131,7 +122,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
   );
 
   return (
-    <Box sx={setTableBoxStyle(isTablet ? 436 : 636)}>
+    <Box sx={setTableBoxStyle(636)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

@@ -1,6 +1,4 @@
 import {Box} from '@mui/material';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useState} from 'react';
@@ -8,6 +6,7 @@ import React, {useEffect, useState} from 'react';
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {Measurement} from '~/types';
 
 type JupiterData = {
@@ -31,8 +30,7 @@ export default function PlotGraph({
   boreholeno,
   intakeno,
 }: PlotGraphProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const {isMobile} = useBreakpoints();
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => (d.waterlevel ? d.disttowatertable_m : null));
 
@@ -108,7 +106,7 @@ export default function PlotGraph({
 
   const data: Array<Partial<PlotData>> = [...jupiterTraces, plotOurData, dynamicMeas];
 
-  const layout: Partial<Layout> = matches
+  const layout: Partial<Layout> = isMobile
     ? {
         showlegend: false,
       }
@@ -123,10 +121,10 @@ export default function PlotGraph({
     <Box
       style={{
         width: 'auto',
-        height: setGraphHeight(matches),
+        height: setGraphHeight(isMobile),
       }}
     >
-      <PlotlyGraph plotModebarButtons={['toImage']} layout={layout} data={data} />;
+      <PlotlyGraph plotModebarButtons={['toImage']} layout={layout} data={data} />
     </Box>
   );
 }

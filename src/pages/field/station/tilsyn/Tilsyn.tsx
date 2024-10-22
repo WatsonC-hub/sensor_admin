@@ -9,6 +9,7 @@ import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {StationPages} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
@@ -20,6 +21,7 @@ type Props = {
 
 export default function Tilsyn({ts_id, canEdit}: Props) {
   const [showForm, setShowForm] = useSearchParam('showForm');
+  const {isTouch, isLaptop} = useBreakpoints();
   const store = stamdataStore();
   const initialData: TilsynItem = {
     dato: moment().format('YYYY-MM-DDTHH:mm'),
@@ -100,22 +102,27 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   }, [ts_id]);
 
   return (
-    <FabWrapper
-      icon={<PlaylistAddRounded />}
-      text={'Tilføj ' + StationPages.TILSYN}
-      onClick={() => {
-        setShowForm('true');
-      }}
-      visible={showForm === null ? 'visible' : 'hidden'}
-    >
+    <Box>
       <FormProvider {...formMethods}>
         <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
           {showForm === 'true' && (
             <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
           )}
-          <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
         </Box>
       </FormProvider>
-    </FabWrapper>
+      <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
+        <FabWrapper
+          icon={<PlaylistAddRounded />}
+          text={'Tilføj ' + StationPages.TILSYN}
+          onClick={() => {
+            setShowForm('true');
+          }}
+          sx={{
+            visibility: showForm === null ? 'visible' : 'hidden',
+          }}
+        />
+      </Box>
+    </Box>
   );
 }

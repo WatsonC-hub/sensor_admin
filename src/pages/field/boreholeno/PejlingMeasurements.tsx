@@ -1,6 +1,4 @@
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-
+import useBreakpoints from '~/hooks/useBreakpoints';
 import PejlingMeasurementsTableDesktop from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
 import PejlingMeasurementsTableMobile from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableMobile';
 import {Kontrol} from '~/types';
@@ -16,10 +14,9 @@ export default function PejlingMeasurements({
   handleEdit,
   handleDelete,
 }: PejlingProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const {isMobile} = useBreakpoints();
 
-  return matches ? (
+  return isMobile ? (
     <PejlingMeasurementsTableMobile
       data={measurements}
       handleEdit={handleEdit}
