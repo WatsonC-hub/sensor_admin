@@ -34,7 +34,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
     setDialogOpen(true);
   };
 
-  const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
+  const unit = timeseries.tstype_id === 1 ? 'Kote [m (DVR90)]' : `Måling [${timeseries.unit}]`;
 
   const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
     () => [
@@ -47,6 +47,19 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
           (checkEndDateIsUnset(row.enddate) ? 'Nu' : convertDateWithTimeStamp(row.enddate)),
         sortingFn: (a, b) => (a.original.startdate > b.original.startdate ? 1 : -1),
         enableHide: false,
+        Cell: ({row}) => {
+          const startDate: string = convertDateWithTimeStamp(row.original.startdate);
+          const endDate: string = convertDateWithTimeStamp(row.original.enddate);
+
+          return (
+            <>
+              <span style={{display: 'inline-block'}}>{startDate}</span>
+              {' - '}
+              {/* <span style={{display: 'block'}}>-</span> */}
+              <span style={{display: 'inline-block'}}> {endDate}</span>
+            </>
+          );
+        },
       },
       {
         accessorFn: (row) => limitDecimalNumbers(row.elevation),
