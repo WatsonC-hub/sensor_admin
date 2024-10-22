@@ -94,6 +94,7 @@ export default function PejlingForm({
           setHide(Math.abs(diff) > 1);
         } else {
           setDynamic([]);
+          setHide(true);
         }
       }
     } else if (tstype_id !== 1) {
@@ -175,7 +176,7 @@ export default function PejlingForm({
             MPTitle={currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
             koteTitle={pejlingOutOfRange || currentMP == null ? '' : currentMP.elevation}
             elevationDiff={elevationDiff}
-            pejlingOutOfRange={pejlingOutOfRange}
+            pejlingOutOfRange={pejlingOutOfRange || !currentMP}
           />
         )}
 
