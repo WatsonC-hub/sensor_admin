@@ -7,6 +7,19 @@ export const StationPages = {
   DEFAULT: null,
 } as const;
 
+export const QaPages = {
+  DATA: null,
+  ALGORITHMS: 'algoritmer',
+  DATAMOBILE: 'Justeringer',
+};
+
+export const QaAdjustment = {
+  CONFIRM: 'confirm',
+  REMOVE: 'remove',
+  BOUNDS: 'bounds',
+  CORRECTION: 'correction',
+};
+
 export enum TableTypes {
   STATIONTABLE = 'stationTable',
   TABLE = 'table',

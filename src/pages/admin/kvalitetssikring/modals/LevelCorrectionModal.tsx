@@ -7,6 +7,7 @@ import {useContext, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
@@ -14,6 +15,8 @@ const LevelCorrectionModal = () => {
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
   const metadata = useContext(MetadataContext);
+  const [, setDataAdjustment] = useSearchParam('adjust', null);
+
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     onAccept();
@@ -60,7 +63,9 @@ const LevelCorrectionModal = () => {
         rows={3}
       />
       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} m={1} gap={1}>
-        {/* <Button bttype="tertiary">Annuller</Button> */}
+        <Button bttype="tertiary" onClick={() => setDataAdjustment(null)}>
+          Annuller
+        </Button>
         <Button bttype="primary" onClick={handleSubmit} startIcon={<Save />} color="secondary">
           Gem
         </Button>

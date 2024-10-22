@@ -8,6 +8,7 @@ import {useContext, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useExclude} from '~/hooks/query/useExclude';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
@@ -30,6 +31,7 @@ const ExcludeModal = () => {
   const [endDate, setEndDate] = useState(moment.max(x0, x1));
   const [startValue, setStartValue] = useState(Math.min(y0, y1).toFixed(4));
   const [endValue, setEndValue] = useState(Math.max(y0, y1).toFixed(4));
+  const [, setDataAdjustment] = useSearchParam('adjust', null);
 
   const {post: excludeMutation} = useExclude();
 
@@ -128,14 +130,14 @@ const ExcludeModal = () => {
         <Typography gutterBottom>Ekskluderer {selection.points?.length} punkter</Typography>
       )}
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-        {/* <Button
+        <Button
           bttype="tertiary"
           // startIcon={<KeyboardReturnIcon />}
-          // onClick={onClose}
+          onClick={() => setDataAdjustment(null)}
           sx={{marginRight: 1}}
         >
           Annuller
-        </Button> */}
+        </Button>
         <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
           Gem
         </Button>
