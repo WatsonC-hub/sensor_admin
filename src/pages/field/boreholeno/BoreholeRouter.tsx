@@ -30,17 +30,17 @@ export default function BoreholeRouter() {
   });
 
   useEffect(() => {
-    if (data && params.boreholeno && params.intakeno) {
-      let intakeno = params.intakeno;
+    if (data && params.boreholeno) {
+      let intakeno = params.intakeno ?? '';
       if (intakeno) {
         setSelectedItem(parseInt(intakeno));
       } else {
-        intakeno = '';
         if (data.length === 1) {
           intakeno = data[0].intakeno;
           // navigate(`../borehole/${params.boreholeno}/${intakeno}`, {
           //   replace: true,
           // });
+          setSelectedItem(parseInt(intakeno));
           boreholeIntake(params.boreholeno, intakeno, {replace: true});
         }
         setSelectedItem(parseInt(intakeno));
