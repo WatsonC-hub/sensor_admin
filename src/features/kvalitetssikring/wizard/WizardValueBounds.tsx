@@ -46,16 +46,7 @@ const WizardValueBounds = ({setStep, setInitiateSelect}: WizardValueBoundsProps)
             Markér grænseværdier
           </Button>
         </Box>
-        <Box alignSelf={'center'}>
-          {'range' in selection && (
-            <YRangeModal
-              onClose={() => {
-                setInitiateSelect(false);
-                setStep(0);
-              }}
-            />
-          )}
-        </Box>
+        <Box alignSelf={'center'}>{'range' in selection && <YRangeModal />}</Box>
       </CardContent>
     </Box>
   );
