@@ -74,6 +74,7 @@ const LegendContent = () => {
               />
             </CircleBox>
           </CircleBox>
+
           <Typography variant="body2">
             Ringen omkring en IoT station betegner f.eks. at der er QA problemer som ikke er drift
             kritiske. Det som er inde i ringen betegner hvorvidt en IoT station har kritiske
