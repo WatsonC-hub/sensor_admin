@@ -1,9 +1,10 @@
+import {Circle} from '@mui/icons-material';
 import {Box, Divider, Typography} from '@mui/material';
 import React from 'react';
 
 import {boreholeColors} from '~/consts';
 import BoreholeIcon from '~/pages/field/overview/components/BoreholeIcon';
-import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+import NotificationIcon, {CircleBox} from '~/pages/field/overview/components/NotificationIcon';
 import {useDrawerContext} from '~/state/contexts';
 
 const iotItems = [
@@ -45,6 +46,39 @@ const LegendContent = () => {
               <Typography variant="body1">{item.text}</Typography>
             </Box>
           ))}
+        </Box>
+      </Box>
+      <Divider sx={{my: 1}} />
+
+      <Box display="flex" flexDirection="column">
+        <Box display="flex" gap={1}>
+          <CircleBox
+            sx={{
+              textAlign: 'center',
+              bgcolor: 'red',
+            }}
+          >
+            <CircleBox
+              sx={{
+                height: '1.3em',
+                ml: -0.02,
+                width: '1.3em',
+              }}
+            >
+              <Circle
+                sx={{
+                  fontSize: 'inherit',
+                  textAlign: 'start',
+                  color: '#4caf50',
+                }}
+              />
+            </CircleBox>
+          </CircleBox>
+          <Typography variant="body2">
+            Ringen omkring en IoT station betegner f.eks. at der er QA problemer som ikke er drift
+            kritiske. Det som er inde i ringen betegner hvorvidt en IoT station har kritiske
+            driftsproblemer.
+          </Typography>
         </Box>
       </Box>
 

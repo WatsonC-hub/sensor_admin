@@ -35,7 +35,7 @@ const flagStyling = (iconDetails: IconDetails) => {
   };
 };
 
-const CircleBox = ({
+export const CircleBox = ({
   children,
   sx,
   padding = '0.0em',
