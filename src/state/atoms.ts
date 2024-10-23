@@ -3,7 +3,7 @@ import {atomWithStorage, atomFamily} from 'jotai/utils';
 import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
 import {merge} from 'lodash';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
-import {Datum, PlotDatum, SelectionRange} from 'plotly.js';
+import {PlotDatum} from 'plotly.js';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {

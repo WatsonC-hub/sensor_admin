@@ -321,7 +321,7 @@ function Map() {
     );
 
     const map = L.map('map', {
-      center: [55.876823, 8.961644],
+      center: [56.215868, 8.228759],
       zoom: 7,
       layers: [outdormapbox],
       tap: false,
@@ -523,8 +523,8 @@ function Map() {
     geoJsonRef.current?.clearLayers();
     if (geoJsonRef.current) {
       const active_loc_ids = filteredData.map((item) => {
-        if ('locid' in item) {
-          return item.locid;
+        if ('loc_id' in item) {
+          return item.loc_id;
         }
       });
       if (mapRef && mapRef.current && filteredData.length > 0) {
@@ -567,8 +567,8 @@ function Map() {
     parkingLayerRef.current?.clearLayers();
     if (mapRef && mapRef.current && parkings && parkings.length > 0 && filteredData.length > 0) {
       const active_loc_ids = filteredData.map((item) => {
-        if ('locid' in item) {
-          return item.locid;
+        if ('loc_id' in item) {
+          return item.loc_id;
         }
       });
       parkings.forEach((parking: Parking) => {
@@ -749,8 +749,10 @@ function Map() {
     if (zoom !== null && pan !== null) {
       mapRef.current?.setView(pan, zoom);
     } else {
-      if (layerRef.current?.getBounds().isValid()) {
-        mapRef.current?.fitBounds(layerRef.current.getBounds());
+      if (layerRef.current?.getBounds().isValid() && mapRef.current) {
+        const zoom = mapRef.current.getZoom();
+        const localPan = pan ? pan : mapRef.current.getCenter();
+        mapRef.current?.setView(localPan, zoom);
       }
     }
   }, [filteredData]);
