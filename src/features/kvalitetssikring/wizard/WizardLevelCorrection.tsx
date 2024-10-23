@@ -1,20 +1,13 @@
-import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import {Box, CardContent, Typography} from '@mui/material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import {Box, CardContent, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
 
-import Button from '~/components/Button';
 import LevelCorrectionModal from '~/pages/admin/kvalitetssikring/modals/LevelCorrectionModal';
 import {qaSelection} from '~/state/atoms';
 
-type WizardLevelCorrectionProps = {
-  setStep: (value: number) => void;
-  setInitiateConfirmTimeseries: (initiateConfirmTimeseries: boolean) => void;
-};
-
-const WizardLevelCorrection = ({setInitiateConfirmTimeseries}: WizardLevelCorrectionProps) => {
+const WizardLevelCorrection = () => {
   const selection = useAtomValue(qaSelection);
-  console.log(selection);
 
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
@@ -26,38 +19,26 @@ const WizardLevelCorrection = ({setInitiateConfirmTimeseries}: WizardLevelCorrec
           alignContent: 'center',
         }}
       >
-        <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'}>
-          <Typography alignSelf={'center'} variant="h5" component="h2" fontWeight={'bold'}>
+        <Box display={'flex'} flexDirection="row" mb={1} gap={1} alignItems={'end'}>
+          <Typography alignSelf={'center'} variant="h5" fontWeight={'bold'}>
             Korriger spring
           </Typography>
-          <Typography sx={{wordWrap: 'break-word'}}>
-            På denne side af guiden kan du rette en specifik hændelse i tidsserien, f.eks. en
-            unaturlig spike eller et niveauspring. Tryk på knappen, og markér venligst ét punkt på
-            grafen, som du ønsker at rette, for at starte behandlingen.
-          </Typography>
-        </Box>
-        <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
-          <Button
-            startIcon={<HighlightAltIcon />}
-            bttype={'primary'}
-            disabled={false}
-            onClick={() => {
-              setInitiateConfirmTimeseries(true);
-            }}
+          <Tooltip
+            placement="right"
+            open={true}
+            arrow={true}
+            title={
+              <p>
+                På denne side af guiden kan du rette en specifik hændelse i tidsserien, f.eks. en
+                unaturlig spike eller et niveauspring. Markér venligst ét punkt på grafen, som du
+                ønsker at rette, for at starte behandlingen.
+              </p>
+            }
           >
-            Markér et punkt
-          </Button>
+            <InfoOutlinedIcon />
+          </Tooltip>
         </Box>
-        <Box alignSelf={'center'}>
-          {'points' in selection && (
-            <LevelCorrectionModal
-            // onClose={() => {
-            //   setInitiateSelect(false);
-            //   setStep(0);
-            // }}
-            />
-          )}
-        </Box>
+        <Box alignSelf={'center'}>{'points' in selection && <LevelCorrectionModal />}</Box>
       </CardContent>
     </Box>
   );

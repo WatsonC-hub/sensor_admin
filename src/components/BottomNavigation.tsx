@@ -5,12 +5,10 @@ import {
   Paper,
   SvgIconProps,
   Box,
-  useMediaQuery,
   MenuItem,
   Menu,
   IconButton,
 } from '@mui/material';
-import {useTheme} from '@mui/material/styles';
 import React from 'react';
 
 import {StationPages} from '~/helpers/EnumHelper';
@@ -29,7 +27,7 @@ interface NavigationItem {
 interface CustomBottomNavigationProps {
   pageToShow: string | null;
   onChange: (event: React.ChangeEvent<object>, newValue: string | null) => void;
-  items: NavigationItem[];
+  items: Array<NavigationItem>;
   canEdit?: boolean;
 }
 
@@ -67,13 +65,12 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   };
 
   return (
-    <Box sx={{mt: isMobile ? 15 : 8, position: 'sticky', zIndex: 3}}>
+    <Box sx={{mt: isMobile ? 15 : 8, zIndex: 3}}>
       {isMobile && hiddenItems.length > 0 && (
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
-          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
           PaperProps={{
             sx: {
               backgroundColor: 'primary.main',
@@ -108,7 +105,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           })}
         </Menu>
       )}
-      <Paper sx={{position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={3}>
+      <Paper sx={{position: 'fixed', bottom: 0, width: '100%'}} elevation={3}>
         <BottomNavigation
           value={pageToShow}
           showLabels
