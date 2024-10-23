@@ -1,11 +1,18 @@
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
 
+import Button from '~/components/Button';
 import ExcludeModal from '~/pages/admin/kvalitetssikring/modals/ExcludeModal';
 import {qaSelection} from '~/state/atoms';
 
-const WizardDataExclude = () => {
+type WizardDataExcludeProps = {
+  setStep: (value: number) => void;
+  setInitiateSelect: (initiateSelect: boolean) => void;
+};
+
+const WizardDataExclude = ({setInitiateSelect}: WizardDataExcludeProps) => {
   const selection = useAtomValue(qaSelection);
 
   return (
@@ -24,8 +31,20 @@ const WizardDataExclude = () => {
           </Typography>
           <Typography sx={{wordWrap: 'break-word'}}>
             På denne side af guiden har du mulighed for at fjerne punkter som du mener der er fejl
-            i. Markér området som skal fjernes fra grafen.
+            i. Tryk på knappen nedenfor og derefter marker området på grafen som skal fjernes.
           </Typography>
+        </Box>
+        <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
+          <Button
+            startIcon={<HighlightAltIcon />}
+            bttype={'primary'}
+            disabled={false}
+            onClick={() => {
+              setInitiateSelect(true);
+            }}
+          >
+            Markér punkter
+          </Button>
         </Box>
         <Box alignSelf={'center'}>
           {'range' in selection && (

@@ -1,5 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
+import AdsClickIcon from '@mui/icons-material/AdsClick';
 // import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
@@ -12,16 +13,15 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 // import {QaStampLevel} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
 import {CertifyQa, useCertifyQa} from '../api/useCertifyQa';
 
 interface WizardConfirmTimeseriesProps {
-  // setStep: (value: number) => void;
+  setStep: (value: number) => void;
   initiateConfirmTimeseries: boolean;
-  // setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
+  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
 }
 
 const schema = z
@@ -47,12 +47,14 @@ type CertifyQaValues = z.infer<typeof schema>;
 const WizardConfirmTimeseries = ({
   // setStep,
   initiateConfirmTimeseries,
-  // setInitiateConfirmTimeseries,
+  setInitiateConfirmTimeseries,
 }: WizardConfirmTimeseriesProps) => {
   const metadata = useContext(MetadataContext);
   const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
   const {isMobile} = useBreakpoints();
   const selection = useAtomValue(qaSelection);
+  const [disabled, setDisabled] = useState(false);
+  // const disabled = !initiateConfirmTimeseries || !('points' in selection);
 
   const {
     get: {data: qaData},
@@ -60,8 +62,8 @@ const WizardConfirmTimeseries = ({
   } = useCertifyQa(metadata?.ts_id);
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
-  const [, setDataAdjustment] = useSearchParam('adjust', null);
 
+  console.log(selectedQaData);
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -81,6 +83,10 @@ const WizardConfirmTimeseries = ({
       setSelectedQaData(qaData?.find((qa) => qa.level === qaStampWatch));
     }
   }, [qaStampWatch, qaStamp, qaData]);
+
+  useEffect(() => {
+    setDisabled(!initiateConfirmTimeseries || !true);
+  }, [initiateConfirmTimeseries]);
 
   useEffect(() => {
     if (selection.points && selection.points.length > 0) {
@@ -134,6 +140,16 @@ const WizardConfirmTimeseries = ({
             alignSelf={'center'}
             gap={1}
           >
+            <Button
+              startIcon={<AdsClickIcon />}
+              bttype={'primary'}
+              disabled={false}
+              onClick={() => {
+                setInitiateConfirmTimeseries(true);
+              }}
+            >
+              Markér punkt
+            </Button>
             <Box
               display={'flex'}
               width={'100%'}
@@ -166,7 +182,7 @@ const WizardConfirmTimeseries = ({
                 name="date"
                 label="Godkendt til"
                 type={'datetime-local'}
-                disabled={!initiateConfirmTimeseries}
+                disabled={disabled}
                 style={{
                   minWidth: 195,
                   width: isMobile ? 'fit-content' : 195,
@@ -208,15 +224,15 @@ const WizardConfirmTimeseries = ({
             /> */}
 
             <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
-              <Button
+              {/* <Button
                 bttype="tertiary"
                 onClick={() => {
-                  setDataAdjustment(null);
-                  // reset();
+                  reset();
+                  setInitiateConfirmTimeseries(false);
                 }}
               >
                 Annuller
-              </Button>
+              </Button> */}
               <Button
                 bttype="primary"
                 startIcon={<Save />}

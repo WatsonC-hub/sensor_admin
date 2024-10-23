@@ -24,6 +24,8 @@ export default function QAHistory() {
     refetchOnWindowFocus: false,
   });
 
+  console.log(data);
+
   if (isLoading)
     return (
       <Box>

@@ -1,5 +1,5 @@
 import {Fab, FabProps, SvgIconProps, Typography} from '@mui/material';
-import React from 'react';
+import React, {ReactNode} from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 

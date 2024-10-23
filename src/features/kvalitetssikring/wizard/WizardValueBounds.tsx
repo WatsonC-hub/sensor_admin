@@ -1,16 +1,18 @@
+import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import {Box, CardContent, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import React from 'react';
 
+import Button from '~/components/Button';
 import YRangeModal from '~/pages/admin/kvalitetssikring/modals/YRangeModal';
 import {qaSelection} from '~/state/atoms';
 
-// type WizardValueBoundsProps = {
-//   setStep: (value: number) => void;
-//   setInitiateSelect: (initiateSelect: boolean) => void;
-// };
+type WizardValueBoundsProps = {
+  setStep: (value: number) => void;
+  setInitiateSelect: (initiateSelect: boolean) => void;
+};
 
-const WizardValueBounds = () => {
+const WizardValueBounds = ({setStep, setInitiateSelect}: WizardValueBoundsProps) => {
   const selection = useAtomValue(qaSelection);
 
   return (
@@ -32,7 +34,7 @@ const WizardValueBounds = () => {
             inden for disse grænser vil være gyldige, og alle punkter udenfor vil blive fjernet.
           </Typography>
         </Box>
-        {/* <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
+        <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
           <Button
             startIcon={<DensityLargeIcon />}
             bttype={'primary'}
@@ -43,14 +45,14 @@ const WizardValueBounds = () => {
           >
             Markér grænseværdier
           </Button>
-        </Box> */}
+        </Box>
         <Box alignSelf={'center'}>
           {'range' in selection && (
             <YRangeModal
-            // onClose={() => {
-            //   setInitiateSelect(false);
-            //   setStep(0);
-            // }}
+              onClose={() => {
+                setInitiateSelect(false);
+                setStep(0);
+              }}
             />
           )}
         </Box>

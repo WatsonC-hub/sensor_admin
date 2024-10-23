@@ -4,18 +4,17 @@ import {FormControlLabel, FormGroup, Switch} from '@mui/material';
 import {useAtom} from 'jotai';
 import React from 'react';
 
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {dataToShowAtom} from '~/state/atoms';
 
 export default function DataToShow() {
   const [dataToShow, setDataToShow] = useAtom(dataToShowAtom);
-  const {isMobile} = useBreakpoints();
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDataToShow({...dataToShow, [event.target.name]: event.target.checked});
   };
 
   return (
-    <FormGroup row={isMobile} sx={{ml: 1}}>
+    <FormGroup>
       {Object.keys(dataToShow).map((key) => (
         <FormControlLabel
           key={key}

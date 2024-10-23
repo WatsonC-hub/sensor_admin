@@ -168,6 +168,8 @@ export default function PlotGraph({
     refetchOnWindowFocus: false,
   });
 
+  console.log(removed_data);
+
   const {data: precipitation_data} = useQuery({
     queryKey: ['precipitation_data', ts_id],
     queryFn: async () => {
@@ -183,7 +185,7 @@ export default function PlotGraph({
   });
 
   const handlePlotlySelected = (eventData: any) => {
-    console.log(levelCorrection);
+    console.log(eventData);
     if (eventData === undefined) {
       return;
     } else {
@@ -447,10 +449,6 @@ export default function PlotGraph({
     },
   };
 
-  useEffect(() => {
-    if (levelCorrection) setInitiateSelect(false);
-  }, [levelCorrection]);
-
   return (
     <div
       style={{
@@ -462,7 +460,8 @@ export default function PlotGraph({
           onSelected: handlePlotlySelected,
           onRelayout: handleRelayout,
           onClick: (e) => {
-            if (initiateConfirmTimeseries || levelCorrection) {
+            console.log(initiateConfirmTimeseries);
+            if (initiateConfirmTimeseries) {
               setSelection({points: e.points});
             }
           },

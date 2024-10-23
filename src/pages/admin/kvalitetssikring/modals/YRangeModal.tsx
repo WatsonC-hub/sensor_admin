@@ -6,7 +6,6 @@ import {useContext, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
@@ -17,8 +16,6 @@ const YRangeModal = () => {
 
   const [minY, setMinY] = useState(Math.min(y1, y0).toFixed(4));
   const [maxY, setMaxY] = useState(Math.max(y1, y0).toFixed(4));
-  const [, setDataAdjustment] = useSearchParam('adjust', null);
-
   const metadata = useContext(MetadataContext);
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -80,9 +77,9 @@ const YRangeModal = () => {
         </Box>
       </Box>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-        <Button bttype="tertiary" onClick={() => setDataAdjustment(null)} sx={{marginRight: 1}}>
+        {/* <Button bttype="tertiary" onClick={onClose} sx={{marginRight: 1}}>
           Annuller
-        </Button>
+        </Button> */}
         <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
           Gem
         </Button>
