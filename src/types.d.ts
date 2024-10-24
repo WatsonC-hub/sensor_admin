@@ -1,7 +1,16 @@
+import type {QueryClient} from '@tanstack/react-query';
+import type {Axios} from 'axios';
+import type {LoaderFunctionArgs} from 'react-router-dom';
 import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
-
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+type LoaderProps = {
+  queryClient: QueryClient;
+  apiClient: Axios;
+};
+
+export type LoaderFunction<T> = (props: LoaderProps) => (args: LoaderFunctionArgs) => Promise<T>;
 
 export interface Image {
   type: string;

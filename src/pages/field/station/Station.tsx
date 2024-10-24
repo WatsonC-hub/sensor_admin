@@ -1,8 +1,9 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import {Alert, Box, Divider, Typography} from '@mui/material';
+import {useQuery, useSuspenseQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {ChangeEvent, createRef, useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useLoaderData, useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
@@ -11,6 +12,7 @@ import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {StationPages} from '~/helpers/EnumHelper';
+import {options} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -18,14 +20,30 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {stamdataStore} from '~/state/store';
+import {LoaderFunction} from '~/types';
 
-interface StationProps {
-  ts_id: number;
-  stamdata: any;
-}
+export const loader: LoaderFunction<{ts_id: number; loc_id: number}> =
+  ({queryClient}) =>
+  async ({params}) => {
+    if (!params.ts_id) {
+      throw new Error('ts_id is required');
+    }
+    if (!params.locid) {
+      throw new Error('locid is required');
+    }
+    const ts_id = parseInt(params.ts_id);
+    const loc_id = parseInt(params.locid);
+    const data = await queryClient.ensureQueryData(options(ts_id));
+    return {ts_id, loc_id};
+  };
 
-export default function Station({ts_id, stamdata}: StationProps) {
-  const params = useParams();
+export default function Station() {
+  const {ts_id, loc_id} = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>;
+  const {data: stamdata} = useSuspenseQuery({
+    ...options(ts_id),
+    staleTime: 1000,
+  });
+
   const [showForm, setShowForm] = useSearchParam('showForm');
   const [pageToShow, setPageToShow] = useSearchParam('page', null);
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
@@ -37,7 +55,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
   const {isTouch} = useBreakpoints();
   const [activeImage, setActiveImage] = useState({
     gid: -1,
-    type: params.locid,
+    type: loc_id,
     comment: '',
     public: false,
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
@@ -82,7 +100,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
     setdataUri(datauri);
     setActiveImage({
       gid: -1,
-      type: params.locid,
+      type: loc_id,
       comment: '',
       public: false,
       date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
@@ -198,7 +216,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
         <Box>
           <Images
             type={'station'}
-            typeId={params.locid ?? ''}
+            typeId={loc_id}
             setOpenSave={setOpenSave}
             setActiveImage={setActiveImage}
             setShowForm={setShowForm}
@@ -213,7 +231,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
           <SaveImageDialog
             activeImage={activeImage}
             changeData={changeActiveImageData}
-            id={params.locid ?? ''}
+            id={loc_id}
             type={'station'}
             open={openSave}
             dataUri={dataUri}

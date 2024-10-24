@@ -35,7 +35,7 @@ const NetworkStatus = () => {
 
   prevStatus = online;
 
-  return;
+  return <></>;
 };
 
 export default NetworkStatus;

@@ -1,6 +1,5 @@
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import AppBar from '@mui/material/AppBar';
-import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import {useQuery} from '@tanstack/react-query';
@@ -50,7 +49,6 @@ export default function BoreholeRouter() {
 
   return (
     <>
-      <CssBaseline />
       <AppBar position="sticky" style={{backgroundColor: 'primary'}}>
         <Toolbar>
           <IconButton

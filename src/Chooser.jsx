@@ -6,8 +6,6 @@ import {useNavigate} from 'react-router-dom';
 
 import ChoiseCard from '~/components/ChoiseCard';
 const Chooser = () => {
-  let navigate = useNavigate();
-
   return (
     <Grid
       container

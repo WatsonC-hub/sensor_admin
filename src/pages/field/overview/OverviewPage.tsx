@@ -92,7 +92,7 @@ export default function OverviewPage() {
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
-      <NavBar />
+      {/* <NavBar /> */}
       <Tabs
         value={tabValue}
         onChange={handleChange}

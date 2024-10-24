@@ -17,15 +17,14 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import {useQueryClient} from '@tanstack/react-query';
 import {useSetAtom} from 'jotai';
 import {useState, ReactNode, useContext, MouseEventHandler} from 'react';
 import {useNavigate} from 'react-router-dom';
 
-import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import NotificationList from '~/components/NotificationList';
 import {appBarHeight} from '~/consts';
+import {useAuth} from '~/hooks/query/useAuth';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
@@ -37,15 +36,14 @@ import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const [resetState] = authStore((state) => [state.resetState]);
-  const queryClient = useQueryClient();
+  const {logOut} = useAuth();
   const {home} = useNavigationFunctions();
 
   const handleLogout = () => {
     resetState();
     // navigate('/');
     home();
-    apiClient.get('/auth/logout/secure');
-    queryClient.clear();
+    logOut.mutate();
   };
 
   return (

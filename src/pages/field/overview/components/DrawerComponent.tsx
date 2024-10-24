@@ -2,7 +2,6 @@ import {Global} from '@emotion/react';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {Typography, Box, Drawer} from '@mui/material';
-import CssBaseline from '@mui/material/CssBaseline';
 import React, {useEffect, useState} from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -40,7 +39,6 @@ const DrawerComponent = ({
 
   return (
     <>
-      <CssBaseline />
       <Global
         styles={{
           '.MuiDrawer-root > .MuiPaper-root': {

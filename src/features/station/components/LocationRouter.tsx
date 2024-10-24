@@ -2,7 +2,6 @@ import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography} from '@mui/material';
-import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
@@ -62,7 +61,6 @@ export default function LocationRouter() {
 
   return (
     <MetadataContext.Provider value={metadata}>
-      <CssBaseline />
       <AppBarLayout>
         <IconButton
           color="inherit"
