@@ -32,7 +32,7 @@ export default function PlotGraph({
 }: PlotGraphProps) {
   const {isMobile} = useBreakpoints();
   const xOurData = ourData?.map((d) => d.timeofmeas);
-  const yOurData = ourData?.map((d) => (d.waterlevel ? d.disttowatertable_m : null));
+  const yOurData = ourData?.map((d) => (d.waterlevel ? d.waterlevel : null));
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string | number>>([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<string | number>>([]);
