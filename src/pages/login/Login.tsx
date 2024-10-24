@@ -9,7 +9,8 @@ import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
-import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
+import {apiClient, loginAPI, resetPassword} from '~/pages/field/fieldAPI';
+import {queryClient} from '~/queryClient';
 import {authStore} from '~/state/store';
 
 export default function Login() {
@@ -48,6 +49,15 @@ export default function Login() {
           setAuthorization(data);
           setAuthenticated(true);
           setLoginExpired(false);
+          queryClient.prefetchQuery({
+            queryKey: ['overblik'],
+            queryFn: async ({signal}) => {
+              const {data} = await apiClient.get(`/sensor_admin/overblik`, {
+                signal,
+              });
+              return data;
+            },
+          });
         },
       }
     );

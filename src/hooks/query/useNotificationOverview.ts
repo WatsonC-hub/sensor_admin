@@ -65,10 +65,8 @@ const nullState: Partial<Notification> = {
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
-    queryFn: async ({signal}) => {
-      const {data} = await apiClient.get(`/sensor_admin/overblik`, {
-        signal,
-      });
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/overblik`);
       return data;
     },
     refetchInterval: 1000 * 60 * 60,
