@@ -6,9 +6,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
-import {useEffect} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
-import {useNavigate, useParams} from 'react-router-dom';
+import {Navigate, useNavigate, useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';
@@ -25,7 +24,7 @@ import {authStore} from '~/state/store';
 export default function LocationRouter() {
   const params = useParams();
   const navigate = useNavigate();
-  const {station, createStamdata, adminKvalitetssikring} = useNavigationFunctions();
+  const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
   const adminAccess = authStore((state) => state.adminAccess);
 
   const {data} = useQuery({
@@ -36,15 +35,6 @@ export default function LocationRouter() {
     },
     enabled: params.locid !== undefined,
   });
-
-  useEffect(() => {
-    if (data && data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
-      station(params.locid ? parseInt(params.locid) : -1, data[0].ts_id, {replace: true});
-      // navigate(`../location/${params.locid}/${data[0].ts_id}`, {
-      //   replace: true,
-      // });
-    }
-  }, [data]);
 
   const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
@@ -58,6 +48,10 @@ export default function LocationRouter() {
     )?.[0];
   } else {
     stamdata = data?.[0];
+  }
+
+  if (data && data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
+    return <Navigate to={`../location/${params.locid}/${data[0].ts_id}`} replace />;
   }
 
   return (

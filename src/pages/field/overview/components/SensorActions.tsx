@@ -1,7 +1,9 @@
 import DirectionsIcon from '@mui/icons-material/Directions';
 import LocationOnRounded from '@mui/icons-material/LocationOnRounded';
+import {useQueryClient} from '@tanstack/react-query';
 import React from 'react';
 
+import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -11,6 +13,20 @@ type Props = {
 };
 
 const SensorActions = ({data}: Props) => {
+  const queryClient = useQueryClient();
+
+  const handlePrefetch = () => {
+    queryClient.prefetchQuery({
+      queryKey: ['stations', data.loc_id],
+      queryFn: async () => {
+        const {data: out} = await apiClient.get(
+          `/sensor_field/station/metadata_location/${data.loc_id}`
+        );
+        return out;
+      },
+    });
+  };
+
   const {location} = useNavigationFunctions();
   return (
     <>
@@ -30,6 +46,8 @@ const SensorActions = ({data}: Props) => {
       <Button
         bttype="primary"
         color="primary"
+        onFocus={handlePrefetch}
+        onMouseEnter={handlePrefetch}
         onClick={() => {
           location(data.loc_id);
         }}

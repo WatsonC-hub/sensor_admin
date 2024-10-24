@@ -26,9 +26,9 @@ import {
 } from '@mui/material';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient, useSuspenseQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, {Suspense, useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -48,6 +48,7 @@ import StationDetails from '~/features/stamdata/components/StationDetails';
 import {StationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
+import LoadingSkeleton from '~/LoadingSkeleton';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import {authStore, stamdataStore} from '~/state/store';
 
@@ -259,7 +260,6 @@ type UnitHistory = {
 };
 
 const UdstyrReplace = ({stationId}: {stationId: number}) => {
-  const [selected, setselected] = useState<number | ''>('');
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
@@ -278,6 +278,7 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
     },
     refetchOnWindowFocus: false,
   });
+  const [selected, setselected] = useState<number | ''>(data?.[0].gid ?? '');
 
   const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
@@ -409,6 +410,16 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   const [tabValue, setTabValue] = useSearchParam('tab');
   const [showForm, setShowForm] = useSearchParam('showForm');
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
+
+  useQuery<UnitHistory[]>({
+    queryKey: ['udstyr', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${ts_id}`);
+      return data;
+    },
+    refetchOnWindowFocus: false,
+    notifyOnChangeProps: [],
+  });
 
   const loc_id = metadata?.loc_id;
   useEffect(() => {
@@ -655,14 +666,16 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
             />
           </TabPanel>
           <TabPanel value={tabValue} index="2">
-            <UdstyrReplace stationId={ts_id} />
-            <UnitForm mode="edit" />
-            <StamdataFooter
-              cancel={resetFormData}
-              handleOpret={() => handleUpdate('unit')}
-              saveTitle="Gem udstyr"
-              disabled={isSubmitting || !('unit' in dirtyFields)}
-            />
+            <Suspense fallback={<LoadingSkeleton />}>
+              <UdstyrReplace stationId={ts_id} />
+              <UnitForm mode="edit" />
+              <StamdataFooter
+                cancel={resetFormData}
+                handleOpret={() => handleUpdate('unit')}
+                saveTitle="Gem udstyr"
+                disabled={isSubmitting || !('unit' in dirtyFields)}
+              />
+            </Suspense>
           </TabPanel>
           <TabPanel value={tabValue} index={'3'}>
             <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
