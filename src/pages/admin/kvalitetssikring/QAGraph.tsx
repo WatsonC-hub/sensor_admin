@@ -1,7 +1,8 @@
 import {useTheme} from '@mui/material/styles';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
+import {Layout} from 'plotly.js';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
@@ -12,9 +13,10 @@ import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {APIError} from '~/queryClient';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
-import {QaGraphData, QaGraphLabel} from '~/types';
+import {QaGraphLabel} from '~/types';
 
 const LABEL_COLORS: Record<number, string> = {
   0: '#666666',
@@ -130,20 +132,27 @@ export default function PlotGraph({
   const metadata = useContext(MetadataContext);
   const dataToShow = useAtomValue(dataToShowAtom);
   const theme = useTheme();
-  const loc_name = metadata && 'loc_name' in metadata ? metadata.loc_name : '';
-  const tstype_name = metadata && 'tstype_name' in metadata ? metadata.tstype_name : '';
-  const unit = metadata && 'unit' in metadata ? metadata.unit : '';
-  const ts_name = metadata && 'ts_name' in metadata ? metadata.ts_name : '';
+  const loc_name = metadata?.loc_name;
+  const ts_name = metadata?.ts_name;
+
   const {isTouch} = useBreakpoints();
-
-  const queryClient = useQueryClient();
-
-  const fullData = queryClient.getQueryData<QaGraphData>(['graphData', ts_id, initRange]);
 
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
-  const {data: graphData} = useGraphData(ts_id, xRange);
 
+  const {data: edgeDates} = useQuery<{firstDate: string; lastDate: string} | null, APIError>({
+    queryKey: ['all_range', metadata?.ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<{firstDate: string; lastDate: string} | null>(
+        `/sensor_field/station/graph_all_range/${metadata?.ts_id}`
+      );
+
+      return data;
+    },
+    staleTime: 10,
+    enabled: metadata?.ts_id !== undefined && metadata?.ts_id !== null && metadata?.ts_id !== -1,
+  });
+  const {data: graphData} = useGraphData(ts_id, xRange);
   const {
     get: {data: certifedData},
   } = useCertifyQa(ts_id);
@@ -168,24 +177,21 @@ export default function PlotGraph({
     refetchOnWindowFocus: false,
   });
 
-  console.log(removed_data);
-
   const {data: precipitation_data} = useQuery({
     queryKey: ['precipitation_data', ts_id],
     queryFn: async () => {
-      const starttime = moment(fullData?.x[0]).format('YYYY-MM-DDTHH:mm');
-      const stoptime = moment(fullData?.x[fullData?.x.length - 1]).format('YYYY-MM-DDTHH:mm');
+      const starttime = moment(edgeDates?.firstDate).format('YYYY-MM-DDTHH:mm');
+      const stoptime = moment(edgeDates?.lastDate).format('YYYY-MM-DDTHH:mm');
       const {data} = await apiClient.get(
         `/data/timeseries/${ts_id}/precipitation/1?start=${starttime}&stop=${stoptime}`
       );
       return data;
     },
-    enabled: dataToShow['Nedbør'] && fullData !== undefined,
+    enabled: dataToShow['Nedbør'] && edgeDates !== undefined,
     refetchOnWindowFocus: false,
   });
 
   const handlePlotlySelected = (eventData: any) => {
-    console.log(eventData);
     if (eventData === undefined) {
       return;
     } else {
@@ -222,7 +228,12 @@ export default function PlotGraph({
       console.log(e);
       setSelection({});
     }
-    if (e['dragmode'] === 'select') setInitiateSelect(true);
+
+    if (e['dragmode'] === 'zoom') {
+      setInitiateSelect(false);
+    } else if (e['dragmode'] === 'select') {
+      setInitiateSelect(true);
+    }
   };
 
   const xControl = controlData?.map((d) => d.timeofmeas);
@@ -434,11 +445,7 @@ export default function PlotGraph({
       : []),
   ];
 
-  const layout = {
-    yaxis: {
-      title: `${tstype_name} [${unit}]`,
-      // font: {size: matches ? 6 : 12},
-    },
+  const layout: Partial<Layout> = {
     yaxis2: {
       title: {
         text: 'Nedbør [mm]',
@@ -460,8 +467,7 @@ export default function PlotGraph({
           onSelected: handlePlotlySelected,
           onRelayout: handleRelayout,
           onClick: (e) => {
-            console.log(initiateConfirmTimeseries);
-            if (initiateConfirmTimeseries) {
+            if (initiateConfirmTimeseries || levelCorrection) {
               setSelection({points: e.points});
             }
           },

@@ -61,9 +61,14 @@ export default function PlotlyGraph({
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
+  const metadata = useContext(MetadataContext);
+  // const loc_name = metadata?.loc_name;
+  const tstype_name = metadata?.tstype_name;
+  const unit = metadata?.unit;
+  // const ts_name = metadata?.ts_name;
+
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
-  const metadata = useContext(MetadataContext);
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
   const {mutation: rerunQAMutation} = useRunQA(metadata?.ts_id);
   const {isTouch} = useBreakpoints();
@@ -80,6 +85,7 @@ export default function PlotlyGraph({
     staleTime: 10,
     enabled: metadata?.ts_id !== undefined && metadata?.ts_id !== null && metadata?.ts_id !== -1,
   });
+
   useEffect(() => {
     if (xRange != undefined) {
       const layout = {
@@ -103,6 +109,11 @@ export default function PlotlyGraph({
 
   const handleRelayout = (e: any) => {
     const doubleclick = e['xaxis.autorange'] === true && e['yaxis.autorange'] === true;
+
+    // if (e['selections']) {
+    //   console.log('e', e);
+    //   plotEventProps?.onSelected && plotEventProps.onSelected(e);
+    // }
 
     if (doubleclick) {
       graphLayout('all');
@@ -158,18 +169,23 @@ export default function PlotlyGraph({
         const x = moment(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       }
+
       if (setXRange != undefined) {
         setXRange(range);
       }
-      if (xRange == undefined) {
-        const layout = {
-          xaxis: {
-            autorange: false,
-            range: range,
-          },
-        };
-        setLayout(layout);
-      }
+      const layout: Partial<Layout> = {
+        xaxis: {
+          autorange: false,
+          range: range,
+        },
+        yaxis: {
+          autorange: true,
+        },
+        yaxis2: {
+          autorange: true,
+        },
+      };
+      setLayout(layout);
     }
   };
 
@@ -237,7 +253,9 @@ export default function PlotlyGraph({
     icon: rawDataIcon,
     click: function () {
       if (showRaw) showRaw();
-      setLayout({yaxis2: {visible: true}});
+      setLayout({
+        yaxis2: {visible: true},
+      });
     },
   };
 
@@ -251,6 +269,11 @@ export default function PlotlyGraph({
     }
     return button;
   });
+
+  useEffect(() => {
+    if (tstype_name) setLayout({yaxis: {title: `${tstype_name} [${unit}]`}});
+  }, [tstype_name, unit]);
+
   return (
     <>
       <Box display={'flex'} flexDirection={'row'} ml={isTouch ? '15%' : 10}>
@@ -288,7 +311,10 @@ export default function PlotlyGraph({
         </Button>
       </Box>
       <Plot
-        onSelected={plotEventProps && plotEventProps.onSelected}
+        onSelected={(e) => {
+          console.log('onselected', e);
+          plotEventProps?.onSelected && plotEventProps.onSelected(e);
+        }}
         divId="qagraphDiv"
         onRelayout={handleRelayout}
         data={data}
@@ -310,14 +336,6 @@ export default function PlotlyGraph({
         }}
         onDoubleClick={() => {
           graphLayout('all');
-          setLayout({
-            yaxis: {
-              autorange: true,
-            },
-            yaxis2: {
-              autorange: true,
-            },
-          });
         }}
         onClick={plotEventProps && plotEventProps.onClick}
         useResizeHandler={true}
