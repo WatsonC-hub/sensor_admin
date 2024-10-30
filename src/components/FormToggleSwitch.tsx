@@ -26,7 +26,6 @@ const FormToggleSwitch = <TFieldValues extends FieldValues>({
         name={name}
         rules={rules}
         render={({field: {value, onChange, ref, name}}) => {
-          console.log(value);
           return (
             <FormControlLabel
               control={

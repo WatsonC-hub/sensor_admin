@@ -58,8 +58,6 @@ export default function LocationRouter() {
     return <Navigate to={`../location/${params.locid}/${data[0].ts_id}`} replace />;
   }
 
-  console.log(data);
-
   return (
     <MetadataContext.Provider value={metadata}>
       <CssBaseline />

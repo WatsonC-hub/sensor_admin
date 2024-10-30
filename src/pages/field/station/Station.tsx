@@ -44,8 +44,6 @@ export default function Station({ts_id, stamdata}: StationProps) {
   });
   const store = stamdataStore();
 
-  console.log(stamdata);
-
   useEffect(() => {
     if (stamdata) {
       store.setLocation(stamdata);

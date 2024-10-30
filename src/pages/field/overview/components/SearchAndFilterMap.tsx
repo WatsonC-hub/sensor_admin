@@ -130,7 +130,6 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const {isTouch} = useBreakpoints();
   const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
-  console.log(mapFilter);
   const elasticSearch = (
     e: SyntheticEvent,
     value: string,
@@ -274,7 +273,6 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         <FilterOptions
           filters={mapFilter}
           onSubmit={(filter) => {
-            console.log(filter);
             handleClose();
             setMapFilter(filter);
           }}
