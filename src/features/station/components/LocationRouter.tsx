@@ -16,6 +16,7 @@ import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import LoadingSkeleton from '~/LoadingSkeleton';
 import ErrorPage from '~/pages/field/station/ErrorPage';
 import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
@@ -27,7 +28,7 @@ export default function LocationRouter() {
   const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
   const adminAccess = authStore((state) => state.adminAccess);
 
-  const {data} = useQuery({
+  const {data, error, isPending} = useQuery({
     queryKey: ['stations', params.locid],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata_location/${params.locid}`);
@@ -38,21 +39,26 @@ export default function LocationRouter() {
 
   const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
+  if (isPending) return <LoadingSkeleton />;
+  if (error) return;
+
   let hasTimeseries = undefined;
-  if (data && data.length > 0)
-    hasTimeseries = data && data.some((stamdata: {ts_id: number}) => stamdata.ts_id !== null);
+  if (data.length > 0)
+    hasTimeseries = data.some((stamdata: {ts_id: number}) => stamdata.ts_id !== null);
   let stamdata = undefined;
   if (hasTimeseries) {
-    stamdata = data?.filter(
+    stamdata = data.filter(
       (elem: {ts_id: number}) => params.ts_id && elem.ts_id == parseInt(params.ts_id)
     )?.[0];
   } else {
-    stamdata = data?.[0];
+    stamdata = data[0];
   }
 
-  if (data && data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
+  if (data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
     return <Navigate to={`../location/${params.locid}/${data[0].ts_id}`} replace />;
   }
+
+  console.log(data);
 
   return (
     <MetadataContext.Provider value={metadata}>

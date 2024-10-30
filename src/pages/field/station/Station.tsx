@@ -1,7 +1,7 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import {Alert, Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
-import React, {ChangeEvent, createRef, useEffect, useState} from 'react';
+import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
@@ -44,6 +44,8 @@ export default function Station({ts_id, stamdata}: StationProps) {
   });
   const store = stamdataStore();
 
+  console.log(stamdata);
+
   useEffect(() => {
     if (stamdata) {
       store.setLocation(stamdata);
@@ -56,7 +58,6 @@ export default function Station({ts_id, stamdata}: StationProps) {
       store.resetUnit();
     };
   }, [stamdata]);
-  const isCalculated = stamdata ? stamdata?.calculated : false;
 
   const changeActiveImageData = (field: string, value: string) => {
     setActiveImage({
@@ -112,53 +113,9 @@ export default function Station({ts_id, stamdata}: StationProps) {
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
 
-  return (
-    <Box
-      display="flex"
-      height={
-        ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'
-      }
-      flexDirection={'column'}
-    >
-      {((!stamdata && ts_id === -1) || ts_id !== -1) && (
-        <Box
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-between'}
-          sx={{marginBottom: 0.5, marginTop: 0.2}}
-        >
-          {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
-            <Box
-              display={'flex'}
-              flexDirection={'column'}
-              gap={5}
-              sx={{marginBottom: 0.5, marginTop: 0.2}}
-            >
-              <PlotGraph
-                ts_id={ts_id}
-                dynamicMeasurement={
-                  pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
-                }
-              />
-              <Divider />
-            </Box>
-          )}
-          <Box
-            sx={{
-              maxWidth: '1080px',
-              width: isTouch ? '100%' : 'fit-content',
-              alignSelf: 'center',
-            }}
-          >
-            {pageToShow === StationPages.PEJLING && ts_id !== -1 && (
-              <Pejling ts_id={ts_id} setDynamic={setDynamic} />
-            )}
-            {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
-          </Box>
-        </Box>
-      )}
-
-      {ts_id === -1 && stamdata && pageToShow === StationPages.PEJLING && (
+  if (ts_id === -1 && pageToShow === StationPages.PEJLING) {
+    return (
+      <Layout dynamic={dynamic} stamdata={stamdata} ts_id={ts_id}>
         <Box
           display={'flex'}
           alignSelf={'center'}
@@ -189,8 +146,24 @@ export default function Station({ts_id, stamdata}: StationProps) {
             Opret tidsserie og/eller udstyr
           </Button>
         </Box>
-      )}
+      </Layout>
+    );
+  }
 
+  return (
+    <Layout dynamic={dynamic} stamdata={stamdata} ts_id={ts_id}>
+      <Box
+        sx={{
+          maxWidth: '1080px',
+          width: isTouch ? '100%' : 'fit-content',
+          alignSelf: 'center',
+        }}
+      >
+        {pageToShow === StationPages.PEJLING && ts_id !== -1 && (
+          <Pejling ts_id={ts_id} setDynamic={setDynamic} />
+        )}
+        {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
+      </Box>
       {pageToShow === StationPages.STAMDATA && (
         <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} />
       )}
@@ -232,7 +205,53 @@ export default function Station({ts_id, stamdata}: StationProps) {
         onChange={handleFileRead}
         onClick={handleFileInputClick}
       />
-      <ActionArea isCalculated={isCalculated} ts_id={ts_id} stamdata={stamdata} />
-    </Box>
+    </Layout>
   );
 }
+
+interface LayoutProps {
+  children: ReactNode;
+  ts_id: number;
+  stamdata: any;
+  dynamic: Array<string | number> | undefined;
+}
+
+const Layout = ({children, ts_id, stamdata, dynamic}: LayoutProps) => {
+  const [pageToShow] = useSearchParam('page', null);
+  const [showForm] = useSearchParam('showForm');
+  const isCalculated = stamdata ? stamdata?.calculated : false;
+
+  return (
+    <Box
+      display="flex"
+      height={ts_id === -1 && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'}
+      flexDirection={'column'}
+    >
+      <Box
+        display={'flex'}
+        flexDirection={'column'}
+        justifyContent={'space-between'}
+        sx={{marginBottom: 0.5, marginTop: 0.2}}
+      >
+        {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
+          <Box
+            display={'flex'}
+            flexDirection={'column'}
+            gap={5}
+            sx={{marginBottom: 0.5, marginTop: 0.2}}
+          >
+            <PlotGraph
+              ts_id={ts_id}
+              dynamicMeasurement={
+                pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
+              }
+            />
+            <Divider />
+          </Box>
+        )}
+        {children}
+      </Box>
+      <ActionArea isCalculated={isCalculated} ts_id={ts_id} />
+    </Box>
+  );
+};

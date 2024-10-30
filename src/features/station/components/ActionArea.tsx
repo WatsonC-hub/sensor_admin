@@ -18,10 +18,9 @@ const navIconStyle = (isSelected: boolean) => {
 interface ActionAreaProps {
   isCalculated: boolean;
   ts_id: number;
-  stamdata: Array<object>;
 }
 
-export default function ActionArea({isCalculated, ts_id, stamdata}: ActionAreaProps) {
+export default function ActionArea({isCalculated, ts_id}: ActionAreaProps) {
   const [pageToShow, setPageToShow] = useSearchParam('page');
   const [showForm, setShowForm] = useSearchParam('showForm');
   const handleChange = (event: any, newValue: string | null) => {
@@ -31,7 +30,7 @@ export default function ActionArea({isCalculated, ts_id, stamdata}: ActionAreaPr
     }
   };
   const navigationItems = [];
-  if (ts_id.toString() !== '' || !stamdata) {
+  if (ts_id !== -1) {
     navigationItems.push(
       {
         text: 'Kontrol',
