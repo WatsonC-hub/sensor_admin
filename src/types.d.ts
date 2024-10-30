@@ -88,7 +88,7 @@ export type Kontrol = {
   uploaded_status: boolean;
 };
 
-export type Measurement = {
+export type BoreholeMeasurement = {
   boreholeno: string;
   intakeno: number;
   timeofmeas: string;
@@ -106,7 +106,7 @@ export type Measurement = {
   useforcorrection: number;
   userid: number;
   uuid: string;
-  waterlevel?: boolean;
+  waterlevel?: number | null;
 };
 
 export type MaalepunktTableData = {

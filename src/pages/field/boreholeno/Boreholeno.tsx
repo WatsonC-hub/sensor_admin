@@ -21,7 +21,13 @@ import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
 import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingFormBorehole';
 import MaalepunktTable from '~/pages/field/boreholeno/MaalepunktTable';
 import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
-import {Kontrol, Maalepunkt, MaalepunktPost, MaalepunktTableData, Measurement} from '~/types';
+import {
+  Kontrol,
+  Maalepunkt,
+  MaalepunktPost,
+  MaalepunktTableData,
+  BoreholeMeasurement,
+} from '~/types';
 
 interface boreholenoProps {
   boreholeno: string;
@@ -135,7 +141,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   useEffect(() => {
     let ctrls = [];
     if (watlevmp.length > 0) {
-      ctrls = measurements.map((e: Measurement) => {
+      ctrls = measurements.map((e: BoreholeMeasurement) => {
         const elev = watlevmp.filter((e2: Maalepunkt) => {
           return (
             moment(e.timeofmeas) >= moment(e2.startdate) &&
@@ -149,7 +155,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
         };
       });
     } else {
-      ctrls = measurements?.map((elem: Measurement) => {
+      ctrls = measurements?.map((elem: BoreholeMeasurement) => {
         return {...elem, waterlevel: elem.disttowatertable_m};
       });
     }

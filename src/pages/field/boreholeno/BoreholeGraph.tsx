@@ -7,7 +7,7 @@ import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {Measurement} from '~/types';
+import {BoreholeMeasurement} from '~/types';
 
 type JupiterData = {
   data: {
@@ -20,7 +20,7 @@ type JupiterData = {
 interface PlotGraphProps {
   boreholeno: string;
   intakeno: number;
-  ourData: Array<Measurement>;
+  ourData: Array<BoreholeMeasurement>;
   dynamicMeasurement: Array<string | number> | undefined;
 }
 
