@@ -1,11 +1,21 @@
-import {Grid, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio} from '@mui/material';
+import {
+  Grid,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Typography,
+} from '@mui/material';
 import React from 'react';
 import {Controller, useFormContext} from 'react-hook-form';
 
 import {correction_map} from '~/consts';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const Correction = () => {
   const {control} = useFormContext();
+  const {isMobile} = useBreakpoints();
   return (
     <Grid item xs={12} sm={12}>
       <Controller
@@ -17,12 +27,28 @@ const Correction = () => {
             <FormControl component="fieldset">
               <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
               <RadioGroup value={field.value + ''} onChange={field.onChange}>
-                <FormControlLabel value="0" control={<Radio />} label="Kontrol" />
-                <FormControlLabel value="1" control={<Radio />} label="Korrektion fremadrettet" />
+                <FormControlLabel
+                  value="0"
+                  control={<Radio />}
+                  label={<Typography variant={isMobile ? 'body2' : 'body1'}>Kontrol</Typography>}
+                />
+                <FormControlLabel
+                  value="1"
+                  control={<Radio />}
+                  label={
+                    <Typography variant={isMobile ? 'body2' : 'body1'}>
+                      Korrektion fremadrettet
+                    </Typography>
+                  }
+                />
                 <FormControlLabel
                   value="-1"
                   control={<Radio />}
-                  label="Korrektion bagud og fremadrettet"
+                  label={
+                    <Typography variant={isMobile ? 'body2' : 'body1'}>
+                      Korrektion bagud og fremadrettet
+                    </Typography>
+                  }
                 />
                 {['-1', '2', '4', '5', '6'].includes(field.value.toString()) && (
                   <>
