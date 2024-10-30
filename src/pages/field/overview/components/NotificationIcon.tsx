@@ -14,7 +14,7 @@ import TerrainIcon from '@mui/icons-material/Terrain';
 import {Box, BoxProps, Tooltip} from '@mui/material';
 import React from 'react';
 
-import {sensorColors} from '~/consts';
+import {sensorColors, sensorLocationTypeColors} from '~/consts';
 //Imports
 
 export const statusStyling = (flagColor: string) => {
@@ -88,8 +88,9 @@ type IconDetails = {
   color?: string | null;
   notification_id?: number;
   flag?: number;
+  loctype_id?: number | string;
   opgave?: string | null;
-  active?: boolean;
+  active?: boolean | null;
   status?: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   notify_type?: 'obs' | 'station' | 'primary' | null;
   isqa?: boolean;
@@ -110,6 +111,9 @@ type NotificationIconProps =
     };
 
 export const getColor = (iconDetails: IconDetails) => {
+  if (iconDetails?.active === null && iconDetails?.loctype_id !== 12)
+    return sensorLocationTypeColors['-1'].color;
+  if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color;
   if (iconDetails?.notify_type === 'station') return '#4caf50';
   if (iconDetails?.status == 'POSTPONED') return '#4caf50';
   if (iconDetails?.notification_id == 12) return '#334FFF';

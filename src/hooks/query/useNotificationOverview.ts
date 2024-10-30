@@ -27,6 +27,7 @@ export interface Notification {
   notify_type: 'primary' | 'obs' | 'station' | null;
   isqa: boolean;
   groups: Group[];
+  loctype_id: number;
 }
 
 export interface NotificationMap extends Notification {

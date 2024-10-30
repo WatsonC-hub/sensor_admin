@@ -10,6 +10,7 @@ interface Filter {
   sensor: {
     showInactive: boolean;
     isCustomerService: Inderterminate;
+    isSingleMeasurement: boolean;
   };
   groups: Group[];
 }
@@ -22,6 +23,7 @@ const defaultMapFilter: Filter = {
   sensor: {
     showInactive: false,
     isCustomerService: 'indeterminate',
+    isSingleMeasurement: false,
   },
   groups: [],
 };

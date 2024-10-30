@@ -5,12 +5,10 @@ import {
   Paper,
   SvgIconProps,
   Box,
-  useMediaQuery,
   MenuItem,
   Menu,
   IconButton,
 } from '@mui/material';
-import {useTheme} from '@mui/material/styles';
 import React from 'react';
 
 import {StationPages} from '~/helpers/EnumHelper';

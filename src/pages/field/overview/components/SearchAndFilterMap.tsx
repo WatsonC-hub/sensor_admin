@@ -78,12 +78,13 @@ const searchAcrossAll = (data: (NotificationMap | BoreholeMapData)[], search_str
 };
 
 const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
+  if (data.loctype_id === 12) return filter.isSingleMeasurement;
   const serviceFilter =
     filter.isCustomerService === 'indeterminate'
       ? true
       : data.is_customer_service === filter.isCustomerService;
   const activeFilter = data.active == true || data.active == null ? true : filter.showInactive;
-  return activeFilter && serviceFilter;
+  return activeFilter && serviceFilter && (!filter.isSingleMeasurement || data.loctype_id !== 12);
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
@@ -129,6 +130,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const {isTouch} = useBreakpoints();
   const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
 
+  console.log(mapFilter);
   const elasticSearch = (
     e: SyntheticEvent,
     value: string,
@@ -272,6 +274,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         <FilterOptions
           filters={mapFilter}
           onSubmit={(filter) => {
+            console.log(filter);
             handleClose();
             setMapFilter(filter);
           }}

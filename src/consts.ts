@@ -56,6 +56,17 @@ export const sensorColors: Record<
   },
 };
 
+export const sensorLocationTypeColors: Record<number | string, {color: string; text: string}> = {
+  12: {
+    color: '#AFFFAD',
+    text: 'Enkeltmåling',
+  },
+  '-1': {
+    color: '#70C8FF',
+    text: 'Ny opsætning',
+  },
+};
+
 export const correction_map: Record<number, string> = {
   0: 'Kontrol',
   1: 'Korrektion fremadrettet',

@@ -15,6 +15,7 @@ const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
   const {station, adminKvalitetssikring} = useNavigationFunctions();
 
+  console.log(data);
   const all_notifications = [data, ...data.otherNotifications];
 
   const unique_stations = all_notifications
