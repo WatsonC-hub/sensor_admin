@@ -57,11 +57,6 @@
     "check-types": "tsc --project tsconfig.json --pretty --noEmit",
     "prepare": "husky"
   },
-  "husky": {
-    "hooks": {
-      "pre-push": "npm run check-types"
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",
