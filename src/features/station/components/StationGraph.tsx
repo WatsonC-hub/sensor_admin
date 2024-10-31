@@ -2,7 +2,7 @@ import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import {Layout, PlotData} from 'plotly.js';
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
@@ -11,7 +11,7 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {stamdataStore} from '~/state/store';
+import {MetadataContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 const initRange = [
@@ -25,11 +25,10 @@ interface PlotGraphProps {
 }
 
 export default function PlotGraph({ts_id, dynamicMeasurement}: PlotGraphProps) {
-  const [name, unit, stationtype] = stamdataStore((state) => [
-    state.location.loc_name + ' ' + state.timeseries.ts_name,
-    state.timeseries.unit,
-    state.timeseries.tstype_name,
-  ]);
+  const metadata = useContext(MetadataContext);
+  const loc_name = metadata?.loc_name;
+  const ts_name = metadata?.ts_name;
+
   const {isTouch, isMobile} = useBreakpoints();
   const [xRange, setXRange] = useState(initRange);
 
@@ -43,9 +42,6 @@ export default function PlotGraph({ts_id, dynamicMeasurement}: PlotGraphProps) {
     : {
         yaxis2: {
           visible: false,
-        },
-        yaxis: {
-          title: `${stationtype} [${unit}]`,
         },
       };
 
@@ -81,7 +77,7 @@ export default function PlotGraph({ts_id, dynamicMeasurement}: PlotGraphProps) {
     {
       x: graphData?.x,
       y: graphData?.y,
-      name: name,
+      name: loc_name + ' ' + ts_name,
       type: 'scatter',
       line: {width: 2},
       mode: 'lines',

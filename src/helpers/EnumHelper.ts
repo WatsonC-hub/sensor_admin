@@ -7,6 +7,19 @@ export const StationPages = {
   DEFAULT: null,
 } as const;
 
+export const QaPages = {
+  DATA: null,
+  ALGORITHMS: 'algoritmer',
+  DATAMOBILE: 'Justeringer',
+};
+
+export const QaAdjustment = {
+  CONFIRM: 'confirm',
+  REMOVE: 'remove',
+  BOUNDS: 'bounds',
+  CORRECTION: 'correction',
+};
+
 export enum TableTypes {
   STATIONTABLE = 'stationTable',
   TABLE = 'table',
@@ -45,4 +58,11 @@ export enum QaStampLevel {
   A = '1',
   B = '2',
   C = '3',
+}
+
+export enum AdjustmentTypes {
+  EXLUDETIME = 'Fjernet tidsinterval',
+  LEVELCORRECTION = 'Korrigeret spring',
+  EXLUDEPOINTS = 'Fjernet datapunkter',
+  MINMAX = 'Valide værdier',
 }

@@ -1,20 +1,15 @@
-import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import {Box, CardContent, Typography} from '@mui/material';
-import {useAtomValue} from 'jotai';
 import React from 'react';
 
-import Button from '~/components/Button';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import YRangeModal from '~/pages/admin/kvalitetssikring/modals/YRangeModal';
-import {qaSelection} from '~/state/atoms';
 
-type WizardValueBoundsProps = {
-  setStep: (value: number) => void;
-  setInitiateSelect: (initiateSelect: boolean) => void;
-};
+interface WizardValueBoundsProps {
+  onClose: () => void;
+}
 
-const WizardValueBounds = ({setStep, setInitiateSelect}: WizardValueBoundsProps) => {
-  const selection = useAtomValue(qaSelection);
-
+const WizardValueBounds = ({onClose}: WizardValueBoundsProps) => {
+  const {isMobile} = useBreakpoints();
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
       <CardContent
@@ -25,28 +20,26 @@ const WizardValueBounds = ({setStep, setInitiateSelect}: WizardValueBoundsProps)
           alignContent: 'center',
         }}
       >
-        <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'}>
-          <Typography alignSelf={'center'} variant="h5" component="h2" fontWeight={'bold'}>
+        <Box
+          display={'flex'}
+          flexDirection="row"
+          justifyContent={'center'}
+          mb={1}
+          gap={1}
+          alignItems={'end'}
+        >
+          <Typography
+            alignSelf={'center'}
+            variant={isMobile ? 'h6' : 'h5'}
+            component="h2"
+            fontWeight={'bold'}
+          >
             Øvre og nedre værdigrænser
           </Typography>
-          <Typography sx={{wordWrap: 'break-word'}}>
-            På denne side af guiden kan du definere de øvre og nedre grænseværdier. Kun punkter
-            inden for disse grænser vil være gyldige, og alle punkter udenfor vil blive fjernet.
-          </Typography>
         </Box>
-        <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
-          <Button
-            startIcon={<DensityLargeIcon />}
-            bttype={'primary'}
-            disabled={false}
-            onClick={() => {
-              setInitiateSelect(true);
-            }}
-          >
-            Markér grænseværdier
-          </Button>
+        <Box alignSelf={'center'}>
+          <YRangeModal onClose={onClose} />
         </Box>
-        <Box alignSelf={'center'}>{'range' in selection && <YRangeModal />}</Box>
       </CardContent>
     </Box>
   );

@@ -71,15 +71,19 @@ export const useAlgorithms = (ts_id: string | undefined) => {
     },
     enabled: ts_id !== undefined,
   });
-  //   const post = useMutation({
-  //     ...algorithmsPostOptions,
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries({
-  //         queryKey: ['algorithms'],
-  //       });
-  //       toast.success('Algorithms gemt');
-  //     },
-  //   });
+
+  const handlePrefetch = () => {
+    queryClient.prefetchQuery({
+      queryKey: ['algorithms', ts_id],
+      queryFn: async () => {
+        const {data} = await apiClient.get<Array<QaAlgorithms>>(
+          `/sensor_admin/algorithms/${ts_id}`
+        );
+        return data;
+      },
+    });
+  };
+
   const put = useMutation({
     ...algorithmsPutOptions,
     onSuccess: () => {
@@ -109,5 +113,5 @@ export const useAlgorithms = (ts_id: string | undefined) => {
     },
   });
 
-  return {get, put, del, revert};
+  return {get, handlePrefetch, put, del, revert};
 };

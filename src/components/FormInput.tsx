@@ -76,7 +76,7 @@ const FormInput = <TFieldValues extends FieldValues>({
             }}
             className="swiper-no-swiping"
             variant="outlined"
-            InputLabelProps={{shrink: true}}
+            InputLabelProps={{shrink: true, style: {zIndex: 0}}}
             fullWidth
             margin="dense"
             onChange={(e) => {

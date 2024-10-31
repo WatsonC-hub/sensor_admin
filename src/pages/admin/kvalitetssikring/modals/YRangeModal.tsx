@@ -2,20 +2,27 @@ import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
-const YRangeModal = () => {
+interface YRangeModalProps {
+  onClose: () => void;
+}
+
+const YRangeModal = ({onClose}: YRangeModalProps) => {
   const selection = useAtomValue(qaSelection);
   const y1 = selection?.selections?.[0]?.y1 as number;
   const y0 = selection?.selections?.[0]?.y0 as number;
 
   const [minY, setMinY] = useState(Math.min(y1, y0).toFixed(4));
   const [maxY, setMaxY] = useState(Math.max(y1, y0).toFixed(4));
+  const [, setDataAdjustment] = useSearchParam('adjust');
+
   const metadata = useContext(MetadataContext);
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -32,6 +39,11 @@ const YRangeModal = () => {
       data: {mincutoff: Number(minY), maxcutoff: Number(maxY)},
     });
   };
+
+  useEffect(() => {
+    setMinY(Math.min(y1, y0).toFixed(4));
+    setMaxY(Math.max(y1, y0).toFixed(4));
+  }, [selection]);
 
   return (
     <div>
@@ -62,7 +74,7 @@ const YRangeModal = () => {
             size="small"
             type="number"
             onChange={(e) => setMinY(e.target.value)}
-            sx={{maxWidth: '120px'}}
+            sx={{maxWidth: '120px', zIndex: 0}}
           />
           <Typography gutterBottom> - </Typography>
           <TextField
@@ -72,14 +84,21 @@ const YRangeModal = () => {
             size="small"
             type="number"
             onChange={(e) => setMaxY(e.target.value)}
-            sx={{maxWidth: '120px'}}
+            sx={{maxWidth: '120px', zIndex: 0}}
           />
         </Box>
       </Box>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-        {/* <Button bttype="tertiary" onClick={onClose} sx={{marginRight: 1}}>
+        <Button
+          bttype="tertiary"
+          onClick={() => {
+            setDataAdjustment(null);
+            onClose();
+          }}
+          sx={{marginRight: 1}}
+        >
           Annuller
-        </Button> */}
+        </Button>
         <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
           Gem
         </Button>

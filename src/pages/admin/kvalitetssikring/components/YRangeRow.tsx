@@ -1,14 +1,11 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Divider, Grid} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
-import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 
@@ -20,12 +17,12 @@ type YRangeData = {
 
 interface YRangeRowProps {
   data: YRangeData;
+  setOpen: () => void;
 }
 
-const YRangeRow = ({data}: YRangeRowProps) => {
+const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
   const [editMode, setEditMode] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const {post, del} = useYRangeMutations();
+  const {post} = useYRangeMutations();
 
   const schema = z.object({
     mincutoff: z.number(),
@@ -58,13 +55,14 @@ const YRangeRow = ({data}: YRangeRowProps) => {
       });
     }
     setEditMode(false);
+    setOpen();
   };
 
-  const handleDelete = () => {
-    del.mutate({
-      path: `${data.ts_id}`,
-    });
-  };
+  // const handleDelete = () => {
+  //   del.mutate({
+  //     path: `${data.ts_id}`,
+  //   });
+  // };
 
   return (
     <FormProvider {...formMethods}>
@@ -100,55 +98,27 @@ const YRangeRow = ({data}: YRangeRowProps) => {
           </Grid>
         </Grid>
         <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1}>
-          {editMode ? (
-            <Button
-              bttype="tertiary"
-              size="small"
-              onClick={() => {
-                setEditMode(false);
-                reset(data);
-              }}
-            >
-              Annuller
-            </Button>
-          ) : (
-            <Button
-              bttype="tertiary"
-              size="small"
-              onClick={() => setConfirmDelete(true)}
-              startIcon={<DeleteIcon />}
-            >
-              Slet
-            </Button>
-          )}
-          {editMode ? (
-            <Button
-              bttype="primary"
-              size="small"
-              onClick={handleSubmit(submit, (values) => console.log(values))}
-              startIcon={<SaveIcon />}
-            >
-              Gem
-            </Button>
-          ) : (
-            <Button
-              bttype="primary"
-              size="small"
-              onClick={() => setEditMode(true)}
-              startIcon={<EditIcon />}
-            >
-              Rediger
-            </Button>
-          )}
+          <Button
+            bttype="tertiary"
+            size="small"
+            onClick={() => {
+              setEditMode(false);
+              reset(data);
+              setOpen();
+            }}
+          >
+            Annuller
+          </Button>
+          <Button
+            bttype="primary"
+            size="small"
+            onClick={handleSubmit(submit, (values) => console.log(values))}
+            startIcon={<SaveIcon />}
+          >
+            Gem
+          </Button>
         </Box>
       </Box>
-      <Divider />
-      <DeleteAlert
-        title="Vil du slette ekskluderingen?"
-        dialogOpen={confirmDelete}
-        setDialogOpen={setConfirmDelete}
-        onOkDelete={handleDelete}
-      />
     </FormProvider>
   );
 };

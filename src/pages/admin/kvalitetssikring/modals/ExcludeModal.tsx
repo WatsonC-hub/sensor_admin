@@ -4,14 +4,19 @@ import {Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography} from 
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
-import {useContext, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useExclude} from '~/hooks/query/useExclude';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
-const ExcludeModal = () => {
+interface ExcludeModalProps {
+  onClose: () => void;
+}
+
+const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const [radio, setRadio] = useState('selected');
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
@@ -30,6 +35,14 @@ const ExcludeModal = () => {
   const [endDate, setEndDate] = useState(moment.max(x0, x1));
   const [startValue, setStartValue] = useState(Math.min(y0, y1).toFixed(4));
   const [endValue, setEndValue] = useState(Math.max(y0, y1).toFixed(4));
+  const [, setDataAdjustment] = useSearchParam('adjust');
+
+  useEffect(() => {
+    setStartDate(moment.min(x0, x1));
+    setEndDate(moment.max(x0, x1));
+    setStartValue(Math.min(y0, y1).toFixed(4));
+    setEndValue(Math.max(y0, y1).toFixed(4));
+  }, [selection]);
 
   const {post: excludeMutation} = useExclude();
 
@@ -61,6 +74,7 @@ const ExcludeModal = () => {
             value={startDate.format('YYYY-MM-DD HH:mm')}
             label="Dato fra"
             type="datetime-local"
+            sx={{zIndex: 0}}
             onChange={(event) => {
               setStartDate(moment(event.target.value));
             }}
@@ -69,6 +83,7 @@ const ExcludeModal = () => {
             value={endDate.format('YYYY-MM-DD HH:mm')}
             label="Dato til"
             type="datetime-local"
+            sx={{zIndex: 0}}
             onChange={(event) => {
               setEndDate(moment(event.target.value));
             }}
@@ -84,7 +99,8 @@ const ExcludeModal = () => {
         >
           <TextField
             value={startValue}
-            label={'start interval'}
+            label={'Start interval'}
+            sx={{zIndex: 0}}
             type="number"
             onChange={(event) => {
               setStartValue(event.target.value);
@@ -92,7 +108,8 @@ const ExcludeModal = () => {
           />
           <TextField
             value={endValue}
-            label={'slut interval'}
+            label={'Slut interval'}
+            sx={{zIndex: 0}}
             type="number"
             onChange={(event) => {
               setEndValue(event.target.value);
@@ -102,6 +119,7 @@ const ExcludeModal = () => {
         <TextField
           label="Kommentar"
           variant="outlined"
+          sx={{zIndex: 0}}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           fullWidth
@@ -128,14 +146,17 @@ const ExcludeModal = () => {
         <Typography gutterBottom>Ekskluderer {selection.points?.length} punkter</Typography>
       )}
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-        {/* <Button
+        <Button
           bttype="tertiary"
           // startIcon={<KeyboardReturnIcon />}
-          // onClick={onClose}
+          onClick={() => {
+            setDataAdjustment(null);
+            onClose();
+          }}
           sx={{marginRight: 1}}
         >
           Annuller
-        </Button> */}
+        </Button>
         <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
           Gem
         </Button>

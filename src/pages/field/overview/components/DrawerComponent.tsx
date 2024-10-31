@@ -85,7 +85,7 @@ const DrawerComponent = ({
             if (enableFull) {
               setOpen((prev) => (prev === 'full' ? 'half' : 'full'));
             } else {
-              setOpen((prev) => (prev === 'closed' ? 'half' : 'closed'));
+              setOpen((prev) => (prev === 'closed' ? 'full' : 'closed'));
             }
           }}
         >

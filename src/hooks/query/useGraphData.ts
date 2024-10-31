@@ -9,8 +9,9 @@ export const useGraphData = (ts_id: number, xRange: Array<string>) => {
   const x1 = moment(xRange[1]);
   const daysdiff = x1.diff(x0, 'days');
 
-  const start = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DD');
-  const end = x1.add(Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DD');
+  const start = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DDTHH:mm');
+  const end = x1.add(Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DDTHH:mm');
+
   const query = useQuery({
     queryKey: ['graphData', ts_id, [start, end]],
     queryFn: async () => {

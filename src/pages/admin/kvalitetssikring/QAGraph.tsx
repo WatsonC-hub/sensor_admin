@@ -310,7 +310,7 @@ export default function PlotGraph({
                     xanchor: 'left',
                     yanchor: 'bottom',
                     showarrow: false,
-                    text: 'Maksimal værdi',
+                    text: 'Minimal værdi',
                     y: adjustmentData?.min_max_cutoff?.mincutoff,
                   },
                   {
@@ -320,7 +320,7 @@ export default function PlotGraph({
                     xanchor: 'left',
                     yanchor: 'bottom',
                     showarrow: false,
-                    text: 'Minimal værdi',
+                    text: 'Maksimal værdi',
                     y: adjustmentData?.min_max_cutoff?.maxcutoff,
                   },
                 ]
@@ -380,7 +380,7 @@ export default function PlotGraph({
             }) ?? []),
           ];
           break;
-        case 'QA':
+        case 'Algoritmer':
           shapes = [...shapes, ...(qaShapes ?? [])];
           annotations = [...annotations, ...(qaAnnotate ?? [])];
           break;
@@ -405,8 +405,8 @@ export default function PlotGraph({
     ...(dataToShow?.Kontrolmålinger
       ? [
           {
-            x: xControl,
-            y: yControl,
+            x: xControl?.reverse(),
+            y: yControl?.reverse(),
             name: 'Kontrolpejlinger',
             type: 'scattergl',
             mode: 'markers',
@@ -467,7 +467,10 @@ export default function PlotGraph({
           onSelected: handlePlotlySelected,
           onRelayout: handleRelayout,
           onClick: (e) => {
-            if (initiateConfirmTimeseries || levelCorrection) {
+            if (
+              (initiateConfirmTimeseries || levelCorrection) &&
+              e.points[0].data.mode !== 'markers'
+            ) {
               setSelection({points: e.points});
             }
           },

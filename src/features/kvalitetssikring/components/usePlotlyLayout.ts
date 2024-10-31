@@ -1,4 +1,3 @@
-import {useMediaQuery, useTheme} from '@mui/material';
 import {assign, merge} from 'lodash';
 import {Layout} from 'plotly.js';
 import {useState} from 'react';

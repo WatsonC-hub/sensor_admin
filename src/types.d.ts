@@ -1,3 +1,5 @@
+import {SvgIconProps} from '@mui/material';
+import {ReactNode} from 'react';
 import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -343,7 +345,7 @@ export type MinMaxCutoff = {
 
 export type QaAllData = {
   levelcorrection: Array<LevelCorrection>;
-  min_max_cutoff: MinMaxCutoff | null;
+  min_max_cutoff: MinMaxCutoff;
   dataexclude: Array<DataExclude>;
 };
 
@@ -376,4 +378,13 @@ export type FieldLocation = {
   description: string;
   loctype_id: number;
   initial_project_no: string | null;
+};
+
+export type DialAction = {
+  key: string;
+  icon: React.ReactElement<SvgIconProps>;
+  tooltip?: ReactNode;
+  onClick: () => void;
+  color: string;
+  toastTip: string;
 };

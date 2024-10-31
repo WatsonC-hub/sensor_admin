@@ -1,20 +1,15 @@
-import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {Box, CardContent, Typography} from '@mui/material';
-import {useAtomValue} from 'jotai';
 import React from 'react';
 
-import Button from '~/components/Button';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import LevelCorrectionModal from '~/pages/admin/kvalitetssikring/modals/LevelCorrectionModal';
-import {qaSelection} from '~/state/atoms';
 
-type WizardLevelCorrectionProps = {
-  setStep: (value: number) => void;
-  setInitiateConfirmTimeseries: (initiateConfirmTimeseries: boolean) => void;
-};
+interface WizardLevelCorrectionProps {
+  onClose: () => void;
+}
 
-const WizardLevelCorrection = ({setInitiateConfirmTimeseries}: WizardLevelCorrectionProps) => {
-  const selection = useAtomValue(qaSelection);
-  console.log(selection);
+const WizardLevelCorrection = ({onClose}: WizardLevelCorrectionProps) => {
+  const {isMobile} = useBreakpoints();
 
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
@@ -26,37 +21,20 @@ const WizardLevelCorrection = ({setInitiateConfirmTimeseries}: WizardLevelCorrec
           alignContent: 'center',
         }}
       >
-        <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'}>
-          <Typography alignSelf={'center'} variant="h5" component="h2" fontWeight={'bold'}>
+        <Box
+          display={'flex'}
+          flexDirection="row"
+          justifyContent={'center'}
+          mb={1}
+          gap={1}
+          alignItems={'end'}
+        >
+          <Typography alignSelf={'center'} variant={isMobile ? 'h6' : 'h5'} fontWeight={'bold'}>
             Korriger spring
           </Typography>
-          <Typography sx={{wordWrap: 'break-word'}}>
-            På denne side af guiden kan du rette en specifik hændelse i tidsserien, f.eks. en
-            unaturlig spike eller et niveauspring. Tryk på knappen, og markér venligst ét punkt på
-            grafen, som du ønsker at rette, for at starte behandlingen.
-          </Typography>
-        </Box>
-        <Box display={'flex'} flexDirection="column" mb={3} alignSelf={'center'}>
-          <Button
-            startIcon={<HighlightAltIcon />}
-            bttype={'primary'}
-            disabled={false}
-            onClick={() => {
-              setInitiateConfirmTimeseries(true);
-            }}
-          >
-            Markér et punkt
-          </Button>
         </Box>
         <Box alignSelf={'center'}>
-          {'points' in selection && (
-            <LevelCorrectionModal
-            // onClose={() => {
-            //   setInitiateSelect(false);
-            //   setStep(0);
-            // }}
-            />
-          )}
+          <LevelCorrectionModal onClose={onClose} />
         </Box>
       </CardContent>
     </Box>

@@ -1,101 +1,114 @@
-import {KeyboardArrowLeft, KeyboardArrowRight} from '@mui/icons-material';
-import {Box, Button, CardActions, MobileStepper, Card, CardContent, useTheme} from '@mui/material';
-import {useSetAtom} from 'jotai';
-import React, {useEffect, useState} from 'react';
+import {Box, Card, CardContent, Typography} from '@mui/material';
+import {useAtom} from 'jotai';
+import React, {useEffect} from 'react';
+import {toast} from 'react-toastify';
 
+import {QaAdjustment} from '~/helpers/EnumHelper';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 
 import WizardConfirmTimeseries from './WizardConfirmTimeseries';
 import WizardDataExclude from './WizardExcludeData';
-import WizardIntro from './WizardIntro';
 import WizardLevelCorrection from './WizardLevelCorrection';
 import WizardValueBounds from './WizardValueBounds';
 
 interface StepWizardProps {
-  setInitiateSelect: (initiateSelect: boolean) => void;
   setLevelCorrection: (levelCorrection: boolean) => void;
   initiateConfirmTimeseries: boolean;
-  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
+  setInitiateSelect: (initiateSelect: boolean) => void;
+  setInitiateConfirmTimeseries: (confirm: boolean) => void;
 }
 
 const StepWizard = ({
-  setInitiateSelect,
   setLevelCorrection,
   initiateConfirmTimeseries,
+  setInitiateSelect,
   setInitiateConfirmTimeseries,
 }: StepWizardProps) => {
-  const theme = useTheme();
-  const [activeStep, setActiveStep] = React.useState(0);
-  const [nextStep, setNextStep] = useState<number | null>(null);
-  const setSelection = useSetAtom(qaSelection);
+  const [dataAdjustment] = useSearchParam('adjust');
+  const [selection, setSelection] = useAtom(qaSelection);
+  const {isMobile} = useBreakpoints();
 
-  const handleBack = () => {
-    setActiveStep(0);
-    setInitiateSelect(false);
+  useEffect(() => {
+    setSelection({});
+    setInitiateSelect(
+      dataAdjustment === QaAdjustment.BOUNDS || dataAdjustment === QaAdjustment.REMOVE
+    );
+    setInitiateConfirmTimeseries(dataAdjustment === QaAdjustment.CONFIRM);
+    setLevelCorrection(dataAdjustment === QaAdjustment.CORRECTION);
+  }, [dataAdjustment]);
+
+  useEffect(() => {
+    const points =
+      selection.points &&
+      selection.points.length === 1 &&
+      isMobile &&
+      (dataAdjustment === QaAdjustment.CONFIRM || dataAdjustment === QaAdjustment.CORRECTION);
+    const range =
+      selection.range &&
+      isMobile &&
+      (dataAdjustment === QaAdjustment.REMOVE || dataAdjustment === QaAdjustment.BOUNDS);
+
+    if (points || range) scrollTo({top: 450});
+  }, [selection]);
+
+  const dismiss = () => {
+    toast.update('juster', {
+      render: (
+        <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
+          <Typography>Annulleret</Typography>
+        </Box>
+      ),
+      type: 'default',
+      autoClose: 2000,
+    });
+  };
+
+  const handleOnClose = () => {
     setInitiateConfirmTimeseries(false);
+    setInitiateSelect(false);
     setLevelCorrection(false);
+    dismiss();
     setSelection({});
   };
 
-  useEffect(() => {
-    if (nextStep === activeStep) setNextStep(null);
-    if (activeStep === 4) setLevelCorrection(true);
-    else setLevelCorrection(false);
-  }, [nextStep, activeStep]);
-
   return (
     <Box height={'fit-content'} alignItems={'center'}>
-      <Card
-        raised={true}
-        sx={{
-          width: 'inherit',
-          height: 'inherit',
-          display: 'flex',
-          flexDirection: 'column',
-          flex: '1 0 auto',
-          borderRadius: 4,
-        }}
-        elevation={12}
-      >
-        <CardContent sx={{height: '95%'}}>
-          <Box width={'inherit'} height={'inherit'}>
-            {activeStep === 0 && <WizardIntro setValue={setActiveStep} />}
-            {activeStep === 1 && (
-              <WizardConfirmTimeseries
-                setStep={setActiveStep}
-                initiateConfirmTimeseries={initiateConfirmTimeseries}
-                setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
-              />
-            )}
-            {activeStep === 2 && (
-              <WizardDataExclude setStep={setActiveStep} setInitiateSelect={setInitiateSelect} />
-            )}
-            {activeStep === 3 && (
-              <WizardValueBounds setStep={setActiveStep} setInitiateSelect={setInitiateSelect} />
-            )}
-            {activeStep === 4 && (
-              <WizardLevelCorrection
-                setStep={setActiveStep}
-                setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
-              />
-            )}
-          </Box>
-        </CardContent>
-        <CardActions sx={{marginTop: 'auto', justifySelf: 'end', alignSelf: 'center'}}>
-          <MobileStepper
-            steps={0}
-            position="static"
-            activeStep={activeStep}
-            nextButton={<div></div>}
-            backButton={
-              <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                Tilbage
-              </Button>
-            }
-          />
-        </CardActions>
-      </Card>
+      {(selection.range || selection.points) && dataAdjustment !== null && (
+        <Card
+          raised={true}
+          sx={{
+            width: 'inherit',
+            height: 'inherit',
+            display: 'flex',
+            flexDirection: 'column',
+            flex: '1 0 auto',
+            borderRadius: 4,
+          }}
+          elevation={2}
+        >
+          <CardContent sx={{height: '95%'}}>
+            <Box width={'inherit'} height={'inherit'}>
+              {dataAdjustment === QaAdjustment.CONFIRM && (
+                <WizardConfirmTimeseries
+                  initiateConfirmTimeseries={initiateConfirmTimeseries}
+                  onClose={handleOnClose}
+                />
+              )}
+              {dataAdjustment === QaAdjustment.REMOVE && (
+                <WizardDataExclude onClose={handleOnClose} />
+              )}
+              {dataAdjustment === QaAdjustment.BOUNDS && (
+                <WizardValueBounds onClose={handleOnClose} />
+              )}
+              {dataAdjustment === QaAdjustment.CORRECTION && (
+                <WizardLevelCorrection onClose={handleOnClose} />
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      )}
     </Box>
   );
 };

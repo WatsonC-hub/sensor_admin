@@ -1,29 +1,24 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Divider, Grid} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
-import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {LevelCorrection} from '~/types';
 
 interface LevelCorrectionRowProps {
   data: LevelCorrection;
-  index: number;
-  lastElement: boolean;
+  index: number | undefined;
+  setOpen: () => void;
 }
 
-const LevelCorrectionRow = ({data, index, lastElement}: LevelCorrectionRowProps) => {
-  const [editMode, setEditMode] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const {put, del} = useLevelCorrection();
+const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => {
+  const {put} = useLevelCorrection();
 
   const schema = z.object({
     date: z
@@ -58,13 +53,7 @@ const LevelCorrectionRow = ({data, index, lastElement}: LevelCorrectionRowProps)
         },
       });
     }
-    setEditMode(false);
-  };
-
-  const handleDelete = () => {
-    del.mutate({
-      path: `${data.ts_id}/${data.gid}`,
-    });
+    setOpen && setOpen();
   };
 
   return (
@@ -87,18 +76,11 @@ const LevelCorrectionRow = ({data, index, lastElement}: LevelCorrectionRowProps)
               flexDirection="row"
               gap={1}
             >
-              <FormInput
-                name="date"
-                label="Dato"
-                fullWidth
-                type="datetime-local"
-                required
-                disabled={!editMode}
-              />
+              <FormInput name="date" label="Dato" fullWidth type="datetime-local" required />
             </Box>
           </Grid>
           <Grid item xs={12} xl={7}>
-            <FormInput name="comment" label="Kommentar" multiline rows={2} disabled={!editMode} />
+            <FormInput name="comment" label="Kommentar" multiline rows={2} />
           </Grid>
           <Grid
             item
@@ -109,57 +91,28 @@ const LevelCorrectionRow = ({data, index, lastElement}: LevelCorrectionRowProps)
             justifyContent={'end'}
           >
             <Box display="flex" alignSelf={'end'} flexDirection="row" gap={1} minWidth="97.02px">
-              {editMode ? (
-                <Button
-                  bttype="tertiary"
-                  size="small"
-                  onClick={() => {
-                    setEditMode(false);
-                    reset(data);
-                  }}
-                >
-                  Annuller
-                </Button>
-              ) : (
-                <Button
-                  bttype="tertiary"
-                  size="small"
-                  onClick={() => setConfirmDelete(true)}
-                  startIcon={<DeleteIcon />}
-                >
-                  Slet
-                </Button>
-              )}
-              {editMode ? (
-                <Button
-                  bttype="primary"
-                  size="small"
-                  onClick={handleSubmit(submit, (values) => console.log(values))}
-                  startIcon={<SaveIcon />}
-                >
-                  Gem
-                </Button>
-              ) : (
-                <Button
-                  bttype="primary"
-                  size="small"
-                  onClick={() => setEditMode(true)}
-                  startIcon={<EditIcon />}
-                >
-                  Rediger
-                </Button>
-              )}
+              <Button
+                bttype="tertiary"
+                size="small"
+                onClick={() => {
+                  reset(data);
+                  setOpen && setOpen();
+                }}
+              >
+                Annuller
+              </Button>
+              <Button
+                bttype="primary"
+                size="small"
+                onClick={handleSubmit(submit, (values) => console.log(values))}
+                startIcon={<SaveIcon />}
+              >
+                Gem
+              </Button>
             </Box>
           </Grid>
         </Grid>
       </Box>
-      {!lastElement && <Divider />}
-      <DeleteAlert
-        title="Vil du slette spring korrektionen?"
-        dialogOpen={confirmDelete}
-        setDialogOpen={setConfirmDelete}
-        onOkDelete={handleDelete}
-      />
     </FormProvider>
   );
 };

@@ -27,7 +27,7 @@ const GraphButton = ({onClick, icon, disabled, children, infotext, enableTooltip
       <Tooltip
         title={showTooltip ? 'ℹ️ ' + infotext : ''}
         enterTouchDelay={0}
-        componentsProps={{
+        slotProps={{
           tooltip: {
             sx: {
               bgcolor: 'info.main',

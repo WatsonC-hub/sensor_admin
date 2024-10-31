@@ -1,8 +1,8 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import AdsClickIcon from '@mui/icons-material/AdsClick';
 // import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import {Box, CardContent, Typography} from '@mui/material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import {Box, CardContent, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import React, {useContext, useEffect, useState} from 'react';
@@ -13,15 +13,15 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 // import {QaStampLevel} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
 import {CertifyQa, useCertifyQa} from '../api/useCertifyQa';
 
 interface WizardConfirmTimeseriesProps {
-  setStep: (value: number) => void;
   initiateConfirmTimeseries: boolean;
-  setInitiateConfirmTimeseries: (confirmTimeseries: boolean) => void;
+  onClose: () => void;
 }
 
 const schema = z
@@ -45,16 +45,13 @@ const schema = z
 type CertifyQaValues = z.infer<typeof schema>;
 
 const WizardConfirmTimeseries = ({
-  // setStep,
   initiateConfirmTimeseries,
-  setInitiateConfirmTimeseries,
+  onClose,
 }: WizardConfirmTimeseriesProps) => {
   const metadata = useContext(MetadataContext);
   const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
   const {isMobile} = useBreakpoints();
   const selection = useAtomValue(qaSelection);
-  const [disabled, setDisabled] = useState(false);
-  // const disabled = !initiateConfirmTimeseries || !('points' in selection);
 
   const {
     get: {data: qaData},
@@ -62,8 +59,8 @@ const WizardConfirmTimeseries = ({
   } = useCertifyQa(metadata?.ts_id);
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
+  const [, setDataAdjustment] = useSearchParam('adjust');
 
-  console.log(selectedQaData);
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -83,10 +80,6 @@ const WizardConfirmTimeseries = ({
       setSelectedQaData(qaData?.find((qa) => qa.level === qaStampWatch));
     }
   }, [qaStampWatch, qaStamp, qaData]);
-
-  useEffect(() => {
-    setDisabled(!initiateConfirmTimeseries || !true);
-  }, [initiateConfirmTimeseries]);
 
   useEffect(() => {
     if (selection.points && selection.points.length > 0) {
@@ -110,6 +103,7 @@ const WizardConfirmTimeseries = ({
       data: certifyQa,
     };
     postQaData.mutateAsync(payload);
+    onClose();
   };
   return (
     <FormProvider {...formMethods}>
@@ -122,15 +116,41 @@ const WizardConfirmTimeseries = ({
             alignContent: 'center',
           }}
         >
-          <Box display={'flex'} flexDirection="column" mb={3} justifyContent={'center'}>
-            <Typography alignSelf={'center'} variant="h5" component="h2" fontWeight={'bold'}>
-              Markere tidsserie som godkendt
+          <Box display={'flex'} flexDirection="row" justifyContent={'center'} mb={1} gap={1}>
+            <Typography
+              alignSelf={'center'}
+              variant={isMobile ? 'h6' : 'h5'}
+              component="h2"
+              fontWeight={'bold'}
+            >
+              Godkend tidsserie
             </Typography>
-            <Typography sx={{wordWrap: 'break-word'}}>
-              På denne side af guiden har du mulighed for at godkende tidsserien. Hvis du er sikker
-              på at der ikke mangler ændringer eller fejlhåndtering og at tidsserien er klar til at
-              blive godtkendt, så tryk på knappen nedenfor.
-            </Typography>
+            <Tooltip
+              placement="right"
+              enterTouchDelay={0}
+              slotProps={{
+                tooltip: {
+                  sx: {
+                    bgcolor: 'primary.main',
+                  },
+                },
+                arrow: {
+                  sx: {
+                    color: 'primary.main',
+                  },
+                },
+              }}
+              arrow={true}
+              title={
+                <p>
+                  Markér et punkt på grafen som du gerne vil godkende tidsserien frem til. Datoen
+                  vil blive brugt som tidsstempel for hvornår tidsserien sidst er blevet godkendt
+                </p>
+              }
+              sx={{alignSelf: 'center'}}
+            >
+              <InfoOutlinedIcon color="info" />
+            </Tooltip>
           </Box>
           <Box
             display={'flex'}
@@ -140,23 +160,13 @@ const WizardConfirmTimeseries = ({
             alignSelf={'center'}
             gap={1}
           >
-            <Button
-              startIcon={<AdsClickIcon />}
-              bttype={'primary'}
-              disabled={false}
-              onClick={() => {
-                setInitiateConfirmTimeseries(true);
-              }}
-            >
-              Markér punkt
-            </Button>
             <Box
               display={'flex'}
               width={'100%'}
               flexDirection={'row'}
               alignItems={'center'}
               flexWrap={'wrap'}
-              justifyContent={isMobile ? 'start' : 'center'}
+              justifyContent={'center'}
               gap={1}
             >
               <FormInput
@@ -182,7 +192,7 @@ const WizardConfirmTimeseries = ({
                 name="date"
                 label="Godkendt til"
                 type={'datetime-local'}
-                disabled={disabled}
+                disabled={!initiateConfirmTimeseries}
                 style={{
                   minWidth: 195,
                   width: isMobile ? 'fit-content' : 195,
@@ -224,15 +234,16 @@ const WizardConfirmTimeseries = ({
             /> */}
 
             <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
-              {/* <Button
+              <Button
                 bttype="tertiary"
                 onClick={() => {
-                  reset();
-                  setInitiateConfirmTimeseries(false);
+                  setDataAdjustment(null);
+                  onClose();
+                  // reset();
                 }}
               >
                 Annuller
-              </Button> */}
+              </Button>
               <Button
                 bttype="primary"
                 startIcon={<Save />}

@@ -8,12 +8,7 @@ interface CustomLabelProps {
   typographyProps?: TypographyProps;
 }
 
-function CustomBottomNavigationActionLabel({
-  text,
-  icon,
-  color = 'inherit',
-  typographyProps,
-}: CustomLabelProps) {
+function CustomBottomNavigationActionLabel({text, icon, color, typographyProps}: CustomLabelProps) {
   return (
     <div style={{display: 'inline-block', alignItems: 'center'}}>
       <SvgIcon component="span" sx={{fontSize: '1.2rem', marginRight: '4px', color: color}}>

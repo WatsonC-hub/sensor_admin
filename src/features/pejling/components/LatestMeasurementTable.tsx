@@ -100,7 +100,6 @@ const LatestMeasurementTable = ({
     enableTableFooter: false,
     enableStickyHeader: false,
     enableGlobalFilterRankedResults: false,
-    muiTablePaperProps: {},
     muiTableContainerProps: {},
     muiTableHeadCellProps: {
       sx: {

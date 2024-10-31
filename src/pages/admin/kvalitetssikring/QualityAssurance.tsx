@@ -1,56 +1,100 @@
-import {Box, Divider, Grid, Tab, Tabs, Typography} from '@mui/material';
-import React, {ReactNode, SyntheticEvent, useEffect, useState} from 'react';
+import {Delete, Verified} from '@mui/icons-material';
+import DensityLargeIcon from '@mui/icons-material/DensityLarge';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import {Box, Divider, Grid, Typography} from '@mui/material';
+import {startCase} from 'lodash';
+import React, {ReactNode, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
+import CustomBottomNavigation from '~/components/BottomNavigation';
+import CustomSpeedDial from '~/components/CustomSpeedDial';
 import NavBar from '~/components/NavBar';
+import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
+import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
+import {QaAdjustment, QaPages} from '~/helpers/EnumHelper';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useSearchParam} from '~/hooks/useSeachParam';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
-import QAHistory from '~/pages/admin/kvalitetssikring/QAHistory';
 import {MetadataContext} from '~/state/contexts';
+import {DialAction} from '~/types';
 
 import PlotGraph from './QAGraph';
 
-interface TabPanelProps {
-  children: ReactNode;
-  value: number;
-  index: number;
-}
-
-function TabPanel({children, value, index, ...other}: TabPanelProps) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={2}>{children}</Box>}
-    </div>
-  );
-}
+const navIconStyle = (isSelected: boolean) => {
+  return isSelected ? 'secondary.main' : 'white';
+};
 
 const QualityAssurance = () => {
   const params = useParams();
+  const [pageToShow] = useSearchParam('page');
+  const [dataAdjustment, setDataAdjustment] = useSearchParam('adjust');
 
-  const {isTouch, isMobile} = useBreakpoints();
-  const [tabValue, setTabValue] = React.useState(0);
+  const {isMobile} = useBreakpoints();
   const [initiateSelect, setInitiateSelect] = useState(false);
   const [levelCorrection, setLevelCorrection] = useState(false);
   const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useState(false);
 
   const {data} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
-  const handleChange = (e: SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
+  const speedDialActions: Array<DialAction> = [];
 
   useEffect(() => {
-    setTabValue(0);
-  }, [isMobile]);
+    if (pageToShow !== QaPages.DATA) {
+      setDataAdjustment(null);
+    }
+  }, [pageToShow]);
+
+  speedDialActions.push(
+    {
+      key: 'confirm',
+      icon: <Verified />,
+      tooltip: <Typography noWrap>Godkend tidsserie</Typography>,
+      onClick: () => {
+        setInitiateConfirmTimeseries(true);
+        setDataAdjustment(QaAdjustment.CONFIRM);
+      },
+      color: navIconStyle(dataAdjustment === QaAdjustment.CONFIRM),
+      toastTip: 'Vælg et punkt på grafen',
+    },
+    {
+      key: 'removeData',
+      icon: <Delete />,
+      tooltip: <Typography noWrap>Fjern data</Typography>,
+      onClick: () => {
+        setInitiateSelect(true);
+        setDataAdjustment(QaAdjustment.REMOVE);
+      },
+      color: navIconStyle(dataAdjustment === QaAdjustment.REMOVE),
+      toastTip: 'Markér et område på grafen',
+    },
+    {
+      key: 'defineValues',
+      icon: <DensityLargeIcon />,
+      tooltip: <Typography noWrap>Definer værdier</Typography>,
+      onClick: () => {
+        setInitiateSelect(true);
+        setDataAdjustment(QaAdjustment.BOUNDS);
+      },
+      color: navIconStyle(dataAdjustment === QaAdjustment.BOUNDS),
+      toastTip: 'Markér et område på grafen',
+    },
+    {
+      key: 'levelCorrection',
+      icon: <HighlightAltIcon />,
+      tooltip: <Typography noWrap>Korriger spring</Typography>,
+      onClick: () => {
+        setLevelCorrection(true);
+        setDataAdjustment(QaAdjustment.CORRECTION);
+      },
+      color: navIconStyle(dataAdjustment === QaAdjustment.CORRECTION),
+      toastTip: 'Vælg et punkt på grafen',
+    }
+  );
 
   if (!isMobile) {
     return (
@@ -65,45 +109,32 @@ const QualityAssurance = () => {
         <Grid item tablet={1}>
           <DataToShow />
         </Grid>
-        <Box boxShadow={2} borderRadius={4} m={'auto'} width={'100%'} maxWidth={1200}>
-          <Tabs
-            value={tabValue}
-            onChange={handleChange}
-            variant="fullWidth"
-            aria-label="simple tabs example"
-            scrollButtons="auto"
-          >
-            <Tab label="Data" />
-            <Tab label="Algoritmer" />
-          </Tabs>
-          <TabPanel value={tabValue} index={0}>
-            <Box display={'flex'} flexDirection={'row'}>
-              <Grid container gap={isTouch ? 2 : 0}>
-                <Grid item tablet={12} laptop={6} desktop={6} xl={6}>
-                  <Box mr={1} display={'flex'} flexDirection={'column'} gap={1}>
-                    <Typography variant="h5">Datajustering</Typography>
+        <Box borderRadius={4} m={'auto'} width={'100%'} maxWidth={1200}>
+          <Box display={'flex'} flexDirection={'column'}>
+            {pageToShow === QaPages.DATA && (
+              <>
+                <Grid container gap={3} justifyContent={'center'}>
+                  <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
                     <StepWizard
-                      setInitiateSelect={setInitiateSelect}
                       setLevelCorrection={setLevelCorrection}
                       initiateConfirmTimeseries={initiateConfirmTimeseries}
+                      setInitiateSelect={setInitiateSelect}
                       setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
                     />
-                  </Box>
+                  </Grid>
+                  <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
+                    <Box display={'flex'} flexDirection={'column'} borderRadius={4}>
+                      <Typography variant="h5">Aktive justeringer</Typography>
+                      <QAHistory />
+                      {/* <QAHistory /> */}
+                    </Box>
+                  </Grid>
                 </Grid>
-                <Grid item tablet={12} laptop={6} desktop={6} xl={6}>
-                  <Box display={'flex'} flexDirection={'column'} borderRadius={4}>
-                    <Typography variant="h5">Aktive justeringer</Typography>
-                    <QAHistory />
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <Grid tablet={12} direction={'column'}>
-              <Algorithms />
-            </Grid>{' '}
-          </TabPanel>
+                <CustomSpeedDial actions={speedDialActions} />
+              </>
+            )}
+            {pageToShow === QaPages.ALGORITHMS && <Algorithms />}
+          </Box>
         </Box>
       </Layout>
     );
@@ -118,38 +149,23 @@ const QualityAssurance = () => {
       levelCorrection={levelCorrection}
       initiateConfirmTimeseries={initiateConfirmTimeseries}
     >
-      <Box boxShadow={4} borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
-        <Tabs
-          value={tabValue}
-          onChange={handleChange}
-          variant={'fullWidth'}
-          aria-label="simple tabs example"
-          scrollButtons="auto"
-        >
-          <Tab label="Data" />
-          <Tab label="Justering" />
-          <Tab label="Wizard" />
-          <Tab label="Detektion" />
-        </Tabs>
-
+      <Box borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
         <Grid item mobile={12}>
-          <TabPanel value={tabValue} index={0}>
-            <DataToShow />
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <QAHistory />
-          </TabPanel>
-          <TabPanel value={tabValue} index={2}>
-            <StepWizard
-              setInitiateSelect={setInitiateSelect}
-              setLevelCorrection={setLevelCorrection}
-              initiateConfirmTimeseries={initiateConfirmTimeseries}
-              setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
-            />
-          </TabPanel>
-          <TabPanel value={tabValue} index={3}>
-            <Algorithms />
-          </TabPanel>
+          {pageToShow === QaPages.DATA && (
+            <Box display="flex" flexDirection={'column'} gap={2}>
+              {dataAdjustment !== null && (
+                <StepWizard
+                  setLevelCorrection={setLevelCorrection}
+                  initiateConfirmTimeseries={initiateConfirmTimeseries}
+                  setInitiateSelect={setInitiateSelect}
+                  setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
+                />
+              )}
+              <QAHistory />
+              <CustomSpeedDial actions={speedDialActions} />
+            </Box>
+          )}
+          {pageToShow === QaPages.ALGORITHMS && <Algorithms />}
         </Grid>
       </Box>
     </Layout>
@@ -177,10 +193,38 @@ const Layout = ({
   initiateConfirmTimeseries,
   children,
 }: LayoutProps) => {
+  const [pageToShow, setPageToShow] = useSearchParam('page');
+  const {isMobile} = useBreakpoints();
+  const handleChange = (event: any, newValue: string | null) => {
+    setPageToShow(newValue);
+  };
+
+  const {handlePrefetch} = useAlgorithms(ts_id.toString());
+
+  const navigationItems = [];
+
+  navigationItems.push(
+    {
+      text: 'Justering',
+      value: QaPages.DATA,
+      icon: <QueryStatsIcon />,
+      color: navIconStyle(pageToShow === QaPages.DATA),
+    },
+    {
+      text: startCase(QaPages.ALGORITHMS),
+      value: QaPages.ALGORITHMS,
+      icon: <FunctionsIcon />,
+      color: navIconStyle(pageToShow === QaPages.ALGORITHMS),
+      handlePrefetch: handlePrefetch,
+    }
+  );
+
   return (
     <MetadataContext.Provider value={data}>
       <NavBar />
+
       <Grid container gap={1}>
+        {isMobile && <DataToShow />}
         <Grid item mobile={12} tablet={9} laptop={10}>
           <Box
             display={'flex'}
@@ -200,6 +244,11 @@ const Layout = ({
         </Grid>
         {children}
       </Grid>
+      <CustomBottomNavigation
+        pageToShow={pageToShow}
+        onChange={handleChange}
+        items={navigationItems}
+      />
     </MetadataContext.Provider>
   );
 };

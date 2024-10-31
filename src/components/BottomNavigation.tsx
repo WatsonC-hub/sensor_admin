@@ -1,14 +1,4 @@
-import MenuIcon from '@mui/icons-material/MoreVert';
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Paper,
-  SvgIconProps,
-  Box,
-  MenuItem,
-  Menu,
-  IconButton,
-} from '@mui/material';
+import {BottomNavigation, BottomNavigationAction, Paper, SvgIconProps, Box} from '@mui/material';
 import React from 'react';
 
 import {StationPages} from '~/helpers/EnumHelper';
@@ -22,56 +12,55 @@ interface NavigationItem {
   icon: React.ReactElement<SvgIconProps>;
   color: string;
   isCalculated?: boolean;
+  handlePrefetch?: () => void;
 }
 
 interface CustomBottomNavigationProps {
   pageToShow: string | null;
   onChange: (event: React.ChangeEvent<object>, newValue: string | null) => void;
-  items: NavigationItem[];
+  items: Array<NavigationItem>;
   canEdit?: boolean;
 }
 
 const bottomNavStyle = {
   borderRadius: 10,
   color: 'white',
-  '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
-  },
+  transition: 'none',
+  animation: 'none',
 };
 
 const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   pageToShow,
   onChange,
   items,
-  canEdit,
+  // canEdit,
 }) => {
   const {isMobile} = useBreakpoints();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const threshold = isMobile ? 4 : items.length;
   const visibleItems = items.slice(0, threshold);
-  const hiddenItems = items.slice(threshold);
+  // const hiddenItems = items.slice(threshold);
 
-  const handleMenuItemClick = (event: React.MouseEvent<HTMLElement>, value: string | null) => {
-    onChange(event, value);
-    handleMenuClose();
-  };
+  // const handleMenuItemClick = (event: React.MouseEvent<HTMLElement>, value: string | null) => {
+  //   onChange(event, value);
+  //   handleMenuClose();
+  // };
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+  // const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  // const handleMenuClose = () => {
+  //   setAnchorEl(null);
+  // };
 
   return (
-    <Box sx={{mt: isMobile ? 15 : 8, position: 'sticky', zIndex: 3}}>
-      {isMobile && hiddenItems.length > 0 && (
+    <Box sx={{mt: isMobile ? 15 : 8, zIndex: 3}}>
+      {/* {isMobile && hiddenItems.length > 0 && (
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
-          anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
           PaperProps={{
             sx: {
               backgroundColor: 'primary.main',
@@ -96,8 +85,8 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
                   disabled={!canEdit}
                   label={<CustomBottomNavigationActionLabel {...item} />}
                   value={item.value}
-                  onClick={() => {
-                    onChange;
+                  onClick={(e) => {
+                    onChange(e, e.target);
                   }}
                   sx={bottomNavStyle}
                 />
@@ -105,8 +94,8 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
             );
           })}
         </Menu>
-      )}
-      <Paper sx={{position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={3}>
+      )} */}
+      <Paper sx={{position: 'fixed', bottom: 0, width: '100%'}} elevation={3}>
         <BottomNavigation
           value={pageToShow}
           showLabels
@@ -115,7 +104,6 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
           }}
           sx={{
             backgroundColor: 'primary.main',
-            color: 'white',
           }}
         >
           {visibleItems.map((item) => {
@@ -133,10 +121,12 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
                 label={<CustomBottomNavigationActionLabel {...item} />}
                 value={item.value}
                 sx={bottomNavStyle}
+                onFocus={item.handlePrefetch}
+                onMouseEnter={item.handlePrefetch}
               />
             );
           })}
-          {isMobile && hiddenItems.length > 0 && (
+          {/* {isMobile && hiddenItems.length > 0 && (
             <IconButton
               aria-label="more"
               aria-controls="long-menu"
@@ -146,7 +136,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
             >
               <MenuIcon />
             </IconButton>
-          )}
+          )} */}
         </BottomNavigation>
       </Paper>
     </Box>

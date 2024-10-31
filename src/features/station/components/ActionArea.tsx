@@ -12,7 +12,7 @@ import {StationPages} from '~/helpers/EnumHelper';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 const navIconStyle = (isSelected: boolean) => {
-  return isSelected ? 'secondary.main' : 'inherit';
+  return isSelected ? 'secondary.main' : 'white';
 };
 
 interface ActionAreaProps {

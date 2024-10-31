@@ -1,30 +1,25 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import {Box, Divider, Grid} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
-import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 interface ExcludeRowProps {
   data: ExcludeData;
-  index: number;
+  index: number | undefined;
   isWithYValues?: boolean;
-  lastElement: boolean;
+  setOpen?: (open: boolean) => void;
 }
 
-const ExcludeRow = ({data, index, isWithYValues = false, lastElement}: ExcludeRowProps) => {
-  const [editMode, setEditMode] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const {put, del} = useExclude();
+const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowProps) => {
+  const {put} = useExclude();
   const {isTouch, isLaptop} = useBreakpoints();
 
   let schema = z.object({
@@ -79,15 +74,15 @@ const ExcludeRow = ({data, index, isWithYValues = false, lastElement}: ExcludeRo
         },
       });
     }
-    setEditMode(false);
+    setOpen && setOpen(false);
   };
 
-  const handleDelete = () => {
-    console.log(data);
-    del.mutate({
-      path: `${data.ts_id}/${data.gid}`,
-    });
-  };
+  // const handleDelete = () => {
+  //   console.log(data);
+  //   del.mutate({
+  //     path: `${data.ts_id}/${data.gid}`,
+  //   });
+  // };
 
   return (
     <FormProvider {...formMethods}>
@@ -109,20 +104,8 @@ const ExcludeRow = ({data, index, isWithYValues = false, lastElement}: ExcludeRo
               flexDirection={isLaptop || isTouch ? 'column' : 'row'}
               gap={1}
             >
-              <FormInput
-                name="startdate"
-                label="Fra"
-                type="datetime-local"
-                required
-                disabled={!editMode}
-              />
-              <FormInput
-                name="enddate"
-                label="Til"
-                type="datetime-local"
-                required
-                disabled={!editMode}
-              />
+              <FormInput name="startdate" label="Fra" type="datetime-local" required />
+              <FormInput name="enddate" label="Til" type="datetime-local" required />
             </Box>
           </Grid>
           {isWithYValues && (
@@ -137,7 +120,6 @@ const ExcludeRow = ({data, index, isWithYValues = false, lastElement}: ExcludeRo
                     required
                     style={{alignSelf: 'center'}}
                     placeholder="Brug venligst kun tal"
-                    disabled={!editMode}
                   />
                   -
                   <FormInput
@@ -147,14 +129,13 @@ const ExcludeRow = ({data, index, isWithYValues = false, lastElement}: ExcludeRo
                     type="number"
                     required
                     placeholder="Brug venligst kun tal"
-                    disabled={!editMode}
                   />
                 </Box>
               </Grid>
             </>
           )}
           <Grid item xs={12} sm={12}>
-            <FormInput name="comment" label="Kommentar" multiline rows={2} disabled={!editMode} />
+            <FormInput name="comment" label="Kommentar" multiline rows={2} />
           </Grid>
           <Grid
             item
@@ -165,65 +146,43 @@ const ExcludeRow = ({data, index, isWithYValues = false, lastElement}: ExcludeRo
             justifyContent={'end'}
           >
             <Box display="flex" flexDirection="row" alignSelf={'end'} gap={1}>
-              {editMode ? (
-                <Button
-                  bttype="tertiary"
-                  size="small"
-                  onClick={() => {
-                    reset(data);
-                    setEditMode(false);
-                  }}
-                >
-                  Annuller
-                </Button>
-              ) : (
-                <Button
-                  bttype="tertiary"
-                  size="small"
-                  onClick={() => setConfirmDelete(true)}
-                  startIcon={<DeleteIcon />}
-                >
-                  Slet
-                </Button>
-              )}
-              {editMode ? (
-                <Button
-                  bttype="primary"
-                  size="small"
-                  onClick={handleSubmit(submit, (values) => console.log(values))}
-                  startIcon={<SaveIcon />}
-                >
-                  Gem
-                </Button>
-              ) : (
-                <Button
-                  bttype="primary"
-                  size="small"
-                  onClick={() => setEditMode(true)}
-                  startIcon={<EditIcon />}
-                >
-                  Rediger
-                </Button>
-              )}
+              <Button
+                bttype="tertiary"
+                size="small"
+                onClick={() => {
+                  reset(data);
+                  setOpen && setOpen(false);
+                }}
+              >
+                Annuller
+              </Button>
+              <Button
+                bttype="primary"
+                size="small"
+                onClick={handleSubmit(submit, (values) => console.log(values))}
+                startIcon={<SaveIcon />}
+              >
+                Gem
+              </Button>
             </Box>
           </Grid>
         </Grid>
       </Box>
-      {!lastElement && (
+      {/* {!lastElement && (
         <Divider
           sx={{
             mt: 1,
             mb: 1,
-            borderBottomWidth: 2,
+            borderBottomWidth: 2, 
           }}
         />
-      )}
-      <DeleteAlert
+      )} */}
+      {/* <DeleteAlert
         title="Vil du slette ekskluderingen?"
         dialogOpen={confirmDelete}
         setDialogOpen={setConfirmDelete}
         onOkDelete={handleDelete}
-      />
+      /> */}
     </FormProvider>
   );
 };
