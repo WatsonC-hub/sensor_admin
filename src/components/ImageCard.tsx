@@ -28,6 +28,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
 
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   function handleDelete() {
     deleteMutation.mutateAsync(
@@ -67,7 +68,22 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
           width: isMobile ? '300px' : '480px',
         }}
       >
-        <img src={imageUrl} alt={image.title} loading="lazy" />
+        <div
+          style={
+            isLoaded
+              ? {display: `none`}
+              : {height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}
+          }
+        >
+          <CircularProgress />
+        </div>
+        <img
+          src={imageUrl}
+          alt={image.title}
+          loading="lazy"
+          onLoad={() => setIsLoaded(true)}
+          // style={isLoaded ? {} : {display: `none`}}
+        />
       </CardMedia>
       <CardContent
         sx={{
