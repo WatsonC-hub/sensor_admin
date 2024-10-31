@@ -1,7 +1,7 @@
 import {BottomNavigation, BottomNavigationAction, Paper, SvgIconProps, Box} from '@mui/material';
 import React from 'react';
 
-import {StationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import CustomBottomNavigationActionLabel from './CustomLabel';
@@ -110,7 +110,7 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
             if (
               item.isCalculated !== undefined &&
               item.isCalculated &&
-              item.value === StationPages.TILSYN
+              item.value === stationPages.TILSYN
             ) {
               return;
             }

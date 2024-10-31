@@ -8,7 +8,7 @@ import {startCase} from 'lodash';
 import React from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
-import {StationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/EnumHelper';
 import {useSearchParam} from '~/hooks/useSeachParam';
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
@@ -31,27 +31,27 @@ export default function ActionArea({canEdit}: ActionAreaProps) {
   const navigationItems = [
     {
       text: 'Pejling',
-      value: StationPages.PEJLING,
+      value: stationPages.PEJLING,
       icon: <AddCircle />,
-      color: navIconStyle(pageToShow === StationPages.PEJLING),
+      color: navIconStyle(pageToShow === stationPages.PEJLING),
     },
     {
       text: 'Målepunkt',
-      value: StationPages.MAALEPUNKT,
+      value: stationPages.MAALEPUNKT,
       icon: <StraightenRounded />,
-      color: navIconStyle(pageToShow === StationPages.MAALEPUNKT),
+      color: navIconStyle(pageToShow === stationPages.MAALEPUNKT),
     },
     {
-      text: startCase(StationPages.BILLEDER),
-      value: StationPages.BILLEDER,
+      text: startCase(stationPages.BILLEDER),
+      value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(pageToShow === StationPages.BILLEDER),
+      color: navIconStyle(pageToShow === stationPages.BILLEDER),
     },
     {
-      text: startCase(StationPages.STAMDATA),
-      value: StationPages.STAMDATA,
+      text: startCase(stationPages.STAMDATA),
+      value: stationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === StationPages.STAMDATA),
+      color: navIconStyle(pageToShow === stationPages.STAMDATA),
     },
   ];
 

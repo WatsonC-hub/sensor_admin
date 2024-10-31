@@ -1,4 +1,4 @@
-export const StationPages = {
+export const stationPages = {
   PEJLING: null,
   TILSYN: 'tilsyn',
   STAMDATA: 'stamdata',
@@ -7,13 +7,13 @@ export const StationPages = {
   DEFAULT: null,
 } as const;
 
-export const QaPages = {
+export const qaPages = {
   DATA: null,
   ALGORITHMS: 'algoritmer',
   DATAMOBILE: 'Justeringer',
 };
 
-export const QaAdjustment = {
+export const qaAdjustment = {
   CONFIRM: 'confirm',
   REMOVE: 'remove',
   BOUNDS: 'bounds',

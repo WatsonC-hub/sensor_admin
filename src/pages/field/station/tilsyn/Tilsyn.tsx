@@ -8,7 +8,7 @@ import FabWrapper from '~/components/FabWrapper';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
-import {StationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
@@ -114,7 +114,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
         <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
         <FabWrapper
           icon={<PlaylistAddRounded />}
-          text={'Tilføj ' + StationPages.TILSYN}
+          text={'Tilføj ' + stationPages.TILSYN}
           onClick={() => {
             setShowForm('true');
           }}

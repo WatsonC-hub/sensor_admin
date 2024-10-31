@@ -10,7 +10,7 @@ import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
 import PlotGraph from '~/features/station/components/StationGraph';
-import {StationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -105,13 +105,13 @@ export default function Station({ts_id, stamdata}: StationProps) {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (stamdata?.calculated && pageToShow == StationPages.TILSYN)
-      setPageToShow(StationPages.PEJLING);
+    if (stamdata?.calculated && pageToShow == stationPages.TILSYN)
+      setPageToShow(stationPages.PEJLING);
 
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
 
-  if (ts_id === -1 && pageToShow === StationPages.PEJLING) {
+  if (ts_id === -1 && pageToShow === stationPages.PEJLING) {
     return (
       <Layout dynamic={dynamic} stamdata={stamdata} ts_id={ts_id}>
         <Box
@@ -157,15 +157,15 @@ export default function Station({ts_id, stamdata}: StationProps) {
           alignSelf: 'center',
         }}
       >
-        {pageToShow === StationPages.PEJLING && ts_id !== -1 && (
+        {pageToShow === stationPages.PEJLING && ts_id !== -1 && (
           <Pejling ts_id={ts_id} setDynamic={setDynamic} />
         )}
-        {pageToShow === StationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
+        {pageToShow === stationPages.TILSYN && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
       </Box>
-      {pageToShow === StationPages.STAMDATA && (
+      {pageToShow === stationPages.STAMDATA && (
         <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} />
       )}
-      {pageToShow === StationPages.BILLEDER && (
+      {pageToShow === stationPages.BILLEDER && (
         <Box>
           <Images
             type={'station'}
@@ -176,7 +176,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
           />
           <FabWrapper
             icon={<AddAPhotoRounded />}
-            text={'Tilføj ' + StationPages.BILLEDER}
+            text={'Tilføj ' + stationPages.BILLEDER}
             onClick={() => {
               if (fileInputRef.current) fileInputRef.current.click();
             }}
@@ -222,7 +222,7 @@ const Layout = ({children, ts_id, stamdata, dynamic}: LayoutProps) => {
   return (
     <Box
       display="flex"
-      height={ts_id === -1 && pageToShow === StationPages.PEJLING ? '95vh' : 'max-content'}
+      height={ts_id === -1 && pageToShow === stationPages.PEJLING ? '95vh' : 'max-content'}
       flexDirection={'column'}
     >
       <Box
@@ -231,7 +231,7 @@ const Layout = ({children, ts_id, stamdata, dynamic}: LayoutProps) => {
         justifyContent={'space-between'}
         sx={{marginBottom: 0.5, marginTop: 0.2}}
       >
-        {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
+        {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
           <Box
             display={'flex'}
             flexDirection={'column'}
@@ -241,7 +241,7 @@ const Layout = ({children, ts_id, stamdata, dynamic}: LayoutProps) => {
             <PlotGraph
               ts_id={ts_id}
               dynamicMeasurement={
-                pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
+                pageToShow === stationPages.PEJLING && showForm === 'true' ? dynamic : undefined
               }
             />
             <Divider />

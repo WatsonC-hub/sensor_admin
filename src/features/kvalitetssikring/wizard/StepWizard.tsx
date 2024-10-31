@@ -3,7 +3,7 @@ import {useAtom} from 'jotai';
 import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
-import {QaAdjustment} from '~/helpers/EnumHelper';
+import {qaAdjustment} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
@@ -33,10 +33,10 @@ const StepWizard = ({
   useEffect(() => {
     setSelection({});
     setInitiateSelect(
-      dataAdjustment === QaAdjustment.BOUNDS || dataAdjustment === QaAdjustment.REMOVE
+      dataAdjustment === qaAdjustment.BOUNDS || dataAdjustment === qaAdjustment.REMOVE
     );
-    setInitiateConfirmTimeseries(dataAdjustment === QaAdjustment.CONFIRM);
-    setLevelCorrection(dataAdjustment === QaAdjustment.CORRECTION);
+    setInitiateConfirmTimeseries(dataAdjustment === qaAdjustment.CONFIRM);
+    setLevelCorrection(dataAdjustment === qaAdjustment.CORRECTION);
   }, [dataAdjustment]);
 
   useEffect(() => {
@@ -44,11 +44,11 @@ const StepWizard = ({
       selection.points &&
       selection.points.length === 1 &&
       isMobile &&
-      (dataAdjustment === QaAdjustment.CONFIRM || dataAdjustment === QaAdjustment.CORRECTION);
+      (dataAdjustment === qaAdjustment.CONFIRM || dataAdjustment === qaAdjustment.CORRECTION);
     const range =
       selection.range &&
       isMobile &&
-      (dataAdjustment === QaAdjustment.REMOVE || dataAdjustment === QaAdjustment.BOUNDS);
+      (dataAdjustment === qaAdjustment.REMOVE || dataAdjustment === qaAdjustment.BOUNDS);
 
     if (points || range) scrollTo({top: 450});
   }, [selection]);
@@ -82,19 +82,19 @@ const StepWizard = ({
         >
           <CardContent sx={{height: '95%'}}>
             <Box width={'inherit'} height={'inherit'}>
-              {dataAdjustment === QaAdjustment.CONFIRM && (
+              {dataAdjustment === qaAdjustment.CONFIRM && (
                 <WizardConfirmTimeseries
                   initiateConfirmTimeseries={initiateConfirmTimeseries}
                   onClose={handleOnClose}
                 />
               )}
-              {dataAdjustment === QaAdjustment.REMOVE && (
+              {dataAdjustment === qaAdjustment.REMOVE && (
                 <WizardDataExclude onClose={handleOnClose} />
               )}
-              {dataAdjustment === QaAdjustment.BOUNDS && (
+              {dataAdjustment === qaAdjustment.BOUNDS && (
                 <WizardValueBounds onClose={handleOnClose} />
               )}
-              {dataAdjustment === QaAdjustment.CORRECTION && (
+              {dataAdjustment === qaAdjustment.CORRECTION && (
                 <WizardLevelCorrection onClose={handleOnClose} />
               )}
             </Box>

@@ -14,7 +14,7 @@ import NavBar from '~/components/NavBar';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
-import {QaAdjustment, QaPages} from '~/helpers/EnumHelper';
+import {qaAdjustment, qaPages} from '~/helpers/EnumHelper';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -44,7 +44,7 @@ const QualityAssurance = () => {
   const speedDialActions: Array<DialAction> = [];
 
   useEffect(() => {
-    if (pageToShow !== QaPages.DATA) {
+    if (pageToShow !== qaPages.DATA) {
       setDataAdjustment(null);
     }
   }, [pageToShow]);
@@ -56,9 +56,9 @@ const QualityAssurance = () => {
       tooltip: <Typography noWrap>Godkend tidsserie</Typography>,
       onClick: () => {
         setInitiateConfirmTimeseries(true);
-        setDataAdjustment(QaAdjustment.CONFIRM);
+        setDataAdjustment(qaAdjustment.CONFIRM);
       },
-      color: navIconStyle(dataAdjustment === QaAdjustment.CONFIRM),
+      color: navIconStyle(dataAdjustment === qaAdjustment.CONFIRM),
       toastTip: 'Vælg et punkt på grafen',
     },
     {
@@ -67,9 +67,9 @@ const QualityAssurance = () => {
       tooltip: <Typography noWrap>Fjern data</Typography>,
       onClick: () => {
         setInitiateSelect(true);
-        setDataAdjustment(QaAdjustment.REMOVE);
+        setDataAdjustment(qaAdjustment.REMOVE);
       },
-      color: navIconStyle(dataAdjustment === QaAdjustment.REMOVE),
+      color: navIconStyle(dataAdjustment === qaAdjustment.REMOVE),
       toastTip: 'Markér et område på grafen',
     },
     {
@@ -78,9 +78,9 @@ const QualityAssurance = () => {
       tooltip: <Typography noWrap>Definer værdier</Typography>,
       onClick: () => {
         setInitiateSelect(true);
-        setDataAdjustment(QaAdjustment.BOUNDS);
+        setDataAdjustment(qaAdjustment.BOUNDS);
       },
-      color: navIconStyle(dataAdjustment === QaAdjustment.BOUNDS),
+      color: navIconStyle(dataAdjustment === qaAdjustment.BOUNDS),
       toastTip: 'Markér et område på grafen',
     },
     {
@@ -89,9 +89,9 @@ const QualityAssurance = () => {
       tooltip: <Typography noWrap>Korriger spring</Typography>,
       onClick: () => {
         setLevelCorrection(true);
-        setDataAdjustment(QaAdjustment.CORRECTION);
+        setDataAdjustment(qaAdjustment.CORRECTION);
       },
-      color: navIconStyle(dataAdjustment === QaAdjustment.CORRECTION),
+      color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
       toastTip: 'Vælg et punkt på grafen',
     }
   );
@@ -111,7 +111,7 @@ const QualityAssurance = () => {
         </Grid>
         <Box borderRadius={4} m={'auto'} width={'100%'} maxWidth={1200}>
           <Box display={'flex'} flexDirection={'column'}>
-            {pageToShow === QaPages.DATA && (
+            {pageToShow === qaPages.DATA && (
               <>
                 <Grid container gap={3} justifyContent={'center'}>
                   <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
@@ -133,7 +133,7 @@ const QualityAssurance = () => {
                 <CustomSpeedDial actions={speedDialActions} />
               </>
             )}
-            {pageToShow === QaPages.ALGORITHMS && <Algorithms />}
+            {pageToShow === qaPages.ALGORITHMS && <Algorithms />}
           </Box>
         </Box>
       </Layout>
@@ -151,7 +151,7 @@ const QualityAssurance = () => {
     >
       <Box borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
         <Grid item mobile={12}>
-          {pageToShow === QaPages.DATA && (
+          {pageToShow === qaPages.DATA && (
             <Box display="flex" flexDirection={'column'} gap={2}>
               {dataAdjustment !== null && (
                 <StepWizard
@@ -165,7 +165,7 @@ const QualityAssurance = () => {
               <CustomSpeedDial actions={speedDialActions} />
             </Box>
           )}
-          {pageToShow === QaPages.ALGORITHMS && <Algorithms />}
+          {pageToShow === qaPages.ALGORITHMS && <Algorithms />}
         </Grid>
       </Box>
     </Layout>
@@ -206,15 +206,15 @@ const Layout = ({
   navigationItems.push(
     {
       text: 'Justering',
-      value: QaPages.DATA,
+      value: qaPages.DATA,
       icon: <QueryStatsIcon />,
-      color: navIconStyle(pageToShow === QaPages.DATA),
+      color: navIconStyle(pageToShow === qaPages.DATA),
     },
     {
-      text: startCase(QaPages.ALGORITHMS),
-      value: QaPages.ALGORITHMS,
+      text: startCase(qaPages.ALGORITHMS),
+      value: qaPages.ALGORITHMS,
       icon: <FunctionsIcon />,
-      color: navIconStyle(pageToShow === QaPages.ALGORITHMS),
+      color: navIconStyle(pageToShow === qaPages.ALGORITHMS),
       handlePrefetch: handlePrefetch,
     }
   );

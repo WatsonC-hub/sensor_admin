@@ -8,7 +8,7 @@ import RuleIcon from '@mui/icons-material/Rule';
 import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
-import {StationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/EnumHelper';
 import {useSearchParam} from '~/hooks/useSeachParam';
 
 const navIconStyle = (isSelected: boolean) => {
@@ -34,39 +34,39 @@ export default function ActionArea({isCalculated, ts_id}: ActionAreaProps) {
     navigationItems.push(
       {
         text: 'Kontrol',
-        value: StationPages.PEJLING,
+        value: stationPages.PEJLING,
         icon: <AddCircle />,
         color: navIconStyle(pageToShow === null),
       },
       {
-        text: startCase(StationPages.TILSYN),
-        value: StationPages.TILSYN,
+        text: startCase(stationPages.TILSYN),
+        value: stationPages.TILSYN,
         icon: <PlaylistAddCheck />,
-        color: navIconStyle(pageToShow === StationPages.TILSYN),
+        color: navIconStyle(pageToShow === stationPages.TILSYN),
         isCalculated: isCalculated,
       }
     );
   } else {
     navigationItems.push({
       text: 'Tidsserie',
-      value: StationPages.DEFAULT,
+      value: stationPages.DEFAULT,
       icon: <RuleIcon />,
-      color: navIconStyle(pageToShow === StationPages.DEFAULT),
+      color: navIconStyle(pageToShow === stationPages.DEFAULT),
     });
   }
 
   navigationItems.push(
     {
-      text: startCase(StationPages.BILLEDER),
-      value: StationPages.BILLEDER,
+      text: startCase(stationPages.BILLEDER),
+      value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(pageToShow === StationPages.BILLEDER),
+      color: navIconStyle(pageToShow === stationPages.BILLEDER),
     },
     {
-      text: startCase(StationPages.STAMDATA),
-      value: StationPages.STAMDATA,
+      text: startCase(stationPages.STAMDATA),
+      value: stationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === StationPages.STAMDATA),
+      color: navIconStyle(pageToShow === stationPages.STAMDATA),
       isCalculated: isCalculated,
     }
   );

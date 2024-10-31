@@ -10,7 +10,7 @@ import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import MaalepunktForm from '~/components/MaalepunktForm';
 import SaveImageDialog from '~/components/SaveImageDialog';
-import {StationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
 import {useSearchParam} from '~/hooks/useSeachParam';
@@ -168,7 +168,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   };
 
   const openAddMP = () => {
-    setPageToShow(StationPages.MAALEPUNKT);
+    setPageToShow(stationPages.MAALEPUNKT);
     setShowForm('true');
   };
 
@@ -188,7 +188,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
     addOrEditPejling.mutate(payload, {
       onSuccess: () => {
         resetPejlingData();
-        setPageToShow(StationPages.PEJLING);
+        setPageToShow(stationPages.PEJLING);
         setShowForm(null);
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries({
@@ -317,7 +317,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
 
   return (
     <Box display="flex" height={'max-content'} flexDirection={'column'}>
-      {pageToShow !== StationPages.BILLEDER && pageToShow !== StationPages.STAMDATA && (
+      {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -329,7 +329,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             intakeno={intakeno}
             ourData={control ?? []}
             dynamicMeasurement={
-              pageToShow === StationPages.PEJLING && showForm === 'true' ? dynamic : undefined
+              pageToShow === stationPages.PEJLING && showForm === 'true' ? dynamic : undefined
             }
           />
           <Divider />
@@ -344,7 +344,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           alignSelf: 'center',
         }}
       >
-        {pageToShow === StationPages.PEJLING && showForm === 'true' && (
+        {pageToShow === stationPages.PEJLING && showForm === 'true' && (
           <PejlingFormBorehole
             formData={pejlingData}
             changeFormData={changePejlingData}
@@ -360,7 +360,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             }
           />
         )}
-        {pageToShow === StationPages.MAALEPUNKT && (
+        {pageToShow === stationPages.MAALEPUNKT && (
           <Box
             sx={{
               display: 'flex',
@@ -390,7 +390,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             )}
           </Box>
         )}
-        {pageToShow === StationPages.MAALEPUNKT && (
+        {pageToShow === stationPages.MAALEPUNKT && (
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <MaalepunktTable
               watlevmp={watlevmp}
@@ -406,7 +406,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
               }}
               sx={{
                 visibility:
-                  pageToShow === StationPages.MAALEPUNKT && showForm === null
+                  pageToShow === stationPages.MAALEPUNKT && showForm === null
                     ? 'visible'
                     : 'hidden',
               }}
@@ -429,17 +429,17 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
               }}
               sx={{
                 visibility:
-                  pageToShow === StationPages.PEJLING && showForm === null ? 'visible' : 'hidden',
+                  pageToShow === stationPages.PEJLING && showForm === null ? 'visible' : 'hidden',
               }}
             />
           </Box>
         )}
-        {pageToShow === StationPages.STAMDATA && canEdit && (
+        {pageToShow === stationPages.STAMDATA && canEdit && (
           <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
         )}
       </Box>
 
-      {pageToShow === StationPages.BILLEDER && (
+      {pageToShow === stationPages.BILLEDER && (
         <Box>
           <Images
             type={'borehole'}

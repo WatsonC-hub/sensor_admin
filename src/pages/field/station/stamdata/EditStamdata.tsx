@@ -45,7 +45,7 @@ import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm
 import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
-import {StationPages} from '~/helpers/EnumHelper';
+import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useSearchParam} from '~/hooks/useSeachParam';
 import LoadingSkeleton from '~/LoadingSkeleton';
@@ -423,8 +423,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
 
   const loc_id = metadata?.loc_id;
   useEffect(() => {
-    if (pageToShow === StationPages.STAMDATA && ts_id !== prev_ts_id && prev_ts_id !== 0) {
-      setPageToShow(StationPages.STAMDATA);
+    if (pageToShow === stationPages.STAMDATA && ts_id !== prev_ts_id && prev_ts_id !== 0) {
+      setPageToShow(stationPages.STAMDATA);
       setShowForm(null);
     }
     if (tabValue === null) {
