@@ -89,7 +89,7 @@ export default function PejlingForm({
           setDynamic([dynamicDate, dynamicMeas]);
           const latestmeas =
             latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
-          setElevationDiff(dynamicMeas - latestmeas);
+          setElevationDiff(Math.abs(dynamicMeas - latestmeas));
           const diff = moment(dynamicDate).diff(moment(latestMeasurement?.timeofmeas), 'days');
           setHide(Math.abs(diff) > 1);
         } else {
@@ -103,7 +103,7 @@ export default function PejlingForm({
       setDynamic([dynamicDate, dynamicMeas]);
       const latestmeas =
         latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
-      setElevationDiff(dynamicMeas - latestmeas);
+      setElevationDiff(Math.abs(dynamicMeas - latestmeas));
     }
   }, [mpData, measurement, date, tstype_id]);
 

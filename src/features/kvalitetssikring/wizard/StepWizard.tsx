@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, Typography} from '@mui/material';
+import {Box, Card, CardContent} from '@mui/material';
 import {useAtom} from 'jotai';
 import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
