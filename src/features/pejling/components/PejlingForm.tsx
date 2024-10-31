@@ -170,7 +170,7 @@ export default function PejlingForm({
         {isWaterlevel && (
           <WaterlevelAlert
             latestMeasurementSeverity={
-              (elevationDiff && elevationDiff > 0.1) || !latestMeasurement ? 'warning' : 'info'
+              (elevationDiff && elevationDiff > 0.03) || !latestMeasurement ? 'warning' : 'info'
             }
             hide={hide}
             MPTitle={currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
