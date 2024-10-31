@@ -169,7 +169,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     renderEditRowDialogContent: () => {
       return (
         <Box py={4} px={2} boxShadow={6}>
-          <LocationAccessFormDialog loc_id={loc_id} />
+          <LocationAccessFormDialog loc_id={loc_id} editMode={true} />
         </Box>
       );
     },
@@ -243,7 +243,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
       >
         <DialogTitle id="form-dialog-title">Ændre adgangsinformation</DialogTitle>
         <DialogContent>
-          <LocationAccessFormDialog loc_id={loc_id} editMode={true} />
+          <LocationAccessFormDialog loc_id={loc_id} editMode={false} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} bttype="tertiary">

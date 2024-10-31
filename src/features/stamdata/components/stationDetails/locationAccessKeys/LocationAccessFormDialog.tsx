@@ -18,7 +18,7 @@ type Props = {
   setCreateNew?: (createNew: boolean) => void;
 };
 
-const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreateNew}: Props) => {
+const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: Props) => {
   const {control, watch} = useFormContext<AdgangsForhold>();
   const {reset, setValue} = useFormContext<AdgangsForhold>();
 
@@ -33,22 +33,24 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
     <Box>
       {contacts && (
         <Grid container spacing={1}>
+          {editMode === undefined && (
+            <Grid item xs={12} sm={12}>
+              <Button
+                bttype="primary"
+                onClick={() => {
+                  if (createNew) {
+                    reset(initialLocationAccessData);
+                    setValue('id', null);
+                  }
+                  setCreateNew && setCreateNew(!createNew);
+                }}
+              >
+                {createNew ? 'Annuller' : 'Påbegynd'} oprettelse af nøgle/kode
+              </Button>
+            </Grid>
+          )}
           <Grid item xs={12} sm={12}>
-            <Button
-              bttype="primary"
-              onClick={() => {
-                if (createNew) {
-                  reset(initialLocationAccessData);
-                  setValue('id', null);
-                }
-                setCreateNew && setCreateNew(!createNew);
-              }}
-            >
-              {createNew ? 'Annuller' : 'Påbegynd'} oprettelse af nøgle/kode
-            </Button>
-          </Grid>
-          <Grid item xs={12} sm={12}>
-            <Collapse in={createNew}>
+            <Collapse in={createNew || editMode !== undefined}>
               <Grid container spacing={1}>
                 <Grid item xs={12} sm={6}>
                   <FormInput
@@ -58,7 +60,7 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
                     select
                     required
                     fullWidth
-                    disabled={location_access_id !== -1 && !editMode}
+                    disabled={location_access_id !== -1 && editMode !== false}
                   >
                     <MenuItem value={'-1'} key={'-1'}>
                       Vælg type
@@ -78,7 +80,7 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
                           options={contacts ?? []}
                           labelKey="navn"
                           error={error?.message}
-                          disabled={location_access_id !== -1 && !editMode}
+                          disabled={location_access_id !== -1 && editMode !== false}
                           onChange={(option) => {
                             if (option == null) {
                               onChange(null);
@@ -141,7 +143,7 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
                       required
                       fullWidth
                       style={{marginBottom: 12}}
-                      disabled={location_access_id !== -1 && !editMode}
+                      disabled={location_access_id !== -1 && editMode !== false}
                     />
                   )}
                 </Grid>
@@ -154,7 +156,7 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
                           label={'Koden på låsen'}
                           placeholder="Eks. kode 2024 eller 3962..."
                           required
-                          disabled={location_access_id !== -1 && !editMode}
+                          disabled={location_access_id !== -1 && editMode !== false}
                           fullWidth
                         />
                       ) : (
@@ -163,7 +165,7 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
                           label={'Udleveres på adresse'}
                           placeholder="Eks. Østre Alle, 9000 Aalborg..."
                           required
-                          disabled={location_access_id !== -1 && !editMode}
+                          disabled={location_access_id !== -1 && editMode !== false}
                           fullWidth
                         />
                       )}
@@ -176,7 +178,7 @@ const LocationAccessFormDialog = ({loc_id, editMode = false, createNew, setCreat
                     label={'Kommentar'}
                     multiline
                     placeholder="F.eks. at det er tredje hænge lås eller det er koden til en dør..."
-                    disabled={location_access_id !== -1 && !editMode}
+                    disabled={location_access_id !== -1 && editMode !== false}
                     fullWidth
                   />
                 </Grid>
