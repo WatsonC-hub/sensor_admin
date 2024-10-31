@@ -54,15 +54,7 @@ const StepWizard = ({
   }, [selection]);
 
   const dismiss = () => {
-    toast.update('juster', {
-      render: (
-        <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
-          <Typography>Annulleret</Typography>
-        </Box>
-      ),
-      type: 'default',
-      autoClose: 2000,
-    });
+    toast.dismiss('juster');
   };
 
   const handleOnClose = () => {
