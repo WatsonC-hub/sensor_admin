@@ -59,7 +59,7 @@ const AdjustmentDataTable = ({data}: Props) => {
       });
     else if (type === AdjustmentTypes.MINMAX)
       delMinMax.mutate({
-        path: `${ts_id}/${gid}`,
+        path: `${ts_id}`,
       });
   };
 
