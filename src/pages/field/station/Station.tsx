@@ -113,14 +113,15 @@ export default function Station({ts_id, stamdata}: StationProps) {
 
   if (ts_id === -1 && pageToShow === stationPages.PEJLING) {
     return (
-      <Layout dynamic={dynamic} stamdata={stamdata} ts_id={ts_id}>
+      <Layout stamdata={stamdata} ts_id={ts_id}>
         <Box
           display={'flex'}
           alignSelf={'center'}
           flexDirection={'column'}
-          margin={'auto'}
+          marginX={'auto'}
           maxWidth={400}
           gap={2}
+          marginY={4}
         >
           <Alert
             severity={'info'}
@@ -149,7 +150,23 @@ export default function Station({ts_id, stamdata}: StationProps) {
   }
 
   return (
-    <Layout dynamic={dynamic} stamdata={stamdata} ts_id={ts_id}>
+    <Layout stamdata={stamdata} ts_id={ts_id}>
+      {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
+        <Box
+          display={'flex'}
+          flexDirection={'column'}
+          gap={5}
+          sx={{marginBottom: 0.5, marginTop: 0.2}}
+        >
+          <PlotGraph
+            ts_id={ts_id}
+            dynamicMeasurement={
+              pageToShow === stationPages.PEJLING && showForm === 'true' ? dynamic : undefined
+            }
+          />
+          <Divider />
+        </Box>
+      )}
       <Box
         sx={{
           maxWidth: '1080px',
@@ -211,12 +228,10 @@ interface LayoutProps {
   children: ReactNode;
   ts_id: number;
   stamdata: any;
-  dynamic: Array<string | number> | undefined;
 }
 
-const Layout = ({children, ts_id, stamdata, dynamic}: LayoutProps) => {
+const Layout = ({children, ts_id, stamdata}: LayoutProps) => {
   const [pageToShow] = useSearchParam('page', null);
-  const [showForm] = useSearchParam('showForm');
   const isCalculated = stamdata ? stamdata?.calculated : false;
 
   return (
@@ -231,22 +246,6 @@ const Layout = ({children, ts_id, stamdata, dynamic}: LayoutProps) => {
         justifyContent={'space-between'}
         sx={{marginBottom: 0.5, marginTop: 0.2}}
       >
-        {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            gap={5}
-            sx={{marginBottom: 0.5, marginTop: 0.2}}
-          >
-            <PlotGraph
-              ts_id={ts_id}
-              dynamicMeasurement={
-                pageToShow === stationPages.PEJLING && showForm === 'true' ? dynamic : undefined
-              }
-            />
-            <Divider />
-          </Box>
-        )}
         {children}
       </Box>
       <ActionArea isCalculated={isCalculated} ts_id={ts_id} />
