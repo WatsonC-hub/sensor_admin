@@ -23,11 +23,12 @@ export interface Notification {
   enddate: string | null;
   projectno: string | null;
   is_customer_service: boolean;
-  active: boolean;
+  active: boolean | null;
   notify_type: 'primary' | 'obs' | 'station' | null;
   isqa: boolean;
   groups: Group[];
   loctype_id: number;
+  calculated: boolean | null;
 }
 
 export interface NotificationMap extends Notification {
@@ -103,7 +104,11 @@ export const useNotificationOverviewMap = (
           }
           existing.otherNotifications.push(item);
 
-          existing.active = existing.active || item.active;
+          if (existing.active == null) {
+            existing.active = item.active;
+          } else {
+            existing.active = item.active || existing.active;
+          }
         } else {
           if (item.notify_type === 'primary') {
             acc.push({...item, otherNotifications: [], obsNotifications: []});

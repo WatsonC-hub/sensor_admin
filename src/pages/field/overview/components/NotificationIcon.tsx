@@ -89,6 +89,7 @@ type IconDetails = {
   notification_id?: number;
   flag?: number;
   loctype_id?: number | string;
+  calculated?: boolean | null;
   opgave?: string | null;
   active?: boolean | null;
   status?: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
@@ -111,7 +112,11 @@ type NotificationIconProps =
     };
 
 export const getColor = (iconDetails: IconDetails) => {
-  if (iconDetails?.active === null && iconDetails?.loctype_id !== 12)
+  if (
+    iconDetails?.active === null &&
+    iconDetails?.loctype_id !== 12 &&
+    iconDetails.calculated !== true
+  )
     return sensorLocationTypeColors['-1'].color;
   if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color;
   if (iconDetails?.notify_type === 'station') return '#4caf50';

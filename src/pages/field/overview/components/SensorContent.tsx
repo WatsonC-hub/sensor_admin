@@ -15,9 +15,7 @@ const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
   const {station, adminKvalitetssikring} = useNavigationFunctions();
 
-  console.log(data);
   const all_notifications = [...data.otherNotifications];
-  console.log(all_notifications);
   const unique_stations = all_notifications
     .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
     .filter((item) => item.ts_id !== null);

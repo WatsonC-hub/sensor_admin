@@ -278,7 +278,7 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
     },
     refetchOnWindowFocus: false,
   });
-  const [selected, setselected] = useState<number | ''>(data?.[0].gid ?? '');
+  const [selected, setselected] = useState<number | ''>(data?.[0]?.gid ?? '');
 
   const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
