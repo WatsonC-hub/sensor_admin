@@ -140,7 +140,7 @@ export const statefullTableAtomFamily = atomFamily(
         density: 'comfortable',
       },
       1000 * 60 * 60,
-      ['pagination']
+      []
     ),
   (a, b) => {
     return a == b;

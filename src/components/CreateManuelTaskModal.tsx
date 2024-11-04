@@ -7,7 +7,7 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import {useTaskMutation} from '~/hooks/query/useTaskMutation';
+import {useTasks} from '~/hooks/query/useTasks';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
 interface Props {
@@ -37,7 +37,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     },
   });
 
-  const {post: createTask} = useTaskMutation();
+  const {post: createTask} = useTasks();
 
   const submitTask = async (values: FormValues) => {
     await createTask.mutateAsync(

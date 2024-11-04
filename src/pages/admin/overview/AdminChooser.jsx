@@ -1,3 +1,4 @@
+import {Assignment} from '@mui/icons-material';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import {Grid, Link, Typography} from '@mui/material';
@@ -92,7 +93,7 @@ const AdminChooser = () => {
             icon={NotificationsActiveIcon}
           />
         </Grid>
-        {/* <Grid
+        <Grid
           item
           xs={10}
           sm={5}
@@ -102,12 +103,12 @@ const AdminChooser = () => {
           }}
         >
           <ChoiseCard
-            navigateTo="brugerstyring"
-            title="Brugerstyring"
-            text="Administrer brugere"
-            icon={SupervisorAccountIcon}
+            navigateTo="opgaver"
+            title="Opgaver"
+            text="Administrer opgaver"
+            icon={Assignment}
           />
-        </Grid> */}
+        </Grid>
       </Grid>
     </>
   );

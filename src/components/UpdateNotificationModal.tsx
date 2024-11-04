@@ -8,7 +8,7 @@ import {z} from 'zod';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {Notification} from '~/hooks/query/useNotificationOverview';
-import {useTaskMutation} from '~/hooks/query/useTaskMutation';
+import {useTasks} from '~/hooks/query/useTasks';
 
 interface Props {
   open: boolean;
@@ -38,7 +38,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
     },
   });
 
-  const {update} = useTaskMutation();
+  const {update, convertNotificationToTask} = useTasks();
 
   const submitTask = async (values: FormValues) => {
     await update.mutateAsync([
@@ -56,7 +56,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
   return (
     <Dialog open={open} onClose={closeModal}>
       <FormProvider {...formMethods}>
-        <DialogTitle>Opdater opgave</DialogTitle>
+        <DialogTitle>Opdater notifikation</DialogTitle>
         <DialogContent
           sx={{
             minWidth: 300,
@@ -67,7 +67,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
         >
           <FormInput
             name="enddate"
-            label="Udskyd opgave til"
+            label="Udskyd notifikation til"
             fullWidth
             type="datetime-local"
             required
@@ -83,7 +83,17 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
             Annuller
           </Button>
           <Button onClick={formMethods.handleSubmit(submitTask)} bttype="primary">
-            Registrer
+            Udskyd
+          </Button>
+          <Button
+            onClick={() => {
+              console.log('notification', notification);
+              convertNotificationToTask.mutate(notification);
+              closeModal();
+            }}
+            bttype="primary"
+          >
+            Lav til opgave
           </Button>
         </DialogActions>
       </FormProvider>
