@@ -8,11 +8,14 @@ import type {Task} from '~/features/tasks/types';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useQueryTable} from '~/hooks/useTable';
+import {useTable} from '~/hooks/useTable';
 
-const TasksTable = () => {
-  const {get} = useTasks();
+import {taskStore} from '../store';
+
+const TaskTable = () => {
+  const [shownTasks] = taskStore((store) => [store.shownTasks]);
   const {station} = useNavigationFunctions();
+  console.log(shownTasks[0]);
 
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
     () =>
@@ -46,12 +49,12 @@ const TasksTable = () => {
     []
   );
 
-  const table = useQueryTable<Task>(
+  const table = useTable<Task>(
     columns,
-    get,
+    shownTasks,
     {},
     {},
-    TableTypes.STATIONTABLE,
+    TableTypes.TABLE,
     MergeType.RECURSIVEMERGE
   );
 
@@ -61,13 +64,10 @@ const TasksTable = () => {
       alignSelf={'center'}
       p={1}
       sx={{
-        margin: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        height: calculateContentHeight(64),
-        minWidth: '50%',
+        height: calculateContentHeight(128),
         width: '100%',
-        maxWidth: '1080px',
         justifySelf: 'center',
       }}
     >
@@ -76,4 +76,4 @@ const TasksTable = () => {
   );
 };
 
-export default TasksTable;
+export default TaskTable;
