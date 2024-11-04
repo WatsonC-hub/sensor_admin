@@ -39,7 +39,25 @@ export default function LocationRouter() {
 
   const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
-  if (isPending) return <LoadingSkeleton />;
+  if (isPending)
+    return (
+      <>
+        <CssBaseline />
+        <AppBarLayout>
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              navigate(-1);
+            }}
+            size="large"
+          >
+            <KeyboardBackspaceIcon />
+          </IconButton>
+          <NavBarMenu />
+        </AppBarLayout>
+        <LoadingSkeleton />
+      </>
+    );
   if (error) return;
 
   let hasTimeseries = undefined;
@@ -55,7 +73,25 @@ export default function LocationRouter() {
   }
 
   if (data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
-    return <Navigate to={`../location/${params.locid}/${data[0].ts_id}`} replace />;
+    return (
+      <>
+        <CssBaseline />
+        <AppBarLayout>
+          <IconButton
+            color="inherit"
+            onClick={() => {
+              navigate(-1);
+            }}
+            size="large"
+          >
+            <KeyboardBackspaceIcon />
+          </IconButton>
+          <NavBarMenu />
+        </AppBarLayout>
+        <LoadingSkeleton />
+        <Navigate to={`../location/${params.locid}/${data[0].ts_id}`} replace />;
+      </>
+    );
   }
 
   return (
