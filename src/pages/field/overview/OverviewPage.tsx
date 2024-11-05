@@ -20,6 +20,8 @@ import Map from '~/pages/field/overview/Map';
 import {authStore} from '~/state/store';
 import {TableData, BoreholeData} from '~/types';
 
+import TestMap from '../../../features/map/components/TestMap';
+
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
 
@@ -109,8 +111,9 @@ export default function OverviewPage() {
         <Tab label="Kort" icon={<MapIcon />} iconPosition="start" />
         <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Liste" />
       </Tabs>
-      <TabPanel value={tabValue} index={0}>
-        <Map key="map" />
+      <TabPanel value={tabValue} index={0} sx={{height: '100%'}}>
+        <TestMap key="map" />
+        {/* <Map /> */}
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <Tabs

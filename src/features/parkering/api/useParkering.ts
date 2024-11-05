@@ -9,7 +9,7 @@ interface ParkeringBase {
   data?: any;
 }
 
-interface ParkeringPost extends ParkeringBase {
+export interface ParkeringPost extends ParkeringBase {
   data: {
     x: number;
     y: number;

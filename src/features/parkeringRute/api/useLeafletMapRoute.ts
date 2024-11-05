@@ -9,7 +9,7 @@ interface LeafletMapRouteBase {
   data?: any;
 }
 
-interface LeafletMapRoutePost extends LeafletMapRouteBase {
+export interface LeafletMapRoutePost extends LeafletMapRouteBase {
   data: {
     geo_route: GeoJSON.Geometry;
   };
@@ -65,7 +65,7 @@ export const useLeafletMapRoute = () => {
       queryClient.invalidateQueries({
         queryKey: ['leaflet_map_route'],
       });
-      toast.success('Parkeringsrute gemt');
+      toast.success('Rute gemt');
     },
   });
 
@@ -75,14 +75,14 @@ export const useLeafletMapRoute = () => {
       queryClient.invalidateQueries({
         queryKey: ['leaflet_map_route'],
       });
-      toast.success('Parkeringsrute ændret');
+      toast.success('Rute ændret');
     },
   });
 
   const del = useMutation({
     ...leafletMapRouteDelOptions,
     onSuccess: () => {
-      toast.success('Parkeringsrute slettet');
+      toast.success('Rute slettet');
       queryClient.invalidateQueries({
         queryKey: ['leaflet_map_route'],
       });

@@ -15,6 +15,7 @@ const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
   const {station, adminKvalitetssikring} = useNavigationFunctions();
 
+  console.log(data);
   const all_notifications = [...data.otherNotifications];
   const unique_stations = all_notifications
     .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
@@ -30,7 +31,6 @@ const SensorContent = ({data}: SensorContentProps) => {
       >
         {unique_stations.map((notification, index) => {
           const splitted = notification.ts_name.split(notification.loc_name);
-          console.log(notification);
           return (
             <Box
               key={index}
