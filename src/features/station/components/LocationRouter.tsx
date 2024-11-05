@@ -1,3 +1,4 @@
+import {Person} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
@@ -7,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
-import {Navigate, useNavigate, useParams} from 'react-router-dom';
+import {Navigate, redirect, useNavigate, useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';
@@ -150,6 +151,13 @@ export default function LocationRouter() {
                 onClick: () => {
                   createStamdata();
                   // navigate('/field/stamdata');
+                },
+              },
+              {
+                title: 'Til bruger profil',
+                icon: <Person />,
+                onClick: () => {
+                  window.location.href = 'https://admin.watsonc.dk/profile';
                 },
               },
             ]}
