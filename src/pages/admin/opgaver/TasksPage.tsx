@@ -7,22 +7,10 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskInfo from '~/features/tasks/components/TaskInfo';
 import TaskItiniaries from '~/features/tasks/components/TaskItiniaries';
 import TasksOverview from '~/features/tasks/components/TasksOverview';
-import {taskStore} from '~/features/tasks/store';
+import {useTaskStore} from '~/features/tasks/store';
 
 const TasksPage = () => {
-  const [setTasks] = taskStore((store) => [store.setTasks]);
-
-  const {
-    get: {data, error, isPending},
-  } = useTasks();
-
-  useEffect(() => {
-    if (data) {
-      setTasks(data);
-    }
-  }, [data, setTasks]);
-
-  if (isPending) return <div>Loading...</div>;
+  // const store = useTaskStore();
 
   return (
     <>

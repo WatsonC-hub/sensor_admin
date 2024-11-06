@@ -1,7 +1,11 @@
 import React from 'react';
 
+import {useTaskStore} from '../store';
+
 const TaskInfo = () => {
-  return <div>TaskInfo</div>;
+  const {selectedTask, selectedTaskId} = useTaskStore();
+  console.log('selectedTask', selectedTask);
+  return <div>{JSON.stringify(selectedTask)}</div>;
 };
 
 export default TaskInfo;

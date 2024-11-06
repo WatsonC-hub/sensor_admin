@@ -7,8 +7,6 @@ import React, {SyntheticEvent} from 'react';
 
 import {tabsHeight} from '~/consts';
 
-import {taskStore} from '../store';
-
 import TaskCalendar from './TaskCalendar';
 import TaskMap from './TaskMap';
 import TaskTable from './TaskTable';
@@ -31,7 +29,7 @@ function TabPanel(props: {
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && <>{children}</>}
+      {children}
     </Box>
   );
 }

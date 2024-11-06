@@ -4,13 +4,19 @@ import React, {useEffect} from 'react';
 
 import {mapboxToken, calculateContentHeight} from '~/consts';
 
-import {taskStore} from '../store';
+import {taskStore, useTaskStore} from '../store';
+import type {Task} from '../types';
 
 const TaskMap = () => {
   const mapRef = React.useRef<L.Map | null>(null);
   const layerRef = React.useRef<L.FeatureGroup | null>(null);
 
-  const [shownTasks] = taskStore((store) => [store.shownTasks]);
+  // const [shownTasks, setSelectedTask] = taskStore((store) => [
+  //   store.shownTasks,
+  //   store.setSelectedTask,
+  // ]);
+  const {shownTasks, setSelectedTask} = useTaskStore();
+
   const renderMap = () => {
     const outdormapbox = L.tileLayer(
       `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
@@ -36,6 +42,12 @@ const TaskMap = () => {
   useEffect(() => {
     mapRef.current = renderMap();
     layerRef.current = L.featureGroup().addTo(mapRef.current);
+
+    layerRef.current.on('click', (e: L.LeafletMouseEvent) => {
+      L.DomEvent.stopPropagation(e);
+      setSelectedTask(e.sourceTarget.options.data.id as unknown as Task);
+    });
+
     return () => {
       if (mapRef.current) {
         mapRef.current.remove();
@@ -49,7 +61,11 @@ const TaskMap = () => {
       layer.clearLayers();
       shownTasks.forEach((task) => {
         if (task.latitude && task.longitude) {
-          L.circleMarker([task.latitude, task.longitude]).addTo(layer).bindPopup(task.opgave);
+          L.circleMarker([task.latitude, task.longitude], {
+            data: task,
+          })
+            .addTo(layer)
+            .bindPopup(task.opgave);
         }
       });
     }

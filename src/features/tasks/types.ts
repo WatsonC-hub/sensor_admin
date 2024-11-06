@@ -11,9 +11,14 @@
 //     longitude: '{{floating(8.24402, 14.70664)}}'
 //   }
 
+export type ID = string;
+
 export type Task = {
-  id: string;
-  assigned_to: number;
+  id: ID;
+  assigned_to: {
+    id: number;
+    initials: string;
+  };
   status: number;
   due_date: string;
   loc_id: number;

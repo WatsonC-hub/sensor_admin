@@ -56,6 +56,7 @@ export const useTasks = () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       return [...dummydata]; /* Write the url for the endpoint  */
     },
+    initialData: [],
   });
   const post = useMutation<unknown, APIError, TasksPost>({
     ...tasksPostOptions,
