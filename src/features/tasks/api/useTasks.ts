@@ -5,17 +5,18 @@ import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
 import {dummydata} from '../consts';
-import type {Task} from '../types';
+import type {Task, PatchTask, DBTask} from '../types';
 
 interface TasksBase {
   path: string;
   data?: any;
 }
 interface TasksPost extends TasksBase {
-  data: object;
+  data: DBTask;
 }
-interface TasksPut extends TasksBase {
-  data: object;
+
+interface TasksPatch extends TasksBase {
+  data: PatchTask;
 }
 export const tasksPostOptions = {
   mutationKey: ['tasks_post'],
@@ -25,13 +26,12 @@ export const tasksPostOptions = {
     return result;
   },
 };
-export const tasksPutOptions = {
-  mutationKey: ['tasks_put'],
-  mutationFn: async (mutation_data: TasksPut) => {
+export const taskPatchOptions = {
+  mutationKey: ['tasks_patch'],
+  mutationFn: async (mutation_data: TasksPatch) => {
     const {path, data} = mutation_data;
-    console.log('path', path, 'data', data);
-    const {data: result} = await apiClient.put(
-      `//${path}`,
+    const {data: result} = await apiClient.patch(
+      `/${path}`,
       data
     ); /* Write the url for the endpoint  */
     return result;
@@ -41,9 +41,7 @@ export const tasksDelOptions = {
   mutationKey: ['tasks_del'],
   mutationFn: async (mutation_data: TasksBase) => {
     const {path} = mutation_data;
-    const {data: result} = await apiClient.delete(
-      `//${path}`
-    ); /* Write the url for the endpoint  */
+    const {data: result} = await apiClient.delete(`/${path}`); /* Write the url for the endpoint  */
     return result;
   },
 };
@@ -67,8 +65,39 @@ export const useTasks = () => {
       toast.success('Opgaver gemt');
     },
   });
-  const put = useMutation({
-    ...tasksPutOptions,
+  const patch = useMutation({
+    ...taskPatchOptions,
+    onMutate: async (mutation_data) => {
+      const {path, data} = mutation_data;
+      const previous = queryClient.getQueryData<Task[]>(['tasks']);
+      queryClient.setQueryData<Task[]>(
+        ['tasks'],
+        previous?.map((task) => {
+          if (task.id === path) {
+            const newTask = {...task};
+
+            if (data.assigned_to) {
+              newTask.assigned_to.id = data.assigned_to;
+            }
+            if (data.due_date) {
+              newTask.due_date = data.due_date;
+            }
+            if (data.status) {
+              newTask.status = data.status;
+            }
+            if (data.opgave) {
+              newTask.opgave = data.opgave;
+            }
+            if (data.description) {
+              newTask.description = data.description;
+            }
+            return newTask;
+          }
+          return task;
+        })
+      );
+      return {previous};
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['tasks'],
@@ -85,5 +114,5 @@ export const useTasks = () => {
       toast.success('Opgaver slettet');
     },
   });
-  return {get, post, put, del};
+  return {get, post, patch, del};
 };

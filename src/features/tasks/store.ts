@@ -31,6 +31,7 @@ export const useTaskStore = () => {
   const {
     get: {data: tasks},
   } = useTasks();
+
   const {
     shownListTaskIds,
     shownMapTaskIds,
@@ -81,7 +82,6 @@ export const taskStore = create<TaskState>()(
       shownListTaskIds: [],
       shownMapTaskIds: [],
       selectedTaskId: null,
-      // setShownTaskIds: (ids) => set({shownTaskIds: ids}),
       setShownListTaskIds: (ids) => set({shownListTaskIds: ids}),
       setShownMapTaskIds: (ids) => set({shownMapTaskIds: ids}),
       setSelectedTask: (id) => set({selectedTaskId: id}),

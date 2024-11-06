@@ -29,6 +29,16 @@ export type Task = {
   longitude: number;
 };
 
+export type DBTask = {
+  assigned_to: number;
+  status: number;
+  due_date: string;
+  opgave: string;
+  description: string;
+};
+
+export type PatchTask = Partial<DBTask>;
+
 export type TaskItiniary = {
   tasks: Pick<Task, 'id'>[];
   due_date: string;

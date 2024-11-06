@@ -9,6 +9,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './taskcalendar.css';
 import {calculateContentHeight} from '~/consts';
 
+import {useTasks} from '../api/useTasks';
 import {useTaskStore} from '../store';
 import {Task} from '../types';
 moment.locale('da');
@@ -16,11 +17,7 @@ const DragAndDropCalendar = withDragAndDrop<Task, object>(Calendar);
 const localizer = momentLocalizer(moment);
 
 export default function TaskCalendar() {
-  //   const [shownTasks, setTasks, setSelectedTask] = taskStore((store) => [
-  //     store.shownTasks,
-  //     store.setTasks,
-  //     store.setSelectedTask,
-  //   ]);
+  const {patch} = useTasks();
 
   const {shownTasks, setSelectedTask} = useTaskStore();
 
@@ -30,6 +27,12 @@ export default function TaskCalendar() {
     // if (existing) {
     //   setTasks([...filtered, {...existing, due_date: start as string}]);
     // }
+    patch.mutate({
+      path: event.id,
+      data: {
+        due_date: moment(start).format('YYYY-MM-DD'),
+      },
+    });
   };
 
   const components: Components<Task> = {
