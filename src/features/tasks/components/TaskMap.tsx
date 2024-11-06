@@ -4,7 +4,7 @@ import React, {useEffect} from 'react';
 
 import {mapboxToken, calculateContentHeight} from '~/consts';
 
-import {taskStore, useTaskStore} from '../store';
+import {useTaskStore} from '../store';
 import type {Task} from '../types';
 
 const TaskMap = () => {
@@ -56,6 +56,7 @@ const TaskMap = () => {
   }, []);
 
   useEffect(() => {
+    console.log('RERENDER');
     const layer = layerRef.current;
     if (layer) {
       layer.clearLayers();

@@ -1,47 +1,75 @@
+import {useMemo} from 'react';
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 
 import {useTasks} from './api/useTasks';
-import {Task, ID} from './types';
+import {ID, Task} from './types';
 
 type TaskState = {
   // tasks: Task[];
-  shownTaskIds: ID[];
+  // shownTaskIds: ID[];
+  shownMapTaskIds: ID[];
+  shownListTaskIds: ID[];
   selectedTaskId: ID | null;
   // setTasks: (tasks: Task[]) => void;
-  setShownTaskIds: (ids: ID[]) => void;
+  // setShownTaskIds: (ids: ID[]) => void;
+  setShownMapTaskIds: (ids: ID[]) => void;
+  setShownListTaskIds: (ids: ID[]) => void;
   // setShownTasksByPredicate: (predicate: () => boolean) => void;
   setSelectedTask: (id: ID) => void;
   resetFilter: () => void;
   resetState: () => void;
 };
 
-const hiddenTasks = (tasks: Task[], shownTasks: Task[]) =>
-  tasks.filter((task) => !shownTasks.map((item) => item.id).includes(task.id));
+const filterTasks = (tasks: Task[], ids: ID[][]) => {
+  const shownTasks = tasks.filter((task) => ids.flat().includes(task.id));
+
+  return shownTasks.length == 0 ? tasks : shownTasks;
+};
 
 export const useTaskStore = () => {
   const {
     get: {data: tasks},
   } = useTasks();
-  const {shownTaskIds, selectedTaskId, setShownTaskIds, setSelectedTask, resetFilter, resetState} =
-    taskStore();
+  const {
+    shownListTaskIds,
+    shownMapTaskIds,
+    selectedTaskId,
+    setShownMapTaskIds,
+    setShownListTaskIds,
+    setSelectedTask,
+    resetFilter,
+    resetState,
+  } = taskStore();
+
+  const {shownTasks, hiddenTasks} = useMemo(() => {
+    return {
+      shownTasks: filterTasks(tasks, [shownListTaskIds, shownMapTaskIds]),
+      hiddenTasks: tasks.filter(
+        (task) => !shownListTaskIds.includes(task.id) && !shownMapTaskIds.includes(task.id)
+      ),
+    };
+  }, [tasks, shownListTaskIds, shownMapTaskIds]);
+
+  const {selectedTask} = useMemo(() => {
+    return {
+      selectedTask: selectedTaskId ? tasks.find((task) => task.id === selectedTaskId) : null,
+    };
+  }, [tasks, selectedTaskId]);
 
   return {
     tasks,
-    shownTasks:
-      shownTaskIds.length == 0
-        ? tasks
-        : shownTaskIds.map((id) => tasks.find((task) => task.id === id)!),
-    hiddenTasks: hiddenTasks(
-      tasks,
-      shownTaskIds.map((id) => tasks.find((task) => task.id === id)!)
-    ),
-    selectedTask: selectedTaskId ? tasks.find((task) => task.id === selectedTaskId) : null,
+    shownTasks,
+    hiddenTasks,
+    selectedTask,
     setSelectedTask,
-    setShownTaskIds,
-    setShownTasksByPredicate: (predicate: () => boolean) => {
-      setShownTaskIds(tasks.filter(predicate).map((task) => task.id));
-    },
+    shownListTaskIds,
+    shownMapTaskIds,
+    setShownMapTaskIds,
+    setShownListTaskIds,
+    // setShownTasksByPredicate: (predicate: () => boolean) => {
+    //   setShownTaskIds(tasks.filter(predicate).map((task) => task.id));
+    // },
     resetFilter,
     resetState,
   };
@@ -50,12 +78,15 @@ export const useTaskStore = () => {
 export const taskStore = create<TaskState>()(
   persist(
     devtools((set) => ({
-      shownTaskIds: [],
+      shownListTaskIds: [],
+      shownMapTaskIds: [],
       selectedTaskId: null,
-      setShownTaskIds: (ids) => set({shownTaskIds: ids}),
+      // setShownTaskIds: (ids) => set({shownTaskIds: ids}),
+      setShownListTaskIds: (ids) => set({shownListTaskIds: ids}),
+      setShownMapTaskIds: (ids) => set({shownMapTaskIds: ids}),
       setSelectedTask: (id) => set({selectedTaskId: id}),
-      resetFilter: () => set({shownTaskIds: []}),
-      resetState: () => set({shownTaskIds: [], selectedTaskId: null}),
+      resetFilter: () => set({shownListTaskIds: [], shownMapTaskIds: []}),
+      resetState: () => set({shownListTaskIds: [], shownMapTaskIds: [], selectedTaskId: null}),
     })),
     {
       name: 'calypso-tasks', // name of item in the storage (must be unique)

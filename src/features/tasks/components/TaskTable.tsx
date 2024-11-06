@@ -1,6 +1,6 @@
 import {Box} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo} from 'react';
 
 import {calculateContentHeight} from '~/consts';
 import type {Task} from '~/features/tasks/types';
@@ -10,15 +10,16 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useTable} from '~/hooks/useTable';
 
 import {useTaskStore} from '../store';
-
+const areSetsEqual = (setA, setB) =>
+  setA.size === setB.size && [...setA].every((value) => setB.has(value));
 const TaskTable = () => {
   // const [shownTasks, setSelectedTask] = taskStore((store) => [
   //   store.shownTasks,
   //   store.setSelectedTask,
   // ]);
-  const {tasks, shownTasks, setSelectedTask, setShownTaskIds} = useTaskStore();
+  const {tasks, shownTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
   const {station} = useNavigationFunctions();
-
+  console.log('tasks', shownTasks);
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
     () =>
       [
@@ -64,14 +65,20 @@ const TaskTable = () => {
 
   const table = useTable<Task>(
     columns,
-    shownTasks,
+    tasks,
     options,
     {},
     TableTypes.TABLE,
     MergeType.RECURSIVEMERGE
   );
 
-  console.log(table.getFilteredRowModel());
+  const filteredIds = table.getFilteredRowModel().rows.map((row) => row.original.id);
+  console.log('filteredIds', new Set(filteredIds));
+  console.log('filteredIds', new Set(shownTasks.map((task) => task.id)));
+
+  useEffect(() => {
+    setShownListTaskIds(filteredIds);
+  }, [areSetsEqual(new Set(filteredIds), new Set(shownTasks.map((task) => task.id)))]);
 
   return (
     <Box
