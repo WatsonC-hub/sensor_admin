@@ -62,12 +62,11 @@ const TaskMap = () => {
       layer.clearLayers();
       shownTasks.forEach((task) => {
         if (task.latitude && task.longitude) {
-          L.marker([task.latitude, task.longitude], {draggable: true, data: task}).addTo(layer);
-          // L.circleMarker([task.latitude, task.longitude], {
-          //   data: task,
-          // })
-          //   .addTo(layer)
-          //   .bindPopup(task.opgave);
+          L.circleMarker([task.latitude, task.longitude], {
+            data: task,
+          })
+            .addTo(layer)
+            .bindPopup(task.opgave);
         }
       });
     }

@@ -17,7 +17,8 @@ const TaskTable = () => {
   //   store.shownTasks,
   //   store.setSelectedTask,
   // ]);
-  const {tasks, shownTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
+  const {tasks, shownTasks, shownListTaskIds, setSelectedTask, setShownListTaskIds} =
+    useTaskStore();
   const {station} = useNavigationFunctions();
   console.log('tasks', shownTasks);
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
@@ -53,15 +54,16 @@ const TaskTable = () => {
   );
 
   const options: Partial<MRT_TableOptions<Task>> = {
-    // enableRowDragging: true,
-    // muiRowDragHandleProps: ({row}) => {
-    //   return {
-    //     onDragStart: (e) => {
-    //       e.dataTransfer.effectAllowed = 'all';
-    //       e.dataTransfer.setData('text/plain', row.original.id);
-    //     },
-    //   };
-    // },
+    enableRowDragging: true,
+
+    muiRowDragHandleProps: ({row}) => {
+      return {
+        onDragStart: (e) => {
+          e.dataTransfer.effectAllowed = 'all';
+          e.dataTransfer.setData('text/plain', row.original.id);
+        },
+      };
+    },
 
     muiTableBodyRowProps: (props) => {
       return {
@@ -75,20 +77,20 @@ const TaskTable = () => {
 
   const table = useTable<Task>(
     columns,
-    tasks,
+    shownTasks,
     options,
     {},
     TableTypes.TABLE,
     MergeType.RECURSIVEMERGE
   );
 
-  const filteredIds = table.getFilteredRowModel().rows.map((row) => row.original.id);
-  console.log('filteredIds', new Set(filteredIds));
-  console.log('filteredIds', new Set(shownTasks.map((task) => task.id)));
+  // const filteredIds = table.getFilteredRowModel().rows.map((row) => row.original.id);
 
-  useEffect(() => {
-    setShownListTaskIds(filteredIds);
-  }, [areSetsEqual(new Set(filteredIds), new Set(shownTasks.map((task) => task.id)))]);
+  // useEffect(() => {
+
+  //   setShownListTaskIds(filteredIds);
+
+  // }, [areSetsEqual(new Set(filteredIds), new Set(shownTasks.map((task) => task.id)))]);
 
   return (
     <Box
