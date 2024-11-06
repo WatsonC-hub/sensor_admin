@@ -16,9 +16,10 @@ import ScrollTop from '~/components/ScrollTop';
 import {tabsHeight} from '~/consts';
 import BoreholeTable from '~/pages/field/overview/components/BoreholeTable';
 import StationTable from '~/pages/field/overview/components/StationTable';
-import Map from '~/pages/field/overview/Map';
 import {authStore} from '~/state/store';
 import {TableData, BoreholeData} from '~/types';
+
+import TestMap from '../../../features/map/components/TestMap';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -110,7 +111,8 @@ export default function OverviewPage() {
         <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Liste" />
       </Tabs>
       <TabPanel value={tabValue} index={0}>
-        <Map key="map" />
+        <TestMap key="map" />
+        {/* <Map /> */}
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <Tabs

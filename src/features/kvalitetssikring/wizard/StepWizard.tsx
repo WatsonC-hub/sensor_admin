@@ -1,11 +1,11 @@
 import {Box, Card, CardContent} from '@mui/material';
 import {useAtom} from 'jotai';
+import {parseAsString, useQueryState} from 'nuqs';
 import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
 import {qaAdjustment} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 
 import WizardConfirmTimeseries from './WizardConfirmTimeseries';
@@ -26,7 +26,7 @@ const StepWizard = ({
   setInitiateSelect,
   setInitiateConfirmTimeseries,
 }: StepWizardProps) => {
-  const [dataAdjustment] = useSearchParam('adjust');
+  const [dataAdjustment] = useQueryState('adjust', parseAsString);
   const [selection, setSelection] = useAtom(qaSelection);
   const {isMobile} = useBreakpoints();
 

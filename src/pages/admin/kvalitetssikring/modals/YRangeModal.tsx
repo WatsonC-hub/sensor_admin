@@ -2,11 +2,11 @@ import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
+import {parseAsString, useQueryState} from 'nuqs';
 import {useContext, useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
@@ -21,7 +21,7 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const [minY, setMinY] = useState(Math.min(y1, y0).toFixed(4));
   const [maxY, setMaxY] = useState(Math.max(y1, y0).toFixed(4));
-  const [, setDataAdjustment] = useSearchParam('adjust');
+  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const metadata = useContext(MetadataContext);
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {

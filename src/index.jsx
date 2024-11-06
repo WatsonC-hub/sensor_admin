@@ -3,11 +3,13 @@ import * as Sentry from '@sentry/react';
 import {BrowserTracing} from '@sentry/tracing';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
+import {NuqsAdapter} from 'nuqs/adapters/react';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// eslint-disable-next-line import/no-unresolved
 import {registerSW} from 'virtual:pwa-register';
 
 import NetworkStatus from '~/components/NetworkStatus';
@@ -56,7 +58,9 @@ root.render(
             }}
           >
             <CssBaseline />
-            <App />
+            <NuqsAdapter>
+              <App />
+            </NuqsAdapter>
             <ReactQueryDevtools initialIsOpen={false} />
             <ToastContainer
               draggablePercent={30}

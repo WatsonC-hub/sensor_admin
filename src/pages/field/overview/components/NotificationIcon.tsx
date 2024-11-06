@@ -115,14 +115,14 @@ export const getColor = (iconDetails: IconDetails) => {
   if (
     iconDetails?.active === null &&
     iconDetails?.loctype_id !== 12 &&
-    iconDetails.calculated !== true
+    iconDetails?.calculated !== true
   )
-    return sensorLocationTypeColors['-1'].color;
-  if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color;
+    return sensorLocationTypeColors['-1'].color; // Nyopsætning
+  if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color; // Enkeltmålinger
   if (iconDetails?.notify_type === 'station') return '#4caf50';
   if (iconDetails?.status == 'POSTPONED') return '#4caf50';
   if (iconDetails?.notification_id == 12) return '#334FFF';
-  if (iconDetails?.active === false || iconDetails?.active === null) return '#C0C0C0';
+  if (iconDetails?.active === false) return '#C0C0C0';
   // if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
   if (iconDetails?.color) return iconDetails?.color;
   if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;

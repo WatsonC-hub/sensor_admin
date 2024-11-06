@@ -1,3 +1,4 @@
+import {Person} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
@@ -161,6 +162,13 @@ export default function LocationRouter() {
                 onClick: () => {
                   createStamdata();
                   // navigate('/field/stamdata');
+                },
+              },
+              {
+                title: 'Til bruger profil',
+                icon: <Person />,
+                onClick: () => {
+                  window.location.href = 'https://admin.watsonc.dk/profile';
                 },
               },
             ]}

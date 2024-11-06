@@ -5,6 +5,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {Box, CardContent, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
+import {parseAsString, useQueryState} from 'nuqs';
 import React, {useContext, useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
@@ -13,7 +14,6 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 // import {QaStampLevel} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
@@ -59,7 +59,7 @@ const WizardConfirmTimeseries = ({
   } = useCertifyQa(metadata?.ts_id);
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
-  const [, setDataAdjustment] = useSearchParam('adjust');
+  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),

@@ -2,6 +2,7 @@ import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
+import {parseAsBoolean, parseAsString, useQueryState} from 'nuqs';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
@@ -12,7 +13,7 @@ import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurem
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useSearchParam} from '~/hooks/useSeachParam';
+import {useStationPages} from '~/hooks/useStationPages';
 import {APIError} from '~/queryClient';
 import {stamdataStore} from '~/state/store';
 import {LatestMeasurement, PejlingItem} from '~/types';
@@ -22,23 +23,23 @@ type Props = {
   setDynamic: (dynamic: Array<string | number> | undefined) => void;
 };
 
-const initialData = {
-  gid: -1,
-  timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
-  measurement: 0,
-  useforcorrection: 0,
-  comment: '',
-};
-
 const Pejling = ({ts_id, setDynamic}: Props) => {
   const store = stamdataStore();
   const [canEdit] = useState(true);
   const isWaterlevel = store.timeseries?.tstype_id === 1;
-  const [showForm, setShowForm] = useSearchParam('showForm');
-  const [, setPageToShow] = useSearchParam('page');
-  const [, setTabValue] = useSearchParam('tab');
+  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [, setPageToShow] = useStationPages();
+  const [, setTabValue] = useQueryState('tab', parseAsString);
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
   const {isTouch, isLaptop} = useBreakpoints();
+
+  const initialData = {
+    gid: -1,
+    timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
+    measurement: 0,
+    useforcorrection: 0,
+    comment: '',
+  };
 
   const formMethods = useForm<PejlingItem>({
     defaultValues: initialData,
@@ -94,7 +95,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const handleEdit = (data: PejlingItem) => {
     data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
     reset(data);
-    setShowForm('true');
+    setShowForm(true);
   };
 
   const handleDelete = (gid: number | undefined) => {
@@ -106,8 +107,8 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
 
   const openAddMP = () => {
     setPageToShow('stamdata');
-    setTabValue('3');
-    setShowForm('true');
+    setTabValue('udstyr');
+    setShowForm(true);
   };
 
   const resetFormData = () => {
@@ -128,7 +129,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
       />
       <FormProvider {...formMethods}>
         <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
-          {showForm === 'true' && (
+          {showForm === true && (
             <PejlingForm
               openAddMP={openAddMP}
               submit={handlePejlingSubmit}
@@ -149,7 +150,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
           icon={<AddCircle />}
           text="Tilføj kontrol"
           onClick={() => {
-            setShowForm('true');
+            setShowForm(true);
           }}
           sx={{
             visibility: showForm === null ? 'visible' : 'hidden',

@@ -4,6 +4,7 @@ import {BuildRounded, Error, LocationOnRounded, ShowChartRounded} from '@mui/ico
 import {Grid, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
+import {parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {ReactNode, useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {useNavigate} from 'react-router-dom';
@@ -21,7 +22,6 @@ import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesFo
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
 import {FieldLocation} from '~/types';
 
@@ -54,6 +54,8 @@ type Timeseries = CreateValues['timeseries'];
 type Unit = CreateValues['unit'];
 type Watlevmp = CreateValues['watlevmp'];
 
+const tabValues = ['lokation', 'tidsserie', 'udstyr'] as const;
+
 export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const store = stamdataStore();
@@ -76,7 +78,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     };
   }, []);
 
-  const [tabValue, setTabValue] = useSearchParam('tab', '0');
+  const [tabValue, setTabValue] = useQueryState('tab', parseAsStringLiteral(tabValues));
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -163,19 +165,20 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   const nextTab = async () => {
     let valid = false;
 
-    if (tabValue === '0') {
+    if (tabValue === 'lokation') {
       valid = await trigger('location');
-    } else if (tabValue === '1') {
+    } else if (tabValue === 'tidsserie') {
       valid = await trigger('timeseries');
       const isWaterlevel = getValues()?.timeseries.tstype_id === 1;
       if (isWaterlevel) valid = await trigger('watlevmp');
     }
 
-    if (tabValue && tabValue !== '3' && valid) setTabValue((parseInt(tabValue) + 1).toString());
+    if (tabValue === 'lokation' && valid) setTabValue('tidsserie');
+    else if (tabValue === 'tidsserie' && valid) setTabValue('udstyr');
   };
 
   useEffect(() => {
-    if (tabValue === null && getValues().location.loc_id) setTabValue('1');
+    if (tabValue === null && getValues().location.loc_id) setTabValue('tidsserie');
   }, [tabValue]);
 
   const showErrorMessage = (updateType?: string) => {
@@ -335,7 +338,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       <div>
         <FormProvider {...formMethods}>
           <Tabs
-            value={tabValue !== null ? tabValue : '0'}
+            value={tabValue !== null ? tabValue : 'lokation'}
             onChange={(_, newValue) => {
               setTabValue(newValue);
             }}
@@ -350,7 +353,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
             }}
           >
             <Tab
-              value="0"
+              value={'lokation'}
               icon={
                 'location' in errors ? (
                   <Error sx={{marginTop: 1, color: '#d32f2f'}} />
@@ -365,7 +368,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
               }
             />
             <Tab
-              value="1"
+              value={'tidsserie'}
               icon={
                 'timeseries' in errors || 'watlevmp' in errors ? (
                   <Error sx={{marginTop: 1, color: '#d32f2f'}} />
@@ -380,7 +383,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
               }
             />
             <Tab
-              value="2"
+              value={'udstyr'}
               icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
               label={
                 <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -398,7 +401,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
               margin: 'auto',
             }}
           >
-            <TabPanel value={tabValue} index={'0'}>
+            <TabPanel value={tabValue} index={'lokation'}>
               <Grid container>
                 <LocationForm disable={loc_id == null ? false : true} mode={'normal'} />
               </Grid>
@@ -410,7 +413,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
                 type="lokation"
               />
             </TabPanel>
-            <TabPanel value={tabValue} index={'1'}>
+            <TabPanel value={tabValue} index={'tidsserie'}>
               <TimeseriesForm mode="add" />
               <StamdataFooter
                 cancel={cancel}
@@ -420,7 +423,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
                 type="tidsserie"
               />
             </TabPanel>
-            <TabPanel value={tabValue} index={'2'}>
+            <TabPanel value={tabValue} index={'udstyr'}>
               <Box
                 sx={{
                   display: 'flex',

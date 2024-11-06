@@ -1,6 +1,7 @@
 import {PlaylistAddRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
+import {parseAsBoolean, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
@@ -10,7 +11,6 @@ import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {stamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
 
@@ -20,7 +20,7 @@ type Props = {
 };
 
 export default function Tilsyn({ts_id, canEdit}: Props) {
-  const [showForm, setShowForm] = useSearchParam('showForm');
+  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
   const {isTouch, isLaptop} = useBreakpoints();
   const store = stamdataStore();
   const initialData: TilsynItem = {
@@ -69,7 +69,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
 
   const handleEdit = (data: TilsynItem) => {
     reset(data, {keepDirty: true});
-    setShowForm('true');
+    setShowForm(true);
   };
 
   const handleDelete = (gid: number | undefined) => {
@@ -105,7 +105,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
     <Box>
       <FormProvider {...formMethods}>
         <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
-          {showForm === 'true' && (
+          {showForm === true && (
             <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
           )}
         </Box>
@@ -116,7 +116,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
           icon={<PlaylistAddRounded />}
           text={'Tilføj ' + stationPages.TILSYN}
           onClick={() => {
-            setShowForm('true');
+            setShowForm(true);
           }}
           sx={{
             visibility: showForm === null ? 'visible' : 'hidden',

@@ -4,11 +4,11 @@ import {Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography} from 
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
+import {parseAsString, useQueryState} from 'nuqs';
 import {useContext, useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useExclude} from '~/hooks/query/useExclude';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
@@ -35,7 +35,7 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const [endDate, setEndDate] = useState(moment.max(x0, x1));
   const [startValue, setStartValue] = useState(Math.min(y0, y1).toFixed(4));
   const [endValue, setEndValue] = useState(Math.max(y0, y1).toFixed(4));
-  const [, setDataAdjustment] = useSearchParam('adjust');
+  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   useEffect(() => {
     setStartDate(moment.min(x0, x1));

@@ -11,7 +11,7 @@ interface Props {
   typeId: string | number;
   setOpenSave: (openSave: boolean) => void;
   setActiveImage: (image: Image) => void;
-  setShowForm: (showForm: string) => void;
+  setShowForm: (showForm: boolean) => void;
 }
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
@@ -30,7 +30,7 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
   const handleEdit = (image: Image) => {
     setActiveImage(image);
     setOpenSave(true);
-    setShowForm('true');
+    setShowForm(true);
   };
 
   return (

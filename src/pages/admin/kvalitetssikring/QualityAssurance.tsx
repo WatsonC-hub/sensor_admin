@@ -5,6 +5,7 @@ import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {Box, Divider, Grid, Typography} from '@mui/material';
 import {startCase} from 'lodash';
+import {parseAsString, useQueryState} from 'nuqs';
 import React, {ReactNode, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
@@ -17,7 +18,6 @@ import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
 import {qaAdjustment, qaPages} from '~/helpers/EnumHelper';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
 import {MetadataContext} from '~/state/contexts';
@@ -31,8 +31,8 @@ const navIconStyle = (isSelected: boolean) => {
 
 const QualityAssurance = () => {
   const params = useParams();
-  const [pageToShow] = useSearchParam('page');
-  const [dataAdjustment, setDataAdjustment] = useSearchParam('adjust');
+  const [pageToShow] = useQueryState('page', parseAsString);
+  const [dataAdjustment, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const {isMobile} = useBreakpoints();
   const [initiateSelect, setInitiateSelect] = useState(false);
@@ -193,7 +193,7 @@ const Layout = ({
   initiateConfirmTimeseries,
   children,
 }: LayoutProps) => {
-  const [pageToShow, setPageToShow] = useSearchParam('page');
+  const [pageToShow, setPageToShow] = useQueryState('page', parseAsString);
   const {isMobile} = useBreakpoints();
   const handleChange = (event: any, newValue: string | null) => {
     setPageToShow(newValue);

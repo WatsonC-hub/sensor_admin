@@ -74,7 +74,7 @@ export const correction_map: Record<number, string> = {
   3: 'Lineær',
   4: 'Korrektion frem og tilbage til udstyr',
   5: 'Korrektion frem og tilbage til niveau spring',
-  6: 'Korrektion frem og tilbage til forrige spring',
+  6: 'Korrektion frem og tilbage til forrige pejling',
 };
 
 export const appBarHeight = '64px';

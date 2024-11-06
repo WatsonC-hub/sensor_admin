@@ -22,7 +22,8 @@ const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
   const {station} = useNavigationFunctions();
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    station(locid, parseInt(event.target.value), {replace: true});
+    if (params.ts_id != event.target.value)
+      station(locid, parseInt(event.target.value), {replace: true});
     // navigate(`../location/${locid}/${event.target.value}`, {
     //   replace: true,
     // });

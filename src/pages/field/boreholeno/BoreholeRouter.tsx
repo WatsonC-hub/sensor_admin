@@ -1,4 +1,6 @@
+import {Person} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import {Box} from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
@@ -8,6 +10,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
+import {NavBarMenu} from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import Boreholeno from '~/pages/field/boreholeno/Boreholeno';
 import MinimalSelectBorehole from '~/pages/field/boreholeno/MinimalSelectBorehole';
@@ -62,12 +65,28 @@ export default function BoreholeRouter() {
           >
             <KeyboardBackspaceIcon />
           </IconButton>
-          <MinimalSelectBorehole
-            boreholeno={params.boreholeno ? params.boreholeno : ''}
-            boreholenoList={data}
-            selectedIntake={selectedItem}
-            setSelectedItem={setSelectedItem}
-          />
+          <Box display="block" flexGrow={1} overflow="hidden">
+            <MinimalSelectBorehole
+              boreholeno={params.boreholeno ? params.boreholeno : ''}
+              boreholenoList={data}
+              selectedIntake={selectedItem}
+              setSelectedItem={setSelectedItem}
+            />
+          </Box>
+          <Box display="flex" justifyContent="end" alignItems="center" flexShrink={0}>
+            <NavBarMenu
+              highligtFirst={false}
+              items={[
+                {
+                  title: 'Til bruger profil',
+                  icon: <Person />,
+                  onClick: () => {
+                    window.location.href = 'https://admin.watsonc.dk/profile';
+                  },
+                },
+              ]}
+            />
+          </Box>
         </Toolbar>
       </AppBar>
 

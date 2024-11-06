@@ -5,11 +5,12 @@ import {
   ConstructionRounded,
 } from '@mui/icons-material';
 import {startCase} from 'lodash';
+import {parseAsBoolean, useQueryState} from 'nuqs';
 import React from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useSearchParam} from '~/hooks/useSeachParam';
+import {useStationPages} from '~/hooks/useStationPages';
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
@@ -19,9 +20,9 @@ interface ActionAreaProps {
 }
 
 export default function ActionArea({canEdit}: ActionAreaProps) {
-  const [pageToShow, setPageToShow] = useSearchParam('page');
-  const [showForm, setShowForm] = useSearchParam('showForm');
-  const handleChange = (event: React.ChangeEvent<object>, newValue: string | null) => {
+  const [pageToShow, setPageToShow] = useStationPages();
+  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const handleChange = (event: React.ChangeEvent<object>, newValue: any) => {
     setPageToShow(newValue);
     if (showForm !== null) {
       setShowForm(null);
@@ -33,25 +34,25 @@ export default function ActionArea({canEdit}: ActionAreaProps) {
       text: 'Pejling',
       value: stationPages.PEJLING,
       icon: <AddCircle />,
-      color: navIconStyle(pageToShow === stationPages.PEJLING),
+      color: navIconStyle(pageToShow === 'pejling'),
     },
     {
       text: 'Målepunkt',
       value: stationPages.MAALEPUNKT,
       icon: <StraightenRounded />,
-      color: navIconStyle(pageToShow === stationPages.MAALEPUNKT),
+      color: navIconStyle(pageToShow === 'maalepunkt'),
     },
     {
       text: startCase(stationPages.BILLEDER),
       value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(pageToShow === stationPages.BILLEDER),
+      color: navIconStyle(pageToShow === 'billeder'),
     },
     {
       text: startCase(stationPages.STAMDATA),
       value: stationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === stationPages.STAMDATA),
+      color: navIconStyle(pageToShow === 'stamdata'),
     },
   ];
 

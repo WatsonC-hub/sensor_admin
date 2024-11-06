@@ -6,10 +6,11 @@ import {
 } from '@mui/icons-material';
 import RuleIcon from '@mui/icons-material/Rule';
 import {startCase} from 'lodash';
+import {parseAsBoolean, useQueryState} from 'nuqs';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useSearchParam} from '~/hooks/useSeachParam';
+import {useStationPages} from '~/hooks/useStationPages';
 
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
@@ -18,40 +19,41 @@ const navIconStyle = (isSelected: boolean) => {
 interface ActionAreaProps {
   isCalculated: boolean;
   ts_id: number;
+  stamdata: any;
 }
 
-export default function ActionArea({isCalculated, ts_id}: ActionAreaProps) {
-  const [pageToShow, setPageToShow] = useSearchParam('page');
-  const [showForm, setShowForm] = useSearchParam('showForm');
-  const handleChange = (event: any, newValue: string | null) => {
+export default function ActionArea({isCalculated, ts_id, stamdata}: ActionAreaProps) {
+  const [pageToShow, setPageToShow] = useStationPages();
+  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const handleChange = (event: any, newValue: any) => {
     setPageToShow(newValue);
     if (showForm !== null) {
       setShowForm(null);
     }
   };
   const navigationItems = [];
-  if (ts_id !== -1) {
+  if (ts_id !== -1 || !stamdata) {
     navigationItems.push(
       {
         text: 'Kontrol',
         value: stationPages.PEJLING,
         icon: <AddCircle />,
-        color: navIconStyle(pageToShow === null),
+        color: navIconStyle(pageToShow === 'pejling'),
       },
       {
         text: startCase(stationPages.TILSYN),
         value: stationPages.TILSYN,
         icon: <PlaylistAddCheck />,
-        color: navIconStyle(pageToShow === stationPages.TILSYN),
+        color: navIconStyle(pageToShow === 'tilsyn'),
         isCalculated: isCalculated,
       }
     );
   } else {
     navigationItems.push({
       text: 'Tidsserie',
-      value: stationPages.DEFAULT,
+      value: stationPages.PEJLING,
       icon: <RuleIcon />,
-      color: navIconStyle(pageToShow === stationPages.DEFAULT),
+      color: navIconStyle(pageToShow === 'pejling'),
     });
   }
 
@@ -60,13 +62,13 @@ export default function ActionArea({isCalculated, ts_id}: ActionAreaProps) {
       text: startCase(stationPages.BILLEDER),
       value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
-      color: navIconStyle(pageToShow === stationPages.BILLEDER),
+      color: navIconStyle(pageToShow === 'billeder'),
     },
     {
       text: startCase(stationPages.STAMDATA),
       value: stationPages.STAMDATA,
       icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === stationPages.STAMDATA),
+      color: navIconStyle(pageToShow === 'stamdata'),
       isCalculated: isCalculated,
     }
   );
