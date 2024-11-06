@@ -167,7 +167,7 @@ export default function PejlingForm({
             disabled={notPossible || (isWaterlevel && currentMP == null)}
           />
         </Grid>
-        {isWaterlevel && (
+        {isWaterlevel && !notPossible && (
           <WaterlevelAlert
             latestMeasurementSeverity={
               (elevationDiff && elevationDiff > 0.03) || !latestMeasurement ? 'warning' : 'info'

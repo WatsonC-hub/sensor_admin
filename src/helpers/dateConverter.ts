@@ -29,7 +29,7 @@ const calculatePumpstop = (timeofmeas: string, pumpstop: string, service: boolea
       : '-';
 };
 
-const limitDecimalNumbers = (value: number) => {
+const limitDecimalNumbers = (value: number | null) => {
   return value !== null &&
     value !== undefined &&
     value.toString().split('.')[1] !== undefined &&
