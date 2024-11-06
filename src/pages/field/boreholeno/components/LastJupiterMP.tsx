@@ -13,7 +13,7 @@ interface JupiterMPProps {
   intakeno: number;
   lastOurMP: Maalepunkt;
   watlevmpMutate: UseMutationResult<void, Error, MaalepunktPost, unknown>;
-  setAddMPOpen: (open: string | null) => void;
+  setAddMPOpen: (open: boolean | null) => void;
 }
 
 const LastJupiterMP = ({

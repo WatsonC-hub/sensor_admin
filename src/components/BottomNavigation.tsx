@@ -33,68 +33,13 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
   pageToShow,
   onChange,
   items,
-  // canEdit,
 }) => {
   const {isMobile} = useBreakpoints();
-  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const threshold = isMobile ? 4 : items.length;
   const visibleItems = items.slice(0, threshold);
-  // const hiddenItems = items.slice(threshold);
-
-  // const handleMenuItemClick = (event: React.MouseEvent<HTMLElement>, value: string | null) => {
-  //   onChange(event, value);
-  //   handleMenuClose();
-  // };
-
-  // const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  // };
 
   return (
     <Box sx={{mt: isMobile ? 15 : 8, zIndex: 3}}>
-      {/* {isMobile && hiddenItems.length > 0 && (
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-          PaperProps={{
-            sx: {
-              backgroundColor: 'primary.main',
-              color: 'white',
-            },
-          }}
-        >
-          {hiddenItems.map((item) => {
-            if (
-              item.isCalculated !== undefined &&
-              item.isCalculated &&
-              item.value === StationPages.TILSYN
-            )
-              return;
-            return (
-              <MenuItem
-                key={item.value}
-                onClick={(event) => handleMenuItemClick(event, item.value)}
-              >
-                <BottomNavigationAction
-                  showLabel
-                  disabled={!canEdit}
-                  label={<CustomBottomNavigationActionLabel {...item} />}
-                  value={item.value}
-                  onClick={(e) => {
-                    onChange(e, e.target);
-                  }}
-                  sx={bottomNavStyle}
-                />
-              </MenuItem>
-            );
-          })}
-        </Menu>
-      )} */}
       <Paper sx={{position: 'fixed', bottom: 0, width: '100%'}} elevation={3}>
         <BottomNavigation
           value={pageToShow}
@@ -126,17 +71,6 @@ const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
               />
             );
           })}
-          {/* {isMobile && hiddenItems.length > 0 && (
-            <IconButton
-              aria-label="more"
-              aria-controls="long-menu"
-              aria-haspopup="true"
-              onClick={handleMenuOpen}
-              size="medium"
-            >
-              <MenuIcon />
-            </IconButton>
-          )} */}
         </BottomNavigation>
       </Paper>
     </Box>

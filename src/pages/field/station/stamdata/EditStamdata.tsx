@@ -28,6 +28,7 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
+import {parseAsBoolean, parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {Suspense, useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -47,7 +48,7 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
-import {useSearchParam} from '~/hooks/useSeachParam';
+import {useStationPages} from '~/hooks/useStationPages';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import {authStore, stamdataStore} from '~/state/store';
@@ -401,14 +402,18 @@ type Location = EditValues['location'];
 type Timeseries = EditValues['timeseries'];
 type Unit = EditValues['unit'];
 
+const tabValues = ['lokation', 'tidsserie', 'udstyr', 'målepunkt', 'stationsinformation'] as const;
+
 export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataProps) {
-  // const [selectedUnit, setSelectedUnit] = useState('');
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
-  const [pageToShow, setPageToShow] = useSearchParam('page');
-  const [tabValue, setTabValue] = useSearchParam('tab');
-  const [showForm, setShowForm] = useSearchParam('showForm');
+  const [pageToShow, setPageToShow] = useStationPages();
+  const [tabValue, setTabValue] = useQueryState(
+    'tab',
+    parseAsStringLiteral(tabValues).withDefault('lokation')
+  );
+  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
 
   useQuery<UnitHistory[]>({
@@ -428,14 +433,18 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
       setShowForm(null);
     }
     if (tabValue === null) {
-      setTabValue('0');
-    } else if (tabValue === '3' && metadata && metadata.tstype_id !== 1) {
-      setTabValue('0');
-    } else if (tabValue === '2' && metadata && metadata.calculated) {
-      setTabValue('0');
+      setTabValue('lokation');
+    } else if (tabValue === 'målepunkt' && metadata && metadata.tstype_id !== 1) {
+      setTabValue('lokation');
+    } else if (
+      (tabValue === 'udstyr' || tabValue === 'tidsserie') &&
+      metadata &&
+      metadata.calculated
+    ) {
+      setTabValue('lokation');
     } else setTabValue(tabValue);
 
-    if (tabValue !== '3' && showForm === 'true') {
+    if (tabValue !== 'udstyr' && showForm) {
       setShowForm(null);
     }
 
@@ -580,7 +589,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
       }}
     >
       <Tabs
-        value={tabValue ?? '0'}
+        value={tabValue ?? 'lokation'}
         onChange={(_, newValue) => setTabValue(newValue)}
         variant={matches ? 'scrollable' : 'fullWidth'}
         aria-label="simple tabs example"
@@ -594,7 +603,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
         }}
       >
         <Tab
-          value="0"
+          value={'lokation'}
           icon={<LocationOnRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -603,7 +612,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
           }
         />
         <Tab
-          value="1"
+          value={'tidsserie'}
           disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
           icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
@@ -613,7 +622,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
           }
         />
         <Tab
-          value="2"
+          value={'udstyr'}
           disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
           icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
@@ -623,7 +632,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
           }
         />
         <Tab
-          value="3"
+          value={'målepunkt'}
           disabled={!metadata || (metadata && metadata.tstype_id !== 1)}
           icon={
             <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
@@ -635,7 +644,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
           }
         />
         <Tab
-          value="4"
+          value={'stationsinformation'}
           icon={<SettingsPhoneRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography variant={'body2'} marginBottom={1} textTransform={'capitalize'}>
@@ -647,7 +656,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
       <Divider />
       <Box>
         <FormProvider {...formMethods}>
-          <TabPanel value={tabValue} index={'0'}>
+          <TabPanel value={tabValue} index={'lokation'}>
             <LocationForm mode="normal" />
             <StamdataFooter
               cancel={resetFormData}
@@ -656,7 +665,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
               disabled={isSubmitting || !('location' in dirtyFields)}
             />
           </TabPanel>
-          <TabPanel value={tabValue} index={'1'}>
+          <TabPanel value={tabValue} index={'tidsserie'}>
             <TimeseriesForm mode="" />
             <StamdataFooter
               cancel={resetFormData}
@@ -665,7 +674,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
               disabled={isSubmitting || !('timeseries' in dirtyFields)}
             />
           </TabPanel>
-          <TabPanel value={tabValue} index="2">
+          <TabPanel value={tabValue} index={'udstyr'}>
             <Suspense fallback={<LoadingSkeleton />}>
               <UdstyrReplace stationId={ts_id} />
               <UnitForm mode="edit" />
@@ -677,13 +686,13 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
               />
             </Suspense>
           </TabPanel>
-          <TabPanel value={tabValue} index={'3'}>
+          <TabPanel value={tabValue} index={'målepunkt'}>
             <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
             <FabWrapper
               icon={<AddCircle />}
               text="Tilføj målepunkt"
               onClick={() => {
-                setShowForm('true');
+                setShowForm(true);
               }}
               sx={{
                 visibility: showForm === null ? 'visible' : 'hidden',
@@ -691,7 +700,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
             />
           </TabPanel>
         </FormProvider>
-        <TabPanel value={tabValue} index={'4'}>
+        <TabPanel value={tabValue} index={'stationsinformation'}>
           <StationDetails mode={'normal'} />
         </TabPanel>
       </Box>

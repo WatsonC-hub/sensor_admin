@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
-import {Navigate, redirect, useNavigate, useParams} from 'react-router-dom';
+import {Navigate, useNavigate, useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';

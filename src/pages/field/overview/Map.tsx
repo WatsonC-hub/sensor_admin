@@ -103,15 +103,11 @@ declare module 'leaflet' {
   }
 
   interface MarkerOptions {
-    contextmenu?: boolean;
-    contextmenuItems?: Array<object>;
     title?: string;
     data?: BoreholeMapData | Parking;
   }
 
   interface MapOptions {
-    contextmenu?: boolean;
-    contextmenuItems?: any[];
     contextmenuWidth?: number;
   }
 
@@ -613,6 +609,8 @@ function Map() {
           const parkingMarker = L.marker(point, {
             data: parking,
             icon: parkingIcon,
+            contextmenu: true,
+            contextmenuItems: [],
           });
 
           parkingMarker.bindContextMenu({
@@ -868,6 +866,7 @@ function Map() {
       title: element.boreholeno,
       data: element,
       contextmenu: true,
+      contextmenuItems: [],
     });
 
     return marker;

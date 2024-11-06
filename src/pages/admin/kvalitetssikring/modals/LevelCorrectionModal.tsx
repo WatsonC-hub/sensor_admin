@@ -3,12 +3,12 @@ import {Box, Typography} from '@mui/material';
 import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
+import {parseAsString, useQueryState} from 'nuqs';
 import {useContext, useState} from 'react';
 
 import Button from '~/components/Button';
 import {limitDecimalNumbers} from '~/helpers/dateConverter';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 
@@ -20,7 +20,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
   const [comment, setComment] = useState('');
   const metadata = useContext(MetadataContext);
-  const [, setDataAdjustment] = useSearchParam('adjust');
+  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

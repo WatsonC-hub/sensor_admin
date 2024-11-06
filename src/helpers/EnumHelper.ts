@@ -1,10 +1,9 @@
 export const stationPages = {
-  PEJLING: null,
+  PEJLING: 'pejling',
   TILSYN: 'tilsyn',
   STAMDATA: 'stamdata',
   BILLEDER: 'billeder',
   MAALEPUNKT: 'maalepunkt',
-  DEFAULT: null,
 } as const;
 
 export const qaPages = {

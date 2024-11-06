@@ -2,6 +2,7 @@ import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
+import {parseAsBoolean, useQueryState} from 'nuqs';
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
@@ -13,7 +14,7 @@ import SaveImageDialog from '~/components/SaveImageDialog';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
-import {useSearchParam} from '~/hooks/useSeachParam';
+import {useStationPages} from '~/hooks/useStationPages';
 import ActionAreaBorehole from '~/pages/field/boreholeno/ActionAreaBorehole';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import BoreholeStamdata from '~/pages/field/boreholeno/BoreholeStamdata';
@@ -38,8 +39,8 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   const queryClient = useQueryClient();
   const [canEdit, setCanEdit] = useState(false);
   const {isMobile, isTouch} = useBreakpoints();
-  const [showForm, setShowForm] = useSearchParam('showForm');
-  const [pageToShow, setPageToShow] = useSearchParam('page', null);
+  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [pageToShow, setPageToShow] = useStationPages();
   const {data: permissions} = useQuery({
     queryKey: ['borehole_permissions'],
     queryFn: async () => {
@@ -168,8 +169,8 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   };
 
   const openAddMP = () => {
-    setPageToShow(stationPages.MAALEPUNKT);
-    setShowForm('true');
+    setPageToShow('maalepunkt');
+    setShowForm(true);
   };
 
   const addOrEditPejling = useMutation({
@@ -188,7 +189,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
     addOrEditPejling.mutate(payload, {
       onSuccess: () => {
         resetPejlingData();
-        setPageToShow(stationPages.PEJLING);
+        setPageToShow('pejling');
         setShowForm(null);
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries({
@@ -234,13 +235,13 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
         data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
-        setShowForm('true'); // update to use state machine¨
+        setShowForm(true); // update to use state machine¨
       };
     } else {
       return (data: Kontrol) => {
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
-        setShowForm('true'); // update to use state machine¨
+        setShowForm(true); // update to use state machine¨
       };
     }
   };
@@ -302,7 +303,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   };
 
   const handleFileRead = async (event: ChangeEvent<HTMLInputElement>) => {
-    setShowForm('true');
+    setShowForm(true);
     const fileList = event.target.files;
     if (event && fileList) {
       const base64 = await convertBase64(fileList[0]);
@@ -317,7 +318,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
 
   return (
     <Box display="flex" height={'max-content'} flexDirection={'column'}>
-      {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
+      {pageToShow !== 'billeder' && pageToShow !== 'stamdata' && (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -328,9 +329,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             boreholeno={boreholeno}
             intakeno={intakeno}
             ourData={control ?? []}
-            dynamicMeasurement={
-              pageToShow === stationPages.PEJLING && showForm === 'true' ? dynamic : undefined
-            }
+            dynamicMeasurement={pageToShow === 'pejling' && showForm ? dynamic : undefined}
           />
           <Divider />
         </Box>
@@ -344,7 +343,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           alignSelf: 'center',
         }}
       >
-        {pageToShow === stationPages.PEJLING && showForm === 'true' && (
+        {pageToShow === 'pejling' && showForm && (
           <PejlingFormBorehole
             formData={pejlingData}
             changeFormData={changePejlingData}
@@ -360,7 +359,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             }
           />
         )}
-        {pageToShow === stationPages.MAALEPUNKT && (
+        {pageToShow === 'maalepunkt' && (
           <Box
             sx={{
               display: 'flex',
@@ -380,7 +379,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
               setAddMPOpen={setShowForm}
             />
 
-            {showForm === 'true' && (
+            {showForm && (
               <MaalepunktForm
                 formData={mpData}
                 changeFormData={changeMpData}
@@ -390,7 +389,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             )}
           </Box>
         )}
-        {pageToShow === stationPages.MAALEPUNKT && (
+        {pageToShow === 'maalepunkt' && (
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <MaalepunktTable
               watlevmp={watlevmp}
@@ -401,19 +400,16 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
               icon={<AddCircle />}
               text="Tilføj målepunkt"
               onClick={() => {
-                setShowForm('true');
+                setShowForm(true);
                 resetMpData();
               }}
               sx={{
-                visibility:
-                  pageToShow === stationPages.MAALEPUNKT && showForm === null
-                    ? 'visible'
-                    : 'hidden',
+                visibility: pageToShow === 'maalepunkt' && showForm === null ? 'visible' : 'hidden',
               }}
             />
           </Box>
         )}
-        {pageToShow === null && (
+        {pageToShow === 'pejling' && (
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <PejlingMeasurements
               measurements={measurements}
@@ -425,7 +421,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
               text="Tilføj pejling"
               onClick={() => {
                 resetPejlingData();
-                setShowForm('true');
+                setShowForm(true);
               }}
               sx={{
                 visibility:
@@ -434,12 +430,12 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             />
           </Box>
         )}
-        {pageToShow === stationPages.STAMDATA && canEdit && (
+        {pageToShow === 'stamdata' && canEdit && (
           <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
         )}
       </Box>
 
-      {pageToShow === stationPages.BILLEDER && (
+      {pageToShow === 'billeder' && (
         <Box>
           <Images
             type={'borehole'}
