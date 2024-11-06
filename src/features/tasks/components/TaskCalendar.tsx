@@ -22,11 +22,6 @@ export default function TaskCalendar() {
   const {shownTasks, setSelectedTask} = useTaskStore();
 
   const moveEvent: withDragAndDropProps<Task, object>['onEventDrop'] = ({event, start}) => {
-    const existing = shownTasks.find((ev) => ev.id === event.id);
-    const filtered = shownTasks.filter((ev) => ev.id !== event.id);
-    // if (existing) {
-    //   setTasks([...filtered, {...existing, due_date: start as string}]);
-    // }
     patch.mutate({
       path: event.id,
       data: {
@@ -68,6 +63,11 @@ export default function TaskCalendar() {
       events={shownTasks}
       localizer={localizer}
       onEventDrop={moveEvent}
+      onDragStart={(event) => console.log('drag start', event)}
+      //   onDragOver={(event) => {
+      //     event.preventDefault();
+      //     console.log('drag over', event);
+      //   }}
       onSelectEvent={(event) => setSelectedTask(event.id)}
       //   onEventResize={resizeEvent}
       startAccessor={(event) => new Date(event.due_date)}

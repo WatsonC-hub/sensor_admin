@@ -53,6 +53,16 @@ const TaskTable = () => {
   );
 
   const options: Partial<MRT_TableOptions<Task>> = {
+    enableRowDragging: true,
+    muiRowDragHandleProps: ({row}) => {
+      return {
+        onDragStart: (e) => {
+          e.dataTransfer.effectAllowed = 'all';
+          e.dataTransfer.setData('text/plain', row.original.id);
+        },
+      };
+    },
+
     muiTableBodyRowProps: (props) => {
       return {
         onClick: () => {
