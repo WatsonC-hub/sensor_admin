@@ -111,7 +111,8 @@ export default function Station({ts_id, stamdata}: StationProps) {
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
 
-  if (ts_id === -1 && pageToShow === 'pejling') {
+  console.log(stamdata);
+  if (ts_id === -1 && stamdata && pageToShow === 'pejling') {
     return (
       <Layout stamdata={stamdata} ts_id={ts_id}>
         <Box
@@ -151,7 +152,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
 
   return (
     <Layout stamdata={stamdata} ts_id={ts_id}>
-      {pageToShow !== 'billeder' && pageToShow !== 'stamdata' && (
+      {pageToShow !== 'billeder' && stamdata && pageToShow !== 'stamdata' && (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -248,7 +249,7 @@ const Layout = ({children, ts_id, stamdata}: LayoutProps) => {
       >
         {children}
       </Box>
-      <ActionArea isCalculated={isCalculated} ts_id={ts_id} />
+      <ActionArea isCalculated={isCalculated} ts_id={ts_id} stamdata={stamdata} />
     </Box>
   );
 };
