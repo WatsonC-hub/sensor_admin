@@ -23,14 +23,6 @@ type Props = {
   setDynamic: (dynamic: Array<string | number> | undefined) => void;
 };
 
-const initialData = {
-  gid: -1,
-  timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
-  measurement: 0,
-  useforcorrection: 0,
-  comment: '',
-};
-
 const Pejling = ({ts_id, setDynamic}: Props) => {
   const store = stamdataStore();
   const [canEdit] = useState(true);
@@ -40,6 +32,14 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   const [, setTabValue] = useQueryState('tab', parseAsString);
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
   const {isTouch, isLaptop} = useBreakpoints();
+
+  const initialData = {
+    gid: -1,
+    timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
+    measurement: 0,
+    useforcorrection: 0,
+    comment: '',
+  };
 
   const formMethods = useForm<PejlingItem>({
     defaultValues: initialData,

@@ -128,7 +128,7 @@ export default function PejlingForm({
 
   const handleNotPossibleChange = () => {
     setNotPossible(!notPossible);
-    setValue('measurement', 0);
+    setValue('measurement', notPossible ? 0 : null);
   };
 
   const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
@@ -152,7 +152,7 @@ export default function PejlingForm({
           <FormInput
             type="number"
             name="measurement"
-            rules={{required: true}}
+            rules={{required: !notPossible}}
             label={
               <Typography variant="h5" component="h3">
                 {isWaterlevel ? 'Pejling (nedstik)' : 'Måling'}
@@ -212,7 +212,9 @@ export default function PejlingForm({
           />
         </Grid>
         <Actions
-          onSave={handleSubmit(submit)}
+          onSave={handleSubmit(submit, (error) => {
+            console.log(error);
+          })}
           onCancel={() => {
             resetFormData();
             setDynamic([]);

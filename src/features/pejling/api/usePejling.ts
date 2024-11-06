@@ -15,7 +15,7 @@ interface PejlingPost extends PejlingBase {
   data: {
     comment: string;
     gid: number;
-    measurement: number;
+    measurement: number | null;
     timeofmeas: string;
     useforcorrection: number;
   };
@@ -25,7 +25,7 @@ interface PejlingPut extends PejlingPost {
   data: {
     comment: string;
     gid: number;
-    measurement: number;
+    measurement: number | null;
     timeofmeas: string;
     useforcorrection: number;
   };

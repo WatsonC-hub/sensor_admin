@@ -162,7 +162,7 @@ export type ZodTilsynItem = {
 export type PejlingItem = {
   comment: string;
   gid: number;
-  measurement: number;
+  measurement: number | null;
   timeofmeas: string;
   useforcorrection: number;
   disttowatertable_m?: number | null;
