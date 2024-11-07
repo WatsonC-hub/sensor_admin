@@ -1,5 +1,12 @@
-import {Box} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {Box, TextField} from '@mui/material';
+import {set} from 'lodash';
+import {
+  MaterialReactTable,
+  MRT_ColumnDef,
+  MRT_TableOptions,
+  MRT_FilterFns,
+  MRT_GlobalFilterTextField,
+} from 'material-react-table';
 import React, {useEffect, useMemo} from 'react';
 
 import {calculateContentHeight} from '~/consts';
@@ -20,7 +27,7 @@ const TaskTable = () => {
   const {tasks, shownTasks, shownListTaskIds, setSelectedTask, setShownListTaskIds} =
     useTaskStore();
   const {station} = useNavigationFunctions();
-  console.log('tasks', shownTasks);
+  // console.log('tasks', shownTasks);
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
     () =>
       [
@@ -31,7 +38,7 @@ const TaskTable = () => {
           sortingFn: (a, b) => (a.original.due_date > b.original.due_date ? 1 : -1),
         },
         {
-          accessorKey: 'opgave',
+          accessorKey: 'name',
           header: 'Opgave',
         },
         {
@@ -54,16 +61,41 @@ const TaskTable = () => {
   );
 
   const options: Partial<MRT_TableOptions<Task>> = {
-    enableRowDragging: true,
-
-    muiRowDragHandleProps: ({row}) => {
-      return {
-        onDragStart: (e) => {
-          e.dataTransfer.effectAllowed = 'all';
-          e.dataTransfer.setData('text/plain', row.original.id);
-        },
-      };
-    },
+    // onColumnFiltersChange: (columnFilters) => {
+    //   console.log('columnFilters', columnFilters);
+    // },
+    // enableRowDragging: true,
+    // muiRowDragHandleProps: ({row}) => {
+    //   return {
+    //     onDragStart: (e) => {
+    //       e.dataTransfer.effectAllowed = 'all';
+    //       e.dataTransfer.setData('text/plain', row.original.id);
+    //     },
+    //   };
+    // },
+    // renderTopToolbar: ({table}) => (
+    //   <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+    //     <Box maxWidth={'250px'}>
+    //       <TextField
+    //         fullWidth
+    //         size={'small'}
+    //         variant={'outlined'}
+    //         placeholder={'Søg...'}
+    //         onChange={(e) => {
+    //           console.log('search', e.target.value);
+    //           if (e.target.value === '') {
+    //             setShownListTaskIds([]);
+    //             return;
+    //           }
+    //           const ids = tasks
+    //             .filter((task) => task.name.includes(e.target.value))
+    //             .map((task) => task.id);
+    //           setShownListTaskIds(ids);
+    //         }}
+    //       />
+    //     </Box>
+    //   </Box>
+    // ),
 
     muiTableBodyRowProps: (props) => {
       return {
@@ -86,11 +118,16 @@ const TaskTable = () => {
 
   // const filteredIds = table.getFilteredRowModel().rows.map((row) => row.original.id);
 
-  // useEffect(() => {
-
-  //   setShownListTaskIds(filteredIds);
-
-  // }, [areSetsEqual(new Set(filteredIds), new Set(shownTasks.map((task) => task.id)))]);
+  useEffect(() => {
+    const globalFilter = table.getState().globalFilter;
+    if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
+      setShownListTaskIds([]);
+      return;
+    }
+    const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
+    console.log('ids', ids);
+    setShownListTaskIds(ids);
+  }, [table.getState().globalFilter]);
 
   return (
     <Box

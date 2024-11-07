@@ -7,6 +7,8 @@ import React, {SyntheticEvent} from 'react';
 
 import {tabsHeight} from '~/consts';
 
+import {useTaskStore} from '../store';
+
 import TaskCalendar from './TaskCalendar';
 import TaskMap from './TaskMap';
 import TaskTable from './TaskTable';
@@ -38,6 +40,7 @@ const tabAtom = atom<number>(0);
 
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
+  const {shownMapTaskIds, setShownListTaskIds} = useTaskStore();
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
@@ -57,7 +60,19 @@ const TasksOverview = () => {
           },
         }}
       >
-        <Tab label="Kort" icon={<MapIcon />} iconPosition="start" />
+        <Tab
+          label={
+            <Box
+              sx={{
+                color: shownMapTaskIds.length > 0 ? 'error.main' : undefined,
+              }}
+            >
+              Kort
+            </Box>
+          }
+          icon={<MapIcon />}
+          iconPosition="start"
+        />
         <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Liste" />
         <Tab icon={<CalendarMonth />} iconPosition="start" label="Kalender" />
       </Tabs>

@@ -22,7 +22,21 @@ type TaskState = {
 };
 
 const filterTasks = (tasks: Task[], ids: ID[][]) => {
-  const shownTasks = tasks.filter((task) => ids.flat().includes(task.id));
+  const overlappingIds = ids.reduce(
+    (acc, curr) => {
+      if (curr.length === 0) {
+        return acc;
+      }
+      if (acc.size === 0) {
+        return new Set(curr);
+      }
+
+      return new Set([...curr].filter((id) => acc.has(id)));
+    },
+    new Set<ID>([...ids[0]])
+  );
+
+  const shownTasks = tasks.filter((task) => overlappingIds.has(task.id));
 
   return shownTasks.length == 0 ? tasks : shownTasks;
 };
@@ -44,11 +58,14 @@ export const useTaskStore = () => {
   } = taskStore();
 
   const {shownTasks, hiddenTasks} = useMemo(() => {
+    const shownTasks = filterTasks(tasks, [shownListTaskIds, shownMapTaskIds]);
+    console.log('shownTasks', shownTasks);
+    console.log('shownListTaskIds', shownListTaskIds);
+    console.log('shownMapTaskIds', shownMapTaskIds);
+
     return {
-      shownTasks: filterTasks(tasks, [shownListTaskIds, shownMapTaskIds]),
-      hiddenTasks: tasks.filter(
-        (task) => !shownListTaskIds.includes(task.id) && !shownMapTaskIds.includes(task.id)
-      ),
+      shownTasks: shownTasks,
+      hiddenTasks: tasks.filter((task) => !shownTasks.includes(task)),
     };
   }, [tasks, shownListTaskIds, shownMapTaskIds]);
 
