@@ -40,7 +40,7 @@ const tabAtom = atom<number>(0);
 
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
-  const {shownMapTaskIds, setShownListTaskIds} = useTaskStore();
+  const {shownMapTaskIds, shownListTaskIds} = useTaskStore();
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
@@ -62,18 +62,44 @@ const TasksOverview = () => {
       >
         <Tab
           label={
-            <Box
-              sx={{
-                color: shownMapTaskIds.length > 0 ? 'error.main' : undefined,
-              }}
-            >
-              Kort
+            <Box>
+              Kort{' '}
+              <Box
+                component="span"
+                sx={{
+                  display: shownMapTaskIds.length > 0 ? 'inline' : 'none',
+                  color: shownMapTaskIds.length > 0 ? 'error.main' : undefined,
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                }}
+              >
+                !
+              </Box>
             </Box>
           }
           icon={<MapIcon />}
           iconPosition="start"
         />
-        <Tab icon={<FormatListBulletedIcon />} iconPosition="start" label="Liste" />
+        <Tab
+          icon={<FormatListBulletedIcon />}
+          iconPosition="start"
+          label={
+            <Box>
+              Liste{' '}
+              <Box
+                component="span"
+                sx={{
+                  display: shownListTaskIds.length > 0 ? 'inline' : 'none',
+                  color: shownListTaskIds.length > 0 ? 'error.main' : undefined,
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                }}
+              >
+                !
+              </Box>
+            </Box>
+          }
+        />
         <Tab icon={<CalendarMonth />} iconPosition="start" label="Kalender" />
       </Tabs>
       <TabPanel value={tabValue} index={0}>
