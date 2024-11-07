@@ -63,7 +63,9 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
             <MRT_ExpandButton row={row} table={table} staticRowIndex={staticRowIndex} />
             <Box display="flex" flexDirection={'column'}>
               <Typography alignSelf={'center'} variant="caption" fontWeight="bold">
-                {limitDecimalNumbers(row.original.measurement)} {unit}
+                {row.original.measurement === null
+                  ? 'Ingen måling'
+                  : `${limitDecimalNumbers(row.original.measurement)} ${unit}`}
               </Typography>
               <Typography alignSelf={'center'} variant="caption" color="grey.700" fontWeight="bold">
                 {convertDate(row.original.timeofmeas)}

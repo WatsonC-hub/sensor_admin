@@ -29,7 +29,7 @@ export default function PejlingMeasurementsTableDesktop({
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
 
-  const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
+  const unit = timeseries.tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${timeseries.unit}]`;
 
   const {get} = usePejling();
 

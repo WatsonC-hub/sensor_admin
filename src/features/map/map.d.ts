@@ -1,6 +1,3 @@
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
-import {BoreholeMapData, Parking} from '~/types';
-
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
@@ -8,18 +5,18 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 
 declare module 'leaflet' {
-  export interface CircleMarkerOptions {
+  export interface CircleMarkerOptions<TData = any> {
     contextmenu?: boolean;
     contextmenuItems?: Array<object>;
     title?: string;
-    data?: NotificationMap;
+    data?: TData;
     icon?: any;
     visible?: boolean;
   }
 
-  export interface MarkerOptions {
+  export interface MarkerOptions<TData = any> {
     title?: string;
-    data?: BoreholeMapData | Parking;
+    data?: TData;
   }
 
   export interface Popup {
@@ -29,6 +26,13 @@ declare module 'leaflet' {
   export interface LeafletMouseEvent {
     sourceTarget: Marker | CircleMarker;
   }
+
+  export function circleMarker<P = any>(
+    latlng: LatLngExpression,
+    options?: CircleMarkerOptions<P>
+  ): CircleMarker<P>;
+
+  export function marker<P = any>(latlng: LatLngExpression, options?: MarkerOptions<P>): Marker<P>;
 
   export interface Marker {
     bindContextMenu: (options: {

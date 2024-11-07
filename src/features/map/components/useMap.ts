@@ -11,9 +11,8 @@ import {toast} from 'react-toastify';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {authStore, parkingStore} from '~/state/store';
-import {BoreholeMapData, LeafletMapRoute, Parking, PartialBy} from '~/types';
+import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
 import {
   outdormapbox,
@@ -28,7 +27,6 @@ import {
   zoomAtom,
   panAtom,
   routeStyle,
-  TestMapData,
   utm,
   parkingIcon,
   hightlightParkingIcon,
@@ -38,9 +36,9 @@ import {
 
 let highlightedParking: L.Marker | null = null;
 
-const useMap = (
+const useMap = <TData extends object>(
   id: string,
-  data: Array<NotificationMap | BoreholeMapData | TestMapData>,
+  data: Array<TData>,
   contextmenuItems: Array<L.ContextMenuItem>
 ) => {
   const mapRef = useRef<L.Map | null>(null);
@@ -62,9 +60,7 @@ const useMap = (
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
-  const [selectedMarker, setSelectedMarker] = useState<
-    NotificationMap | BoreholeMapData | Parking | null | undefined
-  >(null);
+  const [selectedMarker, setSelectedMarker] = useState<TData | null | undefined>(null);
 
   const {
     get: {data: leafletMapRoutes},
@@ -137,20 +133,7 @@ const useMap = (
     });
 
     map.pm.setLang('da');
-    map.pm.addControls({
-      position: 'topleft',
-      drawCircleMarker: false,
-      drawCircle: false,
-      customControls: false,
-      drawText: false,
-      drawPolygon: false,
-      drawPolyline: false,
-      drawMarker: false,
-      rotateMode: false,
-      removalMode: false,
-      cutPolygon: false,
-      dragMode: false,
-    });
+
     map.attributionControl.setPrefix(false);
 
     const baseMaps = {
