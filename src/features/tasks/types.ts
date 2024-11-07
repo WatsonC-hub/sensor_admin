@@ -15,29 +15,42 @@ export type ID = string;
 
 export type Task = {
   id: ID;
-  assigned_to: {
-    id: number;
-    initials: string;
-  };
-  status: number;
-  due_date: string;
-  loc_id: number;
   ts_id: number;
-  opgave: string;
-  description: string;
-  latitude: number;
+  loc_id: number;
+  location_name: string;
   longitude: number;
+  latitude: number;
+  name: string;
+  description: string;
+  status_id: number;
+  status_name: string;
+  due_date: string;
+  due_date_type: string;
+  assigned_to: number;
+  assigned_last_name: string;
+  blocks_notifications: number[];
+  created_by: string;
+  created_last_name: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type DBTask = {
-  assigned_to: number;
-  status: number;
-  due_date: string;
-  opgave: string;
+  id: number;
+  ts_id: number;
+  name: string;
   description: string;
+  status_id: number;
+  due_date: string;
+  due_date_type: string;
+  assigned_to: number;
+  blocks_notifications: number[];
+  created_by: string;
 };
 
-export type PatchTask = Partial<DBTask>;
+export type PatchTask = Partial<Omit<DBTask, 'id'>>;
+
+export type PostTask = Omit<DBTask, 'id'>;
 
 export type TaskItiniary = {
   tasks: Pick<Task, 'id'>[];

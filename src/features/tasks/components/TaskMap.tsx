@@ -34,6 +34,8 @@ const TaskMap = () => {
       layers: [outdormapbox],
       tap: false,
       renderer: L.canvas(),
+      contextmenu: false,
+      contextmenuItems: [],
     });
 
     return map;
@@ -66,7 +68,7 @@ const TaskMap = () => {
             data: task,
           })
             .addTo(layer)
-            .bindPopup(task.opgave);
+            .bindPopup(task.name);
         }
       });
     }

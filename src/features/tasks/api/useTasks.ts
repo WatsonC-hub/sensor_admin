@@ -4,7 +4,6 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
-import {dummydata} from '../consts';
 import type {Task, PatchTask, DBTask} from '../types';
 
 interface TasksBase {
@@ -51,8 +50,8 @@ export const useTasks = () => {
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks'],
     queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return [...dummydata]; /* Write the url for the endpoint  */
+      const {data} = await apiClient.get('/sensor_admin/tasks/');
+      return data; /* Write the url for the endpoint  */
     },
     initialData: [],
   });
@@ -77,16 +76,16 @@ export const useTasks = () => {
             const newTask = {...task};
 
             if (data.assigned_to) {
-              newTask.assigned_to.id = data.assigned_to;
+              newTask.assigned_to = data.assigned_to;
             }
             if (data.due_date) {
               newTask.due_date = data.due_date;
             }
-            if (data.status) {
-              newTask.status = data.status;
+            if (data.status_id) {
+              newTask.status_id = data.status_id;
             }
-            if (data.opgave) {
-              newTask.opgave = data.opgave;
+            if (data.name) {
+              newTask.name = data.name;
             }
             if (data.description) {
               newTask.description = data.description;

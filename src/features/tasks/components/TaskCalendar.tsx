@@ -32,11 +32,10 @@ export default function TaskCalendar() {
 
   const components: Components<Task> = {
     agenda: {
-      time: ({event}) => {
-        console.log(event);
+      time: ({event}: {event?: Task}) => {
         return (
           <div>
-            <div>{event.assigned_to.initials}</div>
+            <div>{event?.assigned_last_name}</div>
           </div>
         );
       },
@@ -73,7 +72,7 @@ export default function TaskCalendar() {
       startAccessor={(event) => new Date(event.due_date)}
       endAccessor={(event) => new Date(event.due_date)}
       allDayAccessor={() => true}
-      titleAccessor={(event) => event.opgave}
+      titleAccessor={(event) => event.name}
       popup
       components={components}
       messages={{
