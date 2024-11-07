@@ -47,7 +47,9 @@ const TaskMap = () => {
 
     layerRef.current.on('click', (e: L.LeafletMouseEvent) => {
       L.DomEvent.stopPropagation(e);
-      setSelectedTask(e.sourceTarget.options.data.id as unknown as Task);
+      if (e.sourceTarget instanceof L.CircleMarker) {
+        setSelectedTask((e.sourceTarget.options.data as Task).id);
+      }
     });
 
     return () => {
@@ -58,13 +60,13 @@ const TaskMap = () => {
   }, []);
 
   useEffect(() => {
-    console.log('RERENDER');
     const layer = layerRef.current;
     if (layer) {
       layer.clearLayers();
       shownTasks.forEach((task) => {
         if (task.latitude && task.longitude) {
           L.circleMarker([task.latitude, task.longitude], {
+            radius: 5,
             data: task,
           })
             .addTo(layer)
