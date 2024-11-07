@@ -78,7 +78,10 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     };
   }, []);
 
-  const [tabValue, setTabValue] = useQueryState('tab', parseAsStringLiteral(tabValues));
+  const [tabValue, setTabValue] = useQueryState(
+    'tab',
+    parseAsStringLiteral(tabValues).withDefault('lokation')
+  );
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
