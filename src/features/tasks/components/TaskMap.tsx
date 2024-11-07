@@ -8,7 +8,6 @@ import useMap from '~/features/map/components/useMap';
 import {defaultCircleMarkerStyle} from '~/features/map/mapConsts';
 
 import {useTaskStore} from '../store';
-import type {Task} from '../types';
 
 const TaskMap = () => {
   // const mapRef = React.useRef<L.Map | null>(null);

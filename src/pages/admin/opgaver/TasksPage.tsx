@@ -35,6 +35,7 @@ const TasksPage = () => {
           sx={{
             gridColumn: '2',
             gridRow: '1',
+            height: 'fit-content',
             border: '1px solid black',
           }}
         >
@@ -44,6 +45,7 @@ const TasksPage = () => {
           sx={{
             gridColumn: '2',
             gridRow: '2',
+            height: '100%',
             border: '1px solid black',
           }}
         >

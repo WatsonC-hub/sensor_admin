@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
-import type {Task, PatchTask, DBTask} from '../types';
+import {type Task, type PatchTask, type DBTask} from '../types';
 
 interface TasksBase {
   path: string;

@@ -57,3 +57,19 @@ export type TaskItiniary = {
   due_date: string;
   assigned_to: number;
 };
+
+export type DBTaskComment = {
+  initials: string;
+  comment: string;
+  task_id: ID;
+  created_at: string;
+};
+
+export type TaskComment = DBTaskComment & {
+  id: ID;
+};
+
+export type TaskStatus = {
+  id: number;
+  name: string;
+};
