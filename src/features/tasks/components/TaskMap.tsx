@@ -1,10 +1,11 @@
 import {Box} from '@mui/material';
 import L from 'leaflet';
-import {LassoHandler, LassoHandlerFinishedEvent} from 'leaflet-lasso';
+import {LassoHandlerFinishedEvent} from 'leaflet-lasso';
 import React, {useEffect} from 'react';
 
 import {calculateContentHeight} from '~/consts';
 import useMap from '~/features/map/components/useMap';
+import {defaultCircleMarkerStyle} from '~/features/map/mapConsts';
 
 import {useTaskStore} from '../store';
 import type {Task} from '../types';
@@ -55,23 +56,28 @@ const TaskMap = () => {
   useEffect(() => {
     if (markerLayer) {
       markerLayer.clearLayers();
-      shownTasks.forEach((task) => {
+
+      hiddenTasks.forEach((task) => {
         if (task.latitude && task.longitude) {
           L.circleMarker([task.latitude, task.longitude], {
-            radius: 5,
+            ...defaultCircleMarkerStyle,
+            // radius: 5,
+            title: task.name,
             data: task,
+            color: 'gray',
           })
             .addTo(markerLayer)
             .bindPopup(task.name);
         }
       });
-
-      hiddenTasks.forEach((task) => {
+      shownTasks.forEach((task) => {
         if (task.latitude && task.longitude) {
           L.circleMarker([task.latitude, task.longitude], {
-            radius: 5,
+            ...defaultCircleMarkerStyle,
+            // radius: 5,
+            title: task.name,
+            fillColor: 'blue',
             data: task,
-            color: 'gray',
           })
             .addTo(markerLayer)
             .bindPopup(task.name);
