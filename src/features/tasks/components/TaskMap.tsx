@@ -23,18 +23,14 @@ const TaskMap = () => {
   const {
     map,
     layers: {markerLayer},
+    selectedMarker,
   } = useMap('taskmap', shownTasks, []);
 
   useEffect(() => {
-    if (markerLayer) {
-      markerLayer.on('click', (e: L.LeafletMouseEvent) => {
-        L.DomEvent.stopPropagation(e);
-        if (e.sourceTarget instanceof L.CircleMarker) {
-          setSelectedTask((e.sourceTarget.options.data as Task).id);
-        }
-      });
+    if (selectedMarker) {
+      setSelectedTask(selectedMarker.id);
     }
-  }, [markerLayer]);
+  }, [selectedMarker]);
 
   useEffect(() => {
     if (map) {
