@@ -1,6 +1,5 @@
 import {Assignment, Edit, FormatListBulleted} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
-import DoneIcon from '@mui/icons-material/Done';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
