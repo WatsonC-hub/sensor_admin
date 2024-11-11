@@ -1,4 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
+import {Save} from '@mui/icons-material';
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
@@ -7,8 +8,8 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {useTasks} from '~/features/tasks/api/useTasks';
 import {Notification} from '~/hooks/query/useNotificationOverview';
-import {useTasks} from '~/hooks/query/useTasks';
 
 interface Props {
   open: boolean;
@@ -38,10 +39,10 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
     },
   });
 
-  const {update, convertNotificationToTask} = useTasks();
+  const {updateNotification} = useTasks();
 
   const submitTask = async (values: FormValues) => {
-    await update.mutateAsync([
+    await updateNotification.mutateAsync([
       {
         ts_id: values.ts_id,
         notification_id: values.notification_id,
@@ -74,26 +75,18 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
             sx={{
               mb: 2,
             }}
-            // error={pejlingOutOfRange}
-            // warning={() => (pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : '')}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={closeModal} bttype="tertiary">
             Annuller
           </Button>
-          <Button onClick={formMethods.handleSubmit(submitTask)} bttype="primary">
-            Udskyd
-          </Button>
           <Button
-            onClick={() => {
-              console.log('notification', notification);
-              convertNotificationToTask.mutate(notification);
-              closeModal();
-            }}
+            onClick={formMethods.handleSubmit(submitTask)}
             bttype="primary"
+            startIcon={<Save />}
           >
-            Lav til opgave
+            Udskyd
           </Button>
         </DialogActions>
       </FormProvider>

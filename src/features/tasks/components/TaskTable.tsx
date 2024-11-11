@@ -1,12 +1,5 @@
-import {Box, TextField} from '@mui/material';
-import {set} from 'lodash';
-import {
-  MaterialReactTable,
-  MRT_ColumnDef,
-  MRT_TableOptions,
-  MRT_FilterFns,
-  MRT_GlobalFilterTextField,
-} from 'material-react-table';
+import {Box} from '@mui/material';
+import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useEffect, useMemo} from 'react';
 
 import {calculateContentHeight} from '~/consts';
@@ -17,15 +10,13 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useTable} from '~/hooks/useTable';
 
 import {useTaskStore} from '../store';
-const areSetsEqual = (setA, setB) =>
-  setA.size === setB.size && [...setA].every((value) => setB.has(value));
+
 const TaskTable = () => {
   // const [shownTasks, setSelectedTask] = taskStore((store) => [
   //   store.shownTasks,
   //   store.setSelectedTask,
   // ]);
-  const {tasks, shownTasks, shownListTaskIds, setSelectedTask, setShownListTaskIds} =
-    useTaskStore();
+  const {shownTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
   const {station} = useNavigationFunctions();
   // console.log('tasks', shownTasks);
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
