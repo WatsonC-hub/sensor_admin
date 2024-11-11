@@ -1,4 +1,4 @@
-import {Assignment, Edit} from '@mui/icons-material';
+import {Assignment, Edit, FormatListBulleted} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import DoneIcon from '@mui/icons-material/Done';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -8,9 +8,10 @@ import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
 
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
-import UpdateNotificationModal from '~/components/UpdateNotificationModal';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
+import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
-import {useTasks} from '~/hooks/query/useTasks';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 
 // Mock data for notifications
@@ -18,11 +19,11 @@ const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+  const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
 
   const {
     get: {data: tasks},
-    markAsDone,
   } = useTasks();
   const params = useParams();
 
@@ -54,22 +55,12 @@ const NotificationList = () => {
     setUpdateModalOpen(false);
   };
 
-  const handleMarkAsDone = (notification) => {
-    markAsDone.mutate({
-      path: params.ts_id,
-      data: {
-        opgave: notification.opgave,
-      },
-    });
-  };
-
   let loc_id = params.locid;
   if (loc_id == undefined) {
     loc_id = data?.filter((elem) => elem.ts_id == params.ts_id)[0]?.loc_id;
   }
 
   const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
-  const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
     onstation?.filter((elem) => elem.notification_id != 0),
     'notification_id'
@@ -78,7 +69,7 @@ const NotificationList = () => {
   const mapped = map(grouped, (group) => {
     return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));
   });
-  const concat = mapped?.concat(manual_tasks ?? []);
+  const concat = mapped;
   const notifications = sortBy(concat, (item) => item.dato).reverse();
 
   // Find index of max flag in notificaitons
@@ -88,6 +79,8 @@ const NotificationList = () => {
   );
 
   const badgeColor = getColor(notifications[maxFlagIndex]);
+
+  const tasksOnStation = tasks?.filter((task) => task.loc_id == loc_id);
 
   return (
     <div>
@@ -110,7 +103,7 @@ const NotificationList = () => {
         >
           {' '}
           <Badge
-            badgeContent={tasks?.length}
+            badgeContent={tasksOnStation?.length}
             anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
             sx={{
               '& .MuiBadge-badge': {
@@ -160,17 +153,20 @@ const NotificationList = () => {
                 }
               />
               {/* <Typography variant="caption">{}</Typography> */}
-              {/* {notification.notification_id == 0 && (
-                <IconButton
-                  sx={{
-                    pointerEvents: 'auto',
-                  }}
-                  aria-label="Mark as done"
-                  onClick={() => handleMarkAsDone(notification)}
-                >
-                  <DoneIcon />
-                </IconButton>
-              )} */}
+
+              <IconButton
+                sx={{
+                  pointerEvents: 'auto',
+                }}
+                aria-label="Make task"
+                onClick={() => {
+                  setSelectedNotification(notification);
+                  setMakeTaskModalOpen(true);
+                }}
+              >
+                <FormatListBulleted />
+              </IconButton>
+
               <IconButton
                 sx={{
                   pointerEvents: 'auto',
@@ -186,7 +182,7 @@ const NotificationList = () => {
             </MenuItem>
           );
         })}
-        {tasks?.map((task, index) => {
+        {tasksOnStation?.map((task, index) => {
           return (
             <MenuItem key={index} sx={{gap: 0.5}}>
               <ListItemIcon
@@ -196,17 +192,8 @@ const NotificationList = () => {
               >
                 <Assignment />
               </ListItemIcon>
-              <ListItemText primary={task.opgave} secondary={task.created_at.slice(0, 10)} />
-              <IconButton
-                sx={{
-                  pointerEvents: 'auto',
-                }}
-                aria-label="Mark as done"
-                onClick={() => handleMarkAsDone(task)}
-              >
-                <DoneIcon />
-              </IconButton>
-              <IconButton
+              <ListItemText primary={task.name} secondary={task.created_at.slice(0, 10)} />
+              {/* <IconButton
                 sx={{
                   pointerEvents: 'auto',
                 }}
@@ -217,7 +204,7 @@ const NotificationList = () => {
                 }}
               >
                 <Edit />
-              </IconButton>
+              </IconButton> */}
             </MenuItem>
           );
         })}
@@ -227,6 +214,13 @@ const NotificationList = () => {
         <UpdateNotificationModal
           open={isUpdateModalOpen}
           closeModal={closeUpdateModal}
+          notification={selectedNotification}
+        />
+      )}
+      {isMakeTaskModalOpen && (
+        <ConvertTaskModal
+          open={isMakeTaskModalOpen}
+          closeModal={() => setMakeTaskModalOpen(false)}
           notification={selectedNotification}
         />
       )}

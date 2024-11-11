@@ -41,7 +41,9 @@ const TaskMap = () => {
         .addTo(map);
       map.on('lasso.finished', (event) => {
         const ids = new Set(
-          (event as LassoHandlerFinishedEvent).layers.map((layer) => layer.options.data.id)
+          (event as LassoHandlerFinishedEvent).layers.map(
+            (layer: L.CircleMarker<Task>) => layer.options.data.id
+          )
         );
         setShownMapTaskIds(Array.from(ids));
         console.log(ids);
