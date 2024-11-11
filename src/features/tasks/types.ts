@@ -26,8 +26,8 @@ export type Task = {
   status_name: string;
   due_date: string;
   due_date_type: string;
-  assigned_to: number;
-  assigned_last_name: string;
+  assigned_to: string | null;
+  assigned_last_name: string | null;
   blocks_notifications: number[];
   created_by: string;
   created_last_name: string;
@@ -43,12 +43,15 @@ export type DBTask = {
   status_id: number;
   due_date: string;
   due_date_type: string;
-  assigned_to: number;
+  assigned_to: string | null;
+  assigned_last_name: string | null;
   blocks_notifications: number[];
   created_by: string;
 };
 
-export type PatchTask = Partial<Omit<DBTask, 'id'>>;
+export type PatchTask = Partial<
+  Omit<DBTask, 'id' | 'due_date_type' | 'blocks_notifications' | 'created_by' | 'description'>
+>;
 
 export type PostTask = Omit<DBTask, 'id'>;
 
@@ -68,6 +71,8 @@ export type DBTaskComment = {
 export type TaskComment = DBTaskComment & {
   id: ID;
 };
+
+export type PostComment = Omit<DBTaskComment, 'initials' | 'created_at'>;
 
 export type TaskStatus = {
   id: number;

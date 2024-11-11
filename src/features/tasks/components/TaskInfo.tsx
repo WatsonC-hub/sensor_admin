@@ -11,8 +11,6 @@ const TaskInfo = () => {
 
   if (!selectedTask) return <div></div>;
 
-  console.log(selectedTask);
-
   return (
     <Grid container mt={5}>
       <Grid item xs={6.8}>

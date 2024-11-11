@@ -10,6 +10,10 @@ type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   rules?: any;
   transform?: (value: any) => any;
   onChangeCallback?: (value: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
+  onBlurCallback?: (
+    value: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>
+  ) => void;
+  onKeyDownCallback?: (value: React.KeyboardEvent<HTMLDivElement>) => void;
   type?: string;
 };
 
@@ -20,6 +24,8 @@ const FormInput = <TFieldValues extends FieldValues>({
   rules,
   transform,
   onChangeCallback,
+  onBlurCallback,
+  onKeyDownCallback,
   type,
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
@@ -54,7 +60,17 @@ const FormInput = <TFieldValues extends FieldValues>({
             name={name}
             type={type}
             value={value ?? ''}
-            onBlur={onBlur}
+            onBlur={(e) => {
+              onBlur();
+              onBlurCallback && onBlurCallback(e);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                console.log('test');
+                e.preventDefault();
+                onKeyDownCallback && onKeyDownCallback(e);
+              }
+            }}
             ref={ref}
             sx={{
               // pt: 1,

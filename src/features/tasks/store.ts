@@ -59,9 +59,9 @@ export const useTaskStore = () => {
 
   const {shownTasks, hiddenTasks} = useMemo(() => {
     const shownTasks = filterTasks(tasks, [shownListTaskIds, shownMapTaskIds]);
-    console.log('shownTasks', shownTasks);
-    console.log('shownListTaskIds', shownListTaskIds);
-    console.log('shownMapTaskIds', shownMapTaskIds);
+    // console.log('shownTasks', shownTasks);
+    // console.log('shownListTaskIds', shownListTaskIds);
+    // console.log('shownMapTaskIds', shownMapTaskIds);
 
     return {
       shownTasks: shownTasks,

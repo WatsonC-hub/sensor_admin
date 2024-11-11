@@ -21,7 +21,7 @@ export const tasksPostOptions = {
   mutationKey: ['tasks_post'],
   mutationFn: async (mutation_data: TasksPost) => {
     const {data} = mutation_data;
-    const {data: result} = await apiClient.post(`/`, data); /* Write the url for the endpoint  */
+    const {data: result} = await apiClient.post(`/`, data);
     return result;
   },
 };
@@ -29,10 +29,7 @@ export const taskPatchOptions = {
   mutationKey: ['tasks_patch'],
   mutationFn: async (mutation_data: TasksPatch) => {
     const {path, data} = mutation_data;
-    const {data: result} = await apiClient.patch(
-      `/${path}`,
-      data
-    ); /* Write the url for the endpoint  */
+    const {data: result} = await apiClient.patch(`/sensor_admin/tasks/${path}`, data);
     return result;
   },
 };
@@ -40,7 +37,7 @@ export const tasksDelOptions = {
   mutationKey: ['tasks_del'],
   mutationFn: async (mutation_data: TasksBase) => {
     const {path} = mutation_data;
-    const {data: result} = await apiClient.delete(`/${path}`); /* Write the url for the endpoint  */
+    const {data: result} = await apiClient.delete(`/${path}`);
     return result;
   },
 };
@@ -51,7 +48,7 @@ export const useTasks = () => {
     queryKey: ['tasks'],
     queryFn: async () => {
       const {data} = await apiClient.get('/sensor_admin/tasks/');
-      return data; /* Write the url for the endpoint  */
+      return data;
     },
     initialData: [],
   });
@@ -64,7 +61,7 @@ export const useTasks = () => {
       toast.success('Opgaver gemt');
     },
   });
-  const patch = useMutation({
+  const patch = useMutation<TasksPatch, APIError, TasksPatch>({
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
@@ -72,36 +69,46 @@ export const useTasks = () => {
       queryClient.setQueryData<Task[]>(
         ['tasks'],
         previous?.map((task) => {
-          if (task.id === path) {
-            const newTask = {...task};
+          // if (task.id === path) {
+          //   const newTask = {...task};
 
-            if (data.assigned_to) {
-              newTask.assigned_to = data.assigned_to;
-            }
-            if (data.due_date) {
-              newTask.due_date = data.due_date;
-            }
-            if (data.status_id) {
-              newTask.status_id = data.status_id;
-            }
-            if (data.name) {
-              newTask.name = data.name;
-            }
-            if (data.description) {
-              newTask.description = data.description;
-            }
-            return newTask;
+          //   if (data.assigned_to) {
+          //     newTask.assigned_to = data.assigned_to;
+          //   }
+          //   if (data.due_date) {
+          //     newTask.due_date = data.due_date;
+          //   }
+          //   if (data.status_id) {
+          //     newTask.status_id = data.status_id;
+          //   }
+          //   if (data.name) {
+          //     newTask.name = data.name;
+          //   }
+          //   if (data.description) {
+          //     newTask.description = data.description;
+          //   }
+          //   return newTask;
+          // }
+
+          if (task.id === path) {
+            console.log('previous', task);
+            console.log('updated', data);
           }
-          return task;
+
+          const updated = task.id === path ? {...task, ...data} : task;
+          return updated;
         })
       );
       return {previous};
     },
     onSuccess: () => {
+      toast.success('Opgaver ændret');
+    },
+    onError: (e) => {
+      console.log(e);
       queryClient.invalidateQueries({
         queryKey: ['tasks'],
       });
-      toast.success('Opgaver ændret');
     },
   });
   const del = useMutation({
