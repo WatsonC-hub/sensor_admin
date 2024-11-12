@@ -57,3 +57,8 @@ export type TaskItiniary = {
   due_date: string;
   assigned_to: number;
 };
+
+export type TaskStatus = {
+  id: number;
+  name: string;
+};
