@@ -1,4 +1,5 @@
 import {Typography} from '@mui/material';
+import * as Sentry from '@sentry/react';
 import React, {Suspense, useEffect, useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
@@ -64,6 +65,7 @@ function App() {
       )}
       onError={(error) => {
         console.error('application crash', error);
+        Sentry.captureException(error);
         if (error.message.includes('Failed to fetch dynamically imported module')) {
           // window.location.reload(true);
         }
