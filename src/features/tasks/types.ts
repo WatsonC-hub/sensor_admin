@@ -50,7 +50,7 @@ export type DBTask = {
 };
 
 export type PatchTask = Partial<
-  Omit<DBTask, 'id' | 'due_date_type' | 'blocks_notifications' | 'created_by' | 'description'>
+  Omit<DBTask, 'id' | 'due_date_type' | 'blocks_notifications' | 'created_by'>
 >;
 
 export type PostTask = Omit<DBTask, 'id'>;
@@ -73,6 +73,16 @@ export type TaskComment = DBTaskComment & {
 };
 
 export type PostComment = Omit<DBTaskComment, 'initials' | 'created_at'>;
+
+export type TaskChanges = {
+  id: string;
+  task_id: string;
+  field_name: string;
+  old_value: string;
+  new_value: string;
+  initials: string;
+  created_at: string;
+};
 
 export type TaskStatus = {
   id: number;

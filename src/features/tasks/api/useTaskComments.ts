@@ -56,7 +56,7 @@ import {APIError} from '~/queryClient';
 //   },
 // ];
 
-import {DBTaskComment, PostComment, TaskComment} from '../types';
+import {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
 interface TaskCommentBase {
   path: string;
   data?: any;
@@ -94,10 +94,10 @@ export const taskCommentDelOptions = {
 };
 export const useTaskComments = (task_id: string | undefined) => {
   const queryClient = useQueryClient();
-  const get = useQuery<Array<TaskComment>, APIError>({
+  const get = useQuery<Array<TaskComment | TaskChanges>, APIError>({
     queryKey: ['taskComments'],
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<TaskComment>>(
+      const {data} = await apiClient.get<Array<TaskComment | TaskChanges>>(
         `sensor_admin/tasks/comments/${task_id}`
       );
       return data;

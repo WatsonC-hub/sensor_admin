@@ -13,7 +13,6 @@ export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & 
   onBlurCallback?: (
     value: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>
   ) => void;
-  onKeyDownCallback?: (value: React.KeyboardEvent<HTMLDivElement>) => void;
   type?: string;
 };
 
@@ -25,7 +24,6 @@ const FormInput = <TFieldValues extends FieldValues>({
   transform,
   onChangeCallback,
   onBlurCallback,
-  onKeyDownCallback,
   type,
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
@@ -63,13 +61,6 @@ const FormInput = <TFieldValues extends FieldValues>({
             onBlur={(e) => {
               onBlur();
               onBlurCallback && onBlurCallback(e);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                console.log('test');
-                e.preventDefault();
-                onKeyDownCallback && onKeyDownCallback(e);
-              }
             }}
             ref={ref}
             sx={{
