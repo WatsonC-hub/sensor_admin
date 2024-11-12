@@ -10,8 +10,9 @@ import {
   Divider,
   Collapse,
 } from '@mui/material';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
+import {useParams} from 'react-router-dom';
 
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
@@ -19,7 +20,6 @@ import {initialContactData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
-import {MetadataContext} from '~/state/contexts';
 import {ContactInfo} from '~/types';
 
 interface SelectContactInfoProps {
@@ -30,10 +30,10 @@ interface SelectContactInfoProps {
 const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [search, setSearch] = useState<string>('');
+  const params = useParams();
 
   const {reset, handleSubmit} = useFormContext<InferContactInfo>();
-  const metadata = useContext(MetadataContext);
-  const loc_id: number | undefined = metadata?.loc_id;
+  const loc_id: number | undefined = parseInt(params.locid!);
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 

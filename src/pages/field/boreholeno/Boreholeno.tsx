@@ -231,17 +231,17 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
 
   const handleEdit = (type: string) => {
     if (type === 'watlevmp') {
+      setShowForm(true); // update to use state machine¨
       return (data: MaalepunktTableData) => {
         data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
-        setShowForm(true); // update to use state machine¨
       };
     } else {
+      setShowForm(true);
       return (data: Kontrol) => {
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
-        setShowForm(true); // update to use state machine¨
       };
     }
   };
@@ -343,7 +343,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           alignSelf: 'center',
         }}
       >
-        {pageToShow === 'pejling' && showForm && (
+        {pageToShow === 'pejling' && showForm === true && (
           <PejlingFormBorehole
             formData={pejlingData}
             changeFormData={changePejlingData}
