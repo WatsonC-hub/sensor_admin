@@ -234,7 +234,7 @@ export default function PejlingFormBorehole({
                     {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
                   </Typography>
                   <Typography variant="body2">
-                    Kote: {pejlingOutOfRange ? '' : currentMP.elevation} m
+                    Kote: {pejlingOutOfRange ? '' : `${currentMP.elevation} m`}
                   </Typography>
                 </Alert>
               </Grid>
