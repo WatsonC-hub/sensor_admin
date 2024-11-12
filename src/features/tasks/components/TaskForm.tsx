@@ -73,13 +73,6 @@ const StatusSelect = (props: FormInputProps<FormValues>) => {
     },
   });
 
-  //   const status_id = watch('status_id');
-
-  //   useEffect(() => {
-  //     if (task_status)
-  //       setValue('status_id', task_status.find((status) => status.id === status_id)?.name ?? '');
-  //   });
-
   if (!task_status) return <div></div>;
 
   return (
