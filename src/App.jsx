@@ -63,6 +63,7 @@ function App() {
         </>
       )}
       onError={(error) => {
+        console.error('application crash', error);
         if (error.message.includes('Failed to fetch dynamically imported module')) {
           // window.location.reload(true);
         }
