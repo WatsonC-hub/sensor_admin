@@ -16,6 +16,8 @@ const TaskInfo = () => {
     <Grid container mt={5}>
       <Grid item xs={6.8}>
         <TaskForm
+          key={selectedTask.id}
+          onSubmit={() => {}}
           defaultValues={{
             name: selectedTask.name,
             description: selectedTask.description,

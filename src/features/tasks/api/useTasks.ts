@@ -11,14 +11,9 @@ type Mutation<TData> = {
   data: TData;
 };
 
-interface TasksBase {
-  path: string;
-  data?: any;
-}
-
 type UpdateTask = {
   ts_id: number;
-  notification_id: number;
+  notification_id?: number;
   status?: string | null | undefined;
   enddate?: string | null | undefined;
   notify_type?: 'obs' | 'primary' | 'station' | null | undefined;
@@ -30,7 +25,7 @@ type TaskConvert = {
   description?: string;
   status_id: number;
   due_date: string | null;
-  assigned_to: string;
+  assigned_to: string | null;
   notification_id: number;
 };
 
@@ -46,6 +41,7 @@ export const taskPatchOptions = {
   mutationKey: ['tasks_patch'],
   mutationFn: async (mutation_data: Mutation<PatchTask>) => {
     const {path, data} = mutation_data;
+    console.log(data);
     const {data: result} = await apiClient.patch(`/sensor_admin/tasks/${path}`, data);
     return result;
   },
@@ -97,7 +93,7 @@ export const useTasks = () => {
       toast.success('Opgaver gemt');
     },
   });
-  const patch = useMutation<TasksPatch, APIError, TasksPatch>({
+  const patch = useMutation<PatchTask, APIError, Mutation<PatchTask>>({
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
@@ -105,34 +101,11 @@ export const useTasks = () => {
       queryClient.setQueryData<Task[]>(
         ['tasks'],
         previous?.map((task) => {
-          // if (task.id === path) {
-          //   const newTask = {...task};
-
-          //   if (data.assigned_to) {
-          //     newTask.assigned_to = data.assigned_to;
-          //   }
-          //   if (data.due_date) {
-          //     newTask.due_date = data.due_date;
-          //   }
-          //   if (data.status_id) {
-          //     newTask.status_id = data.status_id;
-          //   }
-          //   if (data.name) {
-          //     newTask.name = data.name;
-          //   }
-          //   if (data.description) {
-          //     newTask.description = data.description;
-          //   }
-          //   return newTask;
-          // }
-
           if (task.id === path) {
-            console.log('previous', task);
-            console.log('updated', data);
+            const updated = {...task, ...data};
+            return updated;
           }
-
-          const updated = task.id === path ? {...task, ...data} : task;
-          return updated;
+          return task;
         })
       );
       return {previous};

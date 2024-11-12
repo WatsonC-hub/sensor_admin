@@ -44,8 +44,6 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
     console.log(taskComments);
   }, [selectedTaskId]);
 
-  if (!taskComments) return <div></div>;
-
   const {handleSubmit} = formMethods;
 
   const submit: SubmitHandler<InferTaskComment> = async (values) => {
@@ -64,7 +62,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
     <Grid container>
       <Grid item xs={12} mb={2} overflow={'auto'}>
         <Box display={'flex'} flexDirection={'column'} maxHeight={500} gap={2}>
-          {taskComments.map((taskComment) => {
+          {taskComments?.map((taskComment) => {
             if ('comment' in taskComment)
               return <TaskInfoComment key={taskComment.id} comment={taskComment} />;
             else return <TaskInfoChanges key={taskComment.id} taskChanges={taskComment} />;

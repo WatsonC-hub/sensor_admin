@@ -1,6 +1,6 @@
 import {Box, Grid} from '@mui/material';
-import React, {useEffect} from 'react';
-import {FieldValues, SubmitHandler, useFormContext} from 'react-hook-form';
+import React from 'react';
+import {FieldValues, useFormContext} from 'react-hook-form';
 
 import {useTasks} from '../api/useTasks';
 import {Task} from '../types';
@@ -13,19 +13,20 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const {patch} = useTasks();
-  const {handleSubmit, reset} = useFormContext();
+  const {trigger, getValues} = useFormContext();
 
-  const handleBlurSubmit: SubmitHandler<FieldValues> = (values) => {
+  const handleBlurSubmit = (values: Partial<FieldValues>) => {
     const payload = {
       path: `${selectedTask.id}`,
-      data: values,
+      data: {ts_id: selectedTask.ts_id, ...values},
     };
     patch.mutate(payload);
   };
 
-  useEffect(() => {
-    reset(selectedTask);
-  }, [selectedTask]);
+  const onBlur = async (field_name: keyof FieldValues) => {
+    const validated = await trigger(field_name);
+    if (validated) handleBlurSubmit({[field_name]: getValues(field_name)});
+  };
 
   return (
     <Box display={'flex'} flexDirection={'column'} mx={2} gap={2}>
@@ -34,18 +35,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           <TaskForm.Input
             label={'Navn'}
             name="name"
-            onBlurCallback={handleSubmit(handleBlurSubmit, (e) => console.log(e))}
-            required
+            onBlurCallback={async () => await onBlur('name')}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.StatusSelect
             name="status_id"
             label="Status"
-            placeholder="Vælg status..."
-            required
-            fullWidth
-            onBlurCallback={handleSubmit(handleBlurSubmit, (e) => console.log(e))}
+            onBlurCallback={async () => await onBlur('status_id')}
             sx={{
               mb: 2,
             }}
@@ -57,14 +54,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             name="due_date"
             type="datetime-local"
             placeholder="Sæt forfaldsdato"
-            onBlurCallback={handleSubmit(handleBlurSubmit, (e) => console.log(e))}
+            onBlurCallback={async () => await onBlur('due_date')}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Input
-            label="Tildelt til"
-            name="assigned_to"
-            onBlurCallback={handleSubmit(handleBlurSubmit, (e) => console.log(e))}
+          <TaskForm.AssignedTo
+            onSelect={async () => {
+              await onBlur('assigned_to');
+            }}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
@@ -72,7 +69,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             label="Beskrivelse"
             name="description"
             placeholder="Indtæst opgavebeskrivelse..."
-            onBlur={handleSubmit(handleBlurSubmit, (e) => console.log(e))}
+            onBlur={async () => await onBlur('description')}
           />
         </Grid>
       </Grid>

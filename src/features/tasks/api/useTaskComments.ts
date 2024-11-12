@@ -5,57 +5,6 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
-// const dummyData = [
-//   {
-//     id: '1',
-//     initials: 'Amble',
-//     comment:
-//       'in magna bibendum imperdiet nullam orci pede venenatis non sodales sed tincidunt eu felis fusce posuere felis sed lacus morbi',
-//     created_at: '2024-01-24',
-//     task_id: '1',
-//   },
-//   {
-//     id: '2',
-//     initials: 'Chery',
-//     comment:
-//       'quisque porta volutpat erat quisque erat eros viverra eget congue eget semper rutrum nulla nunc purus phasellus in felis donec',
-//     created_at: '2024-02-21',
-//     task_id: '2',
-//   },
-//   {
-//     id: '3',
-//     initials: 'Sophie',
-//     comment:
-//       'mauris viverra diam vitae quam suspendisse potenti nullam porttitor lacus at turpis donec posuere',
-//     created_at: '2024-05-28',
-//     task_id: '3',
-//   },
-//   {
-//     id: '4',
-//     initials: 'Yasmeen',
-//     comment:
-//       'ac neque duis bibendum morbi non quam nec dui luctus rutrum nulla tellus in sagittis dui',
-//     created_at: '2024-07-19',
-//     task_id: '4',
-//   },
-//   {
-//     id: '5',
-//     initials: 'Tulley',
-//     comment:
-//       'pretium iaculis justo in hac habitasse platea dictumst etiam faucibus cursus urna ut tellus nulla ut erat id mauris vulputate',
-//     created_at: '2024-08-06',
-//     task_id: '5',
-//   },
-//   {
-//     id: '6',
-//     initials: 'Izak',
-//     comment:
-//       'ut tellus nulla ut erat id mauris vulputate elementum nullam varius nulla facilisi cras non velit',
-//     created_at: '2024-08-26',
-//     task_id: '6',
-//   },
-// ];
-
 import {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
 interface TaskCommentBase {
   path: string;
@@ -95,7 +44,7 @@ export const taskCommentDelOptions = {
 export const useTaskComments = (task_id: string | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery<Array<TaskComment | TaskChanges>, APIError>({
-    queryKey: ['taskComments'],
+    queryKey: ['taskComments', task_id],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<TaskComment | TaskChanges>>(
         `sensor_admin/tasks/comments/${task_id}`
@@ -112,7 +61,7 @@ export const useTaskComments = (task_id: string | undefined) => {
       const previous = queryClient.getQueryData<Array<TaskComment>>(['taskComments']);
 
       queryClient.setQueryData<Array<TaskComment>>(
-        ['taskComments'],
+        ['taskComments', task_id],
         [
           ...(previous ? previous : []),
           {id: '', ...data, initials: 'Hvordan?', created_at: moment().format('YYYY-MM-DD HH:mm')},
@@ -121,22 +70,27 @@ export const useTaskComments = (task_id: string | undefined) => {
 
       return previous;
     },
+    onSettled: (data) => {
+      console.log(data);
+    },
     onSuccess: () => {
       toast.success('Opgave kommentar gemt');
     },
     onError: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskComments'],
+        queryKey: ['taskComments', task_id],
       });
     },
   });
   const put = useMutation({
     ...taskCommentPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['taskComments'],
-      });
       toast.success('Opgave kommentar ændret');
+    },
+    onError: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['taskComments', task_id],
+      });
     },
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
@@ -144,7 +98,7 @@ export const useTaskComments = (task_id: string | undefined) => {
       const previous = queryClient.getQueryData<Array<TaskComment>>(['taskComments']);
 
       queryClient.setQueryData<Array<TaskComment>>(
-        ['taskComments'],
+        ['taskComments', task_id],
         previous?.map((taskComment) => {
           if (taskComment.id === path) {
             return {id: taskComment.id, ...data};
@@ -158,7 +112,7 @@ export const useTaskComments = (task_id: string | undefined) => {
     ...taskCommentDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskComments'],
+        queryKey: ['taskComments', task_id],
       });
       toast.success('Opgave kommentar slettet');
     },

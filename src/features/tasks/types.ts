@@ -50,7 +50,10 @@ export type DBTask = {
 };
 
 export type PatchTask = Partial<
-  Omit<DBTask, 'id' | 'due_date_type' | 'blocks_notifications' | 'created_by'>
+  Omit<
+    DBTask,
+    'id' | 'due_date_type' | 'blocks_notifications' | 'created_by' | 'assigned_last_name'
+  >
 >;
 
 export type PostTask = Omit<DBTask, 'id'>;
@@ -87,4 +90,9 @@ export type TaskChanges = {
 export type TaskStatus = {
   id: number;
   name: string;
+};
+
+export type TaskUser = {
+  id: string;
+  email: string;
 };
