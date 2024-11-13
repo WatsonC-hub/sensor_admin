@@ -55,28 +55,7 @@ export const useTaskComments = (task_id: string | undefined) => {
   });
   const post = useMutation({
     ...taskCommentPostOptions,
-    onMutate: async (mutation_data) => {
-      const {data} = mutation_data;
-
-      const previous = queryClient.getQueryData<Array<TaskComment>>(['taskComments']);
-
-      queryClient.setQueryData<Array<TaskComment>>(
-        ['taskComments', task_id],
-        [
-          ...(previous ? previous : []),
-          {id: '', ...data, initials: 'Hvordan?', created_at: moment().format('YYYY-MM-DD HH:mm')},
-        ]
-      );
-
-      return previous;
-    },
-    onSettled: (data) => {
-      console.log(data);
-    },
     onSuccess: () => {
-      toast.success('Opgave kommentar gemt');
-    },
-    onError: () => {
       queryClient.invalidateQueries({
         queryKey: ['taskComments', task_id],
       });
@@ -92,21 +71,21 @@ export const useTaskComments = (task_id: string | undefined) => {
         queryKey: ['taskComments', task_id],
       });
     },
-    onMutate: async (mutation_data) => {
-      const {path, data} = mutation_data;
+    // onMutate: async (mutation_data) => {
+    //   const {path, data} = mutation_data;
 
-      const previous = queryClient.getQueryData<Array<TaskComment>>(['taskComments']);
+    //   const previous = queryClient.getQueryData<Array<TaskComment>>(['taskComments']);
 
-      queryClient.setQueryData<Array<TaskComment>>(
-        ['taskComments', task_id],
-        previous?.map((taskComment) => {
-          if (taskComment.id === path) {
-            return {id: taskComment.id, ...data};
-          }
-          return taskComment;
-        })
-      );
-    },
+    //   queryClient.setQueryData<Array<TaskComment>>(
+    //     ['taskComments', task_id],
+    //     previous?.map((taskComment) => {
+    //       if (taskComment.id === path) {
+    //         return {id: taskComment.id, ...data};
+    //       }
+    //       return taskComment;
+    //     })
+    //   );
+    // },
   });
   const del = useMutation({
     ...taskCommentDelOptions,

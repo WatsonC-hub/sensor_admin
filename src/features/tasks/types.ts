@@ -60,17 +60,17 @@ export type TaskItiniary = {
 };
 
 export type DBTaskComment = {
-  initials: string;
+  id: ID;
   comment: string;
   task_id: ID;
   created_at: string;
 };
 
 export type TaskComment = DBTaskComment & {
-  id: ID;
+  display_name: string;
 };
 
-export type PostComment = Omit<DBTaskComment, 'initials' | 'created_at'>;
+export type PostComment = Omit<DBTaskComment, 'id' | 'created_at'>;
 
 export type TaskChanges = {
   id: string;
