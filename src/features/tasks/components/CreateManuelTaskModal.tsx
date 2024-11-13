@@ -3,7 +3,6 @@ import React from 'react';
 import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
-import FormInput from '~/components/FormInput';
 import {useTasks} from '~/features/tasks/api/useTasks';
 
 import TaskForm, {FormValues} from './TaskForm';
@@ -40,8 +39,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             minWidth: 400,
           }}
         >
-          <FormInput name="name" label="Navne" />
-          <TaskForm.Input name="description" label="Beskrivelse" />
+          <TaskForm.Input name="name" label="Navn" />
           {/* <TaskForm.Input name="status_id" label="Status" /> */}
           <TaskForm.Input
             name="due_date"
@@ -50,6 +48,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             placeholder="Sæt forfaldsdato"
           />
           <TaskForm.AssignedTo />
+          <TaskForm.Input name="description" label="Beskrivelse" multiline rows={5} />
         </DialogContent>
         <DialogActions>
           <Button bttype="tertiary" onClick={closeModal}>

@@ -2,7 +2,6 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
 
 import Button from '~/components/Button';
-import FormInput from '~/components/FormInput';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {Notification} from '~/hooks/query/useNotificationOverview';
 
@@ -48,9 +47,7 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
             minWidth: 400,
           }}
         >
-          <FormInput name="name" label="Navne" />
-          <TaskForm.Input name="description" label="Beskrivelse" />
-          {/* <TaskForm.Input name="status_id" label="Status" /> */}
+          <TaskForm.Input name="name" label="Navn" />
           <TaskForm.Input
             name="due_date"
             label="Due date"
@@ -58,6 +55,7 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
             placeholder="Sæt forfaldsdato"
           />
           <TaskForm.AssignedTo />
+          <TaskForm.Input name="description" label="Beskrivelse" multiline rows={5} />
         </DialogContent>
         <DialogActions>
           <Button bttype="tertiary" onClick={closeModal}>
