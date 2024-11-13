@@ -43,20 +43,11 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
 
   return (
     <Grid container key={taskChanges.id} flexDirection={'row'} spacing={1}>
-      <Grid item xs={'auto'}></Grid>
-      <Grid item xs={7} alignSelf={'center'}>
-        {dueDateComment(old_value, new_value, field_name, taskChanges)}
-        {/* <Typography whiteSpace={'pre-line'} variant="body2" sx={{wordWrap: 'break-word'}}>
-          <b>{`${taskChanges.initials} `}</b>
-          {old_value && old_value !== 'None' && new_value && new_value !== 'None'
-            ? `<b>${field_name}</b> ændret fra ${old_value_bold} til <b>${new_value}</b>`
-            : old_value && old_value !== 'None' && (!new_value || new_value === 'None')
-              ? `${field_name} er blevet sæt til at have ingen værdi`
-              : `${field_name} er blevet sæt til ${new_value}`}
-        </Typography> */}
+      <Grid item xs={9} alignSelf={'center'}>
+        {Comment(old_value, new_value, field_name, taskChanges)}
       </Grid>
       <Grid item xs={'auto'} alignSelf={'center'}>
-        <Box display={'flex'} flexDirection={'row'} justifySelf={'center'} gap={1}>
+        <Box display={'flex'} flexDirection={'row'} justifySelf={'end'} gap={1}>
           <Typography variant="body2">
             {moment(taskChanges.created_at).format('YYYY-MM-DD HH:mm')}
           </Typography>
@@ -66,18 +57,22 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
   );
 };
 
-const dueDateComment = (
+const Comment = (
   old_value: string | undefined,
   new_value: string | undefined,
   field_name: FieldsMap | undefined,
   taskChanges: TaskChanges
 ) => {
   let text = '';
-  if (old_value && old_value !== 'None' && new_value && new_value !== 'None')
-    text = `ændrede ${field_name} fra ${old_value} til ${new_value}`;
-  else if (old_value && old_value !== 'None' && (!new_value || new_value === 'None'))
-    text = `har fjernet værdien ${old_value} fra ${field_name} feltet`;
-  else text = `har givet ${field_name} værdien '${new_value}'`;
+  if (taskChanges.field_name !== 'description') {
+    if (old_value && old_value !== 'None' && new_value && new_value !== 'None')
+      text = `ændrede ${field_name} fra ${old_value} til ${new_value}`;
+    else if (old_value && old_value !== 'None' && (!new_value || new_value === 'None'))
+      text = `har fjernet værdien ${old_value} fra ${field_name} feltet`;
+    else text = `har givet ${field_name} værdien ${new_value}`;
+  } else {
+    text = `opdaterede ${field_name}`;
+  }
 
   return (
     <Typography whiteSpace={'pre-line'} variant="body2" sx={{wordWrap: 'break-word'}}>
