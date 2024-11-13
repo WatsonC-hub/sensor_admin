@@ -12,6 +12,7 @@ import {calculateContentHeight} from '~/consts';
 import {useTasks} from '../api/useTasks';
 import {useTaskStore} from '../store';
 import {Task} from '../types';
+
 moment.locale('da');
 const DragAndDropCalendar = withDragAndDrop<Task, object>(Calendar);
 const localizer = momentLocalizer(moment);
@@ -25,6 +26,7 @@ export default function TaskCalendar() {
     patch.mutate({
       path: event.id,
       data: {
+        ts_id: event.ts_id,
         due_date: moment(start).format('YYYY-MM-DD'),
       },
     });
@@ -35,23 +37,12 @@ export default function TaskCalendar() {
       time: ({event}: {event?: Task}) => {
         return (
           <div>
-            <div>{event?.assigned_last_name}</div>
+            <div>{event?.assigned_display_name}</div>
           </div>
         );
       },
     },
   };
-
-  //   const resizeEvent = useCallback(
-  //     ({event, start, end}) => {
-  //       setMyEvents((prev) => {
-  //         const existing = prev.find((ev) => ev.id === event.id) ?? {};
-  //         const filtered = prev.filter((ev) => ev.id !== event.id);
-  //         return [...filtered, {...existing, start, end}];
-  //       });
-  //     },
-  //     [setMyEvents]
-  //   );
 
   return (
     <DragAndDropCalendar

@@ -19,7 +19,6 @@ const TaskMap = () => {
   // ]);
   const {shownTasks, hiddenTasks, setSelectedTask, setShownMapTaskIds} = useTaskStore();
 
-  console.log(shownTasks);
   const {
     map,
     layers: {markerLayer},
@@ -43,7 +42,6 @@ const TaskMap = () => {
           )
         );
         setShownMapTaskIds(Array.from(ids));
-        console.log(ids);
       });
     }
   }, [map]);
@@ -66,20 +64,15 @@ const TaskMap = () => {
         }
       });
       shownTasks.forEach((task) => {
-        console.log(task);
-        if (task.latitude && task.longitude) {
-          console.log([task.latitude, task.longitude]);
-
-          L.circleMarker([task.latitude, task.longitude], {
-            ...defaultCircleMarkerStyle,
-            // radius: 5,
-            title: task.name,
-            fillColor: 'blue',
-            data: task,
-          })
-            .addTo(markerLayer)
-            .bindPopup(task.name);
-        }
+        L.circleMarker([task.latitude, task.longitude], {
+          ...defaultCircleMarkerStyle,
+          // radius: 5,
+          title: task.name,
+          fillColor: 'blue',
+          data: task,
+        })
+          .addTo(markerLayer)
+          .bindPopup(task.name);
       });
     }
   }, [shownTasks, markerLayer, hiddenTasks]);

@@ -93,7 +93,7 @@ export const useTasks = () => {
       toast.success('Opgaver gemt');
     },
   });
-  const patch = useMutation<PatchTask, APIError, Mutation<PatchTask>>({
+  const patch = useMutation<unknown, APIError, Mutation<PatchTask>>({
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
@@ -103,6 +103,13 @@ export const useTasks = () => {
         previous?.map((task) => {
           if (task.id === path) {
             const updated = {...task, ...data};
+            if ('assigned_to' in data) {
+              const display_name = previous.find(
+                (task) => task.assigned_to === data.assigned_to && task.assigned_display_name
+              )?.assigned_display_name;
+              updated.assigned_display_name = display_name ?? '';
+            }
+
             return updated;
           }
           return task;
@@ -110,8 +117,23 @@ export const useTasks = () => {
       );
       return {previous};
     },
-    onSuccess: () => {
-      toast.success('Opgaver ændret');
+    onSuccess: (_, variables) => {
+      const {path, data} = variables;
+      const previous = queryClient.getQueryData<Task[]>(['tasks']);
+      if ('assigned_to' in data) {
+        const display_name = previous?.find(
+          (task) => task.assigned_to === data.assigned_to && task.assigned_display_name
+        )?.assigned_display_name;
+        if (!display_name) {
+          queryClient.invalidateQueries({
+            queryKey: ['tasks'],
+          });
+        }
+      }
+      queryClient.invalidateQueries({
+        queryKey: ['taskComments', path],
+      });
+      // toast.success('Opgaver ændret');
     },
     onError: (e) => {
       console.log(e);

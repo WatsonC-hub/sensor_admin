@@ -27,10 +27,10 @@ export type Task = {
   due_date: string;
   due_date_type: string;
   assigned_to: string | null;
-  assigned_last_name: string | null;
+  assigned_display_name: string | null;
   blocks_notifications: number[];
   created_by: string;
-  created_last_name: string;
+  created_display_name: string;
   created_at: string;
   updated_at: string;
 };
