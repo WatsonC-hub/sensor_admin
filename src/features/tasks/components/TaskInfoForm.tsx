@@ -14,7 +14,12 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const {patch} = useTasks();
-  const {trigger, getValues} = useFormContext();
+  const {
+    trigger,
+    getValues,
+    formState: {dirtyFields},
+    resetField,
+  } = useFormContext();
 
   const handleBlurSubmit = (values: Partial<FieldValues>) => {
     const payload = {
@@ -27,8 +32,17 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const onBlur = async (field_name: keyof FieldValues) => {
     const validated = await trigger(field_name);
     let field_value = getValues(field_name);
-    if (field_name === 'due_date') field_value = moment(field_value);
-    if (validated) handleBlurSubmit({[field_name]: field_value});
+
+    const isDirty = dirtyFields[field_name];
+
+    if (field_name === 'due_date')
+      field_value = field_value == '' ? null : moment(field_value).toISOString();
+    if (validated && isDirty) {
+      handleBlurSubmit({[field_name]: field_value});
+      resetField(field_name, {
+        defaultValue: field_value,
+      });
+    }
   };
 
   return (
@@ -67,10 +81,12 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             }}
           />
         </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
+        <Grid item mobile={12} tablet={12} laptop={12}>
           <TaskForm.Input
             label="Beskrivelse"
             name="description"
+            multiline={true}
+            rows={5}
             placeholder="Indtæst opgavebeskrivelse..."
             onBlurCallback={async () => await onBlur('description')}
           />
