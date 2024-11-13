@@ -2,24 +2,59 @@ import {Grid, Typography, Box} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 
-import {TaskChanges} from '../types';
+import {TaskChanges, TaskStatus, TaskUser} from '../types';
 
 type Props = {
   taskChanges: TaskChanges;
+  taskUsers: Array<TaskUser> | undefined;
+  taskStatus: Array<TaskStatus> | undefined;
 };
 
-const TaskInfoChanges = ({taskChanges}: Props) => {
+enum FieldsMap {
+  'name' = 'Navn',
+  'status_id' = 'Status',
+  'due_date' = 'Dato',
+  'assigned_to' = 'Ansvarlig',
+  'description' = 'Beskrivelse',
+}
+
+const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
+  let old_value: string | undefined = taskChanges.old_value;
+  let new_value: string | undefined = taskChanges.new_value;
+  const field_name = Object.entries(FieldsMap).find(
+    (value) => value[0] === taskChanges.field_name
+  )?.[1];
+  console.log(field_name);
+  if (taskChanges.field_name === 'due_date') {
+    if (old_value) old_value = moment(old_value).format('YYYY-MM-DD HH:mm');
+    if (new_value) new_value = moment(new_value).format('YYYY-MM-DD HH:mm');
+  }
+
+  if (taskChanges.field_name === 'assigned_to') {
+    if (old_value) old_value = taskUsers?.find((user) => user.id === taskChanges.old_value)?.email;
+    if (new_value) new_value = taskUsers?.find((user) => user.id === taskChanges.new_value)?.email;
+  }
+
+  if (taskChanges.field_name === 'status_id') {
+    if (old_value)
+      old_value = taskStatus?.find((status) => status.id === parseInt(taskChanges.old_value))?.name;
+    if (new_value)
+      new_value = taskStatus?.find((status) => status.id === parseInt(taskChanges.new_value))?.name;
+  }
+
   return (
     <Grid container key={taskChanges.id} flexDirection={'row'} spacing={1}>
-      <Grid item xs={'auto'}>
-        <Typography variant="body2">{`${taskChanges.initials}: `}</Typography>
-      </Grid>
+      <Grid item xs={'auto'}></Grid>
       <Grid item xs={7} alignSelf={'center'}>
-        <Typography
-          whiteSpace={'pre-line'}
-          variant="body2"
-          sx={{wordWrap: 'break-word'}}
-        >{`${taskChanges.field_name} ændret fra ${taskChanges.old_value} til ${taskChanges.new_value}`}</Typography>
+        {dueDateComment(old_value, new_value, field_name, taskChanges)}
+        {/* <Typography whiteSpace={'pre-line'} variant="body2" sx={{wordWrap: 'break-word'}}>
+          <b>{`${taskChanges.initials} `}</b>
+          {old_value && old_value !== 'None' && new_value && new_value !== 'None'
+            ? `<b>${field_name}</b> ændret fra ${old_value_bold} til <b>${new_value}</b>`
+            : old_value && old_value !== 'None' && (!new_value || new_value === 'None')
+              ? `${field_name} er blevet sæt til at have ingen værdi`
+              : `${field_name} er blevet sæt til ${new_value}`}
+        </Typography> */}
       </Grid>
       <Grid item xs={'auto'} alignSelf={'center'}>
         <Box display={'flex'} flexDirection={'row'} justifySelf={'center'} gap={1}>
@@ -29,6 +64,26 @@ const TaskInfoChanges = ({taskChanges}: Props) => {
         </Box>
       </Grid>
     </Grid>
+  );
+};
+
+const dueDateComment = (
+  old_value: string | undefined,
+  new_value: string | undefined,
+  field_name: FieldsMap | undefined,
+  taskChanges: TaskChanges
+) => {
+  let text = '';
+  if (old_value && old_value !== 'None' && new_value && new_value !== 'None')
+    text = `ændrede ${field_name} fra ${old_value} til ${new_value}`;
+  else if (old_value && old_value !== 'None' && (!new_value || new_value === 'None'))
+    text = `har fjernet værdien ${old_value} fra ${field_name} feltet`;
+  else text = `har givet ${field_name} værdien '${new_value}'`;
+
+  return (
+    <Typography whiteSpace={'pre-line'} variant="body2" sx={{wordWrap: 'break-word'}}>
+      <b>{taskChanges.initials} </b> {text}
+    </Typography>
   );
 };
 

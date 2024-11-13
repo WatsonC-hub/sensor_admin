@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
-import {type Task, type PatchTask, type DBTask} from '../types';
+import {type Task, type PatchTask, type DBTask, TaskUser, TaskStatus} from '../types';
 
 type Mutation<TData> = {
   path: string;
@@ -159,5 +159,32 @@ export const useTasks = () => {
     },
   });
 
-  return {get, post, patch, del, convertNotificationToTask, updateNotification};
+  const getUsers = useQuery<TaskUser[], APIError>({
+    queryKey: ['task_users'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_admin/tasks/task_users');
+
+      return data;
+    },
+  });
+
+  const getStatus = useQuery<TaskStatus[], APIError>({
+    queryKey: ['task_status'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_admin/tasks/status');
+
+      return data;
+    },
+  });
+
+  return {
+    get,
+    post,
+    patch,
+    del,
+    convertNotificationToTask,
+    updateNotification,
+    getUsers,
+    getStatus,
+  };
 };

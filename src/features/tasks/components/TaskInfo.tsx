@@ -23,7 +23,7 @@ const TaskInfo = () => {
             description: selectedTask.description,
             status_id: selectedTask.status_id,
             due_date: selectedTask.due_date,
-            assigned_to: selectedTask.assigned_to ?? '',
+            assigned_to: selectedTask.assigned_to,
             ts_id: selectedTask.ts_id,
           }}
         >

@@ -1,4 +1,5 @@
 import {Box, Grid} from '@mui/material';
+import moment from 'moment';
 import React from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 
@@ -25,7 +26,9 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
   const onBlur = async (field_name: keyof FieldValues) => {
     const validated = await trigger(field_name);
-    if (validated) handleBlurSubmit({[field_name]: getValues(field_name)});
+    let field_value = getValues(field_name);
+    if (field_name === 'due_date') field_value = moment(field_value);
+    if (validated) handleBlurSubmit({[field_name]: field_value});
   };
 
   return (
@@ -59,7 +62,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.AssignedTo
-            onSelect={async () => {
+            onBlur={async () => {
               await onBlur('assigned_to');
             }}
           />
@@ -69,7 +72,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             label="Beskrivelse"
             name="description"
             placeholder="Indtæst opgavebeskrivelse..."
-            onBlur={async () => await onBlur('description')}
+            onBlurCallback={async () => await onBlur('description')}
           />
         </Grid>
       </Grid>

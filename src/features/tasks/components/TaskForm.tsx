@@ -1,18 +1,16 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, MenuItem, Typography} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {z} from 'zod';
 
-import {apiClient} from '~/apiClient';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {APIError} from '~/queryClient';
 
-import {TaskStatus, TaskUser} from '../types';
+import {useTasks} from '../api/useTasks';
+import {TaskUser} from '../types';
 
 const zodSchema = z.object({
   name: z.string(),
@@ -20,7 +18,10 @@ const zodSchema = z.object({
   description: z.string(),
   status_id: z.number(),
   due_date: z.string().nullable(),
-  assigned_to: z.string().transform((value) => (value === null ? '' : value)),
+  assigned_to: z
+    .string()
+    .nullish()
+    .transform((value) => (value === '' ? null : value)),
 });
 
 export type FormValues = z.infer<typeof zodSchema>;
@@ -63,14 +64,9 @@ const Input = (props: FormInputProps<FormValues>) => {
 };
 
 const StatusSelect = (props: FormInputProps<FormValues>) => {
-  const {data: task_status} = useQuery<TaskStatus[], APIError>({
-    queryKey: ['task_status'],
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/status');
-
-      return data;
-    },
-  });
+  const {
+    getStatus: {data: task_status},
+  } = useTasks();
 
   return (
     <FormInput select placeholder="Vælg status..." fullWidth {...props}>
@@ -86,14 +82,9 @@ const StatusSelect = (props: FormInputProps<FormValues>) => {
 };
 
 const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
-  const {data: taskUsers} = useQuery<TaskUser[], APIError>({
-    queryKey: ['task_users'],
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/task_users');
-
-      return data;
-    },
-  });
+  const {
+    getUsers: {data: taskUsers},
+  } = useTasks();
   const {control} = useFormContext<FormValues>();
   return (
     <Controller
@@ -137,7 +128,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
             );
           }}
           textFieldsProps={{
-            label: 'Tildeles til',
+            label: 'Ansvarlig',
             placeholder: 'Vælg opgave ansvarlig',
           }}
         />

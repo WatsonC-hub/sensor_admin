@@ -1,6 +1,6 @@
 import {Box} from '@mui/material';
 import L from 'leaflet';
-import {LassoHandlerFinishedEvent} from 'leaflet-lasso';
+import {LassoControl, LassoHandlerFinishedEvent} from 'leaflet-lasso';
 import React, {useEffect} from 'react';
 
 import {calculateContentHeight} from '~/consts';
@@ -19,6 +19,7 @@ const TaskMap = () => {
   // ]);
   const {shownTasks, hiddenTasks, setSelectedTask, setShownMapTaskIds} = useTaskStore();
 
+  console.log(shownTasks);
   const {
     map,
     layers: {markerLayer},
@@ -33,11 +34,8 @@ const TaskMap = () => {
 
   useEffect(() => {
     if (map) {
-      L.control
-        .lasso({
-          position: 'topleft',
-        })
-        .addTo(map);
+      const lassoControl = new LassoControl({position: 'topleft'});
+      map.addControl(lassoControl);
       map.on('lasso.finished', (event) => {
         const ids = new Set(
           (event as LassoHandlerFinishedEvent).layers.map(
@@ -68,7 +66,10 @@ const TaskMap = () => {
         }
       });
       shownTasks.forEach((task) => {
+        console.log(task);
         if (task.latitude && task.longitude) {
+          console.log([task.latitude, task.longitude]);
+
           L.circleMarker([task.latitude, task.longitude], {
             ...defaultCircleMarkerStyle,
             // radius: 5,

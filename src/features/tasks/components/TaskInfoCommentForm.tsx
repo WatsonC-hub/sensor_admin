@@ -6,6 +6,7 @@ import {z} from 'zod';
 import FormInput from '~/components/FormInput';
 
 import {useTaskComments} from '../api/useTaskComments';
+import {useTasks} from '../api/useTasks';
 
 import TaskInfoChanges from './TaskInfoChanges';
 import TaskInfoComment from './TaskInfoComment';
@@ -33,6 +34,10 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
     get: {data: taskComments},
     post: postComment,
   } = useTaskComments(selectedTaskId);
+  const {
+    getUsers: {data: taskUsers},
+    getStatus: {data: taskStatus},
+  } = useTasks();
 
   const schemaData = taskCommentSchema.safeParse(initialValues);
 
@@ -65,7 +70,15 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
           {taskComments?.map((taskComment) => {
             if ('comment' in taskComment)
               return <TaskInfoComment key={taskComment.id} comment={taskComment} />;
-            else return <TaskInfoChanges key={taskComment.id} taskChanges={taskComment} />;
+            else
+              return (
+                <TaskInfoChanges
+                  key={taskComment.id}
+                  taskChanges={taskComment}
+                  taskUsers={taskUsers}
+                  taskStatus={taskStatus}
+                />
+              );
           })}
         </Box>
       </Grid>
