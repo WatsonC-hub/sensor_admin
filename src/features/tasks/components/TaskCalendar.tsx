@@ -14,7 +14,10 @@ import {useTaskStore} from '../store';
 import {Task} from '../types';
 
 moment.locale('da');
-const DragAndDropCalendar = withDragAndDrop<Task, object>(Calendar);
+
+type CalendarTask = Task & {due_date: string};
+
+const DragAndDropCalendar = withDragAndDrop<CalendarTask, object>(Calendar);
 const localizer = momentLocalizer(moment);
 
 export default function TaskCalendar() {
@@ -32,9 +35,9 @@ export default function TaskCalendar() {
     });
   };
 
-  const components: Components<Task> = {
+  const components: Components<CalendarTask> = {
     agenda: {
-      time: ({event}: {event?: Task}) => {
+      time: ({event}: {event?: CalendarTask}) => {
         return (
           <div>
             <div>{event?.assigned_display_name}</div>
@@ -44,13 +47,15 @@ export default function TaskCalendar() {
     },
   };
 
+  const calendarTasks = shownTasks.filter((task) => task.due_date) as CalendarTask[];
+
   return (
     <DragAndDropCalendar
       culture="da-DK"
       defaultDate={new Date()}
       defaultView={Views.MONTH}
       views={['month', 'day', 'agenda']}
-      events={shownTasks}
+      events={calendarTasks}
       localizer={localizer}
       onEventDrop={moveEvent}
       onDragStart={(event) => console.log('drag start', event)}

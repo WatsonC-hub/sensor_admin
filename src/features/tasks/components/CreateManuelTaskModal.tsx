@@ -1,45 +1,37 @@
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
 import React from 'react';
+import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useTasks} from '~/features/tasks/api/useTasks';
-import {Notification} from '~/hooks/query/useNotificationOverview';
 
 import TaskForm, {FormValues} from './TaskForm';
 
 interface Props {
   open: boolean;
   closeModal: () => void;
-  notification: Notification;
 }
 
-const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
-  const {convertNotificationToTask} = useTasks();
+const CreateManuelTaskModal = ({open, closeModal}: Props) => {
+  const params = useParams();
 
-  const onSubmit = (data: FormValues) => {
+  const {post: createTask} = useTasks();
+
+  const submitTask = async (values: FormValues) => {
+    if (params.ts_id === undefined) return;
     const submit = {
-      ...data,
-      notification_id: notification.notification_id,
-      ts_id: notification.ts_id,
+      ...values,
+      ts_id: parseInt(params.ts_id),
     };
-    convertNotificationToTask.mutate(submit, {
-      onSuccess: () => {
-        closeModal();
-      },
-    });
+    createTask.mutate(submit);
+    closeModal();
   };
 
   return (
     <Dialog open={open} onClose={closeModal}>
-      <DialogTitle>Lav til opgave</DialogTitle>
-
-      <TaskForm
-        onSubmit={onSubmit}
-        defaultValues={{
-          name: notification.opgave ?? '',
-        }}
-      >
+      <DialogTitle>Registrer opgave</DialogTitle>
+      <TaskForm onSubmit={submitTask} defaultValues={{}}>
         <DialogContent
           sx={{
             display: 'flex',
@@ -70,4 +62,4 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
   );
 };
 
-export default ConvertTaskModal;
+export default CreateManuelTaskModal;

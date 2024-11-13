@@ -13,6 +13,7 @@ export const useNavigationFunctions = () => {
     admin: () => navigate('/admin'),
     adminNotifikationer: () => navigate('/admin/notifikationer'),
     adminKvalitetssikring: (ts_id: number) => navigate('/admin/kvalitetssikring/' + ts_id),
+    tasks: () => navigate('/admin/opgaver'),
   };
 
   const fieldFunctions = {

@@ -24,7 +24,6 @@ const TaskInfo = () => {
             status_id: selectedTask.status_id,
             due_date: selectedTask.due_date,
             assigned_to: selectedTask.assigned_to,
-            ts_id: selectedTask.ts_id,
           }}
         >
           <TaskInfoForm selectedTask={selectedTask} />

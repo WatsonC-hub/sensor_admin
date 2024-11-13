@@ -13,11 +13,13 @@ import {useTasks} from '../api/useTasks';
 import {TaskUser} from '../types';
 
 const zodSchema = z.object({
-  name: z.string(),
-  ts_id: z.number(),
-  description: z.string(),
-  status_id: z.number(),
-  due_date: z.string().nullable(),
+  name: z
+    .string({required_error: 'Navn skal være angivet'})
+    .min(16, 'Navn skal være mindst 16 tegn')
+    .max(255, 'Navn må maks være 255 tegn'),
+  description: z.string().nullish(),
+  status_id: z.number().optional(),
+  due_date: z.string().nullish(),
   assigned_to: z
     .string()
     .nullish()
@@ -105,12 +107,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
               onChange(option.id);
             }
           }}
-          selectValue={
-            taskUsers?.find((item) => item.id === value) ?? {
-              id: '-1',
-              email: '',
-            }
-          }
+          selectValue={taskUsers?.find((item) => item.id === value) ?? null}
           filterOptions={(options, params) => {
             const {inputValue} = params;
 

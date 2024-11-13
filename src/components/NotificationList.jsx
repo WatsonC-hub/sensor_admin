@@ -6,11 +6,12 @@ import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
 import {useParams} from 'react-router-dom';
 
-import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
-import {useTasks} from '~/features/tasks/api/useTasks';
 import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
+import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
+import {useTaskStore} from '~/features/tasks/store';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 
 // Mock data for notifications
@@ -21,9 +22,9 @@ const NotificationList = () => {
   const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
 
-  const {
-    get: {data: tasks},
-  } = useTasks();
+  const {setSelectedTask, activeTasks} = useTaskStore();
+  const {tasks: tasksNavigation} = useNavigationFunctions();
+
   const params = useParams();
 
   const {data, isPending} = useNotificationOverview();
@@ -79,7 +80,7 @@ const NotificationList = () => {
 
   const badgeColor = getColor(notifications[maxFlagIndex]);
 
-  const tasksOnStation = tasks?.filter((task) => task.loc_id == loc_id);
+  const tasksOnStation = activeTasks?.filter((task) => task.loc_id == loc_id);
 
   return (
     <div>
@@ -192,18 +193,18 @@ const NotificationList = () => {
                 <Assignment />
               </ListItemIcon>
               <ListItemText primary={task.name} secondary={task.created_at.slice(0, 10)} />
-              {/* <IconButton
+              <IconButton
                 sx={{
                   pointerEvents: 'auto',
                 }}
                 aria-label="Edit task"
                 onClick={() => {
-                  setSelectedNotification(task);
-                  openUpdateModal();
+                  setSelectedTask(task.id);
+                  tasksNavigation();
                 }}
               >
                 <Edit />
-              </IconButton> */}
+              </IconButton>
             </MenuItem>
           );
         })}

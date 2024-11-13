@@ -9,7 +9,7 @@ export type AutoCompleteFieldProps<T> = Omit<
   AutocompleteProps<T, false, false, false>,
   'renderInput'
 > & {
-  selectValue: T;
+  selectValue: T | null;
   onChange: (value: T | null) => void;
   labelKey: keyof T;
   options: T[];

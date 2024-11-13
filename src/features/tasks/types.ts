@@ -21,11 +21,11 @@ export type Task = {
   longitude: number;
   latitude: number;
   name: string;
-  description: string;
+  description: string | null;
   status_id: number;
   status_name: string;
-  due_date: string;
-  due_date_type: string;
+  status_category: 'unstarted' | 'started' | 'closed';
+  due_date: string | null;
   assigned_to: string | null;
   assigned_display_name: string | null;
   blocks_notifications: number[];
@@ -39,21 +39,16 @@ export type DBTask = {
   id: number;
   ts_id: number;
   name: string;
-  description: string;
+  description: string | null;
   status_id: number;
-  due_date: string;
-  due_date_type: string;
+  due_date: string | null;
   assigned_to: string | null;
-  assigned_last_name: string | null;
   blocks_notifications: number[];
   created_by: string;
 };
 
 export type PatchTask = Partial<
-  Omit<
-    DBTask,
-    'id' | 'due_date_type' | 'blocks_notifications' | 'created_by' | 'assigned_last_name'
-  >
+  Omit<DBTask, 'id' | 'due_date_type' | 'blocks_notifications' | 'created_by'>
 >;
 
 export type PostTask = Omit<DBTask, 'id'>;

@@ -4,14 +4,14 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
-import {type Task, type PatchTask, type DBTask, TaskUser, TaskStatus} from '../types';
+import type {Task, PatchTask, TaskUser, TaskStatus} from '../types';
 
 type Mutation<TData> = {
   path: string;
   data: TData;
 };
 
-type UpdateTask = {
+type UpdateNotification = {
   ts_id: number;
   notification_id?: number;
   status?: string | null | undefined;
@@ -22,18 +22,17 @@ type UpdateTask = {
 type TaskConvert = {
   ts_id: number;
   name: string;
-  description?: string;
-  status_id: number;
-  due_date: string | null;
-  assigned_to: string | null;
+  description?: string | null;
+  status_id?: number | null;
+  due_date?: string | null;
+  assigned_to?: string | null;
   notification_id: number;
 };
 
 export const tasksPostOptions = {
   mutationKey: ['tasks_post'],
-  mutationFn: async (mutation_data: Mutation<DBTask>) => {
-    const {data} = mutation_data;
-    const {data: result} = await apiClient.post(`/`, data);
+  mutationFn: async (mutation_data: PatchTask) => {
+    const {data: result} = await apiClient.post(`/sensor_admin/tasks/`, mutation_data);
     return result;
   },
 };
@@ -65,8 +64,8 @@ export const convertNotificationToTaskOptions = {
 
 export const notificationUpdateStatus = {
   mutationKey: ['notification_update'],
-  mutationFn: async (data: UpdateTask[]) => {
-    const {data: res} = await apiClient.put<UpdateTask>(
+  mutationFn: async (data: UpdateNotification[]) => {
+    const {data: res} = await apiClient.post<UpdateNotification>(
       `/sensor_admin/overblik/update_status`,
       data
     );
@@ -84,7 +83,7 @@ export const useTasks = () => {
     },
     initialData: [],
   });
-  const post = useMutation<unknown, APIError, Mutation<DBTask>>({
+  const post = useMutation<unknown, APIError, PatchTask>({
     ...tasksPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({

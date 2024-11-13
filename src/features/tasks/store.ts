@@ -75,9 +75,15 @@ export const useTaskStore = () => {
     };
   }, [tasks, selectedTaskId]);
 
+  const activeTasks = useMemo(() => {
+    console.log('newtasks');
+    return tasks.filter((task) => task.status_category != 'closed');
+  }, [tasks]);
+
   return {
     tasks,
     shownTasks,
+    activeTasks,
     hiddenTasks,
     selectedTask,
     setSelectedTask,
