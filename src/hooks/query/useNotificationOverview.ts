@@ -79,6 +79,17 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
   return query;
 };
 
+export const useLocationNotificationOverview = (loc_id: number) => {
+  return useQuery<Notification[]>({
+    queryKey: ['overblik', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/overblik/${loc_id}`);
+      return data;
+    },
+    staleTime: 10,
+  });
+};
+
 export const useNotificationOverviewMap = (
   options?: NotificationOverviewOptions
 ): UseQueryResult<NotificationMap[], Error> => {

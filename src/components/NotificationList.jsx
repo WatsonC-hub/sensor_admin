@@ -10,7 +10,10 @@ import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
 import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
 import {useTaskStore} from '~/features/tasks/store';
-import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import {
+  useLocationNotificationOverview,
+  useNotificationOverview,
+} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 
@@ -27,7 +30,9 @@ const NotificationList = () => {
 
   const params = useParams();
 
-  const {data, isPending} = useNotificationOverview();
+  // const {data, isPending} = useNotificationOverview();
+
+  const {data, isPending} = useLocationNotificationOverview(params.locid);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -60,9 +65,8 @@ const NotificationList = () => {
     loc_id = data?.filter((elem) => elem.ts_id == params.ts_id)[0]?.loc_id;
   }
 
-  const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
   const grouped = groupBy(
-    onstation?.filter((elem) => elem.notification_id != 0),
+    data?.filter((elem) => elem.notification_id != 0),
     'notification_id'
   );
 
