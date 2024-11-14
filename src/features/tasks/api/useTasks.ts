@@ -27,6 +27,7 @@ type TaskConvert = {
   due_date?: string | null;
   assigned_to?: string | null;
   notification_id: number;
+  blockall?: boolean;
 };
 
 export const tasksPostOptions = {

@@ -21,6 +21,7 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
       ...data,
       notification_id: notification.notification_id,
       ts_id: notification.ts_id,
+      blockall: data.blocks_notifications === 'all',
     };
     convertNotificationToTask.mutate(submit, {
       onSuccess: () => {
@@ -37,6 +38,7 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
         onSubmit={onSubmit}
         defaultValues={{
           name: notification.opgave ?? '',
+          blocks_notifications: [notification.notification_id],
         }}
       >
         <DialogContent
@@ -56,6 +58,7 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
           />
           <TaskForm.AssignedTo />
           <TaskForm.Input name="description" label="Beskrivelse" multiline rows={5} />
+          <TaskForm.BlockNotifications notification_id={notification.notification_id} />
         </DialogContent>
         <DialogActions>
           <Button bttype="tertiary" onClick={closeModal}>
