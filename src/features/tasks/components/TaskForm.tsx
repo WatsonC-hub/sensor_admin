@@ -1,6 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, FormControlLabel, MenuItem, Switch, Typography} from '@mui/material';
+import moment from 'moment';
 import React from 'react';
 import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {z} from 'zod';
@@ -65,6 +66,21 @@ const TaskSubmitButton = () => {
 
 const Input = (props: FormInputProps<FormValues>) => {
   return <FormInput {...props} />;
+};
+
+const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  return (
+    <FormInput
+      name="due_date"
+      label="Due date"
+      type="datetime-local"
+      placeholder="Sæt forfaldsdato"
+      transform={(value) => {
+        return moment(value.target.value).toISOString();
+      }}
+      {...props}
+    />
+  );
 };
 
 const StatusSelect = (props: FormInputProps<FormValues>) => {
@@ -189,5 +205,6 @@ TaskForm.Input = Input;
 TaskForm.StatusSelect = StatusSelect;
 TaskForm.AssignedTo = AssignedTo;
 TaskForm.BlockNotifications = BlockNotifications;
+TaskForm.DueDate = DueDate;
 
 export default TaskForm;

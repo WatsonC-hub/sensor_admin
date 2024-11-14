@@ -24,7 +24,6 @@ export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
   useEffect(() => {
     if (pollData === 200) {
       setRefetchInterval(false);
-      queryClient.invalidateQueries({queryKey: [queryKey, ts_id]});
       toast.update(TOAST_ID, {
         render: 'Genberegnet',
         type: 'success',
@@ -36,6 +35,7 @@ export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
         hideProgressBar: false,
       });
     }
+    queryClient.invalidateQueries({queryKey: [queryKey, ts_id]});
   }, [pollData, queryKey, queryClient, ts_id, dataUpdatedAt]);
 
   const correctMutation = useMutation({

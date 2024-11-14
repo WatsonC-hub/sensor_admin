@@ -41,12 +41,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
         >
           <TaskForm.Input name="name" label="Navn" />
           {/* <TaskForm.Input name="status_id" label="Status" /> */}
-          <TaskForm.Input
-            name="due_date"
-            label="Due date"
-            type="datetime-local"
-            placeholder="Sæt forfaldsdato"
-          />
+          <TaskForm.DueDate />
           <TaskForm.AssignedTo />
           <TaskForm.Input name="description" label="Beskrivelse" multiline rows={5} />
         </DialogContent>
