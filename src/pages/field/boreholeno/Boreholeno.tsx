@@ -231,15 +231,15 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
 
   const handleEdit = (type: string) => {
     if (type === 'watlevmp') {
-      setShowForm(true); // update to use state machine¨
       return (data: MaalepunktTableData) => {
+        setShowForm(true); // update to use state machine¨
         data.startdate = moment(data.startdate).format('YYYY-MM-DDTHH:mm');
         data.enddate = moment(data.enddate).format('YYYY-MM-DDTHH:mm');
         setMpData(data); // Fill form data on Edit
       };
     } else {
-      setShowForm(true);
       return (data: Kontrol) => {
+        setShowForm(true);
         data.timeofmeas = moment(data.timeofmeas).format('YYYY-MM-DDTHH:mm');
         setPejlingData(data); // Fill form data on Edit
       };
@@ -393,7 +393,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <MaalepunktTable
               watlevmp={watlevmp}
-              handleEdit={() => handleEdit('watlevmp')}
+              handleEdit={handleEdit}
               handleDelete={handleDelete('watlevmp')}
             />
             <FabWrapper
@@ -413,7 +413,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <PejlingMeasurements
               measurements={measurements}
-              handleEdit={() => handleEdit('pejling')}
+              handleEdit={handleEdit}
               handleDelete={handleDelete('pejling')}
             />
             <FabWrapper

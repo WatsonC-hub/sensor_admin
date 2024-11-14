@@ -22,7 +22,7 @@ import {Kontrol} from '~/types';
 
 interface Props {
   data: Kontrol[];
-  handleEdit: (kontrol: Kontrol) => void;
+  handleEdit: (type: string) => (kontrol: Kontrol) => void;
   handleDelete: (gid: number) => void;
 }
 
@@ -74,7 +74,7 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
             <Box marginLeft={'auto'}>
               <RenderActions
                 handleEdit={() => {
-                  handleEdit(row.original);
+                  handleEdit('pejling')(row.original);
                 }}
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
