@@ -18,7 +18,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     trigger,
     getValues,
     formState: {dirtyFields},
-    resetField,
   } = useFormContext();
 
   const handleBlurSubmit = (values: Partial<FieldValues>) => {
@@ -39,9 +38,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
       field_value = field_value == '' ? null : moment(field_value).toISOString();
     if (validated && isDirty) {
       handleBlurSubmit({[field_name]: field_value});
-      resetField(field_name, {
-        defaultValue: field_value,
-      });
     }
   };
 
@@ -57,8 +53,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.StatusSelect
-            name="status_id"
-            label="Status"
             onBlurCallback={async () => await onBlur('status_id')}
             sx={{
               mb: 2,

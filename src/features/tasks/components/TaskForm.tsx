@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, MenuItem, Typography} from '@mui/material';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {z} from 'zod';
 
@@ -16,7 +16,8 @@ const zodSchema = z.object({
   name: z
     .string({required_error: 'Navn skal være angivet'})
     .min(16, 'Navn skal være mindst 16 tegn')
-    .max(255, 'Navn må maks være 255 tegn'),
+    .max(255, 'Navn må maks være 255 tegn')
+    .optional(),
   description: z.string().nullish(),
   status_id: z.number().optional(),
   due_date: z.string().nullish(),
@@ -42,6 +43,10 @@ const TaskForm = ({onSubmit, onError, children, defaultValues}: Props) => {
     resolver: zodResolver(zodSchema),
     defaultValues: defaultValues,
   });
+  const {reset} = formMethods;
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
   return (
     <TaskFormContext.Provider value={{onSubmit, onError}}>
       <FormProvider {...formMethods}>{children}</FormProvider>
@@ -65,13 +70,20 @@ const Input = (props: FormInputProps<FormValues>) => {
   return <FormInput {...props} />;
 };
 
-const StatusSelect = (props: FormInputProps<FormValues>) => {
+const StatusSelect = (props: Partial<FormInputProps<FormValues>>) => {
   const {
     getStatus: {data: task_status},
   } = useTasks();
 
   return (
-    <FormInput select placeholder="Vælg status..." fullWidth {...props}>
+    <FormInput
+      name="status_id"
+      label="Status"
+      select
+      placeholder="Vælg status..."
+      fullWidth
+      {...props}
+    >
       {task_status?.map((status) => {
         return (
           <MenuItem key={status.id} value={status.id}>

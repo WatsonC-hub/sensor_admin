@@ -90,6 +90,7 @@ const LatestMeasurementTable = ({
       ...MRT_Localization_DA,
       noRecordsToDisplay: errorMessage ?? MRT_Localization_DA.noRecordsToDisplay,
     },
+    enableFullScreenToggle: false,
     positionExpandColumn: 'last',
     positionActionsColumn: 'last',
     enableRowActions: true,

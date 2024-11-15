@@ -78,6 +78,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {
     localization: {noRecordsToDisplay: 'Ingen målepunkter at vise'},
+    enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions

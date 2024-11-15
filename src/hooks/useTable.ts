@@ -40,7 +40,10 @@ const getOptions = <TData extends MRT_RowData>(
       animation: 'wave',
     },
     paginationDisplayMode: 'pages',
-    muiTablePaperProps: {
+    muiTablePaperProps: ({table}) => ({
+      style: {
+        zIndex: table.getState().isFullScreen ? 1200 : undefined,
+      },
       sx: {
         width: '100%',
         flex: '1 1 0',
@@ -50,7 +53,7 @@ const getOptions = <TData extends MRT_RowData>(
         zIndex: 0,
         borderRadius: 4,
       },
-    },
+    }),
     muiSearchTextFieldProps: {
       sx: {
         '& .MuiOutlinedInput-root': {
