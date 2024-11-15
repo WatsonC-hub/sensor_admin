@@ -30,12 +30,10 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
   const onBlur = async (field_name: keyof FieldValues) => {
     const validated = await trigger(field_name);
-    let field_value = getValues(field_name);
+    const field_value = getValues(field_name);
 
     const isDirty = dirtyFields[field_name];
 
-    if (field_name === 'due_date')
-      field_value = field_value == '' ? null : moment(field_value).toISOString();
     if (validated && isDirty) {
       handleBlurSubmit({[field_name]: field_value});
     }
@@ -60,13 +58,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Input
-            label={'dato'}
-            name="due_date"
-            type="datetime-local"
-            placeholder="Sæt forfaldsdato"
-            onBlurCallback={async () => await onBlur('due_date')}
-          />
+          <TaskForm.DueDate onBlurCallback={async () => await onBlur('due_date')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.AssignedTo
