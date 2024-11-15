@@ -9,7 +9,6 @@ import {z} from 'zod';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import FormToggleSwitch from '~/components/FormToggleSwitch';
 
 import {useTasks} from '../api/useTasks';
 import {TaskUser} from '../types';
@@ -87,7 +86,7 @@ const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   );
 };
 
-const StatusSelect = (props: FormInputProps<FormValues>) => {
+const StatusSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {
     getStatus: {data: task_status},
   } = useTasks();

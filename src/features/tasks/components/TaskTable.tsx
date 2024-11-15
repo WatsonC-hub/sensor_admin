@@ -68,7 +68,7 @@ const TaskTable = () => {
     });
   };
 
-  const [tableState, reset] = useStatefullTableAtom<Task>('taskTableState');
+  const [tableState] = useStatefullTableAtom<Task>('taskTableState');
 
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
     () =>
