@@ -1,5 +1,5 @@
 export const mapboxToken: string =
-  'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3ZxMDhmMGV3bDNzbHE1YTZneGFtMSJ9.-IVlITKrk0DjTghXVnlGiQ';
+  'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3cxbnFmMGYyNzN5bWpvb2Rjd2VuMyJ9.HSp-vSdF0i1uCSeUoCkwcA';
 
 export const boreholeColors: Record<
   number,
