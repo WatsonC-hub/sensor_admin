@@ -26,7 +26,6 @@ export const useGraphData = (ts_id: number, xRange: Array<string>) => {
     },
     placeholderData: (prev) => prev,
     enabled: ts_id !== null && ts_id !== undefined,
-    refetchOnWindowFocus: false,
   });
 
   return query;
