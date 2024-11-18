@@ -10,10 +10,7 @@ import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
 import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
 import {useTaskStore} from '~/features/tasks/store';
-import {
-  useLocationNotificationOverview,
-  useNotificationOverview,
-} from '~/hooks/query/useNotificationOverview';
+import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 

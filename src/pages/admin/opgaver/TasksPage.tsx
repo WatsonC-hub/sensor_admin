@@ -18,7 +18,8 @@ const TasksPage = () => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateColumns: 'auto 1fr',
+          gridTemplateRows: 'auto 1fr',
           height: `calc(100vh - ${appBarHeight} )`,
         }}
       >
@@ -27,6 +28,9 @@ const TasksPage = () => {
             gridColumn: '1',
             gridRow: '1 / span 2',
             border: '1px solid black',
+            resize: 'horizontal',
+            width: '50vw',
+            overflow: 'auto',
           }}
         >
           <TasksOverview />
@@ -37,6 +41,8 @@ const TasksPage = () => {
             gridRow: '1',
             height: 'fit-content',
             border: '1px solid black',
+            resize: 'vertical',
+            overflow: 'auto',
           }}
         >
           <TaskInfo />

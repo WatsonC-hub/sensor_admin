@@ -65,22 +65,31 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
 
   return (
     <Grid container>
-      <Grid item xs={12} mb={2} overflow={'auto'}>
-        <Box display={'flex'} flexDirection={'column'} maxHeight={500} gap={2}>
-          {taskComments?.map((taskComment) => {
-            if ('comment' in taskComment)
-              return <TaskInfoComment key={taskComment.id} comment={taskComment} />;
-            else
-              return (
-                <TaskInfoChanges
-                  key={taskComment.id}
-                  taskChanges={taskComment}
-                  taskUsers={taskUsers}
-                  taskStatus={taskStatus}
-                />
-              );
-          })}
-        </Box>
+      <Grid
+        item
+        xs={12}
+        mb={2}
+        height={'100%'}
+        display={'flex'}
+        flexDirection={'column'}
+        gap={2}
+        overflow={'scrollY'}
+      >
+        {/* <Box display={'flex'} flexDirection={'column'} gap={2}> */}
+        {taskComments?.map((taskComment) => {
+          if ('comment' in taskComment)
+            return <TaskInfoComment key={taskComment.id} comment={taskComment} />;
+          else
+            return (
+              <TaskInfoChanges
+                key={taskComment.id}
+                taskChanges={taskComment}
+                taskUsers={taskUsers}
+                taskStatus={taskStatus}
+              />
+            );
+        })}
+        {/* </Box> */}
       </Grid>
       <Grid item xs={12}>
         <FormProvider {...formMethods}>
