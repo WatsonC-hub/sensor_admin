@@ -89,5 +89,5 @@ export type TaskStatus = {
 
 export type TaskUser = {
   id: string;
-  email: string;
+  display_name: string;
 };

@@ -30,8 +30,10 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
   }
 
   if (taskChanges.field_name === 'assigned_to') {
-    if (old_value) old_value = taskUsers?.find((user) => user.id === taskChanges.old_value)?.email;
-    if (new_value) new_value = taskUsers?.find((user) => user.id === taskChanges.new_value)?.email;
+    if (old_value)
+      old_value = taskUsers?.find((user) => user.id === taskChanges.old_value)?.display_name;
+    if (new_value)
+      new_value = taskUsers?.find((user) => user.id === taskChanges.new_value)?.display_name;
   }
 
   if (taskChanges.field_name === 'status_id') {

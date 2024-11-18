@@ -124,7 +124,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
         <ExtendedAutocomplete<TaskUser>
           {...props}
           options={taskUsers ?? []}
-          labelKey="email"
+          labelKey="display_name"
           error={error?.message}
           onChange={(option) => {
             if (option == null) {
@@ -139,7 +139,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
           filterOptions={(options, params) => {
             const {inputValue} = params;
 
-            const filter = options.filter((option) => option.email?.includes(inputValue));
+            const filter = options.filter((option) => option.display_name?.includes(inputValue));
 
             return filter;
           }}
@@ -147,7 +147,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
             return (
               <li {...props} key={option.id}>
                 <Box display={'flex'} flexDirection={'row'} mx={2} gap={1}>
-                  <Typography variant="body2">{option.email}</Typography>
+                  <Typography variant="body2">{option.display_name}</Typography>
                 </Box>
               </li>
             );
