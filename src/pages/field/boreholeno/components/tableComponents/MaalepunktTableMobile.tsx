@@ -23,7 +23,7 @@ import {MaalepunktTableData} from '~/types';
 
 interface Props {
   data: MaalepunktTableData[];
-  handleEdit: (type: string) => (maalepunkt: MaalepunktTableData) => void;
+  handleEdit: (maalepunkt: MaalepunktTableData) => void;
   handleDelete: (gid: number) => void;
 }
 
@@ -74,7 +74,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
             <Box marginLeft={'auto'}>
               <RenderActions
                 handleEdit={() => {
-                  handleEdit('watlevmp')(row.original);
+                  handleEdit(row.original);
                 }}
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
