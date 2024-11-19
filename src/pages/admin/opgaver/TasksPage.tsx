@@ -9,6 +9,8 @@ import TaskItiniaries from '~/features/tasks/components/TaskItiniaries';
 import TasksOverview from '~/features/tasks/components/TasksOverview';
 import {useTaskStore} from '~/features/tasks/store';
 
+import '~/pages/admin/opgaver/TasksPage.css';
+
 const TasksPage = () => {
   // const store = useTaskStore();
 
@@ -24,6 +26,7 @@ const TasksPage = () => {
         }}
       >
         <Box
+          className="horizontal"
           sx={{
             gridColumn: '1',
             gridRow: '1 / span 2',
@@ -36,6 +39,7 @@ const TasksPage = () => {
           <TasksOverview />
         </Box>
         <Box
+          className="vertical"
           sx={{
             gridColumn: '2',
             gridRow: '1',
