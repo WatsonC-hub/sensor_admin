@@ -43,6 +43,7 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
         | 'showGlobalFilter'
         | 'sorting'
         | 'pagination'
+        | 'grouping'
     ) =>
       (state: any) => {
         setTableState((prev) => {
@@ -61,6 +62,7 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
       onColumnFiltersChange: stateChangeHandler('columnFilters'),
       onColumnVisibilityChange: stateChangeHandler('columnVisibility'),
       onDensityChange: stateChangeHandler('density'),
+      onGroupingChange: stateChangeHandler('grouping'),
       onGlobalFilterChange: stateChangeHandler('globalFilter'),
       onShowColumnFiltersChange: stateChangeHandler('showColumnFilters'),
       onShowGlobalFilterChange: stateChangeHandler('showGlobalFilter'),

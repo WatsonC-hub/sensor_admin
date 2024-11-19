@@ -3,7 +3,7 @@ import {Save} from '@mui/icons-material';
 import {Box, FormControlLabel, MenuItem, Switch, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {useEffect} from 'react';
-import {Controller, FormProvider, useForm, useFormContext} from 'react-hook-form';
+import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
 
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
@@ -32,13 +32,18 @@ const zodSchema = z.object({
 export type FormValues = z.infer<typeof zodSchema>;
 
 type Props = {
-  onSubmit: (data: FormValues) => void;
+  onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => void;
   onError?: () => void;
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
 };
 
-const TaskFormContext = React.createContext({} as Props);
+const TaskFormContext = React.createContext(
+  {} as {
+    onSubmit: (data: FormValues) => void;
+    onError?: () => void;
+  }
+);
 
 const TaskForm = ({onSubmit, onError, children, defaultValues}: Props) => {
   const formMethods = useForm<FormValues>({
@@ -49,8 +54,13 @@ const TaskForm = ({onSubmit, onError, children, defaultValues}: Props) => {
   useEffect(() => {
     reset(defaultValues);
   }, [defaultValues, reset]);
+
+  const innerSubmit = (data: FormValues) => {
+    onSubmit(data, formMethods);
+  };
+
   return (
-    <TaskFormContext.Provider value={{onSubmit, onError}}>
+    <TaskFormContext.Provider value={{onSubmit: innerSubmit, onError}}>
       <FormProvider {...formMethods}>{children}</FormProvider>
     </TaskFormContext.Provider>
   );

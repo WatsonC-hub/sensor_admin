@@ -1,17 +1,20 @@
 import {
   Box,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
-import {LocalizationProvider} from '@mui/x-date-pickers';
-import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
+import {Row, RowData} from '@tanstack/react-table';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
-import moment, {Moment} from 'moment';
+import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {UseFormReturn} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {calculateContentHeight} from '~/consts';
@@ -29,7 +32,18 @@ import TaskForm, {FormValues} from './TaskForm';
 
 const NOT_ASSIGNED = 'Ikke tildelt' as const;
 
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    rows: Row<TData>;
+    foo: string;
+    convert?: (value: TValue) => Record<string, TValue>;
+  }
+}
+
 const TaskTable = () => {
+  const [dueDateChecked, setDueDateChecked] = useState<boolean>(false);
+  const [assignedChecked, setAssignedChecked] = useState<boolean>(false);
+  const [statusChecked, setStatusChecked] = useState<boolean>(false);
   const {shownTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
   const {station} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
@@ -51,23 +65,44 @@ const TaskTable = () => {
     [patch]
   );
 
-  const onSubmit = (data: FormValues) => {
-    rows?.forEach((row) => {
-      if (row.id) {
-        const submit = {
-          path: row.id,
-          data: {
-            ...data,
-            ts_id: row.ts_id,
-          },
-        };
-        patch.mutate(submit, {
-          onSuccess: () => {
-            setOpen(false);
-          },
-        });
+  const onSubmit = (data: FormValues, formMethods?: UseFormReturn<FormValues>) => {
+    if (formMethods) {
+      let patchData = {};
+      if (!dueDateChecked && data.due_date) patchData = {due_date: data.due_date};
+      else if (dueDateChecked) {
+        patchData = {...patchData, due_date: null};
+        setDueDateChecked(!dueDateChecked);
       }
-    });
+      if (!assignedChecked && data.assigned_to)
+        patchData = {...patchData, assigned_to: data.assigned_to};
+      else if (assignedChecked) {
+        patchData = {...patchData, assigned_to: null};
+        setAssignedChecked(!assignedChecked);
+      }
+      if (!statusChecked && data.status_id) patchData = {...patchData, status_id: data.status_id};
+      else if (statusChecked) {
+        patchData = {...patchData, status_id: 1};
+        setStatusChecked(!statusChecked);
+      }
+
+      if (Object.keys(patchData).length > 0)
+        rows?.forEach((row) => {
+          if (row.id) {
+            const submit = {
+              path: row.id,
+              data: {
+                ...patchData,
+                ts_id: row.ts_id,
+              },
+            };
+            patch.mutate(submit, {
+              onSuccess: () => {
+                setOpen(false);
+              },
+            });
+          }
+        });
+    }
   };
 
   const tableData = useMemo(() => {
@@ -87,10 +122,10 @@ const TaskTable = () => {
         {
           header: 'Dato',
           id: 'due_date',
-          accessorFn: (row) => moment(row.due_date),
+          accessorFn: (row) => row.due_date,
           sortingFn: (a, b, columnId) => {
-            const aM: Moment = a.getValue(columnId);
-            const bM: Moment = b.getValue(columnId);
+            const aM = moment(a.getValue(columnId));
+            const bM = moment(b.getValue(columnId));
             if (!aM.isValid() && !bM.isValid()) {
               return 0;
             }
@@ -106,9 +141,47 @@ const TaskTable = () => {
             }
             return -1;
           },
-          filterVariant: 'datetime-range',
+          filterVariant: 'date-range',
           enableGlobalFilter: false,
-          filterFn: () => {},
+          filterFn: (row, id, filterValue) => {
+            const date = moment(row.getValue(id));
+            const startFilterDate = filterValue[0] ? moment(filterValue[0]) : null;
+            const endFilterDate = filterValue[1] ? moment(filterValue[1]) : null;
+
+            const filterNotSet = startFilterDate === null && endFilterDate === null;
+            if (filterNotSet) return true;
+
+            if (startFilterDate !== null && endFilterDate === null) {
+              return date.isAfter(startFilterDate);
+            }
+
+            if (startFilterDate === null && endFilterDate !== null) {
+              return date.isBefore(endFilterDate);
+            }
+
+            return date.isAfter(startFilterDate) && date.isBefore(endFilterDate);
+          },
+          Filter: ({column, rangeFilterIndex}) => {
+            const filters: Array<string | null> = column.getFilterValue() as string[];
+            return (
+              filters &&
+              filters.length > 0 &&
+              rangeFilterIndex != undefined && (
+                <TextField
+                  type="date"
+                  value={filters[rangeFilterIndex] ?? ''}
+                  onChange={(e) => {
+                    column.setFilterValue((prev: Array<string | null>) => {
+                      console.log('prev', prev);
+                      const update = [...prev];
+                      update[rangeFilterIndex] = e.target.value == '' ? null : e.target.value;
+                      return update;
+                    });
+                  }}
+                />
+              )
+            );
+          },
           muiTableHeadCellProps: {
             sx: {
               '& .MuiBox-root': {
@@ -119,35 +192,34 @@ const TaskTable = () => {
           Edit: ({row, cell}) => {
             return (
               <TextField
-                type="datetime-local"
-                defaultValue={moment(row.original.due_date).format('YYYY-MM-DDTHH:mm')}
+                type="date"
+                defaultValue={row.original.due_date ?? ''}
                 onBlur={(e) => {
                   const key = cell.column.id;
                   handleBlurSubmit(row.original.id, row.original.ts_id, {
-                    [key]: moment(e.target.value).toISOString(),
+                    [key]: e.target.value,
                   });
                 }}
               />
             );
           },
           enableEditing: true,
-          muiFilterDateTimePickerProps: {
-            format: 'YYYY-MM-DDTHH:mm',
-            ampm: false,
-            ampmInClock: false,
+          muiFilterDatePickerProps: {
+            format: 'YYYY-MM-DD',
             closeOnSelect: true,
           },
-          size: 150,
+          size: 175,
         },
         {
           accessorKey: 'name',
           header: 'Opgave',
           enableEditing: false,
+          size: 200,
         },
         {
           accessorKey: 'ts_id',
           header: 'TS_ID',
-          size: 30,
+          size: 150,
           enableEditing: false,
           Cell: ({row, renderedCellValue}) => (
             <Box
@@ -165,110 +237,33 @@ const TaskTable = () => {
           accessorFn: (row) => row.assigned_display_name,
           id: 'assigned_to',
           header: 'Ansvarlig',
+          size: 200,
           filterVariant: 'multi-select',
           editVariant: 'select',
           meta: {
-            convert: (value: string) => {
+            convert: (value) => {
               return {
                 assigned_to: taskUsers?.find((user) => user.display_name === value)?.id ?? null,
               };
             },
           },
-          editSelectOptions: taskUsers?.map((user) => user.display_name),
+          editSelectOptions: () => taskUsers?.map((user) => user.display_name),
           enableGlobalFilter: false,
-          // meta: {},
-          // editSelectOptions: taskUsers?.map((user) => ({label: user.email, value: user.id})),
-          // GroupedCell: ({cell, table}) => {
-          //   const filteredRows = table.getFilteredRowModel().rows;
-          //   const value =
-          //     cell.getValue() !== undefined
-          //       ? taskUsers?.find((user) => cell.getValue() === user.id)?.email
-          //       : 'Ikke tildelt';
-          //   return (
-          //     value +
-          //     ' (' +
-          //     filteredRows?.filter(
-          //       (row) =>
-          //         row.original.assigned_to === cell.getValue() ||
-          //         (cell.getValue() === undefined && row.original.assigned_to === null)
-          //     ).length +
-          //     ')'
-          //   );
-          // },
-          // filterFn: (row, id, filterValue) => {
-          //   if (filterValue.includes('Ikke tildelt')) {
-          //     filterValue = filterValue.concat([null]);
-          //   }
-          //   if (row.original.ts_id === 14373) {
-          //     console.log(row.columnFilters);
-          //   }
-          //   // return filterValue.length > 0
-          //   //   ? filterValue.includes(
-          //   //       taskUsers?.find((user) => user.id === row.getValue(id))?.email
-          //   //     ) ||
-          //   //       (filterValue.includes('Ikke tildelt') && row.original.assigned_to === null)
-          //   //   : true;
-          //   // return (
-          //   //   (row.original.assigned_to === null && filterValue.includes('Ikke tildelt')) ||
-          //   //   (row.columnFilters.assigned_to &&
-          //   //     row.columnFilters.status_id &&
-          //   //     !filterValue.includes('Ikke tildelt')) ||
-          //   //   true
-          //   // );
-          //   return filterValue.length > 0
-          //     ? filterValue.includes('Ikke tildelt') && row.original.assigned_to === null
-          //     : filterValue.includes(taskUsers?.find((user) => user.id === row.getValue(id))?.email)
-          //       ? true
-          //       : true;
-          //   // return (
-          //   //   (row.original.assigned_to === null && filterValue.includes('Ikke tildelt')) ||
-          //   //   row.columnFilters.assigned_to
-          //   // );
-          // },
         },
         {
-          accessorFn: (row) => row.status_name.toString(),
+          accessorFn: (row) => row.status_name,
           id: 'status_id',
           header: 'Status',
+          size: 200,
           enableGlobalFilter: false,
           filterVariant: 'multi-select',
           editVariant: 'select',
           meta: {
-            convert: (value: string) => ({
+            convert: (value) => ({
               status_id: taskStatus?.find((status) => status.name === value)?.id,
             }),
           },
           editSelectOptions: taskStatus?.map((status) => status.name),
-          // GroupedCell: ({cell, table}) => {
-          //   const filteredRows = table.getFilteredRowModel().rows;
-          //   return (
-          //     taskStatus?.find((status) => cell.getValue() === status.id.toString())?.name +
-          //     ' (' +
-          //     filteredRows?.filter((row) => row.original.status_id.toString() === cell.getValue())
-          //       .length +
-          //     ')'
-          //   );
-          // },
-          // filterFn: (row, id, filterValue) => {
-          //   // console.log(filterValue);
-          //   // console.log(row);
-          //   // const hasLength = filterValue.length > 0;
-          //   // const hasStatus = taskStatus?.find(
-          //   //   (status) => status.id.toString() === row.getValue(id)
-          //   // )?.name;
-          //   // const includesStatus = filterValue.includes(hasStatus);
-
-          //   // return (
-          //   //   (row.original.assigned_to === null && filterValue.includes('Ikke tildelt')) ||
-          //   //   (row.columnFilters.assigned_to &&
-          //   //     row.columnFilters.status_id &&
-          //   //     !filterValue.includes('Ikke tildelt')) ||
-          //   //   true
-          //   // );
-          //   return filterValue.length > 0 ? filterValue.includes(row.original.status_name) : true;
-          //   // return hasLength ? includesStatus : true;
-          //   // return row.columnFilters.assigned_to && row.columnFilters.status_id;
-          // },
         },
       ] as MRT_ColumnDef<Task>[],
     [taskStatus, taskUsers, handleBlurSubmit, station]
@@ -285,7 +280,10 @@ const TaskTable = () => {
     enableColumnOrdering: true,
     enableMultiRowSelection: true,
     enableRowSelection: true,
-    positionToolbarAlertBanner: 'bottom',
+    positionToolbarAlertBanner: 'top',
+    groupedColumnMode: 'remove',
+    enableColumnResizing: true,
+    positionExpandColumn: 'first',
     muiTableBodyCellProps: {
       sx: {
         padding: 1,
@@ -293,6 +291,33 @@ const TaskTable = () => {
           outline: '2px solid red',
           outlineOffset: '-2px',
         },
+      },
+    },
+    displayColumnDefOptions: {
+      'mrt-row-expand': {
+        GroupedCell: ({row, table}) => {
+          console.log(table.getState());
+          const grouping = table.getState().grouping;
+          console.log(grouping);
+          return grouping && grouping.length > 0
+            ? row.getValue(grouping[grouping.length - 1])
+            : undefined;
+        },
+        enableResizing: true,
+        muiTableBodyCellProps: ({row}) => ({
+          sx: (theme) => ({
+            color:
+              row.depth === 0
+                ? theme.palette.primary.main
+                : row.depth === 1
+                  ? theme.palette.secondary.main
+                  : undefined,
+          }),
+        }),
+        size:
+          tableState?.state?.grouping?.length && tableState?.state?.grouping?.length > 0
+            ? 200
+            : 100,
       },
     },
     renderTopToolbarCustomActions: ({table}) => {
@@ -374,7 +399,7 @@ const TaskTable = () => {
         const key = cell.column.id;
         const meta = column.columnDef.meta;
         if (meta?.convert) {
-          handleBlurSubmit(row.original.id, row.original.ts_id, meta.convert(cell.getValue()));
+          handleBlurSubmit(row.original.id, row.original.ts_id, meta.convert(row.getValue(key)));
         } else {
           handleBlurSubmit(row.original.id, row.original.ts_id, {[key]: cell.getValue()});
         }
@@ -387,69 +412,8 @@ const TaskTable = () => {
         },
       };
     },
-    // getFacetedUniqueValues: (table, columnId) => {
-    //   const uniqueValueMap = new Map<string, number>();
-    //   if (columnId === 'status_id') {
-    //     const filter = table.getState().columnFilters;
-    //     const coreRowModel = table.getCoreRowModel().rows;
-    //     taskStatus?.forEach((status) => {
-    //       if (coreRowModel.map((row) => row.original.status_id).includes(status.id))
-    //         uniqueValueMap.set(
-    //           status.name,
-    //           coreRowModel.filter(
-    //             (row) =>
-    //               row.original.status_id === status.id &&
-    //               filter.find(
-    //                 (filter) =>
-    //                   filter.id === 'assigned_to' &&
-    //                   ((filter.value as Array<string>).length === 0 ||
-    //                     (filter.value as Array<string>).includes(
-    //                       taskUsers?.find((user) => user.id === row.original.assigned_to)?.email ||
-    //                         'Ikke tildelt'
-    //                     ))
-    //               ) !== undefined
-    //           ).length
-    //         );
-    //     });
-    //   } else if (columnId === 'assigned_to') {
-    //     const filter = table.getState().columnFilters;
-    //     const coreRowModel = table.getCoreRowModel().rows;
-    //     if (coreRowModel.filter((row) => row.original.assigned_to === null).length > 0)
-    //       uniqueValueMap.set(
-    //         'Ikke tildelt',
-    //         coreRowModel.filter(
-    //           (row) =>
-    //             row.original.assigned_to === null &&
-    //             filter.find(
-    //               (filter) =>
-    //                 filter.id === 'status_id' &&
-    //                 ((filter.value as Array<string>).length === 0 ||
-    //                   (filter.value as Array<string>).includes(row.original.status_name))
-    //             ) !== undefined
-    //         ).length
-    //       );
-    //     taskUsers?.forEach((user) => {
-    //       if (coreRowModel.map((row) => row.original.assigned_to).includes(user.id))
-    //         uniqueValueMap.set(
-    //           user.email,
-    //           coreRowModel.filter(
-    //             (row) =>
-    //               row.original.assigned_to === user.id &&
-    //               filter.find(
-    //                 (filter) =>
-    //                   filter.id === 'status_id' &&
-    //                   ((filter.value as Array<string>).length === 0 ||
-    //                     (filter.value as Array<string>).includes(row.original.status_name))
-    //               ) !== undefined
-    //           ).length
-    //         );
-    //     });
-    //   }
-
-    //   return () => uniqueValueMap;
-    // },
   };
-
+  console.log('tableState', tableState);
   const table = useTable<Task>(
     columns,
     tableData,
@@ -458,8 +422,6 @@ const TaskTable = () => {
     TableTypes.TABLE,
     MergeType.RECURSIVEMERGE
   );
-
-  // const filteredIds = table.getFilteredRowModel().rows.map((row) => row.original.id);
 
   useEffect(() => {
     const globalFilter = table.getState().globalFilter;
@@ -487,7 +449,14 @@ const TaskTable = () => {
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Masse opdatere opgaver</DialogTitle>
 
-        <TaskForm onSubmit={onSubmit}>
+        <TaskForm
+          onSubmit={onSubmit}
+          defaultValues={{
+            assigned_to: null,
+            due_date: null,
+            status_id: undefined,
+          }}
+        >
           <DialogContent
             sx={{
               display: 'flex',
@@ -496,14 +465,54 @@ const TaskTable = () => {
               minWidth: 400,
             }}
           >
-            <TaskForm.Input
-              name="due_date"
-              label="Due date"
-              type="datetime-local"
-              placeholder="Sæt forfaldsdato"
-            />
-            <TaskForm.AssignedTo />
-            <TaskForm.StatusSelect />
+            <Box display={'flex'} flexDirection={'row'}>
+              <Tooltip title="Fjern dato fra valgte opgaver">
+                <FormControlLabel
+                  label=""
+                  control={
+                    <Checkbox
+                      checked={dueDateChecked}
+                      onChange={() => setDueDateChecked(!dueDateChecked)}
+                    />
+                  }
+                />
+              </Tooltip>
+              <TaskForm.Input
+                name="due_date"
+                label="Due date"
+                type="datetime-local"
+                placeholder="Sæt forfaldsdato"
+                disabled={dueDateChecked}
+              />
+            </Box>
+            <Box display={'flex'} flexDirection={'row'}>
+              <Tooltip title="Fjern tildelt fra valgte opgaver">
+                <FormControlLabel
+                  label=""
+                  control={
+                    <Checkbox
+                      checked={assignedChecked}
+                      onChange={() => setAssignedChecked(!assignedChecked)}
+                    />
+                  }
+                />
+              </Tooltip>
+              <TaskForm.AssignedTo disabled={assignedChecked} />
+            </Box>
+            <Box display={'flex'} flexDirection={'row'}>
+              <Tooltip title="Nulstil status fra valgte opgaver">
+                <FormControlLabel
+                  label=""
+                  control={
+                    <Checkbox
+                      checked={statusChecked}
+                      onChange={() => setStatusChecked(!statusChecked)}
+                    />
+                  }
+                />
+              </Tooltip>
+              <TaskForm.StatusSelect disabled={statusChecked} />
+            </Box>
           </DialogContent>
           <DialogActions>
             <Button bttype="tertiary" onClick={() => setOpen(false)}>
@@ -513,9 +522,7 @@ const TaskTable = () => {
           </DialogActions>
         </TaskForm>
       </Dialog>
-      <LocalizationProvider dateAdapter={AdapterMoment}>
-        <MaterialReactTable table={table} />
-      </LocalizationProvider>
+      <MaterialReactTable table={table} />
     </Box>
   );
 };
