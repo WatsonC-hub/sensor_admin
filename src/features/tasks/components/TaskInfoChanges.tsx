@@ -25,8 +25,8 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
     (value) => value[0] === taskChanges.field_name
   )?.[1];
   if (taskChanges.field_name === 'due_date') {
-    if (old_value) old_value = moment(old_value).format('YYYY-MM-DD HH:mm');
-    if (new_value) new_value = moment(new_value).format('YYYY-MM-DD HH:mm');
+    if (old_value) old_value = moment(old_value).format('YYYY-MM-DD');
+    if (new_value) new_value = moment(new_value).format('YYYY-MM-DD');
   }
 
   if (taskChanges.field_name === 'assigned_to') {
