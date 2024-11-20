@@ -62,12 +62,12 @@ export default function PejlingForm({
 
   const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
 
-  const [notPossible, setNotPossible] = useState(false);
   const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
   const measurement = watch('measurement');
   const date = watch('timeofmeas');
   const [elevationDiff, setElevationDiff] = useState<number>();
   const [hide, setHide] = useState<boolean>(false);
+  const [notPossible, setNotPossible] = useState(getValues('measurement') === null);
 
   useEffect(() => {
     if (mpData !== undefined && mpData.length > 0) {
@@ -143,6 +143,7 @@ export default function PejlingForm({
         <Grid item xs={12} sm={12}>
           <Tooltip title="f.eks. tør eller tilfrossen">
             <FormControlLabel
+              checked={notPossible}
               control={<Checkbox sx={{color: 'primary.main'}} onChange={handleNotPossibleChange} />}
               label="Måling ikke mulig"
             />

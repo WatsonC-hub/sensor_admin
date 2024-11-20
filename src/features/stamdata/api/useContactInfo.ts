@@ -55,7 +55,7 @@ export const contactInfoDelOptions = {
 export const ContactInfoGetOptions = <TData>(
   loc_id: number | undefined
 ): GetQueryOptions<TData> => ({
-  queryKey: ['contact_info'],
+  queryKey: ['contact_info', loc_id],
   queryFn: async () => {
     const {data} = await apiClient.get<TData>(
       `/sensor_field/stamdata/contact/contact_info/${loc_id}`
