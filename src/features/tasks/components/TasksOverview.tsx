@@ -1,11 +1,15 @@
 import {CalendarMonth} from '@mui/icons-material';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import MapIcon from '@mui/icons-material/Map';
-import {Box, BoxProps, Tab, Tabs} from '@mui/material';
+import {Box, BoxProps, Tab, Tabs, Typography} from '@mui/material';
 import {atom, useAtom} from 'jotai';
-import React, {SyntheticEvent} from 'react';
+import React, {Suspense, SyntheticEvent} from 'react';
+import {ErrorBoundary, FallbackProps} from 'react-error-boundary';
 
+import NavBar from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
+import LoadingSkeleton from '~/LoadingSkeleton';
 
 import {useTaskStore} from '../store';
 
@@ -41,6 +45,7 @@ const tabAtom = atom<number>(0);
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
   const {shownMapTaskIds, shownListTaskIds} = useTaskStore();
+  const [state, reset] = useStatefullTableAtom('taskTableState');
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
@@ -106,13 +111,37 @@ const TasksOverview = () => {
         <TaskMap />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
-        <TaskTable />
+        <ErrorBoundary
+          FallbackComponent={errorFallback}
+          onReset={(details) => errorReset(details, reset)}
+          onError={(error) => console.log(error)}
+        >
+          <Suspense fallback={<LoadingSkeleton />} />
+          <TaskTable key="task-table" />
+        </ErrorBoundary>
       </TabPanel>
       <TabPanel value={tabValue} index={2}>
         <TaskCalendar />
       </TabPanel>
     </Box>
   );
+};
+
+const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
+  resetErrorBoundary(error);
+  console.log(error);
+  return (
+    <>
+      <Typography variant="h4" component="h1" sx={{textAlign: 'center', mt: 5}}>
+        {error.message}
+      </Typography>
+    </>
+  );
+};
+
+const errorReset = (details: object, reset: () => void) => {
+  reset();
+  console.log(details);
 };
 
 export default TasksOverview;

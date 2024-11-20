@@ -53,7 +53,7 @@ function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   };
 }
 
-function createPartialTimedStorage<T>(
+function createPartialTimedStorage<T extends object>(
   timeout_ms: number,
   partialKeys: Array<keyof T>
 ): SyncStorage<T> {
@@ -66,11 +66,17 @@ function createPartialTimedStorage<T>(
       } catch {
         return initialValue;
       }
+
       const value = merge({}, initialValue, parsedValue?.value ?? {});
-      if (parsedValue?.timestamp && Date.now() - parsedValue.timestamp < timeout_ms) {
+
+      if (parsedValue?.timestamp && Date.now() - parsedValue.timestamp > timeout_ms) {
         const newValue = {...value};
         for (const partialKey of partialKeys) {
-          newValue[partialKey] = initialValue[partialKey];
+          if (Object.keys(initialValue).includes(partialKey as string)) {
+            newValue[partialKey] = initialValue[partialKey];
+          } else if (Object.keys(newValue).includes(partialKey as string)) {
+            delete newValue[partialKey];
+          }
         }
         return newValue;
       }
@@ -110,7 +116,7 @@ function createPartialTimedStorage<T>(
   };
 }
 
-export const atomWithPartialTimedStorage = <T>(
+export const atomWithPartialTimedStorage = <T extends object>(
   key: string,
   initialValue: T,
   timeout_ms: number,
@@ -140,7 +146,7 @@ export const statefullTableAtomFamily = atomFamily(
         density: 'comfortable',
       },
       1000 * 60 * 60,
-      []
+      ['expanded', 'rowSelection', 'grouping', 'isFullScreen', 'pagination']
     ),
   (a, b) => {
     return a == b;
