@@ -58,6 +58,9 @@ export const useTaskStore = () => {
   } = taskStore();
 
   const {shownTasks, hiddenTasks} = useMemo(() => {
+    if (!tasks) {
+      return {shownTasks: [], hiddenTasks: []};
+    }
     const shownTasks = filterTasks(tasks, [shownListTaskIds, shownMapTaskIds]);
     // console.log('shownTasks', shownTasks);
     // console.log('shownListTaskIds', shownListTaskIds);
@@ -70,13 +73,19 @@ export const useTaskStore = () => {
   }, [tasks, shownListTaskIds, shownMapTaskIds]);
 
   const {selectedTask} = useMemo(() => {
+    if (!tasks) {
+      return {selectedTask: null};
+    }
     return {
       selectedTask: selectedTaskId ? tasks.find((task) => task.id === selectedTaskId) : null,
     };
   }, [tasks, selectedTaskId]);
 
   const activeTasks = useMemo(() => {
-    console.log('newtasks');
+    if (!tasks) {
+      return [];
+    }
+
     return tasks.filter((task) => task.status_category != 'closed');
   }, [tasks]);
 
@@ -91,9 +100,6 @@ export const useTaskStore = () => {
     shownMapTaskIds,
     setShownMapTaskIds,
     setShownListTaskIds,
-    // setShownTasksByPredicate: (predicate: () => boolean) => {
-    //   setShownTaskIds(tasks.filter(predicate).map((task) => task.id));
-    // },
     resetFilter,
     resetState,
   };

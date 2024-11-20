@@ -177,7 +177,6 @@ const TaskTable = () => {
                   value={filters[rangeFilterIndex] ?? ''}
                   onChange={(e) => {
                     column.setFilterValue((prev: Array<string | null>) => {
-                      console.log('prev', prev);
                       const update = [...prev];
                       update[rangeFilterIndex] = e.target.value == '' ? null : e.target.value;
                       return update;
@@ -225,6 +224,29 @@ const TaskTable = () => {
           size: 200,
         },
         {
+          accessorKey: 'location_name',
+          header: 'Lokation',
+          enableEditing: false,
+        },
+        {
+          accessorKey: 'tstype_name',
+          header: 'Tidsserietype',
+          enableEditing: false,
+          filterVariant: 'multi-select',
+        },
+        {
+          accessorKey: 'loctypename',
+          header: 'Lokationstype',
+          enableEditing: false,
+          filterVariant: 'multi-select',
+        },
+        {
+          accessorKey: 'projectno',
+          header: 'Projektnummer',
+          enableEditing: false,
+          filterVariant: 'multi-select',
+        },
+        {
           accessorKey: 'ts_id',
           header: 'TS_ID',
           size: 150,
@@ -247,15 +269,47 @@ const TaskTable = () => {
           header: 'Ansvarlig',
           size: 200,
           filterVariant: 'autocomplete',
-          editVariant: 'select',
+          // editVariant: 'select',
           filterFn: 'arrIncludesSome',
+          Edit: ({row, cell, table}) => {
+            return (
+              <Autocomplete
+                fullWidth
+                selectOnFocus
+                blurOnSelect
+                handleHomeEndKeys
+                disableClearable
+                size="small"
+                value={row.original.assigned_display_name ?? NOT_ASSIGNED}
+                options={
+                  taskUsers
+                    ?.map((user) => user.display_name)
+                    .sort()
+                    .toSpliced(0, 0, NOT_ASSIGNED) ?? []
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder={'Filtrér efter ' + cell.column.columnDef.header}
+                    variant="outlined"
+                  />
+                )}
+                onChange={(e, newValue) => {
+                  handleBlurSubmit(row.original.id, row.original.ts_id, {
+                    assigned_to:
+                      taskUsers?.find((user) => user.display_name === newValue)?.id ?? null,
+                  });
+                  table.setEditingCell(null);
+                }}
+              />
+            );
+          },
           editSelectOptions: taskUsers
             ?.map((user) => user.display_name)
             .sort()
             .toSpliced(0, 0, 'Ikke tildelt'),
-          Filter: ({column, header}) => {
+          Filter: ({column}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
-            console.log('header', header);
 
             return (
               <Autocomplete
@@ -306,6 +360,33 @@ const TaskTable = () => {
           enableGlobalFilter: false,
           filterVariant: 'multi-select',
           editVariant: 'select',
+          Edit: ({row, table}) => {
+            return (
+              <Autocomplete
+                fullWidth
+                selectOnFocus
+                blurOnSelect
+                handleHomeEndKeys
+                disableClearable
+                size="small"
+                value={row.original.status_name}
+                options={taskStatus?.map((status) => status.name) ?? []}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    // placeholder={'Filtrér efter ' + cell.column.columnDef.header}
+                    variant="outlined"
+                  />
+                )}
+                onChange={(e, newValue) => {
+                  handleBlurSubmit(row.original.id, row.original.ts_id, {
+                    status_id: taskStatus?.find((status) => status.name === newValue)?.id,
+                  });
+                  queueMicrotask(() => table.setEditingCell(null));
+                }}
+              />
+            );
+          },
           meta: {
             convert: (value) => ({
               status_id: taskStatus?.find((status) => status.name === value)?.id,
@@ -317,162 +398,157 @@ const TaskTable = () => {
     [taskStatus, taskUsers, handleBlurSubmit, station]
   );
 
-  const options: Partial<MRT_TableOptions<Task>> = {
-    enableFullScreenToggle: true,
-    enableFacetedValues: true,
-    enableGrouping: true,
-    editDisplayMode: 'cell',
-    enableEditing: true,
-    globalFilterFn: 'fuzzy',
-    enableColumnDragging: true,
-    enableColumnOrdering: true,
-    enableMultiRowSelection: true,
-    enableSorting: true,
-    autoResetPageIndex: false,
-    enableRowSelection: true,
-    groupedColumnMode: 'remove',
-    enableColumnResizing: true,
-    enableExpanding: true,
-    positionExpandColumn: 'first',
-    muiTableBodyCellProps: ({cell, table}) => ({
-      onClick: () => {
-        table.setEditingCell(cell); //set editing cell
-        //optionally, focus the text field
-      },
-    }),
-    displayColumnDefOptions: {
-      'mrt-row-expand': {
-        GroupedCell: ({row, table}) => {
-          const grouping = table.getState().grouping;
-          return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
-        },
-        enableResizing: true,
-        muiTableBodyCellProps: ({row, table}) => {
-          const isTsId =
-            row.groupingColumnId === 'ts_id' &&
-            table.getState().grouping.length > 0 &&
-            table.getState().grouping[table.getState().grouping.length - 1] === 'ts_id';
-
-          return {
-            onClick: isTsId
-              ? () => {
-                  station(undefined, row.original.ts_id);
-                }
-              : undefined,
-            sx: (theme) => ({
-              cursor: isTsId ? 'pointer' : undefined,
-              textDecoration: isTsId ? 'underline' : undefined,
-              color:
-                row.depth === 0
-                  ? theme.palette.primary.main
-                  : row.depth === 1
-                    ? theme.palette.secondary.main
-                    : undefined,
-            }),
-          };
-        },
-        size:
-          tableState?.state?.grouping?.length && tableState?.state?.grouping?.length > 0
-            ? 200
-            : 100,
-      },
-    },
-    renderTopToolbarCustomActions: ({table}) => {
-      return (
-        <Box mr={'auto'} display="flex" gap={2} justifyContent="flex-end">
-          <RenderActions
-            handleEdit={() => {
-              const selectedRows = table.getFilteredSelectedRowModel().rows;
-              setOpen(selectedRows.length > 0);
-              if (selectedRows.length > 0) {
-                setRows(
-                  selectedRows.map(
-                    (row) => ({id: row.original.id, ts_id: row.original.ts_id}) as Partial<Task>
-                  )
-                );
-                setOpen(true);
-              }
-            }}
-            canEdit={true}
-          />
-          {/* <Button bttype="primary" sx={{p: 1}} onClick={() => {}} size="large">
-            Filter efter status
-          </Button>
-          <Button bttype="primary" sx={{p: 1}} onClick={() => {}} size="large">
-            Filter efter ansvarlig
-          </Button>
-          <Button bttype="primary" sx={{p: 1}} onClick={() => {}} size="large">
-            Filter efter dato
-          </Button> */}
-        </Box>
-      );
-    },
-    muiDetailPanelProps: {
-      sx: {
-        backgroundColor: 'grey.100',
-      },
-    },
-    renderDetailPanel: ({row}) => {
-      return (
-        <Box
-          sx={{
-            display: 'grid',
-            margin: 'auto',
-            gridTemplateColumns: '1fr',
-            width: '100%',
-          }}
-        >
-          {row.original.loc_id && (
-            <Typography>
-              <b>Lokationsid</b>: {row.original.loc_id}
-            </Typography>
-          )}
-          {row.original.location_name && (
-            <Typography>
-              <b>Lokationsnavn</b>: {row.original.location_name}
-            </Typography>
-          )}
-          {row.original.ts_id && (
-            <Typography>
-              <b>Tidsserie</b>: navn på tidsserie
-            </Typography>
-          )}
-          {row.original.blocks_notifications.length > 0 && (
-            <Typography>
-              <b>blokerede notifikationer</b>: {row.original.blocks_notifications.join(', ')}
-            </Typography>
-          )}
-          {row.original.description && (
-            <Typography>
-              <b>beskrivelse</b>: {row.original.description}
-            </Typography>
-          )}
-        </Box>
-      );
-    },
-    muiEditTextFieldProps: ({cell, row, column}) => ({
-      variant: 'outlined',
-      SelectProps: {
-        defaultOpen: true,
-      },
-      onBlur: () => {
-        const key = cell.column.id;
-        const meta = column.columnDef.meta;
-        if (meta?.convert) {
-          handleBlurSubmit(row.original.id, row.original.ts_id, meta.convert(row.getValue(key)));
-        } else {
-          handleBlurSubmit(row.original.id, row.original.ts_id, {[key]: cell.getValue()});
-        }
-      },
-    }),
-    muiTableBodyRowProps: (props) => {
-      return {
+  const options: Partial<MRT_TableOptions<Task>> = useMemo(
+    () => ({
+      enableFullScreenToggle: true,
+      enableFacetedValues: true,
+      enableGrouping: true,
+      editDisplayMode: 'cell',
+      enableEditing: true,
+      globalFilterFn: 'fuzzy',
+      enableColumnDragging: true,
+      enableColumnOrdering: true,
+      enableMultiRowSelection: true,
+      enableSorting: true,
+      autoResetPageIndex: false,
+      enableRowSelection: true,
+      groupedColumnMode: 'remove',
+      enableColumnResizing: true,
+      enableExpanding: true,
+      positionExpandColumn: 'first',
+      enablePagination: false,
+      muiTableBodyCellProps: ({cell, table}) => ({
         onClick: () => {
-          setSelectedTask(props.row.original.id);
+          table.setEditingCell(cell); //set editing cell
+          //optionally, focus the text field
         },
-      };
-    },
-  };
+      }),
+      displayColumnDefOptions: {
+        'mrt-row-expand': {
+          GroupedCell: ({row, table}) => {
+            const grouping = table.getState().grouping;
+            return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
+          },
+          enableResizing: true,
+          muiTableBodyCellProps: ({row, table}) => {
+            const isTsId =
+              row.groupingColumnId === 'ts_id' &&
+              table.getState().grouping.length > 0 &&
+              table.getState().grouping[table.getState().grouping.length - 1] === 'ts_id';
+
+            return {
+              onClick: isTsId
+                ? () => {
+                    station(undefined, row.original.ts_id);
+                  }
+                : undefined,
+              sx: (theme) => ({
+                cursor: isTsId ? 'pointer' : undefined,
+                textDecoration: isTsId ? 'underline' : undefined,
+                color:
+                  row.depth === 0
+                    ? theme.palette.primary.main
+                    : row.depth === 1
+                      ? theme.palette.secondary.main
+                      : undefined,
+              }),
+            };
+          },
+          size: 100,
+        },
+      },
+      renderTopToolbarCustomActions: ({table}) => {
+        return (
+          <Box mr={'auto'} display="flex" gap={2} justifyContent="flex-end">
+            <RenderActions
+              handleEdit={() => {
+                const selectedRows = table.getFilteredSelectedRowModel().rows;
+                setOpen(selectedRows.length > 0);
+                if (selectedRows.length > 0) {
+                  setRows(
+                    selectedRows.map(
+                      (row) => ({id: row.original.id, ts_id: row.original.ts_id}) as Partial<Task>
+                    )
+                  );
+                  setOpen(true);
+                }
+              }}
+              canEdit={true}
+            />
+          </Box>
+        );
+      },
+      muiDetailPanelProps: {
+        sx: {
+          backgroundColor: 'grey.100',
+        },
+      },
+      renderDetailPanel: ({row}) => {
+        return (
+          <Box
+            sx={{
+              display: 'grid',
+              margin: 'auto',
+              gridTemplateColumns: '1fr',
+              width: '100%',
+            }}
+          >
+            {row.original.loc_id && (
+              <Typography>
+                <b>Lokationsid</b>: {row.original.loc_id}
+              </Typography>
+            )}
+            {row.original.location_name && (
+              <Typography>
+                <b>Lokationsnavn</b>: {row.original.location_name}
+              </Typography>
+            )}
+            {row.original.ts_id && (
+              <Typography>
+                <b>Tidsserie</b>: navn på tidsserie
+              </Typography>
+            )}
+            {row.original.blocks_notifications.length > 0 && (
+              <Typography>
+                <b>blokerede notifikationer</b>: {row.original.blocks_notifications.join(', ')}
+              </Typography>
+            )}
+            {row.original.description && (
+              <Typography>
+                <b>beskrivelse</b>: {row.original.description}
+              </Typography>
+            )}
+          </Box>
+        );
+      },
+      muiEditTextFieldProps: ({cell, row, column}) => ({
+        variant: 'outlined',
+        SelectProps: {
+          defaultOpen: true,
+          MenuProps: {
+            disablePortal: true,
+          },
+        },
+        onBlur: () => {
+          const key = cell.column.id;
+          const meta = column.columnDef.meta;
+          if (meta?.convert) {
+            handleBlurSubmit(row.original.id, row.original.ts_id, meta.convert(row.getValue(key)));
+          } else {
+            handleBlurSubmit(row.original.id, row.original.ts_id, {[key]: cell.getValue()});
+          }
+        },
+      }),
+      muiTableBodyRowProps: (props) => {
+        return {
+          onClick: () => {
+            setSelectedTask(props.row.original.id);
+          },
+        };
+      },
+    }),
+    [handleBlurSubmit, setSelectedTask, station]
+  );
 
   const table = useTable<Task>(
     columns,
@@ -492,6 +568,8 @@ const TaskTable = () => {
     const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
     setShownListTaskIds(ids);
   }, [table.getState().globalFilter]);
+
+  console.log('RERENDERING');
 
   return (
     <Box
@@ -537,13 +615,7 @@ const TaskTable = () => {
                   }
                 />
               </Tooltip>
-              <TaskForm.Input
-                name="due_date"
-                label="Due date"
-                type="datetime-local"
-                placeholder="Sæt forfaldsdato"
-                disabled={dueDateChecked}
-              />
+              <TaskForm.DueDate disabled={dueDateChecked} />
             </Box>
             <Box display={'flex'} flexDirection={'row'}>
               <Tooltip title="Fjern tildelt fra valgte opgaver">

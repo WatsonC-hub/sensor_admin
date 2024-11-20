@@ -9,6 +9,7 @@ import {tabsHeight} from '~/consts';
 
 import {useTaskStore} from '../store';
 
+import FastTable from './FastTable';
 import TaskCalendar from './TaskCalendar';
 import TaskMap from './TaskMap';
 import TaskTable from './TaskTable';
@@ -107,7 +108,7 @@ const TasksOverview = () => {
         <TaskMap />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
-        <TaskTable key="task-table" />
+        <TaskTable />
       </TabPanel>
       <TabPanel value={tabValue} index={2}>
         <TaskCalendar />

@@ -13,6 +13,33 @@
 
 export type ID = string;
 
+// const example = {
+//   id: '07e2a045-e473-4a6f-9097-d9f622542a19',
+//   ts_id: 5,
+//   loc_id: 235,
+//   location_name: 'Brabrand3 (89.9818)',
+//   longitude: 10.132173443382065,
+//   latitude: 56.135061343687596,
+//   name: 'Skal hjemtages',
+//   description: null,
+//   status_id: 1,
+//   due_date: '2024-04-22',
+//   assigned_to: '137180100004673',
+//   assigned_display_name: 'mon@watsonc.dk',
+//   blocks_notifications: [],
+//   created_by: '137180100004635',
+//   created_display_name: 'saw@watsonc.dk',
+//   created_at: '2024-11-13T14:56:04.365848+01:00',
+//   updated_at: '2024-11-20T13:16:27.758672+01:00',
+//   status_name: 'Åbent',
+//   status_category: 'unstarted',
+//   tstype_name: 'Vandstand',
+//   loctypename: 'Våd natur',
+//   projectno: '18.0017',
+//   project_text: 'Aarhus Vand Forsyning A/S ',
+
+// };
+
 export type Task = {
   id: ID;
   ts_id: number;
@@ -33,13 +60,17 @@ export type Task = {
   created_display_name: string;
   created_at: string;
   updated_at: string;
+  tstype_name: string;
+  loctypename: string;
+  projectno: string | null;
+  project_text: string | null;
 };
 
 export type DBTask = {
   id: number;
   ts_id: number;
   name: string;
-  description: string | null;
+  description?: string | null | undefined;
   status_id: number;
   due_date: string | null;
   assigned_to: string | null;
@@ -47,11 +78,7 @@ export type DBTask = {
   created_by: string;
 };
 
-export type PatchTask = Partial<
-  Omit<DBTask, 'id' | 'due_date_type' | 'blocks_notifications' | 'created_by'>
->;
-
-export type PostTask = Omit<DBTask, 'id'>;
+export type PatchTask = Partial<Omit<DBTask, 'id' | 'blocks_notifications' | 'created_by'>>;
 
 export type TaskItiniary = {
   tasks: Pick<Task, 'id'>[];

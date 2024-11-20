@@ -30,9 +30,11 @@ type TaskConvert = {
   blockall?: boolean;
 };
 
+type PostTask = Omit<TaskConvert, 'notification_id'>;
+
 export const tasksPostOptions = {
   mutationKey: ['tasks_post'],
-  mutationFn: async (mutation_data: PatchTask) => {
+  mutationFn: async (mutation_data: PostTask) => {
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/`, mutation_data);
     return result;
   },
@@ -82,10 +84,9 @@ export const useTasks = () => {
       const {data} = await apiClient.get('/sensor_admin/tasks/');
       return data;
     },
-    initialData: [],
     staleTime: 1000 * 60 * 5,
   });
-  const post = useMutation<unknown, APIError, PatchTask>({
+  const post = useMutation<unknown, APIError, PostTask>({
     ...tasksPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({

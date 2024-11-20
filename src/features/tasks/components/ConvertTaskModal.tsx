@@ -21,6 +21,7 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
       ...data,
       notification_id: notification.notification_id,
       ts_id: notification.ts_id,
+      name: data.name!,
       blockall: data.blocks_notifications === 'all',
     };
     convertNotificationToTask.mutate(submit, {

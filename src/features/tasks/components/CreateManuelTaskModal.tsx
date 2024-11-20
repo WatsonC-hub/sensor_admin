@@ -21,6 +21,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     if (params.ts_id === undefined) return;
     const submit = {
       ...values,
+      name: values.name!,
       ts_id: parseInt(params.ts_id),
     };
     createTask.mutate(submit);

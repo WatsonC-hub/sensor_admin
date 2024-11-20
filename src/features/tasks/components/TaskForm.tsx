@@ -1,7 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, FormControlLabel, MenuItem, Switch, Typography} from '@mui/material';
-import moment from 'moment';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -33,7 +32,7 @@ export type FormValues = z.infer<typeof zodSchema>;
 
 type Props = {
   onSubmit: (data: FormValues, formMethods?: UseFormReturn<FormValues>) => void;
-  onError?: () => void;
+  onError?: (error: any) => void;
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
 };
@@ -41,11 +40,16 @@ type Props = {
 const TaskFormContext = React.createContext(
   {} as {
     onSubmit: (data: FormValues) => void;
-    onError?: () => void;
+    onError?: (error: any) => void;
   }
 );
 
-const TaskForm = ({onSubmit, onError, children, defaultValues}: Props) => {
+const TaskForm = ({
+  onSubmit,
+  onError = (error) => console.log(error),
+  children,
+  defaultValues,
+}: Props) => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
     defaultValues: defaultValues,
@@ -86,11 +90,11 @@ const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
     <FormInput
       name="due_date"
       label="Due date"
-      type="datetime-local"
+      type="date"
       placeholder="Sæt forfaldsdato"
-      transform={(value) => {
-        return moment(value.target.value).toISOString();
-      }}
+      // transform={(value) => {
+      //   return moment(value.target.value).toISOString();
+      // }}
       {...props}
     />
   );
