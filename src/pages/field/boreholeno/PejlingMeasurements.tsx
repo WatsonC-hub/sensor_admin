@@ -5,7 +5,7 @@ import {Kontrol} from '~/types';
 
 interface PejlingProps {
   measurements: Array<Kontrol>;
-  handleEdit: (measurement: Kontrol) => void;
+  handleEdit: (type: string) => (kontrol: any) => void;
   handleDelete: (id: number) => void;
 }
 

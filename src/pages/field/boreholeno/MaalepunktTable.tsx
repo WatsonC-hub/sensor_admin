@@ -5,7 +5,7 @@ import {MaalepunktTableData} from '~/types';
 
 interface MaalepunktTableProps {
   watlevmp: Array<MaalepunktTableData>;
-  handleEdit: (Maalepunkt: MaalepunktTableData) => void;
+  handleEdit: (type: string) => (Maalepunkt: any) => void;
   handleDelete: (gid: number) => void;
 }
 

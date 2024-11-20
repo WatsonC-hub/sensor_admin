@@ -15,7 +15,7 @@ import {MaalepunktTableData} from '~/types';
 
 interface Props {
   data: MaalepunktTableData[];
-  handleEdit: (maalepuntk: MaalepunktTableData) => void;
+  handleEdit: (type: string) => (maalepunkt: MaalepunktTableData) => void;
   handleDelete: (gid: number) => void;
 }
 
@@ -73,7 +73,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          handleEdit(row.original);
+          handleEdit('watlevmp')(row.original);
         }}
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
