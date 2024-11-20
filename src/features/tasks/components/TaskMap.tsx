@@ -8,6 +8,7 @@ import useMap from '~/features/map/components/useMap';
 import {defaultCircleMarkerStyle} from '~/features/map/mapConsts';
 
 import {useTaskStore} from '../store';
+import {Task} from '../types';
 
 const TaskMap = () => {
   // const mapRef = React.useRef<L.Map | null>(null);
@@ -35,11 +36,16 @@ const TaskMap = () => {
     if (map) {
       const lassoControl = new LassoControl({position: 'topleft'});
       map.addControl(lassoControl);
+
       map.on('lasso.finished', (event) => {
         const ids = new Set(
-          (event as LassoHandlerFinishedEvent).layers.map(
-            (layer: L.CircleMarker<Task>) => layer.options.data.id
-          )
+          (event as LassoHandlerFinishedEvent).layers
+            .map((layer) => {
+              const data = (layer.options as L.CircleMarkerOptions<Task[]>).data as Task[];
+
+              return data.map((task) => task.id);
+            })
+            .flat()
         );
         setShownMapTaskIds(Array.from(ids));
       });
@@ -50,30 +56,63 @@ const TaskMap = () => {
     if (markerLayer) {
       markerLayer.clearLayers();
 
-      hiddenTasks.forEach((task) => {
-        if (task.latitude && task.longitude) {
-          L.circleMarker([task.latitude, task.longitude], {
-            ...defaultCircleMarkerStyle,
-            // radius: 5,
-            title: task.name,
-            data: task,
-            color: 'gray',
-          })
-            .addTo(markerLayer)
-            .bindPopup(task.name);
-        }
-      });
-      shownTasks.forEach((task) => {
-        L.circleMarker([task.latitude, task.longitude], {
+      const shownByLocid = shownTasks.reduce(
+        (acc, task) => {
+          if (!acc[task.loc_id]) {
+            acc[task.loc_id] = [];
+          }
+          acc[task.loc_id].push(task);
+          return acc;
+        },
+        {} as Record<number, Task[]>
+      );
+
+      const hiddenByLocid = hiddenTasks.reduce(
+        (acc, task) => {
+          if (!acc[task.loc_id]) {
+            acc[task.loc_id] = [];
+          }
+          acc[task.loc_id].push(task);
+          return acc;
+        },
+        {} as Record<number, Task[]>
+      );
+
+      Object.values(hiddenByLocid).forEach((tasks) => {
+        L.circleMarker([tasks[0].latitude, tasks[0].longitude], {
           ...defaultCircleMarkerStyle,
           // radius: 5,
-          title: task.name,
-          fillColor: 'blue',
-          data: task,
+          title: tasks[0].name,
+          fillColor: 'grey',
+          data: tasks,
         })
           .addTo(markerLayer)
-          .bindPopup(task.name);
+          .bindPopup(tasks.map((task) => task.name).join(', '));
       });
+
+      Object.values(shownByLocid).forEach((tasks) => {
+        L.circleMarker([tasks[0].latitude, tasks[0].longitude], {
+          ...defaultCircleMarkerStyle,
+          // radius: 5,
+          title: tasks[0].name,
+          fillColor: 'green',
+          data: tasks,
+        })
+          .addTo(markerLayer)
+          .bindPopup(tasks.map((task) => task.name).join(', '));
+      });
+
+      // shownTasks.forEach((task) => {
+      //   L.circleMarker([task.latitude, task.longitude], {
+      //     ...defaultCircleMarkerStyle,
+      //     // radius: 5,
+      //     title: task.name,
+      //     fillColor: 'blue',
+      //     data: task,
+      //   })
+      //     .addTo(markerLayer)
+      //     .bindPopup(task.name);
+      // });
     }
   }, [shownTasks, markerLayer, hiddenTasks]);
 

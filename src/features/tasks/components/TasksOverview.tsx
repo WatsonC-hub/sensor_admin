@@ -31,7 +31,7 @@ function TabPanel(props: {
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {children}
+      {value === index && <>{children}</>}
     </Box>
   );
 }
@@ -45,6 +45,7 @@ const TasksOverview = () => {
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
   };
+
   return (
     <Box>
       <Tabs
