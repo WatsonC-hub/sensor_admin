@@ -1,5 +1,14 @@
-export const mapboxToken: string =
-  'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3cxbnFmMGYyNzN5bWpvb2Rjd2VuMyJ9.HSp-vSdF0i1uCSeUoCkwcA';
+let mapToken: string;
+
+if (import.meta.env.PROD) {
+  mapToken =
+    'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3cxbnFmMGYyNzN5bWpvb2Rjd2VuMyJ9.HSp-vSdF0i1uCSeUoCkwcA';
+} else {
+  mapToken =
+    'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY20zbjE0eWN6MTV5aDJxcXo3aXFpZ2kzYyJ9.UVPpejPboVyzBKCYupxOxw';
+}
+
+export const mapboxToken = mapToken;
 
 export const boreholeColors: Record<
   number,
