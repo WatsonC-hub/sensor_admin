@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Checkbox,
   Dialog,
@@ -10,6 +11,8 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
 import {Row, RowData} from '@tanstack/react-table';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import moment from 'moment';
@@ -170,6 +173,7 @@ const TaskTable = () => {
               rangeFilterIndex != undefined && (
                 <TextField
                   type="date"
+                  size="small"
                   value={filters[rangeFilterIndex] ?? ''}
                   onChange={(e) => {
                     column.setFilterValue((prev: Array<string | null>) => {
@@ -242,12 +246,49 @@ const TaskTable = () => {
           id: 'assigned_to',
           header: 'Ansvarlig',
           size: 200,
-          filterVariant: 'multi-select',
+          filterVariant: 'autocomplete',
           editVariant: 'select',
+          filterFn: 'arrIncludesSome',
           editSelectOptions: taskUsers
             ?.map((user) => user.display_name)
             .sort()
             .toSpliced(0, 0, 'Ikke tildelt'),
+          Filter: ({column, header}) => {
+            const filters: Array<string | null> = column.getFilterValue() as string[];
+            console.log('header', header);
+
+            return (
+              <Autocomplete
+                multiple
+                fullWidth
+                selectOnFocus
+                clearOnBlur
+                handleHomeEndKeys
+                disableCloseOnSelect
+                size="small"
+                limitTags={3}
+                value={filters ?? []}
+                options={
+                  taskUsers
+                    ?.map((user) => user.display_name)
+                    .sort()
+                    .toSpliced(0, 0, 'Ikke tildelt') ?? []
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder={'Filtrér efter ' + column.columnDef.header}
+                    variant="outlined"
+                  />
+                )}
+                onChange={(e, newValue) => {
+                  column.setFilterValue(() => {
+                    return newValue;
+                  });
+                }}
+              />
+            );
+          },
           meta: {
             convert: (value) => {
               return {
@@ -546,7 +587,9 @@ const TaskTable = () => {
         onReset={(details) => errorReset(details, reset)}
         onError={(error) => console.log(error)}
       >
-        <MaterialReactTable table={table} />
+        <LocalizationProvider dateAdapter={AdapterMoment}>
+          <MaterialReactTable table={table} />
+        </LocalizationProvider>
       </ErrorBoundary>
     </Box>
   );
