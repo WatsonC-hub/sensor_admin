@@ -29,6 +29,7 @@ export interface Notification {
   groups: Group[];
   loctype_id: number;
   calculated: boolean | null;
+  parking_id: number;
 }
 
 export interface NotificationMap extends Notification {
