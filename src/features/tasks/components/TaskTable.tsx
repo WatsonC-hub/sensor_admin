@@ -442,15 +442,15 @@ const TaskTable = () => {
     MergeType.RECURSIVEMERGE
   );
 
-  // useEffect(() => {
-  //   const globalFilter = table.getState().globalFilter;
-  //   if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
-  //     setShownListTaskIds([]);
-  //     return;
-  //   }
-  //   const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
-  //   setShownListTaskIds(ids);
-  // }, [table.getState().globalFilter]);
+  useEffect(() => {
+    const globalFilter = table.getState().globalFilter;
+    if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
+      setShownListTaskIds([]);
+      return;
+    }
+    const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
+    setShownListTaskIds(ids);
+  }, [table.getState().globalFilter]);
 
   return (
     <Box

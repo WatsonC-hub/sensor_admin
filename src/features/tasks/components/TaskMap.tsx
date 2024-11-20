@@ -1,7 +1,7 @@
 import {Box} from '@mui/material';
 import L from 'leaflet';
 import {LassoControl, LassoHandlerFinishedEvent} from 'leaflet-lasso';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 
 import {calculateContentHeight} from '~/consts';
 import useMap from '~/features/map/components/useMap';
@@ -20,15 +20,46 @@ const TaskMap = () => {
   // ]);
   const {shownTasks, hiddenTasks, setSelectedTask, setShownMapTaskIds} = useTaskStore();
 
+  const shownByLocid = useMemo(() => {
+    return Object.values(
+      shownTasks.reduce(
+        (acc, task) => {
+          if (!acc[task.loc_id]) {
+            acc[task.loc_id] = [];
+          }
+          acc[task.loc_id].push(task);
+          return acc;
+        },
+        {} as Record<number, Task[]>
+      )
+    );
+  }, [shownTasks]);
+
+  const hiddenByLocid = useMemo(() => {
+    return Object.values(
+      hiddenTasks.reduce(
+        (acc, task) => {
+          if (!acc[task.loc_id]) {
+            acc[task.loc_id] = [];
+          }
+          acc[task.loc_id].push(task);
+          return acc;
+        },
+        {} as Record<number, Task[]>
+      )
+    );
+  }, [hiddenTasks]);
+
   const {
     map,
     layers: {markerLayer},
     selectedMarker,
-  } = useMap('taskmap', shownTasks, []);
+  } = useMap('taskmap', shownByLocid, []);
 
   useEffect(() => {
     if (selectedMarker) {
-      setSelectedTask(selectedMarker.id);
+      console.log('selectedMarker', selectedMarker);
+      if (selectedMarker.length == 1) setSelectedTask(selectedMarker[0].id);
     }
   }, [selectedMarker]);
 
@@ -56,29 +87,7 @@ const TaskMap = () => {
     if (markerLayer) {
       markerLayer.clearLayers();
 
-      const shownByLocid = shownTasks.reduce(
-        (acc, task) => {
-          if (!acc[task.loc_id]) {
-            acc[task.loc_id] = [];
-          }
-          acc[task.loc_id].push(task);
-          return acc;
-        },
-        {} as Record<number, Task[]>
-      );
-
-      const hiddenByLocid = hiddenTasks.reduce(
-        (acc, task) => {
-          if (!acc[task.loc_id]) {
-            acc[task.loc_id] = [];
-          }
-          acc[task.loc_id].push(task);
-          return acc;
-        },
-        {} as Record<number, Task[]>
-      );
-
-      Object.values(hiddenByLocid).forEach((tasks) => {
+      hiddenByLocid.forEach((tasks) => {
         L.circleMarker([tasks[0].latitude, tasks[0].longitude], {
           ...defaultCircleMarkerStyle,
           // radius: 5,
@@ -90,7 +99,7 @@ const TaskMap = () => {
           .bindPopup(tasks.map((task) => task.name).join(', '));
       });
 
-      Object.values(shownByLocid).forEach((tasks) => {
+      shownByLocid.forEach((tasks) => {
         L.circleMarker([tasks[0].latitude, tasks[0].longitude], {
           ...defaultCircleMarkerStyle,
           // radius: 5,
@@ -101,20 +110,8 @@ const TaskMap = () => {
           .addTo(markerLayer)
           .bindPopup(tasks.map((task) => task.name).join(', '));
       });
-
-      // shownTasks.forEach((task) => {
-      //   L.circleMarker([task.latitude, task.longitude], {
-      //     ...defaultCircleMarkerStyle,
-      //     // radius: 5,
-      //     title: task.name,
-      //     fillColor: 'blue',
-      //     data: task,
-      //   })
-      //     .addTo(markerLayer)
-      //     .bindPopup(task.name);
-      // });
     }
-  }, [shownTasks, markerLayer, hiddenTasks]);
+  }, [shownByLocid, hiddenByLocid, markerLayer]);
 
   return (
     <Box
