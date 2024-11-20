@@ -214,6 +214,8 @@ const TaskTable = () => {
           accessorKey: 'name',
           header: 'Opgave',
           enableEditing: false,
+          enableGrouping: false,
+          enableColumnFilter: false,
           size: 200,
         },
         {
@@ -240,6 +242,38 @@ const TaskTable = () => {
           size: 200,
           filterVariant: 'multi-select',
           editVariant: 'select',
+          editSelectOptions: () =>
+            taskUsers
+              ?.map((user) => user.display_name)
+              .sort()
+              .toSpliced(0, 0, 'Ikke tildelt'),
+          // filterFn: (row, id, filterValue) => {
+          //   const list = row.getUniqueValues(id);
+          //   console.log(list);
+          //   console.log(filterValue);
+
+          //   return filterValue;
+          // },
+          // muiFilterAutocompleteProps: ({column, table}) => {
+          //   console.log(column.getFilterFn());
+          //   return {
+          //     multiple: true,
+          //     value: undefined,
+          //     options: [...column.getFacetedUniqueValues().keys()],
+          //     isOptionEqualToValue: (option, value) => option === value,
+          //     filterOptions: (options, state) => {
+          //       // console.log('options', options, 'state', state);
+
+          //       const {inputValue} = state;
+          //       // console.log(inputValue);
+
+          //       const filter = options.filter((option) => option.includes(inputValue));
+          //       // console.log(filter);
+          //       return [];
+          //     },
+          //     freeSolo: true,
+          //   };
+          // },
           meta: {
             convert: (value) => {
               return {
@@ -247,7 +281,6 @@ const TaskTable = () => {
               };
             },
           },
-          editSelectOptions: () => taskUsers?.map((user) => user.display_name),
           enableGlobalFilter: false,
         },
         {
@@ -279,10 +312,13 @@ const TaskTable = () => {
     enableColumnDragging: true,
     enableColumnOrdering: true,
     enableMultiRowSelection: true,
+    enableSorting: true,
+    manualSorting: true,
+    autoResetPageIndex: false,
     enableRowSelection: true,
-    positionToolbarAlertBanner: 'top',
     groupedColumnMode: 'remove',
     enableColumnResizing: true,
+    enableExpanding: true,
     positionExpandColumn: 'first',
     muiTableBodyCellProps: {
       sx: {
@@ -296,24 +332,34 @@ const TaskTable = () => {
     displayColumnDefOptions: {
       'mrt-row-expand': {
         GroupedCell: ({row, table}) => {
-          console.log(table.getState());
           const grouping = table.getState().grouping;
-          console.log(grouping);
-          return grouping && grouping.length > 0
-            ? row.getValue(grouping[grouping.length - 1])
-            : undefined;
+          return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
         },
         enableResizing: true,
-        muiTableBodyCellProps: ({row}) => ({
-          sx: (theme) => ({
-            color:
-              row.depth === 0
-                ? theme.palette.primary.main
-                : row.depth === 1
-                  ? theme.palette.secondary.main
-                  : undefined,
-          }),
-        }),
+        muiTableBodyCellProps: ({row, table}) => {
+          const isTsId =
+            row.groupingColumnId === 'ts_id' &&
+            table.getState().grouping.length > 0 &&
+            table.getState().grouping[table.getState().grouping.length - 1] === 'ts_id';
+
+          return {
+            onClick: isTsId
+              ? () => {
+                  station(undefined, row.original.ts_id);
+                }
+              : undefined,
+            sx: (theme) => ({
+              cursor: isTsId ? 'pointer' : undefined,
+              textDecoration: isTsId ? 'underline' : undefined,
+              color:
+                row.depth === 0
+                  ? theme.palette.primary.main
+                  : row.depth === 1
+                    ? theme.palette.secondary.main
+                    : undefined,
+            }),
+          };
+        },
         size:
           tableState?.state?.grouping?.length && tableState?.state?.grouping?.length > 0
             ? 200
@@ -413,7 +459,7 @@ const TaskTable = () => {
       };
     },
   };
-  console.log('tableState', tableState);
+
   const table = useTable<Task>(
     columns,
     tableData,
