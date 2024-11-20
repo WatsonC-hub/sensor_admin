@@ -417,6 +417,7 @@ const TaskTable = () => {
       enableExpanding: true,
       positionExpandColumn: 'first',
       enablePagination: false,
+      getRowId: (row) => row.id,
       muiTableBodyCellProps: ({cell, table}) => ({
         onClick: () => {
           table.setEditingCell(cell); //set editing cell
@@ -454,7 +455,7 @@ const TaskTable = () => {
               }),
             };
           },
-          size: 100,
+          size: 200,
         },
       },
       renderTopToolbarCustomActions: ({table}) => {
