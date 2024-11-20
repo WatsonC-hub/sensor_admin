@@ -83,6 +83,7 @@ export const useTasks = () => {
       return data;
     },
     initialData: [],
+    staleTime: 1000 * 60 * 5,
   });
   const post = useMutation<unknown, APIError, PatchTask>({
     ...tasksPostOptions,
@@ -188,6 +189,7 @@ export const useTasks = () => {
 
       return data;
     },
+    staleTime: 1000 * 60 * 5,
   });
 
   const getStatus = useQuery<TaskStatus[], APIError>({
@@ -197,6 +199,7 @@ export const useTasks = () => {
 
       return data;
     },
+    staleTime: 1000 * 60 * 5,
   });
 
   return {

@@ -14,6 +14,7 @@ import {Row, RowData} from '@tanstack/react-table';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {ErrorBoundary, FallbackProps} from 'react-error-boundary';
 import {UseFormReturn} from 'react-hook-form';
 
 import Button from '~/components/Button';
@@ -114,7 +115,7 @@ const TaskTable = () => {
     });
   }, [shownTasks]);
 
-  const [tableState] = useStatefullTableAtom<Task>('taskTableState');
+  const [tableState, reset] = useStatefullTableAtom<Task>('taskTableState');
 
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
     () =>
@@ -193,6 +194,7 @@ const TaskTable = () => {
             return (
               <TextField
                 type="date"
+                size="small"
                 defaultValue={row.original.due_date ?? ''}
                 onBlur={(e) => {
                   const key = cell.column.id;
@@ -242,38 +244,10 @@ const TaskTable = () => {
           size: 200,
           filterVariant: 'multi-select',
           editVariant: 'select',
-          editSelectOptions: () =>
-            taskUsers
-              ?.map((user) => user.display_name)
-              .sort()
-              .toSpliced(0, 0, 'Ikke tildelt'),
-          // filterFn: (row, id, filterValue) => {
-          //   const list = row.getUniqueValues(id);
-          //   console.log(list);
-          //   console.log(filterValue);
-
-          //   return filterValue;
-          // },
-          // muiFilterAutocompleteProps: ({column, table}) => {
-          //   console.log(column.getFilterFn());
-          //   return {
-          //     multiple: true,
-          //     value: undefined,
-          //     options: [...column.getFacetedUniqueValues().keys()],
-          //     isOptionEqualToValue: (option, value) => option === value,
-          //     filterOptions: (options, state) => {
-          //       // console.log('options', options, 'state', state);
-
-          //       const {inputValue} = state;
-          //       // console.log(inputValue);
-
-          //       const filter = options.filter((option) => option.includes(inputValue));
-          //       // console.log(filter);
-          //       return [];
-          //     },
-          //     freeSolo: true,
-          //   };
-          // },
+          editSelectOptions: taskUsers
+            ?.map((user) => user.display_name)
+            .sort()
+            .toSpliced(0, 0, 'Ikke tildelt'),
           meta: {
             convert: (value) => {
               return {
@@ -306,29 +280,25 @@ const TaskTable = () => {
     enableFullScreenToggle: true,
     enableFacetedValues: true,
     enableGrouping: true,
-    editDisplayMode: 'table',
+    editDisplayMode: 'cell',
     enableEditing: true,
     globalFilterFn: 'fuzzy',
     enableColumnDragging: true,
     enableColumnOrdering: true,
     enableMultiRowSelection: true,
     enableSorting: true,
-    manualSorting: true,
     autoResetPageIndex: false,
     enableRowSelection: true,
     groupedColumnMode: 'remove',
     enableColumnResizing: true,
     enableExpanding: true,
     positionExpandColumn: 'first',
-    muiTableBodyCellProps: {
-      sx: {
-        padding: 1,
-        '&:focus': {
-          outline: '2px solid red',
-          outlineOffset: '-2px',
-        },
+    muiTableBodyCellProps: ({cell, table}) => ({
+      onClick: () => {
+        table.setEditingCell(cell); //set editing cell
+        //optionally, focus the text field
       },
-    },
+    }),
     displayColumnDefOptions: {
       'mrt-row-expand': {
         GroupedCell: ({row, table}) => {
@@ -441,6 +411,9 @@ const TaskTable = () => {
     },
     muiEditTextFieldProps: ({cell, row, column}) => ({
       variant: 'outlined',
+      SelectProps: {
+        defaultOpen: true,
+      },
       onBlur: () => {
         const key = cell.column.id;
         const meta = column.columnDef.meta;
@@ -469,15 +442,15 @@ const TaskTable = () => {
     MergeType.RECURSIVEMERGE
   );
 
-  useEffect(() => {
-    const globalFilter = table.getState().globalFilter;
-    if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
-      setShownListTaskIds([]);
-      return;
-    }
-    const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
-    setShownListTaskIds(ids);
-  }, [table.getState().globalFilter]);
+  // useEffect(() => {
+  //   const globalFilter = table.getState().globalFilter;
+  //   if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
+  //     setShownListTaskIds([]);
+  //     return;
+  //   }
+  //   const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
+  //   setShownListTaskIds(ids);
+  // }, [table.getState().globalFilter]);
 
   return (
     <Box
@@ -568,9 +541,31 @@ const TaskTable = () => {
           </DialogActions>
         </TaskForm>
       </Dialog>
-      <MaterialReactTable table={table} />
+      <ErrorBoundary
+        FallbackComponent={errorFallback}
+        onReset={(details) => errorReset(details, reset)}
+        onError={(error) => console.log(error)}
+      >
+        <MaterialReactTable table={table} />
+      </ErrorBoundary>
     </Box>
   );
 };
 
+const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
+  resetErrorBoundary(error);
+  console.log(error);
+  return (
+    <>
+      <Typography variant="h4" component="h1" sx={{textAlign: 'center', mt: 5}}>
+        {error.message}
+      </Typography>
+    </>
+  );
+};
+
+const errorReset = (details: object, reset: () => void) => {
+  reset();
+  console.log(details);
+};
 export default TaskTable;

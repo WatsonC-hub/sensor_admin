@@ -1,13 +1,11 @@
 import {Box} from '@mui/material';
-import React, {useEffect} from 'react';
+import React from 'react';
 
 import NavBar from '~/components/NavBar';
 import {appBarHeight} from '~/consts';
-import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskInfo from '~/features/tasks/components/TaskInfo';
 import TaskItiniaries from '~/features/tasks/components/TaskItiniaries';
 import TasksOverview from '~/features/tasks/components/TasksOverview';
-import {useTaskStore} from '~/features/tasks/store';
 
 import '~/pages/admin/opgaver/TasksPage.css';
 
