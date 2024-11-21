@@ -1,6 +1,9 @@
-import {Box, Grid} from '@mui/material';
+import {Box, Grid, Stack, Typography} from '@mui/material';
 import React from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
+
+import Button from '~/components/Button';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import {useTasks} from '../api/useTasks';
 import {Task} from '../types';
@@ -12,6 +15,7 @@ type TaskInfoFormProps = {
 };
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
+  const {location, station} = useNavigationFunctions();
   const {patch} = useTasks();
   const {
     trigger,
@@ -29,9 +33,11 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
   const onBlur = async (field_name: keyof FieldValues) => {
     const validated = await trigger(field_name);
-    const field_value = getValues(field_name);
+    let field_value = getValues(field_name);
 
     const isDirty = dirtyFields[field_name];
+
+    if (field_name === 'due_date' && field_value === '') field_value = null;
 
     if (validated && isDirty) {
       handleBlurSubmit({[field_name]: field_value});
@@ -40,6 +46,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
   return (
     <Box display={'flex'} flexDirection={'column'} mx={2} gap={2}>
+      <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'}>
+        <Button bttype="tertiary" onClick={() => location(selectedTask.loc_id)}>
+          <Typography>Gå til lokationen</Typography>
+        </Button>
+        <Button bttype="tertiary" onClick={() => station(selectedTask.loc_id, selectedTask.ts_id)}>
+          <Typography>Gå til tidsserien</Typography>
+        </Button>
+      </Stack>
       <Grid container spacing={1}>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input
@@ -65,6 +79,21 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               await onBlur('assigned_to');
             }}
           />
+        </Grid>
+        <Grid item mobile={12} tablet={12} laptop={6}>
+          <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />
+        </Grid>
+        <Grid item mobile={12} tablet={12} laptop={6}>
+          <TaskForm.Input label="Lokationstype" name="loctypename" disabled />
+        </Grid>
+        <Grid item mobile={12} tablet={12} laptop={6}>
+          <TaskForm.Input label="Tidsserie type" name="tstype_name" disabled />
+        </Grid>
+        <Grid item mobile={12} tablet={12} laptop={6}>
+          <TaskForm.Input label="Projektnummer" name="projectno" disabled />
+        </Grid>
+        <Grid item mobile={12} tablet={12} laptop={12}>
+          <TaskForm.Input label="Projektinfo" name="project_text" disabled />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={12}>
           <TaskForm.Input

@@ -9,7 +9,6 @@ import {tabsHeight} from '~/consts';
 
 import {useTaskStore} from '../store';
 
-import FastTable from './FastTable';
 import TaskCalendar from './TaskCalendar';
 import TaskMap from './TaskMap';
 import TaskTable from './TaskTable';

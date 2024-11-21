@@ -26,6 +26,11 @@ const zodSchema = z.object({
     .nullish()
     .transform((value) => (value === '' ? null : value)),
   blocks_notifications: z.array(z.number()).or(z.literal('all')).optional(),
+  loctypename: z.string().optional(),
+  tstype_name: z.string().optional(),
+  project_text: z.string().nullish(),
+  projectno: z.string().nullish(),
+  location_name: z.string().optional(),
 });
 
 export type FormValues = z.infer<typeof zodSchema>;

@@ -17,21 +17,28 @@ import {
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
-import {Row, RowData} from '@tanstack/react-table';
-import {MaterialReactTable, MRT_ColumnDef, MRT_Row, MRT_TableOptions} from 'material-react-table';
+import {ColumnFiltersState, Row, RowData, SortingState} from '@tanstack/react-table';
+import {
+  MaterialReactTable,
+  MRT_ColumnDef,
+  MRT_Row,
+  MRT_TableInstance,
+  MRT_TableOptions,
+} from 'material-react-table';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {ErrorBoundary, FallbackProps} from 'react-error-boundary';
 import {UseFormReturn} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight} from '~/consts';
-import type {Task} from '~/features/tasks/types';
+import type {Task, TaskUser} from '~/features/tasks/types';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
-import RenderActions from '~/helpers/RowActions';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
+import {authStore} from '~/state/store';
 
 import {useTasks} from '../api/useTasks';
 import {useTaskStore} from '../store';
@@ -98,8 +105,11 @@ const TaskTable = () => {
   const {
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
+    getProjects: {data: taskProjects},
     patch,
   } = useTasks();
+
+  const userAuthId = authStore().user_id;
 
   const handleBlurSubmit = useCallback(
     (id: string, ts_id: number, values: any) => {
@@ -210,6 +220,7 @@ const TaskTable = () => {
           },
           Filter: ({column, rangeFilterIndex}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
+            console.log(filters);
             return (
               filters &&
               filters.length > 0 &&
@@ -241,7 +252,7 @@ const TaskTable = () => {
               <TextField
                 type="date"
                 size="small"
-                defaultValue={row.original.due_date ?? ''}
+                defaultValue={row.original.due_date}
                 onBlur={(e) => {
                   const key = cell.column.id;
                   handleBlurSubmit(row.original.id, row.original.ts_id, {
@@ -288,6 +299,36 @@ const TaskTable = () => {
           header: 'Projektnummer',
           enableEditing: false,
           filterVariant: 'multi-select',
+          Filter: ({column}) => {
+            const filters: Array<string | null> = column.getFilterValue() as string[];
+
+            return (
+              <Autocomplete
+                multiple
+                fullWidth
+                selectOnFocus
+                clearOnBlur
+                handleHomeEndKeys
+                disableCloseOnSelect
+                size="small"
+                limitTags={3}
+                value={filters ?? []}
+                options={taskProjects?.map((project) => project.project_no).sort() ?? []}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder={'Filtrér efter ' + column.columnDef.header}
+                    variant="outlined"
+                  />
+                )}
+                onChange={(e, newValue) => {
+                  column.setFilterValue(() => {
+                    return newValue;
+                  });
+                }}
+              />
+            );
+          },
         },
         {
           accessorKey: 'ts_id',
@@ -312,7 +353,6 @@ const TaskTable = () => {
           header: 'Ansvarlig',
           size: 200,
           filterVariant: 'autocomplete',
-          // editVariant: 'select',
           filterFn: 'arrIncludesSome',
           Edit: ({row, cell, table}) => {
             return (
@@ -341,8 +381,9 @@ const TaskTable = () => {
                   handleBlurSubmit(row.original.id, row.original.ts_id, {
                     assigned_to:
                       taskUsers?.find((user) => user.display_name === newValue)?.id ?? null,
+                    assigned_display_name: newValue,
                   });
-                  table.setEditingCell(null);
+                  queueMicrotask(() => table.setEditingCell(null));
                 }}
               />
             );
@@ -351,9 +392,9 @@ const TaskTable = () => {
             ?.map((user) => user.display_name)
             .sort()
             .toSpliced(0, 0, 'Ikke tildelt'),
-          Filter: ({column}) => {
+          Filter: ({column, table}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
-
+            console.log(table.getState().columnFilters);
             return (
               <Autocomplete
                 multiple
@@ -386,13 +427,6 @@ const TaskTable = () => {
               />
             );
           },
-          meta: {
-            convert: (value) => {
-              return {
-                assigned_to: taskUsers?.find((user) => user.display_name === value)?.id ?? null,
-              };
-            },
-          },
           enableGlobalFilter: false,
         },
         {
@@ -424,6 +458,7 @@ const TaskTable = () => {
                 onChange={(e, newValue) => {
                   handleBlurSubmit(row.original.id, row.original.ts_id, {
                     status_id: taskStatus?.find((status) => status.name === newValue)?.id,
+                    status_name: newValue,
                   });
                   queueMicrotask(() => table.setEditingCell(null));
                 }}
@@ -451,7 +486,6 @@ const TaskTable = () => {
       globalFilterFn: 'fuzzy',
       enableColumnDragging: true,
       enableColumnOrdering: true,
-      // enableMultiRowSelection: true,
       enableSorting: true,
       autoResetPageIndex: false,
       enableRowSelection: true,
@@ -459,14 +493,16 @@ const TaskTable = () => {
       enableColumnResizing: true,
       enableExpanding: true,
       positionExpandColumn: 'first',
-      enablePagination: false,
+      enablePagination: true,
       getRowId: (row) => row.id,
       muiTableBodyCellProps: ({cell, table}) => ({
         onClick: () => {
-          table.setEditingCell(cell); //set editing cell
-          //optionally, focus the text field
+          table.setEditingCell(cell);
         },
       }),
+      renderToolbarInternalActions: ({table}) => {
+        return <RenderInternalActions table={table} reset={reset} />;
+      },
       displayColumnDefOptions: {
         'mrt-row-select': {
           Cell: ({row}) => {
@@ -517,14 +553,13 @@ const TaskTable = () => {
               }),
             };
           },
-          size: 200,
         },
       },
       renderTopToolbarCustomActions: ({table}) => {
         return (
-          <Box mr={'auto'} display="flex" gap={2} justifyContent="flex-end">
+          <Box width={'60%'} display="flex" flexDirection={'row'} gap={2}>
             <IconButton
-              sx={{p: 1}}
+              sx={{p: 1, alignSelf: 'center', justifySelf: 'start'}}
               edge="end"
               onClick={() => {
                 const selectedRows = table.getFilteredSelectedRowModel().rows;
@@ -542,8 +577,22 @@ const TaskTable = () => {
             >
               <Edit />
             </IconButton>
-            <Button bttype="tertiary" size="small" onClick={() => console.log('clicked')}>
-              Filtrer
+            <Button bttype="tertiary" size="small" onClick={() => showUpcomingTasks(table)}>
+              Kommende opgaver
+            </Button>
+            <Button
+              bttype="tertiary"
+              size="small"
+              onClick={() => showMyTasks(table, taskUsers, userAuthId?.toString())}
+            >
+              Se mine opgaver
+            </Button>
+            <Button
+              bttype="tertiary"
+              onClick={() => revertCustomFiltering(table)}
+              sx={{justifySelf: 'end'}}
+            >
+              Nulstil filtrering
             </Button>
           </Box>
         );
@@ -606,11 +655,6 @@ const TaskTable = () => {
             {row.original.location_name && (
               <Typography>
                 <b>Lokationsnavn</b>: {row.original.location_name}
-              </Typography>
-            )}
-            {row.original.ts_id && (
-              <Typography>
-                <b>Tidsserie</b>: navn på tidsserie
               </Typography>
             )}
             {row.original.blocks_notifications.length > 0 && (
@@ -786,7 +830,71 @@ const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
   );
 };
 
+const showUpcomingTasks = (table: MRT_TableInstance<Task>) => {
+  const {sorting, columnFilters} = table.getState();
+
+  filterFunction(columnFilters, 'due_date', [moment().format('YYYY-MM-DD'), null]);
+  sortingFunction(sorting, 'due_date', false);
+
+  table.setSorting(sorting);
+  table.setColumnFilters(columnFilters);
+};
+
+const showMyTasks = (
+  table: MRT_TableInstance<Task>,
+  taskUsers: Array<TaskUser> | undefined,
+  userAuthId: string | undefined
+) => {
+  const {sorting, columnFilters} = table.getState();
+  showUpcomingTasks(table);
+
+  filterFunction(columnFilters, 'assigned_to', [
+    taskUsers?.find((user) => user.id === userAuthId)?.display_name,
+  ]);
+
+  sortingFunction(sorting, 'assigned_to', false);
+
+  table.setColumnFilters(columnFilters);
+  table.setSorting(sorting);
+};
+
+const revertCustomFiltering = (table: MRT_TableInstance<Task>) => {
+  table.setColumnFilters(
+    table
+      .getState()
+      .columnFilters.filter((filter) => filter.id !== 'due_date' && filter.id !== 'assigned_to')
+  );
+  table.setSorting(
+    table
+      .getState()
+      .sorting.filter((filter) => filter.id !== 'due_date' && filter.id !== 'assigned_to')
+  );
+};
+
+const sortingFunction = (sorting: SortingState, sort_id: string, sortDirection: boolean) => {
+  const sorted = sorting.find((sort) => sort.id === sort_id);
+  if (sorted !== undefined) {
+    sorted.desc = sortDirection;
+  } else {
+    sorting.push({id: sort_id, desc: sortDirection});
+  }
+};
+
+const filterFunction = (
+  columnFilter: ColumnFiltersState,
+  filter_id: string,
+  value: Array<string | undefined | null>
+) => {
+  const filter = columnFilter.find((filter) => filter.id === filter_id);
+  if (filter) {
+    filter.value = value;
+  } else {
+    columnFilter.push({id: filter_id, value: value});
+  }
+};
+
 const errorReset = (details: object, reset: () => void) => {
   reset();
 };
+
 export default TaskTable;

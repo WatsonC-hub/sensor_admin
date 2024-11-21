@@ -49,7 +49,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
     console.log(taskComments);
   }, [selectedTaskId]);
 
-  const {handleSubmit} = formMethods;
+  const {handleSubmit, reset} = formMethods;
 
   const submit: SubmitHandler<InferTaskComment> = async (values) => {
     if (values.comment !== '') {
@@ -60,6 +60,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
         },
       };
       postComment.mutate(payload);
+      reset();
     }
   };
 
@@ -75,7 +76,6 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
         gap={2}
         overflow={'scrollY'}
       >
-        {/* <Box display={'flex'} flexDirection={'column'} gap={2}> */}
         {taskComments?.map((taskComment) => {
           if ('comment' in taskComment)
             return <TaskInfoComment key={taskComment.id} comment={taskComment} />;
@@ -89,7 +89,6 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
               />
             );
         })}
-        {/* </Box> */}
       </Grid>
       <Grid item xs={12}>
         <FormProvider {...formMethods}>

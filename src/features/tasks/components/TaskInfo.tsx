@@ -18,6 +18,11 @@ const TaskInfo = () => {
       status_id: selectedTask.status_id,
       due_date: selectedTask.due_date,
       assigned_to: selectedTask.assigned_to,
+      loctypename: selectedTask.loctypename,
+      tstype_name: selectedTask.tstype_name,
+      projectno: selectedTask.projectno,
+      project_text: selectedTask.project_text,
+      location_name: selectedTask.location_name,
     };
   }, [selectedTask]);
 

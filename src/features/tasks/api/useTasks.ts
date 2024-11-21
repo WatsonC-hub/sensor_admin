@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
-import type {Task, PatchTask, TaskUser, TaskStatus} from '../types';
+import {type Task, type PatchTask, type TaskUser, type TaskStatus, TaskProject} from '../types';
 
 type Mutation<TData> = {
   path: string;
@@ -105,12 +105,6 @@ export const useTasks = () => {
         previous?.map((task) => {
           if (task.id === path) {
             const updated = {...task, ...data};
-            if ('assigned_to' in data) {
-              const display_name = previous.find(
-                (task) => task.assigned_to === data.assigned_to && task.assigned_display_name
-              )?.assigned_display_name;
-              updated.assigned_display_name = display_name ?? '';
-            }
 
             return updated;
           }
@@ -120,18 +114,7 @@ export const useTasks = () => {
       return {previous};
     },
     onSuccess: (_, variables) => {
-      const {path, data} = variables;
-      const previous = queryClient.getQueryData<Task[]>(['tasks']);
-      if ('assigned_to' in data) {
-        const display_name = previous?.find(
-          (task) => task.assigned_to === data.assigned_to && task.assigned_display_name
-        )?.assigned_display_name;
-        if (!display_name) {
-          queryClient.invalidateQueries({
-            queryKey: ['tasks'],
-          });
-        }
-      }
+      const {path} = variables;
       queryClient.invalidateQueries({
         queryKey: ['taskComments', path],
       });
@@ -203,6 +186,16 @@ export const useTasks = () => {
     staleTime: 1000 * 60 * 5,
   });
 
+  const getProjects = useQuery<TaskProject[], APIError>({
+    queryKey: ['task_projects'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_admin/tasks/projects');
+
+      return data;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
   return {
     get,
     post,
@@ -212,5 +205,6 @@ export const useTasks = () => {
     updateNotification,
     getUsers,
     getStatus,
+    getProjects,
   };
 };

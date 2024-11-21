@@ -118,3 +118,9 @@ export type TaskUser = {
   id: string;
   display_name: string;
 };
+
+export type TaskProject = {
+  project_no: string;
+  customer_name: string;
+  project_info: string;
+};
