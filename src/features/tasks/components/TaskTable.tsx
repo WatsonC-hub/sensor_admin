@@ -1,3 +1,4 @@
+import {Edit} from '@mui/icons-material';
 import {
   Autocomplete,
   Box,
@@ -7,14 +8,17 @@ import {
   DialogContent,
   DialogTitle,
   FormControlLabel,
+  Stack,
   TextField,
   Tooltip,
   Typography,
+  Button as MuiButton,
+  IconButton,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
 import {Row, RowData} from '@tanstack/react-table';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MaterialReactTable, MRT_ColumnDef, MRT_Row, MRT_TableOptions} from 'material-react-table';
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {ErrorBoundary, FallbackProps} from 'react-error-boundary';
@@ -43,6 +47,45 @@ declare module '@tanstack/react-table' {
     convert?: (value: TValue) => Record<string, TValue>;
   }
 }
+
+const isInderminate = (row: MRT_Row<Task>): boolean => {
+  const isGrouped = row.groupingColumnId != undefined;
+  if (isGrouped && row.subRows) {
+    return row.subRows.some((subRow) => isInderminate(subRow));
+  }
+  return row.getIsSelected();
+};
+
+const isChecked = (row: MRT_Row<Task>): boolean => {
+  const isGrouped = row.groupingColumnId != undefined;
+  if (isGrouped && row.subRows) {
+    return row.subRows.every((subRow) => isChecked(subRow));
+  }
+  return row.getIsSelected();
+};
+
+const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
+  const isGrouped = row.groupingColumnId != undefined;
+
+  const checked = isChecked(row);
+
+  if (isGrouped) {
+    row.subRows?.forEach((subRow) => {
+      toggleRowSelection(subRow, parentChecked);
+    });
+  } else {
+    console.log('row', row);
+    console.log('parentChecked', parentChecked);
+    console.log('checked', checked);
+    if (!parentChecked) {
+      if (!checked) {
+        row.toggleSelected();
+      }
+    } else {
+      row.toggleSelected();
+    }
+  }
+};
 
 const TaskTable = () => {
   const [dueDateChecked, setDueDateChecked] = useState<boolean>(false);
@@ -408,7 +451,7 @@ const TaskTable = () => {
       globalFilterFn: 'fuzzy',
       enableColumnDragging: true,
       enableColumnOrdering: true,
-      enableMultiRowSelection: true,
+      // enableMultiRowSelection: true,
       enableSorting: true,
       autoResetPageIndex: false,
       enableRowSelection: true,
@@ -425,12 +468,31 @@ const TaskTable = () => {
         },
       }),
       displayColumnDefOptions: {
+        'mrt-row-select': {
+          Cell: ({row}) => {
+            const checked = isChecked(row);
+
+            const indeterminate = isInderminate(row);
+
+            return (
+              <Checkbox
+                checked={checked}
+                indeterminate={checked ? false : indeterminate}
+                onChange={() => {
+                  toggleRowSelection(row, checked);
+                }}
+              />
+            );
+          },
+          size: 50,
+        },
         'mrt-row-expand': {
           GroupedCell: ({row, table}) => {
             const grouping = table.getState().grouping;
             return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
           },
           enableResizing: true,
+
           muiTableBodyCellProps: ({row, table}) => {
             const isTsId =
               row.groupingColumnId === 'ts_id' &&
@@ -461,8 +523,10 @@ const TaskTable = () => {
       renderTopToolbarCustomActions: ({table}) => {
         return (
           <Box mr={'auto'} display="flex" gap={2} justifyContent="flex-end">
-            <RenderActions
-              handleEdit={() => {
+            <IconButton
+              sx={{p: 1}}
+              edge="end"
+              onClick={() => {
                 const selectedRows = table.getFilteredSelectedRowModel().rows;
                 setOpen(selectedRows.length > 0);
                 if (selectedRows.length > 0) {
@@ -474,8 +538,13 @@ const TaskTable = () => {
                   setOpen(true);
                 }
               }}
-              canEdit={true}
-            />
+              size="large"
+            >
+              <Edit />
+            </IconButton>
+            <Button bttype="tertiary" size="small" onClick={() => console.log('clicked')}>
+              Filtrer
+            </Button>
           </Box>
         );
       },
@@ -483,6 +552,41 @@ const TaskTable = () => {
         sx: {
           backgroundColor: 'grey.100',
         },
+      },
+      renderToolbarAlertBannerContent: ({table, groupedAlert}) => {
+        const selected = table.getSelectedRowModel();
+        const isgrouped = table.getState().grouping.length > 0;
+        const numSelected = selected.rows.length;
+        const total = table.getFilteredRowModel().rows.length;
+        return (
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              px: 1,
+            }}
+          >
+            {isgrouped ? groupedAlert : <div />}
+            {numSelected > 0 && (
+              <Stack direction={'row'} alignItems="center" gap={1}>
+                <Typography>
+                  {numSelected} af {total} rækker valgt
+                </Typography>
+                <MuiButton
+                  size="small"
+                  onClick={() => {
+                    table.resetRowSelection(true);
+                  }}
+                >
+                  Ryd valg
+                </MuiButton>
+              </Stack>
+            )}
+          </Box>
+        );
       },
       renderDetailPanel: ({row}) => {
         return (
@@ -540,10 +644,10 @@ const TaskTable = () => {
           }
         },
       }),
-      muiTableBodyRowProps: (props) => {
+      muiTableBodyRowProps: ({row}) => {
         return {
           onClick: () => {
-            setSelectedTask(props.row.original.id);
+            setSelectedTask(row.original.id);
           },
         };
       },
@@ -669,19 +773,20 @@ const TaskTable = () => {
 };
 
 const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
-  resetErrorBoundary(error);
   console.log(error);
   return (
     <>
       <Typography variant="h4" component="h1" sx={{textAlign: 'center', mt: 5}}>
         {error.message}
       </Typography>
+      <Button bttype="primary" onClick={resetErrorBoundary}>
+        Prøv igen
+      </Button>
     </>
   );
 };
 
 const errorReset = (details: object, reset: () => void) => {
   reset();
-  console.log(details);
 };
 export default TaskTable;
