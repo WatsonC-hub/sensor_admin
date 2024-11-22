@@ -14,10 +14,12 @@ import {
   Typography,
   Button as MuiButton,
   IconButton,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
-import {ColumnFiltersState, Row, RowData, SortingState} from '@tanstack/react-table';
+import {ColumnFiltersState, GroupingState, Row, RowData, SortingState} from '@tanstack/react-table';
 import {
   MaterialReactTable,
   MRT_ColumnDef,
@@ -81,9 +83,9 @@ const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
       toggleRowSelection(subRow, parentChecked);
     });
   } else {
-    console.log('row', row);
-    console.log('parentChecked', parentChecked);
-    console.log('checked', checked);
+    // console.log('row', row);
+    // console.log('parentChecked', parentChecked);
+    // console.log('checked', checked);
     if (!parentChecked) {
       if (!checked) {
         row.toggleSelected();
@@ -102,6 +104,7 @@ const TaskTable = () => {
   const {station} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
   const [rows, setRows] = useState<Array<Partial<Task>>>();
+  const [value, setValue] = useState<string>();
   const {
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
@@ -131,12 +134,22 @@ const TaskTable = () => {
         setDueDateChecked(!dueDateChecked);
       }
       if (!assignedChecked && data.assigned_to)
-        patchData = {...patchData, assigned_to: data.assigned_to};
+        patchData = {
+          ...patchData,
+          assigned_to: data.assigned_to,
+          assigned_display_name: taskUsers?.find((user) => user.id == data.assigned_to)
+            ?.display_name,
+        };
       else if (assignedChecked) {
         patchData = {...patchData, assigned_to: null};
         setAssignedChecked(!assignedChecked);
       }
-      if (!statusChecked && data.status_id) patchData = {...patchData, status_id: data.status_id};
+      if (!statusChecked && data.status_id)
+        patchData = {
+          ...patchData,
+          status_id: data.status_id,
+          status_name: taskStatus?.find((status) => status.id === data.status_id)?.name,
+        };
       else if (statusChecked) {
         patchData = {...patchData, status_id: 1};
         setStatusChecked(!statusChecked);
@@ -220,7 +233,6 @@ const TaskTable = () => {
           },
           Filter: ({column, rangeFilterIndex}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
-            console.log(filters);
             return (
               filters &&
               filters.length > 0 &&
@@ -392,9 +404,8 @@ const TaskTable = () => {
             ?.map((user) => user.display_name)
             .sort()
             .toSpliced(0, 0, 'Ikke tildelt'),
-          Filter: ({column, table}) => {
+          Filter: ({column}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
-            console.log(table.getState().columnFilters);
             return (
               <Autocomplete
                 multiple
@@ -473,7 +484,7 @@ const TaskTable = () => {
           editSelectOptions: taskStatus?.map((status) => status.name),
         },
       ] as MRT_ColumnDef<Task>[],
-    [taskStatus, taskUsers, handleBlurSubmit, station]
+    [taskStatus, taskUsers, handleBlurSubmit, station, taskProjects]
   );
 
   const options: Partial<MRT_TableOptions<Task>> = useMemo(
@@ -528,6 +539,7 @@ const TaskTable = () => {
             return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
           },
           enableResizing: true,
+          size: 100,
 
           muiTableBodyCellProps: ({row, table}) => {
             const isTsId =
@@ -577,7 +589,20 @@ const TaskTable = () => {
             >
               <Edit />
             </IconButton>
-            <Button bttype="tertiary" size="small" onClick={() => showUpcomingTasks(table)}>
+            <Select
+              size="small"
+              sx={{width: 200}}
+              defaultValue={'-1'}
+              onChange={(e) => {
+                setValue(e.target.value);
+              }}
+            >
+              <MenuItem value={'-1'}>Valg filtrering...</MenuItem>
+              <MenuItem value={'1'}>Kommende opgaver</MenuItem>
+              <MenuItem value={'2'}>Se Mine opgaver</MenuItem>
+              <MenuItem value={'3'}>Gruppér efter tildelte</MenuItem>
+            </Select>
+            {/* <Button bttype="tertiary" size="small" onClick={() => showUpcomingTasks(table)}>
               Kommende opgaver
             </Button>
             <Button
@@ -587,6 +612,9 @@ const TaskTable = () => {
             >
               Se mine opgaver
             </Button>
+            <Button bttype="tertiary" onClick={() => groupByAssigned(table)}>
+              gruppér efter tildelte
+            </Button> */}
             <Button
               bttype="tertiary"
               onClick={() => revertCustomFiltering(table)}
@@ -696,7 +724,7 @@ const TaskTable = () => {
         };
       },
     }),
-    [handleBlurSubmit, setSelectedTask, station]
+    [handleBlurSubmit, setSelectedTask, station, taskUsers, reset, userAuthId]
   );
 
   const table = useTable<Task>(
@@ -717,8 +745,6 @@ const TaskTable = () => {
     const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
     setShownListTaskIds(ids);
   }, [table.getState().globalFilter]);
-
-  console.log('RERENDERING');
 
   return (
     <Box
@@ -836,6 +862,7 @@ const showUpcomingTasks = (table: MRT_TableInstance<Task>) => {
   filterFunction(columnFilters, 'due_date', [moment().format('YYYY-MM-DD'), null]);
   sortingFunction(sorting, 'due_date', false);
 
+  table.setShowColumnFilters(true);
   table.setSorting(sorting);
   table.setColumnFilters(columnFilters);
 };
@@ -854,7 +881,19 @@ const showMyTasks = (
 
   sortingFunction(sorting, 'assigned_to', false);
 
+  table.setShowColumnFilters(true);
   table.setColumnFilters(columnFilters);
+  table.setSorting(sorting);
+};
+
+const groupByAssigned = (table: MRT_TableInstance<Task>) => {
+  const {sorting, grouping} = table.getState();
+
+  sortingFunction(sorting, 'assigned_to', false);
+  groupingFunction(grouping, 'assigned_to');
+
+  table.setShowColumnFilters(true);
+  table.setGrouping(grouping);
   table.setSorting(sorting);
 };
 
@@ -890,6 +929,14 @@ const filterFunction = (
     filter.value = value;
   } else {
     columnFilter.push({id: filter_id, value: value});
+  }
+};
+
+const groupingFunction = (groupingState: GroupingState, group_id: string) => {
+  const grouping = groupingState.find((group) => group === group_id);
+
+  if (!grouping) {
+    groupingState.push(group_id);
   }
 };
 
