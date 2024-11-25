@@ -26,6 +26,7 @@ const zodSchema = z.object({
     .nullish()
     .transform((value) => (value === '' ? null : value)),
   blocks_notifications: z.array(z.number()).or(z.literal('all')).optional(),
+  block_on_location: z.boolean().optional(),
   loctypename: z.string().optional(),
   tstype_name: z.string().optional(),
   project_text: z.string().nullish(),
@@ -189,7 +190,7 @@ const BlockNotifications = ({notification_id}: BlockNotificationsProps) => {
   const {control} = useFormContext<FormValues>();
 
   return (
-    <Controller<FormValues>
+    <Controller<FormValues, 'blocks_notifications'>
       control={control}
       name={'blocks_notifications'}
       render={({field: {value, onChange, ref, name}}) => {
@@ -229,11 +230,42 @@ const BlockNotifications = ({notification_id}: BlockNotificationsProps) => {
   );
 };
 
+const BlockOnLocation = () => {
+  const {control} = useFormContext<FormValues>();
+
+  return (
+    <Controller<FormValues, 'block_on_location'>
+      control={control}
+      name={'block_on_location'}
+      render={({field: {value, onChange, ref, name}}) => {
+        return (
+          <FormControlLabel
+            control={
+              <Switch
+                ref={ref}
+                checked={value}
+                size="small"
+                color="primary"
+                aria-label={name}
+                onChange={(e, value) => {
+                  onChange(value);
+                }}
+              />
+            }
+            label={'Bloker på hele lokation i stedet'}
+          />
+        );
+      }}
+    />
+  );
+};
+
 TaskForm.SubmitButton = TaskSubmitButton;
 TaskForm.Input = Input;
 TaskForm.StatusSelect = StatusSelect;
 TaskForm.AssignedTo = AssignedTo;
 TaskForm.BlockNotifications = BlockNotifications;
 TaskForm.DueDate = DueDate;
+TaskForm.BlockOnLocation = BlockOnLocation;
 
 export default TaskForm;
