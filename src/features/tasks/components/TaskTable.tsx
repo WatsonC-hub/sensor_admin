@@ -182,10 +182,7 @@ const TaskTable = () => {
   };
 
   const revertView = (table: MRT_TableInstance<Task>) => {
-    table.resetColumnFilters();
-    table.resetGlobalFilter();
-    table.resetGrouping();
-    table.resetSorting();
+    resetView(table);
     setViewValue(null);
   };
 
@@ -920,20 +917,28 @@ const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
   );
 };
 
+const resetView = (table: MRT_TableInstance<Task>) => {
+  table.resetColumnFilters();
+  table.resetGlobalFilter();
+  table.resetGrouping();
+  table.resetSorting();
+};
+
 const onSelectChange = (
   selectValue: ViewValues | '-1',
   table: MRT_TableInstance<Task>,
   taskUsers: Array<TaskUser> | undefined,
   userAuthId: string | undefined
 ) => {
+  resetView(table);
   switch (selectValue) {
-    case '1':
+    case 'upcoming':
       showUpcomingTasks(table);
       break;
-    case '2':
+    case 'my':
       showMyTasks(table, taskUsers, userAuthId);
       break;
-    case '3':
+    case 'groupAssigned':
       groupByAssigned(table);
       break;
     default:
@@ -942,14 +947,19 @@ const onSelectChange = (
 };
 
 const showUpcomingTasks = (table: MRT_TableInstance<Task>) => {
-  const {sorting, columnFilters} = table.getState();
-
-  filterFunction(columnFilters, 'due_date', [moment().format('YYYY-MM-DD'), null]);
-  sortingFunction(sorting, 'due_date', false);
-
   table.setShowColumnFilters(true);
-  table.setSorting(sorting);
-  table.setColumnFilters(columnFilters);
+  table.setSorting([
+    {
+      id: 'due_date',
+      desc: false,
+    },
+  ]);
+  table.setColumnFilters([
+    {
+      id: 'due_date',
+      value: [moment().format('YYYY-MM-DD'), null],
+    },
+  ]);
 };
 
 const showMyTasks = (
@@ -957,59 +967,59 @@ const showMyTasks = (
   taskUsers: Array<TaskUser> | undefined,
   userAuthId: string | undefined
 ) => {
-  const {sorting, columnFilters} = table.getState();
-  showUpcomingTasks(table);
-  filterFunction(columnFilters, 'assigned_to', [
-    taskUsers?.find((user) => user.id === userAuthId)?.display_name,
-  ]);
-
-  sortingFunction(sorting, 'assigned_to', false);
-
   table.setShowColumnFilters(true);
-  table.setColumnFilters(columnFilters);
-  table.setSorting(sorting);
+  table.setColumnFilters([
+    {
+      id: 'assigned_to',
+      value: [taskUsers?.find((user) => user.id === userAuthId)?.display_name],
+    },
+  ]);
+  table.setSorting([
+    {
+      id: 'due_date',
+      desc: false,
+    },
+  ]);
 };
 
 const groupByAssigned = (table: MRT_TableInstance<Task>) => {
-  const {sorting, grouping} = table.getState();
-
-  sortingFunction(sorting, 'assigned_to', false);
-  groupingFunction(grouping, 'assigned_to');
-
-  table.setShowColumnFilters(true);
-  table.setGrouping(grouping);
-  table.setSorting(sorting);
+  // table.setShowColumnFilters(true);
+  table.setGrouping(['assigned_to']);
+  table.setSorting([
+    {id: 'assigned_to', desc: false},
+    {id: 'due_date', desc: false},
+  ]);
 };
 
-const sortingFunction = (sorting: SortingState, sort_id: string, sortDirection: boolean) => {
-  const sorted = sorting.find((sort) => sort.id === sort_id);
-  if (sorted !== undefined) {
-    sorted.desc = sortDirection;
-  } else {
-    sorting.push({id: sort_id, desc: sortDirection});
-  }
-};
+// const sortingFunction = (sorting: SortingState, sort_id: string, sortDirection: boolean) => {
+//   const sorted = sorting.find((sort) => sort.id === sort_id);
+//   if (sorted !== undefined) {
+//     sorted.desc = sortDirection;
+//   } else {
+//     sorting.push({id: sort_id, desc: sortDirection});
+//   }
+// };
 
-const filterFunction = (
-  columnFilter: ColumnFiltersState,
-  filter_id: string,
-  value: Array<string | undefined | null>
-) => {
-  const filter = columnFilter.find((filter) => filter.id === filter_id);
-  if (filter) {
-    filter.value = value;
-  } else {
-    columnFilter.push({id: filter_id, value: value});
-  }
-};
+// const filterFunction = (
+//   columnFilter: ColumnFiltersState,
+//   filter_id: string,
+//   value: Array<string | undefined | null>
+// ) => {
+//   const filter = columnFilter.find((filter) => filter.id === filter_id);
+//   if (filter) {
+//     filter.value = value;
+//   } else {
+//     columnFilter.push({id: filter_id, value: value});
+//   }
+// };
 
-const groupingFunction = (groupingState: GroupingState, group_id: string) => {
-  const grouping = groupingState.find((group) => group === group_id);
+// const groupingFunction = (groupingState: GroupingState, group_id: string) => {
+//   const grouping = groupingState.find((group) => group === group_id);
 
-  if (!grouping) {
-    groupingState.push(group_id);
-  }
-};
+//   if (!grouping) {
+//     groupingState.push(group_id);
+//   }
+// };
 
 const errorReset = (details: object, reset: () => void) => {
   reset();
