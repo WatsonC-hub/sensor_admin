@@ -57,17 +57,19 @@ export const useTaskStore = () => {
     resetState,
   } = taskStore();
 
-  const {shownTasks, hiddenTasks} = useMemo(() => {
+  const {shownTasks, hiddenTasks, mapFilteredTasks} = useMemo(() => {
     if (!tasks) {
-      return {shownTasks: [], hiddenTasks: []};
+      return {shownTasks: [], hiddenTasks: [], mapFilteredTasks: []};
     }
     const shownTasks = filterTasks(tasks, [shownListTaskIds, shownMapTaskIds]);
     // console.log('shownTasks', shownTasks);
     // console.log('shownListTaskIds', shownListTaskIds);
     // console.log('shownMapTaskIds', shownMapTaskIds);
+    const mapFilteredTasks = filterTasks(tasks, [shownMapTaskIds]);
 
     return {
       shownTasks: shownTasks,
+      mapFilteredTasks,
       hiddenTasks: tasks.filter((task) => !shownTasks.includes(task)),
     };
   }, [tasks, shownListTaskIds, shownMapTaskIds]);
@@ -92,6 +94,7 @@ export const useTaskStore = () => {
   return {
     tasks,
     shownTasks,
+    mapFilteredTasks,
     activeTasks,
     hiddenTasks,
     selectedTask,
