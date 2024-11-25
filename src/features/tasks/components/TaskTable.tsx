@@ -16,7 +16,9 @@ import {
   IconButton,
   Select,
   MenuItem,
-  SelectChangeEvent,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
@@ -49,6 +51,7 @@ import {useTaskStore} from '../store';
 import TaskForm, {FormValues} from './TaskForm';
 
 const NOT_ASSIGNED = 'Ikke tildelt' as const;
+const NO_PROJECT = 'Intet projektnummer' as const;
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -97,6 +100,8 @@ const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
   }
 };
 
+type ViewValues = 'upcoming' | 'my' | 'groupAssigned' | null;
+
 const TaskTable = () => {
   const [dueDateChecked, setDueDateChecked] = useState<boolean>(false);
   const [assignedChecked, setAssignedChecked] = useState<boolean>(false);
@@ -105,7 +110,7 @@ const TaskTable = () => {
   const {station} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
   const [rows, setRows] = useState<Array<Partial<Task>>>();
-  const [value, setValue] = useState<string>('-1');
+  const [viewValue, setViewValue] = useState<ViewValues>(null);
   const {
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
@@ -176,11 +181,20 @@ const TaskTable = () => {
     }
   };
 
+  const revertView = (table: MRT_TableInstance<Task>) => {
+    table.resetColumnFilters();
+    table.resetGlobalFilter();
+    table.resetGrouping();
+    table.resetSorting();
+    setViewValue(null);
+  };
+
   const tableData = useMemo(() => {
     return mapFilteredTasks.map((task) => {
       return {
         ...task,
         assigned_display_name: task.assigned_display_name ?? NOT_ASSIGNED,
+        projectno: task.projectno ?? NO_PROJECT,
       };
     });
   }, [mapFilteredTasks]);
@@ -287,7 +301,7 @@ const TaskTable = () => {
           header: 'Opgave',
           enableEditing: false,
           enableGrouping: false,
-          enableColumnFilter: false,
+          // enableColumnFilter: false,
           size: 200,
         },
         {
@@ -337,15 +351,19 @@ const TaskTable = () => {
             .toSpliced(0, 0, 'Ikke tildelt'),
           Filter: ({column}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
+            const faceted = column.getFacetedUniqueValues();
             return (
               <Autocomplete
                 multiple
-                fullWidth
+                // fullWidth
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
                 disableCloseOnSelect
                 size="small"
+                componentsProps={{
+                  popper: {style: {width: 'fit-content'}},
+                }}
                 limitTags={3}
                 value={filters ?? []}
                 options={
@@ -354,6 +372,17 @@ const TaskTable = () => {
                     .sort()
                     .toSpliced(0, 0, 'Ikke tildelt') ?? []
                 }
+                getOptionLabel={(option) => {
+                  if (option != null) {
+                    if (faceted.has(option)) {
+                      return option + ' (' + faceted.get(option) + ')';
+                    } else {
+                      return option + ' (0)';
+                    }
+                  }
+
+                  return option ?? '';
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -438,6 +467,7 @@ const TaskTable = () => {
           filterVariant: 'multi-select',
           Filter: ({column}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
+            const faceted = column.getFacetedUniqueValues();
 
             return (
               <Autocomplete
@@ -450,7 +480,18 @@ const TaskTable = () => {
                 size="small"
                 limitTags={3}
                 value={filters ?? []}
-                options={taskProjects?.map((project) => project.project_no).sort() ?? []}
+                options={Array.from(faceted.keys()).sort().reverse() ?? []}
+                getOptionLabel={(option) => {
+                  if (option != null) {
+                    if (faceted.has(option)) {
+                      return option + ' (' + faceted.get(option) + ')';
+                    } else {
+                      return option + ' (0)';
+                    }
+                  }
+
+                  return 'Intet projektnummer' + ' (0)';
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -502,10 +543,11 @@ const TaskTable = () => {
       autoResetPageIndex: false,
       enableRowSelection: true,
       groupedColumnMode: 'remove',
-      enableColumnResizing: true,
-      enableExpanding: true,
+      // enableColumnResizing: true,
+      enableExpanding: false,
       positionExpandColumn: 'first',
       enablePagination: true,
+      paginateExpandedRows: false,
       getRowId: (row) => row.id,
       muiTableBodyCellProps: ({cell, table}) => ({
         onClick: () => {
@@ -539,8 +581,11 @@ const TaskTable = () => {
             const grouping = table.getState().grouping;
             return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
           },
-          enableResizing: true,
-          size: 100,
+          // enableColumnOrdering: true,
+          enableResizing: false,
+          // size: 200,
+          // size: 200,
+          // maxSize: 200,
 
           muiTableBodyCellProps: ({row, table}) => {
             const isTsId =
@@ -590,20 +635,26 @@ const TaskTable = () => {
             >
               <Edit />
             </IconButton>
-            <Select
+
+            <TextField
+              select
               size="small"
               sx={{width: 200}}
-              value={value}
+              value={viewValue}
+              placeholder="Vælg filtrering..."
+              label="View"
               onChange={(e) => {
-                setValue(e.target.value);
-                onSelectChange(e.target.value, table, taskUsers, userAuthId?.toString());
+                const value = e.target.value as ViewValues;
+                setViewValue(value);
+                onSelectChange(value, table, taskUsers, userAuthId?.toString());
               }}
             >
-              <MenuItem value={'-1'}>Valg filtrering...</MenuItem>
-              <MenuItem value={'1'}>Kommende opgaver</MenuItem>
-              <MenuItem value={'2'}>Se Mine opgaver</MenuItem>
-              <MenuItem value={'3'}>Gruppér efter tildelte</MenuItem>
-            </Select>
+              {/* <MenuItem value={'-1'}>Vælg filtrering...</MenuItem> */}
+              <MenuItem value={'upcoming'}>Kommende opgaver</MenuItem>
+              <MenuItem value={'my'}>Se Mine opgaver</MenuItem>
+              <MenuItem value={'groupAssigned'}>Gruppér efter tildelte</MenuItem>
+            </TextField>
+
             {/* <Button bttype="tertiary" size="small" onClick={() => showUpcomingTasks(table)}>
               Kommende opgaver
             </Button>
@@ -617,12 +668,8 @@ const TaskTable = () => {
             <Button bttype="tertiary" onClick={() => groupByAssigned(table)}>
               gruppér efter tildelte
             </Button> */}
-            <Button
-              bttype="tertiary"
-              onClick={() => revertCustomFiltering(table)}
-              sx={{justifySelf: 'end'}}
-            >
-              Nulstil filtrering
+            <Button bttype="tertiary" onClick={() => revertView(table)} sx={{justifySelf: 'end'}}>
+              Nulstil view
             </Button>
           </Box>
         );
@@ -699,6 +746,10 @@ const TaskTable = () => {
             )}
           </Box>
         );
+      },
+      muiFilterTextFieldProps: {
+        size: 'small',
+        variant: 'outlined',
       },
       muiEditTextFieldProps: ({cell, row, column}) => ({
         variant: 'outlined',
@@ -870,7 +921,7 @@ const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
 };
 
 const onSelectChange = (
-  selectValue: string,
+  selectValue: ViewValues | '-1',
   table: MRT_TableInstance<Task>,
   taskUsers: Array<TaskUser> | undefined,
   userAuthId: string | undefined
@@ -928,19 +979,6 @@ const groupByAssigned = (table: MRT_TableInstance<Task>) => {
   table.setShowColumnFilters(true);
   table.setGrouping(grouping);
   table.setSorting(sorting);
-};
-
-const revertCustomFiltering = (table: MRT_TableInstance<Task>) => {
-  table.setColumnFilters(
-    table
-      .getState()
-      .columnFilters.filter((filter) => filter.id !== 'due_date' && filter.id !== 'assigned_to')
-  );
-  table.setSorting(
-    table
-      .getState()
-      .sorting.filter((filter) => filter.id !== 'due_date' && filter.id !== 'assigned_to')
-  );
 };
 
 const sortingFunction = (sorting: SortingState, sort_id: string, sortDirection: boolean) => {
