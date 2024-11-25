@@ -16,6 +16,7 @@ import {
   IconButton,
   Select,
   MenuItem,
+  SelectChangeEvent,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
@@ -35,7 +36,7 @@ import {UseFormReturn} from 'react-hook-form';
 import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight} from '~/consts';
-import type {Task, TaskUser} from '~/features/tasks/types';
+import type {ID, Task, TaskUser} from '~/features/tasks/types';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
@@ -100,11 +101,11 @@ const TaskTable = () => {
   const [dueDateChecked, setDueDateChecked] = useState<boolean>(false);
   const [assignedChecked, setAssignedChecked] = useState<boolean>(false);
   const [statusChecked, setStatusChecked] = useState<boolean>(false);
-  const {shownTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
+  const {mapFilteredTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
   const {station} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
   const [rows, setRows] = useState<Array<Partial<Task>>>();
-  const [value, setValue] = useState<string>();
+  const [value, setValue] = useState<string>('-1');
   const {
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
@@ -176,13 +177,13 @@ const TaskTable = () => {
   };
 
   const tableData = useMemo(() => {
-    return shownTasks.map((task) => {
+    return mapFilteredTasks.map((task) => {
       return {
         ...task,
         assigned_display_name: task.assigned_display_name ?? NOT_ASSIGNED,
       };
     });
-  }, [shownTasks]);
+  }, [mapFilteredTasks]);
 
   const [tableState, reset] = useStatefullTableAtom<Task>('taskTableState');
 
@@ -592,9 +593,10 @@ const TaskTable = () => {
             <Select
               size="small"
               sx={{width: 200}}
-              defaultValue={'-1'}
+              value={value}
               onChange={(e) => {
                 setValue(e.target.value);
+                onSelectChange(e.target.value, table, taskUsers, userAuthId?.toString());
               }}
             >
               <MenuItem value={'-1'}>Valg filtrering...</MenuItem>
@@ -737,14 +739,25 @@ const TaskTable = () => {
   );
 
   useEffect(() => {
-    const globalFilter = table.getState().globalFilter;
-    if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
+    // const globalFilter = table.getState().globalFilter;
+    // if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
+    //   setShownListTaskIds([]);
+    //   return;
+    // }
+    const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
+    const origIds = tableData.map((task) => task.id);
+
+    const areSetsEqual = (a: Set<ID>, b: Set<ID>) =>
+      a.size === b.size && [...a].every((value) => b.has(value));
+
+    if (areSetsEqual(new Set(ids), new Set(origIds))) {
+      console.log('EQUAL');
       setShownListTaskIds([]);
       return;
     }
-    const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
+
     setShownListTaskIds(ids);
-  }, [table.getState().globalFilter]);
+  }, [table.getState().globalFilter, table.getState().columnFilters]);
 
   return (
     <Box
@@ -856,6 +869,27 @@ const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
   );
 };
 
+const onSelectChange = (
+  selectValue: string,
+  table: MRT_TableInstance<Task>,
+  taskUsers: Array<TaskUser> | undefined,
+  userAuthId: string | undefined
+) => {
+  switch (selectValue) {
+    case '1':
+      showUpcomingTasks(table);
+      break;
+    case '2':
+      showMyTasks(table, taskUsers, userAuthId);
+      break;
+    case '3':
+      groupByAssigned(table);
+      break;
+    default:
+      break;
+  }
+};
+
 const showUpcomingTasks = (table: MRT_TableInstance<Task>) => {
   const {sorting, columnFilters} = table.getState();
 
@@ -874,7 +908,6 @@ const showMyTasks = (
 ) => {
   const {sorting, columnFilters} = table.getState();
   showUpcomingTasks(table);
-
   filterFunction(columnFilters, 'assigned_to', [
     taskUsers?.find((user) => user.id === userAuthId)?.display_name,
   ]);
