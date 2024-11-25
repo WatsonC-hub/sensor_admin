@@ -290,76 +290,6 @@ const TaskTable = () => {
           size: 200,
         },
         {
-          accessorKey: 'location_name',
-          header: 'Lokation',
-          enableEditing: false,
-        },
-        {
-          accessorKey: 'tstype_name',
-          header: 'Tidsserietype',
-          enableEditing: false,
-          filterVariant: 'multi-select',
-        },
-        {
-          accessorKey: 'loctypename',
-          header: 'Lokationstype',
-          enableEditing: false,
-          filterVariant: 'multi-select',
-        },
-        {
-          accessorKey: 'projectno',
-          header: 'Projektnummer',
-          enableEditing: false,
-          filterVariant: 'multi-select',
-          Filter: ({column}) => {
-            const filters: Array<string | null> = column.getFilterValue() as string[];
-
-            return (
-              <Autocomplete
-                multiple
-                fullWidth
-                selectOnFocus
-                clearOnBlur
-                handleHomeEndKeys
-                disableCloseOnSelect
-                size="small"
-                limitTags={3}
-                value={filters ?? []}
-                options={taskProjects?.map((project) => project.project_no).sort() ?? []}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder={'Filtrér efter ' + column.columnDef.header}
-                    variant="outlined"
-                  />
-                )}
-                onChange={(e, newValue) => {
-                  column.setFilterValue(() => {
-                    return newValue;
-                  });
-                }}
-              />
-            );
-          },
-        },
-        {
-          accessorKey: 'ts_id',
-          header: 'TS_ID',
-          size: 150,
-          enableEditing: false,
-          Cell: ({row, renderedCellValue}) => (
-            <Box
-              sx={{
-                cursor: 'pointer',
-                textDecoration: 'underline',
-              }}
-              onClick={() => station(undefined, row.original.ts_id)}
-            >
-              {renderedCellValue}
-            </Box>
-          ),
-        },
-        {
           accessorFn: (row) => row.assigned_display_name,
           id: 'assigned_to',
           header: 'Ansvarlig',
@@ -482,6 +412,76 @@ const TaskTable = () => {
             }),
           },
           editSelectOptions: taskStatus?.map((status) => status.name),
+        },
+        {
+          accessorKey: 'location_name',
+          header: 'Lokation',
+          enableEditing: false,
+        },
+        {
+          accessorKey: 'tstype_name',
+          header: 'Tidsserietype',
+          enableEditing: false,
+          filterVariant: 'multi-select',
+        },
+        {
+          accessorKey: 'loctypename',
+          header: 'Lokationstype',
+          enableEditing: false,
+          filterVariant: 'multi-select',
+        },
+        {
+          accessorKey: 'projectno',
+          header: 'Projektnummer',
+          enableEditing: false,
+          filterVariant: 'multi-select',
+          Filter: ({column}) => {
+            const filters: Array<string | null> = column.getFilterValue() as string[];
+
+            return (
+              <Autocomplete
+                multiple
+                fullWidth
+                selectOnFocus
+                clearOnBlur
+                handleHomeEndKeys
+                disableCloseOnSelect
+                size="small"
+                limitTags={3}
+                value={filters ?? []}
+                options={taskProjects?.map((project) => project.project_no).sort() ?? []}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    placeholder={'Filtrér efter ' + column.columnDef.header}
+                    variant="outlined"
+                  />
+                )}
+                onChange={(e, newValue) => {
+                  column.setFilterValue(() => {
+                    return newValue;
+                  });
+                }}
+              />
+            );
+          },
+        },
+        {
+          accessorKey: 'ts_id',
+          header: 'TS_ID',
+          size: 150,
+          enableEditing: false,
+          Cell: ({row, renderedCellValue}) => (
+            <Box
+              sx={{
+                cursor: 'pointer',
+                textDecoration: 'underline',
+              }}
+              onClick={() => station(undefined, row.original.ts_id)}
+            >
+              {renderedCellValue}
+            </Box>
+          ),
         },
       ] as MRT_ColumnDef<Task>[],
     [taskStatus, taskUsers, handleBlurSubmit, station, taskProjects]
