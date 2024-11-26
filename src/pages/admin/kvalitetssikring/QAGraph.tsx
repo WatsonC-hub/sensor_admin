@@ -4,6 +4,7 @@ import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
 import {Layout} from 'plotly.js';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
+import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
@@ -214,6 +215,7 @@ export default function PlotGraph({
         eventData.points = [{x: prevDate, y: prevValue}, ...eventData.points];
       }
       setSelection(eventData);
+      if (eventData.points && eventData.points.length > 0) toast.dismiss('juster');
     }
   };
 
@@ -472,6 +474,7 @@ export default function PlotGraph({
               e.points[0].data.mode !== 'markers'
             ) {
               setSelection({points: e.points});
+              if (e.points && e.points.length > 0) toast.dismiss('juster');
             }
           },
         }}

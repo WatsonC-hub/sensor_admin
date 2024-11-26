@@ -59,7 +59,7 @@ const QualityAssurance = () => {
         setDataAdjustment(qaAdjustment.CONFIRM);
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.CONFIRM),
-      toastTip: 'Vælg et punkt på grafen',
+      toastTip: 'Klik på et datapunkt på grafen',
     },
     {
       key: 'removeData',
@@ -75,7 +75,7 @@ const QualityAssurance = () => {
     {
       key: 'defineValues',
       icon: <DensityLargeIcon />,
-      tooltip: <Typography noWrap>Definer værdier</Typography>,
+      tooltip: <Typography noWrap>Valide værdier</Typography>,
       onClick: () => {
         setInitiateSelect(true);
         setDataAdjustment(qaAdjustment.BOUNDS);
@@ -92,7 +92,7 @@ const QualityAssurance = () => {
         setDataAdjustment(qaAdjustment.CORRECTION);
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
-      toastTip: 'Vælg et punkt på grafen',
+      toastTip: 'Klik på et datapunkt på grafen',
     }
   );
 

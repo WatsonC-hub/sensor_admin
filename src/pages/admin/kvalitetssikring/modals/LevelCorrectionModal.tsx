@@ -7,7 +7,6 @@ import {parseAsString, useQueryState} from 'nuqs';
 import {useContext, useState} from 'react';
 
 import Button from '~/components/Button';
-import {limitDecimalNumbers} from '~/helpers/dateConverter';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
