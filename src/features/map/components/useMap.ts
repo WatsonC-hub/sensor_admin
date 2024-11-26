@@ -55,7 +55,7 @@ const useMap = <TData extends object>(
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const [hightlightedMarker, setHightlightedMarker] = useState<L.CircleMarker | null>();
-  const [highlightedParking, setHighlightedParking] = useState<L.Marker | null>();
+  const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
   const [superUser] = authStore((state) => [state.superUser]);
   const [deleteTitle, setDeleteTitle] = useState<string>(
