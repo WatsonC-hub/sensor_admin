@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
-import {type Task, type PatchTask, type TaskUser, type TaskStatus, TaskProject} from '../types';
+import {type Task, type PatchTask, type TaskUser, type TaskStatus} from '../types';
 
 type Mutation<TData> = {
   path: string;
@@ -186,15 +186,15 @@ export const useTasks = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const getProjects = useQuery<TaskProject[], APIError>({
-    queryKey: ['task_projects'],
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/projects');
+  // const getProjects = useQuery<TaskProject[], APIError>({
+  //   queryKey: ['task_projects'],
+  //   queryFn: async () => {
+  //     const {data} = await apiClient.get('/sensor_admin/tasks/projects');
 
-      return data;
-    },
-    staleTime: 1000 * 60 * 5,
-  });
+  //     return data;
+  //   },
+  //   staleTime: 1000 * 60 * 5,
+  // });
 
   return {
     get,
@@ -205,6 +205,6 @@ export const useTasks = () => {
     updateNotification,
     getUsers,
     getStatus,
-    getProjects,
+    // getProjects,
   };
 };

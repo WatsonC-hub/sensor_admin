@@ -81,9 +81,6 @@ const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
       toggleRowSelection(subRow, parentChecked);
     });
   } else {
-    // console.log('row', row);
-    // console.log('parentChecked', parentChecked);
-    // console.log('checked', checked);
     if (!parentChecked) {
       if (!checked) {
         row.toggleSelected();
@@ -108,7 +105,6 @@ const TaskTable = () => {
   const {
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
-    getProjects: {data: taskProjects},
     patch,
   } = useTasks();
 
@@ -517,7 +513,7 @@ const TaskTable = () => {
           ),
         },
       ] as MRT_ColumnDef<Task>[],
-    [taskStatus, taskUsers, handleBlurSubmit, station, taskProjects]
+    [taskStatus, taskUsers, handleBlurSubmit, station]
   );
 
   const options: Partial<MRT_TableOptions<Task>> = useMemo(
@@ -534,7 +530,6 @@ const TaskTable = () => {
       autoResetPageIndex: false,
       enableRowSelection: true,
       groupedColumnMode: 'remove',
-      // enableColumnResizing: true,
       enableExpanding: false,
       positionExpandColumn: 'first',
       enablePagination: true,
@@ -572,11 +567,7 @@ const TaskTable = () => {
             const grouping = table.getState().grouping;
             return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
           },
-          // enableColumnOrdering: true,
           enableResizing: false,
-          // size: 200,
-          // size: 200,
-          // maxSize: 200,
 
           muiTableBodyCellProps: ({row, table}) => {
             const isTsId =
@@ -645,20 +636,6 @@ const TaskTable = () => {
               <MenuItem value={'my'}>Se Mine opgaver</MenuItem>
               <MenuItem value={'groupAssigned'}>Gruppér efter tildelte</MenuItem>
             </TextField>
-
-            {/* <Button bttype="tertiary" size="small" onClick={() => showUpcomingTasks(table)}>
-              Kommende opgaver
-            </Button>
-            <Button
-              bttype="tertiary"
-              size="small"
-              onClick={() => showMyTasks(table, taskUsers, userAuthId?.toString())}
-            >
-              Se mine opgaver
-            </Button>
-            <Button bttype="tertiary" onClick={() => groupByAssigned(table)}>
-              gruppér efter tildelte
-            </Button> */}
             <Button bttype="tertiary" onClick={() => revertView(table)} sx={{justifySelf: 'end'}}>
               Nulstil view
             </Button>
