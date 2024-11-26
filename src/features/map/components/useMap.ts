@@ -34,7 +34,7 @@ import {
   markerNumThreshold,
 } from '../mapConsts';
 
-let highlightedParking: L.Marker | null = null;
+// const highlightedParking: L.Marker | null = null;
 
 const useMap = <TData extends object>(
   id: string,
@@ -55,6 +55,7 @@ const useMap = <TData extends object>(
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const [hightlightedMarker, setHightlightedMarker] = useState<L.CircleMarker | null>();
+  const [highlightedParking, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
   const [superUser] = authStore((state) => [state.superUser]);
   const [deleteTitle, setDeleteTitle] = useState<string>(
@@ -172,6 +173,7 @@ const useMap = <TData extends object>(
       setSelectedMarker(null);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
+        highlightParking(hightlightedMarker.options.data.loc_id, false);
         setHightlightedMarker(null);
       }
 
@@ -369,7 +371,7 @@ const useMap = <TData extends object>(
             let view = parkingIcon;
             if (highlight) view = hightlightParkingIcon;
             layer.setIcon(view);
-            highlightedParking = layer;
+            setHighlightedParking(layer);
           }
         }
       });
@@ -543,6 +545,8 @@ const useMap = <TData extends object>(
           radius: highlightRadius,
         });
         setHightlightedMarker(e.sourceTarget);
+        highlightParking(hightlightedMarker?.options.data.loc_id, false);
+        highlightParking(e.sourceTarget.options.data.loc_id, true);
       }
     });
 
@@ -551,17 +555,6 @@ const useMap = <TData extends object>(
       mapRef.current?.removeEventListener('click');
       mapRef.current?.removeEventListener('pm:create');
     };
-  }, [hightlightedMarker]);
-
-  useEffect(() => {
-    if (hightlightedMarker?.options.data?.loc_id) {
-      highlightParking(hightlightedMarker?.options.data?.loc_id, true);
-    }
-
-    if (hightlightedMarker == null && highlightedParking && highlightedParking.options) {
-      highlightParking((highlightedParking?.options.data as Parking).loc_id, false);
-      highlightedParking = null;
-    }
   }, [hightlightedMarker]);
 
   useEffect(() => {
