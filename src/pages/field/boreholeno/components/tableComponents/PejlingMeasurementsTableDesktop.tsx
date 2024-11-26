@@ -31,7 +31,7 @@ export type Kontrol = {
 
 interface Props {
   data: Kontrol[];
-  handleEdit: (type: string) => (kontrol: Kontrol) => void;
+  handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number) => void;
 }
 
@@ -99,7 +99,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          handleEdit('pejling')(row.original);
+          handleEdit(row.original);
         }}
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);

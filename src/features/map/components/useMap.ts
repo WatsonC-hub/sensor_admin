@@ -76,51 +76,48 @@ const useMap = <TData extends object>(
     del: deleteParkering,
   } = useParkering();
 
-  const items: Array<L.ContextMenuItem> = [];
+  const defaultContextmenuItems: Array<L.ContextMenuItem> = [
+    {
+      text: 'Google Maps',
+      callback: function (e: L.ContextMenuItemClickEvent) {
+        if (e.relatedTarget) {
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+            '_blank'
+          );
+        } else {
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+            '_blank'
+          );
+        }
+      },
+      icon: '/leaflet-images/map.png',
+    },
+    {
+      text: 'Zoom ind',
+      callback: function () {
+        if (mapRef.current) mapRef.current.zoomIn();
+      },
+      icon: '/leaflet-images/zoom-in.png',
+    },
+    {
+      text: 'Zoom ud',
+      callback: function () {
+        if (mapRef.current) mapRef.current.zoomOut();
+      },
+      icon: '/leaflet-images/zoom-out.png',
+    },
+    {
+      text: 'Centrer kort her',
+      callback: function (e: L.ContextMenuItemClickEvent) {
+        if (mapRef.current) mapRef.current.panTo(e.latlng);
+      },
+      icon: '/leaflet-images/center.png',
+    },
+  ];
 
-  items.push(
-    ...contextmenuItems,
-    ...[
-      {
-        text: 'Google Maps',
-        callback: function (e: L.ContextMenuItemClickEvent) {
-          if (e.relatedTarget) {
-            window.open(
-              `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-              '_blank'
-            );
-          } else {
-            window.open(
-              `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-              '_blank'
-            );
-          }
-        },
-        icon: '/leaflet-images/map.png',
-      },
-      {
-        text: 'Zoom ind',
-        callback: function () {
-          if (mapRef.current) mapRef.current.zoomIn();
-        },
-        icon: '/leaflet-images/zoom-in.png',
-      },
-      {
-        text: 'Zoom ud',
-        callback: function () {
-          if (mapRef.current) mapRef.current.zoomOut();
-        },
-        icon: '/leaflet-images/zoom-out.png',
-      },
-      {
-        text: 'Centrer kort her',
-        callback: function (e: L.ContextMenuItemClickEvent) {
-          if (mapRef.current) mapRef.current.panTo(e.latlng);
-        },
-        icon: '/leaflet-images/center.png',
-      },
-    ]
-  );
+  const items: Array<L.ContextMenuItem> = [...contextmenuItems, ...defaultContextmenuItems];
 
   const buildMap = () => {
     const map = L.map(id, {
@@ -603,6 +600,7 @@ const useMap = <TData extends object>(
       displayAlert,
       setDisplayAlert,
     },
+    defaultContextmenuItems,
   };
 };
 

@@ -63,7 +63,7 @@ const Map = () => {
     store.setLocationValue,
   ]);
 
-  const [iotAccess, boreholeAccess, superUser] = authStore((state) => [
+  const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
     state.superUser,
     state.iotAccess,
     state.boreholeAccess,
@@ -128,6 +128,7 @@ const Map = () => {
       type,
     },
     warning: {displayAlert, setDisplayAlert},
+    defaultContextmenuItems,
   } = useMap('test', data, contextmenuItems);
 
   const createBoreholeMarker = (element: BoreholeMapData) => {
@@ -215,11 +216,11 @@ const Map = () => {
         text: 'divider',
         separator: true,
       },
-      ...map!.options.contextmenuItems.slice(2),
+      ...defaultContextmenuItems,
     ];
 
     marker.bindContextMenu({
-      contextmenu: superUser,
+      contextmenu: true,
       contextmenuInheritItems: false,
       contextmenuItems: [...locationMenu],
     });
