@@ -8,9 +8,8 @@ import {z} from 'zod';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-
-import {useTasks} from '../api/useTasks';
-import {TaskUser} from '../types';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import {TaskUser} from '~/features/tasks/types';
 
 const zodSchema = z.object({
   name: z

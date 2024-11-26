@@ -2,7 +2,7 @@ import {Grid, Typography, Box} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 
-import {TaskChanges, TaskStatus, TaskUser} from '../types';
+import {TaskChanges, TaskStatus, TaskUser} from '~/features/tasks/types';
 
 type Props = {
   taskChanges: TaskChanges;

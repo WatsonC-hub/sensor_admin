@@ -3,9 +3,8 @@ import React from 'react';
 
 import Button from '~/components/Button';
 import {useTasks} from '~/features/tasks/api/useTasks';
+import TaskForm, {FormValues} from '~/features/tasks/components/TaskForm';
 import {Notification} from '~/hooks/query/useNotificationOverview';
-
-import TaskForm, {FormValues} from './TaskForm';
 
 interface Props {
   open: boolean;

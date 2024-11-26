@@ -34,17 +34,15 @@ import {UseFormReturn} from 'react-hook-form';
 import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight} from '~/consts';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import TaskForm, {FormValues} from '~/features/tasks/components/TaskForm';
+import {useTaskStore} from '~/features/tasks/store';
 import type {ID, Task, TaskUser} from '~/features/tasks/types';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {authStore} from '~/state/store';
-
-import {useTasks} from '../api/useTasks';
-import {useTaskStore} from '../store';
-
-import TaskForm, {FormValues} from './TaskForm';
 
 const NOT_ASSIGNED = 'Ikke tildelt' as const;
 const NO_PROJECT = 'Intet projektnummer' as const;
@@ -96,7 +94,7 @@ const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
   }
 };
 
-type ViewValues = 'upcoming' | 'my' | 'groupAssigned' | null;
+type ViewValues = 'upcoming' | 'my' | 'groupAssigned' | '';
 
 const TaskTable = () => {
   const [dueDateChecked, setDueDateChecked] = useState<boolean>(false);
@@ -106,7 +104,7 @@ const TaskTable = () => {
   const {station} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
   const [rows, setRows] = useState<Array<Partial<Task>>>();
-  const [viewValue, setViewValue] = useState<ViewValues>(null);
+  const [viewValue, setViewValue] = useState<ViewValues>('');
   const {
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
@@ -179,7 +177,7 @@ const TaskTable = () => {
 
   const revertView = (table: MRT_TableInstance<Task>) => {
     resetView(table);
-    setViewValue(null);
+    setViewValue('');
   };
 
   const tableData = useMemo(() => {

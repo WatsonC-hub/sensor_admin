@@ -4,8 +4,7 @@ import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import {useTasks} from '~/features/tasks/api/useTasks';
-
-import TaskForm, {FormValues} from './TaskForm';
+import TaskForm, {FormValues} from '~/features/tasks/components/TaskForm';
 
 interface Props {
   open: boolean;

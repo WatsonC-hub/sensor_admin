@@ -3,12 +3,10 @@ import React from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import TaskForm from '~/features/tasks/components/TaskForm';
+import {Task} from '~/features/tasks/types';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-
-import {useTasks} from '../api/useTasks';
-import {Task} from '../types';
-
-import TaskForm from './TaskForm';
 
 type TaskInfoFormProps = {
   selectedTask: Task;

@@ -58,4 +58,14 @@ declare module 'leaflet' {
       contextmenuItems?: Array<string | object>;
     }) => void;
   }
+
+  export namespace Control {
+    class StyleSelect extends Control {
+      constructor(options: ControlOptions);
+    }
+  }
+
+  export namespace control {
+    function StyleSelect(options: ControlOptions): Control.StyleSelect;
+  }
 }

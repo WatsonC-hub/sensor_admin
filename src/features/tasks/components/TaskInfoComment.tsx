@@ -2,7 +2,7 @@ import {Grid, Typography} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 
-import {TaskComment} from '../types';
+import {TaskComment} from '~/features/tasks/types';
 
 type Props = {
   comment: TaskComment;

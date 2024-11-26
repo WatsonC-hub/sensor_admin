@@ -4,12 +4,10 @@ import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';
-
-import {useTaskComments} from '../api/useTaskComments';
-import {useTasks} from '../api/useTasks';
-
-import TaskInfoChanges from './TaskInfoChanges';
-import TaskInfoComment from './TaskInfoComment';
+import {useTaskComments} from '~/features/tasks/api/useTaskComments';
+import {useTasks} from '~/features/tasks/api/useTasks';
+import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
+import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
 
 const taskCommentSchema = z.object({
   id: z.string().optional(),

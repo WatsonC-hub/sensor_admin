@@ -1,11 +1,10 @@
 import {Grid} from '@mui/material';
 import React, {useMemo} from 'react';
 
-import {useTaskStore} from '../store';
-
-import TaskForm from './TaskForm';
-import TaskInfoCommentForm from './TaskInfoCommentForm';
-import TaskInfoForm from './TaskInfoForm';
+import TaskForm from '~/features/tasks/components/TaskForm';
+import TaskInfoCommentForm from '~/features/tasks/components/TaskInfoCommentForm';
+import TaskInfoForm from '~/features/tasks/components/TaskInfoForm';
+import {useTaskStore} from '~/features/tasks/store';
 
 const TaskInfo = () => {
   const {selectedTask} = useTaskStore();

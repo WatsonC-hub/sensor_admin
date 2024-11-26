@@ -6,12 +6,10 @@ import {atom, useAtom} from 'jotai';
 import React, {SyntheticEvent} from 'react';
 
 import {tabsHeight} from '~/consts';
-
-import {useTaskStore} from '../store';
-
-import TaskCalendar from './TaskCalendar';
-import TaskMap from './TaskMap';
-import TaskTable from './TaskTable';
+import TaskCalendar from '~/features/tasks/components/TaskCalendar';
+import TaskMap from '~/features/tasks/components/TaskMap';
+import TaskTable from '~/features/tasks/components/TaskTable';
+import {useTaskStore} from '~/features/tasks/store';
 
 function TabPanel(props: {
   children?: React.ReactNode;
