@@ -79,7 +79,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Notifications label="Blokerede notifikationer" disabled />
+          <TaskForm.Input name="blocks_notifications" label="Blokerede notifikationer" disabled />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />

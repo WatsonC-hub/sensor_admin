@@ -22,7 +22,12 @@ const TaskInfo = () => {
       projectno: selectedTask.projectno,
       project_text: selectedTask.project_text,
       location_name: selectedTask.location_name,
-      blocks_notifications: selectedTask.blocks_notifications,
+      blocks_notifications:
+        selectedTask.blocks_notifications && selectedTask.blocks_notifications.length !== 0
+          ? selectedTask.blocks_notifications.length === 1
+            ? selectedTask.blocks_notifications
+            : ('alle' as const)
+          : undefined,
     };
   }, [selectedTask]);
 

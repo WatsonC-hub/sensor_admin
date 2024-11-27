@@ -181,20 +181,6 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
   );
 };
 
-const Notifications = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
-  const {getValues, setValue} = useFormContext<FormValues>();
-  const notifications = getValues('blocks_notifications');
-
-  const result =
-    notifications && notifications.length !== 0
-      ? notifications.length === 1
-        ? notifications
-        : 'alle'
-      : undefined;
-  setValue('blocks_notifications', result);
-  return <FormInput name="blocks_notifications" label="Notifikationer" fullWidth {...props} />;
-};
-
 type BlockNotificationsProps = {
   notification_id: number | null;
 };
@@ -280,6 +266,5 @@ TaskForm.AssignedTo = AssignedTo;
 TaskForm.BlockNotifications = BlockNotifications;
 TaskForm.DueDate = DueDate;
 TaskForm.BlockOnLocation = BlockOnLocation;
-TaskForm.Notifications = Notifications;
 
 export default TaskForm;
