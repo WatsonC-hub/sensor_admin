@@ -24,7 +24,7 @@ const zodSchema = z.object({
     .string()
     .nullish()
     .transform((value) => (value === '' ? null : value)),
-  blocks_notifications: z.array(z.number()).or(z.literal('all')).optional(),
+  blocks_notifications: z.array(z.number()).or(z.literal('alle')).optional(),
   block_on_location: z.boolean().optional(),
   loctypename: z.string().optional(),
   tstype_name: z.string().optional(),
@@ -181,6 +181,20 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
   );
 };
 
+const Notifications = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {getValues, setValue} = useFormContext<FormValues>();
+  const notifications = getValues('blocks_notifications');
+
+  const result =
+    notifications && notifications.length !== 0
+      ? notifications.length === 1
+        ? notifications
+        : 'alle'
+      : undefined;
+  setValue('blocks_notifications', result);
+  return <FormInput name="blocks_notifications" label="Notifikationer" fullWidth {...props} />;
+};
+
 type BlockNotificationsProps = {
   notification_id: number | null;
 };
@@ -214,7 +228,7 @@ const BlockNotifications = ({notification_id}: BlockNotificationsProps) => {
                 aria-label={name}
                 onChange={(e, value) => {
                   if (value) {
-                    onChange('all');
+                    onChange('alle');
                   } else {
                     onChange([notification_id]);
                   }
@@ -266,5 +280,6 @@ TaskForm.AssignedTo = AssignedTo;
 TaskForm.BlockNotifications = BlockNotifications;
 TaskForm.DueDate = DueDate;
 TaskForm.BlockOnLocation = BlockOnLocation;
+TaskForm.Notifications = Notifications;
 
 export default TaskForm;

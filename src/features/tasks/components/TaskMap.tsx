@@ -99,12 +99,22 @@ const TaskMap = () => {
   };
 
   const getStyleOptions = (tasks: Array<Task>): object => {
-    let style: Partial<CircleMarkerOptions> = {fillColor: 'grey'};
+    let style: Partial<CircleMarkerOptions> = {fillColor: 'red'};
     const upcomingTasks = tasks.filter(
       (task) =>
         task.due_date === null ||
         moment(task.due_date).toDate().getTime() > moment().toDate().getTime()
     );
+    const overdueTasks = tasks.filter(
+      (task) =>
+        task.due_date !== null &&
+        moment(task.due_date).toDate().getTime() < moment().toDate().getTime() &&
+        task.status_id !== 3
+    );
+
+    if (tasks.length === overdueTasks.length) {
+      return style;
+    }
 
     switch (selectedStyle) {
       case 'dato':
@@ -142,7 +152,7 @@ const TaskMap = () => {
     const due_date_week = date.week();
     let taskColor = 'green';
 
-    if (due_date_week - week === 0) taskColor = 'red';
+    if (due_date_week - week === 0) taskColor = 'orange';
     else if (due_date_week - week === 1) taskColor = 'yellow';
 
     return {fillColor: taskColor};
@@ -154,7 +164,7 @@ const TaskMap = () => {
     const status = task.status_id;
     let taskColor = 'grey';
     if (assigned === user_id && status === 1) taskColor = 'green';
-    else if (assigned === user_id && status === 2) taskColor = 'red';
+    else if (assigned === user_id && status === 2) taskColor = 'orange';
     else if (assigned === user_id && status === 3) taskColor = 'blue';
 
     return {fillColor: taskColor};

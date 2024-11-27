@@ -1,4 +1,5 @@
 import {Edit} from '@mui/icons-material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {
   Autocomplete,
   Box,
@@ -261,6 +262,15 @@ const TaskTable = () => {
               },
             },
           },
+          Cell: ({row, renderedCellValue}) => {
+            return (
+              <Stack direction={'row'} gap={1} alignItems={'center'}>
+                {renderedCellValue}{' '}
+                {moment(row.original.due_date).toDate().getTime() < moment().toDate().getTime() &&
+                  row.original.status_id !== 3 && <ErrorOutlineIcon color="error" />}
+              </Stack>
+            );
+          },
           Edit: ({row, cell}) => {
             return (
               <TextField
@@ -288,7 +298,6 @@ const TaskTable = () => {
           header: 'Opgave',
           enableEditing: false,
           enableGrouping: false,
-          // enableColumnFilter: false,
           size: 200,
         },
         {
@@ -342,7 +351,6 @@ const TaskTable = () => {
             return (
               <Autocomplete
                 multiple
-                // fullWidth
                 selectOnFocus
                 clearOnBlur
                 handleHomeEndKeys
@@ -406,13 +414,7 @@ const TaskTable = () => {
                 size="small"
                 value={row.original.status_name}
                 options={taskStatus?.map((status) => status.name) ?? []}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    // placeholder={'Filtrér efter ' + cell.column.columnDef.header}
-                    variant="outlined"
-                  />
-                )}
+                renderInput={(params) => <TextField {...params} variant="outlined" />}
                 onChange={(e, newValue) => {
                   handleBlurSubmit(row.original.id, row.original.ts_id, {
                     status_id: taskStatus?.find((status) => status.name === newValue)?.id,
@@ -599,8 +601,7 @@ const TaskTable = () => {
         return (
           <Box width={'60%'} display="flex" flexDirection={'row'} gap={2}>
             <IconButton
-              sx={{p: 1, alignSelf: 'center', justifySelf: 'start'}}
-              edge="end"
+              sx={{px: 1, py: 1, alignSelf: 'start'}}
               onClick={() => {
                 const selectedRows = table.getFilteredSelectedRowModel().rows;
                 setOpen(selectedRows.length > 0);
@@ -636,7 +637,11 @@ const TaskTable = () => {
               <MenuItem value={'my'}>Se Mine opgaver</MenuItem>
               <MenuItem value={'groupAssigned'}>Gruppér efter tildelte</MenuItem>
             </TextField>
-            <Button bttype="tertiary" onClick={() => revertView(table)} sx={{justifySelf: 'end'}}>
+            <Button
+              bttype="tertiary"
+              onClick={() => revertView(table)}
+              sx={{alignSelf: 'start', my: 0}}
+            >
               Nulstil view
             </Button>
           </Box>

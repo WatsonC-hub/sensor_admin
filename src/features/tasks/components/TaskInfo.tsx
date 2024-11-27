@@ -22,6 +22,7 @@ const TaskInfo = () => {
       projectno: selectedTask.projectno,
       project_text: selectedTask.project_text,
       location_name: selectedTask.location_name,
+      blocks_notifications: selectedTask.blocks_notifications,
     };
   }, [selectedTask]);
 
