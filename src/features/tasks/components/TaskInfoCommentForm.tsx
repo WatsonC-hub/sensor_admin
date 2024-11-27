@@ -43,10 +43,6 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
     defaultValues: schemaData.success ? schemaData.data : {},
   });
 
-  useEffect(() => {
-    console.log(taskComments);
-  }, [selectedTaskId]);
-
   const {handleSubmit, reset} = formMethods;
 
   const submit: SubmitHandler<InferTaskComment> = async (values) => {
