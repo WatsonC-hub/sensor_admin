@@ -173,7 +173,7 @@ const TaskMap = () => {
   useEffect(() => {
     if (selectedMarker) {
       console.log('selectedMarker', selectedMarker);
-      if (selectedMarker.length == 1) setSelectedTask(selectedMarker[0].id);
+      setSelectedTask(selectedMarker[0].id);
     }
   }, [selectedMarker]);
 

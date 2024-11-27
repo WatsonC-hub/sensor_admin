@@ -775,7 +775,6 @@ const TaskTable = () => {
       a.size === b.size && [...a].every((value) => b.has(value));
 
     if (areSetsEqual(new Set(ids), new Set(origIds))) {
-      console.log('EQUAL');
       setShownListTaskIds([]);
       return;
     }
@@ -966,36 +965,6 @@ const groupByAssigned = (table: MRT_TableInstance<Task>) => {
     {id: 'due_date', desc: false},
   ]);
 };
-
-// const sortingFunction = (sorting: SortingState, sort_id: string, sortDirection: boolean) => {
-//   const sorted = sorting.find((sort) => sort.id === sort_id);
-//   if (sorted !== undefined) {
-//     sorted.desc = sortDirection;
-//   } else {
-//     sorting.push({id: sort_id, desc: sortDirection});
-//   }
-// };
-
-// const filterFunction = (
-//   columnFilter: ColumnFiltersState,
-//   filter_id: string,
-//   value: Array<string | undefined | null>
-// ) => {
-//   const filter = columnFilter.find((filter) => filter.id === filter_id);
-//   if (filter) {
-//     filter.value = value;
-//   } else {
-//     columnFilter.push({id: filter_id, value: value});
-//   }
-// };
-
-// const groupingFunction = (groupingState: GroupingState, group_id: string) => {
-//   const grouping = groupingState.find((group) => group === group_id);
-
-//   if (!grouping) {
-//     groupingState.push(group_id);
-//   }
-// };
 
 const errorReset = (details: object, reset: () => void) => {
   reset();
