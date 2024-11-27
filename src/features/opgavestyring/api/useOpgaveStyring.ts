@@ -3,6 +3,7 @@ import {useQueries} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 
 import {useLocationData} from './useLocationData';
+
 interface TaskManagement {
   loc_ids: Array<number>;
 }
