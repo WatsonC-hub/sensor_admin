@@ -1,7 +1,6 @@
 import {describe, it, expect} from 'vitest';
 
-import {convertDate} from './dateConverter';
-convertDate;
+import './dateConverter';
 
 describe('dateConverter', () => {
   it('should convert date to string', () => {
