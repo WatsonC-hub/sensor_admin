@@ -52,6 +52,8 @@
     "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
     "lint": "eslint src --ignore-path .gitignore",
     "test": "vitest run",
+    "test:changed": "vitest run --changed",
+    "test:related": "vitest related ./App.jsx",
     "check-types": "tsc --project tsconfig.json --pretty --noEmit"
   },
   "browserslist": {
