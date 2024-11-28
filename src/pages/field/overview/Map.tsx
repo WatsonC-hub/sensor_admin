@@ -1,12 +1,12 @@
 import {Box, Grid} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import 'leaflet-contextmenu';
-import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import 'leaflet.locatecontrol';
-import '@geoman-io/leaflet-geoman-free';
-import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
+// import 'leaflet-contextmenu';
+// import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
+// import 'leaflet.locatecontrol';
+// import '@geoman-io/leaflet-geoman-free';
+// import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L, {ContextMenuItemClickEvent} from 'leaflet';
-import '~/css/leaflet.css';
+// import '~/css/leaflet.css';
 import {useEffect, useState, useMemo, SyntheticEvent, useCallback} from 'react';
 import {toast} from 'react-toastify';
 
@@ -24,7 +24,7 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {stamdataStore, authStore, parkingStore} from '~/state/store';
+import {useStamdataStore, useAuthStore, parkingStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -56,14 +56,14 @@ interface LocItems {
 
 const Map = () => {
   const {createStamdata} = useNavigationFunctions();
-  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
+  const setSelectParking = parkingStore((state) => state.setSelectedLocId);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  const [setLocation, setLocationValue] = stamdataStore((store) => [
+  const [setLocation, setLocationValue] = useStamdataStore((store) => [
     store.setLocation,
     store.setLocationValue,
   ]);
 
-  const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
+  const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
     state.superUser,
     state.iotAccess,
     state.boreholeAccess,
@@ -170,7 +170,7 @@ const Map = () => {
             loc_id: element.loc_id,
             loc_name: element.loc_name,
           });
-          createStamdata('1');
+          createStamdata('tidsserie');
         },
         icon: '/leaflet-images/marker.png',
       },

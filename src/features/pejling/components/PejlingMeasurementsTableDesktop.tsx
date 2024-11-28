@@ -11,7 +11,7 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
@@ -27,7 +27,7 @@ export default function PejlingMeasurementsTableDesktop({
 }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
 
   const unit = timeseries.tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${timeseries.unit}]`;
 

@@ -6,7 +6,7 @@ import {useQuery} from '@tanstack/react-query';
 import {FieldError, Noop} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 interface Project {
   project_no: string;
@@ -38,7 +38,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     },
   });
 
-  const superUser = authStore((store) => store.superUser);
+  const superUser = useAuthStore((store) => store.superUser);
 
   const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 

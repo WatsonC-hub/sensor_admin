@@ -2,8 +2,8 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {GetQueryOptions} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import type {APIError} from '~/queryClient';
+import {useStamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface PejlingBase {
@@ -58,10 +58,12 @@ export const pejlingDelOptions = {
   },
 };
 
-export const pejlingGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> => ({
+export const pejlingGetOptions = (ts_id: number) => ({
   queryKey: ['measurements', ts_id],
   queryFn: async () => {
-    const {data} = await apiClient.get<TData>(`/sensor_field/station/measurements/${ts_id}`);
+    const {data} = await apiClient.get<Array<PejlingItem>>(
+      `/sensor_field/station/measurements/${ts_id}`
+    );
 
     return data;
     // return data.map((m) => {
@@ -77,8 +79,8 @@ export const pejlingGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> 
 export const usePejling = () => {
   const queryClient = useQueryClient();
 
-  const ts_id = stamdataStore((store) => store.timeseries.ts_id);
-  const get = useQuery(pejlingGetOptions<Array<PejlingItem>>(ts_id));
+  const ts_id = useStamdataStore((store) => store.timeseries.ts_id);
+  const get = useQuery<Array<PejlingItem>, APIError>(pejlingGetOptions(ts_id));
 
   const post = useMutation({
     ...pejlingPostOptions,

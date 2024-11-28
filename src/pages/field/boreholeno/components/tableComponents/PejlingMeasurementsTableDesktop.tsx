@@ -14,7 +14,7 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {authStore, stamdataStore} from '~/state/store';
+import {useAuthStore, useStamdataStore} from '~/state/store';
 
 export type Kontrol = {
   comment: string;
@@ -38,8 +38,8 @@ interface Props {
 export default function PejlingMeasurementsTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  const org_id = authStore((store) => store.org_id);
+  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
+  const org_id = useAuthStore((store) => store.org_id);
 
   const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
 

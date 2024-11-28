@@ -8,8 +8,8 @@ import {
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
 
-import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
+import {pejlingPostOptions, pejlingPutOptions} from '~/features/pejling/api/usePejling';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
 
 type ErrorDetail = {
@@ -96,19 +96,8 @@ const queryClient = new QueryClient({
   }),
 });
 
-queryClient.setMutationDefaults(['pejling'], {
-  mutationFn: async (data) => {
-    await queryClient.cancelQueries({queryKey: ['measurements']});
-    if (data.gid === -1) {
-      return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);
-    } else {
-      return apiClient.put(
-        `/sensor_field/station/measurements/${data.stationid}/${data.gid}`,
-        data
-      );
-    }
-  },
-});
+queryClient.setMutationDefaults(pejlingPostOptions.mutationKey, pejlingPostOptions);
+queryClient.setMutationDefaults(pejlingPutOptions.mutationKey, pejlingPutOptions);
 
 queryClient.setMutationDefaults(excludePostOptions.mutationKey, excludePostOptions);
 queryClient.setMutationDefaults(excludePutOptions.mutationKey, excludePutOptions);

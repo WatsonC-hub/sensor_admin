@@ -48,10 +48,11 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
+import {editStamdataTabValues as tabValues} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useStationPages';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import TabPanel from '~/pages/field/overview/TabPanel';
-import {authStore, stamdataStore} from '~/state/store';
+import {useAuthStore, useStamdataStore} from '~/state/store';
 
 const unitEndSchema = z.object({
   enddate: z.string(),
@@ -89,7 +90,7 @@ const UnitEndDateDialog = ({
   stationId,
 }: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
-  const superUser = authStore((store) => store.superUser);
+  const superUser = useAuthStore((store) => store.superUser);
 
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
@@ -263,7 +264,7 @@ type UnitHistory = {
 const UdstyrReplace = ({stationId}: {stationId: number}) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-  const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
+  const [tstype_id, setUnitValue, setUnit] = useStamdataStore((store) => [
     store.timeseries.tstype_id,
     store.setUnitValue,
     store.setUnit,
@@ -329,7 +330,6 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
                     : ''
                 }
                 onChange={handleChange}
-                className="swiper-no-swiping"
               >
                 {data?.map((item) => {
                   const endDate =
@@ -402,8 +402,6 @@ type Location = EditValues['location'];
 type Timeseries = EditValues['timeseries'];
 type Unit = EditValues['unit'];
 
-const tabValues = ['lokation', 'tidsserie', 'udstyr', 'målepunkt', 'stationsinformation'] as const;
-
 export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
@@ -414,7 +412,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     parseAsStringLiteral(tabValues).withDefault('lokation')
   );
   const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
-  const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
+  const prev_ts_id = useStamdataStore((store) => store.timeseries.ts_id);
 
   useQuery<UnitHistory[]>({
     queryKey: ['udstyr', ts_id],

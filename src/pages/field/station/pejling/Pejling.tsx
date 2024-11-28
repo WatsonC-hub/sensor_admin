@@ -15,7 +15,7 @@ import PejlingMeasurements from '~/features/pejling/components/PejlingMeasuremen
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useStationPages';
 import {APIError} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
 type Props = {
@@ -24,9 +24,9 @@ type Props = {
 };
 
 const Pejling = ({ts_id, setDynamic}: Props) => {
-  const store = stamdataStore();
+  const tstype_id = useStamdataStore((state) => state.timeseries.tstype_id);
   const [canEdit] = useState(true);
-  const isWaterlevel = store.timeseries?.tstype_id === 1;
+  const isWaterlevel = tstype_id === 1;
   const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
   const [, setPageToShow] = useStationPages();
   const [, setTabValue] = useQueryState('tab', parseAsString);
@@ -69,10 +69,8 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   }, [showForm]);
 
   useEffect(() => {
-    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
-      setShowForm(null);
-      reset(initialData);
-    }
+    setShowForm(null);
+    reset(initialData);
   }, [ts_id]);
 
   const handlePejlingSubmit = (values: PejlingItem) => {

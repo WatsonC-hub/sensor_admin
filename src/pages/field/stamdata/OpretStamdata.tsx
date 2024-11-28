@@ -21,8 +21,11 @@ import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {stamdataStore} from '~/state/store';
+import {
+  useNavigationFunctions,
+  createStamdataTabValues as tabValues,
+} from '~/hooks/useNavigationFunctions';
+import {useStamdataStore} from '~/state/store';
 import {FieldLocation} from '~/types';
 
 interface TabPanelProps {
@@ -54,11 +57,9 @@ type Timeseries = CreateValues['timeseries'];
 type Unit = CreateValues['unit'];
 type Watlevmp = CreateValues['watlevmp'];
 
-const tabValues = ['lokation', 'tidsserie', 'udstyr'] as const;
-
 export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
-  const store = stamdataStore();
+  const store = useStamdataStore((state) => state);
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const navigate = useNavigate();
 
@@ -466,7 +467,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
             tstype_id={watchtstype_id}
             mode="normal"
           />
-          <DevTool control={formMethods.control} />
+          {import.meta.env.DEV && <DevTool control={formMethods.control} />}
         </FormProvider>
       </div>
     </>

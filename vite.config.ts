@@ -127,8 +127,7 @@ export default defineConfig({
     VitePWA(pwaOptions),
     viteTsconfigPaths(),
     {
-      ...strip({include: /\**\/*.js/}),
-      // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
+      ...strip({include: /\**\/*.(js|ts|jsx|tsx)/}),
       apply: 'build',
     },
     // removeConsole(),

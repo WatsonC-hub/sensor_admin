@@ -18,7 +18,7 @@ import {useStationPages} from '~/hooks/useStationPages';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 
 interface StationProps {
   ts_id: number;
@@ -43,7 +43,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
     public: false,
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
-  const store = stamdataStore();
+  const store = useStamdataStore((state) => state);
 
   useEffect(() => {
     if (stamdata) {
@@ -111,7 +111,6 @@ export default function Station({ts_id, stamdata}: StationProps) {
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
 
-  console.log(stamdata);
   if (ts_id === -1 && stamdata && pageToShow === 'pejling') {
     return (
       <Layout stamdata={stamdata} ts_id={ts_id}>
@@ -140,7 +139,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
           <Button
             bttype="primary"
             onClick={() => {
-              createStamdata(ts_id !== -1 ? '2' : '1');
+              createStamdata('tidsserie');
             }}
           >
             Opret tidsserie og/eller udstyr

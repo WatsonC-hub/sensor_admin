@@ -1,6 +1,16 @@
 import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
 
+export const createStamdataTabValues = ['lokation', 'tidsserie', 'udstyr'] as const;
+
+export const editStamdataTabValues = [
+  'lokation',
+  'tidsserie',
+  'udstyr',
+  'målepunkt',
+  'stationsinformation',
+] as const;
+
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
 
@@ -33,7 +43,7 @@ export const useNavigationFunctions = () => {
     stamdata: (
       loc_id: number,
       station_id: number,
-      tabValue: string = '0',
+      tabValue?: (typeof editStamdataTabValues)[number],
       options?: NavigateOptions
     ) =>
       navigate(
@@ -44,7 +54,10 @@ export const useNavigationFunctions = () => {
       navigate('/field/borehole/' + boreholeno, options),
     boreholeIntake: (boreholeno: string, intake: string | number, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno + '/' + intake, options),
-    createStamdata: (tabValue?: string, options?: NavigateOptions) => {
+    createStamdata: (
+      tabValue?: (typeof createStamdataTabValues)[number],
+      options?: NavigateOptions
+    ) => {
       if (tabValue) navigate('/field/stamdata?tab=' + tabValue, options);
       else navigate('/field/stamdata', options);
     },

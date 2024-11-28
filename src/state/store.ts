@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
+import {useShallow} from 'zustand/react/shallow';
 
 type AuthState = {
   authenticated: boolean;
@@ -30,7 +31,7 @@ const authInitialState = {
   properties: {},
 };
 
-export const authStore = create<AuthState>()(
+const authStore = create<AuthState>()(
   persist(
     devtools((set) => ({
       ...authInitialState,
@@ -77,6 +78,8 @@ export const authStore = create<AuthState>()(
     }
   )
 );
+
+const useAuthStore = <T>(selector: (state: AuthState) => T) => authStore(useShallow(selector));
 
 type LocationState = {
   location: {
@@ -267,12 +270,20 @@ const stamdataStore = create<LocationState>()(
   }))
 );
 
-export const parkingStore = create<{
+const useStamdataStore = <T>(selector: (state: LocationState) => T) =>
+  stamdataStore(useShallow(selector));
+
+type ParkingState = {
   selectedLocId: number | null;
   setSelectedLocId: (loc_id: number | null) => void;
-}>((set) => ({
+};
+
+const parkingStore = create<ParkingState>((set) => ({
   selectedLocId: null,
   setSelectedLocId: (loc_id: number | null) => set({selectedLocId: loc_id}),
 }));
 
-export {initialState, stamdataStore};
+const useParkingStore = <T>(selector: (state: ParkingState) => T) =>
+  parkingStore(useShallow(selector));
+
+export {authStore, useAuthStore, parkingStore, useParkingStore, stamdataStore, useStamdataStore};

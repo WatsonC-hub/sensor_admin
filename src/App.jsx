@@ -7,12 +7,12 @@ import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import Redirecter from '~/Redirecter';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = authStore(
+  const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = useAuthStore(
     (state) => [
       state.authenticated,
       state.setAuthenticated,

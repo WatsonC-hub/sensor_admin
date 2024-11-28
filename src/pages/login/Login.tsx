@@ -11,7 +11,7 @@ import React, {useState} from 'react';
 import Button from '~/components/Button';
 import {apiClient, loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -21,7 +21,7 @@ export default function Login() {
   const [passReset, setPassReset] = useState('');
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
-  const [setAuthenticated, setLoginExpired, setAuthorization] = authStore((state) => [
+  const [setAuthenticated, setLoginExpired, setAuthorization] = useAuthStore((state) => [
     state.setAuthenticated,
     state.setLoginExpired,
     state.setAuthorization,

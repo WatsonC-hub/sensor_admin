@@ -18,7 +18,7 @@ import {
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 import {MaalepunktTableData} from '~/types';
 
 interface Props {
@@ -30,7 +30,7 @@ interface Props {
 export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
-  const org_id = authStore((store) => store.org_id);
+  const org_id = useAuthStore((store) => store.org_id);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);

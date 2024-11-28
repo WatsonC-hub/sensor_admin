@@ -17,7 +17,7 @@ import {useFormContext, get} from 'react-hook-form';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {LatestMeasurement, Maalepunkt, PejlingItem} from '~/types';
 
 import Correction from './Correction';
@@ -41,11 +41,12 @@ export default function PejlingForm({
   setDynamic,
   latestMeasurement,
 }: PejlingFormProps) {
-  const store = stamdataStore();
-  const tstype_id = store.timeseries.tstype_id;
+  const [stationUnit, tstype_id] = useStamdataStore((state) => [
+    state.timeseries.unit,
+    state.timeseries.tstype_id,
+  ]);
   const isWaterlevel = tstype_id === 1;
   const isFlow = tstype_id === 2;
-
   const {
     get: {data: mpData},
   } = useMaalepunkt();
@@ -62,7 +63,6 @@ export default function PejlingForm({
 
   const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
 
-  const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
   const measurement = watch('measurement');
   const date = watch('timeofmeas');
   const [elevationDiff, setElevationDiff] = useState<number>();

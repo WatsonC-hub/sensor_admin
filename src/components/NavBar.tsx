@@ -31,12 +31,12 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
-  const [resetState] = authStore((state) => [state.resetState]);
+  const [resetState] = useAuthStore((state) => [state.resetState]);
   const queryClient = useQueryClient();
   const {home} = useNavigationFunctions();
 
@@ -244,7 +244,10 @@ const GoBack = () => {
 };
 
 const NavBar = () => {
-  const [authenticated, iotAccess] = authStore((state) => [state.authenticated, state.iotAccess]);
+  const [authenticated, iotAccess] = useAuthStore((state) => [
+    state.authenticated,
+    state.iotAccess,
+  ]);
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
   const {admin, createStamdata, field, station} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
@@ -333,19 +336,7 @@ const NavBar = () => {
       <>
         <GoBack />
 
-        {/* <Typography
-          sx={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-          }}
-          variant="h4"
-        >
-          Opret station
-        </Typography> */}
-
         <Box>
-          {/* {adminAccess && <NavBarNotifications />} */}
           <NavBarMenu />
         </Box>
       </>

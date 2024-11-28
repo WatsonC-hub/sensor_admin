@@ -6,10 +6,10 @@ import React from 'react';
 import ChoiseCard from '~/components/ChoiseCard';
 import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 const AdminChooser = () => {
-  const adminAccess = authStore((state) => state.adminAccess);
+  const adminAccess = useAuthStore((state) => state.adminAccess);
   const {field} = useNavigationFunctions();
 
   return (

@@ -4,7 +4,6 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
 import {Navigate, useNavigate, useParams} from 'react-router-dom';
@@ -20,13 +19,13 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import ErrorPage from '~/pages/field/station/ErrorPage';
 import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 export default function LocationRouter() {
   const params = useParams();
   const navigate = useNavigate();
   const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
-  const adminAccess = authStore((state) => state.adminAccess);
+  const adminAccess = useAuthStore((state) => state.adminAccess);
 
   const {data, error, isPending} = useQuery({
     queryKey: ['stations', params.locid],
@@ -109,11 +108,10 @@ export default function LocationRouter() {
         </IconButton>
 
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Tooltip title={data?.[0].loc_name} arrow enterTouchDelay={0}>
-            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-              {data?.[0].loc_name}
-            </Typography>
-          </Tooltip>
+          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            {data?.[0].loc_name}
+          </Typography>
+
           {hasTimeseries ? (
             <MinimalSelect
               locid={params.locid ? parseInt(params.locid) : undefined}

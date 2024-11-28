@@ -11,7 +11,7 @@ import FormToggleSwitch from '~/components/FormToggleSwitch';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 interface FilterOptionsProps {
   filters: Filter;
@@ -19,7 +19,7 @@ interface FilterOptionsProps {
 }
 
 const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
-  const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
+  const [boreholeAccess, iotAccess, superUser] = useAuthStore((state) => [
     state.boreholeAccess,
     state.iotAccess,
     state.superUser,

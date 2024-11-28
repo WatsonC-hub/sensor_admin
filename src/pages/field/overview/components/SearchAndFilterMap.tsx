@@ -18,7 +18,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 interface LocItems {
@@ -128,7 +128,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isTouch} = useBreakpoints();
-  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
+  const [boreholeAccess] = useAuthStore((state) => [state.boreholeAccess]);
 
   const elasticSearch = (
     e: SyntheticEvent,

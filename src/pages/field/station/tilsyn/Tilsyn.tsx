@@ -11,7 +11,6 @@ import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {stamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
 
 type Props = {
@@ -22,7 +21,7 @@ type Props = {
 export default function Tilsyn({ts_id, canEdit}: Props) {
   const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
   const {isTouch, isLaptop} = useBreakpoints();
-  const store = stamdataStore();
+
   const initialData: TilsynItem = {
     dato: moment().format('YYYY-MM-DDTHH:mm'),
     gid: -1,
@@ -95,10 +94,8 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   }, [showForm]);
 
   useEffect(() => {
-    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
-      setShowForm(null);
-      reset(initialData);
-    }
+    setShowForm(null);
+    reset(initialData);
   }, [ts_id]);
 
   return (

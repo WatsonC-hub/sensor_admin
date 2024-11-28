@@ -9,7 +9,7 @@ import LocationProjects from '~/features/stamdata/components/stamdata/LocationPr
 import LocationTypeSelect from '~/features/stamdata/components/stamdata/LocationTypeSelect';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
 import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 interface Props {
   mode: 'modal' | 'normal';
@@ -39,15 +39,8 @@ export default function LocationForm({mode, disable = false}: Props) {
   const metadata = useContext(MetadataContext);
   const watchTerrainqual = watch('location.terrainqual', '');
 
-  // if (mode === 'modal' && getValues().location && getValues().location.loc_id)
-  //   reset({
-  //     location: stamdataStore().location,
-  //     timeseries: getValues().timeseries,
-  //     unit: getValues().unit,
-  //   });
-
   const gridsize = mode === 'modal' ? 12 : 6;
-  const superUser = authStore((store) => store.superUser);
+  const superUser = useAuthStore((store) => store.superUser);
   return (
     // <FormProvider {...formMethods}>
     <Grid container spacing={2} alignItems="center">

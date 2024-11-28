@@ -1,17 +1,19 @@
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import 'leaflet.locatecontrol';
+
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
 import L from 'leaflet';
+//@ts-expect-error typedefinition missing for esm module
+import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {authStore, parkingStore} from '~/state/store';
+import {useAuthStore, parkingStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
 import {
@@ -50,14 +52,14 @@ const useMap = <TData extends object>(
   const mutateLeafletMapRouteRef = useRef<number | boolean | null>();
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
-  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
+  const setSelectParking = parkingStore((state) => state.setSelectedLocId);
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const [hightlightedMarker, setHightlightedMarker] = useState<L.CircleMarker | null>();
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
-  const [superUser] = authStore((state) => [state.superUser]);
+  const [superUser] = useAuthStore((state) => [state.superUser]);
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -124,7 +126,6 @@ const useMap = <TData extends object>(
       center: [56.215868, 8.228759],
       zoom: 7,
       layers: [outdormapbox],
-      tap: false,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
@@ -142,21 +143,18 @@ const useMap = <TData extends object>(
 
     L.control.layers(baseMaps).addTo(map);
 
-    L.control
-      // @ts-expect-error Locate is injected
-      .locate({
-        showPopup: false,
-        strings: {
-          title: 'Find mig',
-        },
-        circleStyle: {
-          interactive: false,
-        },
-        locateOptions: {
-          enableHighAccuracy: true,
-        },
-      })
-      .addTo(map);
+    new LocateControl({
+      showPopup: false,
+      strings: {
+        title: 'Find mig',
+      },
+      circleStyle: {
+        interactive: false,
+      },
+      locateOptions: {
+        enableHighAccuracy: true,
+      },
+    }).addTo(map);
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
