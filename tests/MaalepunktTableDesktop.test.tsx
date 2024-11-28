@@ -1,8 +1,8 @@
 import {describe, it, expect} from 'vitest';
 
-import './MaalepunktTableDesktop';
+import '../src/components/tableComponents/MaalepunktTableDesktop';
 
-describe('Målepunkt', () => {
+describe('Målepunkt desktop', () => {
   it('should convert date to string', () => {
     // const date = new Date('2021-01-01T00:00:00Z').toISOString();
     // expect(convertDate(date)).toBe('2021-01-01');
