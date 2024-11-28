@@ -76,7 +76,6 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
         label="Kommentar"
         InputLabelProps={{shrink: true, style: {zIndex: 0}}}
         variant="outlined"
-        className="swiper-no-swiping"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         multiline

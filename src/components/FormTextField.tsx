@@ -4,10 +4,17 @@ import React from 'react';
 interface FormTextFieldProps {
   value: string;
   label: string;
-  disabled: boolean;
+  disabled?: boolean;
+  type?: string;
 }
 
-const FormTextField = ({value, label, disabled, ...rest}: FormTextFieldProps) => {
+const FormTextField = ({
+  value,
+  label,
+  disabled = false,
+  type = 'text',
+  ...rest
+}: FormTextFieldProps) => {
   return (
     <TextField
       sx={{
@@ -20,7 +27,6 @@ const FormTextField = ({value, label, disabled, ...rest}: FormTextFieldProps) =>
           '& > fieldset': {borderColor: 'primary.main'},
         },
       }}
-      className="swiper-no-swiping"
       disabled={disabled}
       variant="outlined"
       id={label}
@@ -29,14 +35,10 @@ const FormTextField = ({value, label, disabled, ...rest}: FormTextFieldProps) =>
       InputLabelProps={{shrink: true}}
       fullWidth
       margin="dense"
+      type={type}
       {...rest}
     />
   );
-};
-
-FormTextField.defaultProps = {
-  disabled: false,
-  type: 'text',
 };
 
 export default FormTextField;

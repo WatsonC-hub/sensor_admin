@@ -1,15 +1,15 @@
 import {describe, it, expect} from 'vitest';
 
-import '../src/components/tableComponents/MaalepunktTableDesktop';
+import '~/pages/field/overview/Map';
 
-describe('Målepunkt desktop', () => {
-  it('should convert date to string', () => {
+describe('Map funktioner', () => {
+  it('Oprette bare lokation', () => {
     // const date = new Date('2021-01-01T00:00:00Z').toISOString();
     // expect(convertDate(date)).toBe('2021-01-01');
 
     expect(true).toBe(true);
   });
-  it('should convert date to number', () => {
+  it('Oprette lokation+tidsserie', () => {
     // const date = new Date('2021-01-01T00:00:00Z').toISOString();
     // expect(convertDate(date)).toBe('2021-01-01');
     expect(true).toBe(true);

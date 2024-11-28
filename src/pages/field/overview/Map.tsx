@@ -1,12 +1,6 @@
 import {Box, Grid} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-// import 'leaflet-contextmenu';
-// import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-// import 'leaflet.locatecontrol';
-// import '@geoman-io/leaflet-geoman-free';
-// import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L, {ContextMenuItemClickEvent} from 'leaflet';
-// import '~/css/leaflet.css';
 import {useEffect, useState, useMemo, SyntheticEvent, useCallback} from 'react';
 import {toast} from 'react-toastify';
 
@@ -14,6 +8,8 @@ import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
 import {boreholeColors} from '~/consts';
+import useMap from '~/features/map/components/useMap';
+import {boreholeSVG, defaultCircleMarkerStyle, defaultRadius, utm} from '~/features/map/mapConsts';
 import {NotificationMap, useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeActions from '~/pages/field/overview/components/BoreholeActions';
@@ -30,13 +26,6 @@ import {BoreholeMapData} from '~/types';
 import 'leaflet/dist/leaflet.css';
 
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
-import useMap from '../../../features/map/components/useMap';
-import {
-  boreholeSVG,
-  defaultCircleMarkerStyle,
-  defaultRadius,
-  utm,
-} from '../../../features/map/mapConsts';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);

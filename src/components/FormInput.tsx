@@ -74,7 +74,6 @@ const FormInput = <TFieldValues extends FieldValues>({
                 top: 'calc(100% - 8px)',
               },
             }}
-            className="swiper-no-swiping"
             variant="outlined"
             InputLabelProps={{shrink: true, style: {zIndex: 0}}}
             fullWidth

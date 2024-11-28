@@ -16,7 +16,7 @@ const pwaOptions: Partial<VitePWAOptions> = {
   filename: 'sw.js',
   registerType: 'autoUpdate',
   injectManifest: {
-    globPatterns: ['**/*'],
+    globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg}'],
     maximumFileSizeToCacheInBytes: 5000000,
   },
   includeAssets: ['**/*'],

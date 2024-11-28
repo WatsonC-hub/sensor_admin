@@ -11,16 +11,6 @@ const Algorithms = () => {
     get: {data},
   } = useAlgorithms(params.ts_id);
 
-  // const {data} = useQuery({
-  //   queryKey: ['algorithms', params.ts_id],
-  //   queryFn: async () => {
-  //     const {data} = await apiClient.get<Array<QaAlgorithms>>(
-  //       `/sensor_admin/algorithms/${params.ts_id}`
-  //     );
-  //     return data;
-  //   },
-  // });
-
   return (
     <>
       <Grid

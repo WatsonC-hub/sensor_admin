@@ -2,8 +2,6 @@ import {useMediaQuery, useTheme} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Route, Routes, useLocation} from 'react-router-dom';
 
-// const sensorAdminPromise = import('./pages/admin/SensorAdmin');
-// const SensorAdmin = React.lazy(() => sensorAdminPromise);
 import Chooser from '~/Chooser';
 import NavBar from '~/components/NavBar';
 import ScanComponent from '~/components/ScanComponent';

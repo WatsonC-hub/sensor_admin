@@ -51,7 +51,6 @@ const FormCheckbox = <TFieldValues extends FieldValues>({
                   '.MuiFormHelperText-root': {color: warning && warning(value) ? 'orange' : 'red'},
                 }}
                 indeterminate={includeInderterminate && value === null}
-                className="swiper-no-swiping"
                 onChange={(e) => {
                   switch (value) {
                     case true:
