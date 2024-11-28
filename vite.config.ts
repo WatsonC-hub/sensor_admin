@@ -134,6 +134,9 @@ export default defineConfig({
     // sentryVitePlugin(sentryOptions),
   ],
   test: {
+    passWithNoTests: true,
+    globals: true,
+    setupFiles: './testsetup.ts',
     environment: 'jsdom',
   },
   build: {

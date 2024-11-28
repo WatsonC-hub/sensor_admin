@@ -12,6 +12,7 @@ import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 function App() {
   const [loading, setLoading] = useState(true);
+
   const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = useAuthStore(
     (state) => [
       state.authenticated,
@@ -20,7 +21,6 @@ function App() {
       state.setAuthorization,
     ]
   );
-
   useEffect(() => {
     apiClient
       .get('/auth/me/secure')
@@ -44,7 +44,6 @@ function App() {
   if (loading) {
     return <LoadingSkeleton />;
   }
-
   if (!authenticated) {
     return (
       <>
