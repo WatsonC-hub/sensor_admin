@@ -136,6 +136,7 @@ export default defineConfig({
   test: {
     passWithNoTests: true,
     globals: true,
+
     coverage: {
       include: ['src/*.(ts|tsx|js|jsx)'],
       provider: 'v8',
