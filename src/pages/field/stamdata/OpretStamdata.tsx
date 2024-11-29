@@ -117,6 +117,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   }, [store.location.loc_id, locations]);
 
   const watchtstype_id = watch('timeseries.tstype_id');
+
   const loc_id = watch('location.loc_id');
 
   const stamdataNewMutation = useMutation({
