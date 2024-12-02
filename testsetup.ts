@@ -21,6 +21,5 @@ vi.mock('leaflet.locatecontrol', () => {
 
 // runs a clean after each test case (e.g. clearing jsdom)
 afterEach(() => {
-  window.URL.createObjectURL = vi.fn();
   cleanup();
 });
