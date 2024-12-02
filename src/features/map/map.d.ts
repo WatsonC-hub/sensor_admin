@@ -3,6 +3,7 @@ import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
+import {LocateOptions} from 'leaflet';
 
 declare module 'leaflet' {
   export interface CircleMarkerOptions<TData = any> {
@@ -57,5 +58,11 @@ declare module 'leaflet' {
       contextmenuInheritItems: boolean;
       contextmenuItems?: Array<string | object>;
     }) => void;
+  }
+}
+
+declare module 'leaflet.locatecontrol' {
+  class LocateControl extends L.Control.Locate {
+    constructor(options: L.Control.LocateOptions);
   }
 }

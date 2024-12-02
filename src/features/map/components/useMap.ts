@@ -5,8 +5,8 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
 import L from 'leaflet';
-//@ts-expect-error typedefinition missing for esm module
 import {LocateControl} from 'leaflet.locatecontrol';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import '~/css/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
@@ -45,6 +45,7 @@ const useMap = <TData extends object>(
 ) => {
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.FeatureGroup | null>(null);
+
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const geoJsonRef = useRef<L.FeatureGroup | null>(null);
@@ -143,18 +144,26 @@ const useMap = <TData extends object>(
 
     L.control.layers(baseMaps).addTo(map);
 
-    new LocateControl({
-      showPopup: false,
-      strings: {
-        title: 'Find mig',
-      },
-      circleStyle: {
-        interactive: false,
-      },
-      locateOptions: {
-        enableHighAccuracy: true,
-      },
-    }).addTo(map);
+    L.control.locate = function (options) {
+      //return new L.Control.Locate(options);
+      if (options) return new LocateControl(options);
+      return new LocateControl({});
+    };
+
+    L.control
+      .locate({
+        showPopup: false,
+        strings: {
+          title: 'Find mig',
+        },
+        circleStyle: {
+          interactive: false,
+        },
+        locateOptions: {
+          enableHighAccuracy: true,
+        },
+      })
+      .addTo(map);
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);

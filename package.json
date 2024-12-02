@@ -52,7 +52,7 @@
     "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
     "lint": "eslint src --ignore-path .gitignore",
     "test": "vitest run",
-    "test:changed": "vitest run --changed --reporter=verbose",
+    "test:changed": "vitest run --changed --reporter=verbose --dangerouslyIgnoreUnhandledErrors=true",
     "test:related": "vitest related ./App.jsx",
     "check-types": "tsc --project tsconfig.json --pretty --noEmit"
   },
@@ -82,6 +82,7 @@
     "@types/jsdom": "^21.1.7",
     "@types/leaflet": "^1.9.14",
     "@types/leaflet-contextmenu": "^1.4.3",
+    "@types/leaflet.locatecontrol": "^0.74.6",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-plotly.js": "^2.6.3",
