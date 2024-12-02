@@ -99,8 +99,6 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                           }
                           filterOptions={(options, params) => {
                             const {inputValue} = params;
-                            console.log(inputValue);
-                            console.log(options);
                             const filter = options.filter(
                               (option) =>
                                 (option.navn && option.navn.includes(inputValue)) ||
