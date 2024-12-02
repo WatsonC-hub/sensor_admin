@@ -534,7 +534,7 @@ const TaskTable = () => {
       groupedColumnMode: 'remove',
       enableExpanding: false,
       positionExpandColumn: 'first',
-      enablePagination: true,
+      enablePagination: false,
       paginateExpandedRows: false,
       getRowId: (row) => row.id,
       muiTableBodyCellProps: ({cell, table}) => ({
