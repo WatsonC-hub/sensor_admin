@@ -550,7 +550,8 @@ const TaskTable = () => {
       muiExpandButtonProps: ({row}) => ({
         onClick: () => {
           row.toggleExpanded(!row.getIsExpanded());
-          row.pin(row.getIsExpanded() ? false : 'top');
+
+          row.getIsGrouped() && row.pin(row.getIsExpanded() ? false : 'top');
         },
       }),
       displayColumnDefOptions: {
@@ -593,17 +594,9 @@ const TaskTable = () => {
                     station(undefined, row.original.ts_id);
                   }
                 : undefined,
-              sx: (theme) => ({
+              sx: {
                 whiteSpace: 'nowrap',
-                cursor: isTsId ? 'pointer' : undefined,
-                textDecoration: isTsId ? 'underline' : undefined,
-                // color:
-                //   row.depth === 0
-                //     ? theme.palette.primary.main
-                //     : row.depth === 1
-                //       ? theme.palette.secondary.main
-                //       : undefined,
-              }),
+              },
             };
           },
         },
