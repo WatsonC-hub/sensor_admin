@@ -60,7 +60,7 @@ export default function StationContactInfo({
           placeholder="Navn på kontakten..."
           required
           fullWidth
-          disabled={isEditing || isUser}
+          disabled={(!isEditing && isUser) || (isUser && isEditing)}
           sx={{
             mb: 2,
           }}
@@ -73,7 +73,7 @@ export default function StationContactInfo({
           placeholder="Email på kontakten..."
           type={'email'}
           fullWidth
-          disabled={isEditing || isUser}
+          disabled={(!isEditing && isUser) || (isUser && isEditing)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -99,7 +99,7 @@ export default function StationContactInfo({
           placeholder="Telefonnummer..."
           type={'number'}
           fullWidth
-          disabled={isEditing || isUser}
+          disabled={(!isEditing && isUser) || (isUser && isEditing)}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">

@@ -7,7 +7,6 @@ import {parseAsString, useQueryState} from 'nuqs';
 import {useContext, useState} from 'react';
 
 import Button from '~/components/Button';
-import {limitDecimalNumbers} from '~/helpers/dateConverter';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
@@ -61,7 +60,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
           <Box display={'flex'} flexDirection={'row'}>
             <b style={{width: 150}}>Forrige punkt:</b>
             <Typography gutterBottom>
-              {prevX.format('YYYY-MM-DD HH:mm')} - {limitDecimalNumbers(parseInt(prevY)) + ' '}
+              {prevX.format('YYYY-MM-DD HH:mm')} - {prevY + ' '}
               {unit}
             </Typography>
           </Box>
@@ -69,7 +68,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
         <Box display={'flex'} flexDirection={'row'}>
           <b style={{width: 150}}>Nuværende punkt:</b>
           <Typography gutterBottom>
-            {x.format('YYYY-MM-DD HH:mm')} - {limitDecimalNumbers(parseInt(y)) + ' '} {unit}
+            {x.format('YYYY-MM-DD HH:mm')} - {y + ' '} {unit}
           </Typography>
         </Box>
       </Box>

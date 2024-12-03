@@ -1,4 +1,4 @@
-import {MapRounded} from '@mui/icons-material';
+import {MapRounded, Person} from '@mui/icons-material';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
@@ -197,6 +197,17 @@ export const NavBarMenu = ({
             </MenuItem>
           ))}
 
+        <MenuItem
+          key="Til bruger profil"
+          onClick={() => {
+            window.location.href = 'https://admin.watsonc.dk/profile';
+          }}
+        >
+          <ListItemIcon>
+            <Person />
+          </ListItemIcon>
+          Til bruger profil
+        </MenuItem>
         <MenuItem onClick={handleClose}>
           <LogOut>
             <ListItemIcon>

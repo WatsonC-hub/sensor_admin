@@ -1,4 +1,3 @@
-import {Person} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box} from '@mui/material';
 import AppBar from '@mui/material/AppBar';
@@ -10,7 +9,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
-import {NavBarMenu} from '~/components/NavBar';
+import {HomeButton, NavBarMenu} from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import Boreholeno from '~/pages/field/boreholeno/Boreholeno';
 import MinimalSelectBorehole from '~/pages/field/boreholeno/MinimalSelectBorehole';
@@ -40,9 +39,6 @@ export default function BoreholeRouter() {
       } else {
         if (data.length === 1) {
           intakeno = data[0].intakeno;
-          // navigate(`../borehole/${params.boreholeno}/${intakeno}`, {
-          //   replace: true,
-          // });
           setSelectedItem(parseInt(intakeno));
           boreholeIntake(params.boreholeno, intakeno, {replace: true});
         }
@@ -74,18 +70,8 @@ export default function BoreholeRouter() {
             />
           </Box>
           <Box display="flex" justifyContent="end" alignItems="center" flexShrink={0}>
-            <NavBarMenu
-              highligtFirst={false}
-              items={[
-                {
-                  title: 'Til bruger profil',
-                  icon: <Person />,
-                  onClick: () => {
-                    window.location.href = 'https://admin.watsonc.dk/profile';
-                  },
-                },
-              ]}
-            />
+            <HomeButton />
+            <NavBarMenu highligtFirst={false} />
           </Box>
         </Toolbar>
       </AppBar>
@@ -93,7 +79,6 @@ export default function BoreholeRouter() {
       <main
         style={{
           flexGrow: 1,
-          // padding: theme.spacing(0.5),
         }}
       >
         <Boreholeno

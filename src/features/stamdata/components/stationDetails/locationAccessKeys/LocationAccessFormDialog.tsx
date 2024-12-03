@@ -99,11 +99,10 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                           }
                           filterOptions={(options, params) => {
                             const {inputValue} = params;
-
                             const filter = options.filter(
                               (option) =>
-                                option.navn.includes(inputValue) ||
-                                option.email.includes(inputValue)
+                                (option.navn && option.navn.includes(inputValue)) ||
+                                (option.email && option.email.includes(inputValue))
                             );
 
                             return filter;
