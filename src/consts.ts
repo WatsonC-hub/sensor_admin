@@ -18,19 +18,19 @@ export const boreholeColors: Record<
   }
 > = {
   1: {
-    color: '#66bb6a',
-    text: 'Nyligt pejlet',
+    color: '#4caf50',
+    text: 'OK',
   },
   2: {
-    color: '#FFFF00',
+    color: '#f1c21b',
     text: 'Skal snart pejles',
   },
   3: {
-    color: '#FF6C00',
+    color: '#ff832b',
     text: 'Pejleinterval overskredet',
   },
   0: {
-    color: '#3388ff',
+    color: '#4caf50',
     text: 'OK',
   },
 };
