@@ -4,14 +4,8 @@ import {
   Autocomplete,
   Box,
   Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
   Stack,
   TextField,
-  Tooltip,
   Typography,
   Button as MuiButton,
   IconButton,
@@ -30,13 +24,11 @@ import {
 import moment from 'moment';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {ErrorBoundary, FallbackProps} from 'react-error-boundary';
-import {UseFormReturn} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight} from '~/consts';
 import {useTasks} from '~/features/tasks/api/useTasks';
-import TaskForm, {FormValues} from '~/features/tasks/components/TaskForm';
 import {useTaskStore} from '~/features/tasks/store';
 import type {ID, Task, TaskUser} from '~/features/tasks/types';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -44,6 +36,8 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 import {authStore} from '~/state/store';
+
+import MassEditDialog from './MassEditDialog';
 
 const NOT_ASSIGNED = 'Ikke tildelt' as const;
 const NO_PROJECT = 'Intet projektnummer' as const;
@@ -95,13 +89,9 @@ const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
 type ViewValues = 'upcoming' | 'my' | 'groupAssigned' | '';
 
 const TaskTable = () => {
-  const [dueDateChecked, setDueDateChecked] = useState<boolean>(false);
-  const [assignedChecked, setAssignedChecked] = useState<boolean>(false);
-  const [statusChecked, setStatusChecked] = useState<boolean>(false);
   const {mapFilteredTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
   const {station} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
-  const [rows, setRows] = useState<Array<Partial<Task>>>();
   const [viewValue, setViewValue] = useState<ViewValues>('');
   const {
     getStatus: {data: taskStatus},
@@ -121,56 +111,6 @@ const TaskTable = () => {
     },
     [patch]
   );
-
-  const onSubmit = (data: FormValues, formMethods?: UseFormReturn<FormValues>) => {
-    if (formMethods) {
-      let patchData = {};
-      if (!dueDateChecked && data.due_date) patchData = {due_date: data.due_date};
-      else if (dueDateChecked) {
-        patchData = {...patchData, due_date: null};
-        setDueDateChecked(!dueDateChecked);
-      }
-      if (!assignedChecked && data.assigned_to)
-        patchData = {
-          ...patchData,
-          assigned_to: data.assigned_to,
-          assigned_display_name: taskUsers?.find((user) => user.id == data.assigned_to)
-            ?.display_name,
-        };
-      else if (assignedChecked) {
-        patchData = {...patchData, assigned_to: null};
-        setAssignedChecked(!assignedChecked);
-      }
-      if (!statusChecked && data.status_id)
-        patchData = {
-          ...patchData,
-          status_id: data.status_id,
-          status_name: taskStatus?.find((status) => status.id === data.status_id)?.name,
-        };
-      else if (statusChecked) {
-        patchData = {...patchData, status_id: 1};
-        setStatusChecked(!statusChecked);
-      }
-
-      if (Object.keys(patchData).length > 0)
-        rows?.forEach((row) => {
-          if (row.id) {
-            const submit = {
-              path: row.id,
-              data: {
-                ...patchData,
-                ts_id: row.ts_id,
-              },
-            };
-            patch.mutate(submit, {
-              onSuccess: () => {
-                setOpen(false);
-              },
-            });
-          }
-        });
-    }
-  };
 
   const revertView = (table: MRT_TableInstance<Task>) => {
     resetView(table);
@@ -578,26 +518,11 @@ const TaskTable = () => {
           size: 50,
         },
         'mrt-row-expand': {
-          // GroupedCell: ({row, table}) => {
-          //   const grouping = table.getState().grouping;
-          //   return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
-          // },
           enableResizing: false,
-          muiTableBodyCellProps: ({row, table}) => {
-            const isTsId =
-              row.groupingColumnId === 'ts_id' &&
-              table.getState().grouping.length > 0 &&
-              table.getState().grouping[table.getState().grouping.length - 1] === 'ts_id';
-            return {
-              onClick: isTsId
-                ? () => {
-                    station(undefined, row.original.ts_id);
-                  }
-                : undefined,
-              sx: {
-                whiteSpace: 'nowrap',
-              },
-            };
+          muiTableBodyCellProps: {
+            sx: {
+              whiteSpace: 'nowrap',
+            },
           },
         },
       },
@@ -609,14 +534,6 @@ const TaskTable = () => {
               onClick={() => {
                 const selectedRows = table.getFilteredSelectedRowModel().rows;
                 setOpen(selectedRows.length > 0);
-                if (selectedRows.length > 0) {
-                  setRows(
-                    selectedRows.map(
-                      (row) => ({id: row.original.id, ts_id: row.original.ts_id}) as Partial<Task>
-                    )
-                  );
-                  setOpen(true);
-                }
               }}
               size="large"
             >
@@ -799,76 +716,7 @@ const TaskTable = () => {
         justifySelf: 'center',
       }}
     >
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>Masse opdatere opgaver</DialogTitle>
-
-        <TaskForm
-          onSubmit={onSubmit}
-          defaultValues={{
-            assigned_to: null,
-            due_date: null,
-            status_id: undefined,
-          }}
-        >
-          <DialogContent
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-              minWidth: 400,
-            }}
-          >
-            <Box display={'flex'} flexDirection={'row'}>
-              <Tooltip title="Fjern dato fra valgte opgaver">
-                <FormControlLabel
-                  label=""
-                  control={
-                    <Checkbox
-                      checked={dueDateChecked}
-                      onChange={() => setDueDateChecked(!dueDateChecked)}
-                    />
-                  }
-                />
-              </Tooltip>
-              <TaskForm.DueDate disabled={dueDateChecked} />
-            </Box>
-            <Box display={'flex'} flexDirection={'row'}>
-              <Tooltip title="Fjern tildelt fra valgte opgaver">
-                <FormControlLabel
-                  label=""
-                  control={
-                    <Checkbox
-                      checked={assignedChecked}
-                      onChange={() => setAssignedChecked(!assignedChecked)}
-                    />
-                  }
-                />
-              </Tooltip>
-              <TaskForm.AssignedTo disabled={assignedChecked} />
-            </Box>
-            <Box display={'flex'} flexDirection={'row'}>
-              <Tooltip title="Nulstil status fra valgte opgaver">
-                <FormControlLabel
-                  label=""
-                  control={
-                    <Checkbox
-                      checked={statusChecked}
-                      onChange={() => setStatusChecked(!statusChecked)}
-                    />
-                  }
-                />
-              </Tooltip>
-              <TaskForm.StatusSelect disabled={statusChecked} />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button bttype="tertiary" onClick={() => setOpen(false)}>
-              Annuller
-            </Button>
-            <TaskForm.SubmitButton />
-          </DialogActions>
-        </TaskForm>
-      </Dialog>
+      <MassEditDialog open={open} setOpen={setOpen} table={table} />
       <ErrorBoundary
         FallbackComponent={errorFallback}
         onReset={(details) => errorReset(details, reset)}

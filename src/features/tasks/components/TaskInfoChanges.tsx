@@ -1,4 +1,4 @@
-import {Grid, Typography, Box} from '@mui/material';
+import {Typography, Box} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 
@@ -44,27 +44,29 @@ const TaskInfoChanges = ({taskChanges, taskUsers, taskStatus}: Props) => {
   }
 
   return (
-    <Grid container key={taskChanges.id} flexDirection={'row'} spacing={1}>
-      <Grid item xs={9} alignSelf={'center'}>
-        {Comment(old_value, new_value, field_name, taskChanges)}
-      </Grid>
-      <Grid item xs={'auto'} alignSelf={'center'}>
-        <Box display={'flex'} flexDirection={'row'} justifySelf={'end'} gap={1}>
-          <Typography variant="body2">
-            {moment(taskChanges.created_at).format('YYYY-MM-DD HH:mm')}
-          </Typography>
-        </Box>
-      </Grid>
-    </Grid>
+    <Box display="flex" justifyContent="space-between" key={taskChanges.id} flexDirection={'row'}>
+      <ChangeText
+        old_value={old_value}
+        new_value={new_value}
+        field_name={field_name}
+        taskChanges={taskChanges}
+      />
+
+      <Typography variant="body2">
+        {moment(taskChanges.created_at).format('YYYY-MM-DD HH:mm')}
+      </Typography>
+    </Box>
   );
 };
 
-const Comment = (
-  old_value: string | undefined,
-  new_value: string | undefined,
-  field_name: FieldsMap | undefined,
-  taskChanges: TaskChanges
-) => {
+interface ChangeTextProps {
+  old_value: string | undefined;
+  new_value: string | undefined;
+  field_name: FieldsMap | undefined;
+  taskChanges: TaskChanges;
+}
+
+const ChangeText = ({old_value, new_value, field_name, taskChanges}: ChangeTextProps) => {
   let text = '';
   if (taskChanges.field_name !== 'description') {
     if (old_value && old_value !== 'None' && new_value && new_value !== 'None')

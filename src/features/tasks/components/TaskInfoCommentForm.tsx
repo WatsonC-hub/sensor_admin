@@ -1,10 +1,10 @@
-import {Grid} from '@mui/material';
-import React, {useEffect} from 'react';
+import {Box} from '@mui/material';
+import React from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import FormInput from '~/components/FormInput';
-import {useTaskComments} from '~/features/tasks/api/useTaskComments';
+import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
@@ -29,9 +29,9 @@ interface TaskInfoCommentFormProps {
 
 const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
   const {
-    get: {data: taskComments},
-    post: postComment,
-  } = useTaskComments(selectedTaskId);
+    get: {data: taskHistory},
+    addTaskComment,
+  } = useTaskHistory(selectedTaskId);
   const {
     getUsers: {data: taskUsers},
     getStatus: {data: taskStatus},
@@ -53,38 +53,34 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
           comment: values.comment,
         },
       };
-      postComment.mutate(payload);
+      addTaskComment.mutate(payload);
       reset();
     }
   };
 
   return (
-    <Grid container>
-      <Grid
-        item
-        xs={12}
-        mb={2}
-        height={'100%'}
+    <Box display="flex" flexDirection="column" maxHeight={'100%'} gap={2}>
+      <Box
+        // maxHeight={'100%'}
         display={'flex'}
         flexDirection={'column'}
         gap={2}
-        overflow={'scrollY'}
+        sx={{overflowY: 'auto', overflowX: 'hidden'}}
       >
-        {taskComments?.map((taskComment) => {
-          if ('comment' in taskComment)
-            return <TaskInfoComment key={taskComment.id} comment={taskComment} />;
+        {taskHistory?.map((row) => {
+          if ('comment' in row) return <TaskInfoComment key={row.id} comment={row} />;
           else
             return (
               <TaskInfoChanges
-                key={taskComment.id}
-                taskChanges={taskComment}
+                key={row.id}
+                taskChanges={row}
                 taskUsers={taskUsers}
                 taskStatus={taskStatus}
               />
             );
         })}
-      </Grid>
-      <Grid item xs={12}>
+      </Box>
+      <Box>
         <FormProvider {...formMethods}>
           <FormInput
             fullWidth
@@ -99,8 +95,8 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
             }}
           />
         </FormProvider>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 };
 

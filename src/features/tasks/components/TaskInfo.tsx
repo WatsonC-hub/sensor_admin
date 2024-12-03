@@ -1,4 +1,4 @@
-import {Grid} from '@mui/material';
+import {Box, Grid} from '@mui/material';
 import React, {useMemo} from 'react';
 
 import TaskForm from '~/features/tasks/components/TaskForm';
@@ -34,16 +34,16 @@ const TaskInfo = () => {
   if (!selectedTask) return <div></div>;
 
   return (
-    <Grid container mt={5}>
-      <Grid item xs={6.8}>
+    <Box display="flex" flexDirection="row" pt={2} maxHeight={'100%'}>
+      <Box flexGrow={1} flexBasis={0}>
         <TaskForm key={selectedTask.id} onSubmit={() => {}} defaultValues={defaultValues}>
           <TaskInfoForm selectedTask={selectedTask} />
         </TaskForm>
-      </Grid>
-      <Grid item xs={5}>
+      </Box>
+      <Box flexGrow={1} flexBasis={0}>
         <TaskInfoCommentForm selectedTaskId={selectedTask.id} />
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 };
 

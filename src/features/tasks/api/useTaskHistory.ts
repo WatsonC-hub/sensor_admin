@@ -1,5 +1,4 @@
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -41,10 +40,10 @@ export const taskCommentDelOptions = {
     return result;
   },
 };
-export const useTaskComments = (task_id: string | undefined) => {
+export const useTaskHistory = (task_id: string | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery<Array<TaskComment | TaskChanges>, APIError>({
-    queryKey: ['taskComments', task_id],
+    queryKey: ['taskHistory', task_id],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<TaskComment | TaskChanges>>(
         `sensor_admin/tasks/comments/${task_id}`
@@ -53,7 +52,7 @@ export const useTaskComments = (task_id: string | undefined) => {
     },
     enabled: task_id !== undefined,
   });
-  const post = useMutation({
+  const addTaskComment = useMutation({
     ...taskCommentPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -61,7 +60,7 @@ export const useTaskComments = (task_id: string | undefined) => {
       });
     },
   });
-  const put = useMutation({
+  const editTaskComment = useMutation({
     ...taskCommentPutOptions,
     onSuccess: () => {
       toast.success('Opgave kommentar ændret');
@@ -87,7 +86,7 @@ export const useTaskComments = (task_id: string | undefined) => {
     //   );
     // },
   });
-  const del = useMutation({
+  const deleteTaskComment = useMutation({
     ...taskCommentDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -96,5 +95,5 @@ export const useTaskComments = (task_id: string | undefined) => {
       toast.success('Opgave kommentar slettet');
     },
   });
-  return {get, post, put, del};
+  return {get, addTaskComment, editTaskComment, deleteTaskComment};
 };
