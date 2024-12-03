@@ -144,6 +144,9 @@ export const statefullTableAtomFamily = atomFamily(
           pageIndex: 0,
         },
         density: 'comfortable',
+        columnVisibility: {
+          'mrt-row-pin': false,
+        },
       },
       1000 * 60 * 60,
       ['expanded', 'rowSelection', 'grouping', 'isFullScreen', 'pagination']

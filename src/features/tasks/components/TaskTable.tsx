@@ -529,13 +529,15 @@ const TaskTable = () => {
       enableColumnDragging: true,
       enableColumnOrdering: true,
       enableSorting: true,
-      autoResetPageIndex: false,
+      // autoResetPageIndex: false,
       enableRowSelection: true,
       groupedColumnMode: 'remove',
-      enableExpanding: false,
+      // enableExpanding: false,
       positionExpandColumn: 'first',
       enablePagination: false,
-      paginateExpandedRows: false,
+      enableRowPinning: true,
+      keepPinnedRows: false,
+      // paginateExpandedRows: false,
       getRowId: (row) => row.id,
       muiTableBodyCellProps: ({cell, table}) => ({
         onClick: () => {
@@ -545,7 +547,17 @@ const TaskTable = () => {
       renderToolbarInternalActions: ({table}) => {
         return <RenderInternalActions table={table} reset={reset} />;
       },
+      muiExpandButtonProps: ({row}) => ({
+        onClick: () => {
+          row.toggleExpanded(!row.getIsExpanded());
+          row.pin(row.getIsExpanded() ? false : 'top');
+        },
+      }),
       displayColumnDefOptions: {
+        'mrt-row-pin': {
+          enableHiding: true,
+          visibleInShowHideMenu: false,
+        },
         'mrt-row-select': {
           Cell: ({row}) => {
             const checked = isChecked(row);
@@ -565,18 +577,16 @@ const TaskTable = () => {
           size: 50,
         },
         'mrt-row-expand': {
-          GroupedCell: ({row, table}) => {
-            const grouping = table.getState().grouping;
-            return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
-          },
+          // GroupedCell: ({row, table}) => {
+          //   const grouping = table.getState().grouping;
+          //   return grouping.length > 0 ? row.getValue(grouping[grouping.length - 1]) : undefined;
+          // },
           enableResizing: false,
-
           muiTableBodyCellProps: ({row, table}) => {
             const isTsId =
               row.groupingColumnId === 'ts_id' &&
               table.getState().grouping.length > 0 &&
               table.getState().grouping[table.getState().grouping.length - 1] === 'ts_id';
-
             return {
               onClick: isTsId
                 ? () => {
@@ -584,14 +594,15 @@ const TaskTable = () => {
                   }
                 : undefined,
               sx: (theme) => ({
+                whiteSpace: 'nowrap',
                 cursor: isTsId ? 'pointer' : undefined,
                 textDecoration: isTsId ? 'underline' : undefined,
-                color:
-                  row.depth === 0
-                    ? theme.palette.primary.main
-                    : row.depth === 1
-                      ? theme.palette.secondary.main
-                      : undefined,
+                // color:
+                //   row.depth === 0
+                //     ? theme.palette.primary.main
+                //     : row.depth === 1
+                //       ? theme.palette.secondary.main
+                //       : undefined,
               }),
             };
           },
