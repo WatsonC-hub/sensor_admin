@@ -7,10 +7,10 @@ import NotificationIcon from '~/pages/field/overview/components/NotificationIcon
 import {DrawerContext} from '~/state/contexts';
 
 const iotItems = [
-  {flag: 3, text: 'Kritisk'},
-  {flag: 2, text: 'Advarsel'},
-  {flag: 1, text: 'Opmærksom'},
   {flag: 0, text: 'Alt vel'},
+  {flag: 1, text: 'Opmærksom'},
+  {flag: 2, text: 'Advarsel'},
+  {flag: 3, text: 'Kritisk'},
   {loctype_id: 12, text: 'Enkeltmåling'},
   {active: null, text: 'Nyopsætning'},
   // {notification_id: 12, text: 'Plateau'},
@@ -18,8 +18,8 @@ const iotItems = [
   {active: false, text: 'Inaktiv'},
   {
     notify_type: 'obs' as const,
-    flag: 2,
-    text: 'Ringen indikere ikke drift kritiske notifikationer',
+    flag: 3,
+    text: 'Ydre ring indikerer ikke drift kritiske notifikationer',
   },
 ];
 
@@ -46,12 +46,14 @@ const LegendContent = () => {
           </Box>
           <Box>
             <Typography variant="body1">DGU</Typography>
-            {Object.values(boreholeColors).map((item) => (
-              <Box display="flex" alignItems="center" gap={1} key={item.text}>
-                <BoreholeIcon color={item.color} />
-                <Typography variant="body1">{item.text}</Typography>
-              </Box>
-            ))}
+            {Object.entries(boreholeColors)
+              .filter(([key]) => key != '1')
+              .map(([, item]) => (
+                <Box display="flex" alignItems="center" gap={1} key={item.text}>
+                  <BoreholeIcon color={item.color} />
+                  <Typography variant="body1">{item.text}</Typography>
+                </Box>
+              ))}
           </Box>
         </Box>
       )}
