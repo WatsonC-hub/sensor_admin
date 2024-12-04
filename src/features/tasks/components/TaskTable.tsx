@@ -288,7 +288,6 @@ const TaskTable = () => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
             const faceted = column.getFacetedUniqueValues();
             const locale = table.options.localization;
-            console.log(table.getState().columnFilterFns);
 
             let helperText = '';
             if (table.getState().columnFilterFns[column.id]) {
@@ -761,7 +760,6 @@ const TaskTable = () => {
 };
 
 const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
-  console.log(error);
   return (
     <>
       <Typography variant="h4" component="h1" sx={{textAlign: 'center', mt: 5}}>
@@ -775,10 +773,21 @@ const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
 };
 
 const resetView = (table: MRT_TableInstance<Task>) => {
-  table.resetColumnFilters();
   table.resetGlobalFilter();
   table.resetGrouping();
   table.resetSorting();
+  table.setColumnFilterFns((prev) => {
+    return {
+      ...prev,
+      status_id: 'arrIncludesNone',
+    };
+  });
+  table.setColumnFilters([
+    {
+      id: 'status_id',
+      value: ['Færdiggjort'],
+    },
+  ]);
 };
 
 const onSelectChange = (

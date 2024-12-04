@@ -57,7 +57,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
   return (
     <Dialog open={open} onClose={closeModal}>
       <FormProvider {...formMethods}>
-        <DialogTitle>Opdater notifikation</DialogTitle>
+        <DialogTitle>Udskyd notifikation</DialogTitle>
         <DialogContent
           sx={{
             minWidth: 300,

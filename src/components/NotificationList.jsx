@@ -1,4 +1,4 @@
-import {Assignment, Edit, FormatListBulleted} from '@mui/icons-material';
+import {AddTask, Assignment, Update} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
@@ -165,7 +165,7 @@ const NotificationList = () => {
                   setMakeTaskModalOpen(true);
                 }}
               >
-                <FormatListBulleted />
+                <AddTask />
               </IconButton>
 
               <IconButton
@@ -178,14 +178,21 @@ const NotificationList = () => {
                   openUpdateModal();
                 }}
               >
-                <Edit />
+                <Update />
               </IconButton>
             </MenuItem>
           );
         })}
         {tasksOnStation?.map((task, index) => {
           return (
-            <MenuItem key={index} sx={{gap: 0.5}}>
+            <MenuItem
+              key={index}
+              sx={{gap: 0.5}}
+              onClick={() => {
+                setSelectedTask(task.id);
+                tasksNavigation();
+              }}
+            >
               <ListItemIcon
                 sx={{
                   fontSize: '1.5rem',
@@ -194,18 +201,6 @@ const NotificationList = () => {
                 <Assignment />
               </ListItemIcon>
               <ListItemText primary={task.name} secondary={task.created_at.slice(0, 10)} />
-              <IconButton
-                sx={{
-                  pointerEvents: 'auto',
-                }}
-                aria-label="Edit task"
-                onClick={() => {
-                  setSelectedTask(task.id);
-                  tasksNavigation();
-                }}
-              >
-                <Edit />
-              </IconButton>
             </MenuItem>
           );
         })}
