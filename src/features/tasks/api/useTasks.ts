@@ -116,7 +116,7 @@ export const useTasks = () => {
     onSuccess: (_, variables) => {
       const {path} = variables;
       queryClient.invalidateQueries({
-        queryKey: ['taskComments', path],
+        queryKey: ['taskHistory', path],
       });
       // toast.success('Opgaver ændret');
     },

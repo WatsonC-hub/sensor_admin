@@ -56,7 +56,7 @@ export const useTaskHistory = (task_id: string | undefined) => {
     ...taskCommentPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskComments', task_id],
+        queryKey: ['taskHistory', task_id],
       });
     },
   });
@@ -67,7 +67,7 @@ export const useTaskHistory = (task_id: string | undefined) => {
     },
     onError: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskComments', task_id],
+        queryKey: ['taskHistory', task_id],
       });
     },
     // onMutate: async (mutation_data) => {
@@ -90,7 +90,7 @@ export const useTaskHistory = (task_id: string | undefined) => {
     ...taskCommentDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskComments', task_id],
+        queryKey: ['taskHistory', task_id],
       });
       toast.success('Opgave kommentar slettet');
     },

@@ -14,7 +14,11 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const {location, station} = useNavigationFunctions();
-  const {patch} = useTasks();
+  const {
+    patch,
+    getStatus: {data: taskStatus},
+    getUsers: {data: taskUsers},
+  } = useTasks();
   const {
     trigger,
     getValues,
@@ -37,8 +41,20 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
     if (field_name === 'due_date' && field_value === '') field_value = null;
 
+    const values = {[field_name]: field_value};
+
+    if (field_name === 'assigned_to') {
+      values.assigned_display_name = taskUsers?.find(
+        (user) => user.id === field_value
+      )?.display_name;
+    }
+
+    if (field_name === 'status_id') {
+      values.status_name = taskStatus?.find((status) => status.id === field_value)?.name;
+    }
+
     if (validated && isDirty) {
-      handleBlurSubmit({[field_name]: field_value});
+      handleBlurSubmit(values);
     }
   };
 
