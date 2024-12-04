@@ -102,13 +102,13 @@ const TasksOverview = () => {
         <Tab icon={<CalendarMonth />} iconPosition="start" label="Kalender" />
       </Tabs>
       <TabPanel value={tabValue} index={0}>
-        <TaskMap />
+        <TaskMap key="taskmap" />
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
-        <TaskTable />
+        <TaskTable key="tasktable" />
       </TabPanel>
       <TabPanel value={tabValue} index={2}>
-        <TaskCalendar />
+        <TaskCalendar key="taskcalendar" />
       </TabPanel>
     </Box>
   );

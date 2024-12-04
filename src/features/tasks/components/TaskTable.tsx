@@ -10,6 +10,7 @@ import {
   Button as MuiButton,
   IconButton,
   MenuItem,
+  ListItemIcon,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
@@ -20,9 +21,10 @@ import {
   MRT_Row,
   MRT_TableInstance,
   MRT_TableOptions,
+  MRT_FilterOption,
 } from 'material-react-table';
 import moment from 'moment';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {ErrorBoundary, FallbackProps} from 'react-error-boundary';
 
 import Button from '~/components/Button';
@@ -101,16 +103,13 @@ const TaskTable = () => {
 
   const userAuthId = authStore().user_id;
 
-  const handleBlurSubmit = useCallback(
-    (id: string, ts_id: number, values: any) => {
-      const payload = {
-        path: `${id}`,
-        data: {...values, ts_id: ts_id},
-      };
-      patch.mutate(payload);
-    },
-    [patch]
-  );
+  const handleBlurSubmit = (id: string, ts_id: number, values: any) => {
+    const payload = {
+      path: `${id}`,
+      data: {...values, ts_id: ts_id},
+    };
+    patch.mutate(payload);
+  };
 
   const revertView = (table: MRT_TableInstance<Task>) => {
     resetView(table);
@@ -245,8 +244,7 @@ const TaskTable = () => {
           id: 'assigned_to',
           header: 'Ansvarlig',
           size: 200,
-          filterVariant: 'autocomplete',
-          filterFn: 'arrIncludesSome',
+          filterVariant: 'multi-select',
           Edit: ({row, cell, table}) => {
             return (
               <Autocomplete
@@ -285,9 +283,20 @@ const TaskTable = () => {
             ?.map((user) => user.display_name)
             .sort()
             .toSpliced(0, 0, 'Ikke tildelt'),
-          Filter: ({column}) => {
+          renderColumnFilterModeMenuItems: renderArrFilterModeOptions,
+          Filter: ({column, table}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
             const faceted = column.getFacetedUniqueValues();
+            const locale = table.options.localization;
+            console.log(table.getState().columnFilterFns);
+
+            let helperText = '';
+            if (table.getState().columnFilterFns[column.id]) {
+              const filterName = 'filter' + capitalize(table.getState().columnFilterFns[column.id]);
+              //@ts-expect-error - this is a hack to get the correct locale
+              helperText = 'Filtertilstand: ' + locale[filterName];
+            }
+
             return (
               <Autocomplete
                 multiple
@@ -323,6 +332,7 @@ const TaskTable = () => {
                     {...params}
                     placeholder={'Filtrér efter ' + column.columnDef.header}
                     variant="outlined"
+                    helperText={helperText}
                   />
                 )}
                 onChange={(e, newValue) => {
@@ -343,6 +353,8 @@ const TaskTable = () => {
           enableGlobalFilter: false,
           filterVariant: 'multi-select',
           editVariant: 'select',
+          enableColumnFilterModes: true,
+          renderColumnFilterModeMenuItems: renderArrFilterModeOptions,
           Edit: ({row, table}) => {
             return (
               <Autocomplete
@@ -394,9 +406,17 @@ const TaskTable = () => {
           header: 'Projektnummer',
           enableEditing: false,
           filterVariant: 'multi-select',
-          Filter: ({column}) => {
+          renderColumnFilterModeMenuItems: renderArrFilterModeOptions,
+          Filter: ({column, table}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
             const faceted = column.getFacetedUniqueValues();
+            const locale = table.options.localization;
+            let helperText = '';
+            if (table.getState().columnFilterFns[column.id]) {
+              const filterName = 'filter' + capitalize(table.getState().columnFilterFns[column.id]);
+              //@ts-expect-error - this is a hack to get the correct locale
+              helperText = 'Filtertilstand: ' + locale[filterName];
+            }
 
             return (
               <Autocomplete
@@ -426,6 +446,7 @@ const TaskTable = () => {
                     {...params}
                     placeholder={'Filtrér efter ' + column.columnDef.header}
                     variant="outlined"
+                    helperText={helperText}
                   />
                 )}
                 onChange={(e, newValue) => {
@@ -455,17 +476,26 @@ const TaskTable = () => {
           ),
         },
       ] as MRT_ColumnDef<Task>[],
-    [taskStatus, taskUsers, handleBlurSubmit, station]
+    [taskStatus, taskUsers]
   );
 
   const options: Partial<MRT_TableOptions<Task>> = useMemo(
     () => ({
+      enableColumnFilterModes: true,
       enableFullScreenToggle: true,
       enableFacetedValues: true,
       enableGrouping: true,
       editDisplayMode: 'cell',
       enableEditing: true,
       globalFilterFn: 'fuzzy',
+      filterFns: {
+        arrIncludesNone: (row, id, filterValue) => {
+          return !filterValue.some((val: any) => row.getValue(id) === val);
+        },
+      },
+      localization: {
+        filterArrIncludesNone: 'Indeholder ikke',
+      } as any,
       enableColumnDragging: true,
       enableColumnOrdering: true,
       enableSorting: true,
@@ -821,5 +851,34 @@ const groupByAssigned = (table: MRT_TableInstance<Task>) => {
 const errorReset = (details: object, reset: () => void) => {
   reset();
 };
+
+interface FilterModeOptions {
+  onSelectFilterMode: (mode: MRT_FilterOption) => void;
+}
+
+const renderArrFilterModeOptions = ({onSelectFilterMode}: FilterModeOptions) => [
+  <MenuItem
+    key="arrIncludesSome"
+    onClick={() => {
+      onSelectFilterMode('arrIncludesSome');
+    }}
+  >
+    <ListItemIcon>*</ListItemIcon>
+    Indeholder
+  </MenuItem>,
+  <MenuItem
+    key="arrIncludesNone"
+    onClick={() => {
+      onSelectFilterMode('arrIncludesNone');
+    }}
+  >
+    <ListItemIcon>!*</ListItemIcon>
+    Indeholder ikke
+  </MenuItem>,
+];
+
+function capitalize(s: string) {
+  return String(s[0]).toUpperCase() + String(s).slice(1);
+}
 
 export default TaskTable;

@@ -41,7 +41,7 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
 
   const stateChangeHandler = useCallback(
     (stateName: keyof Partial<MRT_TableState<TData>>) => (stateOrCallback: any) => {
-      if (stateName === 'rowSelection') {
+      if (stateName === 'columnFilterFns') {
         console.log('stateOrCallback', stateOrCallback);
       }
 
@@ -58,9 +58,10 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
     [setTableState]
   );
 
-  const handlers: StateAndHandlers<TData> = useMemo(() => {
+  const handlers = useMemo(() => {
     return {
       state: tableState,
+      // onColumnFilterFnsChange: stateChangeHandler('columnFilterFns'),
       onColumnFiltersChange: stateChangeHandler('columnFilters'),
       onColumnVisibilityChange: stateChangeHandler('columnVisibility'),
       onDensityChange: stateChangeHandler('density'),
@@ -76,7 +77,7 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
       onColumnPinningChange: stateChangeHandler('columnPinning'),
       onColumnSizingChange: stateChangeHandler('columnSizing'),
       onExpandedChange: stateChangeHandler('expanded'),
-    };
+    } as StateAndHandlers<TData>;
   }, [tableState, stateChangeHandler]);
 
   return [handlers, () => setTableState(RESET)] as const;
