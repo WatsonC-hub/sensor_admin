@@ -127,8 +127,6 @@ const TaskTable = () => {
     });
   }, [mapFilteredTasks]);
 
-  console.log(tableData);
-
   const [tableState, reset] = useStatefullTableAtom<Task>('taskTableState');
 
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
@@ -737,7 +735,6 @@ const TaskTable = () => {
   }, [table.getState().globalFilter, table.getState().columnFilters]);
 
   useEffect(() => {
-    console.log(table.getFilteredSelectedRowModel());
     setSelectedLocIds([
       ...new Set(table.getFilteredSelectedRowModel().rows.map((row) => row.original.loc_id)),
     ]);
