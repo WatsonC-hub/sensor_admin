@@ -1,5 +1,6 @@
 import {Box, CssBaseline, Divider, Tab, Tabs, Typography} from '@mui/material';
-import React, {useState} from 'react';
+import {parseAsStringLiteral, useQueryState} from 'nuqs';
+import React from 'react';
 
 import {AppBarLayout, HomeButton, NavBarMenu} from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
@@ -10,10 +11,15 @@ import {useSearchParam} from '~/hooks/useSeachParam';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import TabPanel from '~/pages/field/overview/TabPanel';
 
+const tabValues = ['forberedelse', 'overblik'] as const;
+
 const Trip = () => {
   const [search] = useSearchParam('loc_ids', '[15613, 15647]');
   const loc_ids: Array<number> = JSON.parse(search ?? '[]');
-  const [tabValue, setTabValue] = useState<string | null>(null);
+  const [tabValue, setTabValue] = useQueryState(
+    'page',
+    parseAsStringLiteral(tabValues).withDefault('forberedelse')
+  );
 
   const {data} = useTaskManagement({loc_ids});
 
