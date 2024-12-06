@@ -11,11 +11,13 @@ type TaskState = {
   shownMapTaskIds: ID[];
   shownListTaskIds: ID[];
   selectedTaskId: ID | null;
+  selectedLocIds: Array<number>;
   // setTasks: (tasks: Task[]) => void;
   // setShownTaskIds: (ids: ID[]) => void;
   setShownMapTaskIds: (ids: ID[]) => void;
   setShownListTaskIds: (ids: ID[]) => void;
   // setShownTasksByPredicate: (predicate: () => boolean) => void;
+  setSelectedLocIds: (loc_ids: Array<number>) => void;
   setSelectedTask: (id: ID) => void;
   resetFilter: () => void;
   resetState: () => void;
@@ -50,9 +52,11 @@ export const useTaskStore = () => {
     shownListTaskIds,
     shownMapTaskIds,
     selectedTaskId,
+    selectedLocIds: selectedLocIds,
     setShownMapTaskIds,
     setShownListTaskIds,
     setSelectedTask,
+    setSelectedLocIds,
     resetFilter,
     resetState,
   } = taskStore();
@@ -98,11 +102,13 @@ export const useTaskStore = () => {
     activeTasks,
     hiddenTasks,
     selectedTask,
+    selectedLocIds,
     setSelectedTask,
     shownListTaskIds,
     shownMapTaskIds,
     setShownMapTaskIds,
     setShownListTaskIds,
+    setSelectedLocIds,
     resetFilter,
     resetState,
   };
@@ -114,9 +120,11 @@ export const taskStore = create<TaskState>()(
       shownListTaskIds: [],
       shownMapTaskIds: [],
       selectedTaskId: null,
+      selectedLocIds: [],
       setShownListTaskIds: (ids) => set({shownListTaskIds: ids}),
       setShownMapTaskIds: (ids) => set({shownMapTaskIds: ids}),
       setSelectedTask: (id) => set({selectedTaskId: id}),
+      setSelectedLocIds: (tasks) => set({selectedLocIds: tasks}),
       resetFilter: () => set({shownListTaskIds: [], shownMapTaskIds: []}),
       resetState: () => set({shownListTaskIds: [], shownMapTaskIds: [], selectedTaskId: null}),
     })),

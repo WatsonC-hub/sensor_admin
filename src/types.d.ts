@@ -388,3 +388,71 @@ export type DialAction = {
   color: string;
   toastTip: string;
 };
+
+export type TaskCollection = {
+  contacts: Array<TaskContact>;
+  location_access: Array<TaskLocationAccess>;
+  ressourcer: Array<TaskRessources>;
+  units: Array<TaskUnits>;
+  notifications: Array<TaskNotifications>;
+  tasks: Array<LocationTasks>;
+};
+
+export type TaskContact = {
+  id: string;
+  navn: string;
+  telefonnummer: Optional[string];
+  email: Optional[string];
+  comment: Optional[string];
+  contact_role_name: string;
+  loc_ids: List[number];
+  loc_names: List[string];
+};
+
+export type TaskLocationAccess = {
+  id: number;
+  navn: string;
+  type: string;
+  placering: string;
+  kommentar: string;
+  kode: string;
+  loc_name: string;
+  contact_name: string;
+};
+
+export type TaskRessources = {
+  kategori: string;
+  navn: string;
+};
+
+export type TaskUnits = {
+  terminal_type: string;
+  sensorinfo: string;
+  sensor_id: string;
+  terminal_id: string;
+  ts_name: string;
+  tstype_name: string;
+  startdate: string;
+  enddate: string;
+};
+
+export type TaskNotifications = {
+  loc_id: number;
+  ts_id: number;
+  notification_id: number;
+  opgave: string;
+  color: string;
+  flag: number;
+};
+
+export type LocationTasks = {
+  loc_id: number;
+  ts_id: number;
+  status_id: number;
+  assigned_to: string;
+  due_date: string;
+  name: string;
+  description: string;
+  status_name: string;
+  display_name: string;
+};

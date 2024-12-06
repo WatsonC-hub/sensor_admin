@@ -1,8 +1,15 @@
+import {Typography} from '@mui/material';
 import React from 'react';
+
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import Button from '~/components/Button';
+import {useTaskStore} from '~/features/tasks/store';
 
 const TaskItiniaries = () => {
   const [ids, setIds] = React.useState<string[]>([]);
+  const {selectedLocIds} = useTaskStore();
   const [isDragging, setIsDragging] = React.useState(false);
+  const {taskManagement} = useNavigationFunctions();
   return (
     <div
       onDrop={(e) => {
@@ -30,6 +37,16 @@ const TaskItiniaries = () => {
     >
       TaskItiniaries
       {isDragging && ids.map((id) => <div key={id}>{id}</div>)}
+      <Button
+        bttype="primary"
+        size="large"
+        onClick={() => {
+          taskManagement(JSON.stringify(selectedLocIds));
+        }}
+        disabled={selectedLocIds.length === 0}
+      >
+        <Typography>Ny tur</Typography>
+      </Button>
     </div>
   );
 };

@@ -49,6 +49,9 @@ export const useNavigationFunctions = () => {
       if (tabValue) navigate('/field/stamdata?tab=' + tabValue, options);
       else navigate('/field/stamdata', options);
     },
+    taskManagement: (loc_ids: string) => {
+      navigate('/field/opgave?loc_ids=' + loc_ids);
+    },
   };
 
   const out = useMemo(() => {

@@ -13,7 +13,7 @@ import OverviewPage from '~/pages/field/overview/OverviewPage';
 import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import {captureDialogAtom} from '~/state/atoms';
 
-import Opgave from './opgave/Opgave';
+import Trip from './tripManagement/Trip';
 
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);
@@ -80,7 +80,7 @@ function SensorField() {
           path="stamdata"
           element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
         />
-        <Route path="opgave" element={<Opgave />} />
+        <Route path="opgave" element={<Trip />} />
         <Route path="/:labelid" element={<ScanComponent />} />
         <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeRouter />} />
         <Route path="borehole/:boreholeno" element={<BoreholeRouter />} />

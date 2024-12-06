@@ -2,7 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {APIError} from '~/queryClient';
+import {APIError, GetQueryOptions} from '~/queryClient';
 
 import {type Task, type PatchTask, type TaskUser, type TaskStatus} from '../types';
 
@@ -76,6 +76,18 @@ export const notificationUpdateStatus = {
   },
 };
 
+export const RelatedTasksOptions = <TData>(
+  loc_ids: Array<number> | undefined
+): GetQueryOptions<TData> => ({
+  queryKey: ['tasks', loc_ids],
+  queryFn: async () => {
+    const {data} = await apiClient.get<TData>(`/sensor_admin/tasks/${loc_ids}`);
+    console.log('from api', data);
+    return data;
+  },
+  enabled: loc_ids !== undefined && loc_ids !== null && loc_ids.length > 0,
+});
+
 export const useTasks = () => {
   const queryClient = useQueryClient();
   const get = useQuery<Task[], APIError>({
@@ -95,6 +107,7 @@ export const useTasks = () => {
       toast.success('Opgaver gemt');
     },
   });
+
   const patch = useMutation<unknown, APIError, Mutation<PatchTask>>({
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {

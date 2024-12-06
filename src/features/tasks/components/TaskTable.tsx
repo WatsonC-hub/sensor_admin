@@ -91,7 +91,8 @@ const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
 type ViewValues = 'upcoming' | 'my' | 'groupAssigned' | '';
 
 const TaskTable = () => {
-  const {mapFilteredTasks, setSelectedTask, setShownListTaskIds} = useTaskStore();
+  const {mapFilteredTasks, setSelectedTask, setShownListTaskIds, setSelectedLocIds} =
+    useTaskStore();
   const {station} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
   const [viewValue, setViewValue] = useState<ViewValues>('');
@@ -125,6 +126,8 @@ const TaskTable = () => {
       };
     });
   }, [mapFilteredTasks]);
+
+  console.log(tableData);
 
   const [tableState, reset] = useStatefullTableAtom<Task>('taskTableState');
 
@@ -486,6 +489,7 @@ const TaskTable = () => {
       enableGrouping: true,
       editDisplayMode: 'cell',
       enableEditing: true,
+      enableRowDragging: false,
       globalFilterFn: 'fuzzy',
       filterFns: {
         arrIncludesNone: (row, id, filterValue) => {
@@ -731,6 +735,13 @@ const TaskTable = () => {
 
     setShownListTaskIds(ids);
   }, [table.getState().globalFilter, table.getState().columnFilters]);
+
+  useEffect(() => {
+    console.log(table.getFilteredSelectedRowModel());
+    setSelectedLocIds([
+      ...new Set(table.getFilteredSelectedRowModel().rows.map((row) => row.original.loc_id)),
+    ]);
+  }, [table.getState().rowSelection]);
 
   return (
     <Box
