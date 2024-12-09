@@ -12,9 +12,9 @@ import {setGraphHeight} from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
+import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {APIError} from '~/queryClient';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 import {QaGraphLabel} from '~/types';
@@ -144,19 +144,8 @@ export default function PlotGraph({
     get: {data: certify},
   } = useCertifyQa(metadata?.ts_id);
 
-  const {data: edgeDates} = useQuery<{firstDate: string; lastDate: string} | null, APIError>({
-    queryKey: ['all_range', metadata?.ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<{firstDate: string; lastDate: string} | null>(
-        `/sensor_field/station/graph_all_range/${metadata?.ts_id}`
-      );
-
-      return data;
-    },
-    staleTime: 10,
-    enabled: metadata?.ts_id !== undefined && metadata?.ts_id !== null && metadata?.ts_id !== -1,
-  });
   const {data: graphData} = useGraphData(ts_id, xRange);
+  const {data: edgeDates} = useEdgeDates(ts_id);
   const {
     get: {data: certifedData},
   } = useCertifyQa(ts_id);
@@ -278,7 +267,7 @@ export default function PlotGraph({
             ...(certify?.map((d) => {
               return {
                 type: 'rect',
-                x0: moment('1900-01-01').format('YYYY-MM-DD HH:mm'),
+                x0: edgeDates?.firstDate,
                 x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
                 y0: 0,
                 y1: 1,
