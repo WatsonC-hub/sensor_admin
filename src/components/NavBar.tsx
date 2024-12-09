@@ -43,7 +43,6 @@ const LogOut = ({children}: {children?: ReactNode}) => {
   const handleLogout = () => {
     resetState();
     // navigate('/');
-    console.log('logging out');
     home();
     apiClient.get('/auth/logout/secure');
     queryClient.clear();
@@ -159,7 +158,7 @@ export const NavBarMenu = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
-  console.log('rendering');
+
   return (
     <>
       {highligtFirst && items != undefined && items.length > 0 && (

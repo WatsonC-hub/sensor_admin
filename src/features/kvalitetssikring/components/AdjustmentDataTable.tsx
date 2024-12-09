@@ -267,23 +267,26 @@ const AdjustmentDataTable = ({data}: Props) => {
         </Box>
       );
     },
-    renderRowActions: ({row, staticRowIndex}) => (
-      <RenderActions
-        handleEdit={() => {
-          setEditDialogOpen(true);
-          setType(row.original.type);
-          setIndex(staticRowIndex);
-          table.setEditingRow(row);
-        }}
-        canEdit={true}
-        onDeleteBtnClick={() => {
-          setDialogOpen(true);
-          setType(row.original.type);
-          setGid(row.original.data.gid);
-          setId(row.original.data.ts_id);
-        }}
-      />
-    ),
+    renderRowActions: ({row, staticRowIndex}) =>
+      row.original.type !== AdjustmentTypes.APPROVED && (
+        <RenderActions
+          handleEdit={() => {
+            setEditDialogOpen(true);
+            setType(row.original.type);
+            setIndex(staticRowIndex);
+            table.setEditingRow(row);
+          }}
+          canEdit={true}
+          onDeleteBtnClick={() => {
+            setDialogOpen(true);
+            setType(row.original.type);
+            //@ts-expect-error gid and ts_id is in all but approved
+            setGid(row.original.data.gid);
+            //@ts-expect-error gid and ts_id is in all but approved
+            setId(row.original.data.ts_id);
+          }}
+        />
+      ),
   };
 
   const table = useTable<AdjustmentData>(

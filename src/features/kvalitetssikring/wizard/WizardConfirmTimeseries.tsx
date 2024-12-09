@@ -98,7 +98,6 @@ const WizardConfirmTimeseries = ({
   }, [selectedQaData]);
 
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
-    console.log(certifyQa);
     const payload = {
       path: `${metadata?.ts_id}`,
       data: certifyQa,
