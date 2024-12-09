@@ -12,12 +12,16 @@ export const qaPages = {
   DATAMOBILE: 'Justeringer',
 };
 
+export const qaPagesLiteral = ['algoritmer', 'justeringer'] as const;
+
 export const qaAdjustment = {
   CONFIRM: 'confirm',
   REMOVE: 'remove',
   BOUNDS: 'bounds',
   CORRECTION: 'correction',
 };
+
+export const qaAdjustmentLiteral = ['confirm', 'remove', 'bounds', 'correction'] as const;
 
 export enum TableTypes {
   STATIONTABLE = 'stationTable',
@@ -64,4 +68,5 @@ export enum AdjustmentTypes {
   LEVELCORRECTION = 'Korrigeret spring',
   EXLUDEPOINTS = 'Fjernet datapunkter',
   MINMAX = 'Valide værdier',
+  APPROVED = 'Godkendt',
 }
