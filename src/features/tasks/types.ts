@@ -65,6 +65,8 @@ export type Task = {
   projectno: string | null;
   project_text: string | null;
   is_created: boolean;
+  block_on_location: boolean;
+  block_all: boolean;
 };
 
 export type DBTask = {
@@ -77,6 +79,8 @@ export type DBTask = {
   assigned_to: string | null;
   blocks_notifications: number[];
   created_by: string;
+  block_on_location: boolean;
+  block_all: boolean;
 };
 
 export type PatchTask = Partial<Omit<DBTask, 'id' | 'blocks_notifications' | 'created_by'>> & {
@@ -115,6 +119,8 @@ export type TaskChanges = {
 export type TaskStatus = {
   id: number;
   name: string;
+  category: 'unstarted' | 'started' | 'closed';
+  description: string;
 };
 
 export type TaskUser = {

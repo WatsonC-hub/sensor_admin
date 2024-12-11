@@ -53,7 +53,7 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
           <TaskForm.DueDate />
           <TaskForm.AssignedTo />
           <TaskForm.Input name="description" label="Beskrivelse" multiline rows={5} />
-          <TaskForm.BlockNotifications notification_id={notification.notification_id} />
+          <TaskForm.BlockAll />
           <TaskForm.BlockOnLocation />
         </DialogContent>
         <DialogActions>

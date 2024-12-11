@@ -13,7 +13,7 @@ type TaskInfoFormProps = {
 };
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
-  const {location, station} = useNavigationFunctions();
+  const {station, adminKvalitetssikring} = useNavigationFunctions();
   const {
     patch,
     getStatus: {data: taskStatus},
@@ -25,7 +25,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     formState: {dirtyFields},
   } = useFormContext();
 
-  const handleBlurSubmit = (values: Partial<FieldValues>) => {
+  const handleSubmit = (values: Partial<FieldValues>) => {
     const payload = {
       path: `${selectedTask.id}`,
       data: {ts_id: selectedTask.ts_id, ...values},
@@ -33,7 +33,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     patch.mutate(payload);
   };
 
-  const onBlur = async (field_name: keyof FieldValues) => {
+  const handlePatch = async (field_name: keyof FieldValues) => {
     const validated = await trigger(field_name);
     let field_value = getValues(field_name);
 
@@ -51,21 +51,22 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
     if (field_name === 'status_id') {
       values.status_name = taskStatus?.find((status) => status.id === field_value)?.name;
+      values.status_category = taskStatus?.find((status) => status.id === field_value)?.category;
     }
 
     if (validated && isDirty) {
-      handleBlurSubmit(values);
+      handleSubmit(values);
     }
   };
 
   return (
     <Box display={'flex'} flexDirection={'column'} mx={2} gap={2}>
       <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'}>
-        <Button bttype="tertiary" onClick={() => location(selectedTask.loc_id)}>
-          <Typography>Gå til lokationen</Typography>
-        </Button>
         <Button bttype="tertiary" onClick={() => station(selectedTask.loc_id, selectedTask.ts_id)}>
-          <Typography>Gå til tidsserien</Typography>
+          <Typography>Gå til tidsserie</Typography>
+        </Button>
+        <Button bttype="tertiary" onClick={() => adminKvalitetssikring(selectedTask.ts_id)}>
+          <Typography>Gå til QA</Typography>
         </Button>
       </Stack>
       <Grid container spacing={1}>
@@ -73,29 +74,34 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           <TaskForm.Input
             label={'Navn'}
             name="name"
-            onBlurCallback={async () => await onBlur('name')}
+            onBlurCallback={async () => await handlePatch('name')}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.StatusSelect
-            onBlurCallback={async () => await onBlur('status_id')}
+            onBlurCallback={async () => await handlePatch('status_id')}
             sx={{
               mb: 2,
             }}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.DueDate onBlurCallback={async () => await onBlur('due_date')} />
+          <TaskForm.DueDate onBlurCallback={async () => await handlePatch('due_date')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.AssignedTo
             onBlur={async () => {
-              await onBlur('assigned_to');
+              await handlePatch('assigned_to');
             }}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Input name="blocks_notifications" label="Blokerede notifikationer" disabled />
+          <TaskForm.BlockAll onChangeCallback={async () => await handlePatch('block_all')} />
+        </Grid>
+        <Grid item mobile={12} tablet={12} laptop={6}>
+          <TaskForm.BlockOnLocation
+            onChangeCallback={async () => await handlePatch('block_on_location')}
+          />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />
@@ -119,7 +125,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             multiline={true}
             rows={5}
             placeholder="Indtæst opgavebeskrivelse..."
-            onBlurCallback={async () => await onBlur('description')}
+            onBlurCallback={async () => await handlePatch('description')}
           />
         </Grid>
       </Grid>

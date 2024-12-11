@@ -18,9 +18,10 @@ function TabPanel(props: {
   children?: React.ReactNode;
   index: number;
   value: number;
+  keepMounted?: boolean;
   other?: BoxProps;
 }) {
-  const {children, value, index, ...other} = props;
+  const {children, value, index, keepMounted, ...other} = props;
   return (
     <Box
       display={value === index ? 'flex' : 'none'}
@@ -32,7 +33,7 @@ function TabPanel(props: {
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && <>{children}</>}
+      {keepMounted ? <>{children}</> : value === index && <>{children}</>}
     </Box>
   );
 }
@@ -51,6 +52,7 @@ const TasksOverview = () => {
     console.log('data', data);
     if ('loc_id' in data) {
       const id = activeTasks.find((task) => task.loc_id === data.loc_id)?.id;
+
       if (id) setSelectedTask(id);
     }
   };

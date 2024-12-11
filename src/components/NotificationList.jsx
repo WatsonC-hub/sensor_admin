@@ -81,7 +81,9 @@ const NotificationList = () => {
 
   const badgeColor = getColor(notifications[maxFlagIndex]);
 
-  const tasksOnStation = activeTasks?.filter((task) => task.loc_id == loc_id);
+  const tasksOnStation = activeTasks?.filter(
+    (task) => task.loc_id == loc_id && !task.id.includes(':')
+  );
 
   return (
     <div>

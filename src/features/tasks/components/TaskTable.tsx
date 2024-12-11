@@ -370,6 +370,8 @@ const TaskTable = () => {
                 onChange={(e, newValue) => {
                   handleBlurSubmit(row.original.id, row.original.ts_id, {
                     status_id: taskStatus?.find((status) => status.name === newValue)?.id,
+                    status_category: taskStatus?.find((status) => status.name === newValue)
+                      ?.category,
                     status_name: newValue,
                   });
                   queueMicrotask(() => table.setEditingCell(null));
@@ -481,7 +483,6 @@ const TaskTable = () => {
 
   const options: Partial<MRT_TableOptions<Task>> = useMemo(
     () => ({
-      enableRowVirtualization: true,
       enableColumnFilterModes: true,
       enableFullScreenToggle: true,
       enableFacetedValues: true,
@@ -504,11 +505,12 @@ const TaskTable = () => {
       // autoResetPageIndex: false,
       enableRowSelection: true,
       groupedColumnMode: 'remove',
-      // enableExpanding: false,
+      // enableExpanding: true,
       positionExpandColumn: 'first',
       enablePagination: false,
-      enableRowPinning: true,
-      keepPinnedRows: false,
+      enableRowVirtualization: true,
+      // enableRowPinning: true,
+      // keepPinnedRows: false,
       // paginateExpandedRows: false,
       getRowId: (row) => row.id,
       muiTableBodyCellProps: ({cell, table}) => ({
@@ -523,7 +525,7 @@ const TaskTable = () => {
         onClick: () => {
           row.toggleExpanded(!row.getIsExpanded());
 
-          row.getIsGrouped() && row.pin(row.getIsExpanded() ? false : 'top');
+          // row.getIsGrouped() && row.pin(row.getIsExpanded() ? false : 'top');
         },
       }),
       displayColumnDefOptions: {
@@ -550,11 +552,12 @@ const TaskTable = () => {
           size: 50,
         },
         'mrt-row-expand': {
-          size: 100,
+          size: 200,
           enableResizing: false,
+
           muiTableBodyCellProps: {
             sx: {
-              whiteSpace: 'nowrap',
+              whiteSpace: 'normal',
             },
           },
         },
@@ -641,39 +644,39 @@ const TaskTable = () => {
           </Box>
         );
       },
-      renderDetailPanel: ({row}) => {
-        return (
-          <Box
-            sx={{
-              display: 'grid',
-              margin: 'auto',
-              gridTemplateColumns: '1fr',
-              width: '100%',
-            }}
-          >
-            {row.original.loc_id && (
-              <Typography>
-                <b>Lokationsid</b>: {row.original.loc_id}
-              </Typography>
-            )}
-            {row.original.location_name && (
-              <Typography>
-                <b>Lokationsnavn</b>: {row.original.location_name}
-              </Typography>
-            )}
-            {row.original.blocks_notifications.length > 0 && (
-              <Typography>
-                <b>blokerede notifikationer</b>: {row.original.blocks_notifications.join(', ')}
-              </Typography>
-            )}
-            {row.original.description && (
-              <Typography>
-                <b>beskrivelse</b>: {row.original.description}
-              </Typography>
-            )}
-          </Box>
-        );
-      },
+      // renderDetailPanel: ({row}) => {
+      //   return (
+      //     <Box
+      //       sx={{
+      //         display: 'grid',
+      //         margin: 'auto',
+      //         gridTemplateColumns: '1fr',
+      //         width: '100%',
+      //       }}
+      //     >
+      //       {row.original.loc_id && (
+      //         <Typography>
+      //           <b>Lokationsid</b>: {row.original.loc_id}
+      //         </Typography>
+      //       )}
+      //       {row.original.location_name && (
+      //         <Typography>
+      //           <b>Lokationsnavn</b>: {row.original.location_name}
+      //         </Typography>
+      //       )}
+      //       {row.original.blocks_notifications.length > 0 && (
+      //         <Typography>
+      //           <b>blokerede notifikationer</b>: {row.original.blocks_notifications.join(', ')}
+      //         </Typography>
+      //       )}
+      //       {row.original.description && (
+      //         <Typography>
+      //           <b>beskrivelse</b>: {row.original.description}
+      //         </Typography>
+      //       )}
+      //     </Box>
+      //   );
+      // },
       muiFilterTextFieldProps: {
         size: 'small',
         variant: 'outlined',

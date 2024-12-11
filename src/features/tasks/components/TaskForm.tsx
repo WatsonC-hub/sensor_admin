@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, MenuItem, Switch, Typography} from '@mui/material';
+import {Box, FormControlLabel, MenuItem, Stack, Switch, Typography} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -26,6 +26,7 @@ const zodSchema = z.object({
     .transform((value) => (value === '' ? null : value)),
   blocks_notifications: z.array(z.number()).or(z.literal('alle')).optional(),
   block_on_location: z.boolean().optional(),
+  block_all: z.boolean().optional(),
   loctypename: z.string().optional(),
   tstype_name: z.string().optional(),
   project_text: z.string().nullish(),
@@ -181,11 +182,11 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
   );
 };
 
-type BlockNotificationsProps = {
+type BlockNotificationsProps = Omit<FormInputProps<FormValues>, 'name'> & {
   notification_id: number | null;
 };
 
-const BlockNotifications = ({notification_id}: BlockNotificationsProps) => {
+const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificationsProps) => {
   const {control} = useFormContext<FormValues>();
 
   return (
@@ -204,32 +205,41 @@ const BlockNotifications = ({notification_id}: BlockNotificationsProps) => {
         }
 
         return (
-          <FormControlLabel
-            control={
-              <Switch
-                ref={ref}
-                checked={switchValue}
-                size="small"
-                color="primary"
-                aria-label={name}
-                onChange={(e, value) => {
-                  if (value) {
-                    onChange('alle');
-                  } else {
-                    onChange([notification_id]);
-                  }
-                }}
-              />
-            }
-            label={'Bloker alle notifikationer på tidsserien'}
-          />
+          <Box
+            display={'flex'}
+            flexDirection={'row'}
+            alignItems={'center'}
+            justifyContent={'center'}
+            height={'100%'}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  ref={ref}
+                  checked={switchValue}
+                  size="small"
+                  color="primary"
+                  aria-label={name}
+                  onChange={(e, value) => {
+                    if (value) {
+                      onChange('alle');
+                    } else {
+                      onChange([notification_id]);
+                    }
+                    onChangeCallback && onChangeCallback(e);
+                  }}
+                />
+              }
+              label={'Bloker alle notifikationer'}
+            />
+          </Box>
         );
       }}
     />
   );
 };
 
-const BlockOnLocation = () => {
+const BlockOnLocation = ({onChangeCallback}: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {control} = useFormContext<FormValues>();
 
   return (
@@ -238,24 +248,64 @@ const BlockOnLocation = () => {
       name={'block_on_location'}
       render={({field: {value, onChange, ref, name}}) => {
         return (
-          <FormControlLabel
-            control={
-              <Switch
-                ref={ref}
-                checked={value}
-                size="small"
-                color="primary"
-                aria-label={name}
-                onChange={(e, value) => {
-                  onChange(value);
-                }}
-              />
-            }
-            label={'Bloker på hele lokation i stedet'}
-          />
+          <Stack direction="row" alignItems="center" justifyContent="center">
+            <Typography variant="body2">Tidsserien</Typography>
+            <FormControlLabel
+              labelPlacement="top"
+              control={
+                <Switch
+                  ref={ref}
+                  checked={value}
+                  size="small"
+                  color="primary"
+                  aria-label={name}
+                  onChange={(e, value) => {
+                    onChange(value);
+                    onChangeCallback && onChangeCallback(e);
+                  }}
+                />
+              }
+              label={'Bloker på'}
+            />
+            <Typography variant="body2">Lokationen</Typography>
+          </Stack>
         );
       }}
     />
+  );
+};
+
+const BlockAll = ({onChangeCallback}: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {control} = useFormContext<FormValues>();
+
+  return (
+    <Stack direction="row" alignItems="center" justifyContent="center">
+      <Controller<FormValues, 'block_all'>
+        control={control}
+        name={'block_all'}
+        render={({field: {value, onChange, ref, name}}) => {
+          return (
+            <FormControlLabel
+              labelPlacement="top"
+              control={
+                <Switch
+                  ref={ref}
+                  checked={value}
+                  size="small"
+                  color="primary"
+                  aria-label={name}
+                  onChange={(e, value) => {
+                    onChange(value);
+                    onChangeCallback && onChangeCallback(e);
+                  }}
+                />
+              }
+              label={'Bloker alle notifikationer'}
+            />
+          );
+        }}
+      />
+    </Stack>
   );
 };
 
@@ -266,5 +316,6 @@ TaskForm.AssignedTo = AssignedTo;
 TaskForm.BlockNotifications = BlockNotifications;
 TaskForm.DueDate = DueDate;
 TaskForm.BlockOnLocation = BlockOnLocation;
+TaskForm.BlockAll = BlockAll;
 
 export default TaskForm;

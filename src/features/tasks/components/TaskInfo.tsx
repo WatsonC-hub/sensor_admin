@@ -28,6 +28,8 @@ const TaskInfo = () => {
             ? selectedTask.blocks_notifications
             : ('alle' as const)
           : undefined,
+      block_on_location: selectedTask.block_on_location,
+      block_all: selectedTask.block_all,
     };
   }, [selectedTask]);
 

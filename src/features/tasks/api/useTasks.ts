@@ -29,7 +29,8 @@ type TaskConvert = {
   due_date?: string | null;
   assigned_to?: string | null;
   notification_id: number;
-  blockall?: boolean;
+  block_all?: boolean;
+  block_on_location?: boolean;
 };
 
 type PostTask = Omit<TaskConvert, 'notification_id'>;

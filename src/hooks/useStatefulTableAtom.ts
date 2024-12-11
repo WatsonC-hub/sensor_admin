@@ -41,10 +41,6 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
 
   const stateChangeHandler = useCallback(
     (stateName: keyof Partial<MRT_TableState<TData>>) => (stateOrCallback: any) => {
-      if (stateName === 'columnFilterFns') {
-        console.log('stateOrCallback', stateOrCallback);
-      }
-
       setTableState((prev) => {
         return {
           ...prev,
@@ -61,7 +57,7 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
   const handlers = useMemo(() => {
     return {
       state: tableState,
-      // onColumnFilterFnsChange: stateChangeHandler('columnFilterFns'),
+      onColumnFilterFnsChange: stateChangeHandler('columnFilterFns'),
       onColumnFiltersChange: stateChangeHandler('columnFilters'),
       onColumnVisibilityChange: stateChangeHandler('columnVisibility'),
       onDensityChange: stateChangeHandler('density'),
