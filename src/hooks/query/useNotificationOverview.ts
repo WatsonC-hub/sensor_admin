@@ -29,6 +29,7 @@ export interface Notification {
   groups: Group[];
   loctype_id: number;
   calculated: boolean | null;
+  type: 'task' | 'notification' | 'none';
 }
 
 export interface NotificationMap extends Notification {
@@ -95,7 +96,6 @@ export const useNotificationOverviewMap = (
 ): UseQueryResult<NotificationMap[], Error> => {
   // @ts-expect-error - This is a valid use case for the hook
   return useNotificationOverview({
-    ...options,
     select: (data) => {
       const sorted = reverse(
         sortBy(data, [
@@ -134,5 +134,6 @@ export const useNotificationOverviewMap = (
 
       return grouped;
     },
+    ...options,
   });
 };

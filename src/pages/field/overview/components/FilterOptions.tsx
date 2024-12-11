@@ -139,6 +139,12 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
             {superUser && (
               <FormToggleSwitch name="sensor.isSingleMeasurement" label="Vis kun enkeltmålinger" />
             )}
+            {superUser && (
+              <FormToggleSwitch
+                name="sensor.hideLocationsWithoutNotifications"
+                label="Skjul lokationer uden notifikationer"
+              />
+            )}
           </Grid>
         )}
       </Grid>

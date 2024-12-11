@@ -11,6 +11,7 @@ interface Filter {
     showInactive: boolean;
     isCustomerService: Inderterminate;
     isSingleMeasurement: boolean;
+    hideLocationsWithoutNotifications: boolean;
   };
   groups: Group[];
 }
@@ -24,6 +25,7 @@ const defaultMapFilter: Filter = {
     showInactive: false,
     isCustomerService: 'indeterminate',
     isSingleMeasurement: false,
+    hideLocationsWithoutNotifications: false,
   },
   groups: [],
 };
