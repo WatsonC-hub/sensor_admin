@@ -1,9 +1,9 @@
 import {Typography} from '@mui/material';
 import React from 'react';
 
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import Button from '~/components/Button';
-import {useTaskStore} from '~/features/tasks/store';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const TaskItiniaries = () => {
   const [ids, setIds] = React.useState<string[]>([]);

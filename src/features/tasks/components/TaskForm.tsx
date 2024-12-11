@@ -14,7 +14,7 @@ import {TaskUser} from '~/features/tasks/types';
 const zodSchema = z.object({
   name: z
     .string({required_error: 'Navn skal være angivet'})
-    .min(16, 'Navn skal være mindst 16 tegn')
+    .min(8, 'Navn skal være mindst 16 tegn')
     .max(255, 'Navn må maks være 255 tegn')
     .optional(),
   description: z.string().nullish(),

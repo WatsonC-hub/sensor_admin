@@ -44,7 +44,7 @@ const DrawerComponent = ({
       <Global
         styles={{
           '.MuiDrawer-root > .MuiPaper-root': {
-            maxHeight: `calc(${open == 'full' ? '100% - 64px' : '30%'} - ${drawerBleeding}px)`,
+            maxHeight: `calc(${open == 'full' ? '100vh - 64px' : '30%'} - ${drawerBleeding}px)`,
             minHeight: `${drawerBleeding}px`,
             overflow: 'visible',
             // transition that opens the drawer
@@ -52,10 +52,14 @@ const DrawerComponent = ({
             width: isTouch ? '100%' : '50%',
             maxWidth: '800px',
             margin: 'auto',
+            position: 'absolute',
           },
         }}
       />
       <Drawer
+        sx={{
+          position: 'relative',
+        }}
         anchor="bottom"
         open={open !== 'closed'}
         onClose={() => setOpen('closed')}

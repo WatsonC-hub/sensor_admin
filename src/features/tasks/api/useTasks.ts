@@ -4,7 +4,8 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError, GetQueryOptions} from '~/queryClient';
 
-import {type Task, type PatchTask, type TaskUser, type TaskStatus} from '../types';
+import {taskStore} from '../store';
+import {type Task, type PatchTask, type TaskUser, type TaskStatus, DBTask} from '../types';
 
 type Mutation<TData> = {
   path: string;
@@ -90,6 +91,7 @@ export const RelatedTasksOptions = <TData>(
 
 export const useTasks = () => {
   const queryClient = useQueryClient();
+  const setSelectedTask = taskStore((state) => state.setSelectedTask);
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks'],
     queryFn: async () => {
@@ -108,7 +110,7 @@ export const useTasks = () => {
     },
   });
 
-  const patch = useMutation<unknown, APIError, Mutation<PatchTask>>({
+  const patch = useMutation<DBTask, APIError, Mutation<PatchTask>>({
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
@@ -126,8 +128,26 @@ export const useTasks = () => {
       );
       return {previous};
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (data, variables) => {
       const {path} = variables;
+      if (path != data.id) {
+        const previous = queryClient.getQueryData<Task[]>(['tasks']);
+        queryClient.setQueryData<Task[]>(
+          ['tasks'],
+          previous?.map((task) => {
+            if (task.id === path) {
+              const updated = {...task, ...data};
+
+              return updated;
+            }
+            return task;
+          })
+        );
+
+        //TODO: change selected task to new ID
+        setSelectedTask(data.id);
+      }
+
       queryClient.invalidateQueries({
         queryKey: ['taskHistory', path],
       });

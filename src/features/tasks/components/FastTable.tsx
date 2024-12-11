@@ -22,6 +22,7 @@ import {UseFormReturn} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {calculateContentHeight} from '~/consts';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import type {Task} from '~/features/tasks/types';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -30,7 +31,6 @@ import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 
 import {useTasks} from '../api/useTasks';
-import {useTaskStore} from '../store';
 
 import TaskForm, {FormValues} from './TaskForm';
 

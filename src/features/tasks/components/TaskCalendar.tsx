@@ -8,9 +8,9 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './taskcalendar.css';
 import {calculateContentHeight} from '~/consts';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
 import {useTasks} from '../api/useTasks';
-import {useTaskStore} from '../store';
 import {Task} from '../types';
 
 moment.locale('da');

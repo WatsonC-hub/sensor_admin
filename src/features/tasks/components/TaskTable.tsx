@@ -31,7 +31,7 @@ import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight} from '~/consts';
 import {useTasks} from '~/features/tasks/api/useTasks';
-import {useTaskStore} from '~/features/tasks/store';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import type {ID, Task, TaskUser} from '~/features/tasks/types';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -481,6 +481,7 @@ const TaskTable = () => {
 
   const options: Partial<MRT_TableOptions<Task>> = useMemo(
     () => ({
+      enableRowVirtualization: true,
       enableColumnFilterModes: true,
       enableFullScreenToggle: true,
       enableFacetedValues: true,
@@ -549,6 +550,7 @@ const TaskTable = () => {
           size: 50,
         },
         'mrt-row-expand': {
+          size: 100,
           enableResizing: false,
           muiTableBodyCellProps: {
             sx: {

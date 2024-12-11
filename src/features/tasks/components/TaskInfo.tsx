@@ -1,10 +1,10 @@
 import {Box} from '@mui/material';
 import React, {useMemo} from 'react';
 
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import TaskInfoCommentForm from '~/features/tasks/components/TaskInfoCommentForm';
 import TaskInfoForm from '~/features/tasks/components/TaskInfoForm';
-import {useTaskStore} from '~/features/tasks/store';
 
 const TaskInfo = () => {
   const {selectedTask} = useTaskStore();

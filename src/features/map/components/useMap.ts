@@ -39,7 +39,8 @@ let highlightedParking: L.Marker | null = null;
 const useMap = <TData extends object>(
   id: string,
   data: Array<TData>,
-  contextmenuItems: Array<L.ContextMenuItem>
+  contextmenuItems: Array<L.ContextMenuItem>,
+  selectCallback?: (data: TData) => void
 ) => {
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -61,6 +62,13 @@ const useMap = <TData extends object>(
     'Er du sikker du vil slette denne parkering?'
   );
   const [selectedMarker, setSelectedMarker] = useState<TData | null | undefined>(null);
+
+  const setSelectedMarkerWithCallback = (data: TData | null | undefined) => {
+    setSelectedMarker(data);
+    if (selectCallback && data) {
+      selectCallback(data);
+    }
+  };
 
   const {
     get: {data: leafletMapRoutes},
@@ -123,8 +131,8 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: [56.215868, 8.228759],
-      zoom: 7,
+      center: pan || [56.215868, 8.228759],
+      zoom: zoom || 7,
       layers: [outdormapbox],
       tap: false,
       renderer: L.canvas(),
@@ -169,7 +177,7 @@ const useMap = <TData extends object>(
 
   const onMapClickEvent = (map: L.Map) => {
     map.on('click', function (e) {
-      setSelectedMarker(null);
+      setSelectedMarkerWithCallback(null);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
         setHightlightedMarker(null);
@@ -531,7 +539,7 @@ const useMap = <TData extends object>(
     markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
       console.log(e);
       L.DomEvent.stopPropagation(e);
-      setSelectedMarker(e.sourceTarget.options.data);
+      setSelectedMarkerWithCallback(e.sourceTarget.options.data);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
       }
@@ -587,7 +595,7 @@ const useMap = <TData extends object>(
   return {
     map: mapRef.current,
     selectedMarker,
-    setSelectedMarker,
+    setSelectedMarker: setSelectedMarkerWithCallback,
     layers: {
       markerLayer: markerLayerRef.current,
     },

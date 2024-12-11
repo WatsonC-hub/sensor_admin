@@ -5,11 +5,14 @@ import {Box, BoxProps, Tab, Tabs} from '@mui/material';
 import {atom, useAtom} from 'jotai';
 import React, {SyntheticEvent} from 'react';
 
-import {tabsHeight} from '~/consts';
+import {tabsHeight, calculateContentHeight} from '~/consts';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import TaskCalendar from '~/features/tasks/components/TaskCalendar';
-import TaskMap from '~/features/tasks/components/TaskMap';
+// import TaskMap from '~/features/tasks/components/TaskMap';
 import TaskTable from '~/features/tasks/components/TaskTable';
-import {useTaskStore} from '~/features/tasks/store';
+import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import Map from '~/pages/field/overview/Map';
+import {BoreholeMapData} from '~/types';
 
 function TabPanel(props: {
   children?: React.ReactNode;
@@ -29,7 +32,7 @@ function TabPanel(props: {
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {children}
+      {value === index && <>{children}</>}
     </Box>
   );
 }
@@ -38,14 +41,22 @@ const tabAtom = atom<number>(0);
 
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
-  const {shownMapTaskIds, shownListTaskIds} = useTaskStore();
+  const {shownMapTaskIds, shownListTaskIds, activeTasks, setSelectedTask} = useTaskStore();
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
   };
 
+  const clickCallback = (data: NotificationMap | BoreholeMapData) => {
+    console.log('data', data);
+    if ('loc_id' in data) {
+      const id = activeTasks.find((task) => task.loc_id === data.loc_id)?.id;
+      if (id) setSelectedTask(id);
+    }
+  };
+
   return (
-    <Box>
+    <Box display="flex" flexDirection="column" minHeight={`calc(100vh-68px)`}>
       <Tabs
         value={tabValue}
         onChange={handleChange}
@@ -101,8 +112,22 @@ const TasksOverview = () => {
         />
         <Tab icon={<CalendarMonth />} iconPosition="start" label="Kalender" />
       </Tabs>
-      <TabPanel value={tabValue} index={0}>
-        <TaskMap key="taskmap" />
+      <TabPanel key={'map'} value={tabValue} index={0}>
+        <Box
+          justifyContent={'center'}
+          alignSelf={'center'}
+          p={1}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            height: calculateContentHeight(128),
+            width: '100%',
+            justifySelf: 'center',
+            overflow: 'hidden',
+          }}
+        >
+          <Map key="taskmap" clickCallback={clickCallback} />
+        </Box>
       </TabPanel>
       <TabPanel value={tabValue} index={1}>
         <TaskTable key="tasktable" />

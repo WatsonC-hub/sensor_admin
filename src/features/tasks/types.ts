@@ -64,10 +64,11 @@ export type Task = {
   loctypename: string;
   projectno: string | null;
   project_text: string | null;
+  is_created: boolean;
 };
 
 export type DBTask = {
-  id: number;
+  id: ID;
   ts_id: number;
   name: string;
   description?: string | null | undefined;
@@ -78,7 +79,9 @@ export type DBTask = {
   created_by: string;
 };
 
-export type PatchTask = Partial<Omit<DBTask, 'id' | 'blocks_notifications' | 'created_by'>>;
+export type PatchTask = Partial<Omit<DBTask, 'id' | 'blocks_notifications' | 'created_by'>> & {
+  is_created?: boolean;
+};
 
 export type TaskItiniary = {
   tasks: Pick<Task, 'id'>[];

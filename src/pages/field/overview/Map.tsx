@@ -54,7 +54,11 @@ interface LocItems {
   group: string;
 }
 
-const Map = () => {
+interface MapProps {
+  clickCallback?: (data: NotificationMap | BoreholeMapData) => void;
+}
+
+const Map = ({clickCallback}: MapProps) => {
   const {createStamdata} = useNavigationFunctions();
   const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
@@ -128,7 +132,13 @@ const Map = () => {
       type,
     },
     warning: {displayAlert, setDisplayAlert},
-  } = useMap('test', data, contextmenuItems);
+  } = useMap('test', data, contextmenuItems, clickCallback);
+
+  // useEffect(() => {
+  //   if (selectedMarker && clickCallback) {
+  //     clickCallback(selectedMarker);
+  //   }
+  // }, [selectedMarker]);
 
   const createBoreholeMarker = (element: BoreholeMapData) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];

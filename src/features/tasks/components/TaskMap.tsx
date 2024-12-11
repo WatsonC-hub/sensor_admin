@@ -9,7 +9,7 @@ import {createRoot} from 'react-dom/client';
 import {calculateContentHeight} from '~/consts';
 import useMap from '~/features/map/components/useMap';
 import {defaultCircleMarkerStyle} from '~/features/map/mapConsts';
-import {useTaskStore} from '~/features/tasks/store';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {Task} from '~/features/tasks/types';
 import {authStore} from '~/state/store';
 
