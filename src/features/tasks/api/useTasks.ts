@@ -2,7 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {Notification} from '~/hooks/query/useNotificationOverview';
+// import {Notification} from '~/hooks/query/useNotificationOverview';
 import {APIError, GetQueryOptions} from '~/queryClient';
 
 import {taskStore} from '../store';
@@ -145,18 +145,25 @@ export const useTasks = () => {
           })
         );
 
-        queryClient.setQueryData<Notification[]>(['overblik'], (old) => {
-          if (!old) {
-            return [];
-          }
-          const idx = old.findIndex(
-            (n) => n.notification_id === data.blocks_notifications[0] && n.ts_id === data.ts_id
-          );
-          if (idx != -1) {
-            old.splice(idx, 1);
-          }
-          return old;
-        });
+        queryClient.invalidateQueries({queryKey: ['overblik']});
+
+        // queryClient.setQueryData<Notification[]>(['overblik'], (old) => {
+        //   if (!old) {
+        //     return [];
+        //   }
+        //   const idx = old.findIndex(
+        //     (n) => n.notification_id === data.blocks_notifications[0] && n.ts_id === data.ts_id
+        //   );
+
+        //   const numberOfNotifications = old.filter((n) => n.ts_id === data.ts_id).length;
+
+        //   if (idx != -1 && numberOfNotifications > 1) {
+        //     old.splice(idx, 1);
+        //   } else if (idx != -1) {
+        //     old[idx].type = 'task';
+        //   }
+        //   return old;
+        // });
 
         //TODO: change selected task to new ID
         setSelectedTask(data.id);
