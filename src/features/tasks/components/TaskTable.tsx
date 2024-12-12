@@ -8,7 +8,6 @@ import {
   TextField,
   Typography,
   Button as MuiButton,
-  IconButton,
   MenuItem,
   ListItemIcon,
 } from '@mui/material';
@@ -353,7 +352,7 @@ const TaskTable = () => {
           enableGlobalFilter: false,
           filterVariant: 'multi-select',
           editVariant: 'select',
-          enableColumnFilterModes: true,
+          // enableColumnFilterModes: true,
           renderColumnFilterModeMenuItems: renderArrFilterModeOptions,
           Edit: ({row, table}) => {
             return (
@@ -483,6 +482,14 @@ const TaskTable = () => {
 
   const options: Partial<MRT_TableOptions<Task>> = useMemo(
     () => ({
+      defaultColumn: {
+        grow: 1,
+        minSize: 150,
+        size: 250,
+      },
+      defaultDisplayColumn: {
+        minSize: 50,
+      },
       enableColumnFilterModes: true,
       enableFullScreenToggle: true,
       enableFacetedValues: true,
@@ -502,6 +509,7 @@ const TaskTable = () => {
       enableColumnDragging: true,
       enableColumnOrdering: true,
       enableSorting: true,
+      enableColumnResizing: true,
       // autoResetPageIndex: false,
       enableRowSelection: true,
       groupedColumnMode: 'remove',
@@ -529,10 +537,6 @@ const TaskTable = () => {
         },
       }),
       displayColumnDefOptions: {
-        'mrt-row-pin': {
-          enableHiding: true,
-          visibleInShowHideMenu: false,
-        },
         'mrt-row-select': {
           Cell: ({row}) => {
             const checked = isChecked(row);
@@ -564,24 +568,24 @@ const TaskTable = () => {
       },
       renderTopToolbarCustomActions: ({table}) => {
         return (
-          <Box width={'60%'} display="flex" flexDirection={'row'} gap={2}>
-            <IconButton
-              sx={{px: 1, py: 1, alignSelf: 'start'}}
+          <Box width="60%" display="flex" flexDirection={'row'} gap={2} alignItems={'center'}>
+            <Button
+              bttype="primary"
               onClick={() => {
                 const selectedRows = table.getFilteredSelectedRowModel().rows;
                 setOpen(selectedRows.length > 0);
               }}
-              size="large"
+              endIcon={<Edit />}
+              disabled={table.getFilteredSelectedRowModel().rows.length === 0}
             >
-              <Edit />
-            </IconButton>
+              Rediger
+            </Button>
 
             <TextField
               select
               size="small"
               sx={{width: 200}}
               value={viewValue}
-              placeholder="Vælg filtrering..."
               label="View"
               onChange={(e) => {
                 const value = e.target.value as ViewValues;
@@ -594,11 +598,7 @@ const TaskTable = () => {
               <MenuItem value={'my'}>Se Mine opgaver</MenuItem>
               <MenuItem value={'groupAssigned'}>Gruppér efter tildelte</MenuItem>
             </TextField>
-            <Button
-              bttype="tertiary"
-              onClick={() => revertView(table)}
-              sx={{alignSelf: 'start', my: 0}}
-            >
+            <Button bttype="tertiary" onClick={() => revertView(table)}>
               Nulstil view
             </Button>
           </Box>
@@ -680,6 +680,21 @@ const TaskTable = () => {
       muiFilterTextFieldProps: {
         size: 'small',
         variant: 'outlined',
+        // InputProps: {
+        //   endAdornment: (
+        //     <Tooltip title="Ryd filter">
+        //       <IconButton
+        //         sx={{mr: 1}}
+        //         size="small"
+        //         onClick={() => {
+        //           column.setFilterValue('');
+        //         }}
+        //       >
+        //         <Close fontSize="small" />
+        //       </IconButton>
+        //     </Tooltip>
+        //   ),
+        // },
       },
       muiEditTextFieldProps: ({cell, row, column}) => ({
         variant: 'outlined',
@@ -702,7 +717,13 @@ const TaskTable = () => {
       muiTableBodyRowProps: ({row}) => {
         return {
           onClick: () => {
+            // e.preventDefault();
+            // e.stopPropagation();
             setSelectedTask(row.original.id);
+            // table.setRowSelection({[row.id]: true});
+          },
+          sx: {
+            backgroundColor: row.original.status_id === 3 ? 'grey.200' : 'inherit',
           },
         };
       },
@@ -718,6 +739,8 @@ const TaskTable = () => {
     TableTypes.TABLE,
     MergeType.RECURSIVEMERGE
   );
+
+  console.log(table.getState().columnFilterFns);
 
   useEffect(() => {
     // const globalFilter = table.getState().globalFilter;

@@ -9,7 +9,7 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import {useEffect, useMemo, useRef} from 'react';
+import {useMemo, useRef} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -206,9 +206,9 @@ const getOptions = <TData extends MRT_RowData>(
 
 function useFirstRender() {
   const ref = useRef(true);
-  const firstRender = ref.current;
+  const isFirstRender = ref.current;
   ref.current = false;
-  return firstRender;
+  return {isFirstRender};
 }
 
 export const useTable = <TData extends MRT_RowData>(
@@ -220,7 +220,7 @@ export const useTable = <TData extends MRT_RowData>(
   merge_method: string | undefined = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
-  const isFirstRender = useFirstRender();
+  const {isFirstRender} = useFirstRender();
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
   if (merge_method === MergeType.SHALLOWMERGE)
@@ -234,22 +234,11 @@ export const useTable = <TData extends MRT_RowData>(
     ...tableOptions,
     ...state,
     state: {
-      ...state?.state,
+      ...(!isFirstRender ? state?.state : {}),
       isLoading: data === undefined,
       showSkeletons: data === undefined,
     },
   });
-
-  useEffect(() => {
-    if (isFirstRender) {
-      const filterfns = table.getState().columnFilterFns;
-      if (table.options.onColumnFilterFnsChange)
-        table.options.onColumnFilterFnsChange({
-          ...filterfns,
-          ...state?.state?.columnFilterFns,
-        });
-    }
-  }, [table, tableOptions, isFirstRender]);
 
   return table;
 };
