@@ -7,9 +7,10 @@ import {
   type MRT_ColumnDef,
   useMaterialReactTable,
   type MRT_TableInstance,
+  MRT_TableState,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import {useEffect, useMemo, useRef, useState} from 'react';
+import {useMemo, useState} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -204,15 +205,19 @@ const getOptions = <TData extends MRT_RowData>(
   return desktopOptions;
 };
 
-function useFirstRender() {
-  const [isFirstRender, setIsFirstRender] = useState(true);
-
-  useEffect(() => {
-    setIsFirstRender(false);
-  }, []);
-
-  return {isFirstRender};
-}
+const excludeColumnFilterFnsOnFirst = <TData extends MRT_RowData>(
+  state: Partial<MRT_TableState<TData>> | undefined,
+  isFirstRender: boolean
+) => {
+  if (isFirstRender) {
+    if (state?.columnFilterFns) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {columnFilterFns, ...rest} = state;
+      return rest;
+    }
+  }
+  return state;
+};
 
 export const useTable = <TData extends MRT_RowData>(
   columns: MRT_ColumnDef<TData>[],
@@ -223,7 +228,7 @@ export const useTable = <TData extends MRT_RowData>(
   merge_method: string | undefined = MergeType.RECURSIVEMERGE
 ): MRT_TableInstance<TData> => {
   const breakpoints = useBreakpoints();
-  const {isFirstRender} = useFirstRender();
+  const [isFirstRender, setIsFirstRender] = useState(true);
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
   if (merge_method === MergeType.SHALLOWMERGE)
@@ -231,17 +236,29 @@ export const useTable = <TData extends MRT_RowData>(
   else if (merge_method === MergeType.RECURSIVEMERGE)
     tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
+  const tableState = excludeColumnFilterFnsOnFirst(state?.state, isFirstRender);
+
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
     ...tableOptions,
     ...state,
     state: {
-      ...(!isFirstRender ? state?.state : {}),
+      ...tableState,
       isLoading: data === undefined,
       showSkeletons: data === undefined,
     },
   });
+
+  if (isFirstRender) {
+    // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
+    console.log('filterfnstate', table.getState().columnFilterFns);
+    table.setColumnFilterFns((prev) => ({
+      ...prev,
+      ...(state?.state?.columnFilterFns ?? {}),
+    }));
+    setIsFirstRender(false);
+  }
 
   return table;
 };

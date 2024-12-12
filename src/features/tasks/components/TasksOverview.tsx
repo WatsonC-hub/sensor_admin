@@ -49,7 +49,6 @@ const TasksOverview = () => {
   };
 
   const clickCallback = (data: NotificationMap | BoreholeMapData) => {
-    console.log('data', data);
     if ('loc_id' in data) {
       const id = activeTasks.find((task) => task.loc_id === data.loc_id)?.id;
 

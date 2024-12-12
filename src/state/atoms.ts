@@ -80,7 +80,6 @@ function createPartialTimedStorage<T extends object>(
         }
         return newValue;
       }
-
       return value;
     },
     setItem(key, value) {
@@ -121,7 +120,10 @@ export const atomWithPartialTimedStorage = <T extends object>(
   initialValue: T,
   timeout_ms: number,
   partialKeys: Array<keyof T>
-) => atomWithStorage(key, initialValue, createPartialTimedStorage(timeout_ms, partialKeys));
+) =>
+  atomWithStorage(key, initialValue, createPartialTimedStorage(timeout_ms, partialKeys), {
+    getOnInit: true,
+  });
 
 export const atomWithTimedStorage = <T>(key: string, initialValue: T, timeout_ms: number) =>
   atomWithStorage(key, initialValue, createTimedStorage(timeout_ms));
