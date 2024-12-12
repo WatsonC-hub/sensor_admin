@@ -129,6 +129,16 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
       </Grid>
+
+      <div
+        id="drag-handle"
+        draggable
+        onDragStart={(e) => {
+          e.dataTransfer.setData('text/plain', JSON.stringify(selectedTask));
+        }}
+      >
+        <Typography>Træk for at tilføje til planlægning</Typography>
+      </div>
     </Box>
   );
 };

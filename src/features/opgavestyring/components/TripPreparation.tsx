@@ -33,18 +33,17 @@ const TripPreparation = ({data}: TripPreparationProps) => {
       </Typography>
       <TripRessourcesTable ressources={data?.ressourcer} />
       <Typography ml={2} variant="h5">
-        Enheder
+        Udstyr
       </Typography>
 
       <TripUnitTable units={data?.units} />
-      <Typography ml={2} variant="h5">
+      {/* <Typography ml={2} variant="h5">
         Notifikationer
       </Typography>
       <NotificationList />
       <Typography ml={2} variant="h5">
         Opgaver
-      </Typography>
-      <TaskTable />
+      </Typography> */}
     </Box>
   );
 };

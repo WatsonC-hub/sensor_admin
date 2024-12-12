@@ -1,9 +1,13 @@
+import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
 import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
-
+  // const [loc_ids, setLocIds] = useQueryState(
+  //   'loc_ids',
+  //   parseAsArrayOf(parseAsInteger).withDefault([])
+  // );
   const homeFunctions = {
     home: () => navigate('/'),
     register: () => navigate('/register'),
@@ -14,6 +18,13 @@ export const useNavigationFunctions = () => {
     adminNotifikationer: () => navigate('/admin/notifikationer'),
     adminKvalitetssikring: (ts_id: number) => navigate('/admin/kvalitetssikring/' + ts_id),
     tasks: () => navigate('/admin/opgaver'),
+    taskManagement: (loc_ids: number[]) => {
+      navigate({
+        pathname: '/admin/opgaver/tur',
+        search: loc_ids.length > 0 ? '?loc_ids=' + loc_ids.join(',') : '',
+      });
+      // setLocIds(loc_ids);
+    },
   };
 
   const fieldFunctions = {
@@ -48,9 +59,6 @@ export const useNavigationFunctions = () => {
     createStamdata: (tabValue?: string, options?: NavigateOptions) => {
       if (tabValue) navigate('/field/stamdata?tab=' + tabValue, options);
       else navigate('/field/stamdata', options);
-    },
-    taskManagement: (loc_ids: string) => {
-      navigate('/field/opgave?loc_ids=' + loc_ids);
     },
   };
 

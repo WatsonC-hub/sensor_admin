@@ -62,15 +62,13 @@ const TripContactTable = ({contacts}: Props) => {
       muiTableHeadCellProps: {
         sx: {
           m: 0,
-          py: 0,
-          px: 0.5,
+          p: 1,
         },
       },
       muiTableBodyCellProps: {
         sx: {
           m: 0,
-          py: 0,
-          px: 0.5,
+          p: 1,
           whiteSpace: 'pre-line',
         },
       },

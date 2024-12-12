@@ -13,9 +13,11 @@ export const useTaskManagement = ({loc_ids}: TaskManagement) => {
   const {data} = useQuery({
     queryKey: ['tasks', loc_ids],
     queryFn: async () => {
-      const {data} = await apiClient.get<TaskCollection>(
-        `/sensor_admin/tasks/task_collection/${loc_ids}`
-      );
+      const {data} = await apiClient.get<TaskCollection>(`/sensor_admin/tasks/task_collection`, {
+        params: {
+          loc_ids: JSON.stringify(loc_ids),
+        },
+      });
       return data;
     },
     enabled: loc_ids !== undefined && loc_ids !== null && loc_ids.length > 0,

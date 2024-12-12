@@ -43,24 +43,6 @@ const AdminChooser = () => {
           marginTop: 10,
         }}
       >
-        {/* {iotAccess && (
-          <Grid
-            item
-            xs={10}
-            sm={5}
-            sx={{
-              pointerEvents: adminAccess ? 'auto' : 'none',
-              opacity: adminAccess ? 1 : 0.8,
-            }}
-          >
-            <ChoiseCard
-              navigateTo="konfiguration"
-              title="Omkonfigurer enheder"
-              text="Omkonfigurer enheder"
-              icon={RouterIcon}
-            />
-          </Grid>
-        )} */}
         <Grid
           item
           xs={10}

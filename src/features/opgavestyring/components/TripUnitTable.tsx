@@ -26,7 +26,7 @@ const TripContactTable = ({units}: Props) => {
       },
       {
         header: 'Tidsserie navn',
-        accessorKey: 'ts_name',
+        accessorKey: 'name',
         size: 100,
       },
       {
@@ -71,15 +71,13 @@ const TripContactTable = ({units}: Props) => {
       muiTableHeadCellProps: {
         sx: {
           m: 0,
-          py: 0,
-          px: 0.5,
+          p: 1,
         },
       },
       muiTableBodyCellProps: {
         sx: {
           m: 0,
-          py: 0,
-          px: 0.5,
+          p: 1,
           whiteSpace: 'pre-line',
         },
       },

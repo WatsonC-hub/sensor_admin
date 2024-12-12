@@ -1,53 +1,85 @@
-import {Typography} from '@mui/material';
+import {Box, Grid, Typography} from '@mui/material';
 import React from 'react';
 
 import Button from '~/components/Button';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
+import Droppable from './Droppable';
+import TaskItineraryCard from './TaskItiniaryCard';
+
 const TaskItiniaries = () => {
-  const [ids, setIds] = React.useState<string[]>([]);
+  const [ids, setIds] = React.useState<number[]>([]);
   const {selectedLocIds} = useTaskStore();
   const [isDragging, setIsDragging] = React.useState(false);
   const {taskManagement} = useNavigationFunctions();
+
+  console.log(ids);
   return (
-    <div
-      onDrop={(e) => {
-        e.preventDefault();
-        console.log('DROP');
-        console.log(e.dataTransfer.getData('text/plain'));
-        setIds((prev) => [...prev, e.dataTransfer.getData('text/plain')]);
-        setIsDragging(false);
-      }}
-      onDragOver={(e) => {
-        e.preventDefault();
-        console.log('DRAG OVER');
-        setIsDragging(true);
-      }}
-      onDragLeave={(e) => {
-        e.preventDefault();
-        console.log('DRAG LEAVE');
-        setIsDragging(false);
-      }}
-      style={{
-        height: '100%',
-        width: '100%',
-        border: '1px solid black',
-      }}
-    >
-      TaskItiniaries
-      {isDragging && ids.map((id) => <div key={id}>{id}</div>)}
+    <Box>
       <Button
         bttype="primary"
         size="large"
         onClick={() => {
-          taskManagement(JSON.stringify(selectedLocIds));
+          taskManagement(selectedLocIds);
         }}
         disabled={selectedLocIds.length === 0}
       >
-        <Typography>Ny tur</Typography>
+        Se tur ud fra selection
       </Button>
-    </div>
+      <Grid container spacing={8} p={2}>
+        <Grid item xs={10} sm={5}>
+          <Droppable
+            onDrop={(e, data) => {
+              e.preventDefault();
+              console.log('DROP');
+              setIds([...ids, data.loc_id]);
+            }}
+          >
+            {({isDraggingOver}) => (
+              <Box
+                onClick={() => {
+                  if (selectedLocIds.length > 0) {
+                    taskManagement(selectedLocIds);
+                    return;
+                  }
+                  if (ids.length > 0) taskManagement(ids);
+                }}
+                sx={{
+                  width: '250px',
+                  height: '250px',
+                  textAlign: 'center',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  borderRadius: 2,
+                  boxShadow: 8,
+                  backgroundColor: isDraggingOver ? 'secondary.light' : 'primary.light',
+                  color: 'primary.contrastText',
+                  cursor: 'pointer',
+                }}
+              >
+                <Typography variant="h5" component="div">
+                  Ny tur
+                </Typography>
+                {ids.map((id) => (
+                  <Typography key={id} variant="body2" color="text.secondary">
+                    {id}
+                  </Typography>
+                ))}
+              </Box>
+            )}
+          </Droppable>
+        </Grid>
+        <Grid item xs={10} sm={5}>
+          <TaskItineraryCard
+            title="TaskItineraryCard"
+            description="description"
+            date="date"
+            onButtonClick={() => {}}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

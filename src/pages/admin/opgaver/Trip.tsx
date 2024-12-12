@@ -1,21 +1,20 @@
-import {Box, CssBaseline, Divider, Tab, Tabs, Typography} from '@mui/material';
-import {parseAsStringLiteral, useQueryState} from 'nuqs';
+import {Box, Divider, Tab, Tabs, Typography} from '@mui/material';
+import {parseAsArrayOf, parseAsStringLiteral, parseAsInteger, useQueryState} from 'nuqs';
 import React from 'react';
 
-import {AppBarLayout, HomeButton, NavBarMenu} from '~/components/NavBar';
+import NavBar from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
 import {useTaskManagement} from '~/features/opgavestyring/api/useOpgaveStyring';
 import TripOverview from '~/features/opgavestyring/components/TripOverview';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
-import {useSearchParam} from '~/hooks/useSeachParam';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import TabPanel from '~/pages/field/overview/TabPanel';
 
 const tabValues = ['forberedelse', 'overblik'] as const;
 
 const Trip = () => {
-  const [search] = useSearchParam('loc_ids', '[15613, 15647]');
-  const loc_ids: Array<number> = JSON.parse(search ?? '[]');
+  const [loc_ids] = useQueryState('loc_ids', parseAsArrayOf(parseAsInteger).withDefault([]));
+  console.log(loc_ids);
   const [tabValue, setTabValue] = useQueryState(
     'page',
     parseAsStringLiteral(tabValues).withDefault('forberedelse')
@@ -24,14 +23,8 @@ const Trip = () => {
   const {data} = useTaskManagement({loc_ids});
 
   return (
-    <Box>
-      <CssBaseline />
-      <AppBarLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
-          <HomeButton />
-          <NavBarMenu highligtFirst={false} items={[]} />
-        </Box>
-      </AppBarLayout>
+    <>
+      <NavBar />
       <Box
         display={'flex'}
         flexDirection={'column'}
@@ -90,7 +83,7 @@ const Trip = () => {
           </Typography>
         </Box>
       ))}
-    </Box>
+    </>
   );
 };
 
