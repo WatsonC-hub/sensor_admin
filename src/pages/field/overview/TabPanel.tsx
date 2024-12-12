@@ -8,8 +8,6 @@ interface TabPanelProps {
 }
 
 export default function TabPanel({children, value, index, ...other}: TabPanelProps) {
-  const ref = React.useRef({hasBeenMounted: false});
-  ref.current.hasBeenMounted = ref.current.hasBeenMounted || value === index;
   return (
     <div
       style={{display: value === index ? 'unset' : 'none'}}
@@ -19,7 +17,7 @@ export default function TabPanel({children, value, index, ...other}: TabPanelPro
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {ref.current.hasBeenMounted ? <Box p={0.5}>{children}</Box> : null}
+      {index == value ? <Box p={0.5}>{children}</Box> : null}
       {/* {children} */}
     </div>
   );

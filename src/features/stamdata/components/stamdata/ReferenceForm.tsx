@@ -33,9 +33,6 @@ export default function ReferenceForm({canEdit, ts_id}: Props) {
   } = useMaalepunkt();
 
   const handleMaalepunktSubmit = () => {
-    mpData.startdate = moment(mpData.startdate).toISOString();
-    mpData.enddate = moment(mpData.enddate).toISOString();
-
     const mutationOptions = {
       onSuccess: () => {
         resetMpData();
@@ -43,15 +40,21 @@ export default function ReferenceForm({canEdit, ts_id}: Props) {
       },
     };
 
+    const data = {
+      ...mpData,
+      startdate: moment(mpData.startdate).toISOString(),
+      enddate: moment(mpData.enddate).toISOString(),
+    };
+
     if (mpData.gid === -1) {
       const payload = {
-        data: mpData,
+        data: data,
         path: `${ts_id}`,
       };
       postWatlevmp.mutate(payload, mutationOptions);
     } else {
       const payload = {
-        data: mpData,
+        data: data,
         path: `${ts_id}/${mpData.gid}`,
       };
       putWatlevmp.mutate(payload, mutationOptions);

@@ -9,7 +9,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {SubmitHandler, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
@@ -52,7 +51,6 @@ interface TransferListProps extends MultiSelectProps {
 }
 
 export default function TranserList({value, setValue, loc_id}: TransferListProps) {
-  const {trigger} = useFormContext();
   const [checked, setChecked] = useState<Ressourcer[]>([]);
   const [selected, setSelected] = useState<Ressourcer[]>(value);
   const [selectedCategory, setSelectedCategory] = useState<Array<string>>([]);
@@ -63,8 +61,6 @@ export default function TranserList({value, setValue, loc_id}: TransferListProps
     )
   );
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
-  const {handleSubmit, getValues} = useFormContext();
-
   const {
     get: {data: options},
     post: postRessourcer,

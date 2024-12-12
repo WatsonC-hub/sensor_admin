@@ -120,7 +120,7 @@ const Map = ({clickCallback}: MapProps) => {
     selectedMarker,
     setSelectedMarker,
     layers: {markerLayer},
-    mutateLayers: {mutateParkingLayer, mutateRoutesLayer},
+    mutateLayers: {setMutateParking, setMutateRoutes},
     delete: {
       deleteId,
       deleteParking,
@@ -193,7 +193,7 @@ const Map = ({clickCallback}: MapProps) => {
           callback: () => {
             if (map) {
               setSelectParking(element.loc_id);
-              mutateRoutesLayer.current = true;
+              setMutateRoutes(true);
 
               map.pm.enableDraw('Line');
             }
@@ -206,7 +206,7 @@ const Map = ({clickCallback}: MapProps) => {
             if (map) map.getContainer().style.cursor = 'pointer';
 
             setSelectParking(element.loc_id);
-            mutateParkingLayer.current = true;
+            setMutateParking(true);
             toast('Vælg parkering for at tilknytte den lokationen', {
               toastId: 'tilknytParking',
               type: 'info',

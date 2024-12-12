@@ -17,6 +17,46 @@ type TaskStyling = 'dato' | 'ansvarlig' | '';
 
 const taskStyleAtom = atom<TaskStyling>('dato');
 
+const Control = () => {
+  const [selectedStyle, setSelectedStyle] = useAtom(taskStyleAtom);
+
+  return (
+    <TextField
+      select
+      size="small"
+      value={selectedStyle}
+      label={'Vælg filtrering...'}
+      sx={{width: 200, backgroundColor: 'white'}}
+      onChange={(e) => {
+        const value = e.target.value as TaskStyling;
+        setSelectedStyle(value);
+        console.log(value);
+      }}
+    >
+      {/* <MenuItem value={''}>Ingen filtrering</MenuItem> */}
+      <MenuItem value={'dato'}>Farvelæg på dato</MenuItem>
+      <MenuItem value={'ansvarlig'}>Farvelæg mine opgaver</MenuItem>
+    </TextField>
+  );
+};
+
+const select: Partial<L.Control.StyleSelect> = {
+  onAdd: function () {
+    const div = L.DomUtil.create('div');
+
+    const root = createRoot(div);
+    root.render(<Control />);
+
+    return div;
+  },
+};
+
+L.Control.StyleSelect = L.Control.extend(select);
+
+L.control.StyleSelect = function (opts: L.ControlOptions) {
+  return new L.Control.StyleSelect(opts);
+};
+
 const TaskMap = () => {
   const {shownTasks, hiddenTasks, setSelectedTask, setShownMapTaskIds} = useTaskStore();
 
@@ -59,46 +99,6 @@ const TaskMap = () => {
     layers: {markerLayer},
     selectedMarker,
   } = useMap('taskmap', shownByLocid, []);
-
-  const select: Partial<L.Control.StyleSelect> = {
-    onAdd: function () {
-      const div = L.DomUtil.create('div');
-
-      const Control = () => {
-        const [selectedStyle, setSelectedStyle] = useAtom(taskStyleAtom);
-
-        return (
-          <TextField
-            select
-            size="small"
-            value={selectedStyle}
-            label={'Vælg filtrering...'}
-            sx={{width: 200, backgroundColor: 'white'}}
-            onChange={(e) => {
-              const value = e.target.value as TaskStyling;
-              setSelectedStyle(value);
-              console.log(value);
-            }}
-          >
-            {/* <MenuItem value={''}>Ingen filtrering</MenuItem> */}
-            <MenuItem value={'dato'}>Farvelæg på dato</MenuItem>
-            <MenuItem value={'ansvarlig'}>Farvelæg mine opgaver</MenuItem>
-          </TextField>
-        );
-      };
-
-      const root = createRoot(div);
-      root.render(<Control />);
-
-      return div;
-    },
-  };
-
-  L.Control.StyleSelect = L.Control.extend(select);
-
-  L.control.StyleSelect = function (opts: L.ControlOptions) {
-    return new L.Control.StyleSelect(opts);
-  };
 
   const createMarkers = (tasks: Array<Task>, markerLayer: L.FeatureGroup<any>) => {
     if (selectedStyle === 'ansvarlig') {

@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {initialLocationAccessData} from '~/consts';
-import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
+import {useSearchLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import {Access} from '~/types';
 
 type Props = {
@@ -16,9 +16,8 @@ const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
   const [selected, setSelected] = useState<Access | null>(null);
   const [search, setSearch] = useState<string>('');
   const {reset} = useFormContext();
-  const {useSearchLocationAccess} = useLocationAccess(loc_id);
 
-  const {data} = useSearchLocationAccess(search);
+  const {data} = useSearchLocationAccess(loc_id, search);
 
   useEffect(() => {
     if (!createNew) {

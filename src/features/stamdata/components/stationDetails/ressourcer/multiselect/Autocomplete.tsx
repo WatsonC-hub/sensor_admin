@@ -27,11 +27,7 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
   } = useRessourcer(parseInt(loc_id));
 
   const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
-  const {
-    trigger,
-    watch,
-    formState: {errors},
-  } = useFormContext();
+  const {trigger, watch} = useFormContext();
 
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
 

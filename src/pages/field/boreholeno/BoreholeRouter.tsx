@@ -81,7 +81,8 @@ export default function BoreholeRouter() {
                   title: 'Til bruger profil',
                   icon: <Person />,
                   onClick: () => {
-                    window.location.href = 'https://admin.watsonc.dk/profile';
+                    navigate('https://admin.watsonc.dk/profile');
+                    // window.location.href = 'https://admin.watsonc.dk/profile';
                   },
                 },
               ]}

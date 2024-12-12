@@ -740,8 +740,6 @@ const TaskTable = () => {
     MergeType.RECURSIVEMERGE
   );
 
-  console.log(table.getState().columnFilterFns);
-
   useEffect(() => {
     // const globalFilter = table.getState().globalFilter;
     // if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {

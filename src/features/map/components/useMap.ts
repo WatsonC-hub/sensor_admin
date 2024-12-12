@@ -592,6 +592,14 @@ const useMap = <TData extends object>(
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
 
+  const setMutateParking = (boolean: boolean) => {
+    mutateParkingRef.current = boolean;
+  };
+
+  const setMutateRoutes = (value: number | boolean | null) => {
+    mutateLeafletMapRouteRef.current = value;
+  };
+
   return {
     map: mapRef.current,
     selectedMarker,
@@ -600,8 +608,8 @@ const useMap = <TData extends object>(
       markerLayer: markerLayerRef.current,
     },
     mutateLayers: {
-      mutateRoutesLayer: mutateLeafletMapRouteRef,
-      mutateParkingLayer: mutateParkingRef,
+      setMutateParking,
+      setMutateRoutes,
     },
     delete: {
       deleteId,

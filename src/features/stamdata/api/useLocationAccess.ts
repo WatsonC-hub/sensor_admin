@@ -62,32 +62,32 @@ export const LocationAccessGetOptions = <TData>(
   enabled: loc_id !== undefined && loc_id !== null,
 });
 
+export const useSearchLocationAccess = (loc_id: number | undefined, searchString: string) => {
+  const searched_location_access = useQuery({
+    queryKey: ['search_location_access', searchString],
+    queryFn: async () => {
+      let data;
+      if (searchString === '') {
+        const response = await apiClient.get<Array<Access>>(
+          `/sensor_field/stamdata/location_access/relevant_location_access/${loc_id}`
+        );
+        data = response.data;
+      } else {
+        const response = await apiClient.get<Array<Access>>(
+          `/sensor_field/stamdata/location_access/search_location_access/${loc_id}/${searchString}`
+        );
+        data = response.data;
+      }
+      return data;
+    },
+    staleTime: 10 * 1000,
+  });
+  return searched_location_access;
+};
+
 export const useLocationAccess = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery(LocationAccessGetOptions<Array<AccessTable>>(loc_id));
-
-  const useSearchLocationAccess = (searchString: string) => {
-    const searched_location_access = useQuery({
-      queryKey: ['search_location_access', searchString],
-      queryFn: async () => {
-        let data;
-        if (searchString === '') {
-          const response = await apiClient.get<Array<Access>>(
-            `/sensor_field/stamdata/location_access/relevant_location_access/${loc_id}`
-          );
-          data = response.data;
-        } else {
-          const response = await apiClient.get<Array<Access>>(
-            `/sensor_field/stamdata/location_access/search_location_access/${loc_id}/${searchString}`
-          );
-          data = response.data;
-        }
-        return data;
-      },
-      staleTime: 10 * 1000,
-    });
-    return searched_location_access;
-  };
 
   const post = useMutation({
     ...locationAccessPostOptions,
@@ -121,5 +121,5 @@ export const useLocationAccess = (loc_id: number | undefined) => {
     },
   });
 
-  return {get, useSearchLocationAccess, post, put, del};
+  return {get, post, put, del};
 };

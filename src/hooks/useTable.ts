@@ -9,7 +9,7 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import {useMemo, useRef} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -205,9 +205,12 @@ const getOptions = <TData extends MRT_RowData>(
 };
 
 function useFirstRender() {
-  const ref = useRef(true);
-  const isFirstRender = ref.current;
-  ref.current = false;
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
+
   return {isFirstRender};
 }
 
@@ -265,20 +268,18 @@ export const useQueryTable = <TData extends MRT_RowData>(
     return tableOptions;
   }, [options, breakpoints, merge_method, type]);
 
-  if (error != null) {
-    if (tableOptions.localization) {
-      tableOptions.localization.noRecordsToDisplay =
-        typeof error.response?.data.detail == 'string'
-          ? error.response?.data.detail
-          : tableOptions.localization.noRecordsToDisplay;
-    }
-  }
-
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
     ...tableOptions,
     ...state,
+    localization: {
+      ...tableOptions.localization,
+      noRecordsToDisplay:
+        error != null && typeof error.response?.data.detail == 'string'
+          ? error.response?.data.detail
+          : tableOptions?.localization?.noRecordsToDisplay,
+    },
     state: {
       ...state?.state,
       isLoading: data === undefined && !isFetched,
