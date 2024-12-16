@@ -23,6 +23,7 @@ const SensorAdmin = () => {
         <Route path="/konfiguration" element={<ConfigurationPage />} />
         <Route path="/opgaver" element={<TasksPage />} />
         <Route path="/opgaver/tur" element={<Trip />} />
+        <Route path="/opgaver/tur/:trip_id" element={<Trip />} />
         <Route path="*" element={<AdminChooser />} />
       </Routes>
     </>

@@ -133,3 +133,62 @@ export type TaskProject = {
   customer_name: string;
   project_info: string;
 };
+
+// class Taskitinerary(SensorDrift, table=True):
+//     __tablename__ = "task_itinerary"
+//     id: str = Field(default=None, primary_key=True)
+//     due_date: date
+//     assigned_to: str
+//     created_by: str = Field(default=None, foreign_key="users.users.id")
+//     created_at: datetime = Field(
+//         sa_column=Column(DateTime(timezone=True), nullable=False)
+//     )
+
+// class TaskitineraryItems(SensorDrift, table=True):
+//     __tablename__ = "task_itinerary_items"
+//     id: str = Field(default=None, primary_key=True)
+//     task_itinerary_id: str = Field(
+//         default=None, foreign_key="sensor_drift.task_itinerary.id"
+//     )
+//     task_id: str = Field(default=None, foreign_key="sensor_drift.tasks.id")
+//     created_by: str = Field(default=None, foreign_key="users.users.id")
+//     created_at: datetime = Field(
+//         sa_column=Column(DateTime(timezone=True), nullable=False)
+//     )
+
+// class PatchTaskitinerary(BaseModel):
+//     due_date: Optional[date]
+//     assigned_to: Optional[str]
+
+// class CreateTaskitinerary(BaseModel):
+//     due_date: date
+//     assigned_to: str
+//     task_ids: List[str]
+
+// class AddTasksToitinerary(BaseModel):
+//     task_ids: List[str]
+
+export type Taskitinerary = {
+  id: ID;
+  due_date?: string | null;
+  assigned_to?: string | null;
+  created_by: string;
+  created_at: string;
+};
+
+export type TaskitineraryItem = {
+  id: ID;
+  task_itinerary_id: ID;
+  task_id: ID;
+  created_by: string;
+  created_at: string;
+};
+
+export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'> & {
+  task_ids: ID[];
+};
+
+export type PatchTaskitinerary = Partial<Omit<Taskitinerary, 'id' | 'created_at'>>;
+export type AddTasksToitinerary = {
+  task_ids: ID[];
+};

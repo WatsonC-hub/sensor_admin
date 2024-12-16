@@ -41,6 +41,7 @@ export const useStatefullTableAtom = <TData extends MRT_RowData>(key: string) =>
 
   const stateChangeHandler = useCallback(
     (stateName: keyof Partial<MRT_TableState<TData>>) => (stateOrCallback: any) => {
+      console.log('stateChangeHandler', stateName, stateOrCallback);
       setTableState((prev) => {
         return {
           ...prev,

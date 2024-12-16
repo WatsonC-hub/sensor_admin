@@ -1,26 +1,38 @@
 import {Box, Divider, Tab, Tabs, Typography} from '@mui/material';
 import {parseAsArrayOf, parseAsStringLiteral, parseAsInteger, useQueryState} from 'nuqs';
 import React from 'react';
+import {useParams} from 'react-router-dom';
 
 import NavBar from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
 import {useTaskManagement} from '~/features/opgavestyring/api/useOpgaveStyring';
 import TripOverview from '~/features/opgavestyring/components/TripOverview';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
+import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import TabPanel from '~/pages/field/overview/TabPanel';
 
 const tabValues = ['forberedelse', 'overblik'] as const;
 
 const Trip = () => {
-  const [loc_ids] = useQueryState('loc_ids', parseAsArrayOf(parseAsInteger).withDefault([]));
-  console.log(loc_ids);
+  const params = useParams();
+
+  // const {tasks} = useTaskStore();
+
+  const [queryLocIds] = useQueryState('loc_ids', parseAsArrayOf(parseAsInteger).withDefault([]));
+
+  const {
+    getItineraryTasks: {data: tasks},
+  } = useTaskItinerary(params.trip_id);
+
   const [tabValue, setTabValue] = useQueryState(
     'page',
     parseAsStringLiteral(tabValues).withDefault('forberedelse')
   );
 
-  const {data} = useTaskManagement({loc_ids});
+  const loc_ids = [...new Set(tasks?.map((task) => task.loc_id))];
+  console.log('loc_ids', loc_ids);
+  const {data} = useTaskManagement({loc_ids: loc_ids.length > 0 ? loc_ids : queryLocIds});
 
   return (
     <>

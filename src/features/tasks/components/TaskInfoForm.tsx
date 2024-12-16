@@ -1,3 +1,4 @@
+import DragHandleIcon from '@mui/icons-material/DragHandle';
 import {Box, Grid, Stack, Typography} from '@mui/material';
 import React from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
@@ -133,11 +134,22 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
       <div
         id="drag-handle"
         draggable
+        style={{
+          cursor: 'move',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '50px',
+          height: '50px',
+          backgroundColor: 'lightgrey',
+          borderRadius: '5px',
+          margin: '5px',
+        }}
         onDragStart={(e) => {
           e.dataTransfer.setData('text/plain', JSON.stringify(selectedTask));
         }}
       >
-        <Typography>Træk for at tilføje til planlægning</Typography>
+        <DragHandleIcon fontSize="large" />
       </div>
     </Box>
   );

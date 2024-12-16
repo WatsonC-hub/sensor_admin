@@ -476,6 +476,14 @@ const TaskTable = () => {
             </Box>
           ),
         },
+        {
+          accessorKey: 'loc_id',
+          header: 'Loc_ID',
+          visibleInShowHideMenu: false,
+
+          size: 150,
+          enableEditing: false,
+        },
       ] as MRT_ColumnDef<Task>[],
     [taskStatus, taskUsers]
   );
@@ -741,11 +749,6 @@ const TaskTable = () => {
   );
 
   useEffect(() => {
-    // const globalFilter = table.getState().globalFilter;
-    // if (globalFilter === '' || globalFilter === undefined || globalFilter === null) {
-    //   setShownListTaskIds([]);
-    //   return;
-    // }
     const ids = table.getFilteredRowModel().rows.map((row) => row.original.id);
     const origIds = tableData.map((task) => task.id);
 

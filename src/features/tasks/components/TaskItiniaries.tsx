@@ -4,24 +4,31 @@ import React from 'react';
 import Button from '~/components/Button';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
+
+import {useTaskItinerary} from '../api/useTaskItinerary';
+import {Task} from '../types';
 
 import Droppable from './Droppable';
 import TaskItineraryCard from './TaskItiniaryCard';
 
 const TaskItiniaries = () => {
-  const [ids, setIds] = React.useState<number[]>([]);
-  const {selectedLocIds} = useTaskStore();
-  const [isDragging, setIsDragging] = React.useState(false);
-  const {taskManagement} = useNavigationFunctions();
+  const [ids, setIds] = React.useState<string[]>([]);
+  const {selectedLocIds, tasks} = useTaskStore();
+  const [{state}] = useStatefullTableAtom('taskTableState');
+  const {taskManagementSearch} = useNavigationFunctions();
+  const {
+    get: {data},
+    post,
+  } = useTaskItinerary();
 
-  console.log(ids);
   return (
     <Box>
       <Button
         bttype="primary"
         size="large"
         onClick={() => {
-          taskManagement(selectedLocIds);
+          taskManagementSearch(selectedLocIds);
         }}
         disabled={selectedLocIds.length === 0}
       >
@@ -29,21 +36,42 @@ const TaskItiniaries = () => {
       </Button>
       <Grid container spacing={8} p={2}>
         <Grid item xs={10} sm={5}>
-          <Droppable
+          <Droppable<Task>
             onDrop={(e, data) => {
               e.preventDefault();
               console.log('DROP');
-              setIds([...ids, data.loc_id]);
+              setIds([...ids, data.id]);
             }}
           >
             {({isDraggingOver}) => (
               <Box
                 onClick={() => {
-                  if (selectedLocIds.length > 0) {
-                    taskManagement(selectedLocIds);
-                    return;
+                  // if (ids.length > 0) taskManagement(ids);
+                  if (state?.rowSelection && tasks) {
+                    const task_ids = Object.keys(state.rowSelection);
+
+                    const selectedTasks = tasks.filter((task) => task_ids.includes(task.id));
+
+                    const lowestDate = selectedTasks.reduce((acc, curr) => {
+                      if (!curr.due_date) return acc;
+                      if (!acc) return curr.due_date;
+
+                      return acc < curr.due_date ? acc : curr.due_date;
+                    }, selectedTasks[0].due_date);
+
+                    // find assigned to if it is the same for all tasks
+                    const assigned_to = selectedTasks.reduce((acc, curr) => {
+                      if (!acc) return curr.assigned_to;
+                      if (acc !== curr.assigned_to) return '';
+                      return acc;
+                    }, selectedTasks[0].assigned_to);
+
+                    post.mutate({
+                      task_ids: task_ids,
+                      due_date: lowestDate,
+                      assigned_to: assigned_to,
+                    });
                   }
-                  if (ids.length > 0) taskManagement(ids);
                 }}
                 sx={{
                   width: '250px',
@@ -71,12 +99,7 @@ const TaskItiniaries = () => {
           </Droppable>
         </Grid>
         <Grid item xs={10} sm={5}>
-          <TaskItineraryCard
-            title="TaskItineraryCard"
-            description="description"
-            date="date"
-            onButtonClick={() => {}}
-          />
+          {data?.map((itinerary) => <TaskItineraryCard key={itinerary.id} itinerary={itinerary} />)}
         </Grid>
       </Grid>
     </Box>

@@ -1,15 +1,15 @@
-import React, {useState, ReactNode, DragEvent, useRef} from 'react';
+import React, {useState, ReactNode, DragEvent} from 'react';
 
 type ChildrenProps = {
   isDraggingOver: boolean;
 };
 
-interface DroppableProps {
-  onDrop: (event: DragEvent<HTMLDivElement>, data: object) => void;
+interface DroppableProps<T> {
+  onDrop: (event: DragEvent<HTMLDivElement>, data: T) => void;
   children: ({isDraggingOver}: ChildrenProps) => ReactNode;
 }
 
-const Droppable: React.FC<DroppableProps> = ({onDrop, children}) => {
+const Droppable = <TData extends object>({onDrop, children}: DroppableProps<TData>) => {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {

@@ -1,21 +1,18 @@
-import {Card, CardContent, Typography, CardActions, Button} from '@mui/material';
-import React, {useRef} from 'react';
+import {Card, CardContent, Typography} from '@mui/material';
+import React from 'react';
+
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+
+import {Taskitinerary} from '../types';
 
 import Droppable from './Droppable';
 
 interface TaskItineraryCardProps {
-  title: string;
-  description: string;
-  date: string;
-  onButtonClick: () => void;
+  itinerary: Taskitinerary;
 }
 
-const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({
-  title,
-  description,
-  date,
-  onButtonClick,
-}) => {
+const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
+  const {taskManagement} = useNavigationFunctions();
   return (
     <Droppable
       onDrop={(e) => {
@@ -38,23 +35,15 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({
             color: 'primary.contrastText',
             cursor: 'pointer',
           }}
+          onClick={() => {
+            taskManagement(itinerary.id);
+          }}
         >
           <CardContent>
             <Typography variant="h5" component="div">
-              {title}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {description}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {date}
+              {itinerary.due_date}
             </Typography>
           </CardContent>
-          <CardActions>
-            <Button size="small" onClick={onButtonClick}>
-              Learn More
-            </Button>
-          </CardActions>
         </Card>
       )}
     </Droppable>

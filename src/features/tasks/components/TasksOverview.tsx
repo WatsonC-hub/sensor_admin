@@ -11,6 +11,7 @@ import TaskCalendar from '~/features/tasks/components/TaskCalendar';
 // import TaskMap from '~/features/tasks/components/TaskMap';
 import TaskTable from '~/features/tasks/components/TaskTable';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import Map from '~/pages/field/overview/Map';
 import {BoreholeMapData} from '~/types';
 
@@ -42,15 +43,24 @@ const tabAtom = atom<number>(0);
 
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
-  const {shownMapTaskIds, shownListTaskIds, activeTasks, setSelectedTask} = useTaskStore();
+  const {shownMapTaskIds, shownListTaskIds, setShownMapTaskIds, activeTasks, setSelectedTask} =
+    useTaskStore();
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
   };
 
+  const [{onColumnFiltersChange}] = useStatefullTableAtom('taskTableState');
+
   const clickCallback = (data: NotificationMap | BoreholeMapData) => {
     if ('loc_id' in data) {
+      // const task_ids = activeTasks
+      //   .filter((task) => task.loc_id === data.loc_id)
+      //   .map((task) => task.id);
+      // setShownMapTaskIds(task_ids);
       const id = activeTasks.find((task) => task.loc_id === data.loc_id)?.id;
+
+      onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
 
       if (id) setSelectedTask(id);
     }
