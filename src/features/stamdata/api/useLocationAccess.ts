@@ -71,7 +71,7 @@ export const useLocationAccess = (loc_id: number | undefined) => {
       queryKey: ['search_location_access', searchString],
       queryFn: async () => {
         let data;
-        if (searchString === '') {
+        if (searchString.trim() === '') {
           const response = await apiClient.get<Array<Access>>(
             `/sensor_field/stamdata/location_access/relevant_location_access/${loc_id}`
           );
