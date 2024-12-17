@@ -132,7 +132,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                 }}
                 textFieldsProps={{
                   label: 'Kontakt',
-                  placeholder: 'Vælg kontakt',
+                  placeholder: 'Søg og vælg kontakt...',
                 }}
                 onInputChange={(event, value) => {
                   setSearch(value);

@@ -119,7 +119,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                         }}
                         textFieldsProps={{
                           label: 'Kontakt',
-                          placeholder: 'Vælg kontakt',
+                          placeholder: 'Søg og vælg kontakt...',
                         }}
                         onInputChange={(event, value) => {
                           setSearch(value);
