@@ -262,7 +262,9 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}
+        onClose={() => {
+          handleClose();
+        }}
         sx={{
           '& .MuiPaper-root': {
             width: isTouch ? '90%' : 500,
@@ -272,8 +274,9 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
       >
         <FilterOptions
           filters={mapFilter}
+          onClose={handleClose}
           onSubmit={(filter) => {
-            handleClose();
+            // handleClose();
             setMapFilter(filter);
           }}
         />
