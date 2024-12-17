@@ -6,19 +6,19 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 
 import CustomBottomNavigationActionLabel from './CustomLabel';
 
-interface NavigationItem {
+interface NavigationItem<T> {
   text: string;
-  value: string | null;
+  value: T;
   icon: React.ReactElement<SvgIconProps>;
   color: string;
   isCalculated?: boolean;
   handlePrefetch?: () => void;
 }
 
-interface CustomBottomNavigationProps {
-  pageToShow: string | null;
-  onChange: (event: React.ChangeEvent<object>, newValue: string | null) => void;
-  items: Array<NavigationItem>;
+interface CustomBottomNavigationProps<T> {
+  pageToShow: T;
+  onChange: (event: React.ChangeEvent<object>, newValue: T) => void;
+  items: Array<NavigationItem<T>>;
   canEdit?: boolean;
 }
 
@@ -29,11 +29,11 @@ const bottomNavStyle = {
   animation: 'none',
 };
 
-const CustomBottomNavigation: React.FC<CustomBottomNavigationProps> = ({
+const CustomBottomNavigation = <T extends string>({
   pageToShow,
   onChange,
   items,
-}) => {
+}: CustomBottomNavigationProps<T>): React.ReactElement => {
   const {isMobile} = useBreakpoints();
   const threshold = isMobile ? 4 : items.length;
   const visibleItems = items.slice(0, threshold);

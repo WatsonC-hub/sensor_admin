@@ -1,10 +1,10 @@
 import {Box, Card, CardContent} from '@mui/material';
 import {useAtom} from 'jotai';
-import {parseAsString, useQueryState} from 'nuqs';
+import {parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
-import {qaAdjustment} from '~/helpers/EnumHelper';
+import {qaAdjustmentLiteral} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
 
@@ -26,17 +26,15 @@ const StepWizard = ({
   setInitiateSelect,
   setInitiateConfirmTimeseries,
 }: StepWizardProps) => {
-  const [dataAdjustment] = useQueryState('adjust', parseAsString);
+  const [dataAdjustment] = useQueryState('adjust', parseAsStringLiteral(qaAdjustmentLiteral));
   const [selection, setSelection] = useAtom(qaSelection);
   const {isMobile} = useBreakpoints();
 
   useEffect(() => {
     setSelection({});
-    setInitiateSelect(
-      dataAdjustment === qaAdjustment.BOUNDS || dataAdjustment === qaAdjustment.REMOVE
-    );
-    setInitiateConfirmTimeseries(dataAdjustment === qaAdjustment.CONFIRM);
-    setLevelCorrection(dataAdjustment === qaAdjustment.CORRECTION);
+    setInitiateSelect(dataAdjustment === 'bounds' || dataAdjustment === 'remove');
+    setInitiateConfirmTimeseries(dataAdjustment === 'confirm');
+    setLevelCorrection(dataAdjustment === 'correction');
   }, [dataAdjustment]);
 
   useEffect(() => {
@@ -44,11 +42,9 @@ const StepWizard = ({
       selection.points &&
       selection.points.length === 1 &&
       isMobile &&
-      (dataAdjustment === qaAdjustment.CONFIRM || dataAdjustment === qaAdjustment.CORRECTION);
+      (dataAdjustment === 'confirm' || dataAdjustment === 'correction');
     const range =
-      selection.range &&
-      isMobile &&
-      (dataAdjustment === qaAdjustment.REMOVE || dataAdjustment === qaAdjustment.BOUNDS);
+      selection.range && isMobile && (dataAdjustment === 'remove' || dataAdjustment === 'bounds');
 
     if (points || range) scrollTo({top: 450});
   }, [selection]);
@@ -82,21 +78,15 @@ const StepWizard = ({
         >
           <CardContent sx={{height: '95%'}}>
             <Box width={'inherit'} height={'inherit'}>
-              {dataAdjustment === qaAdjustment.CONFIRM && (
+              {dataAdjustment === 'confirm' && (
                 <WizardConfirmTimeseries
                   initiateConfirmTimeseries={initiateConfirmTimeseries}
                   onClose={handleOnClose}
                 />
               )}
-              {dataAdjustment === qaAdjustment.REMOVE && (
-                <WizardDataExclude onClose={handleOnClose} />
-              )}
-              {dataAdjustment === qaAdjustment.BOUNDS && (
-                <WizardValueBounds onClose={handleOnClose} />
-              )}
-              {dataAdjustment === qaAdjustment.CORRECTION && (
-                <WizardLevelCorrection onClose={handleOnClose} />
-              )}
+              {dataAdjustment === 'remove' && <WizardDataExclude onClose={handleOnClose} />}
+              {dataAdjustment === 'bounds' && <WizardValueBounds onClose={handleOnClose} />}
+              {dataAdjustment === 'correction' && <WizardLevelCorrection onClose={handleOnClose} />}
             </Box>
           </CardContent>
         </Card>

@@ -1,11 +1,9 @@
 import {Box} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import {Layout, PlotData, PlotMouseEvent, PlotRelayoutEvent, PlotSelectionEvent} from 'plotly.js';
 import React, {useContext, useEffect} from 'react';
 import Plot from 'react-plotly.js';
 
-import {apiClient} from '~/apiClient';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
 import {MergeType} from '~/helpers/EnumHelper';
 import {
@@ -15,10 +13,10 @@ import {
   makeLinkIcon,
   rerunIcon,
 } from '~/helpers/plotlyIcons';
+import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
-import {APIError} from '~/queryClient';
 import {MetadataContext} from '~/state/contexts';
 
 import Button from './Button';
@@ -73,18 +71,7 @@ export default function PlotlyGraph({
   const {mutation: rerunQAMutation} = useRunQA(metadata?.ts_id);
   const {isTouch} = useBreakpoints();
 
-  const {data: edgeDates} = useQuery<{firstDate: string; lastDate: string} | null, APIError>({
-    queryKey: ['all_range', metadata?.ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<{firstDate: string; lastDate: string} | null>(
-        `/sensor_field/station/graph_all_range/${metadata?.ts_id}`
-      );
-
-      return data;
-    },
-    staleTime: 10,
-    enabled: metadata?.ts_id !== undefined && metadata?.ts_id !== null && metadata?.ts_id !== -1,
-  });
+  const {data: edgeDates} = useEdgeDates(metadata?.ts_id);
 
   useEffect(() => {
     if (xRange != undefined) {

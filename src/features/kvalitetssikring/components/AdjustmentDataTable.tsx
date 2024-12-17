@@ -23,9 +23,11 @@ import YRangeRow from '~/pages/admin/kvalitetssikring/components/YRangeRow';
 import {MetadataContext} from '~/state/contexts';
 import {DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
+import {CertifyQa} from '../api/useCertifyQa';
+
 type AdjustmentData = {
   type: AdjustmentTypes;
-  data: DataExclude | LevelCorrection | MinMaxCutoff;
+  data: DataExclude | LevelCorrection | MinMaxCutoff | CertifyQa;
 };
 
 type Props = {
@@ -69,6 +71,7 @@ const AdjustmentDataTable = ({data}: Props) => {
     map.set(AdjustmentTypes.LEVELCORRECTION, 2);
     map.set(AdjustmentTypes.EXLUDEPOINTS, 3);
     map.set(AdjustmentTypes.MINMAX, 4);
+    map.set(AdjustmentTypes.APPROVED, 5);
 
     const mapA = map.get(a.type);
     const mapB = map.get(b.type);
@@ -142,7 +145,7 @@ const AdjustmentDataTable = ({data}: Props) => {
                 </Box>
               </Box>
             );
-          } else {
+          } else if (row.original.type === AdjustmentTypes.MINMAX) {
             const data = row.original.data as MinMaxCutoff;
             return (
               <Box>
@@ -159,6 +162,18 @@ const AdjustmentDataTable = ({data}: Props) => {
                       </Typography>
                     </Box>
                   )}
+                </Box>
+              </Box>
+            );
+          } else if (row.original.type === AdjustmentTypes.APPROVED) {
+            const data = row.original.data as CertifyQa;
+            return (
+              <Box>
+                <Box>
+                  <Typography variant="caption" display={'inline-block'}>
+                    <b>Godkendt til: </b>
+                    {convertDateWithTimeStamp(data.date)}
+                  </Typography>
                 </Box>
               </Box>
             );
@@ -252,23 +267,26 @@ const AdjustmentDataTable = ({data}: Props) => {
         </Box>
       );
     },
-    renderRowActions: ({row, staticRowIndex}) => (
-      <RenderActions
-        handleEdit={() => {
-          setEditDialogOpen(true);
-          setType(row.original.type);
-          setIndex(staticRowIndex);
-          table.setEditingRow(row);
-        }}
-        canEdit={true}
-        onDeleteBtnClick={() => {
-          setDialogOpen(true);
-          setType(row.original.type);
-          setGid(row.original.data.gid);
-          setId(row.original.data.ts_id);
-        }}
-      />
-    ),
+    renderRowActions: ({row, staticRowIndex}) =>
+      row.original.type !== AdjustmentTypes.APPROVED && (
+        <RenderActions
+          handleEdit={() => {
+            setEditDialogOpen(true);
+            setType(row.original.type);
+            setIndex(staticRowIndex);
+            table.setEditingRow(row);
+          }}
+          canEdit={true}
+          onDeleteBtnClick={() => {
+            setDialogOpen(true);
+            setType(row.original.type);
+            //@ts-expect-error gid and ts_id is in all but approved
+            setGid(row.original.data.gid);
+            //@ts-expect-error gid and ts_id is in all but approved
+            setId(row.original.data.ts_id);
+          }}
+        />
+      ),
   };
 
   const table = useTable<AdjustmentData>(

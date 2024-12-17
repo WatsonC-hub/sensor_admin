@@ -12,9 +12,9 @@ import {setGraphHeight} from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
+import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {APIError} from '~/queryClient';
 import {dataToShowAtom, qaSelection} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
 import {QaGraphLabel} from '~/types';
@@ -140,20 +140,12 @@ export default function PlotGraph({
 
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
+  const {
+    get: {data: certify},
+  } = useCertifyQa(metadata?.ts_id);
 
-  const {data: edgeDates} = useQuery<{firstDate: string; lastDate: string} | null, APIError>({
-    queryKey: ['all_range', metadata?.ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<{firstDate: string; lastDate: string} | null>(
-        `/sensor_field/station/graph_all_range/${metadata?.ts_id}`
-      );
-
-      return data;
-    },
-    staleTime: 10,
-    enabled: metadata?.ts_id !== undefined && metadata?.ts_id !== null && metadata?.ts_id !== -1,
-  });
   const {data: graphData} = useGraphData(ts_id, xRange);
+  const {data: edgeDates} = useEdgeDates(ts_id);
   const {
     get: {data: certifedData},
   } = useCertifyQa(ts_id);
@@ -269,6 +261,42 @@ export default function PlotGraph({
     Object.entries(dataToShow).forEach((entry) => {
       if (entry[1] == false) return;
       switch (entry[0]) {
+        case 'Godkendt':
+          shapes = [
+            ...shapes,
+            ...(certify?.map((d) => {
+              return {
+                type: 'rect',
+                x0: edgeDates?.firstDate,
+                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                y0: 0,
+                y1: 1,
+                yref: 'paper',
+                fillcolor: '#4caf50',
+                opacity: 0.2,
+                line: {
+                  width: 0,
+                },
+                layer: 'below',
+              };
+            }) ?? []),
+          ];
+          annotations = [
+            ...annotations,
+            ...(certify?.map((d) => {
+              return {
+                xref: 'x',
+                yref: 'paper',
+                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                xanchor: 'right',
+                yanchor: 'bottom',
+                showarrow: false,
+                text: 'Godkendt',
+                y: 0.9,
+              };
+            }) ?? []),
+          ];
+          break;
         case 'Valide værdier':
           shapes = [
             ...shapes,

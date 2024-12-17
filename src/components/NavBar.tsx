@@ -51,6 +51,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
   return (
     <Box
       onClick={handleLogout}
+      width={'100%'}
       sx={{
         cursor: 'pointer',
         display: 'flex',
