@@ -82,7 +82,7 @@ const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
   const serviceFilter =
     filter.isCustomerService === 'indeterminate'
       ? true
-      : data.is_customer_service === filter.isCustomerService;
+      : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
   const activeFilter = data.active == true || data.active == null ? true : filter.showInactive;
   return activeFilter && serviceFilter && !filter.isSingleMeasurement;
 };
