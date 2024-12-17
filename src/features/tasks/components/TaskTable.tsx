@@ -480,7 +480,7 @@ const TaskTable = () => {
           accessorKey: 'loc_id',
           header: 'Loc_ID',
           visibleInShowHideMenu: false,
-
+          filterFn: 'equals',
           size: 150,
           enableEditing: false,
         },
