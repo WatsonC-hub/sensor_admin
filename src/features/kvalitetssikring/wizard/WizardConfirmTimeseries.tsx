@@ -242,7 +242,10 @@ const WizardConfirmTimeseries = ({
               <Button
                 bttype="primary"
                 startIcon={<Save />}
-                disabled={moment(selectedQaData?.date).isAfter(enddateWatch)}
+                disabled={
+                  moment(selectedQaData?.date).isAfter(enddateWatch) &&
+                  selectedQaData?.date != undefined
+                }
                 onClick={handleSubmit(handleSave, (e) => {
                   console.log(e);
                 })}
