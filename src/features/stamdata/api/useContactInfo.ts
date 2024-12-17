@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {GetQueryOptions} from '~/queryClient';
-import {baseContactInfo, ContactInfo, ContactTable} from '~/types';
+import {ContactInfo, ContactTable} from '~/types';
 
 interface ContactInfoBase {
   path: string;
@@ -70,16 +70,16 @@ export const useContactInfo = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery(ContactInfoGetOptions<Array<ContactTable>>(loc_id));
 
-  const get_all = useQuery({
-    queryKey: ['all_contact_info'],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<baseContactInfo>>(
-        `/sensor_field/stamdata/contact/all_contact_info`
-      );
+  // const get_all = useQuery({
+  //   queryKey: ['all_contact_info'],
+  //   queryFn: async () => {
+  //     const {data} = await apiClient.get<Array<baseContactInfo>>(
+  //       `/sensor_field/stamdata/contact/all_contact_info`
+  //     );
 
-      return data;
-    },
-  });
+  //     return data;
+  //   },
+  // });
 
   const useSearchContact = (searchString: string) => {
     const searched_contacts = useQuery({
@@ -137,5 +137,5 @@ export const useContactInfo = (loc_id: number | undefined) => {
     },
   });
 
-  return {get, get_all, useSearchContact, post, put, del};
+  return {get, useSearchContact, post, put, del};
 };
