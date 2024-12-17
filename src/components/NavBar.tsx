@@ -199,7 +199,7 @@ export const NavBarMenu = ({
           ))}
 
         <MenuItem
-          key="Til bruger profil"
+          key="profile"
           onClick={() => {
             window.location.href = 'https://admin.watsonc.dk/profile';
           }}
@@ -207,7 +207,7 @@ export const NavBarMenu = ({
           <ListItemIcon>
             <Person />
           </ListItemIcon>
-          Til bruger profil
+          Profil
         </MenuItem>
         <MenuItem onClick={handleClose}>
           <LogOut>
