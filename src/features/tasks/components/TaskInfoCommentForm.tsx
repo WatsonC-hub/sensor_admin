@@ -86,6 +86,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
             fullWidth
             name="comment"
             label={'Kommentar'}
+            disabled={selectedTaskId.includes(':')}
             multiline
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {

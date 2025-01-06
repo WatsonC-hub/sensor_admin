@@ -43,8 +43,7 @@ const tabAtom = atom<number>(0);
 
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
-  const {shownMapTaskIds, shownListTaskIds, setShownMapTaskIds, activeTasks, setSelectedTask} =
-    useTaskStore();
+  const {shownMapTaskIds, shownListTaskIds, activeTasks, setSelectedTask} = useTaskStore();
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
