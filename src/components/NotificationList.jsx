@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
@@ -13,6 +13,7 @@ import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificat
 import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import {MetadataContext} from '~/state/contexts';
 
 // Mock data for notifications
 const NotificationList = () => {
@@ -28,8 +29,9 @@ const NotificationList = () => {
   const params = useParams();
 
   // const {data, isPending} = useNotificationOverview();
+  const metadata = useContext(MetadataContext);
 
-  const {data, isPending} = useLocationNotificationOverview(params.locid);
+  const {data, isPending} = useLocationNotificationOverview(params.locid || metadata?.loc_id);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
