@@ -17,7 +17,7 @@ import {useParams} from 'react-router-dom';
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
-import {useContactInfo, useSearchContact} from '~/features/stamdata/api/useContactInfo';
+import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {ContactInfo} from '~/types';
@@ -37,7 +37,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const {post: postContact} = useContactInfo(loc_id);
+  const {post: postContact, useSearchContact} = useContactInfo(loc_id);
 
   const {data} = useSearchContact(loc_id, search);
 
