@@ -19,6 +19,7 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {useRunQA} from '~/hooks/useRunQA';
 import {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
 
 interface AlgorithCardProps {
@@ -27,6 +28,7 @@ interface AlgorithCardProps {
 
 const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   const params = useParams();
+  const {mutation: rerunQAMutation} = useRunQA(parseInt(params.ts_id ?? ''));
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const {put: submitData, revert: revertToDefaults} = useAlgorithms(params.ts_id);
@@ -44,7 +46,13 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
         disabled: data.disabled,
       },
     };
-    submitData.mutate(payload);
+    submitData.mutate(payload, {
+      onSuccess: () => {
+        if (qaAlgorithm.runs_as_qa_algorithm) {
+          rerunQAMutation.mutate();
+        }
+      },
+    });
   };
 
   const handleOkDelete = () => {
@@ -52,7 +60,13 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
       path: `${params.ts_id}/${qaAlgorithm.algorithm}`,
       data: {algorithm: qaAlgorithm.algorithm},
     };
-    revertToDefaults.mutate(payload);
+    revertToDefaults.mutate(payload, {
+      onSuccess: () => {
+        if (qaAlgorithm.runs_as_qa_algorithm) {
+          rerunQAMutation.mutate();
+        }
+      },
+    });
   };
 
   const schema = useMemo(() => {
