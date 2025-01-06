@@ -7,10 +7,16 @@ import {qaHistorySkeletonHeight} from '~/consts';
 import {AdjustmentTypes} from '~/helpers/EnumHelper';
 import {MetadataContext} from '~/state/contexts';
 
+import {useCertifyQa} from '../api/useCertifyQa';
+
 import AdjustmentDataTable from './AdjustmentDataTable';
 
 export default function QAHistory2() {
   const metadata = useContext(MetadataContext);
+  const {
+    get: {data: certify},
+  } = useCertifyQa(metadata?.ts_id);
+
   const {data, isPending} = useQuery({
     queryKey: ['qa_all', metadata?.ts_id],
     queryFn: async () => {
@@ -52,6 +58,15 @@ export default function QAHistory2() {
     enabled: typeof metadata?.ts_id == 'number',
     refetchOnWindowFocus: false,
   });
+
+  if (certify) {
+    certify.forEach((item) => {
+      data?.push({
+        data: item,
+        type: AdjustmentTypes.APPROVED,
+      });
+    });
+  }
 
   if (isPending)
     return (

@@ -4,8 +4,7 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {Box, Divider, Grid, Typography} from '@mui/material';
-import {startCase} from 'lodash';
-import {parseAsString, useQueryState} from 'nuqs';
+import {useQueryState, parseAsStringLiteral} from 'nuqs';
 import React, {ReactNode, useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 
@@ -15,7 +14,7 @@ import NavBar from '~/components/NavBar';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
-import {qaAdjustment, qaPages} from '~/helpers/EnumHelper';
+import {qaPagesLiteral, qaAdjustmentLiteral} from '~/helpers/EnumHelper';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
@@ -31,8 +30,14 @@ const navIconStyle = (isSelected: boolean) => {
 
 const QualityAssurance = () => {
   const params = useParams();
-  const [pageToShow] = useQueryState('page', parseAsString);
-  const [dataAdjustment, setDataAdjustment] = useQueryState('adjust', parseAsString);
+  const [pageToShow] = useQueryState(
+    'page',
+    parseAsStringLiteral(qaPagesLiteral).withDefault('justeringer')
+  );
+  const [dataAdjustment, setDataAdjustment] = useQueryState(
+    'adjust',
+    parseAsStringLiteral(qaAdjustmentLiteral)
+  );
 
   const {isMobile} = useBreakpoints();
   const [initiateSelect, setInitiateSelect] = useState(false);
@@ -42,11 +47,10 @@ const QualityAssurance = () => {
   const {data} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
 
   const speedDialActions: Array<DialAction> = [];
-
   useEffect(() => {
-    if (pageToShow !== qaPages.DATA) {
-      setDataAdjustment(null);
-    }
+    // if (pageToShow !== qaPages.DATA) {
+    setDataAdjustment(null);
+    // }
   }, [pageToShow]);
 
   speedDialActions.push(
@@ -56,10 +60,10 @@ const QualityAssurance = () => {
       tooltip: <Typography noWrap>Godkend tidsserie</Typography>,
       onClick: () => {
         setInitiateConfirmTimeseries(true);
-        setDataAdjustment(qaAdjustment.CONFIRM);
+        setDataAdjustment('confirm');
       },
-      color: navIconStyle(dataAdjustment === qaAdjustment.CONFIRM),
-      toastTip: 'Vælg et punkt på grafen',
+      color: navIconStyle(dataAdjustment === 'confirm'),
+      toastTip: 'Klik på et datapunkt på grafen',
     },
     {
       key: 'removeData',
@@ -67,20 +71,20 @@ const QualityAssurance = () => {
       tooltip: <Typography noWrap>Fjern data</Typography>,
       onClick: () => {
         setInitiateSelect(true);
-        setDataAdjustment(qaAdjustment.REMOVE);
+        setDataAdjustment('remove');
       },
-      color: navIconStyle(dataAdjustment === qaAdjustment.REMOVE),
+      color: navIconStyle(dataAdjustment === 'remove'),
       toastTip: 'Markér et område på grafen',
     },
     {
       key: 'defineValues',
       icon: <DensityLargeIcon />,
-      tooltip: <Typography noWrap>Definer værdier</Typography>,
+      tooltip: <Typography noWrap>Valide værdier</Typography>,
       onClick: () => {
         setInitiateSelect(true);
-        setDataAdjustment(qaAdjustment.BOUNDS);
+        setDataAdjustment('bounds');
       },
-      color: navIconStyle(dataAdjustment === qaAdjustment.BOUNDS),
+      color: navIconStyle(dataAdjustment === 'bounds'),
       toastTip: 'Markér et område på grafen',
     },
     {
@@ -89,10 +93,10 @@ const QualityAssurance = () => {
       tooltip: <Typography noWrap>Korriger spring</Typography>,
       onClick: () => {
         setLevelCorrection(true);
-        setDataAdjustment(qaAdjustment.CORRECTION);
+        setDataAdjustment('correction');
       },
-      color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
-      toastTip: 'Vælg et punkt på grafen',
+      color: navIconStyle(dataAdjustment === 'correction'),
+      toastTip: 'Klik på et datapunkt på grafen',
     }
   );
 
@@ -111,7 +115,7 @@ const QualityAssurance = () => {
         </Grid>
         <Box borderRadius={4} m={'auto'} width={'100%'} maxWidth={1200}>
           <Box display={'flex'} flexDirection={'column'}>
-            {pageToShow === qaPages.DATA && (
+            {pageToShow === 'justeringer' && (
               <>
                 <Grid container gap={3} justifyContent={'center'}>
                   <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
@@ -133,7 +137,7 @@ const QualityAssurance = () => {
                 <CustomSpeedDial actions={speedDialActions} />
               </>
             )}
-            {pageToShow === qaPages.ALGORITHMS && <Algorithms />}
+            {pageToShow === 'algoritmer' && <Algorithms />}
           </Box>
         </Box>
       </Layout>
@@ -151,7 +155,7 @@ const QualityAssurance = () => {
     >
       <Box borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
         <Grid item mobile={12}>
-          {pageToShow === qaPages.DATA && (
+          {pageToShow === 'justeringer' && (
             <Box display="flex" flexDirection={'column'} gap={2}>
               {dataAdjustment !== null && (
                 <StepWizard
@@ -165,7 +169,7 @@ const QualityAssurance = () => {
               <CustomSpeedDial actions={speedDialActions} />
             </Box>
           )}
-          {pageToShow === qaPages.ALGORITHMS && <Algorithms />}
+          {pageToShow === 'algoritmer' && <Algorithms />}
         </Grid>
       </Box>
     </Layout>
@@ -193,9 +197,12 @@ const Layout = ({
   initiateConfirmTimeseries,
   children,
 }: LayoutProps) => {
-  const [pageToShow, setPageToShow] = useQueryState('page', parseAsString);
+  const [pageToShow, setPageToShow] = useQueryState(
+    'page',
+    parseAsStringLiteral(qaPagesLiteral).withDefault('justeringer')
+  );
   const {isMobile} = useBreakpoints();
-  const handleChange = (event: any, newValue: string | null) => {
+  const handleChange = (event: any, newValue: (typeof qaPagesLiteral)[number]) => {
     setPageToShow(newValue);
   };
 
@@ -206,15 +213,15 @@ const Layout = ({
   navigationItems.push(
     {
       text: 'Justering',
-      value: qaPages.DATA,
+      value: 'justeringer' as const,
       icon: <QueryStatsIcon />,
-      color: navIconStyle(pageToShow === qaPages.DATA),
+      color: navIconStyle(pageToShow === 'justeringer'),
     },
     {
-      text: startCase(qaPages.ALGORITHMS),
-      value: qaPages.ALGORITHMS,
+      text: 'Algoritmer',
+      value: 'algoritmer' as const,
       icon: <FunctionsIcon />,
-      color: navIconStyle(pageToShow === qaPages.ALGORITHMS),
+      color: navIconStyle(pageToShow === 'algoritmer'),
       handlePrefetch: handlePrefetch,
     }
   );
@@ -244,7 +251,7 @@ const Layout = ({
         </Grid>
         {children}
       </Grid>
-      <CustomBottomNavigation
+      <CustomBottomNavigation<(typeof qaPagesLiteral)[number]>
         pageToShow={pageToShow}
         onChange={handleChange}
         items={navigationItems}

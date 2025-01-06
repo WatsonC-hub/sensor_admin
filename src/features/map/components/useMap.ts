@@ -34,7 +34,7 @@ import {
   markerNumThreshold,
 } from '../mapConsts';
 
-let highlightedParking: L.Marker | null = null;
+// const highlightedParking: L.Marker | null = null;
 
 const useMap = <TData extends object>(
   id: string,
@@ -56,6 +56,7 @@ const useMap = <TData extends object>(
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const [hightlightedMarker, setHightlightedMarker] = useState<L.CircleMarker | null>();
+  const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
   const [superUser] = authStore((state) => [state.superUser]);
   const [deleteTitle, setDeleteTitle] = useState<string>(
@@ -83,51 +84,48 @@ const useMap = <TData extends object>(
     del: deleteParkering,
   } = useParkering();
 
-  const items: Array<L.ContextMenuItem> = [];
+  const defaultContextmenuItems: Array<L.ContextMenuItem> = [
+    {
+      text: 'Google Maps',
+      callback: function (e: L.ContextMenuItemClickEvent) {
+        if (e.relatedTarget) {
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+            '_blank'
+          );
+        } else {
+          window.open(
+            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+            '_blank'
+          );
+        }
+      },
+      icon: '/leaflet-images/map.png',
+    },
+    {
+      text: 'Zoom ind',
+      callback: function () {
+        if (mapRef.current) mapRef.current.zoomIn();
+      },
+      icon: '/leaflet-images/zoom-in.png',
+    },
+    {
+      text: 'Zoom ud',
+      callback: function () {
+        if (mapRef.current) mapRef.current.zoomOut();
+      },
+      icon: '/leaflet-images/zoom-out.png',
+    },
+    {
+      text: 'Centrer kort her',
+      callback: function (e: L.ContextMenuItemClickEvent) {
+        if (mapRef.current) mapRef.current.panTo(e.latlng);
+      },
+      icon: '/leaflet-images/center.png',
+    },
+  ];
 
-  items.push(
-    ...contextmenuItems,
-    ...[
-      {
-        text: 'Google Maps',
-        callback: function (e: L.ContextMenuItemClickEvent) {
-          if (e.relatedTarget) {
-            window.open(
-              `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-              '_blank'
-            );
-          } else {
-            window.open(
-              `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
-              '_blank'
-            );
-          }
-        },
-        icon: '/leaflet-images/map.png',
-      },
-      {
-        text: 'Zoom ind',
-        callback: function () {
-          if (mapRef.current) mapRef.current.zoomIn();
-        },
-        icon: '/leaflet-images/zoom-in.png',
-      },
-      {
-        text: 'Zoom ud',
-        callback: function () {
-          if (mapRef.current) mapRef.current.zoomOut();
-        },
-        icon: '/leaflet-images/zoom-out.png',
-      },
-      {
-        text: 'Centrer kort her',
-        callback: function (e: L.ContextMenuItemClickEvent) {
-          if (mapRef.current) mapRef.current.panTo(e.latlng);
-        },
-        icon: '/leaflet-images/center.png',
-      },
-    ]
-  );
+  const items: Array<L.ContextMenuItem> = [...contextmenuItems, ...defaultContextmenuItems];
 
   const buildMap = () => {
     const map = L.map(id, {
@@ -135,7 +133,7 @@ const useMap = <TData extends object>(
       zoom: zoom || 7,
       layers: [outdormapbox],
       tap: false,
-      renderer: L.canvas(),
+      renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
     });
@@ -180,6 +178,7 @@ const useMap = <TData extends object>(
       setSelectedMarkerWithCallback(null);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
+        highlightParking(hightlightedMarker.options.data.loc_id, false);
         setHightlightedMarker(null);
       }
 
@@ -377,7 +376,7 @@ const useMap = <TData extends object>(
             let view = parkingIcon;
             if (highlight) view = hightlightParkingIcon;
             layer.setIcon(view);
-            highlightedParking = layer;
+            setHighlightedParking(layer);
           }
         }
       });
@@ -551,6 +550,8 @@ const useMap = <TData extends object>(
           radius: highlightRadius,
         });
         setHightlightedMarker(e.sourceTarget);
+        highlightParking(hightlightedMarker?.options.data.loc_id, false);
+        highlightParking(e.sourceTarget.options.data.loc_id, true);
       }
     });
 
@@ -559,17 +560,6 @@ const useMap = <TData extends object>(
       mapRef.current?.removeEventListener('click');
       mapRef.current?.removeEventListener('pm:create');
     };
-  }, [hightlightedMarker]);
-
-  useEffect(() => {
-    if (hightlightedMarker?.options.data?.loc_id) {
-      highlightParking(hightlightedMarker?.options.data?.loc_id, true);
-    }
-
-    if (hightlightedMarker == null && highlightedParking && highlightedParking.options) {
-      highlightParking((highlightedParking?.options.data as Parking).loc_id, false);
-      highlightedParking = null;
-    }
   }, [hightlightedMarker]);
 
   useEffect(() => {
@@ -626,6 +616,7 @@ const useMap = <TData extends object>(
       displayAlert,
       setDisplayAlert,
     },
+    defaultContextmenuItems,
   };
 };
 

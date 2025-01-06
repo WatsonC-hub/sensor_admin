@@ -187,6 +187,7 @@ export const boreholeTableAtom = atomWithStorage('BoreholeTableState', {
 export const dataToShowAtom = atom({
   Algoritmer: true,
   Kontrolmålinger: true,
+  Godkendt: true,
   Nedbør: false,
   // 'Kvalitets stempel': false,
   'Korrigerede spring': false,

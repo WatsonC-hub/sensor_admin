@@ -82,7 +82,7 @@ const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
   const serviceFilter =
     filter.isCustomerService === 'indeterminate'
       ? true
-      : data.is_customer_service === filter.isCustomerService;
+      : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
   const activeFilter = data.active == true || data.active == null ? true : filter.showInactive;
   const keepLocationsWithoutNotifications =
     data.type === 'none' ? !filter.hideLocationsWithoutNotifications : true;
@@ -269,7 +269,9 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
-        onClose={handleClose}
+        onClose={() => {
+          handleClose();
+        }}
         sx={{
           '& .MuiPaper-root': {
             width: isTouch ? '90%' : 500,
@@ -279,8 +281,9 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
       >
         <FilterOptions
           filters={mapFilter}
+          onClose={handleClose}
           onSubmit={(filter) => {
-            handleClose();
+            // handleClose();
             setMapFilter(filter);
           }}
         />

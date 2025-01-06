@@ -67,7 +67,7 @@ const Map = ({clickCallback}: MapProps) => {
     store.setLocationValue,
   ]);
 
-  const [iotAccess, boreholeAccess, superUser] = authStore((state) => [
+  const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
     state.superUser,
     state.iotAccess,
     state.boreholeAccess,
@@ -132,6 +132,7 @@ const Map = ({clickCallback}: MapProps) => {
       type,
     },
     warning: {displayAlert, setDisplayAlert},
+    defaultContextmenuItems,
   } = useMap('test', data, contextmenuItems, clickCallback);
 
   // useEffect(() => {
@@ -225,11 +226,11 @@ const Map = ({clickCallback}: MapProps) => {
         text: 'divider',
         separator: true,
       },
-      ...map!.options.contextmenuItems.slice(2),
+      ...defaultContextmenuItems,
     ];
 
     marker.bindContextMenu({
-      contextmenu: superUser,
+      contextmenu: true,
       contextmenuInheritItems: false,
       contextmenuItems: [...locationMenu],
     });

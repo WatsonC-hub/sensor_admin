@@ -1,6 +1,6 @@
 import {TextField, TextFieldProps} from '@mui/material';
 import moment from 'moment';
-import {ChangeEvent} from 'react';
+import {ChangeEvent, FocusEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
 
 export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
@@ -10,9 +10,7 @@ export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & 
   rules?: any;
   transform?: (value: any) => any;
   onChangeCallback?: (value: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
-  onBlurCallback?: (
-    value: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>
-  ) => void;
+  onBlurCallback?: (value: FocusEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   type?: string;
 };
 

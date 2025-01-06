@@ -1,4 +1,4 @@
-import SaveIcon from '@mui/icons-material/Save';
+import {CloseOutlined, RestartAlt} from '@mui/icons-material';
 import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
 import {RESET} from 'jotai/utils';
 import React from 'react';
@@ -16,9 +16,10 @@ import {authStore} from '~/state/store';
 interface FilterOptionsProps {
   filters: Filter;
   onSubmit: (filter: Filter | typeof RESET) => void;
+  onClose: () => void;
 }
 
-const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
+const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
   const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
     state.boreholeAccess,
     state.iotAccess,
@@ -53,6 +54,7 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
         name="freeText"
         label="Fritekst filtrering"
         placeholder="Indtast filtreringstekst..."
+        onBlurCallback={() => formMethods.handleSubmit(submit)()}
       />
       <Divider />
       <Grid container spacing={2}>
@@ -62,33 +64,17 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
               <u>Boringer</u>
             </Typography>
 
-            {/* <FormCheckbox
-            name="borehole.hasControlProgram"
-            label="Kun pejleprogram"
-            includeInderterminate
-          /> */}
-
             <FormToggleGroup
               name="borehole.hasControlProgram"
               label="Del af pejleprogram"
               noSelectValue={'indeterminate'}
+              onChangeCallback={formMethods.handleSubmit(submit)}
               values={[
                 {label: <Typography>Ja</Typography>, value: true},
                 // {label: <RemoveIcon />, value: 'indeterminate'},
                 {label: <Typography>Nej</Typography>, value: false},
               ]}
             />
-
-            {/* <FormControlLabel
-            control={
-              <Controller
-                control={formMethods.control}
-                name="borehole.hasControlProgram"
-                render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
-              />
-            }
-            label="Kun pejleprogram"
-          /> */}
           </Grid>
         )}
         {iotAccess && (
@@ -107,6 +93,7 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
               name="sensor.isCustomerService"
               label="Serviceres af kunden"
               noSelectValue={'indeterminate'}
+              onChangeCallback={formMethods.handleSubmit(submit)}
               values={[
                 {label: <Typography>Ja</Typography>, value: true},
                 // {label: <RemoveIcon />, value: 'indeterminate'},
@@ -118,7 +105,16 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
                 <Controller
                   control={formMethods.control}
                   name="sensor.showInactive"
-                  render={({field: {value, ...field}}) => <Checkbox {...field} checked={!!value} />}
+                  render={({field: {value, onChange, ...field}}) => (
+                    <Checkbox
+                      {...field}
+                      onChange={(e) => {
+                        onChange(e);
+                        formMethods.handleSubmit(submit)();
+                      }}
+                      checked={!!value}
+                    />
+                  )}
                 />
               }
               label={
@@ -137,7 +133,11 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
               }
             />
             {superUser && (
-              <FormToggleSwitch name="sensor.isSingleMeasurement" label="Vis kun enkeltmålinger" />
+              <FormToggleSwitch
+                name="sensor.isSingleMeasurement"
+                label="Vis kun enkeltmålinger"
+                onChangeCallback={formMethods.handleSubmit(submit)}
+              />
             )}
             {superUser && (
               <FormToggleSwitch
@@ -155,7 +155,10 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
           render={({field: {onChange, value}}) => (
             <LocationGroups
               value={value}
-              setValue={onChange}
+              setValue={(value) => {
+                onChange(value);
+                formMethods.handleSubmit(submit)();
+              }}
               label="Filtrer grupper"
               disableLink
               creatable={false}
@@ -171,16 +174,12 @@ const FilterOptions = ({filters, onSubmit}: FilterOptionsProps) => {
           gap: 1,
         }}
       >
-        <Button bttype="tertiary" onClick={reset}>
+        <Button bttype="tertiary" onClick={reset} startIcon={<RestartAlt />}>
           Nulstil
         </Button>
 
-        <Button
-          bttype="primary"
-          onClick={formMethods.handleSubmit(submit)}
-          startIcon={<SaveIcon />}
-        >
-          Gem
+        <Button bttype="primary" onClick={onClose} startIcon={<CloseOutlined />}>
+          Luk
         </Button>
       </Box>
     </FormProvider>

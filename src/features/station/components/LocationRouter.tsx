@@ -1,4 +1,3 @@
-import {Person} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
@@ -150,7 +149,6 @@ export default function LocationRouter() {
                       title: 'Til QA',
                       onClick: () => {
                         adminKvalitetssikring(params.ts_id ? parseInt(params.ts_id) : -1);
-                        // navigate(`/admin/kvalitetssikring/${params.ts_id}`);
                       },
                       icon: <AutoGraphIcon />,
                     },
@@ -161,14 +159,6 @@ export default function LocationRouter() {
                 icon: <AddIcon />,
                 onClick: () => {
                   createStamdata();
-                  // navigate('/field/stamdata');
-                },
-              },
-              {
-                title: 'Til bruger profil',
-                icon: <Person />,
-                onClick: () => {
-                  window.location.href = 'https://admin.watsonc.dk/profile';
                 },
               },
             ]}
@@ -179,7 +169,6 @@ export default function LocationRouter() {
       <main
         style={{
           flexGrow: 1,
-          // padding: theme.spacing(0.5),
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>

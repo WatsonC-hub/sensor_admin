@@ -297,6 +297,7 @@ export type QaAlgorithms = {
   parameter_values: Record<string, any>;
   disabled: boolean;
   description: string;
+  runs_as_qa_algorithm: boolean;
 };
 
 export type QaAlgorithmParameters = {

@@ -73,6 +73,7 @@ const WizardConfirmTimeseries = ({
   const {watch, handleSubmit, setValue} = formMethods;
 
   const qaStampWatch = watch('level');
+  const enddateWatch = watch('date');
 
   useEffect(() => {
     if (qaStampWatch !== qaStamp) {
@@ -97,7 +98,6 @@ const WizardConfirmTimeseries = ({
   }, [selectedQaData]);
 
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
-    console.log(certifyQa);
     const payload = {
       path: `${metadata?.ts_id}`,
       data: certifyQa,
@@ -170,11 +170,6 @@ const WizardConfirmTimeseries = ({
               gap={1}
             >
               <FormInput
-                // value={
-                //   selectedQaData
-                //     ? moment(selectedQaData.date).format('YYYY-MM-DD HH:mm')
-                //     : undefined
-                // }
                 name={'startDate'}
                 type={selectedQaData ? 'datetime-local' : undefined}
                 variant="outlined"
@@ -190,7 +185,7 @@ const WizardConfirmTimeseries = ({
               />
               <FormInput
                 name="date"
-                label="Godkendt til"
+                label="Godkend til"
                 type={'datetime-local'}
                 disabled={!initiateConfirmTimeseries}
                 style={{
@@ -247,6 +242,10 @@ const WizardConfirmTimeseries = ({
               <Button
                 bttype="primary"
                 startIcon={<Save />}
+                disabled={
+                  moment(selectedQaData?.date).isAfter(enddateWatch) &&
+                  selectedQaData?.date != undefined
+                }
                 onClick={handleSubmit(handleSave, (e) => {
                   console.log(e);
                 })}

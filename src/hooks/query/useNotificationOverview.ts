@@ -30,6 +30,7 @@ export interface Notification {
   loctype_id: number;
   calculated: boolean | null;
   type: 'task' | 'notification' | 'none';
+  parking_id: number;
 }
 
 export interface NotificationMap extends Notification {
