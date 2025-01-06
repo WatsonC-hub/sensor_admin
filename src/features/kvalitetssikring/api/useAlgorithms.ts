@@ -90,7 +90,7 @@ export const useAlgorithms = (ts_id: string | undefined) => {
       queryClient.invalidateQueries({
         queryKey: ['algorithms', ts_id],
       });
-      toast.success('Algorithms ændret');
+      toast.success('Ændringer gemt');
     },
   });
   const del = useMutation({
