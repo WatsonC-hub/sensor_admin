@@ -62,7 +62,11 @@ const TasksOverview = () => {
 
       onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
 
-      if (id) setSelectedTask(id);
+      if (id) {
+        setSelectedTask(id);
+      } else {
+        setSelectedTask(null);
+      }
     }
   };
 

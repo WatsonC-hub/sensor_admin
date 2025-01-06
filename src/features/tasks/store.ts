@@ -16,7 +16,7 @@ type TaskState = {
   setShownListTaskIds: (ids: ID[]) => void;
   // setShownTasksByPredicate: (predicate: () => boolean) => void;
   setSelectedLocIds: (loc_ids: Array<number>) => void;
-  setSelectedTask: (id: ID) => void;
+  setSelectedTask: (id: ID | null) => void;
   resetFilter: () => void;
   resetState: () => void;
 };
