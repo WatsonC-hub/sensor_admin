@@ -24,6 +24,11 @@ const TripTaskTable = ({tasks}: Props) => {
         size: 100,
       },
       {
+        header: 'Tidsserie navn',
+        accessorKey: 'ts_name',
+        size: 100,
+      },
+      {
         header: 'Status',
         accessorKey: 'status_name',
         size: 100,

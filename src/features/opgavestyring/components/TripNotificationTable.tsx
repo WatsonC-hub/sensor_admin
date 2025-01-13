@@ -20,6 +20,11 @@ const TripNotificationTable = ({notifications}: Props) => {
         size: 100,
       },
       {
+        header: 'Tidsserie navn',
+        accessorKey: 'ts_name',
+        size: 100,
+      },
+      {
         header: 'Tidsserie type',
         accessorKey: 'tstype_name',
         size: 100,

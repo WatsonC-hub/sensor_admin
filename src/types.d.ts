@@ -442,6 +442,7 @@ export type TaskNotifications = {
   ts_id: number;
   loc_name: string;
   tstype_name: string;
+  ts_name: string;
   notification_id: number;
   opgave: string;
   color: string;
@@ -455,6 +456,7 @@ export type LocationTasks = {
   assigned_to: string;
   loc_name: string;
   tstype_name: string;
+  ts_name: string;
   due_date: string;
   name: string;
   description: string;

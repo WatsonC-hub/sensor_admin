@@ -11,7 +11,7 @@ type Props = {
   units: Array<TaskUnits> | undefined;
 };
 
-const TripContactTable = ({units}: Props) => {
+const TripUnitTable = ({units}: Props) => {
   const columns = useMemo<MRT_ColumnDef<TaskUnits>[]>(
     () => [
       {
@@ -101,4 +101,4 @@ const TripContactTable = ({units}: Props) => {
   );
 };
 
-export default TripContactTable;
+export default TripUnitTable;
