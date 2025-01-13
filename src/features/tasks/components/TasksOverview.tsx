@@ -11,7 +11,7 @@ import TaskCalendar from '~/features/tasks/components/TaskCalendar';
 // import TaskMap from '~/features/tasks/components/TaskMap';
 import TaskTable from '~/features/tasks/components/TaskTable';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
-import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
+// import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import Map from '~/pages/field/overview/Map';
 import {BoreholeMapData} from '~/types';
 
@@ -49,7 +49,7 @@ const TasksOverview = () => {
     setTabValue(newValue);
   };
 
-  const [{onColumnFiltersChange}] = useStatefullTableAtom('taskTableState');
+  // const [{onColumnFiltersChange}] = useStatefullTableAtom('taskTableState');
 
   const clickCallback = (data: NotificationMap | BoreholeMapData) => {
     if ('loc_id' in data) {
@@ -59,7 +59,7 @@ const TasksOverview = () => {
       // setShownMapTaskIds(task_ids);
       const id = activeTasks.find((task) => task.loc_id === data.loc_id)?.id;
 
-      onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
+      // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
 
       if (id) {
         setSelectedTask(id);
