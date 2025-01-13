@@ -4,15 +4,15 @@ import React, {useMemo} from 'react';
 
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {TaskContact} from '~/types';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+import {TaskNotifications} from '~/types';
 
 type Props = {
-  contacts: Array<TaskContact> | undefined;
+  notifications: Array<TaskNotifications> | undefined;
 };
 
-const TripContactTable = ({contacts}: Props) => {
-  console.log(contacts);
-  const columns = useMemo<MRT_ColumnDef<TaskContact>[]>(
+const TripNotificationTable = ({notifications}: Props) => {
+  const columns = useMemo<MRT_ColumnDef<TaskNotifications>[]>(
     () => [
       {
         header: 'Lokation',
@@ -20,35 +20,41 @@ const TripContactTable = ({contacts}: Props) => {
         size: 100,
       },
       {
-        header: 'Navn',
-        accessorKey: 'navn',
+        header: 'Tidsserie type',
+        accessorKey: 'tstype_name',
         size: 100,
       },
       {
-        header: 'Rolle',
-        accessorKey: 'contact_role_name',
+        header: 'Opgave',
+        accessorKey: 'opgave',
         size: 100,
       },
       {
-        header: 'Tlf. nummer',
-        accessorKey: 'telefonnummer',
+        header: 'Kritikalitet',
+        accessorKey: 'color',
         size: 100,
-      },
-      {
-        header: 'Email',
-        accessorKey: 'email',
-        size: 100,
-      },
-      {
-        header: 'Kommentar',
-        accessorKey: 'comment',
-        size: 100,
+        Cell: ({row}) => {
+          return (
+            <Box>
+              <NotificationIcon
+                key={Math.random()}
+                iconDetails={{
+                  color: row.original.color,
+                  flag: row.original.flag,
+                  opgave: row.original.opgave,
+                  notification_id: row.original.notification_id,
+                }}
+                enableTooltip={true}
+              />
+            </Box>
+          );
+        },
       },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<TaskContact>> = useMemo(
+  const options: Partial<MRT_TableOptions<TaskNotifications>> = useMemo(
     () => ({
       enableFullScreenToggle: false,
       enableGlobalFilter: false,
@@ -82,9 +88,9 @@ const TripContactTable = ({contacts}: Props) => {
     []
   );
 
-  const table = useTable<TaskContact>(
+  const table = useTable<TaskNotifications>(
     columns,
-    contacts,
+    notifications,
     options,
     undefined,
     TableTypes.TABLE,
@@ -98,4 +104,4 @@ const TripContactTable = ({contacts}: Props) => {
   );
 };
 
-export default TripContactTable;
+export default TripNotificationTable;

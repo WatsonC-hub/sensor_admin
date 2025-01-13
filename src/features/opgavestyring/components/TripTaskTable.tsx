@@ -1,45 +1,56 @@
 import {Box} from '@mui/material';
-import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
+import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {TaskRessources} from '~/types';
+import {LocationTasks} from '~/types';
 
 type Props = {
-  ressources: Array<TaskRessources> | undefined;
+  tasks: Array<LocationTasks> | undefined;
 };
 
-const TripContactTable = ({ressources}: Props) => {
-  const columns = useMemo<MRT_ColumnDef<TaskRessources>[]>(
+const TripTaskTable = ({tasks}: Props) => {
+  const columns = useMemo<MRT_ColumnDef<LocationTasks>[]>(
     () => [
       {
-        header: 'Kategori',
-        accessorKey: 'kategori',
-        size: 150,
-        grow: false,
+        header: 'Lokation',
+        accessorKey: 'loc_name',
+        size: 100,
       },
       {
-        header: 'navn',
-        accessorKey: 'navn',
-        size: 150,
-        enableGrouping: false,
-        grow: false,
+        header: 'Tidsserie type',
+        accessorKey: 'tstype_name',
+        size: 100,
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status_name',
+        size: 100,
+      },
+      {
+        header: 'Ansvarlig',
+        accessorKey: 'display_name',
+        size: 100,
+      },
+      {
+        header: 'Due date',
+        accessorKey: 'due_date',
+        size: 100,
+      },
+      {
+        header: 'Beskrivelse',
+        accessorKey: 'description',
+        size: 100,
       },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<TaskRessources>> = useMemo(
+  const options: Partial<MRT_TableOptions<LocationTasks>> = useMemo(
     () => ({
-      defaultColumn: {
-        grow: 1,
-        minSize: 200,
-        size: 200,
-      },
       enableFullScreenToggle: false,
       enableGlobalFilter: false,
-      positionExpandColumn: 'first',
       enableColumnActions: false,
       enableColumnFilters: false,
       enablePagination: false,
@@ -48,15 +59,11 @@ const TripContactTable = ({ressources}: Props) => {
       enableStickyHeader: false,
       enableMultiSort: false,
       enableFilters: false,
-      groupedColumnMode: 'remove',
       enableGlobalFilterRankedResults: false,
       muiTableContainerProps: {},
-      enableGrouping: true,
+      enableGrouping: false,
       enableTopToolbar: false,
-      enableFacetedValues: true,
       enableBottomToolbar: false,
-      enableExpanding: false,
-      enableExpandAll: false,
       muiTableHeadCellProps: {
         sx: {
           m: 0,
@@ -70,20 +77,13 @@ const TripContactTable = ({ressources}: Props) => {
           whiteSpace: 'pre-line',
         },
       },
-      state: {
-        grouping: ['kategori'],
-      },
-      initialState: {
-        expanded: true,
-        grouping: ['kategori'],
-      },
     }),
     []
   );
 
-  const table = useTable<TaskRessources>(
+  const table = useTable<LocationTasks>(
     columns,
-    ressources,
+    tasks,
     options,
     undefined,
     TableTypes.TABLE,
@@ -97,4 +97,4 @@ const TripContactTable = ({ressources}: Props) => {
   );
 };
 
-export default TripContactTable;
+export default TripTaskTable;

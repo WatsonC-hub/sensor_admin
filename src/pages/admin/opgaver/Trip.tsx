@@ -1,4 +1,4 @@
-import {Box, Divider, Tab, Tabs, Typography} from '@mui/material';
+import {Box, Divider, Tab, Tabs} from '@mui/material';
 import {parseAsArrayOf, parseAsStringLiteral, parseAsInteger, useQueryState} from 'nuqs';
 import React from 'react';
 import {useParams} from 'react-router-dom';
@@ -9,7 +9,6 @@ import {useTaskManagement} from '~/features/opgavestyring/api/useOpgaveStyring';
 import TripOverview from '~/features/opgavestyring/components/TripOverview';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
-import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import TabPanel from '~/pages/field/overview/TabPanel';
 
 const tabValues = ['forberedelse', 'overblik'] as const;
@@ -35,7 +34,7 @@ const Trip = () => {
   const {data} = useTaskManagement({loc_ids: loc_ids.length > 0 ? loc_ids : queryLocIds});
 
   return (
-    <>
+    <Box mb={2}>
       <NavBar />
       <Box
         display={'flex'}
@@ -70,32 +69,7 @@ const Trip = () => {
           <TripOverview />
         </TabPanel>
       </Box>
-      <Typography>NOTIFICATIONS</Typography>
-      {data?.notifications.map((notification) => (
-        <Box display={'flex'} flexDirection={'row'} key={Math.random()} gap={2}>
-          <NotificationIcon
-            key={Math.random()}
-            iconDetails={{
-              color: notification.color,
-              flag: notification.flag,
-              opgave: notification.opgave,
-              notification_id: notification.notification_id,
-            }}
-            enableTooltip={true}
-          />
-          <Typography my={0.5} key={Math.random()}>
-            {JSON.stringify(notification)}
-          </Typography>
-        </Box>
-      ))}
-      {data?.tasks.map((task) => (
-        <Box display={'flex'} flexDirection={'row'} key={Math.random()} gap={2}>
-          <Typography my={0.5} key={Math.random()}>
-            {JSON.stringify(task)}
-          </Typography>
-        </Box>
-      ))}
-    </>
+    </Box>
   );
 };
 

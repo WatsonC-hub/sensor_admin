@@ -406,8 +406,8 @@ export type TaskContact = {
   email: Optional[string];
   comment: Optional[string];
   contact_role_name: string;
-  loc_ids: List[number];
-  loc_names: List[string];
+  loc_id: number;
+  loc_name: string;
 };
 
 export type TaskLocationAccess = {
@@ -440,6 +440,8 @@ export type TaskUnits = {
 export type TaskNotifications = {
   loc_id: number;
   ts_id: number;
+  loc_name: string;
+  tstype_name: string;
   notification_id: number;
   opgave: string;
   color: string;
@@ -451,6 +453,8 @@ export type LocationTasks = {
   ts_id: number;
   status_id: number;
   assigned_to: string;
+  loc_name: string;
+  tstype_name: string;
   due_date: string;
   name: string;
   description: string;
