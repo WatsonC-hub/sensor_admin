@@ -3,6 +3,7 @@ import React from 'react';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
+import {useTasks} from '../api/useTasks';
 import {Taskitinerary} from '../types';
 
 import Droppable from './Droppable';
@@ -13,6 +14,9 @@ interface TaskItineraryCardProps {
 
 const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
   const {taskManagement} = useNavigationFunctions();
+  const {
+    getUsers: {data: users},
+  } = useTasks();
   return (
     <Droppable
       onDrop={(e) => {
@@ -29,8 +33,8 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
             alignContent: 'center',
             borderRadius: 2,
             boxShadow: 8,
-            width: '250px',
-            height: '250px',
+            width: '200px',
+            height: '125px',
             backgroundColor: isDraggingOver ? 'secondary.light' : 'primary.light',
             color: 'primary.contrastText',
             cursor: 'pointer',
@@ -40,8 +44,11 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
           }}
         >
           <CardContent>
-            <Typography variant="h5" component="div">
+            <Typography variant="h6" component="div">
               {itinerary.due_date}
+            </Typography>
+            <Typography>
+              {users?.find((user) => user.id === itinerary.assigned_to)?.display_name}
             </Typography>
           </CardContent>
         </Card>

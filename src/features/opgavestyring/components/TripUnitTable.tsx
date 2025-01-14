@@ -20,15 +20,16 @@ const TripUnitTable = ({units}: Props) => {
         size: 100,
       },
       {
-        header: 'Sensor',
-        accessorKey: 'sensorinfo',
-        size: 100,
-      },
-      {
         header: 'Tidsserie navn',
         accessorKey: 'name',
         size: 100,
       },
+      {
+        header: 'Sensor',
+        accessorKey: 'sensorinfo',
+        size: 100,
+      },
+
       {
         header: 'Tidsserie type',
         accessorKey: 'tstype_name',

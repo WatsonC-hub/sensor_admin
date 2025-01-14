@@ -14,6 +14,11 @@ const TripContactTable = ({keys}: Props) => {
   const columns = useMemo<MRT_ColumnDef<TaskLocationAccess>[]>(
     () => [
       {
+        header: 'Lokation',
+        accessorKey: 'loc_name',
+        size: 100,
+      },
+      {
         header: 'Navn',
         accessorKey: 'navn',
         size: 100,
@@ -36,11 +41,6 @@ const TripContactTable = ({keys}: Props) => {
       {
         header: 'Kode',
         accessorKey: 'kode',
-        size: 100,
-      },
-      {
-        header: 'Lokation',
-        accessorKey: 'loc_name',
         size: 100,
       },
     ],

@@ -450,6 +450,7 @@ export type TaskNotifications = {
 };
 
 export type LocationTasks = {
+  id: number;
   loc_id: number;
   ts_id: number;
   status_id: number;

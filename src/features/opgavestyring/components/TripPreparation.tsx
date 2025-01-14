@@ -12,9 +12,10 @@ import TripTaskTable from './TripTaskTable';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
+  trip_id: string | undefined;
 }
 
-const TripPreparation = ({data}: TripPreparationProps) => {
+const TripPreparation = ({data, trip_id}: TripPreparationProps) => {
   return (
     <Box display={'flex'} flexDirection={'column'} gap={2}>
       <Typography ml={2} variant="h5">
@@ -45,7 +46,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
       <Typography ml={2} variant="h5">
         Opgaver
       </Typography>
-      <TripTaskTable tasks={data?.tasks} />
+      <TripTaskTable tasks={data?.tasks} trip_id={trip_id} />
     </Box>
   );
 };

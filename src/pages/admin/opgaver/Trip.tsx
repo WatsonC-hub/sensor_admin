@@ -63,7 +63,7 @@ const Trip = () => {
         </Tabs>
         <Divider />
         <TabPanel value={tabValue} index="forberedelse">
-          <TripPreparation data={data} />
+          <TripPreparation data={data} trip_id={params.trip_id} />
         </TabPanel>
         <TabPanel value={tabValue} index="overblik">
           <TripOverview />

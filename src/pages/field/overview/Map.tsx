@@ -58,6 +58,49 @@ interface MapProps {
   clickCallback?: (data: NotificationMap | BoreholeMapData) => void;
 }
 
+// type TaskStyling = 'upcoming' | '';
+// const taskStyleAtom = atom<TaskStyling>('');
+
+// const Control = () => {
+//   const [selectedStyle, setSelectedStyle] = useAtom(taskStyleAtom);
+
+//   return (
+//     <TextField
+//       select
+//       size="small"
+//       value={selectedStyle}
+//       label={'Vælg filtrering...'}
+//       sx={{width: 200, backgroundColor: 'white'}}
+//       onChange={(e) => {
+//         const value = e.target.value as TaskStyling;
+//         setSelectedStyle(value);
+//         console.log(value);
+//       }}
+//     >
+//       <MenuItem value={''}>Ingen filtrering</MenuItem>
+//       {/* <MenuItem value={'dato'}>Farvelæg på dato</MenuItem> */}
+//       <MenuItem value={'ansvarlig'}>Farvelæg mine opgaver</MenuItem>
+//     </TextField>
+//   );
+// };
+
+// const select: Partial<L.Control.StyleSelect> = {
+//   onAdd: function () {
+//     const div = L.DomUtil.create('div');
+
+//     const root = createRoot(div);
+//     root.render(<Control />);
+
+//     return div;
+//   },
+// };
+
+// L.Control.StyleSelect = L.Control.extend(select);
+
+// L.control.StyleSelect = function (opts: L.ControlOptions) {
+//   return new L.Control.StyleSelect(opts);
+// };
+
 const Map = ({clickCallback}: MapProps) => {
   const {createStamdata} = useNavigationFunctions();
   const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
@@ -66,6 +109,9 @@ const Map = ({clickCallback}: MapProps) => {
     store.setLocation,
     store.setLocationValue,
   ]);
+  // const user_id = authStore().user_id;
+  // const {hiddenTasks, shownTasks} = useTaskStore();
+  // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
 
   const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
     state.superUser,
@@ -115,6 +161,38 @@ const Map = ({clickCallback}: MapProps) => {
       }
     );
 
+  // const shownByLocid = useMemo(() => {
+  //   return Object.values(
+  //     shownTasks
+  //       .filter((task) => task.status_category != 'closed')
+  //       .reduce(
+  //         (acc, task) => {
+  //           if (!acc[task.loc_id]) {
+  //             acc[task.loc_id] = [];
+  //           }
+  //           acc[task.loc_id].push(task);
+  //           return acc;
+  //         },
+  //         {} as Record<number, Task[]>
+  //       )
+  //   );
+  // }, [shownTasks]);
+
+  // const hiddenByLocid = useMemo(() => {
+  //   return Object.values(
+  //     hiddenTasks.reduce(
+  //       (acc, task) => {
+  //         if (!acc[task.loc_id]) {
+  //           acc[task.loc_id] = [];
+  //         }
+  //         acc[task.loc_id].push(task);
+  //         return acc;
+  //       },
+  //       {} as Record<number, Task[]>
+  //     )
+  //   );
+  // }, [hiddenTasks]);
+
   const {
     map,
     selectedMarker,
@@ -134,6 +212,8 @@ const Map = ({clickCallback}: MapProps) => {
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
   } = useMap('test', data, contextmenuItems, clickCallback);
+
+  // const {setShownMapTaskIds} = useTaskStore();
 
   // useEffect(() => {
   //   if (selectedMarker && clickCallback) {
@@ -368,6 +448,47 @@ const Map = ({clickCallback}: MapProps) => {
       }
     });
   }, [filteredData]);
+
+  // useEffect(() => {
+  //   if (markerLayer) {
+  //     markerLayer.clearLayers();
+
+  //     hiddenByLocid.forEach((tasks) => {
+  //       L.circleMarker([tasks[0].latitude, tasks[0].longitude], {
+  //         ...defaultCircleMarkerStyle,
+  //         title: tasks[0].name,
+  //         fillColor: 'grey',
+  //         data: tasks,
+  //         fillOpacity: 0.3,
+  //         opacity: 0.3,
+  //       })
+  //         .addTo(markerLayer)
+  //         .bindPopup(tasks.map((task) => task.name).join(', '));
+  //     });
+
+  //     shownByLocid.forEach((tasks) => {
+  //       const notification = filteredData.find((data) => {
+  //         if ('loc_id' in data) {
+  //           const filteredTasks = tasks.filter(
+  //             (task) =>
+  //               moment(task.due_date).isBefore(moment().toDate()) ||
+  //               task.status_category === 'closed' ||
+  //               task.assigned_to !== user_id
+  //           );
+  //           const notification = (data as NotificationMap).obsNotifications.find((notification) => {
+  //             if (
+  //               filteredTasks.map((task) => task.ts_id).find((id) => id === notification.ts_id) !==
+  //               undefined
+  //             )
+  //               return notification;
+  //           });
+  //           return notification ? true : false;
+  //         }
+  //       });
+  //       if (notification && 'loc_id' in notification) createLocationMarker(notification);
+  //     });
+  //   }
+  // }, [shownByLocid, hiddenByLocid, markerLayer, selectedStyle]);
 
   return (
     <>

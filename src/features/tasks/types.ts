@@ -192,3 +192,7 @@ export type PatchTaskitinerary = Partial<Omit<Taskitinerary, 'id' | 'created_at'
 export type AddTasksToitinerary = {
   task_ids: ID[];
 };
+
+export type DeleteTaskFromItinerary = {
+  path: string;
+};

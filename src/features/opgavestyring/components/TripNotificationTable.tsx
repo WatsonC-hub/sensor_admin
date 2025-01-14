@@ -17,7 +17,7 @@ const TripNotificationTable = ({notifications}: Props) => {
       {
         header: 'Lokation',
         accessorKey: 'loc_name',
-        size: 100,
+        size: 20,
       },
       {
         header: 'Tidsserie navn',

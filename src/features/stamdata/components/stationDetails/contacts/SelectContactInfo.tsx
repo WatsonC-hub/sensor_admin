@@ -39,7 +39,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
 
   const {post: postContact, useSearchContact} = useContactInfo(loc_id);
 
-  const {data} = useSearchContact(loc_id, search);
+  const {data} = useSearchContact(search);
 
   const handleClose = () => {
     reset(initialContactData);

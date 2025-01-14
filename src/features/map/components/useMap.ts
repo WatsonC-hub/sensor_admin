@@ -6,11 +6,13 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
 import L from 'leaflet';
 import '~/css/leaflet.css';
+import {LassoControl, LassoHandlerFinishedEvent} from 'leaflet-lasso';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {authStore, parkingStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
@@ -83,6 +85,8 @@ const useMap = <TData extends object>(
     put: putParkering,
     del: deleteParkering,
   } = useParkering();
+
+  const {shownTasks, setShownMapTaskIds} = useTaskStore();
 
   const defaultContextmenuItems: Array<L.ContextMenuItem> = [
     {
@@ -165,6 +169,30 @@ const useMap = <TData extends object>(
         },
       })
       .addTo(map);
+
+    // const selectControl = new L.Control.StyleSelect({position: 'topright'});
+    // map.addControl(selectControl);
+    const lassoControl = new LassoControl({position: 'topleft'});
+    map.addControl(lassoControl);
+    map.on('lasso.finished', (event) => {
+      console.log(
+        (event as LassoHandlerFinishedEvent).layers.map(
+          (layer) => layer.options as L.CircleMarkerOptions<TData>
+        )
+      );
+      const ids = new Set(
+        (event as LassoHandlerFinishedEvent).layers
+          .filter((layer) => (layer.options as L.CircleMarkerOptions<TData>).data !== undefined)
+          .map((layer) => {
+            const data = (layer.options as L.CircleMarkerOptions<TData>).data;
+            if (data && 'ts_id' in data) return data?.ts_id;
+          })
+          .flat()
+      );
+      const task_ids = shownTasks.filter((task) => ids.has(task.ts_id)).map((task) => task.id);
+
+      setShownMapTaskIds(task_ids);
+    });
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);

@@ -5,17 +5,26 @@ import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
 import {APIError} from '~/queryClient';
 
-import type {ID, PostTaskitinerary, Task, Taskitinerary} from '../types';
+import type {ID, PostTaskitinerary, Task, Taskitinerary, DeleteTaskFromItinerary} from '../types';
 
-type Mutation<TData> = {
-  path: string;
-  data: TData;
-};
+// type Mutation<TData> = {
+//   path: string;
+//   data: TData;
+// };
 
 export const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
   mutationFn: async (mutation_data: PostTaskitinerary) => {
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries`, mutation_data);
+    return result;
+  },
+};
+
+export const deleteTaskFromItineraryOptions = {
+  mutationKey: ['taskItinerary_delete'],
+  mutationFn: async (mutation_data: DeleteTaskFromItinerary) => {
+    const {path} = mutation_data;
+    const {data: result} = await apiClient.delete(`/sensor_admin/tasks/${path}`);
     return result;
   },
 };
@@ -52,10 +61,21 @@ export const useTaskItinerary = (id?: ID) => {
     },
   });
 
+  const deleteTaskFromitinerary = useMutation<unknown, APIError, DeleteTaskFromItinerary>({
+    ...deleteTaskFromItineraryOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['itineraries', id],
+      });
+      toast.success('opgave slettet fra tur');
+    },
+  });
+
   return {
     get,
     post,
     getItineraryTasks,
+    deleteTaskFromitinerary,
 
     // getProjects,
   };

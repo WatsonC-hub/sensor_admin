@@ -252,7 +252,6 @@ export const useTable = <TData extends MRT_RowData>(
 
   if (isFirstRender) {
     // Sets the columnFilterFns on the first render to avoid a bug with the columnFilterFns not being set correctly
-    console.log('filterfnstate', table.getState().columnFilterFns);
     table.setColumnFilterFns((prev) => ({
       ...prev,
       ...(state?.state?.columnFilterFns ?? {}),

@@ -1,8 +1,9 @@
 import {Box, Grid, Typography} from '@mui/material';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 
@@ -14,6 +15,8 @@ import TaskItineraryCard from './TaskItiniaryCard';
 
 const TaskItiniaries = () => {
   const [ids, setIds] = React.useState<string[]>([]);
+  const {isMobile} = useBreakpoints();
+  const [isColumn, setIsColumn] = useState<boolean>(false);
   const {selectedLocIds, tasks} = useTaskStore();
   const [{state}] = useStatefullTableAtom('taskTableState');
   const {taskManagementSearch} = useNavigationFunctions();
@@ -21,6 +24,10 @@ const TaskItiniaries = () => {
     get: {data},
     post,
   } = useTaskItinerary();
+
+  useEffect(() => {
+    setIsColumn(isMobile);
+  }, [isMobile]);
 
   return (
     <Box>
@@ -34,8 +41,8 @@ const TaskItiniaries = () => {
       >
         Se tur ud fra selection
       </Button>
-      <Grid container spacing={8} p={2}>
-        <Grid item xs={10} sm={5}>
+      <Grid container p={1} gap={1} display={'flex'} flexDirection={isColumn ? 'column' : 'row'}>
+        <Grid item xs={10} sm={1.5}>
           <Droppable<Task>
             onDrop={(e, data) => {
               e.preventDefault();
@@ -74,8 +81,8 @@ const TaskItiniaries = () => {
                   }
                 }}
                 sx={{
-                  width: '250px',
-                  height: '250px',
+                  width: '125px',
+                  height: '100px',
                   textAlign: 'center',
                   justifyContent: 'center',
                   alignContent: 'center',
@@ -98,7 +105,14 @@ const TaskItiniaries = () => {
             )}
           </Droppable>
         </Grid>
-        <Grid item xs={10} sm={5}>
+        <Grid
+          item
+          xs={10}
+          sm={10}
+          gap={2}
+          display={'flex'}
+          flexDirection={isColumn ? 'column' : 'row'}
+        >
           {data?.map((itinerary) => <TaskItineraryCard key={itinerary.id} itinerary={itinerary} />)}
         </Grid>
       </Grid>
