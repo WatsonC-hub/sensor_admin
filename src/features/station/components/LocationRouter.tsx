@@ -120,11 +120,9 @@ export default function LocationRouter() {
         </IconButton>
 
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Tooltip title={data?.[0].loc_name} arrow enterTouchDelay={0}>
-            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-              {data?.[0].loc_name}
-            </Typography>
-          </Tooltip>
+          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            {data?.[0].loc_name}
+          </Typography>
           {hasTimeseries ? (
             <MinimalSelect
               locid={params.locid ? parseInt(params.locid) : undefined}
