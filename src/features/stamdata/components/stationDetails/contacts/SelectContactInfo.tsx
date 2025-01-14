@@ -20,6 +20,7 @@ import {initialContactData} from '~/consts';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
+import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {ContactInfo} from '~/types';
 
 interface SelectContactInfoProps {
@@ -30,6 +31,7 @@ interface SelectContactInfoProps {
 const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [search, setSearch] = useState<string>('');
+  const deboundedSearch = useDebouncedValue(search, 500);
   const params = useParams();
 
   const {reset, handleSubmit} = useFormContext<InferContactInfo>();
@@ -39,7 +41,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
 
   const {useSearchContact, post: postContact} = useContactInfo(loc_id);
 
-  const {data} = useSearchContact(search);
+  const {data, isFetching} = useSearchContact(deboundedSearch);
 
   const handleClose = () => {
     reset(initialContactData);
@@ -83,6 +85,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
             <Grid item xs={12} sm={12}>
               <ExtendedAutocomplete<ContactInfo>
                 options={data ?? []}
+                loading={isFetching}
                 labelKey="navn"
                 onChange={(option) => {
                   if (option == null) {
@@ -104,17 +107,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
                 }}
                 selectValue={selectedContactInfo!}
                 filterOptions={(options, params) => {
-                  const {inputValue} = params;
-
-                  const filter = options.filter(
-                    (option) =>
-                      (option.navn &&
-                        option.navn.toLowerCase().includes(inputValue.toLowerCase())) ||
-                      (option.email &&
-                        option.email.toLowerCase().includes(inputValue.toLowerCase()))
-                  );
-
-                  return filter;
+                  return options;
                 }}
                 inputValue={search}
                 renderOption={(props, option) => {
