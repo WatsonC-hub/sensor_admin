@@ -91,6 +91,7 @@ export const RelatedTasksOptions = <TData>(
   enabled: loc_ids !== undefined && loc_ids !== null && loc_ids.length > 0,
 });
 
+// /location_related_tasks/{loc_id}
 export const useTasks = () => {
   const queryClient = useQueryClient();
   const setSelectedTask = taskStore((state) => state.setSelectedTask);

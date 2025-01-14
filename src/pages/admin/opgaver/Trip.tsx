@@ -5,7 +5,7 @@ import {useParams} from 'react-router-dom';
 
 import NavBar from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
-import {useTaskManagement} from '~/features/opgavestyring/api/useOpgaveStyring';
+import {useTaskManagement} from '~/features/opgavestyring/api/useTaskManagement';
 import TripOverview from '~/features/opgavestyring/components/TripOverview';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';

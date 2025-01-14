@@ -1,10 +1,12 @@
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
+import {Task} from '~/features/tasks/types';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+import {APIError} from '~/queryClient';
 import {useDrawerContext} from '~/state/contexts';
 
 interface SensorContentProps {
@@ -14,6 +16,10 @@ interface SensorContentProps {
 const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
   const {station, adminKvalitetssikring} = useNavigationFunctions();
+
+  // const get_location_tasks = useQuery<Task[], APIError>({
+  //   queryKey: ['location_tasks', loc_id],
+  // });
 
   const all_notifications = [...data.otherNotifications];
   const unique_stations = all_notifications
@@ -102,6 +108,7 @@ const SensorContent = ({data}: SensorContentProps) => {
                 );
               })}
           </Box>
+          <Typography variant="h6">Opgaver</Typography>
         </>
       )}
 
