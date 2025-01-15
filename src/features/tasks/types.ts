@@ -67,6 +67,7 @@ export type Task = {
   is_created: boolean;
   block_on_location: boolean;
   block_all: boolean;
+  itinerary_id: string;
 };
 
 export type DBTask = {

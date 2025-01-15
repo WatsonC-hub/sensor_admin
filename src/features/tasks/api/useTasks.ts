@@ -10,7 +10,7 @@ import {type Task, type PatchTask, type TaskUser, type TaskStatus, DBTask} from 
 
 type Mutation<TData> = {
   path: string;
-  data: TData;
+  data?: TData;
 };
 
 type UpdateNotification = {
@@ -189,7 +189,7 @@ export const useTasks = () => {
       queryClient.invalidateQueries({
         queryKey: ['tasks'],
       });
-      toast.success('Opgaver slettet');
+      toast.success('Opgave slettet');
     },
   });
 

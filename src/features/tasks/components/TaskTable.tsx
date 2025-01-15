@@ -10,6 +10,7 @@ import {
   Button as MuiButton,
   MenuItem,
   ListItemIcon,
+  Tooltip,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
@@ -206,7 +207,11 @@ const TaskTable = () => {
               <Stack direction={'row'} gap={1} alignItems={'center'}>
                 {renderedCellValue}{' '}
                 {moment(row.original.due_date).toDate().getTime() < moment().toDate().getTime() &&
-                  row.original.status_id !== 3 && <ErrorOutlineIcon color="error" />}
+                  row.original.status_id !== 3 && (
+                    <Tooltip title="Opgavens tidsfrist er overskredet">
+                      <ErrorOutlineIcon color="error" />
+                    </Tooltip>
+                  )}
               </Stack>
             );
           },
@@ -724,14 +729,12 @@ const TaskTable = () => {
       }),
       muiTableBodyRowProps: ({row}) => {
         return {
-          onClick: () => {
-            // e.preventDefault();
-            // e.stopPropagation();
-            setSelectedTask(row.original.id);
-            // table.setRowSelection({[row.id]: true});
-          },
           sx: {
             backgroundColor: row.original.status_id === 3 ? 'grey.200' : 'inherit',
+            // backgroundColor: row.original.itinerary_id ? 'grey' : 'inherit',
+          },
+          onClick: () => {
+            setSelectedTask(row.original.id);
           },
         };
       },

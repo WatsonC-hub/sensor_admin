@@ -1,5 +1,6 @@
+import {Delete} from '@mui/icons-material';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
-import {Box, Grid, Stack, Typography} from '@mui/material';
+import {Box, Grid, Stack, Tooltip, Typography} from '@mui/material';
 import React from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 
@@ -9,14 +10,25 @@ import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
+import {useTaskItinerary} from '../api/useTaskItinerary';
+
 type TaskInfoFormProps = {
   selectedTask: Task;
 };
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
+  const deleteTaskTitle = selectedTask.id.includes(':')
+    ? 'Notifikationen kan ikke slettes'
+    : selectedTask.itinerary_id !== null
+      ? 'Opgaven er tilknyttet en tur'
+      : '';
+  const removeFromItineraryTitle = !selectedTask.itinerary_id
+    ? 'Opgaven er ikke tilknyttet en tur'
+    : '';
   const {station, adminKvalitetssikring} = useNavigationFunctions();
   const {
     patch,
+    del,
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
   } = useTasks();
@@ -25,6 +37,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     getValues,
     formState: {dirtyFields},
   } = useFormContext();
+
+  const {deleteTaskFromitinerary} = useTaskItinerary();
 
   const handleSubmit = (values: Partial<FieldValues>) => {
     const payload = {
@@ -58,6 +72,18 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     if (validated && isDirty) {
       handleSubmit(values);
     }
+  };
+
+  const removeFromItinerary = () => {
+    deleteTaskFromitinerary.mutate({
+      path: `itineraries/${selectedTask.itinerary_id}/tasks/${selectedTask.id}`,
+    });
+  };
+
+  const deleteTask = () => {
+    del.mutate({
+      path: `${selectedTask.id}`,
+    });
   };
 
   return (
@@ -131,26 +157,57 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         </Grid>
       </Grid>
 
-      <div
-        id="drag-handle"
-        draggable
-        style={{
-          cursor: 'move',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '50px',
-          height: '50px',
-          backgroundColor: 'lightgrey',
-          borderRadius: '5px',
-          margin: '5px',
-        }}
-        onDragStart={(e) => {
-          e.dataTransfer.setData('text/plain', JSON.stringify(selectedTask));
-        }}
-      >
-        <DragHandleIcon fontSize="large" />
-      </div>
+      <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={2}>
+        <div
+          id="drag-handle"
+          draggable
+          style={{
+            cursor: 'move',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '50px',
+            height: '50px',
+            backgroundColor: 'lightgrey',
+            borderRadius: '5px',
+            margin: '5px',
+          }}
+          onDragStart={(e) => {
+            e.dataTransfer.setData('text/plain', JSON.stringify(selectedTask));
+          }}
+        >
+          <DragHandleIcon fontSize="large" />
+        </div>
+
+        <Box>
+          <Tooltip arrow title={deleteTaskTitle}>
+            <div>
+              <Button
+                bttype="primary"
+                disabled={selectedTask.id.includes(':') || selectedTask.itinerary_id !== null}
+                onClick={deleteTask}
+                startIcon={<Delete />}
+              >
+                Slet
+              </Button>
+            </div>
+          </Tooltip>
+        </Box>
+
+        <Box>
+          <Tooltip arrow title={removeFromItineraryTitle}>
+            <div>
+              <Button
+                bttype="primary"
+                disabled={!selectedTask.itinerary_id}
+                onClick={removeFromItinerary}
+              >
+                Fjern fra tur
+              </Button>
+            </div>
+          </Tooltip>
+        </Box>
+      </Box>
     </Box>
   );
 };
