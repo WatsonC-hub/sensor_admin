@@ -15,14 +15,9 @@ const TripNotificationTable = ({notifications}: Props) => {
   const columns = useMemo<MRT_ColumnDef<TaskNotifications>[]>(
     () => [
       {
-        header: 'Lokation',
-        accessorKey: 'loc_name',
-        size: 20,
-      },
-      {
-        header: 'Tidsserie navn',
+        header: 'Navn',
         accessorKey: 'ts_name',
-        size: 100,
+        size: 20,
       },
       {
         header: 'Tidsserie type',

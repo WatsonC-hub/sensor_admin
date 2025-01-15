@@ -28,18 +28,18 @@ const TripTaskTable = ({tasks, trip_id}: Props) => {
   const columns = useMemo<MRT_ColumnDef<LocationTasks>[]>(
     () => [
       {
-        header: 'Lokation',
-        accessorKey: 'loc_name',
-        size: 120,
-      },
-      {
-        header: 'Tidsserie navn',
+        header: 'Navn',
         accessorKey: 'ts_name',
         size: 100,
       },
       {
         header: 'Tidsserie type',
         accessorKey: 'tstype_name',
+        size: 100,
+      },
+      {
+        header: 'Opgave',
+        accessorKey: 'name',
         size: 100,
       },
       {

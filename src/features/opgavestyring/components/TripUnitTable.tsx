@@ -15,24 +15,23 @@ const TripUnitTable = ({units}: Props) => {
   const columns = useMemo<MRT_ColumnDef<TaskUnits>[]>(
     () => [
       {
+        header: 'Navn',
+        accessorKey: 'name',
+        size: 100,
+      },
+      {
+        header: 'Tidsserie type',
+        accessorKey: 'tstype_name',
+        size: 100,
+      },
+      {
         header: 'Terminal',
         accessorKey: 'terminal_type',
         size: 100,
       },
       {
-        header: 'Tidsserie navn',
-        accessorKey: 'name',
-        size: 100,
-      },
-      {
         header: 'Sensor',
         accessorKey: 'sensorinfo',
-        size: 100,
-      },
-
-      {
-        header: 'Tidsserie type',
-        accessorKey: 'tstype_name',
         size: 100,
       },
       {

@@ -440,7 +440,6 @@ export type TaskUnits = {
 export type TaskNotifications = {
   loc_id: number;
   ts_id: number;
-  loc_name: string;
   tstype_name: string;
   ts_name: string;
   notification_id: number;
@@ -455,7 +454,6 @@ export type LocationTasks = {
   ts_id: number;
   status_id: number;
   assigned_to: string;
-  loc_name: string;
   tstype_name: string;
   ts_name: string;
   due_date: string;

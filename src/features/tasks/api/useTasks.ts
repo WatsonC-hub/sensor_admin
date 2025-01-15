@@ -194,6 +194,7 @@ export const useTasks = () => {
       queryClient.invalidateQueries({
         queryKey: ['tasks'],
       });
+
       toast.success('Opgave slettet');
     },
   });
