@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, MenuItem, Stack, Switch, Typography} from '@mui/material';
+import {Box, FormControlLabel, MenuItem, Switch, Typography} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -10,6 +10,8 @@ import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
+
+import {useTaskStore} from '../api/useTaskStore';
 
 const zodSchema = z.object({
   name: z
@@ -25,8 +27,8 @@ const zodSchema = z.object({
     .nullish()
     .transform((value) => (value === '' ? null : value)),
   blocks_notifications: z.array(z.number()).or(z.literal('alle')).optional(),
-  block_on_location: z.boolean().optional(),
-  block_all: z.boolean().optional(),
+  block_on_location: z.string().optional(),
+  block_all: z.string().optional(),
   loctypename: z.string().optional(),
   tstype_name: z.string().optional(),
   project_text: z.string().nullish(),
@@ -239,73 +241,93 @@ const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificati
   );
 };
 
-const BlockOnLocation = ({onChangeCallback}: Omit<FormInputProps<FormValues>, 'name'>) => {
-  const {control} = useFormContext<FormValues>();
-
+const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   return (
-    <Controller<FormValues, 'block_on_location'>
-      control={control}
-      name={'block_on_location'}
-      render={({field: {value, onChange, ref, name}}) => {
-        return (
-          <Stack direction="row" alignItems="center" justifyContent="center">
-            <Typography variant="body2">Tidsserien</Typography>
-            <FormControlLabel
-              labelPlacement="top"
-              control={
-                <Switch
-                  ref={ref}
-                  checked={value}
-                  size="small"
-                  color="primary"
-                  aria-label={name}
-                  onChange={(e, value) => {
-                    onChange(value);
-                    onChangeCallback && onChangeCallback(e);
-                  }}
-                />
-              }
-              label={'Bloker på'}
-            />
-            <Typography variant="body2">Lokationen</Typography>
-          </Stack>
-        );
-      }}
-    />
+    <FormInput
+      name="block_on_location"
+      select
+      placeholder="Vælg..."
+      style={{width: 175}}
+      {...props}
+    >
+      <MenuItem key={'bloker'} value={'false'}>
+        Tidsserie
+      </MenuItem>
+      <MenuItem key={'bloker_alle'} value={'true'}>
+        Lokation
+      </MenuItem>
+    </FormInput>
+    // <Controller<FormValues, 'block_on_location'>
+    //   control={control}
+    //   name={'block_on_location'}
+    //   render={({field: {value, onChange, ref, name}}) => {
+    //     return (
+    //       <Stack direction="row" alignItems="center" justifyContent="center">
+    //         <Typography variant="body2">Tidsserien</Typography>
+    //         <FormControlLabel
+    //           labelPlacement="top"
+    //           control={
+    //             <Switch
+    //               ref={ref}
+    //               checked={value}
+    //               size="small"
+    //               color="primary"
+    //               aria-label={name}
+    //               onChange={(e, value) => {
+    //                 onChange(value);
+    //                 onChangeCallback && onChangeCallback(e);
+    //               }}
+    //             />
+    //           }
+    //           label={'Bloker på'}
+    //         />
+    //         <Typography variant="body2">Lokationen</Typography>
+    //       </Stack>
+    //     );
+    //   }}
+    // />
   );
 };
 
-const BlockAll = ({onChangeCallback}: Omit<FormInputProps<FormValues>, 'name'>) => {
-  const {control} = useFormContext<FormValues>();
+const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {selectedTask} = useTaskStore();
 
   return (
-    <Stack direction="row" alignItems="center" justifyContent="center">
-      <Controller<FormValues, 'block_all'>
-        control={control}
-        name={'block_all'}
-        render={({field: {value, onChange, ref, name}}) => {
-          return (
-            <FormControlLabel
-              labelPlacement="top"
-              control={
-                <Switch
-                  ref={ref}
-                  checked={value}
-                  size="small"
-                  color="primary"
-                  aria-label={name}
-                  onChange={(e, value) => {
-                    onChange(value);
-                    onChangeCallback && onChangeCallback(e);
-                  }}
-                />
-              }
-              label={'Bloker alle notifikationer'}
-            />
-          );
-        }}
-      />
-    </Stack>
+    <FormInput name="block_all" select placeholder="Vælg..." style={{width: 175}} {...props}>
+      <MenuItem key={'bloker'} value={'false'}>
+        {selectedTask?.blocks_notifications.length === 0 ? 'ingen' : selectedTask?.name}
+      </MenuItem>
+      <MenuItem key={'bloker_alle'} value={'true'}>
+        alle
+      </MenuItem>
+    </FormInput>
+    // <Stack direction="row" alignItems="center" justifyContent="center">
+    //   <Controller<FormValues, 'block_all'>
+    //     control={control}
+    //     name={'block_all'}
+    //     render={({field: {value, onChange, ref, name}}) => {
+    //       return (
+    //         <FormControlLabel
+    //           labelPlacement="top"
+    //           control={
+    //             <Switch
+    //               ref={ref}
+    //               checked={value}
+    //               size="small"
+    //               color="primary"
+    //               aria-label={name}
+    //               onChange={(e, value) => {
+    //                 onChange(value);
+    //                 onChangeCallback && onChangeCallback(e);
+    //               }}
+    //             />
+    //           }
+    //           label={'Bloker alle notifikationer'}
+    //         />
+    //       );
+    //     }}
+    //   />
+    // </Stack>
   );
 };
 

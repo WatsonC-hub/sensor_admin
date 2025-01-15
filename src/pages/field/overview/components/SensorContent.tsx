@@ -1,12 +1,10 @@
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
-import {Task} from '~/features/tasks/types';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {APIError} from '~/queryClient';
 import {useDrawerContext} from '~/state/contexts';
 
 interface SensorContentProps {

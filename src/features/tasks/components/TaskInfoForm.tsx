@@ -38,7 +38,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     formState: {dirtyFields},
   } = useFormContext();
 
-  const {deleteTaskFromitinerary} = useTaskItinerary();
+  const {deleteTaskFromItinerary} = useTaskItinerary();
 
   const handleSubmit = (values: Partial<FieldValues>) => {
     const payload = {
@@ -69,13 +69,23 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
       values.status_category = taskStatus?.find((status) => status.id === field_value)?.category;
     }
 
+    if (field_name === 'block_all') {
+      if (field_value === 'false') values.block_all = false;
+      else values.block_all = true;
+    }
+
+    if (field_name === 'block_on_location') {
+      if (field_value === 'false') values.block_on_location = false;
+      else values.block_on_location = true;
+    }
+
     if (validated && isDirty) {
       handleSubmit(values);
     }
   };
 
   const removeFromItinerary = () => {
-    deleteTaskFromitinerary.mutate({
+    deleteTaskFromItinerary.mutate({
       path: `itineraries/${selectedTask.itinerary_id}/tasks/${selectedTask.id}`,
     });
   };
@@ -122,14 +132,30 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             }}
           />
         </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.BlockAll onChangeCallback={async () => await handlePatch('block_all')} />
-        </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
+        <Grid
+          item
+          mobile={12}
+          tablet={12}
+          laptop={12}
+          display={'flex'}
+          flexDirection={'row'}
+          alignItems={'center'}
+          gap={2}
+        >
+          <Typography>Bloker</Typography>
+          <TaskForm.BlockAll
+            onBlurCallback={async () => await handlePatch('block_all')}
+            onChangeCallback={(e) => {
+              console.log(e);
+            }}
+          />
+          <Typography>notifikationer på</Typography>
           <TaskForm.BlockOnLocation
-            onChangeCallback={async () => await handlePatch('block_on_location')}
+            onBlurCallback={async () => await handlePatch('block_on_location')}
           />
         </Grid>
+        {/* <Grid item mobile={12} tablet={12} laptop={6}>
+        </Grid> */}
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />
         </Grid>
