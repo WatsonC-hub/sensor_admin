@@ -47,18 +47,22 @@ const TaskItiniaries = () => {
             onDrop={(e, data) => {
               e.preventDefault();
               console.log('DROP');
-              setIds([...ids, data.id]);
+              if (!ids.includes(data.id)) setIds([...ids, data.id]);
             }}
           >
             {({isDraggingOver}) => (
               <Box
                 onClick={() => {
-                  // if (ids.length > 0) taskManagement(ids);
+                  let task_ids: Array<string> = [];
                   if (state?.rowSelection && tasks) {
-                    const task_ids = Object.keys(state.rowSelection);
+                    task_ids = Object.keys(state?.rowSelection);
+                  }
 
-                    const selectedTasks = tasks.filter((task) => task_ids.includes(task.id));
+                  const selectedTasks = tasks?.filter(
+                    (task) => task_ids.includes(task.id) || ids.includes(task.id)
+                  );
 
+                  if (selectedTasks) {
                     const lowestDate = selectedTasks.reduce((acc, curr) => {
                       if (!curr.due_date) return acc;
                       if (!acc) return curr.due_date;
@@ -79,6 +83,7 @@ const TaskItiniaries = () => {
                       assigned_to: assigned_to,
                     });
                   }
+                  // }
                 }}
                 sx={{
                   width: '125px',
@@ -88,9 +93,17 @@ const TaskItiniaries = () => {
                   alignContent: 'center',
                   borderRadius: 2,
                   boxShadow: 8,
-                  backgroundColor: isDraggingOver ? 'secondary.light' : 'primary.light',
+                  backgroundColor:
+                    state && state.rowSelection === undefined && ids.length == 0
+                      ? '#EEEEEE'
+                      : isDraggingOver
+                        ? 'secondary.light'
+                        : 'primary.light',
                   color: 'primary.contrastText',
-                  cursor: 'pointer',
+                  cursor:
+                    state && state.rowSelection === undefined && ids.length == 0
+                      ? 'cursor'
+                      : 'pointer',
                 }}
               >
                 <Typography variant="h5" component="div">

@@ -4,6 +4,7 @@ import React from 'react';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import {useTasks} from '../api/useTasks';
+import {useTaskStore} from '../api/useTaskStore';
 import {Taskitinerary} from '../types';
 
 import Droppable from './Droppable';
@@ -16,13 +17,24 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
   const {taskManagement} = useNavigationFunctions();
   const {
     getUsers: {data: users},
+    moveTask,
   } = useTasks();
+
+  const {selectedTask} = useTaskStore();
+
   return (
     <Droppable
       onDrop={(e) => {
         e.preventDefault();
         console.log('DROP');
         console.log(e.dataTransfer.getData('text/plain'));
+        console.log(selectedTask);
+        console.log(itinerary.id);
+        if (selectedTask)
+          moveTask.mutate({
+            path: `${itinerary.id}`,
+            data: {task_ids: [selectedTask.id]},
+          });
       }}
     >
       {({isDraggingOver}) => (

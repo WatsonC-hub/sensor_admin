@@ -6,7 +6,15 @@ import {apiClient} from '~/apiClient';
 import {APIError, GetQueryOptions} from '~/queryClient';
 
 import {taskStore} from '../store';
-import {type Task, type PatchTask, type TaskUser, type TaskStatus, DBTask} from '../types';
+import {
+  type Task,
+  type PatchTask,
+  type TaskUser,
+  type TaskStatus,
+  DBTask,
+  DeleteTaskFromItinerary,
+  MoveTaskToDifferentItinerary,
+} from '../types';
 
 type Mutation<TData> = {
   path: string;
@@ -55,7 +63,7 @@ export const tasksDelOptions = {
   mutationKey: ['tasks_del'],
   mutationFn: async (mutation_data: Mutation<any>) => {
     const {path} = mutation_data;
-    const {data: result} = await apiClient.delete(`/${path}`);
+    const {data: result} = await apiClient.delete(`/sensor_admin/tasks/${path}`);
     return result;
   },
 };
@@ -90,6 +98,24 @@ export const RelatedTasksOptions = <TData>(
   },
   enabled: loc_ids !== undefined && loc_ids !== null && loc_ids.length > 0,
 });
+
+export const deleteTaskFromItineraryOptions = {
+  mutationKey: ['taskItinerary_delete'],
+  mutationFn: async (mutation_data: DeleteTaskFromItinerary) => {
+    const {path} = mutation_data;
+    const {data: result} = await apiClient.delete(`/sensor_admin/tasks/itineraries/${path}`);
+    return result;
+  },
+};
+
+export const moveTaskToItineraryOptions = {
+  mutationKey: ['taskItinerary_move'],
+  mutationFn: async (mutation_data: MoveTaskToDifferentItinerary) => {
+    const {path, data} = mutation_data;
+    const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
+    return result;
+  },
+};
 
 // /location_related_tasks/{loc_id}
 export const useTasks = () => {
@@ -146,28 +172,7 @@ export const useTasks = () => {
             return task;
           })
         );
-
         queryClient.invalidateQueries({queryKey: ['overblik']});
-
-        // queryClient.setQueryData<Notification[]>(['overblik'], (old) => {
-        //   if (!old) {
-        //     return [];
-        //   }
-        //   const idx = old.findIndex(
-        //     (n) => n.notification_id === data.blocks_notifications[0] && n.ts_id === data.ts_id
-        //   );
-
-        //   const numberOfNotifications = old.filter((n) => n.ts_id === data.ts_id).length;
-
-        //   if (idx != -1 && numberOfNotifications > 1) {
-        //     old.splice(idx, 1);
-        //   } else if (idx != -1) {
-        //     old[idx].type = 'task';
-        //   }
-        //   return old;
-        // });
-
-        //TODO: change selected task to new ID
         setSelectedTask(data.id);
       }
 
@@ -252,6 +257,54 @@ export const useTasks = () => {
   //   staleTime: 1000 * 60 * 5,
   // });
 
+  const deleteTaskFromItinerary = useMutation<unknown, APIError, DeleteTaskFromItinerary>({
+    ...deleteTaskFromItineraryOptions,
+    onSuccess: (data, variables) => {
+      const {path} = variables;
+      const splitted = path.split('/');
+      const id = splitted[splitted.length - 1];
+      const previous = queryClient.getQueryData<Task[]>(['tasks']);
+      queryClient.setQueryData<Task[]>(
+        ['tasks'],
+        previous?.map((task) => {
+          if (task.id === id) {
+            const updated = {...task, itinerary_id: null};
+
+            return updated;
+          }
+          return task;
+        })
+      );
+      queryClient.invalidateQueries({
+        queryKey: ['itineraries', splitted[0]],
+      });
+    },
+  });
+
+  const moveTask = useMutation<unknown, APIError, MoveTaskToDifferentItinerary>({
+    ...moveTaskToItineraryOptions,
+    onSuccess: (_, variables) => {
+      const {path, data} = variables;
+      const task_itinerary_id = path;
+      const previous = queryClient.getQueryData<Task[]>(['tasks']);
+      queryClient.setQueryData<Task[]>(
+        ['tasks'],
+        previous?.map((task) => {
+          if (data.task_ids.includes(task.id)) {
+            const updated = {...task, itinerary_id: task_itinerary_id};
+
+            return updated;
+          }
+          return task;
+        })
+      );
+
+      queryClient.invalidateQueries({
+        queryKey: ['itineraries'],
+      });
+    },
+  });
+
   return {
     get,
     post,
@@ -261,6 +314,8 @@ export const useTasks = () => {
     updateNotification,
     getUsers,
     getStatus,
+    deleteTaskFromItinerary,
+    moveTask,
     // getProjects,
   };
 };

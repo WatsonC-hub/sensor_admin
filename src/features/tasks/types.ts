@@ -67,7 +67,7 @@ export type Task = {
   is_created: boolean;
   block_on_location: boolean;
   block_all: boolean;
-  itinerary_id: string;
+  itinerary_id: string | null;
 };
 
 export type DBTask = {
@@ -196,4 +196,9 @@ export type AddTasksToitinerary = {
 
 export type DeleteTaskFromItinerary = {
   path: string;
+};
+
+export type MoveTaskToDifferentItinerary = {
+  path: string;
+  data: AddTasksToitinerary;
 };

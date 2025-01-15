@@ -3,7 +3,7 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import {useTasks} from '~/features/tasks/api/useTasks';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
@@ -17,10 +17,10 @@ type Props = {
 const TripTaskTable = ({tasks, trip_id}: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [taskId, setTaskId] = useState<number>();
-  const {deleteTaskFromitinerary} = useTaskItinerary();
+  const {deleteTaskFromItinerary} = useTasks();
   const onDeleteBtnClick = (id: number) => {
-    deleteTaskFromitinerary.mutate({
-      path: `itineraries/${trip_id}/tasks/${id}`,
+    deleteTaskFromItinerary.mutate({
+      path: `${trip_id}/tasks/${id}`,
     });
     console.log(`itineraries/${trip_id}/tasks/${id}`);
   };

@@ -1,27 +1,23 @@
 import {Delete} from '@mui/icons-material';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import {Box, Grid, Stack, Tooltip, Typography} from '@mui/material';
-import React from 'react';
+import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import DeleteAlert from '~/components/DeleteAlert';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-
-import {useTaskItinerary} from '../api/useTaskItinerary';
 
 type TaskInfoFormProps = {
   selectedTask: Task;
 };
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
-  const deleteTaskTitle = selectedTask.id.includes(':')
-    ? 'Notifikationen kan ikke slettes'
-    : selectedTask.itinerary_id !== null
-      ? 'Opgaven er tilknyttet en tur'
-      : '';
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
   const removeFromItineraryTitle = !selectedTask.itinerary_id
     ? 'Opgaven er ikke tilknyttet en tur'
     : '';
@@ -31,14 +27,13 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     del,
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
+    deleteTaskFromItinerary,
   } = useTasks();
   const {
     trigger,
     getValues,
     formState: {dirtyFields},
   } = useFormContext();
-
-  const {deleteTaskFromItinerary} = useTaskItinerary();
 
   const handleSubmit = (values: Partial<FieldValues>) => {
     const payload = {
@@ -85,8 +80,9 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   };
 
   const removeFromItinerary = () => {
+    console.log(selectedTask);
     deleteTaskFromItinerary.mutate({
-      path: `itineraries/${selectedTask.itinerary_id}/tasks/${selectedTask.id}`,
+      path: `${selectedTask.itinerary_id}/tasks/${selectedTask.id}`,
     });
   };
 
@@ -210,8 +206,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             <div>
               <Button
                 bttype="primary"
-                disabled={selectedTask.id.includes(':') || selectedTask.itinerary_id !== null}
-                onClick={deleteTask}
+                disabled={selectedTask.id.includes(':')}
+                onClick={() => setDialogOpen(true)}
                 startIcon={<Delete />}
               >
                 Slet
@@ -234,6 +230,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           </Tooltip>
         </Box>
       </Box>
+      <DeleteAlert
+        dialogOpen={dialogOpen}
+        setDialogOpen={setDialogOpen}
+        measurementId={selectedTask.id}
+        onOkDelete={() => {
+          deleteTask();
+        }}
+      />
     </Box>
   );
 };
