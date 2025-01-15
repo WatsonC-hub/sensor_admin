@@ -18,6 +18,14 @@ const ConvertTaskModal = ({open, closeModal, notification}: Props) => {
   const onSubmit = (data: FormValues) => {
     const submit = {
       ...data,
+      block_on_location:
+        data.block_on_location === undefined
+          ? data.block_on_location
+          : data.block_on_location === 'false'
+            ? false
+            : true,
+      block_all:
+        data.block_all === undefined ? data.block_all : data.block_all === 'false' ? false : true,
       notification_id: notification.notification_id,
       ts_id: notification.ts_id,
       name: data.name!,

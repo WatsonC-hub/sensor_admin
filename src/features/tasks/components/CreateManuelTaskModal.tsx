@@ -21,6 +21,18 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     const submit = {
       ...values,
       name: values.name!,
+      block_on_location:
+        values.block_on_location === undefined
+          ? values.block_on_location
+          : values.block_on_location === 'false'
+            ? false
+            : true,
+      block_all:
+        values.block_all === undefined
+          ? values.block_all
+          : values.block_all === 'false'
+            ? false
+            : true,
       ts_id: parseInt(params.ts_id),
     };
     createTask.mutate(submit);
