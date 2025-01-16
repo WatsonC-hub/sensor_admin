@@ -2,7 +2,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {
   Box,
-  Card,
   CardActions,
   CardContent,
   CardHeader,
@@ -18,6 +17,7 @@ import * as z from 'zod';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import FormInput from '~/components/FormInput';
+import GenericCard from '~/components/GenericCard';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useRunQA} from '~/hooks/useRunQA';
 import {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
@@ -127,7 +127,8 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
         setDialogOpen={setDeleteDialogOpen}
         onOkDelete={handleOkDelete}
       />
-      <Card
+      <GenericCard
+        key={qaAlgorithm.name}
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -137,7 +138,6 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           minWidth: 200,
           m: 1,
         }}
-        elevation={4}
       >
         <CardHeader
           title={
@@ -220,7 +220,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
             Gem
           </Button>
         </CardActions>
-      </Card>
+      </GenericCard>
     </>
   );
 };
