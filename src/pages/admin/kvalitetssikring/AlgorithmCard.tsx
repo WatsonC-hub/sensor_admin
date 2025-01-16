@@ -137,7 +137,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
           minWidth: 200,
           m: 1,
         }}
-        elevation={12}
+        elevation={4}
       >
         <CardHeader
           title={

@@ -7,15 +7,11 @@ import TripRessourcesTable from '~/features/opgavestyring/components/TripRessour
 import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 import {TaskCollection} from '~/types';
 
-import TripNotificationTable from './TripNotificationTable';
-import TripTaskTable from './TripTaskTable';
-
 interface TripPreparationProps {
   data: TaskCollection | undefined;
-  trip_id: string | undefined;
 }
 
-const TripPreparation = ({data, trip_id}: TripPreparationProps) => {
+const TripPreparation = ({data}: TripPreparationProps) => {
   return (
     <Box display={'flex'} flexDirection={'column'} gap={2}>
       <Typography ml={2} variant="h5">
@@ -37,16 +33,6 @@ const TripPreparation = ({data, trip_id}: TripPreparationProps) => {
         Udstyr
       </Typography>
       <TripUnitTable units={data?.units} />
-
-      <Typography ml={2} variant="h5">
-        Notifikationer
-      </Typography>
-      <TripNotificationTable notifications={data?.notifications} />
-
-      <Typography ml={2} variant="h5">
-        Opgaver
-      </Typography>
-      <TripTaskTable tasks={data?.tasks} trip_id={trip_id} />
     </Box>
   );
 };

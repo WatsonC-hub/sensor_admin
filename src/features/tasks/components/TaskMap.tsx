@@ -17,6 +17,10 @@ type TaskStyling = 'dato' | 'ansvarlig' | '';
 
 const taskStyleAtom = atom<TaskStyling>('dato');
 
+interface TaskMapProps {
+  clickCallback?: (data: Task[]) => void;
+}
+
 const Control = () => {
   const [selectedStyle, setSelectedStyle] = useAtom(taskStyleAtom);
 
@@ -57,7 +61,7 @@ L.control.StyleSelect = function (opts: L.ControlOptions) {
   return new L.Control.StyleSelect(opts);
 };
 
-const TaskMap = () => {
+const TaskMap = ({clickCallback}: TaskMapProps) => {
   const {shownTasks, hiddenTasks, setSelectedTask, setShownMapTaskIds} = useTaskStore();
 
   const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
@@ -98,7 +102,7 @@ const TaskMap = () => {
     map,
     layers: {markerLayer},
     selectedMarker,
-  } = useMap('taskmap', shownByLocid, []);
+  } = useMap('taskmap', shownByLocid, [], clickCallback);
 
   const createMarkers = (tasks: Array<Task>, markerLayer: L.FeatureGroup<any>) => {
     if (selectedStyle === 'ansvarlig') {

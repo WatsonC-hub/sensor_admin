@@ -10,10 +10,11 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import TaskCalendar from '~/features/tasks/components/TaskCalendar';
 // import TaskMap from '~/features/tasks/components/TaskMap';
 import TaskTable from '~/features/tasks/components/TaskTable';
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import Map from '~/pages/field/overview/Map';
-import {BoreholeMapData} from '~/types';
+
+import {Task} from '../types';
+
+import TaskMap from './TaskMap';
 
 function TabPanel(props: {
   children?: React.ReactNode;
@@ -51,7 +52,7 @@ const TasksOverview = () => {
 
   // const [{onColumnFiltersChange}] = useStatefullTableAtom('taskTableState');
 
-  const clickCallback = (data: NotificationMap | BoreholeMapData) => {
+  const clickCallback = (data: Task[]) => {
     if ('loc_id' in data) {
       // const task_ids = activeTasks
       //   .filter((task) => task.loc_id === data.loc_id)
@@ -140,7 +141,7 @@ const TasksOverview = () => {
             overflow: 'hidden',
           }}
         >
-          <Map key="taskmap" clickCallback={clickCallback} />
+          <TaskMap key="taskmap" clickCallback={clickCallback} />
         </Box>
       </TabPanel>
       <TabPanel value={tabValue} index={1}>

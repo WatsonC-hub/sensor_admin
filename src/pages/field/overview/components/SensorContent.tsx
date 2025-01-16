@@ -106,7 +106,7 @@ const SensorContent = ({data}: SensorContentProps) => {
                 );
               })}
           </Box>
-          <Typography variant="h6">Opgaver</Typography>
+          {/* <Typography variant="h6">Opgaver</Typography> */}
         </>
       )}
 

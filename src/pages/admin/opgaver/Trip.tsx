@@ -1,4 +1,4 @@
-import {Box, Divider, Tab, Tabs} from '@mui/material';
+import {Box, Divider, Tab, Tabs, Typography} from '@mui/material';
 import {parseAsArrayOf, parseAsStringLiteral, parseAsInteger, useQueryState} from 'nuqs';
 import React from 'react';
 import {useParams} from 'react-router-dom';
@@ -6,8 +6,10 @@ import {useParams} from 'react-router-dom';
 import NavBar from '~/components/NavBar';
 import {tabsHeight} from '~/consts';
 import {useTaskManagement} from '~/features/opgavestyring/api/useTaskManagement';
+import TripNotificationTable from '~/features/opgavestyring/components/TripNotificationTable';
 import TripOverview from '~/features/opgavestyring/components/TripOverview';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
+import TripTaskTable from '~/features/opgavestyring/components/TripTaskTable';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
 import TabPanel from '~/pages/field/overview/TabPanel';
 
@@ -63,11 +65,20 @@ const Trip = () => {
         </Tabs>
         <Divider />
         <TabPanel value={tabValue} index="forberedelse">
-          <TripPreparation data={data} trip_id={params.trip_id} />
+          <TripPreparation data={data} />
         </TabPanel>
         <TabPanel value={tabValue} index="overblik">
           <TripOverview />
         </TabPanel>
+        <Typography ml={2} variant="h5">
+          Notifikationer
+        </Typography>
+        <TripNotificationTable notifications={data?.notifications} />
+
+        <Typography ml={2} variant="h5">
+          Opgaver
+        </Typography>
+        <TripTaskTable tasks={data?.tasks} trip_id={params.trip_id} />
       </Box>
     </Box>
   );
