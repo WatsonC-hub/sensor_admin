@@ -1,7 +1,6 @@
 import {Edit} from '@mui/icons-material';
 import Delete from '@mui/icons-material/Delete';
 import {Box} from '@mui/material';
-import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -16,6 +15,8 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
+
+import GenericCard from './GenericCard';
 
 type ImageCardProps = {
   image: Image;
@@ -44,7 +45,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
   }
 
   return (
-    <Card
+    <GenericCard
       sx={{
         margin: 'auto',
         display: 'flex',
@@ -54,6 +55,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         width: 'fit-content',
         height: 'fit-content',
       }}
+      key={image.gid.toString()}
     >
       <DeleteAlert
         title="Vil du slette billedet?"
@@ -141,7 +143,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
           </Button>
         </CardActions>
       )}
-    </Card>
+    </GenericCard>
   );
 }
 
