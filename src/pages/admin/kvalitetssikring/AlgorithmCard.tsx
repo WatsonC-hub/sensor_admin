@@ -128,7 +128,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
         onOkDelete={handleOkDelete}
       />
       <GenericCard
-        key={qaAlgorithm.name}
+        identity={qaAlgorithm.name}
         sx={{
           display: 'flex',
           flexDirection: 'column',

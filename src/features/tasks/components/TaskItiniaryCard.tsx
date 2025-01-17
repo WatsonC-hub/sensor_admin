@@ -1,6 +1,8 @@
-import {Card, CardContent, Typography} from '@mui/material';
+import {CardActions, CardContent, CardHeader, Divider, Typography} from '@mui/material';
 import React from 'react';
 
+import Button from '~/components/Button';
+import GenericCard from '~/components/GenericCard';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import {useTasks} from '../api/useTasks';
@@ -15,12 +17,13 @@ interface TaskItineraryCardProps {
 
 const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
   const {taskManagement} = useNavigationFunctions();
+
   const {
     getUsers: {data: users},
     moveTask,
   } = useTasks();
 
-  const {selectedTask} = useTaskStore();
+  const {selectedTask, isDraggingTask, selectedLocIds, tasks} = useTaskStore();
 
   return (
     <Droppable
@@ -28,43 +31,91 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
         e.preventDefault();
         console.log('DROP');
         console.log(e.dataTransfer.getData('text/plain'));
-        console.log(selectedTask);
-        console.log(itinerary.id);
         if (selectedTask)
           moveTask.mutate({
             path: `${itinerary.id}`,
-            data: {task_ids: [selectedTask.id], loc_id: selectedTask.loc_id},
+            data: {task_ids: [selectedTask.id], loc_id: [selectedTask.loc_id]},
           });
       }}
     >
-      {({isDraggingOver}) => (
-        <Card
-          sx={{
-            textAlign: 'center',
-            justifyContent: 'center',
-            alignContent: 'center',
-            borderRadius: 2,
-            boxShadow: 8,
-            width: '200px',
-            height: '125px',
-            backgroundColor: isDraggingOver ? 'secondary.light' : 'primary.light',
-            color: 'primary.contrastText',
-            cursor: 'pointer',
-          }}
-          onClick={() => {
-            taskManagement(itinerary.id);
-          }}
-        >
-          <CardContent>
-            <Typography variant="h6" component="div">
-              {itinerary.due_date}
-            </Typography>
-            <Typography>
-              {users?.find((user) => user.id === itinerary.assigned_to)?.display_name}
-            </Typography>
-          </CardContent>
-        </Card>
-      )}
+      {({isDraggingOver}) => {
+        return (
+          <GenericCard
+            sx={{
+              textAlign: 'center',
+              justifyContent: 'space-between',
+              alignContent: 'center',
+              borderRadius: 6,
+              width: '200px',
+              backgroundColor:
+                selectedTask?.itinerary_id === itinerary.id && isDraggingTask
+                  ? 'yellow'
+                  : isDraggingOver
+                    ? 'secondary.light'
+                    : '#00786D',
+              color: 'primary.contrastText',
+              cursor: 'pointer',
+            }}
+            identity={itinerary.id}
+            shadowIn={8}
+            shadowOut={2}
+            shadowClick={12}
+          >
+            <CardHeader
+              sx={{py: 1, px: 0.5}}
+              title={
+                <Typography>
+                  {
+                    tasks?.filter(
+                      (task) => task.itinerary_id === itinerary.id && task.status_id === 3
+                    ).length
+                  }{' '}
+                  ud af {tasks?.filter((task) => task.itinerary_id === itinerary.id).length}{' '}
+                  afsluttet
+                </Typography>
+              }
+            />
+            <Divider color="white" />
+            <CardContent>
+              <Typography>
+                {users?.find((user) => user.id === itinerary.assigned_to)?.display_name}
+              </Typography>
+              <Typography variant="h6" component="div">
+                {itinerary.due_date}
+              </Typography>
+            </CardContent>
+            <CardActions sx={{justifyContent: 'center'}}>
+              <Button
+                disabled={selectedLocIds.length > 0}
+                onClick={() => {
+                  moveTask.mutate({
+                    path: `${itinerary.id}`,
+                    data: {
+                      task_ids: tasks
+                        ? tasks
+                            .filter((task) => selectedLocIds.includes(task.loc_id))
+                            .map((task) => task.id)
+                        : [],
+                      loc_id: selectedLocIds,
+                    },
+                  });
+                }}
+                bttype="itinerary"
+              >
+                Tilføj
+              </Button>
+              <Button
+                onClick={() => {
+                  taskManagement(itinerary.id);
+                }}
+                bttype="itinerary"
+              >
+                Se tur
+              </Button>
+            </CardActions>
+          </GenericCard>
+        );
+      }}
     </Droppable>
   );
 };

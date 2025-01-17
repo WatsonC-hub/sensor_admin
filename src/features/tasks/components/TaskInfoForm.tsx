@@ -11,12 +11,15 @@ import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
+import {useTaskStore} from '../api/useTaskStore';
+
 type TaskInfoFormProps = {
   selectedTask: Task;
 };
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const {setIsDraggingTask} = useTaskStore();
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
   const removeFromItineraryTitle = !selectedTask.itinerary_id
     ? 'Opgaven er ikke tilknyttet en tur'
@@ -199,7 +202,11 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             margin: '5px',
           }}
           onDragStart={(e) => {
+            setIsDraggingTask(true);
             e.dataTransfer.setData('text/plain', JSON.stringify(selectedTask));
+          }}
+          onDragEnd={() => {
+            setIsDraggingTask(false);
           }}
         >
           <DragHandleIcon fontSize="large" />

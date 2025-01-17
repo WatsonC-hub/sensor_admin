@@ -23,7 +23,7 @@ const Droppable = <TData extends object>({onDrop, children}: DroppableProps<TDat
   };
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
-    console.log('drop   ');
+    console.log('drop');
     event.preventDefault();
     setIsDraggingOver(false);
     onDrop(event, JSON.parse(event.dataTransfer.getData('text/plain')));
