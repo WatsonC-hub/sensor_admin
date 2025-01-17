@@ -1,4 +1,4 @@
-import {AddTask, Assignment, Update} from '@mui/icons-material';
+import {/*AddTask,*/ Assignment /*Update*/} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
@@ -21,7 +21,7 @@ const NotificationList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [selectedNotification /*, setSelectedNotification*/] = useState(null);
 
   const {setSelectedTask, activeTasks} = useTaskStore();
   const {tasks: tasksNavigation} = useNavigationFunctions();
@@ -46,10 +46,10 @@ const NotificationList = () => {
     handleClose();
   };
 
-  const openUpdateModal = () => {
-    setUpdateModalOpen(true);
-    handleClose();
-  };
+  // const openUpdateModal = () => {
+  //   setUpdateModalOpen(true);
+  //   handleClose();
+  // };
 
   const closeModal = () => {
     setModalOpen(false);
@@ -141,7 +141,14 @@ const NotificationList = () => {
         {notifications?.map((notification, index) => {
           const splitted = notification.ts_name.split(notification.loc_name);
           return (
-            <MenuItem key={index} sx={{gap: 0.5}}>
+            <MenuItem
+              key={index}
+              sx={{gap: 0.5}}
+              onClick={() => {
+                setSelectedTask(notification.ts_id + ':' + notification.notification_id);
+                tasksNavigation();
+              }}
+            >
               <ListItemIcon
                 sx={{
                   fontSize: '1.5rem',
@@ -159,7 +166,7 @@ const NotificationList = () => {
               />
               {/* <Typography variant="caption">{}</Typography> */}
 
-              <IconButton
+              {/* <IconButton
                 sx={{
                   pointerEvents: 'auto',
                 }}
@@ -183,7 +190,7 @@ const NotificationList = () => {
                 }}
               >
                 <Update />
-              </IconButton>
+              </IconButton> */}
             </MenuItem>
           );
         })}

@@ -119,13 +119,17 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.DueDate onBlurCallback={async () => await handlePatch('due_date')} />
+          <TaskForm.DueDate
+            onBlurCallback={async () => await handlePatch('due_date')}
+            disabled={selectedTask.itinerary_id !== null}
+          />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.AssignedTo
             onBlur={async () => {
               await handlePatch('assigned_to');
             }}
+            disabled={selectedTask.itinerary_id !== null}
           />
         </Grid>
         <Grid

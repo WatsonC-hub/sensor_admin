@@ -33,7 +33,7 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
         if (selectedTask)
           moveTask.mutate({
             path: `${itinerary.id}`,
-            data: {task_ids: [selectedTask.id]},
+            data: {task_ids: [selectedTask.id], loc_id: selectedTask.loc_id},
           });
       }}
     >

@@ -112,6 +112,7 @@ export const moveTaskToItineraryOptions = {
   mutationKey: ['taskItinerary_move'],
   mutationFn: async (mutation_data: MoveTaskToDifferentItinerary) => {
     const {path, data} = mutation_data;
+    console.log(data);
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
     return result;
   },
@@ -302,6 +303,10 @@ export const useTasks = () => {
 
       queryClient.invalidateQueries({
         queryKey: ['itineraries'],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['tasks'],
       });
     },
   });

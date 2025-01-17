@@ -10,19 +10,20 @@ import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTaskItinerary} from '../api/useTaskItinerary';
 import {Task} from '../types';
 
+import CreateItineraryDialog from './CreateItineraryDialog';
 import Droppable from './Droppable';
 import TaskItineraryCard from './TaskItiniaryCard';
 
 const TaskItiniaries = () => {
   const [ids, setIds] = React.useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
   const [isColumn, setIsColumn] = useState<boolean>(false);
-  const {selectedLocIds, tasks} = useTaskStore();
+  const {selectedLocIds} = useTaskStore();
   const [{state}] = useStatefullTableAtom('taskTableState');
   const {taskManagementSearch} = useNavigationFunctions();
   const {
     get: {data},
-    post,
   } = useTaskItinerary();
 
   useEffect(() => {
@@ -53,36 +54,7 @@ const TaskItiniaries = () => {
             {({isDraggingOver}) => (
               <Box
                 onClick={() => {
-                  let task_ids: Array<string> = [];
-                  if (state?.rowSelection && tasks) {
-                    task_ids = Object.keys(state?.rowSelection);
-                  }
-
-                  const selectedTasks = tasks?.filter(
-                    (task) => task_ids.includes(task.id) || ids.includes(task.id)
-                  );
-
-                  if (selectedTasks) {
-                    const lowestDate = selectedTasks.reduce((acc, curr) => {
-                      if (!curr.due_date) return acc;
-                      if (!acc) return curr.due_date;
-
-                      return acc < curr.due_date ? acc : curr.due_date;
-                    }, selectedTasks[0].due_date);
-
-                    // find assigned to if it is the same for all tasks
-                    const assigned_to = selectedTasks.reduce((acc, curr) => {
-                      if (!acc) return curr.assigned_to;
-                      if (acc !== curr.assigned_to) return '';
-                      return acc;
-                    }, selectedTasks[0].assigned_to);
-
-                    post.mutate({
-                      task_ids: task_ids,
-                      due_date: lowestDate,
-                      assigned_to: assigned_to,
-                    });
-                  }
+                  setDialogOpen(ids.length > 0 || state?.rowSelection !== undefined);
                   // }
                 }}
                 sx={{
@@ -129,6 +101,9 @@ const TaskItiniaries = () => {
           {data?.map((itinerary) => <TaskItineraryCard key={itinerary.id} itinerary={itinerary} />)}
         </Grid>
       </Grid>
+      {dialogOpen && (
+        <CreateItineraryDialog ids={ids} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} />
+      )}
     </Box>
   );
 };

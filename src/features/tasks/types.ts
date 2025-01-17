@@ -200,5 +200,5 @@ export type DeleteTaskFromItinerary = {
 
 export type MoveTaskToDifferentItinerary = {
   path: string;
-  data: AddTasksToitinerary;
+  data: AddTasksToitinerary & {loc_id: number};
 };
