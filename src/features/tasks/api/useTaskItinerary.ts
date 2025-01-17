@@ -73,6 +73,10 @@ export const useTaskItinerary = (id?: ID) => {
       queryClient.invalidateQueries({
         queryKey: ['itineraries'],
       });
+
+      queryClient.invalidateQueries({
+        queryKey: ['tasks'],
+      });
       toast.success('Opgaver gemt');
     },
   });

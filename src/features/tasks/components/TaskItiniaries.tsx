@@ -5,7 +5,6 @@ import Button from '~/components/Button';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 
 import {useTaskItinerary} from '../api/useTaskItinerary';
 import {Task} from '../types';
@@ -20,7 +19,6 @@ const TaskItiniaries = () => {
   const {isMobile} = useBreakpoints();
   const [isColumn, setIsColumn] = useState<boolean>(false);
   const {selectedLocIds} = useTaskStore();
-  const [{state}] = useStatefullTableAtom('taskTableState');
   const {taskManagementSearch} = useNavigationFunctions();
   const {
     get: {data},
@@ -54,8 +52,7 @@ const TaskItiniaries = () => {
             {({isDraggingOver}) => (
               <Box
                 onClick={() => {
-                  setDialogOpen(ids.length > 0 || state?.rowSelection !== undefined);
-                  // }
+                  setDialogOpen(ids.length > 0 || selectedLocIds.length > 0);
                 }}
                 sx={{
                   width: '125px',
@@ -66,16 +63,13 @@ const TaskItiniaries = () => {
                   borderRadius: 2,
                   boxShadow: 8,
                   backgroundColor:
-                    state && state.rowSelection === undefined && ids.length == 0
+                    selectedLocIds.length > 0 && ids.length == 0
                       ? '#EEEEEE'
                       : isDraggingOver
                         ? 'secondary.light'
                         : 'primary.light',
                   color: 'primary.contrastText',
-                  cursor:
-                    state && state.rowSelection === undefined && ids.length == 0
-                      ? 'cursor'
-                      : 'pointer',
+                  cursor: selectedLocIds.length > 0 && ids.length == 0 ? 'cursor' : 'pointer',
                 }}
               >
                 <Typography variant="h5" component="div">

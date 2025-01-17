@@ -1,4 +1,5 @@
 import {Edit} from '@mui/icons-material';
+import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {
   Autocomplete,
@@ -11,6 +12,7 @@ import {
   MenuItem,
   ListItemIcon,
   Tooltip,
+  IconButton,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
@@ -93,7 +95,7 @@ type ViewValues = 'upcoming' | 'my' | 'groupAssigned' | '';
 const TaskTable = () => {
   const {mapFilteredTasks, setSelectedTask, setShownListTaskIds, setSelectedLocIds} =
     useTaskStore();
-  const {station} = useNavigationFunctions();
+  const {station, taskManagement} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
   const [viewValue, setViewValue] = useState<ViewValues>('');
   const {
@@ -132,6 +134,27 @@ const TaskTable = () => {
   const columns = useMemo<MRT_ColumnDef<Task>[]>(
     () =>
       [
+        {
+          header: 'Itinerary',
+          id: 'itinerary_id',
+          accessorFn: (row) => (
+            <IconButton
+              disabled={row.itinerary_id === null}
+              color={'primary'}
+              onClick={() => row.itinerary_id && taskManagement(row.itinerary_id)}
+            >
+              <DriveEtaIcon />
+            </IconButton>
+          ),
+          size: 2,
+          enableEditing: false,
+          enableGrouping: false,
+          enableColumnActions: false,
+          enableColumnDragging: false,
+          enableResizing: false,
+          enableColumnFilter: false,
+          enableSorting: false,
+        },
         {
           header: 'Dato',
           id: 'due_date',
