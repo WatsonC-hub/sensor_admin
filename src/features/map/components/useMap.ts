@@ -86,7 +86,7 @@ const useMap = <TData extends object>(
     del: deleteParkering,
   } = useParkering();
 
-  const {shownTasks, setShownMapTaskIds} = useTaskStore();
+  // const {shownTasks, setShownMapTaskIds} = useTaskStore();
 
   const defaultContextmenuItems: Array<L.ContextMenuItem> = [
     {
@@ -172,27 +172,27 @@ const useMap = <TData extends object>(
 
     // const selectControl = new L.Control.StyleSelect({position: 'topright'});
     // map.addControl(selectControl);
-    const lassoControl = new LassoControl({position: 'topleft'});
-    map.addControl(lassoControl);
-    map.on('lasso.finished', (event) => {
-      console.log(
-        (event as LassoHandlerFinishedEvent).layers.map(
-          (layer) => layer.options as L.CircleMarkerOptions<TData>
-        )
-      );
-      const ids = new Set(
-        (event as LassoHandlerFinishedEvent).layers
-          .filter((layer) => (layer.options as L.CircleMarkerOptions<TData>).data !== undefined)
-          .map((layer) => {
-            const data = (layer.options as L.CircleMarkerOptions<TData>).data;
-            if (data && 'ts_id' in data) return data?.ts_id;
-          })
-          .flat()
-      );
-      const task_ids = shownTasks.filter((task) => ids.has(task.ts_id)).map((task) => task.id);
+    // const lassoControl = new LassoControl({position: 'topleft'});
+    // map.addControl(lassoControl);
+    // map.on('lasso.finished', (event) => {
+    //   console.log(
+    //     (event as LassoHandlerFinishedEvent).layers.map(
+    //       (layer) => layer.options as L.CircleMarkerOptions<TData>
+    //     )
+    //   );
+    //   const ids = new Set(
+    //     (event as LassoHandlerFinishedEvent).layers
+    //       .filter((layer) => (layer.options as L.CircleMarkerOptions<TData>).data !== undefined)
+    //       .map((layer) => {
+    //         const data = (layer.options as L.CircleMarkerOptions<TData>).data;
+    //         if (data && 'ts_id' in data) return data?.ts_id;
+    //       })
+    //       .flat()
+    //   );
+    //   const task_ids = shownTasks.filter((task) => ids.has(task.ts_id)).map((task) => task.id);
 
-      setShownMapTaskIds(task_ids);
-    });
+    //   setShownMapTaskIds(task_ids);
+    // });
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);

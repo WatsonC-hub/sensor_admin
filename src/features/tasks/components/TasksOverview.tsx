@@ -8,13 +8,11 @@ import React, {SyntheticEvent} from 'react';
 import {tabsHeight, calculateContentHeight} from '~/consts';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import TaskCalendar from '~/features/tasks/components/TaskCalendar';
-// import TaskMap from '~/features/tasks/components/TaskMap';
-import TaskTable from '~/features/tasks/components/TaskTable';
-// import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
+import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import Map from '~/pages/field/overview/Map';
+import {BoreholeMapData} from '~/types';
 
-import {Task} from '../types';
-
-import TaskMap from './TaskMap';
+import TaskTable from './TaskTable';
 
 function TabPanel(props: {
   children?: React.ReactNode;
@@ -44,7 +42,8 @@ const tabAtom = atom<number>(0);
 
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
-  const {shownMapTaskIds, shownListTaskIds, activeTasks, setSelectedTask} = useTaskStore();
+  const {shownMapTaskIds, shownListTaskIds, activeTasks, setSelectedTask, setShownMapTaskIds} =
+    useTaskStore();
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
@@ -52,12 +51,12 @@ const TasksOverview = () => {
 
   // const [{onColumnFiltersChange}] = useStatefullTableAtom('taskTableState');
 
-  const clickCallback = (data: Task[]) => {
+  const clickCallback = (data: NotificationMap | BoreholeMapData) => {
     if ('loc_id' in data) {
-      // const task_ids = activeTasks
-      //   .filter((task) => task.loc_id === data.loc_id)
-      //   .map((task) => task.id);
-      // setShownMapTaskIds(task_ids);
+      const task_ids = activeTasks
+        .filter((task) => task.loc_id === data.loc_id)
+        .map((task) => task.id);
+      setShownMapTaskIds(task_ids);
       const id = activeTasks.find((task) => task.loc_id === data.loc_id)?.id;
 
       // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
@@ -141,7 +140,7 @@ const TasksOverview = () => {
             overflow: 'hidden',
           }}
         >
-          <TaskMap key="taskmap" clickCallback={clickCallback} />
+          <Map key="taskmap" clickCallback={clickCallback} />
         </Box>
       </TabPanel>
       <TabPanel value={tabValue} index={1}>

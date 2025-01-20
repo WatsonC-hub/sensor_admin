@@ -86,7 +86,7 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
             </CardContent>
             <CardActions sx={{justifyContent: 'center'}}>
               <Button
-                disabled={selectedLocIds.length > 0}
+                disabled={selectedLocIds.length === 0}
                 onClick={() => {
                   moveTask.mutate({
                     path: `${itinerary.id}`,
