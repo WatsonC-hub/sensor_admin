@@ -149,7 +149,7 @@ const TaskTable = () => {
                 arrow
                 title={row.itinerary_id !== null ? 'Opgaven er ikke tilknyttet en tur' : ''}
               >
-                <div style={{display: 'flex', justifyContent: 'center'}}>
+                <div>
                   <IconButton
                     disabled={row.itinerary_id === null}
                     color={'primary'}
@@ -167,7 +167,7 @@ const TaskTable = () => {
           filterSelectOptions: ['Med tur', 'Uden tur'],
           filterVariant: 'select',
           enableColumnFilterModes: false,
-          filterFn: (row, filterValue) => {
+          filterFn: (row, columnId, filterValue) => {
             return filterValue === 'Med tur'
               ? row.original.itinerary_id !== null
               : filterValue === 'Uden tur'
