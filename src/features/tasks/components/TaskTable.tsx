@@ -136,24 +136,45 @@ const TaskTable = () => {
       [
         {
           header: 'Itinerary',
+          Header: ({column}) => {
+            <Box key={'test'} width={'fit-content'}>
+              <Button bttype="primary">test</Button>
+              {column.columnDef.header}
+            </Box>;
+          },
           id: 'itinerary_id',
           accessorFn: (row) => (
-            <IconButton
-              disabled={row.itinerary_id === null}
-              color={'primary'}
-              onClick={() => row.itinerary_id && taskManagement(row.itinerary_id)}
-            >
-              <DriveEtaIcon />
-            </IconButton>
+            <Box>
+              <Tooltip
+                arrow
+                title={row.itinerary_id !== null ? 'Opgaven er ikke tilknyttet en tur' : ''}
+              >
+                <div style={{display: 'flex', justifyContent: 'center'}}>
+                  <IconButton
+                    disabled={row.itinerary_id === null}
+                    color={'primary'}
+                    onClick={() => row.itinerary_id && taskManagement(row.itinerary_id)}
+                  >
+                    <DriveEtaIcon />
+                  </IconButton>
+                </div>
+              </Tooltip>
+            </Box>
           ),
-          size: 2,
           enableEditing: false,
-          enableGrouping: false,
           enableColumnActions: false,
           enableColumnDragging: false,
-          enableResizing: false,
-          enableColumnFilter: false,
-          enableSorting: false,
+          filterSelectOptions: ['Med tur', 'Uden tur'],
+          filterVariant: 'select',
+          enableColumnFilterModes: false,
+          filterFn: (row, filterValue) => {
+            return filterValue === 'Med tur'
+              ? row.original.itinerary_id !== null
+              : filterValue === 'Uden tur'
+                ? row.original.itinerary_id === null
+                : true;
+          },
+          size: 20,
         },
         {
           header: 'Dato',
