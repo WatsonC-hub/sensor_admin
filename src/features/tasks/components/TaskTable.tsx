@@ -168,11 +168,12 @@ const TaskTable = () => {
           filterVariant: 'select',
           enableColumnFilterModes: false,
           filterFn: (row, columnId, filterValue) => {
-            return filterValue === 'Med tur'
-              ? row.original.itinerary_id !== null
-              : filterValue === 'Uden tur'
-                ? row.original.itinerary_id === null
-                : true;
+            if (filterValue)
+              return filterValue === 'Med tur'
+                ? row.original.itinerary_id !== null
+                : filterValue === 'Uden tur'
+                  ? row.original.itinerary_id === null
+                  : true;
           },
           size: 20,
         },
@@ -202,22 +203,24 @@ const TaskTable = () => {
           filterVariant: 'date-range',
           enableGlobalFilter: false,
           filterFn: (row, id, filterValue) => {
-            const date = moment(row.getValue(id));
-            const startFilterDate = filterValue[0] ? moment(filterValue[0]) : null;
-            const endFilterDate = filterValue[1] ? moment(filterValue[1]) : null;
+            if (filterValue) {
+              const date = moment(row.getValue(id));
+              const startFilterDate = filterValue[0] ? moment(filterValue[0]) : null;
+              const endFilterDate = filterValue[1] ? moment(filterValue[1]) : null;
 
-            const filterNotSet = startFilterDate === null && endFilterDate === null;
-            if (filterNotSet) return true;
+              const filterNotSet = startFilterDate === null && endFilterDate === null;
+              if (filterNotSet) return true;
 
-            if (startFilterDate !== null && endFilterDate === null) {
-              return date.isAfter(startFilterDate);
+              if (startFilterDate !== null && endFilterDate === null) {
+                return date.isAfter(startFilterDate);
+              }
+
+              if (startFilterDate === null && endFilterDate !== null) {
+                return date.isBefore(endFilterDate);
+              }
+
+              return date.isAfter(startFilterDate) && date.isBefore(endFilterDate);
             }
-
-            if (startFilterDate === null && endFilterDate !== null) {
-              return date.isBefore(endFilterDate);
-            }
-
-            return date.isAfter(startFilterDate) && date.isBefore(endFilterDate);
           },
           Filter: ({column, rangeFilterIndex}) => {
             const filters: Array<string | null> = column.getFilterValue() as string[];
@@ -556,11 +559,11 @@ const TaskTable = () => {
       enableEditing: true,
       enableRowDragging: false,
       globalFilterFn: 'fuzzy',
-      filterFns: {
-        arrIncludesNone: (row, id, filterValue) => {
-          return !filterValue.some((val: any) => row.getValue(id) === val);
-        },
-      },
+      // filterFns: {
+      //   arrIncludesNone: (row, id, filterValue) => {
+      //     return filterValue && !filterValue.some((val: any) => row.getValue(id) === val);
+      //   },
+      // },
       localization: {
         filterArrIncludesNone: 'Indeholder ikke',
       } as any,
@@ -899,16 +902,15 @@ const onSelectChange = (
 
 const showUpcomingTasks = (table: MRT_TableInstance<Task>) => {
   table.setShowColumnFilters(true);
-  table.setSorting([
-    {
-      id: 'due_date',
-      desc: false,
-    },
-  ]);
+
   table.setColumnFilters([
     {
-      id: 'due_date',
-      value: [moment().format('YYYY-MM-DD'), null],
+      id: 'assigned_to',
+      value: ['Ikke tildelt'],
+    },
+    {
+      id: 'status_id',
+      value: ['Åbent'],
     },
   ]);
 };

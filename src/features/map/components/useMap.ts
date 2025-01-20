@@ -6,13 +6,11 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
 import L from 'leaflet';
 import '~/css/leaflet.css';
-import {LassoControl, LassoHandlerFinishedEvent} from 'leaflet-lasso';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {authStore, parkingStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
