@@ -181,6 +181,7 @@ const TaskTable = () => {
           id: 'due_date',
           accessorFn: (row) => row.due_date,
           sortingFn: (a, b, columnId) => {
+            if (a.getValue(columnId) === null || b.getValue(columnId) === null) return 1;
             const aM = moment(a.getValue(columnId));
             const bM = moment(b.getValue(columnId));
             if (!aM.isValid() && !bM.isValid()) {
@@ -196,7 +197,7 @@ const TaskTable = () => {
             if (aM.isAfter(bM)) {
               return 1;
             }
-            return -1;
+            return 1;
           },
           filterVariant: 'date-range',
           enableGlobalFilter: false,
