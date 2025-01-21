@@ -119,13 +119,15 @@ export const moveTaskToItineraryOptions = {
 };
 
 // /location_related_tasks/{loc_id}
-export const useTasks = () => {
+export const useTasks = (include_closed: boolean = false) => {
   const queryClient = useQueryClient();
   const setSelectedTask = taskStore((state) => state.setSelectedTask);
   const get = useQuery<Task[], APIError>({
-    queryKey: ['tasks'],
+    queryKey: ['tasks', include_closed],
     queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/');
+      const {data} = await apiClient.get(`/sensor_admin/tasks`, {
+        params: {include_closed},
+      });
       return data;
     },
     staleTime: 1000 * 60 * 5,

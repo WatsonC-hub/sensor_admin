@@ -46,7 +46,6 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
               justifyContent: 'space-between',
               alignContent: 'center',
               borderRadius: 6,
-              width: '200px',
               backgroundColor:
                 selectedTask?.itinerary_id === itinerary.id && isDraggingTask
                   ? 'yellow'

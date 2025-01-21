@@ -11,6 +11,7 @@ type TaskState = {
   selectedTaskId: ID | null;
   selectedLocIds: Array<number>;
   isDraggingTask: boolean;
+  includeClosedTasks: boolean;
   // setTasks: (tasks: Task[]) => void;
   // setShownTaskIds: (ids: ID[]) => void;
   setShownMapTaskIds: (ids: ID[]) => void;
@@ -18,6 +19,7 @@ type TaskState = {
   // setShownTasksByPredicate: (predicate: () => boolean) => void;
   setSelectedLocIds: (loc_ids: Array<number>) => void;
   setIsDraggingTask: (isDraggingTask: boolean) => void;
+  setIncludeClosedTasks: (includeClosedTasks: boolean) => void;
   setSelectedTask: (id: ID | null) => void;
   resetFilter: () => void;
   resetState: () => void;
@@ -31,11 +33,13 @@ export const taskStore = create<TaskState>()(
       selectedTaskId: null,
       selectedLocIds: [],
       isDraggingTask: false,
+      includeClosedTasks: true,
       setShownListTaskIds: (ids) => set({shownListTaskIds: ids}),
       setShownMapTaskIds: (ids) => set({shownMapTaskIds: ids}),
       setSelectedTask: (id) => set({selectedTaskId: id}),
       setSelectedLocIds: (tasks) => set({selectedLocIds: tasks}),
       setIsDraggingTask: (isDraggingTask) => set({isDraggingTask: isDraggingTask}),
+      setIncludeClosedTasks: (includeClosedTasks) => set({includeClosedTasks: includeClosedTasks}),
       resetFilter: () => set({shownListTaskIds: [], shownMapTaskIds: []}),
       resetState: () => set({shownListTaskIds: [], shownMapTaskIds: [], selectedTaskId: null}),
     })),

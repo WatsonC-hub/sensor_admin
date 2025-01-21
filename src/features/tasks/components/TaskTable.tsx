@@ -13,6 +13,7 @@ import {
   ListItemIcon,
   Tooltip,
   IconButton,
+  FormControlLabel,
 } from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
@@ -93,8 +94,15 @@ const toggleRowSelection = (row: MRT_Row<Task>, parentChecked = false) => {
 type ViewValues = 'upcoming' | 'my' | 'groupAssigned' | '';
 
 const TaskTable = () => {
-  const {mapFilteredTasks, setSelectedTask, setShownListTaskIds, setSelectedLocIds} =
-    useTaskStore();
+  const {
+    mapFilteredTasks,
+    setSelectedTask,
+    setShownListTaskIds,
+    setSelectedLocIds,
+    setShownMapTaskIds,
+    includeClosedTasks,
+    setIncludeClosedTasks,
+  } = useTaskStore();
   const {station, taskManagement} = useNavigationFunctions();
   const [open, setOpen] = useState<boolean>(false);
   const [viewValue, setViewValue] = useState<ViewValues>('');
@@ -114,8 +122,11 @@ const TaskTable = () => {
     patch.mutate(payload);
   };
 
-  const revertView = (table: MRT_TableInstance<Task>) => {
-    resetView(table);
+  const revertView = (
+    table: MRT_TableInstance<Task>,
+    setShownMapTaskIds: (taskIds: Array<string>) => void
+  ) => {
+    resetView(table, setShownMapTaskIds);
     setViewValue('');
   };
 
@@ -405,6 +416,7 @@ const TaskTable = () => {
           enableGlobalFilter: false,
           filterVariant: 'multi-select',
           editVariant: 'select',
+          enableColumnFilterModes: false,
           // enableColumnFilterModes: true,
           renderColumnFilterModeMenuItems: renderArrFilterModeOptions,
           Edit: ({row, table}) => {
@@ -651,7 +663,7 @@ const TaskTable = () => {
               onChange={(e) => {
                 const value = e.target.value as ViewValues;
                 setViewValue(value);
-                onSelectChange(value, table, taskUsers, userAuthId?.toString());
+                onSelectChange(value, table, taskUsers, userAuthId?.toString(), setShownMapTaskIds);
               }}
             >
               {/* <MenuItem value={'-1'}>Vælg filtrering...</MenuItem> */}
@@ -659,9 +671,20 @@ const TaskTable = () => {
               <MenuItem value={'my'}>Se Mine opgaver</MenuItem>
               <MenuItem value={'groupAssigned'}>Gruppér efter tildelte</MenuItem>
             </TextField>
-            <Button bttype="tertiary" onClick={() => revertView(table)}>
-              Nulstil view
+            <Button bttype="tertiary" onClick={() => revertView(table, setShownMapTaskIds)}>
+              Nulstil
             </Button>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={includeClosedTasks}
+                  onChange={(e) => {
+                    setIncludeClosedTasks(e.target.checked);
+                  }}
+                />
+              }
+              label="Vis færdige opgaver"
+            />
           </Box>
         );
       },
@@ -860,31 +883,26 @@ const errorFallback = ({error, resetErrorBoundary}: FallbackProps) => {
   );
 };
 
-const resetView = (table: MRT_TableInstance<Task>) => {
+const resetView = (
+  table: MRT_TableInstance<Task>,
+  setShownMapTaskIds: (taskIds: Array<string>) => void
+) => {
   table.resetGlobalFilter();
   table.resetGrouping();
   table.resetSorting();
-  table.setColumnFilterFns((prev) => {
-    return {
-      ...prev,
-      status_id: 'arrIncludesNone',
-    };
-  });
-  table.setColumnFilters([
-    {
-      id: 'status_id',
-      value: ['Færdiggjort'],
-    },
-  ]);
+  table.setColumnFilters([]);
+  table.setShowColumnFilters(false);
+  setShownMapTaskIds([]);
 };
 
 const onSelectChange = (
   selectValue: ViewValues | '-1',
   table: MRT_TableInstance<Task>,
   taskUsers: Array<TaskUser> | undefined,
-  userAuthId: string | undefined
+  userAuthId: string | undefined,
+  setShownMapTaskIds: (taskIds: Array<string>) => void
 ) => {
-  resetView(table);
+  resetView(table, setShownMapTaskIds);
   switch (selectValue) {
     case 'upcoming':
       showUpcomingTasks(table);
@@ -911,6 +929,12 @@ const showUpcomingTasks = (table: MRT_TableInstance<Task>) => {
     {
       id: 'status_id',
       value: ['Åbent'],
+    },
+  ]);
+  table.setSorting([
+    {
+      id: 'due_date',
+      desc: false,
     },
   ]);
 };

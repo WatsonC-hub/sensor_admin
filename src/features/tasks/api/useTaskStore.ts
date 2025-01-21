@@ -27,13 +27,10 @@ const filterTasks = (tasks: Task[], ids: ID[][]) => {
 
 export const useTaskStore = () => {
   const {
-    get: {data: tasks},
-  } = useTasks();
-
-  const {
     shownListTaskIds,
     shownMapTaskIds,
     selectedTaskId,
+    includeClosedTasks,
     selectedLocIds: selectedLocIds,
     isDraggingTask,
     setShownMapTaskIds,
@@ -41,9 +38,14 @@ export const useTaskStore = () => {
     setSelectedTask,
     setSelectedLocIds,
     setIsDraggingTask,
+    setIncludeClosedTasks,
     resetFilter,
     resetState,
   } = taskStore();
+
+  const {
+    get: {data: tasks},
+  } = useTasks(includeClosedTasks);
 
   const {shownTasks, hiddenTasks, mapFilteredTasks} = useMemo(() => {
     if (!tasks) {
@@ -88,6 +90,7 @@ export const useTaskStore = () => {
     selectedTask,
     selectedLocIds,
     isDraggingTask,
+    includeClosedTasks,
     setSelectedTask,
     shownListTaskIds,
     shownMapTaskIds,
@@ -95,6 +98,7 @@ export const useTaskStore = () => {
     setShownListTaskIds,
     setSelectedLocIds,
     setIsDraggingTask,
+    setIncludeClosedTasks,
     resetFilter,
     resetState,
   };

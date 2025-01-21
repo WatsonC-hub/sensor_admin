@@ -1,9 +1,8 @@
 import {Box, Grid, Typography} from '@mui/material';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import {useTaskItinerary} from '../api/useTaskItinerary';
@@ -16,17 +15,11 @@ import TaskItineraryCard from './TaskItiniaryCard';
 const TaskItiniaries = () => {
   const [ids, setIds] = React.useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const {isMobile} = useBreakpoints();
-  const [isColumn, setIsColumn] = useState<boolean>(false);
   const {selectedLocIds} = useTaskStore();
   const {taskManagementSearch} = useNavigationFunctions();
   const {
     get: {data},
   } = useTaskItinerary();
-
-  useEffect(() => {
-    setIsColumn(isMobile);
-  }, [isMobile]);
 
   return (
     <Box>
@@ -40,8 +33,8 @@ const TaskItiniaries = () => {
       >
         Se tur ud fra selection
       </Button>
-      <Grid container p={1} gap={1} display={'flex'} flexDirection={isColumn ? 'column' : 'row'}>
-        <Grid item xs={10} sm={1.5}>
+      <Grid container gap={1} spacing={2} display={'flex'} flexDirection={'row'}>
+        <Grid item mobile={12} tablet={3} laptop={2.5} ml={0.5}>
           <Droppable<Task>
             onDrop={(e, data) => {
               e.preventDefault();
@@ -84,14 +77,7 @@ const TaskItiniaries = () => {
             )}
           </Droppable>
         </Grid>
-        <Grid
-          item
-          xs={10}
-          sm={10}
-          gap={2}
-          display={'flex'}
-          flexDirection={isColumn ? 'column' : 'row'}
-        >
+        <Grid item mobile={12} tablet={10} laptop={9.3} gap={1} container>
           {data?.map((itinerary) => <TaskItineraryCard key={itinerary.id} itinerary={itinerary} />)}
         </Grid>
       </Grid>
