@@ -104,9 +104,16 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
             ? 'Nu'
             : convertDateWithTimeStamp(row.original.enddate)}
         </Typography>
-        <Typography>
-          <b>Beskrivelse:</b> {row.original.mp_description}
-        </Typography>
+        {row.original.display_name && (
+          <Typography>
+            <b>Oprettet af:</b> {row.original.display_name}
+          </Typography>
+        )}
+        {row.original.mp_description && (
+          <Typography>
+            <b>Beskrivelse:</b> {row.original.mp_description}
+          </Typography>
+        )}
       </Box>
     ),
   };

@@ -89,6 +89,10 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
         accessorKey: 'comment',
         header: 'Kommentar',
       },
+      {
+        accessorKey: 'display_name',
+        header: 'Oprettet af',
+      },
     ],
     [unit]
   );
