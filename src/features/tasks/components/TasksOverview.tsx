@@ -1,4 +1,3 @@
-import {CalendarMonth} from '@mui/icons-material';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import MapIcon from '@mui/icons-material/Map';
 import {Box, BoxProps, Tab, Tabs} from '@mui/material';
@@ -7,7 +6,6 @@ import React, {SyntheticEvent} from 'react';
 
 import {tabsHeight, calculateContentHeight} from '~/consts';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
-import TaskCalendar from '~/features/tasks/components/TaskCalendar';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import Map from '~/pages/field/overview/Map';
 import {BoreholeMapData} from '~/types';
@@ -124,7 +122,7 @@ const TasksOverview = () => {
             </Box>
           }
         />
-        <Tab icon={<CalendarMonth />} iconPosition="start" label="Kalender" />
+        {/* <Tab icon={<CalendarMonth />} iconPosition="start" label="Kalender" /> */}
       </Tabs>
       <TabPanel key={'map'} value={tabValue} index={0}>
         <Box
@@ -146,9 +144,9 @@ const TasksOverview = () => {
       <TabPanel value={tabValue} index={1}>
         <TaskTable key="tasktable" />
       </TabPanel>
-      <TabPanel value={tabValue} index={2}>
+      {/* <TabPanel value={tabValue} index={2}>
         <TaskCalendar key="taskcalendar" />
-      </TabPanel>
+      </TabPanel> */}
     </Box>
   );
 };
