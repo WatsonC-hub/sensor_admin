@@ -39,7 +39,8 @@ import {
 const useMap = <TData extends object>(
   id: string,
   data: Array<TData>,
-  contextmenuItems: Array<L.ContextMenuItem>
+  contextmenuItems: Array<L.ContextMenuItem>,
+  selectCallback?: (data: TData) => void
 ) => {
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -63,6 +64,13 @@ const useMap = <TData extends object>(
   );
   const [selectedMarker, setSelectedMarker] = useState<TData | null | undefined>(null);
 
+  const setSelectedMarkerWithCallback = (data: TData | null | undefined) => {
+    setSelectedMarker(data);
+    if (selectCallback && data) {
+      selectCallback(data);
+    }
+  };
+
   const {
     get: {data: leafletMapRoutes},
     post: postLeafletMapRoute,
@@ -75,6 +83,8 @@ const useMap = <TData extends object>(
     put: putParkering,
     del: deleteParkering,
   } = useParkering();
+
+  // const {shownTasks, setShownMapTaskIds} = useTaskStore();
 
   const defaultContextmenuItems: Array<L.ContextMenuItem> = [
     {
@@ -121,8 +131,8 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: [56.215868, 8.228759],
-      zoom: 7,
+      center: pan || [56.215868, 8.228759],
+      zoom: zoom || 7,
       layers: [outdormapbox],
       tap: false,
       renderer: L.canvas({tolerance: 5}),
@@ -158,6 +168,30 @@ const useMap = <TData extends object>(
       })
       .addTo(map);
 
+    // const selectControl = new L.Control.StyleSelect({position: 'topright'});
+    // map.addControl(selectControl);
+    // const lassoControl = new LassoControl({position: 'topleft'});
+    // map.addControl(lassoControl);
+    // map.on('lasso.finished', (event) => {
+    //   console.log(
+    //     (event as LassoHandlerFinishedEvent).layers.map(
+    //       (layer) => layer.options as L.CircleMarkerOptions<TData>
+    //     )
+    //   );
+    //   const ids = new Set(
+    //     (event as LassoHandlerFinishedEvent).layers
+    //       .filter((layer) => (layer.options as L.CircleMarkerOptions<TData>).data !== undefined)
+    //       .map((layer) => {
+    //         const data = (layer.options as L.CircleMarkerOptions<TData>).data;
+    //         if (data && 'ts_id' in data) return data?.ts_id;
+    //       })
+    //       .flat()
+    //   );
+    //   const task_ids = shownTasks.filter((task) => ids.has(task.ts_id)).map((task) => task.id);
+
+    //   setShownMapTaskIds(task_ids);
+    // });
+
     onMapClickEvent(map);
     onCreateRouteEvent(map);
     onMapMoveEndEvent(map);
@@ -167,7 +201,7 @@ const useMap = <TData extends object>(
 
   const onMapClickEvent = (map: L.Map) => {
     map.on('click', function (e) {
-      setSelectedMarker(null);
+      setSelectedMarkerWithCallback(null);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
         highlightParking(hightlightedMarker.options.data.loc_id, false);
@@ -530,7 +564,7 @@ const useMap = <TData extends object>(
     markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
       console.log(e);
       L.DomEvent.stopPropagation(e);
-      setSelectedMarker(e.sourceTarget.options.data);
+      setSelectedMarkerWithCallback(e.sourceTarget.options.data);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
       }
@@ -574,16 +608,24 @@ const useMap = <TData extends object>(
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
 
+  const setMutateParking = (boolean: boolean) => {
+    mutateParkingRef.current = boolean;
+  };
+
+  const setMutateRoutes = (value: number | boolean | null) => {
+    mutateLeafletMapRouteRef.current = value;
+  };
+
   return {
     map: mapRef.current,
     selectedMarker,
-    setSelectedMarker,
+    setSelectedMarker: setSelectedMarkerWithCallback,
     layers: {
       markerLayer: markerLayerRef.current,
     },
     mutateLayers: {
-      mutateRoutesLayer: mutateLeafletMapRouteRef,
-      mutateParkingLayer: mutateParkingRef,
+      setMutateParking,
+      setMutateRoutes,
     },
     delete: {
       deleteId,

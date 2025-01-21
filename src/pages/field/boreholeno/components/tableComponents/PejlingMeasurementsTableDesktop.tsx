@@ -95,6 +95,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
   const [tableState, reset] = useStatefullTableAtom<Kontrol>('boreholePejlingTableState');
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {
+    enableFullScreenToggle: false,
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions

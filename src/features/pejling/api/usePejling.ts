@@ -64,12 +64,6 @@ export const pejlingGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> 
     const {data} = await apiClient.get<TData>(`/sensor_field/station/measurements/${ts_id}`);
 
     return data;
-    // return data.map((m) => {
-    //   return {
-    //     ...m,
-    //     timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss'),
-    //   };
-    // });
   },
   enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
 });

@@ -22,6 +22,28 @@ import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
 
+const Layout = ({children}: {children: React.ReactNode}) => {
+  const navigate = useNavigate();
+  return (
+    <>
+      <CssBaseline />
+      <AppBarLayout>
+        <IconButton
+          color="inherit"
+          onClick={() => {
+            navigate(-1);
+          }}
+          size="large"
+        >
+          <KeyboardBackspaceIcon />
+        </IconButton>
+        <NavBarMenu />
+      </AppBarLayout>
+      {children}
+    </>
+  );
+};
+
 export default function LocationRouter() {
   const params = useParams();
   const navigate = useNavigate();
@@ -38,25 +60,28 @@ export default function LocationRouter() {
   });
 
   const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
+  console.log(params);
+  if (params.locid === 'undefined' && params.ts_id === 'undefined') {
+    return (
+      <Layout>
+        <Navigate to="/field" replace />
+      </Layout>
+    );
+  }
+
+  if (params.locid === 'undefined' && metadata) {
+    return (
+      <Layout>
+        <Navigate to={`../location/${metadata.loc_id}/${params.ts_id}`} replace />
+      </Layout>
+    );
+  }
 
   if (isPending)
     return (
-      <>
-        <CssBaseline />
-        <AppBarLayout>
-          <IconButton
-            color="inherit"
-            onClick={() => {
-              navigate(-1);
-            }}
-            size="large"
-          >
-            <KeyboardBackspaceIcon />
-          </IconButton>
-          <NavBarMenu />
-        </AppBarLayout>
+      <Layout>
         <LoadingSkeleton />
-      </>
+      </Layout>
     );
   if (error) return;
 
@@ -74,23 +99,9 @@ export default function LocationRouter() {
 
   if (data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
     return (
-      <>
-        <CssBaseline />
-        <AppBarLayout>
-          <IconButton
-            color="inherit"
-            onClick={() => {
-              navigate(-1);
-            }}
-            size="large"
-          >
-            <KeyboardBackspaceIcon />
-          </IconButton>
-          <NavBarMenu />
-        </AppBarLayout>
-        <LoadingSkeleton />
+      <Layout>
         <Navigate to={`../location/${params.locid}/${data[0].ts_id}`} replace />;
-      </>
+      </Layout>
     );
   }
 
@@ -109,11 +120,9 @@ export default function LocationRouter() {
         </IconButton>
 
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Tooltip title={data?.[0].loc_name} arrow enterTouchDelay={0}>
-            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-              {data?.[0].loc_name}
-            </Typography>
-          </Tooltip>
+          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            {data?.[0].loc_name}
+          </Typography>
           {hasTimeseries ? (
             <MinimalSelect
               locid={params.locid ? parseInt(params.locid) : undefined}

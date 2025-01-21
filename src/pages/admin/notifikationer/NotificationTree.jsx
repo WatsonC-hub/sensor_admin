@@ -9,7 +9,6 @@ import React, {useEffect} from 'react';
 import NotificationRow from '~/pages/admin/notifikationer/NotificationRow';
 
 const expandedAtom = atom([]);
-const typeAheadAtom = atom('');
 
 const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   const [expanded, setExpanded] = useAtom(expandedAtom);

@@ -1,9 +1,15 @@
+import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
 import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
 
+import {ID} from '~/features/tasks/types';
+
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
-
+  // const [loc_ids, setLocIds] = useQueryState(
+  //   'loc_ids',
+  //   parseAsArrayOf(parseAsInteger).withDefault([])
+  // );
   const homeFunctions = {
     home: () => navigate('/'),
     register: () => navigate('/register'),
@@ -13,6 +19,20 @@ export const useNavigationFunctions = () => {
     admin: () => navigate('/admin'),
     adminNotifikationer: () => navigate('/admin/notifikationer'),
     adminKvalitetssikring: (ts_id: number) => navigate('/admin/kvalitetssikring/' + ts_id),
+    tasks: () => navigate('/admin/opgaver'),
+    taskManagement: (id: ID) => {
+      navigate({
+        pathname: '/admin/opgaver/tur/' + id,
+      });
+      // setLocIds(loc_ids);
+    },
+    taskManagementSearch: (loc_ids: number[]) => {
+      navigate({
+        pathname: '/admin/opgaver/tur',
+        search: loc_ids.length > 0 ? '?loc_ids=' + loc_ids.join(',') : '',
+      });
+      // setLocIds(loc_ids);
+    },
   };
 
   const fieldFunctions = {

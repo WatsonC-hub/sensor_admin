@@ -15,7 +15,10 @@ const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
   const {station, adminKvalitetssikring} = useNavigationFunctions();
 
-  console.log(data);
+  // const get_location_tasks = useQuery<Task[], APIError>({
+  //   queryKey: ['location_tasks', loc_id],
+  // });
+
   const all_notifications = [...data.otherNotifications];
   const unique_stations = all_notifications
     .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
@@ -103,6 +106,7 @@ const SensorContent = ({data}: SensorContentProps) => {
                 );
               })}
           </Box>
+          {/* <Typography variant="h6">Opgaver</Typography> */}
         </>
       )}
 

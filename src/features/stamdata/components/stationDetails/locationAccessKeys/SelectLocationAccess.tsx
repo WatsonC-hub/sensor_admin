@@ -19,8 +19,8 @@ const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
   const [search, setSearch] = useState<string>('');
   const debouncedSearch = useDebouncedValue(search, 500);
   const {reset} = useFormContext();
-  const {useSearchLocationAccess} = useLocationAccess(loc_id);
 
+  const {useSearchLocationAccess} = useLocationAccess(loc_id);
   const {data, isFetching} = useSearchLocationAccess(debouncedSearch);
 
   useEffect(() => {

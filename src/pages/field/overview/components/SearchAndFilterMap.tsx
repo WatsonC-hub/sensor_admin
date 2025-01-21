@@ -84,7 +84,14 @@ const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
       ? true
       : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
   const activeFilter = data.active == true || data.active == null ? true : filter.showInactive;
-  return activeFilter && serviceFilter && !filter.isSingleMeasurement;
+  const keepLocationsWithoutNotifications =
+    data.type === 'none' ? !filter.hideLocationsWithoutNotifications : true;
+  return (
+    keepLocationsWithoutNotifications &&
+    activeFilter &&
+    serviceFilter &&
+    !filter.isSingleMeasurement
+  );
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {

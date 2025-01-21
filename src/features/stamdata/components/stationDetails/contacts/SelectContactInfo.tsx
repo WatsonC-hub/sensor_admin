@@ -39,7 +39,7 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const {useSearchContact, post: postContact} = useContactInfo(loc_id);
+  const {post: postContact, useSearchContact} = useContactInfo(loc_id);
 
   const {data, isFetching} = useSearchContact(deboundedSearch);
 

@@ -29,6 +29,7 @@ export interface Notification {
   groups: Group[];
   loctype_id: number;
   calculated: boolean | null;
+  type: 'task' | 'notification' | 'none';
   parking_id: number;
 }
 
@@ -80,12 +81,22 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
   return query;
 };
 
+export const useLocationNotificationOverview = (loc_id: number) => {
+  return useQuery<Notification[]>({
+    queryKey: ['overblik', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/overblik/${loc_id}`);
+      return data;
+    },
+    staleTime: 10,
+  });
+};
+
 export const useNotificationOverviewMap = (
   options?: NotificationOverviewOptions
 ): UseQueryResult<NotificationMap[], Error> => {
   // @ts-expect-error - This is a valid use case for the hook
   return useNotificationOverview({
-    ...options,
     select: (data) => {
       const sorted = reverse(
         sortBy(data, [
@@ -124,5 +135,6 @@ export const useNotificationOverviewMap = (
 
       return grouped;
     },
+    ...options,
   });
 };

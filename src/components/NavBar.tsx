@@ -1,6 +1,5 @@
-import {MapRounded, Person} from '@mui/icons-material';
+import {Assignment, MapRounded, Person} from '@mui/icons-material';
 import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -247,7 +246,7 @@ const GoBack = () => {
 const NavBar = () => {
   const [authenticated, iotAccess] = authStore((state) => [state.authenticated, state.iotAccess]);
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
-  const {admin, createStamdata, field, station} = useNavigationFunctions();
+  const {createStamdata, field, station, tasks} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const metadata = useContext(MetadataContext);
 
@@ -305,10 +304,10 @@ const NavBar = () => {
           <NavBarMenu
             items={[
               {
-                title: 'Admin',
-                icon: <AdminPanelSettingsIcon fontSize="medium" />,
+                title: 'Opgaver',
+                icon: <Assignment fontSize="medium" />,
                 onClick: () => {
-                  admin();
+                  tasks();
                 },
               },
               ...(iotAccess

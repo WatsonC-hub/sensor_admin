@@ -8,6 +8,9 @@ import QualityAssuranceOverview from '~/pages/admin/kvalitetssikring/QualityAssu
 import NotificationPage from '~/pages/admin/notifikationer/NotificationPage';
 import AdminChooser from '~/pages/admin/overview/AdminChooser';
 
+import TasksPage from './opgaver/TasksPage';
+import Trip from './opgaver/Trip';
+
 const SensorAdmin = () => {
   return (
     <>
@@ -18,6 +21,10 @@ const SensorAdmin = () => {
         <Route path="/notifikationer" element={<NotificationPage />} />
         <Route path="/brugerstyring" element={<UserAdmin />} />
         <Route path="/konfiguration" element={<ConfigurationPage />} />
+        <Route path="/opgaver" element={<TasksPage />} />
+        <Route path="/opgaver/tur" element={<Trip />} />
+        <Route path="/opgaver/tur/:trip_id" element={<Trip />} />
+        <Route path="*" element={<AdminChooser />} />
       </Routes>
     </>
   );

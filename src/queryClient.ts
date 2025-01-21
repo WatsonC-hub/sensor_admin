@@ -4,6 +4,7 @@ import {
   QueryClient,
   UseMutationOptions,
   UseQueryOptions,
+  UseQueryResult,
 } from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';
@@ -26,6 +27,7 @@ type ErrorResponse = {
 export type APIError = AxiosError<ErrorResponse>;
 
 export type GetQueryOptions<TData> = UseQueryOptions<TData, APIError>;
+export type GetResultOptions<TData> = UseQueryResult<TData, APIError>;
 export type MutationQueryOptions = UseMutationOptions;
 
 const queryClient = new QueryClient({

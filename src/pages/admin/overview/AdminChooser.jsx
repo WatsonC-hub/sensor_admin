@@ -1,9 +1,11 @@
+import {Assignment} from '@mui/icons-material';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 
 import ChoiseCard from '~/components/ChoiseCard';
+import GenericCard from '~/components/GenericCard';
 import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {authStore} from '~/state/store';
@@ -42,24 +44,6 @@ const AdminChooser = () => {
           marginTop: 10,
         }}
       >
-        {/* {iotAccess && (
-          <Grid
-            item
-            xs={10}
-            sm={5}
-            sx={{
-              pointerEvents: adminAccess ? 'auto' : 'none',
-              opacity: adminAccess ? 1 : 0.8,
-            }}
-          >
-            <ChoiseCard
-              navigateTo="konfiguration"
-              title="Omkonfigurer enheder"
-              text="Omkonfigurer enheder"
-              icon={RouterIcon}
-            />
-          </Grid>
-        )} */}
         <Grid
           item
           xs={10}
@@ -92,7 +76,7 @@ const AdminChooser = () => {
             icon={NotificationsActiveIcon}
           />
         </Grid>
-        {/* <Grid
+        <Grid
           item
           xs={10}
           sm={5}
@@ -102,13 +86,14 @@ const AdminChooser = () => {
           }}
         >
           <ChoiseCard
-            navigateTo="brugerstyring"
-            title="Brugerstyring"
-            text="Administrer brugere"
-            icon={SupervisorAccountIcon}
+            navigateTo="opgaver"
+            title="Opgaver"
+            text="Administrer opgaver"
+            icon={Assignment}
           />
-        </Grid> */}
+        </Grid>
       </Grid>
+      <GenericCard />
     </>
   );
 };

@@ -5,25 +5,29 @@ import React from 'react';
 
 interface Props {
   canEdit?: boolean;
-  handleEdit: () => void;
-  onDeleteBtnClick: () => void;
+  handleEdit?: () => void;
+  onDeleteBtnClick?: () => void;
 }
 
 const RenderActions = ({handleEdit, onDeleteBtnClick, canEdit}: Props) => {
   return (
     <Box margin="0 auto" display="flex" justifyContent="flex-end">
-      <IconButton edge="end" onClick={handleEdit} disabled={!canEdit} size="large">
-        <EditIcon />
-      </IconButton>
-      <IconButton
-        edge="end"
-        onClick={onDeleteBtnClick}
-        disabled={!canEdit}
-        size="large"
-        style={{marginRight: '2px'}}
-      >
-        <DeleteIcon />
-      </IconButton>
+      {handleEdit && (
+        <IconButton sx={{p: 1}} edge="end" onClick={handleEdit} disabled={!canEdit} size="large">
+          <EditIcon />
+        </IconButton>
+      )}
+      {onDeleteBtnClick && (
+        <IconButton
+          edge="end"
+          onClick={onDeleteBtnClick}
+          disabled={!canEdit}
+          size="large"
+          style={{marginRight: '2px'}}
+        >
+          <DeleteIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };
