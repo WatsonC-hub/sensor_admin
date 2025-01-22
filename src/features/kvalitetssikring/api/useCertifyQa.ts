@@ -70,6 +70,9 @@ export const useCertifyQa = (ts_id: number | undefined) => {
         queryKey: ['certifyQa', ts_id],
       });
       toast.success('Kvalitetsstempel gemt');
+      queryClient.invalidateQueries({
+        queryKey: ['qa_all', ts_id],
+      });
     },
   });
 
