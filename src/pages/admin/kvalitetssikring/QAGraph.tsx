@@ -435,8 +435,8 @@ export default function PlotGraph({
     ...(dataToShow?.Kontrolmålinger
       ? [
           {
-            x: xControl?.reverse(),
-            y: yControl?.reverse(),
+            x: xControl,
+            y: yControl,
             name: 'Kontrolpejlinger',
             type: 'scattergl',
             mode: 'markers',
