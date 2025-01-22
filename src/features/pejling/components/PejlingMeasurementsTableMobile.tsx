@@ -113,6 +113,11 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
         <Typography>
           <b>Dato: </b> {convertDateWithTimeStamp(row.original.timeofmeas)}
         </Typography>
+        {row.original.display_name && (
+          <Typography>
+            <b>Oprettet af: </b> {row.original.display_name}
+          </Typography>
+        )}
       </Box>
     ),
   };

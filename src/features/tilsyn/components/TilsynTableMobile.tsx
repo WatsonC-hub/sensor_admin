@@ -104,6 +104,11 @@ export default function TilsynTableMobile({handleEdit, handleDelete, canEdit}: P
         <Typography>
           <b>Dato: </b> {convertDateWithTimeStamp(row.original.dato)}
         </Typography>
+        {row.original.display_name && (
+          <Typography>
+            <b>Oprettet af:</b> {row.original.display_name}
+          </Typography>
+        )}
         {row.original.kommentar && (
           <Typography>
             <b>Kommentar:</b> {row.original.kommentar}

@@ -90,6 +90,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     else putPejling.mutate(payload);
     setDynamic([]);
     setShowForm(null);
+    if (values.gid !== -1) reset(initialData);
   };
 
   const handleEdit = (data: PejlingItem) => {
