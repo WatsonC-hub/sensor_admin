@@ -129,6 +129,11 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
             {row.original.organisationid !== null ? row.original.organisationname : '-'}
           </Typography>
         )}
+        {row.original.display_name && (
+          <Typography>
+            <b>Oprettet af: </b> {row.original.display_name}
+          </Typography>
+        )}
         {row.original.comment && (
           <Typography>
             <b>Kommentar: </b> {row.original.comment}

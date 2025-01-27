@@ -52,6 +52,25 @@ const FormInput = <TFieldValues extends FieldValues>({
         return (
           <TextField
             {...otherProps}
+            onKeyDown={(e) => {
+              if (type === 'number' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                e.preventDefault();
+              }
+            }}
+            InputProps={
+              type === 'number'
+                ? {
+                    sx: {
+                      '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                        display: 'none',
+                      },
+                      '& input[type=number]': {
+                        MozAppearance: 'textfield',
+                      },
+                    },
+                  }
+                : undefined
+            }
             key={name}
             name={name}
             type={type}

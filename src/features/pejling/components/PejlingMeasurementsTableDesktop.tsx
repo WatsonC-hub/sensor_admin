@@ -65,6 +65,11 @@ export default function PejlingMeasurementsTableDesktop({
         header: 'Kommentar',
         enableColumnFilter: false,
       },
+      {
+        accessorKey: 'display_name',
+        header: 'Oprettet af',
+        enableColumnFilter: false,
+      },
     ],
     [unit]
   );

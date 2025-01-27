@@ -74,6 +74,10 @@ export default function TilsynTableDesktop({handleEdit, handleDelete, canEdit}: 
         header: 'Kommentar',
         size: 300,
       },
+      {
+        header: 'Oprettet af',
+        accessorKey: 'display_name',
+      },
     ],
     []
   );

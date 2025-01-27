@@ -90,16 +90,8 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                           }
                         }}
                         selectValue={selectedContactInfo!}
-                        filterOptions={(options, params) => {
-                          const {inputValue} = params;
-
-                          const filter = options.filter(
-                            (option) =>
-                              option.navn.toLowerCase().includes(inputValue.toLowerCase()) ||
-                              option.email.toLowerCase().includes(inputValue.toLowerCase())
-                          );
-
-                          return filter;
+                        filterOptions={(options) => {
+                          return options;
                         }}
                         inputValue={search}
                         renderOption={(props, option) => {

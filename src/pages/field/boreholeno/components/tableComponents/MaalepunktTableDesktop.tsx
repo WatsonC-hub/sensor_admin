@@ -62,6 +62,10 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         accessorKey: 'mp_description',
         Cell: ({row}) => <Typography>{row.getValue('mp_description')}</Typography>,
       },
+      {
+        header: 'Oprettet af',
+        accessorKey: 'display_name',
+      },
     ],
     []
   );
