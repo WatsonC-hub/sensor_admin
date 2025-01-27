@@ -54,7 +54,6 @@ export const taskPatchOptions = {
   mutationKey: ['tasks_patch'],
   mutationFn: async (mutation_data: Mutation<PatchTask>) => {
     const {path, data} = mutation_data;
-    console.log(data);
     const {data: result} = await apiClient.patch(`/sensor_admin/tasks/${path}`, data);
     return result;
   },
@@ -93,7 +92,6 @@ export const RelatedTasksOptions = <TData>(
   queryKey: ['tasks', loc_ids],
   queryFn: async () => {
     const {data} = await apiClient.get<TData>(`/sensor_admin/tasks/${loc_ids}`);
-    console.log('from api', data);
     return data;
   },
   enabled: loc_ids !== undefined && loc_ids !== null && loc_ids.length > 0,
@@ -112,14 +110,15 @@ export const moveTaskToItineraryOptions = {
   mutationKey: ['taskItinerary_move'],
   mutationFn: async (mutation_data: MoveTaskToDifferentItinerary) => {
     const {path, data} = mutation_data;
-    console.log(data);
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
     return result;
   },
 };
 
 // /location_related_tasks/{loc_id}
-export const useTasks = (include_closed: boolean = false) => {
+export const useTasks = () => {
+  const include_closed = taskStore((state) => state.includeClosedTasks);
+
   const queryClient = useQueryClient();
   const setSelectedTask = taskStore((state) => state.setSelectedTask);
   const get = useQuery<Task[], APIError>({
@@ -136,7 +135,7 @@ export const useTasks = (include_closed: boolean = false) => {
     ...tasksPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['tasks'],
+        queryKey: ['tasks', include_closed],
       });
       toast.success('Opgaver gemt');
     },
@@ -146,30 +145,30 @@ export const useTasks = (include_closed: boolean = false) => {
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
-      const previous = queryClient.getQueryData<Task[]>(['tasks']);
+      const previous = queryClient.getQueryData<Task[]>(['tasks', include_closed]);
+      queryClient.invalidateQueries({queryKey: ['tasks', !include_closed]});
       queryClient.setQueryData<Task[]>(
-        ['tasks'],
+        ['tasks', include_closed],
         previous?.map((task) => {
           if (task.id === path) {
             const updated = {...task, ...data};
-
             return updated;
           }
+
           return task;
         })
       );
-      return {previous};
     },
     onSuccess: (data, variables) => {
       const {path} = variables;
       if (path != data.id) {
-        const previous = queryClient.getQueryData<Task[]>(['tasks']);
+        const previous = queryClient.getQueryData<Task[]>(['tasks', include_closed]);
+        queryClient.invalidateQueries({queryKey: ['tasks', !include_closed]});
         queryClient.setQueryData<Task[]>(
-          ['tasks'],
+          ['tasks', include_closed],
           previous?.map((task) => {
             if (task.id === path) {
               const updated = {...task, ...data};
-
               return updated;
             }
             return task;
