@@ -117,10 +117,15 @@ export const moveTaskToItineraryOptions = {
 
 // /location_related_tasks/{loc_id}
 export const useTasks = () => {
-  const include_closed = taskStore((state) => state.includeClosedTasks);
-
   const queryClient = useQueryClient();
-  const setSelectedTask = taskStore((state) => state.setSelectedTask);
+  const [setSelectedTask, include_closed, shownMapTaskIds, setShownMapTaskIds] = taskStore(
+    (state) => [
+      state.setSelectedTask,
+      state.includeClosedTasks,
+      state.shownMapTaskIds,
+      state.setShownMapTaskIds,
+    ]
+  );
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks', include_closed],
     queryFn: async () => {
@@ -175,6 +180,7 @@ export const useTasks = () => {
           })
         );
         queryClient.invalidateQueries({queryKey: ['overblik']});
+        setShownMapTaskIds([...shownMapTaskIds, data.id]);
         setSelectedTask(data.id);
       }
 
