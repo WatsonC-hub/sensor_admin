@@ -33,7 +33,7 @@ export const taskStore = create<TaskState>()(
       selectedTaskId: null,
       selectedLocIds: [],
       isDraggingTask: false,
-      includeClosedTasks: true,
+      includeClosedTasks: false,
       setShownListTaskIds: (ids) => set({shownListTaskIds: ids}),
       setShownMapTaskIds: (ids) => set({shownMapTaskIds: ids}),
       setSelectedTask: (id) => set({selectedTaskId: id}),

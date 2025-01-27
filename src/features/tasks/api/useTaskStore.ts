@@ -45,7 +45,7 @@ export const useTaskStore = () => {
 
   const {
     get: {data: tasks},
-  } = useTasks(includeClosedTasks);
+  } = useTasks();
 
   const {shownTasks, hiddenTasks, mapFilteredTasks} = useMemo(() => {
     if (!tasks) {
