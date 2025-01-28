@@ -111,6 +111,13 @@ export const useNotificationOverviewMap = (
         const existing = acc.find((accItem) => accItem.loc_id === item.loc_id);
 
         if (existing) {
+          if (item.type === 'task') {
+            existing.type = 'task';
+          }
+          if (item.type === 'notification' && existing.type !== 'task') {
+            existing.type = 'notification';
+          }
+
           if (item.notify_type === 'obs') {
             existing.obsNotifications.push(item);
           }
