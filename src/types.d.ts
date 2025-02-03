@@ -88,6 +88,7 @@ export type Kontrol = {
   organisationid: number;
   organisationname: string;
   uploaded_status: boolean;
+  display_name?: string;
 };
 
 export type BoreholeMeasurement = {
@@ -121,6 +122,7 @@ export type MaalepunktTableData = {
   gid: number;
   ts_id: number;
   userid: string;
+  display_name?: string;
 };
 
 export type Maalepunkt = {
@@ -131,6 +133,7 @@ export type Maalepunkt = {
   gid: number;
   ts_id: number;
   userid: string;
+  display_name?: string;
 };
 
 export type MaalepunktPost = {
@@ -148,6 +151,7 @@ export type TilsynItem = {
   kommentar?: string | undefined;
   tilsyn: boolean;
   user_id: string | null;
+  display_name?: string;
 };
 
 export type ZodTilsynItem = {
@@ -169,6 +173,7 @@ export type PejlingItem = {
   pumpstop?: string | null;
   extrema?: string | null;
   service?: boolean;
+  display_name?: string;
 };
 
 export type Parking = {
@@ -194,7 +199,7 @@ export type ContactInfo = {
   id?: string | null;
   navn: string;
   telefonnummer?: string | null;
-  email: string;
+  email: string | null;
   comment?: string;
   contact_role: number;
   user_id?: string | null;

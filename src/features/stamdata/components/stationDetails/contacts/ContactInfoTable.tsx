@@ -221,6 +221,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const handleSave: SubmitHandler<InferContactInfoTable> = async (details) => {
     editContact({
       ...details,
+      email: details.email ?? '',
       telefonnummer: details.telefonnummer ? details.telefonnummer.toString() : null,
     });
     setOpenContactInfoDialog(false);

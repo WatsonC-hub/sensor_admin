@@ -70,6 +70,10 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         header: 'Beskrivelse',
         accessorKey: 'mp_description',
       },
+      {
+        header: 'Oprettet af',
+        accessorKey: 'display_name',
+      },
     ],
     [unit]
   );
