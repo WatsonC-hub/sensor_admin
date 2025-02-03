@@ -42,7 +42,6 @@ export default function BoreholeRouter() {
           setSelectedItem(parseInt(intakeno));
           boreholeIntake(params.boreholeno, intakeno, {replace: true});
         }
-        setSelectedItem(parseInt(intakeno));
       }
     }
   }, [data]);
