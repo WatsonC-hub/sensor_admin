@@ -81,7 +81,7 @@ export const HomeButton = () => {
 
 export const AppBarLayout = ({children}: {children?: ReactNode}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
       <Toolbar
         sx={{
           height: appBarHeight,

@@ -4,7 +4,6 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
 import {Navigate, useNavigate, useParams} from 'react-router-dom';
@@ -21,6 +20,8 @@ import ErrorPage from '~/pages/field/station/ErrorPage';
 import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
+
+import StationDrawer from './StationDrawer';
 
 export default function LocationRouter() {
   const params = useParams();
@@ -152,16 +153,19 @@ export default function LocationRouter() {
           />
         </Box>
       </AppBarLayout>
-
-      <main
-        style={{
-          flexGrow: 1,
-        }}
-      >
-        <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <Station ts_id={params.ts_id ? parseInt(params.ts_id) : -1} stamdata={stamdata} />
-        </ErrorBoundary>
-      </main>
+      <Box sx={{display: 'flex'}}>
+        <StationDrawer />
+        <Box
+          component={'main'}
+          style={{
+            flexGrow: 1,
+          }}
+        >
+          <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
+            <Station ts_id={params.ts_id ? parseInt(params.ts_id) : -1} stamdata={stamdata} />
+          </ErrorBoundary>
+        </Box>
+      </Box>
     </MetadataContext.Provider>
   );
 }
