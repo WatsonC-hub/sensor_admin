@@ -176,7 +176,6 @@ const WizardConfirmTimeseries = ({
                 label={'Sidst godkendt'}
                 placeholder="Fra start"
                 fullWidth
-                InputLabelProps={{shrink: true}}
                 disabled={true}
                 style={{
                   minWidth: 195,
