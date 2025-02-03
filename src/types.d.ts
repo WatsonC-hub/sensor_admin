@@ -199,7 +199,7 @@ export type ContactInfo = {
   id?: string | null;
   navn: string;
   telefonnummer?: string | null;
-  email: string;
+  email: string | null;
   comment?: string;
   contact_role: number;
   user_id?: string | null;
