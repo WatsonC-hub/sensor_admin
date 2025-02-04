@@ -31,6 +31,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   InputProps,
   onKeyDown,
   helperText,
+  fullWidth = true,
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
   const {
@@ -91,7 +92,7 @@ const FormInput = <TFieldValues extends FieldValues>({
             className={'swiper-no-swiping' + (className ? ' ' + className : '')}
             variant={variant}
             InputLabelProps={{shrink: true, style: {zIndex: 0}, ...InputLabelProps}}
-            fullWidth
+            fullWidth={fullWidth}
             margin={margin}
             onKeyDown={(e) => {
               if (type === 'number' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
