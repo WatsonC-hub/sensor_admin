@@ -7,6 +7,7 @@ import {apiClient} from '~/apiClient';
 import CaptureDialog from '~/components/CaptureDialog';
 import ScanComponent from '~/components/ScanComponent';
 import LocationRouter from '~/features/station/components/LocationRouter';
+import RoutingParamsWrapper from '~/helpers/RoutingParamsWrapper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
@@ -74,8 +75,22 @@ function SensorField() {
       {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
       <Routes>
         <Route path="/" element={<OverviewPage />} />
-        <Route path="location/:locid/:ts_id" element={<LocationRouter />} />
-        <Route path="location/:locid" element={<LocationRouter />} />
+        <Route
+          path="location/:locid/:ts_id"
+          element={
+            <RoutingParamsWrapper<'locid' | 'ts_id'>>
+              {({locid, ts_id}) => <LocationRouter loc_id={locid} ts_id={ts_id} />}
+            </RoutingParamsWrapper>
+          }
+        />
+        <Route
+          path="location/:locid"
+          element={
+            <RoutingParamsWrapper<'locid'>>
+              {({locid}) => <LocationRouter loc_id={locid} />}
+            </RoutingParamsWrapper>
+          }
+        />
         <Route
           path="stamdata"
           element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}

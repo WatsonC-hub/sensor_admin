@@ -4,10 +4,9 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
-import {Navigate, useNavigate, useParams} from 'react-router-dom';
+import {Navigate, useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import {AppBarLayout, NavBarMenu, HomeButton} from '~/components/NavBar';
@@ -22,22 +21,26 @@ import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
 
-export default function LocationRouter() {
-  const params = useParams();
+interface LocationRouterProps {
+  loc_id: string;
+  ts_id?: string;
+}
+
+export default function LocationRouter({loc_id, ts_id}: LocationRouterProps) {
   const navigate = useNavigate();
   const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
   const adminAccess = authStore((state) => state.adminAccess);
 
   const {data, error, isPending} = useQuery({
-    queryKey: ['stations', params.locid],
+    queryKey: ['stations', loc_id],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/station/metadata_location/${params.locid}`);
+      const {data} = await apiClient.get(`/sensor_field/station/metadata_location/${loc_id}`);
       return data;
     },
-    enabled: params.locid !== undefined,
+    enabled: loc_id !== undefined,
   });
 
-  const {data: metadata} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
+  const {data: metadata} = useMetadata(ts_id ? parseInt(ts_id) : -1);
 
   if (isPending)
     return (
@@ -65,14 +68,12 @@ export default function LocationRouter() {
     hasTimeseries = data.some((stamdata: {ts_id: number}) => stamdata.ts_id !== null);
   let stamdata = undefined;
   if (hasTimeseries) {
-    stamdata = data.filter(
-      (elem: {ts_id: number}) => params.ts_id && elem.ts_id == parseInt(params.ts_id)
-    )?.[0];
+    stamdata = data.filter((elem: {ts_id: number}) => ts_id && elem.ts_id == parseInt(ts_id))?.[0];
   } else {
     stamdata = data[0];
   }
 
-  if (data.length == 1 && params.ts_id === undefined && data[0].ts_id != null) {
+  if (data.length == 1 && ts_id === undefined && data[0].ts_id != null) {
     return (
       <>
         <CssBaseline />
@@ -89,7 +90,7 @@ export default function LocationRouter() {
           <NavBarMenu />
         </AppBarLayout>
         <LoadingSkeleton />
-        <Navigate to={`../location/${params.locid}/${data[0].ts_id}`} replace />;
+        <Navigate to={`../location/${loc_id}/${data[0].ts_id}`} replace />;
       </>
     );
   }
@@ -113,10 +114,7 @@ export default function LocationRouter() {
             {data?.[0].loc_name}
           </Typography>
           {hasTimeseries ? (
-            <MinimalSelect
-              locid={params.locid ? parseInt(params.locid) : undefined}
-              stationList={data}
-            />
+            <MinimalSelect locid={loc_id ? parseInt(loc_id) : undefined} stationList={data} />
           ) : hasTimeseries === false ? (
             'Ingen tidsserie på lokationen'
           ) : (
@@ -124,7 +122,7 @@ export default function LocationRouter() {
           )}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
-          <BatteryStatus ts_id={params.ts_id ? params.ts_id : ''} />
+          <BatteryStatus ts_id={ts_id ? ts_id : ''} />
           <HomeButton />
           {adminAccess && <NotificationList />}
           <NavBarMenu
@@ -135,7 +133,7 @@ export default function LocationRouter() {
                     {
                       title: 'Til QA',
                       onClick: () => {
-                        adminKvalitetssikring(params.ts_id ? parseInt(params.ts_id) : -1);
+                        adminKvalitetssikring(ts_id ? parseInt(ts_id) : -1);
                       },
                       icon: <AutoGraphIcon />,
                     },
@@ -159,7 +157,7 @@ export default function LocationRouter() {
         }}
       >
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <Station ts_id={params.ts_id ? parseInt(params.ts_id) : -1} stamdata={stamdata} />
+          <Station ts_id={ts_id ? parseInt(ts_id) : -1} stamdata={stamdata} />
         </ErrorBoundary>
       </main>
     </MetadataContext.Provider>
