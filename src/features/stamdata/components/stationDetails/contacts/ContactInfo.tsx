@@ -1,9 +1,8 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {Box, Grid, useMediaQuery, useTheme} from '@mui/material';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
@@ -11,14 +10,15 @@ import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
 import {contact_info} from '~/features/stamdata/components/stationDetails/zodSchemas';
+import {MetadataContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
 const ContactInfo = () => {
-  const params = useParams();
+  const metadata = useContext(MetadataContext);
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const loc_id: number | undefined = parseInt(params.locid!);
+  const loc_id = metadata?.loc_id;
   const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
 
   const formMethods = useForm({

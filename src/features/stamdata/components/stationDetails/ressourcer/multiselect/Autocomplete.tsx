@@ -16,7 +16,7 @@ import type {
 interface CheckboxesTagsProps extends MultiSelectProps {
   value: Array<Ressourcer>;
   setValue: (value: Array<Ressourcer>) => void;
-  loc_id: string;
+  loc_id: number | undefined;
 }
 
 export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTagsProps) {
@@ -24,14 +24,10 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
     get: {data: options},
     post: postRessourcer,
     relation: {data: related},
-  } = useRessourcer(parseInt(loc_id));
+  } = useRessourcer(loc_id);
 
   const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
-  const {
-    trigger,
-    watch,
-    formState: {errors},
-  } = useFormContext();
+  const {trigger, watch} = useFormContext();
 
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
 

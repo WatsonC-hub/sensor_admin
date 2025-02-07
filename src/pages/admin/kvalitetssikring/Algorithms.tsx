@@ -1,15 +1,16 @@
 import {Grid} from '@mui/material';
-import React from 'react';
-import {useParams} from 'react-router-dom';
+import React, {useContext} from 'react';
 
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
+import {MetadataContext} from '~/state/contexts';
 
 const Algorithms = () => {
-  const params = useParams();
+  const metadata = useContext(MetadataContext);
+  const ts_id = metadata?.ts_id;
   const {
     get: {data},
-  } = useAlgorithms(params.ts_id);
+  } = useAlgorithms(ts_id);
 
   // const {data} = useQuery({
   //   queryKey: ['algorithms', params.ts_id],

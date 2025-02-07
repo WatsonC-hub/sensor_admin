@@ -5,6 +5,7 @@ import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
 import {useQuery} from '@tanstack/react-query';
+import {useMemo} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 import {Navigate, useNavigate} from 'react-router-dom';
 
@@ -114,7 +115,7 @@ export default function LocationRouter({loc_id, ts_id}: LocationRouterProps) {
             {data?.[0].loc_name}
           </Typography>
           {hasTimeseries ? (
-            <MinimalSelect locid={loc_id ? parseInt(loc_id) : undefined} stationList={data} />
+            <MinimalSelect locid={parseInt(loc_id)} stationList={data} />
           ) : hasTimeseries === false ? (
             'Ingen tidsserie på lokationen'
           ) : (

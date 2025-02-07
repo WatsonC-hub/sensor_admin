@@ -2,12 +2,9 @@ import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
 import {Grid} from '@mui/material';
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
 
 import ChoiseCard from '~/components/ChoiseCard';
 const Chooser = () => {
-  let navigate = useNavigate();
-
   return (
     <Grid
       container

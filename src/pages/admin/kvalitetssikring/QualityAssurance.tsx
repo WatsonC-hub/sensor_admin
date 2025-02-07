@@ -6,7 +6,6 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {Box, Divider, Grid, Typography} from '@mui/material';
 import {useQueryState, parseAsStringLiteral} from 'nuqs';
 import React, {ReactNode, useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import CustomSpeedDial from '~/components/CustomSpeedDial';
@@ -28,8 +27,11 @@ const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
 
-const QualityAssurance = () => {
-  const params = useParams();
+interface QualityAssuranceProps {
+  ts_id: number;
+}
+
+const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
   const [pageToShow] = useQueryState(
     'page',
     parseAsStringLiteral(qaPagesLiteral).withDefault('justeringer')
@@ -44,7 +46,7 @@ const QualityAssurance = () => {
   const [levelCorrection, setLevelCorrection] = useState(false);
   const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useState(false);
 
-  const {data} = useMetadata(params.ts_id ? parseInt(params.ts_id) : -1);
+  const {data} = useMetadata(ts_id!);
 
   const speedDialActions: Array<DialAction> = [];
   useEffect(() => {
@@ -104,7 +106,7 @@ const QualityAssurance = () => {
     return (
       <Layout
         data={data}
-        ts_id={params.ts_id ? parseInt(params.ts_id) : -1}
+        ts_id={ts_id}
         initiateSelect={initiateSelect}
         setInitiateSelect={setInitiateSelect}
         levelCorrection={levelCorrection}
@@ -147,7 +149,7 @@ const QualityAssurance = () => {
   return (
     <Layout
       data={data}
-      ts_id={params.ts_id ? parseInt(params.ts_id) : -1}
+      ts_id={ts_id}
       initiateSelect={initiateSelect}
       setInitiateSelect={setInitiateSelect}
       levelCorrection={levelCorrection}
@@ -206,7 +208,7 @@ const Layout = ({
     setPageToShow(newValue);
   };
 
-  const {handlePrefetch} = useAlgorithms(ts_id.toString());
+  const {handlePrefetch} = useAlgorithms(ts_id);
 
   const navigationItems = [];
 

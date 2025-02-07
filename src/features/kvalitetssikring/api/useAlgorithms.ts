@@ -61,7 +61,7 @@ export const algorithmsRevertOptions = {
   },
 };
 
-export const useAlgorithms = (ts_id: string | undefined) => {
+export const useAlgorithms = (ts_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: ['algorithms', ts_id],

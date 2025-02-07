@@ -1,13 +1,13 @@
 import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {BoreholeData} from '~/types';
 
 interface MinimalSelectProps {
   boreholeno: string;
+  intakeno: number | undefined;
   boreholenoList: Array<BoreholeData>;
   selectedIntake: number;
   setSelectedItem: (item: number) => void;
@@ -15,13 +15,12 @@ interface MinimalSelectProps {
 
 const MinimalSelect = ({
   boreholeno,
+  intakeno,
   boreholenoList,
   selectedIntake,
   setSelectedItem,
 }: MinimalSelectProps) => {
-  const params = useParams();
-
-  const [isOpen, setIsOpen] = useState(params.intakeno ? false : true);
+  const [isOpen, setIsOpen] = useState(intakeno ? false : true);
   const {boreholeIntake} = useNavigationFunctions();
 
   const handleChange = (event: SelectChangeEvent<string>) => {

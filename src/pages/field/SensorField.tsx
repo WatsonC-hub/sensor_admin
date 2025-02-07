@@ -97,8 +97,24 @@ function SensorField() {
         />
         <Route path="opgave" element={<Opgave />} />
         <Route path="/:labelid" element={<ScanComponent />} />
-        <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeRouter />} />
-        <Route path="borehole/:boreholeno" element={<BoreholeRouter />} />
+        <Route
+          path="borehole/:boreholeno/:intakeno"
+          element={
+            <RoutingParamsWrapper<'boreholeno' | 'intakeno'>>
+              {({boreholeno, intakeno}) => (
+                <BoreholeRouter boreholeno={boreholeno} intakeno={parseInt(intakeno)} />
+              )}
+            </RoutingParamsWrapper>
+          }
+        />
+        <Route
+          path="borehole/:boreholeno"
+          element={
+            <RoutingParamsWrapper<'boreholeno'>>
+              {({boreholeno}) => <BoreholeRouter boreholeno={boreholeno} />}
+            </RoutingParamsWrapper>
+          }
+        />
       </Routes>
     </div>
   );

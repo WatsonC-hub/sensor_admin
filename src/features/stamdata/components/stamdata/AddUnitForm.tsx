@@ -42,7 +42,6 @@ export default function AddUnitForm({
   } | null>(null);
   const queryClient = useQueryClient();
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
-  // const params = useParams();
 
   const superUser = authStore((state) => state.superUser);
 

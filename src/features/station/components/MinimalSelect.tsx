@@ -1,12 +1,12 @@
 import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
-import {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useContext, useEffect, useState} from 'react';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {MetadataContext} from '~/state/contexts';
 
 interface MinimalSelectProps {
-  locid: number | undefined;
+  locid: number;
   stationList: Array<{
     ts_id: number;
     ts_name: string;
@@ -16,13 +16,13 @@ interface MinimalSelectProps {
 }
 
 const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
-  const params = useParams();
-
-  const [isOpen, setIsOpen] = useState(params.ts_id ? false : true);
+  const metadata = useContext(MetadataContext);
+  const ts_id = metadata?.ts_id;
+  const [isOpen, setIsOpen] = useState(ts_id ? false : true);
   const {station} = useNavigationFunctions();
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    if (params.ts_id != event.target.value)
+    if (ts_id?.toString() != event.target.value)
       station(locid, parseInt(event.target.value), {replace: true});
     // navigate(`../location/${locid}/${event.target.value}`, {
     //   replace: true,
@@ -31,7 +31,7 @@ const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
   };
 
   const handleClose = () => {
-    const value = hasTimeseries && stationList && params.ts_id ? parseInt(params.ts_id) : '';
+    const value = hasTimeseries && stationList && ts_id ? ts_id : '';
     if (typeof value == 'number') {
       setIsOpen(false);
     }
@@ -39,10 +39,10 @@ const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    if (params.ts_id) {
+    if (ts_id) {
       setIsOpen(false);
     }
-  }, [params.ts_id]);
+  }, [ts_id]);
 
   const menuProps = {
     PaperProps: {
@@ -56,7 +56,7 @@ const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
   return (
     <Select
       MenuProps={menuProps}
-      value={hasTimeseries && stationList && params.ts_id ? params.ts_id : ''}
+      value={hasTimeseries && stationList && ts_id ? ts_id.toString() : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

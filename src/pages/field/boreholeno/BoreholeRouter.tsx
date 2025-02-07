@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import {HomeButton, NavBarMenu} from '~/components/NavBar';
@@ -14,33 +14,36 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import Boreholeno from '~/pages/field/boreholeno/Boreholeno';
 import MinimalSelectBorehole from '~/pages/field/boreholeno/MinimalSelectBorehole';
 
-export default function BoreholeRouter() {
+interface boreholeRouterProps {
+  boreholeno: string;
+  intakeno?: number | undefined;
+}
+
+export default function BoreholeRouter({boreholeno, intakeno}: boreholeRouterProps) {
   const [selectedItem, setSelectedItem] = useState(-1);
 
-  const params = useParams();
   const navigate = useNavigate();
   const {boreholeIntake} = useNavigationFunctions();
 
   const {data: data} = useQuery({
-    queryKey: ['borehole', params.boreholeno],
+    queryKey: ['borehole', boreholeno],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole/jupiter/${params.boreholeno}`);
+      const {data} = await apiClient.get(`/sensor_field/borehole/jupiter/${boreholeno}`);
       return data;
     },
-    enabled: params.boreholeno !== undefined,
+    enabled: boreholeno !== undefined,
     placeholderData: [],
   });
 
   useEffect(() => {
-    if (data && params.boreholeno) {
-      let intakeno = params.intakeno ?? '';
+    if (data && boreholeno) {
       if (intakeno) {
-        setSelectedItem(parseInt(intakeno));
+        setSelectedItem(intakeno);
       } else {
         if (data.length === 1) {
           intakeno = data[0].intakeno;
-          setSelectedItem(parseInt(intakeno));
-          boreholeIntake(params.boreholeno, intakeno, {replace: true});
+          setSelectedItem(intakeno ? intakeno : -1);
+          boreholeIntake(boreholeno, intakeno ? intakeno : -1, {replace: true});
         }
       }
     }
@@ -62,7 +65,8 @@ export default function BoreholeRouter() {
           </IconButton>
           <Box display="block" flexGrow={1} overflow="hidden">
             <MinimalSelectBorehole
-              boreholeno={params.boreholeno ? params.boreholeno : ''}
+              boreholeno={boreholeno}
+              intakeno={intakeno}
               boreholenoList={data}
               selectedIntake={selectedItem}
               setSelectedItem={setSelectedItem}
@@ -81,8 +85,8 @@ export default function BoreholeRouter() {
         }}
       >
         <Boreholeno
-          boreholeno={params.boreholeno ? params.boreholeno : '-1'}
-          intakeno={params.intakeno ? parseInt(params.intakeno) : -1}
+          boreholeno={boreholeno ? boreholeno : '-1'}
+          intakeno={intakeno ? intakeno : -1}
         />
       </main>
     </>

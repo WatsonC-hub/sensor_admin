@@ -1,4 +1,3 @@
-import {useMediaQuery, useTheme} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Route, Routes, useLocation} from 'react-router-dom';
 
@@ -16,8 +15,6 @@ import {authStore} from '~/state/store';
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
 
 const Redirecter = () => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const {field} = useNavigationFunctions();
   const location = useLocation();
   const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
@@ -30,13 +27,6 @@ const Redirecter = () => {
       field();
     }
   }, [iotAccess]);
-
-  useEffect(() => {
-    if (matches && location.pathname == '/') {
-      // navigate('/field');
-      field();
-    }
-  }, [matches]);
 
   useEffect(() => {
     if (!adminAccess && location.pathname == '/') {

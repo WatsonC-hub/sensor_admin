@@ -2,9 +2,8 @@ import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/mater
 import {startCase} from 'lodash';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import React, {useMemo, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
@@ -17,6 +16,7 @@ import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
+import {MetadataContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
 type Props = {
@@ -34,7 +34,7 @@ const onDeleteBtnClick = (
 };
 
 const ContactInfoTable = ({delContact, editContact}: Props) => {
-  const params = useParams();
+  const metadata = useContext(MetadataContext);
   const [contactID, setContactID] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
@@ -45,7 +45,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
-  const loc_id: number | undefined = parseInt(params.locid!);
+  const loc_id = metadata?.loc_id;
 
   const {get} = useContactInfo(loc_id);
 

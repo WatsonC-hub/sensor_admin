@@ -1,9 +1,8 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
-import React, {useMemo, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
@@ -17,6 +16,7 @@ import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
+import {MetadataContext} from '~/state/contexts';
 import {AccessTable} from '~/types';
 
 type Props = {
@@ -43,8 +43,8 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     formState: {dirtyFields},
   } = useFormContext<AdgangsforholdTable>();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
-  const params = useParams();
-  const loc_id = parseInt(params.locid!);
+  const metadata = useContext(MetadataContext);
+  const loc_id = metadata?.loc_id;
   const {isMobile} = useBreakpoints();
 
   const {get} = useLocationAccess(loc_id);
