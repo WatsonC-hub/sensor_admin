@@ -23,7 +23,6 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const org_id = authStore((store) => store.org_id);
-
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
@@ -52,9 +51,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         accessorKey: 'organisationname',
         header: 'Organisation',
         Cell: ({row, renderedCellValue}) => (
-          <Typography>
-            {row.original.organisationid === org_id ? renderedCellValue : '-'}
-          </Typography>
+          <Typography>{row.original.organisationid == org_id ? renderedCellValue : '-'}</Typography>
         ),
       },
       {

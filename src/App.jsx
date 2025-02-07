@@ -10,8 +10,12 @@ import Redirecter from '~/Redirecter';
 import {authStore} from '~/state/store';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
+import useBreakpoints from './hooks/useBreakpoints';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+
 function App() {
   const [loading, setLoading] = useState(true);
+  const {field} = useNavigationFunctions();
   const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = authStore(
     (state) => [
       state.authenticated,
@@ -20,6 +24,14 @@ function App() {
       state.setAuthorization,
     ]
   );
+  const {isMobile} = useBreakpoints();
+
+  useEffect(() => {
+    if (isMobile && location.pathname == '/') {
+      // navigate('/field');
+      field();
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     apiClient

@@ -306,7 +306,6 @@ export default function PlotlyGraph({
           annotations: annotations,
         }}
         config={{
-          // showTips: false,
           doubleClick: false,
           responsive: true,
           modeBarButtons: [
@@ -321,7 +320,7 @@ export default function PlotlyGraph({
         }}
         onClick={plotEventProps && plotEventProps.onClick}
         useResizeHandler={true}
-        style={{width: '100%', height: '100%'}}
+        style={{width: '99.863%', height: '90%'}}
       />
     </>
   );
