@@ -4,7 +4,6 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import {Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 import {useQuery} from '@tanstack/react-query';
 import {ErrorBoundary} from 'react-error-boundary';
 import {Navigate, useNavigate, useParams} from 'react-router-dom';

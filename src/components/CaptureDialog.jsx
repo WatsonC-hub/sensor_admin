@@ -7,9 +7,10 @@ import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
 import React, {useState} from 'react';
 import QrReader from 'react-qr-scanner';
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+function Transition(props) {
+  console.log(props);
+  return <Slide direction="up" ref={props.ref} {...props} />;
+}
 
 var running = false;
 

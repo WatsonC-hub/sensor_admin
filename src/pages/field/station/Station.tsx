@@ -111,7 +111,6 @@ export default function Station({ts_id, stamdata}: StationProps) {
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
 
-  console.log(stamdata);
   if (ts_id === -1 && stamdata && pageToShow === 'pejling') {
     return (
       <Layout stamdata={stamdata} ts_id={ts_id}>
