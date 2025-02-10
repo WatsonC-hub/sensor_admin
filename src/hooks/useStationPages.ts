@@ -5,6 +5,6 @@ import {stationPages} from '~/helpers/EnumHelper';
 export function useStationPages() {
   return useQueryState(
     'page',
-    parseAsStringLiteral(Object.values(stationPages)).withDefault('pejling')
+    parseAsStringLiteral(Object.values(stationPages)).withDefault(stationPages.PEJLING)
   );
 }

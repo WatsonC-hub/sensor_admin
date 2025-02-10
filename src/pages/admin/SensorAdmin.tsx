@@ -1,5 +1,6 @@
 import React from 'react';
 import {Route, Routes} from 'react-router-dom';
+
 import RoutingParamsWrapper from '~/helpers/RoutingParamsWrapper';
 import UserAdmin from '~/pages/admin/brugerstyring/UserAdmin';
 import ConfigurationPage from '~/pages/admin/konfiguration/ConfigurationPage';

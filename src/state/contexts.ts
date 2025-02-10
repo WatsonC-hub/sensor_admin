@@ -22,3 +22,19 @@ export const DrawerContext = createContext<'closed' | 'half' | 'full'>('closed')
 export const useDrawerContext = () => {
   return useContext(DrawerContext);
 };
+
+export type AppContextType = {
+  loc_id: number;
+  ts_id: number | undefined;
+};
+
+export const AppContext = createContext<AppContextType | null>(null);
+
+export const useAppContext = () => {
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error('useAppContext must be used within a AppProvider');
+  }
+  return context;
+};

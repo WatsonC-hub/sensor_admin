@@ -13,8 +13,7 @@ import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
 import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import {captureDialogAtom} from '~/state/atoms';
-
-import Opgave from './opgave/Opgave';
+import ReactRouterAppProvider from '~/state/ReactRouterAppProvider';
 
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);
@@ -78,24 +77,23 @@ function SensorField() {
         <Route
           path="location/:locid/:ts_id"
           element={
-            <RoutingParamsWrapper<'locid' | 'ts_id'>>
-              {({locid, ts_id}) => <LocationRouter loc_id={locid} ts_id={ts_id} />}
-            </RoutingParamsWrapper>
+            <ReactRouterAppProvider>
+              <LocationRouter />
+            </ReactRouterAppProvider>
           }
         />
         <Route
           path="location/:locid"
           element={
-            <RoutingParamsWrapper<'locid'>>
-              {({locid}) => <LocationRouter loc_id={locid} />}
-            </RoutingParamsWrapper>
+            <ReactRouterAppProvider>
+              <LocationRouter />
+            </ReactRouterAppProvider>
           }
         />
         <Route
           path="stamdata"
           element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
         />
-        <Route path="opgave" element={<Opgave />} />
         <Route path="/:labelid" element={<ScanComponent />} />
         <Route
           path="borehole/:boreholeno/:intakeno"
