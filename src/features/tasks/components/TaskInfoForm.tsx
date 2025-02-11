@@ -281,7 +281,9 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             <Button
               bttype="primary"
               disabled={
-                selectedTask.status_category === 'closed' || selectedTask.can_edit === false
+                selectedTask.status_category === 'closed' ||
+                selectedTask.can_edit === false ||
+                selectedTask.id.includes(':')
               }
               onClick={() => handleSubmit({status_id: 3})}
             >
