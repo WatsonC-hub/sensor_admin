@@ -449,47 +449,6 @@ const Map = ({clickCallback}: MapProps) => {
     });
   }, [filteredData]);
 
-  // useEffect(() => {
-  //   if (markerLayer) {
-  //     markerLayer.clearLayers();
-
-  //     hiddenByLocid.forEach((tasks) => {
-  //       L.circleMarker([tasks[0].latitude, tasks[0].longitude], {
-  //         ...defaultCircleMarkerStyle,
-  //         title: tasks[0].name,
-  //         fillColor: 'grey',
-  //         data: tasks,
-  //         fillOpacity: 0.3,
-  //         opacity: 0.3,
-  //       })
-  //         .addTo(markerLayer)
-  //         .bindPopup(tasks.map((task) => task.name).join(', '));
-  //     });
-
-  //     shownByLocid.forEach((tasks) => {
-  //       const notification = filteredData.find((data) => {
-  //         if ('loc_id' in data) {
-  //           const filteredTasks = tasks.filter(
-  //             (task) =>
-  //               moment(task.due_date).isBefore(moment().toDate()) ||
-  //               task.status_category === 'closed' ||
-  //               task.assigned_to !== user_id
-  //           );
-  //           const notification = (data as NotificationMap).obsNotifications.find((notification) => {
-  //             if (
-  //               filteredTasks.map((task) => task.ts_id).find((id) => id === notification.ts_id) !==
-  //               undefined
-  //             )
-  //               return notification;
-  //           });
-  //           return notification ? true : false;
-  //         }
-  //       });
-  //       if (notification && 'loc_id' in notification) createLocationMarker(notification);
-  //     });
-  //   }
-  // }, [shownByLocid, hiddenByLocid, markerLayer, selectedStyle]);
-
   return (
     <>
       <DeleteAlert

@@ -1,6 +1,7 @@
 import {Box, Typography} from '@mui/material';
 
 import Button from '~/components/Button';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import type {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -13,16 +14,19 @@ interface SensorContentProps {
 
 const SensorContent = ({data}: SensorContentProps) => {
   const drawerContext = useDrawerContext();
-  const {station, adminKvalitetssikring} = useNavigationFunctions();
+  const {station} = useNavigationFunctions();
+  const {tasks, setSelectedTask} = useTaskStore();
 
   // const get_location_tasks = useQuery<Task[], APIError>({
   //   queryKey: ['location_tasks', loc_id],
   // });
 
   const all_notifications = [...data.otherNotifications];
+  const all_tasks = tasks?.filter((task) => task.loc_id === data.loc_id && task.is_created) || [];
   const unique_stations = all_notifications
     .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
     .filter((item) => item.ts_id !== null);
+
   return (
     <>
       <Box
@@ -86,11 +90,7 @@ const SensorContent = ({data}: SensorContentProps) => {
                     <Button
                       bttype="link"
                       onClick={() => {
-                        if (notification.isqa) {
-                          adminKvalitetssikring(notification.ts_id);
-                        } else {
-                          station(notification.loc_id, notification.ts_id);
-                        }
+                        setSelectedTask(`${notification.ts_id}:${notification.notification_id}`);
                       }}
                     >
                       {splitted[splitted.length - 1].replace('-', '').trim()}
@@ -105,6 +105,32 @@ const SensorContent = ({data}: SensorContentProps) => {
                   </Box>
                 );
               })}
+          </Box>
+          <Typography variant="h6">Opgaver</Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+            }}
+          >
+            {all_tasks.map((task, index) => {
+              return (
+                <Box
+                  key={index}
+                  sx={{
+                    display: 'flex',
+                    gap: 0.5,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Button bttype="link" onClick={() => setSelectedTask(task.id)} color="primary">
+                    {task.name}
+                  </Button>
+                  <Typography variant="body2">{task.due_date}</Typography>
+                </Box>
+              );
+            })}
           </Box>
           {/* <Typography variant="h6">Opgaver</Typography> */}
         </>

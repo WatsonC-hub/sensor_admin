@@ -43,12 +43,14 @@ type Props = {
   onError?: (error: any) => void;
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
+  disabled?: boolean;
 };
 
 const TaskFormContext = React.createContext(
   {} as {
     onSubmit: (data: FormValues) => void;
     onError?: (error: any) => void;
+    disabled?: boolean;
   }
 );
 
@@ -57,6 +59,7 @@ const TaskForm = ({
   onError = (error) => console.log(error),
   children,
   defaultValues,
+  disabled,
 }: Props) => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
@@ -72,7 +75,7 @@ const TaskForm = ({
   };
 
   return (
-    <TaskFormContext.Provider value={{onSubmit: innerSubmit, onError}}>
+    <TaskFormContext.Provider value={{onSubmit: innerSubmit, onError, disabled}}>
       <FormProvider {...formMethods}>{children}</FormProvider>
     </TaskFormContext.Provider>
   );
@@ -91,24 +94,29 @@ const TaskSubmitButton = () => {
 };
 
 const Input = (props: FormInputProps<FormValues>) => {
-  return <FormInput {...props} />;
+  const {disabled} = React.useContext(TaskFormContext);
+  return <FormInput {...props} size="small" disabled={disabled || props.disabled} />;
 };
 const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
   return (
     <FormInput
       name="due_date"
       label="Due date"
       type="date"
+      size="small"
       placeholder="Sæt forfaldsdato"
       // transform={(value) => {
       //   return moment(value.target.value).toISOString();
       // }}
       {...props}
+      disabled={disabled || props.disabled}
     />
   );
 };
 
 const StatusSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
   const {
     getStatus: {data: task_status},
   } = useTasks();
@@ -118,9 +126,11 @@ const StatusSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       name="status_id"
       label="Status"
       select
+      size="small"
       placeholder="Vælg status..."
       fullWidth
       {...props}
+      disabled={disabled || props.disabled}
     >
       {task_status?.map((status) => {
         return (
@@ -134,6 +144,7 @@ const StatusSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
 };
 
 const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
+  const {disabled} = React.useContext(TaskFormContext);
   const {
     getUsers: {data: taskUsers},
   } = useTasks();
@@ -145,9 +156,11 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
       render={({field: {onChange, value}, fieldState: {error}}) => (
         <ExtendedAutocomplete<TaskUser>
           {...props}
+          disabled={disabled || props.disabled}
           options={taskUsers ?? []}
           labelKey="display_name"
           error={error?.message}
+          size="small"
           onChange={(option) => {
             if (option == null) {
               onChange(null);
@@ -168,7 +181,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
           renderOption={(props, option) => {
             return (
               <li {...props} key={option.id}>
-                <Box display={'flex'} flexDirection={'row'} mx={2} gap={1}>
+                <Box display={'flex'} flexDirection={'row'}>
                   <Typography variant="body2">{option.display_name}</Typography>
                 </Box>
               </li>
@@ -189,6 +202,7 @@ type BlockNotificationsProps = Omit<FormInputProps<FormValues>, 'name'> & {
 };
 
 const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificationsProps) => {
+  const {disabled} = React.useContext(TaskFormContext);
   const {control} = useFormContext<FormValues>();
 
   return (
@@ -222,6 +236,7 @@ const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificati
                   size="small"
                   color="primary"
                   aria-label={name}
+                  disabled={disabled}
                   onChange={(e, value) => {
                     if (value) {
                       onChange('alle');
@@ -242,13 +257,16 @@ const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificati
 };
 
 const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
   return (
     <FormInput
       name="block_on_location"
       select
+      size="small"
       placeholder="Vælg..."
-      style={{width: 175}}
+      // style={{width: 175}}
       {...props}
+      disabled={disabled || props.disabled}
     >
       <MenuItem key={'bloker'} value={'false'}>
         Tidsserie
@@ -291,9 +309,18 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
 
 const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {selectedTask} = useTaskStore();
+  const {disabled} = React.useContext(TaskFormContext);
 
   return (
-    <FormInput name="block_all" select placeholder="Vælg..." style={{width: 175}} {...props}>
+    <FormInput
+      name="block_all"
+      select
+      placeholder="Vælg..."
+      size="small"
+      // style={{width: 175}}
+      {...props}
+      disabled={disabled || props.disabled}
+    >
       <MenuItem key={'bloker'} value={'false'}>
         {selectedTask?.blocks_notifications.length === 0 ? 'ingen' : selectedTask?.name}
       </MenuItem>

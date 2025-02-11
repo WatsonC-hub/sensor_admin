@@ -9,6 +9,8 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
 
+import {useTaskStore} from '../api/useTaskStore';
+
 const taskCommentSchema = z.object({
   id: z.string().optional(),
   task_id: z.string().optional(),
@@ -36,6 +38,8 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
     getUsers: {data: taskUsers},
     getStatus: {data: taskStatus},
   } = useTasks();
+
+  const {selectedTask} = useTaskStore();
 
   const schemaData = taskCommentSchema.safeParse(initialValues);
 
@@ -86,7 +90,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
             fullWidth
             name="comment"
             label={'Kommentar'}
-            disabled={selectedTaskId.includes(':')}
+            disabled={selectedTaskId.includes(':') || selectedTask?.can_edit === false}
             multiline
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {

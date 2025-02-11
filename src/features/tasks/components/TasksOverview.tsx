@@ -6,9 +6,9 @@ import React, {SyntheticEvent} from 'react';
 
 import {tabsHeight, calculateContentHeight} from '~/consts';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+// import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import Map from '~/pages/field/overview/Map';
-import {BoreholeMapData} from '~/types';
+// import {BoreholeMapData} from '~/types';
 
 import TaskTable from './TaskTable';
 
@@ -40,8 +40,7 @@ const tabAtom = atom<number>(0);
 
 const TasksOverview = () => {
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
-  const {shownMapTaskIds, shownListTaskIds, activeTasks, setSelectedTask, setShownMapTaskIds} =
-    useTaskStore();
+  const {shownMapTaskIds, shownListTaskIds, setSelectedTask} = useTaskStore();
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
     setTabValue(newValue);
@@ -49,22 +48,17 @@ const TasksOverview = () => {
 
   // const [{onColumnFiltersChange}] = useStatefullTableAtom('taskTableState');
 
-  const clickCallback = (data: NotificationMap | BoreholeMapData) => {
-    if ('loc_id' in data) {
-      const task_ids = activeTasks
-        .filter((task) => task.loc_id === data.loc_id)
-        .map((task) => task.id);
-      setShownMapTaskIds(task_ids);
-      const id = activeTasks.find((task) => task.loc_id === data.loc_id)?.id;
-
-      // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
-
-      if (id) {
-        setSelectedTask(id);
-      } else {
-        setSelectedTask(null);
-      }
-    }
+  const clickCallback = () => {
+    // if ('loc_id' in data) {
+    //   const tasks = activeTasks.filter((task) => task.loc_id === data.loc_id);
+    //   // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
+    //   if (tasks.length == 1) {
+    //     setSelectedTask(tasks[0].id);
+    //   } else {
+    //     setSelectedTask(null);
+    //   }
+    // }
+    setSelectedTask(null);
   };
 
   return (
@@ -128,7 +122,7 @@ const TasksOverview = () => {
         <Box
           justifyContent={'center'}
           alignSelf={'center'}
-          p={1}
+          // p={1}
           sx={{
             display: 'flex',
             flexDirection: 'column',

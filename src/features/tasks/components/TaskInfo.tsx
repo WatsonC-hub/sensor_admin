@@ -1,4 +1,4 @@
-import {Box} from '@mui/material';
+import {Grid} from '@mui/material';
 import React, {useMemo} from 'react';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
@@ -36,16 +36,21 @@ const TaskInfo = () => {
   if (!selectedTask) return <div></div>;
 
   return (
-    <Box display="flex" flexDirection="row" pt={2} maxHeight={'100%'}>
-      <Box flexGrow={1} flexBasis={0}>
-        <TaskForm key={selectedTask.id} onSubmit={() => {}} defaultValues={defaultValues}>
+    <Grid container spacing={2} p={1}>
+      <Grid item xs={12} lg={6}>
+        <TaskForm
+          key={selectedTask.id}
+          disabled={!selectedTask.can_edit}
+          onSubmit={() => {}}
+          defaultValues={defaultValues}
+        >
           <TaskInfoForm selectedTask={selectedTask} />
         </TaskForm>
-      </Box>
-      <Box flexGrow={1} flexBasis={0}>
+      </Grid>
+      <Grid item xs={12} lg={6}>
         <TaskInfoCommentForm selectedTaskId={selectedTask.id} />
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 };
 

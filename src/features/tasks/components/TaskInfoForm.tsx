@@ -1,6 +1,16 @@
 import {Delete} from '@mui/icons-material';
-import DragHandleIcon from '@mui/icons-material/DragHandle';
-import {Box, Grid, Stack, Tooltip, Typography} from '@mui/material';
+// import DragHandleIcon from '@mui/icons-material/DragHandle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Grid,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 
@@ -11,7 +21,7 @@ import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
-import {useTaskStore} from '../api/useTaskStore';
+// import {useTaskStore} from '../api/useTaskStore';
 
 type TaskInfoFormProps = {
   selectedTask: Task;
@@ -19,18 +29,17 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const {setIsDraggingTask} = useTaskStore();
+  // const {setIsDraggingTask} = useTaskStore();
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
-  const removeFromItineraryTitle = !selectedTask.itinerary_id
-    ? 'Opgaven er ikke tilknyttet en tur'
-    : '';
+  // const removeFromItineraryTitle = !selectedTask.itinerary_id
+  //   ? 'Opgaven er ikke tilknyttet en tur'
+  //   : '';
   const {station, adminKvalitetssikring} = useNavigationFunctions();
   const {
     patch,
     del,
     getStatus: {data: taskStatus},
     getUsers: {data: taskUsers},
-    deleteTaskFromItinerary,
   } = useTasks();
   const {
     trigger,
@@ -82,12 +91,12 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     }
   };
 
-  const removeFromItinerary = () => {
-    console.log(selectedTask);
-    deleteTaskFromItinerary.mutate({
-      path: `${selectedTask.itinerary_id}/tasks/${selectedTask.id}`,
-    });
-  };
+  // const removeFromItinerary = () => {
+  //   console.log(selectedTask);
+  //   deleteTaskFromItinerary.mutate({
+  //     path: `${selectedTask.itinerary_id}/tasks/${selectedTask.id}`,
+  //   });
+  // };
 
   const deleteTask = () => {
     del.mutate({
@@ -96,7 +105,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   };
 
   return (
-    <Box display={'flex'} flexDirection={'column'} mx={2} gap={2}>
+    <Box display={'flex'} flexDirection={'column'} gap={2}>
       <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'}>
         <Button bttype="tertiary" onClick={() => station(selectedTask.loc_id, selectedTask.ts_id)}>
           <Typography>Gå til tidsserie</Typography>
@@ -105,7 +114,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           <Typography>Gå til QA</Typography>
         </Button>
       </Stack>
-      <Grid container spacing={1}>
+      <Grid container spacing={0}>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input
             label={'Navn'}
@@ -135,45 +144,84 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             disabled={selectedTask.itinerary_id !== null}
           />
         </Grid>
-        <Grid
-          item
-          mobile={12}
-          tablet={12}
-          laptop={12}
-          display={'flex'}
-          flexDirection={'row'}
-          alignItems={'center'}
-          gap={2}
-        >
-          <Typography>Bloker</Typography>
-          <TaskForm.BlockAll
-            onBlurCallback={async () => await handlePatch('block_all')}
-            onChangeCallback={(e) => {
-              console.log(e);
+        <Grid item mobile={12} py={1}>
+          <Accordion
+            disableGutters={true}
+            sx={{
+              border: '1px solid',
+              borderColor: 'primary.main',
             }}
-          />
-          <Typography>notifikationer på</Typography>
-          <TaskForm.BlockOnLocation
-            onBlurCallback={async () => await handlePatch('block_on_location')}
-          />
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              Flere informationer
+            </AccordionSummary>
+            <AccordionDetails>
+              <Grid
+                container
+                display={'flex'}
+                flexDirection={'row'}
+                alignItems={'center'}
+                spacing={1}
+                px={1}
+              >
+                <Grid
+                  item
+                  mobile={12}
+                  laptop={6}
+                  display={'flex'}
+                  flexDirection={'row'}
+                  alignItems={'center'}
+                  gap={2}
+                >
+                  <Typography>Bloker</Typography>
+                  <TaskForm.BlockAll
+                    onBlurCallback={async () => await handlePatch('block_all')}
+                    onChangeCallback={(e) => {
+                      console.log(e);
+                    }}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  mobile={12}
+                  laptop={6}
+                  display={'flex'}
+                  flexDirection={'row'}
+                  alignItems={'center'}
+                  gap={2}
+                  mt={-3}
+                >
+                  <Typography>notifikationer på</Typography>
+                  <TaskForm.BlockOnLocation
+                    onBlurCallback={async () => await handlePatch('block_on_location')}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item mobile={12} tablet={12} laptop={6}>
+                <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />
+              </Grid>
+              <Grid item mobile={12} tablet={12} laptop={6}>
+                <TaskForm.Input label="Lokationstype" name="loctypename" disabled />
+              </Grid>
+              <Grid item mobile={12} tablet={12} laptop={6}>
+                <TaskForm.Input label="Tidsserie type" name="tstype_name" disabled />
+              </Grid>
+              <Grid item mobile={12} tablet={12} laptop={6}>
+                <TaskForm.Input label="Projektnummer" name="projectno" disabled />
+              </Grid>
+              <Grid item mobile={12} tablet={12} laptop={12}>
+                <TaskForm.Input label="Projektinfo" name="project_text" disabled />
+              </Grid>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
         {/* <Grid item mobile={12} tablet={12} laptop={6}>
         </Grid> */}
-        <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />
-        </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Input label="Lokationstype" name="loctypename" disabled />
-        </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Input label="Tidsserie type" name="tstype_name" disabled />
-        </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.Input label="Projektnummer" name="projectno" disabled />
-        </Grid>
-        <Grid item mobile={12} tablet={12} laptop={12}>
-          <TaskForm.Input label="Projektinfo" name="project_text" disabled />
-        </Grid>
+
         <Grid item mobile={12} tablet={12} laptop={12}>
           <TaskForm.Input
             label="Beskrivelse"
@@ -187,7 +235,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
       </Grid>
 
       <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={2}>
-        <div
+        {/* <div
           id="drag-handle"
           draggable
           style={{
@@ -210,14 +258,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           }}
         >
           <DragHandleIcon fontSize="large" />
-        </div>
+        </div> */}
 
         <Box>
           <Tooltip arrow title={deleteTaskTitle}>
             <div>
               <Button
                 bttype="primary"
-                disabled={selectedTask.id.includes(':')}
+                disabled={selectedTask.id.includes(':') || selectedTask.can_edit === false}
                 onClick={() => setDialogOpen(true)}
                 startIcon={<Delete />}
               >
@@ -228,17 +276,19 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         </Box>
 
         <Box>
-          <Tooltip arrow title={removeFromItineraryTitle}>
-            <div>
-              <Button
-                bttype="primary"
-                disabled={!selectedTask.itinerary_id}
-                onClick={removeFromItinerary}
-              >
-                Fjern fra tur
-              </Button>
-            </div>
-          </Tooltip>
+          {/* <Tooltip arrow title={removeFromItineraryTitle}> */}
+          <div>
+            <Button
+              bttype="primary"
+              disabled={
+                selectedTask.status_category === 'closed' || selectedTask.can_edit === false
+              }
+              onClick={() => handleSubmit({status_id: 3})}
+            >
+              Færdiggør
+            </Button>
+          </div>
+          {/* </Tooltip> */}
         </Box>
       </Box>
       <DeleteAlert
