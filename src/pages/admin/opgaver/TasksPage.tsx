@@ -1,16 +1,46 @@
-import {Box} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import {Box, IconButton} from '@mui/material';
 import React from 'react';
 
 import NavBar from '~/components/NavBar';
 import {appBarHeight} from '~/consts';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import TaskInfo from '~/features/tasks/components/TaskInfo';
-import TaskItiniaries from '~/features/tasks/components/TaskItiniaries';
+// import TaskItiniaries from '~/features/tasks/components/TaskItiniaries';
 import TasksOverview from '~/features/tasks/components/TasksOverview';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 import '~/pages/admin/opgaver/TasksPage.css';
 
 const TasksPage = () => {
-  // const store = useTaskStore();
+  const {selectedTask, setSelectedTask} = useTaskStore();
+  const {isMobile} = useBreakpoints();
+
+  if (isMobile) {
+    return (
+      <Box>
+        <NavBar />
+        <Box display="flex" flexDirection={'column'}>
+          {selectedTask ? (
+            <>
+              <IconButton
+                sx={{
+                  alignContent: 'end',
+                  ml: 'auto',
+                }}
+                onClick={() => setSelectedTask(null)}
+              >
+                <CloseIcon />
+              </IconButton>
+              <TaskInfo />
+            </>
+          ) : (
+            <TasksOverview />
+          )}
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -36,20 +66,10 @@ const TasksPage = () => {
         >
           <TasksOverview />
         </Box>
-        <Box
-          className="vertical"
-          sx={{
-            gridColumn: '2',
-            gridRow: '1',
-            // height: 'fit-content',
-            border: '1px solid black',
-            resize: 'vertical',
-            overflow: 'auto',
-          }}
-        >
+        <Box>
           <TaskInfo />
         </Box>
-        <Box
+        {/* <Box
           sx={{
             gridColumn: '2',
             gridRow: '2',
@@ -58,7 +78,7 @@ const TasksPage = () => {
           }}
         >
           <TaskItiniaries />
-        </Box>
+        </Box> */}
       </Box>
     </>
   );
