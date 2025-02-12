@@ -21,7 +21,7 @@ const SensorContent = ({data}: SensorContentProps) => {
   //   queryKey: ['location_tasks', loc_id],
   // });
 
-  const all_notifications = [...data.otherNotifications];
+  const all_notifications = [data, ...data.otherNotifications];
   const all_tasks = tasks?.filter((task) => task.loc_id === data.loc_id && task.is_created) || [];
   const unique_stations = all_notifications
     .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
@@ -73,7 +73,7 @@ const SensorContent = ({data}: SensorContentProps) => {
               flexWrap: 'wrap',
             }}
           >
-            {[data, ...data.otherNotifications]
+            {all_notifications
               .filter((item) => item.opgave !== null)
               .map((notification, index) => {
                 notification.notification_id;
