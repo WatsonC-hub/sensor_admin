@@ -132,7 +132,6 @@ export const useTasks = () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks`, {
         params: {include_closed},
       });
-      console.log(data);
       return data;
     },
     staleTime: 1000 * 60 * 5,
