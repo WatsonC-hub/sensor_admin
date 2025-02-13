@@ -5,8 +5,8 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
+import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useState} from 'react';
-import QrReader from 'react-qr-scanner';
 function Transition(props) {
   console.log(props);
   return <Slide direction="up" ref={props.ref} {...props} />;
@@ -39,7 +39,7 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
   const handleError = (error) => console.error(error);
 
   return (
-    <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+    <Dialog fullScreen open={open} onClose={handleClose} slots={{transition: Transition}}>
       <AppBar>
         <Toolbar>
           <IconButton
@@ -61,16 +61,12 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
           </Typography>
         )}
         <QrReader
-          delay={100}
+          scanDelay={100}
           // style={previewStyle}
           onError={handleError}
           onScan={handleScanning}
-          onLoad={() => setShowText(false)}
-          constraints={{
-            video: {
-              facingMode: 'environment',
-            },
-          }}
+          // onLoad={() => setShowText(false)}
+          constraints={{video: {facingMode: 'environment'}}}
         />
       </div>
     </Dialog>
