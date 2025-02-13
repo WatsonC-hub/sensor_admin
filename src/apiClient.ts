@@ -23,7 +23,7 @@ apiClient.interceptors.response.use(
   function (error) {
     // const originalRequest = error.config;
     if (error?.response?.status === 401) {
-      // authStore.setState({authenticated: false, loginExpired: true});
+      authStore.setState({authenticated: false, loginExpired: true});
     }
 
     // Any status codes that falls outside the range of 2xx cause this function to trigger
