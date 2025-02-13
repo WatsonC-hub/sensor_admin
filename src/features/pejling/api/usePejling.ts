@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {GetQueryOptions} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface PejlingBase {
@@ -58,7 +58,7 @@ export const pejlingDelOptions = {
   },
 };
 
-export const pejlingGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> => ({
+export const pejlingGetOptions = <TData>(ts_id: number | undefined): GetQueryOptions<TData> => ({
   queryKey: ['measurements', ts_id],
   queryFn: async () => {
     const {data} = await apiClient.get<TData>(`/sensor_field/station/measurements/${ts_id}`);
@@ -71,13 +71,13 @@ export const pejlingGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> 
     //   };
     // });
   },
-  enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
+  enabled: ts_id !== null && ts_id !== undefined,
 });
 
 export const usePejling = () => {
   const queryClient = useQueryClient();
+  const {ts_id} = useAppContext(['ts_id']);
 
-  const ts_id = stamdataStore((store) => store.timeseries.ts_id);
   const get = useQuery(pejlingGetOptions<Array<PejlingItem>>(ts_id));
 
   const post = useMutation({

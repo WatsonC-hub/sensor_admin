@@ -7,7 +7,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const ReactRouterAppProvider = ({children}: Props) => {
+const StationRouterProvider = ({children}: Props) => {
   const params = useParams<'locid' | 'ts_id'>();
 
   if (!params.locid) {
@@ -22,4 +22,4 @@ const ReactRouterAppProvider = ({children}: Props) => {
   );
 };
 
-export default ReactRouterAppProvider;
+export default StationRouterProvider;

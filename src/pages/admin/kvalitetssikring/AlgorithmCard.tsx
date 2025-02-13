@@ -9,7 +9,7 @@ import {
   FormControlLabel,
   Typography,
 } from '@mui/material';
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
@@ -19,7 +19,7 @@ import FormInput from '~/components/FormInput';
 import GenericCard from '~/components/GenericCard';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useRunQA} from '~/hooks/useRunQA';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 import {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
 
 interface AlgorithCardProps {
@@ -27,8 +27,7 @@ interface AlgorithCardProps {
 }
 
 const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
-  const metadata = useContext(MetadataContext);
-  const ts_id = metadata?.ts_id;
+  const {ts_id} = useAppContext(['ts_id']);
   const {mutation: rerunQAMutation} = useRunQA(ts_id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 

@@ -1,7 +1,7 @@
 import {Box} from '@mui/material';
 import moment from 'moment';
 import {Layout, PlotData, PlotMouseEvent, PlotRelayoutEvent, PlotSelectionEvent} from 'plotly.js';
-import React, {useContext, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import Plot from 'react-plotly.js';
 
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
@@ -14,10 +14,10 @@ import {
   rerunIcon,
 } from '~/helpers/plotlyIcons';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
+import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
-import {MetadataContext} from '~/state/contexts';
 
 import Button from './Button';
 
@@ -59,7 +59,7 @@ export default function PlotlyGraph({
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
-  const metadata = useContext(MetadataContext);
+  const {data: metadata} = useMetadata();
   // const loc_name = metadata?.loc_name;
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;

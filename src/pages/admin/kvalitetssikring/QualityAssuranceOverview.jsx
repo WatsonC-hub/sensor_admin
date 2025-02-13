@@ -1,4 +1,5 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import {Box, IconButton, Tooltip} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {atom} from 'jotai';
@@ -23,13 +24,7 @@ const tableStateAtom = atom({
 });
 
 const QualityAssuranceOverview = () => {
-  // const columns = [
-  //   {name: 'calypso_id', title: 'Calypso ID'},
-  //   {name: 'ts_name', title: 'Stationsnavn'},
-  //   {name: 'tstype_name', title: 'Parameter'},
-  // ];
-  const {adminKvalitetssikring} = useNavigationFunctions();
-
+  const {adminKvalitetssikring, field} = useNavigationFunctions();
   const rowActions = ({row}) => (
     <Box>
       <Tooltip arrow title="Gå til kvalitetssikring" enterTouchDelay={0}>
@@ -113,7 +108,24 @@ const QualityAssuranceOverview = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar>
+        <NavBar.GoBack />
+        <NavBar.Title title="Admin" />
+        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          <NavBar.Menu
+            highligtFirst={false}
+            items={[
+              {
+                title: 'Field',
+                icon: <BuildCircleIcon fontSize="medium" />,
+                onClick: () => {
+                  field();
+                },
+              },
+            ]}
+          />
+        </Box>
+      </NavBar>
       <Box p={2}>
         <TableComponent
           data={tabledata}

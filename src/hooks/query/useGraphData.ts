@@ -4,7 +4,7 @@ import moment from 'moment';
 import {apiClient} from '~/apiClient';
 import {QaGraphData} from '~/types';
 
-export const useGraphData = (ts_id: number, xRange: Array<string>) => {
+export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) => {
   const x0 = moment(xRange[0]);
   const x1 = moment(xRange[1]);
   const daysdiff = x1.diff(x0, 'days');

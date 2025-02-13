@@ -10,7 +10,7 @@ import {
   Divider,
   Collapse,
 } from '@mui/material';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
 
 import ExtendedAutocomplete from '~/components/Autocomplete';
@@ -20,7 +20,7 @@ import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 import {ContactInfo} from '~/types';
 
 interface SelectContactInfoProps {
@@ -32,10 +32,9 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [selectedContactInfo, setSelectedContactInfo] = useState<ContactInfo | null>(null);
   const [search, setSearch] = useState<string>('');
   const deboundedSearch = useDebouncedValue(search, 500);
-  const metadata = useContext(MetadataContext);
+  const {loc_id} = useAppContext(['loc_id']);
 
   const {reset, handleSubmit} = useFormContext<InferContactInfo>();
-  const loc_id = metadata?.loc_id;
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 

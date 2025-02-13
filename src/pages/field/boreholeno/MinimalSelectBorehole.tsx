@@ -1,47 +1,18 @@
 import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
+import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 
+import {apiClient} from '~/apiClient';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useAppContext} from '~/state/contexts';
 import {BoreholeData} from '~/types';
 
-interface MinimalSelectProps {
-  boreholeno: string;
-  intakeno: number | undefined;
-  boreholenoList: Array<BoreholeData>;
-  selectedIntake: number;
-  setSelectedItem: (item: number) => void;
-}
-
-const MinimalSelect = ({
-  boreholeno,
-  intakeno,
-  boreholenoList,
-  selectedIntake,
-  setSelectedItem,
-}: MinimalSelectProps) => {
+const MinimalSelect = () => {
+  const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
   const [isOpen, setIsOpen] = useState(intakeno ? false : true);
   const {boreholeIntake} = useNavigationFunctions();
-
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setSelectedItem(event.target.value ? parseInt(event.target.value) : -1);
-    // navigate(`../borehole/${boreholeno}/${event.target.value}`, {
-    //   replace: true,
-    // });
-    boreholeIntake(boreholeno, event.target.value, {replace: true});
-    setIsOpen(false);
-  };
-
-  const handleClose = () => setIsOpen(selectedIntake !== -1 ? false : true);
-  const handleOpen = () => setIsOpen(true);
-
-  useEffect(() => {
-    if (selectedIntake !== -1) {
-      setIsOpen(false);
-    } else {
-      setIsOpen(true);
-    }
-  }, [selectedIntake]);
+  const [selectedItem, setSelectedItem] = useState<number | undefined>();
 
   // moves the menu below the select input
   const menuProps = {
@@ -52,10 +23,56 @@ const MinimalSelect = ({
     },
   };
 
+  const {data: data} = useQuery({
+    queryKey: ['borehole', boreholeno],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<BoreholeData>>(
+        `/sensor_field/borehole/jupiter/${boreholeno}`
+      );
+      return data;
+    },
+    enabled: boreholeno !== undefined,
+    placeholderData: [],
+  });
+
+  useEffect(() => {
+    console.log(data);
+    if (data && boreholeno) {
+      if (intakeno) {
+        setSelectedItem(intakeno);
+        boreholeIntake(boreholeno, intakeno, {replace: true});
+      } else {
+        if (data.length === 1) {
+          setSelectedItem(data[0].intakeno);
+          boreholeIntake(boreholeno, data[0].intakeno, {replace: true});
+        }
+      }
+    }
+  }, [data]);
+
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    console.log(event.target.value);
+    if (selectedItem?.toString() !== event.target.value)
+      boreholeIntake(boreholeno, event.target.value, {replace: true});
+    handleClose();
+  };
+
+  const handleClose = () => setIsOpen(false);
+  const handleOpen = () => setIsOpen(true);
+
+  useEffect(() => {
+    console.log(selectedItem);
+    if (selectedItem !== undefined) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+    }
+  }, [selectedItem]);
+
   return (
     <Select
       MenuProps={menuProps}
-      value={selectedIntake.toString()}
+      value={selectedItem !== undefined ? selectedItem.toString() : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}
@@ -77,8 +94,8 @@ const MinimalSelect = ({
         pb: 0,
       }}
     >
-      {boreholenoList &&
-        boreholenoList
+      {data &&
+        data
           .filter((i) => i.intakeno !== null)
           .map((intake) => (
             <MenuItem

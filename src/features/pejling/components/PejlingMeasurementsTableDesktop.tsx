@@ -17,14 +17,9 @@ import {PejlingItem} from '~/types';
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
 }
 
-export default function PejlingMeasurementsTableDesktop({
-  handleEdit,
-  handleDelete,
-  canEdit,
-}: Props) {
+export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
@@ -37,7 +32,6 @@ export default function PejlingMeasurementsTableDesktop({
     setMpId(id);
     setDialogOpen(true);
   };
-
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
       {
@@ -86,7 +80,7 @@ export default function PejlingMeasurementsTableDesktop({
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={canEdit}
+        canEdit={true}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

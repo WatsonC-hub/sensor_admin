@@ -1,24 +1,27 @@
 import {Delete, Verified} from '@mui/icons-material';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {Box, Divider, Grid, Typography} from '@mui/material';
-import {useQueryState, parseAsStringLiteral} from 'nuqs';
 import React, {ReactNode, useEffect, useState} from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import CustomSpeedDial from '~/components/CustomSpeedDial';
 import NavBar from '~/components/NavBar';
+import NotificationList from '~/components/NotificationList';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
-import {qaPagesLiteral, qaAdjustmentLiteral} from '~/helpers/EnumHelper';
+import {qaAdjustment, qaPages, qaPagesLiteral} from '~/helpers/EnumHelper';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useAdjustmentState, useQAPageState} from '~/hooks/useQueryStateParameters';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 import {DialAction} from '~/types';
 
 import PlotGraph from './QAGraph';
@@ -27,32 +30,18 @@ const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
 
-interface QualityAssuranceProps {
-  ts_id: number;
-}
-
-const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
-  const [pageToShow] = useQueryState(
-    'page',
-    parseAsStringLiteral(qaPagesLiteral).withDefault('justeringer')
-  );
-  const [dataAdjustment, setDataAdjustment] = useQueryState(
-    'adjust',
-    parseAsStringLiteral(qaAdjustmentLiteral)
-  );
+const QualityAssurance = () => {
+  const [pageToShow] = useQAPageState();
+  const [dataAdjustment, setDataAdjustment] = useAdjustmentState();
 
   const {isMobile} = useBreakpoints();
   const [initiateSelect, setInitiateSelect] = useState(false);
   const [levelCorrection, setLevelCorrection] = useState(false);
   const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useState(false);
 
-  const {data} = useMetadata(ts_id!);
-
   const speedDialActions: Array<DialAction> = [];
   useEffect(() => {
-    // if (pageToShow !== qaPages.DATA) {
     setDataAdjustment(null);
-    // }
   }, [pageToShow]);
 
   speedDialActions.push(
@@ -62,9 +51,9 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
       tooltip: <Typography noWrap>Godkend tidsserie</Typography>,
       onClick: () => {
         setInitiateConfirmTimeseries(true);
-        setDataAdjustment('confirm');
+        setDataAdjustment(qaAdjustment.CONFIRM);
       },
-      color: navIconStyle(dataAdjustment === 'confirm'),
+      color: navIconStyle(dataAdjustment === qaAdjustment.CONFIRM),
       toastTip: 'Klik på et datapunkt på grafen',
     },
     {
@@ -73,9 +62,9 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
       tooltip: <Typography noWrap>Fjern data</Typography>,
       onClick: () => {
         setInitiateSelect(true);
-        setDataAdjustment('remove');
+        setDataAdjustment(qaAdjustment.REMOVE);
       },
-      color: navIconStyle(dataAdjustment === 'remove'),
+      color: navIconStyle(dataAdjustment === qaAdjustment.REMOVE),
       toastTip: 'Markér et område på grafen',
     },
     {
@@ -84,9 +73,9 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
       tooltip: <Typography noWrap>Valide værdier</Typography>,
       onClick: () => {
         setInitiateSelect(true);
-        setDataAdjustment('bounds');
+        setDataAdjustment(qaAdjustment.BOUNDS);
       },
-      color: navIconStyle(dataAdjustment === 'bounds'),
+      color: navIconStyle(dataAdjustment === qaAdjustment.BOUNDS),
       toastTip: 'Markér et område på grafen',
     },
     {
@@ -95,9 +84,9 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
       tooltip: <Typography noWrap>Korriger spring</Typography>,
       onClick: () => {
         setLevelCorrection(true);
-        setDataAdjustment('correction');
+        setDataAdjustment(qaAdjustment.CORRECTION);
       },
-      color: navIconStyle(dataAdjustment === 'correction'),
+      color: navIconStyle(dataAdjustment === qaAdjustment.CORRECTION),
       toastTip: 'Klik på et datapunkt på grafen',
     }
   );
@@ -105,8 +94,6 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
   if (!isMobile) {
     return (
       <Layout
-        data={data}
-        ts_id={ts_id}
         initiateSelect={initiateSelect}
         setInitiateSelect={setInitiateSelect}
         levelCorrection={levelCorrection}
@@ -117,7 +104,7 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
         </Grid>
         <Box borderRadius={4} m={'auto'} width={'100%'} maxWidth={1200}>
           <Box display={'flex'} flexDirection={'column'}>
-            {pageToShow === 'justeringer' && (
+            {pageToShow === qaPages.JUSTERINGER && (
               <>
                 <Grid container gap={3} justifyContent={'center'}>
                   <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
@@ -139,7 +126,7 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
                 <CustomSpeedDial actions={speedDialActions} />
               </>
             )}
-            {pageToShow === 'algoritmer' && <Algorithms />}
+            {pageToShow === qaPages.ALGORITHMS && <Algorithms />}
           </Box>
         </Box>
       </Layout>
@@ -148,8 +135,6 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
 
   return (
     <Layout
-      data={data}
-      ts_id={ts_id}
       initiateSelect={initiateSelect}
       setInitiateSelect={setInitiateSelect}
       levelCorrection={levelCorrection}
@@ -157,7 +142,7 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
     >
       <Box borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
         <Grid item mobile={12}>
-          {pageToShow === 'justeringer' && (
+          {pageToShow === qaPages.JUSTERINGER && (
             <Box display="flex" flexDirection={'column'} gap={2}>
               {dataAdjustment !== null && (
                 <StepWizard
@@ -171,7 +156,7 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
               <CustomSpeedDial actions={speedDialActions} />
             </Box>
           )}
-          {pageToShow === 'algoritmer' && <Algorithms />}
+          {pageToShow === qaPages.ALGORITHMS && <Algorithms />}
         </Grid>
       </Box>
     </Layout>
@@ -181,8 +166,6 @@ const QualityAssurance = ({ts_id}: QualityAssuranceProps) => {
 export default QualityAssurance;
 
 interface LayoutProps {
-  data: any;
-  ts_id: number;
   initiateSelect: boolean;
   setInitiateSelect: (value: boolean) => void;
   levelCorrection: boolean;
@@ -191,19 +174,17 @@ interface LayoutProps {
 }
 
 const Layout = ({
-  data,
-  ts_id,
   initiateSelect,
   setInitiateSelect,
   levelCorrection,
   initiateConfirmTimeseries,
   children,
 }: LayoutProps) => {
-  const [pageToShow, setPageToShow] = useQueryState(
-    'page',
-    parseAsStringLiteral(qaPagesLiteral).withDefault('justeringer')
-  );
+  const [pageToShow, setPageToShow] = useQAPageState();
   const {isMobile} = useBreakpoints();
+  const {ts_id} = useAppContext(['ts_id']);
+  const {field, station} = useNavigationFunctions();
+  const {data: metadata} = useMetadata();
   const handleChange = (event: any, newValue: (typeof qaPagesLiteral)[number]) => {
     setPageToShow(newValue);
   };
@@ -217,21 +198,45 @@ const Layout = ({
       text: 'Justering',
       value: 'justeringer' as const,
       icon: <QueryStatsIcon />,
-      color: navIconStyle(pageToShow === 'justeringer'),
+      color: navIconStyle(pageToShow === qaPages.JUSTERINGER),
     },
     {
       text: 'Algoritmer',
       value: 'algoritmer' as const,
       icon: <FunctionsIcon />,
-      color: navIconStyle(pageToShow === 'algoritmer'),
+      color: navIconStyle(pageToShow === qaPages.ALGORITHMS),
       handlePrefetch: handlePrefetch,
     }
   );
 
   return (
-    <MetadataContext.Provider value={data}>
-      <NavBar />
-
+    <>
+      <NavBar>
+        <NavBar.GoBack />
+        <NavBar.Title title="Kvalitetssikring" />
+        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          <NotificationList />
+          <NavBar.Menu
+            highligtFirst={!isMobile}
+            items={[
+              {
+                title: 'Til service',
+                icon: <QueryStatsIcon />,
+                onClick: () => {
+                  station(metadata?.loc_id, metadata?.ts_id);
+                },
+              },
+              {
+                title: 'Field',
+                icon: <BuildCircleIcon fontSize="medium" />,
+                onClick: () => {
+                  field();
+                },
+              },
+            ]}
+          />
+        </Box>
+      </NavBar>
       <Grid container gap={1}>
         {isMobile && <DataToShow />}
         <Grid item mobile={12} tablet={9} laptop={10}>
@@ -258,6 +263,6 @@ const Layout = ({
         onChange={handleChange}
         items={navigationItems}
       />
-    </MetadataContext.Provider>
+    </>
   );
 };

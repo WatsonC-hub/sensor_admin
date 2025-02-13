@@ -1,26 +1,33 @@
 import React from 'react';
 import {Route, Routes} from 'react-router-dom';
 
-import RoutingParamsWrapper from '~/helpers/RoutingParamsWrapper';
 import UserAdmin from '~/pages/admin/brugerstyring/UserAdmin';
 import ConfigurationPage from '~/pages/admin/konfiguration/ConfigurationPage';
 import QualityAssurance from '~/pages/admin/kvalitetssikring/QualityAssurance';
 import QualityAssuranceOverview from '~/pages/admin/kvalitetssikring/QualityAssuranceOverview';
 import NotificationPage from '~/pages/admin/notifikationer/NotificationPage';
 import AdminChooser from '~/pages/admin/overview/AdminChooser';
+import AdminRouterProvider from '~/state/AdminRouterProvider';
 
 const SensorAdmin = () => {
   return (
     <>
       <Routes>
         <Route path="/" element={<AdminChooser />} />
-        <Route path="/kvalitetssikring" element={<QualityAssuranceOverview />} />
+        <Route
+          path="/kvalitetssikring"
+          element={
+            <AdminRouterProvider>
+              <QualityAssuranceOverview />
+            </AdminRouterProvider>
+          }
+        />
         <Route
           path="/kvalitetssikring/:ts_id"
           element={
-            <RoutingParamsWrapper<'ts_id'>>
-              {({ts_id}) => <QualityAssurance ts_id={parseInt(ts_id)} />}
-            </RoutingParamsWrapper>
+            <AdminRouterProvider>
+              <QualityAssurance />
+            </AdminRouterProvider>
           }
         />
         <Route path="/notifikationer" element={<NotificationPage />} />

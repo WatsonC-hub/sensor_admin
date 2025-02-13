@@ -1,8 +1,7 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import {Alert, Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
-import {parseAsBoolean, useQueryState} from 'nuqs';
-import React, {ChangeEvent, createRef, ReactNode, useContext, useEffect, useState} from 'react';
+import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
@@ -11,27 +10,23 @@ import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
+import {useMetadata} from '~/hooks/query/useMetadata';
+import useStationList from '~/hooks/query/useStationList';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useStationPages} from '~/hooks/useStationPages';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
-import {MetadataContext} from '~/state/contexts';
-import {stamdataStore} from '~/state/store';
+import {useAppContext} from '~/state/contexts';
 
-interface StationProps {
-  ts_id: number;
-  stamdata: any;
-}
-
-export default function Station({ts_id, stamdata}: StationProps) {
-  const metadata = useContext(MetadataContext);
-  const loc_id = metadata?.loc_id;
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+export default function Station() {
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {data: metadata} = useMetadata();
+  const {ts_list} = useStationList(loc_id);
+  const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
-  const [canEdit] = useState(true);
   const fileInputRef = createRef<HTMLInputElement>();
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
   const [openSave, setOpenSave] = useState(false);
@@ -44,20 +39,6 @@ export default function Station({ts_id, stamdata}: StationProps) {
     public: false,
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
-  const store = stamdataStore();
-
-  useEffect(() => {
-    if (stamdata) {
-      store.setLocation(stamdata);
-      store.setTimeseries(stamdata);
-      store.setUnit(stamdata);
-    }
-    return () => {
-      store.resetLocation();
-      store.resetTimeseries();
-      store.resetUnit();
-    };
-  }, [stamdata]);
 
   const changeActiveImageData = (field: string, value: string) => {
     setActiveImage({
@@ -107,14 +88,14 @@ export default function Station({ts_id, stamdata}: StationProps) {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (stamdata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
+    if (metadata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
 
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
 
-  if (ts_id === -1 && stamdata && pageToShow === 'pejling') {
+  if (ts_list && ts_list.length === 0 && pageToShow === stationPages.PEJLING) {
     return (
-      <Layout stamdata={stamdata} ts_id={ts_id}>
+      <Layout>
         <Box
           display={'flex'}
           alignSelf={'center'}
@@ -140,7 +121,13 @@ export default function Station({ts_id, stamdata}: StationProps) {
           <Button
             bttype="primary"
             onClick={() => {
-              createStamdata(ts_id !== -1 ? '2' : '1');
+              createStamdata(ts_id ? '2' : '1', {
+                state: {
+                  location: {
+                    ...metadata,
+                  },
+                },
+              });
             }}
           >
             Opret tidsserie og/eller udstyr
@@ -150,12 +137,13 @@ export default function Station({ts_id, stamdata}: StationProps) {
     );
   }
 
+  if (!ts_id && ts_list && ts_list.length > 0) return '';
+
   return (
-    <Layout stamdata={stamdata} ts_id={ts_id}>
-      {pageToShow !== 'billeder' && stamdata && pageToShow !== 'stamdata' && (
+    <Layout>
+      {pageToShow !== 'billeder' && metadata && pageToShow !== 'stamdata' && (
         <>
           <PlotGraph
-            ts_id={ts_id}
             dynamicMeasurement={
               pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
             }
@@ -170,14 +158,10 @@ export default function Station({ts_id, stamdata}: StationProps) {
           alignSelf: 'center',
         }}
       >
-        {pageToShow === 'pejling' && ts_id !== -1 && (
-          <Pejling ts_id={ts_id} setDynamic={setDynamic} />
-        )}
-        {pageToShow === 'tilsyn' && <Tilsyn ts_id={ts_id} canEdit={canEdit} />}
+        {pageToShow === 'pejling' && ts_id !== -1 && <Pejling setDynamic={setDynamic} />}
+        {pageToShow === 'tilsyn' && <Tilsyn />}
       </Box>
-      {pageToShow === 'stamdata' && (
-        <EditStamdata ts_id={ts_id} metadata={stamdata} canEdit={canEdit} />
-      )}
+      {pageToShow === 'stamdata' && <EditStamdata />}
       {pageToShow === 'billeder' && (
         <Box>
           <Images
@@ -222,17 +206,13 @@ export default function Station({ts_id, stamdata}: StationProps) {
 
 interface LayoutProps {
   children: ReactNode;
-  ts_id: number;
-  stamdata: any;
 }
 
-const Layout = ({children, ts_id, stamdata}: LayoutProps) => {
-  const isCalculated = stamdata ? stamdata?.calculated : false;
-
+const Layout = ({children}: LayoutProps) => {
   return (
     <Box display="flex" flexDirection={'column'} gap={1}>
       {children}
-      <ActionArea isCalculated={isCalculated} ts_id={ts_id} stamdata={stamdata} />
+      <ActionArea />
     </Box>
   );
 };

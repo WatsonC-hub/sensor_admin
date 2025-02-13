@@ -1,5 +1,5 @@
 import {zodResolver} from '@hookform/resolvers/zod';
-import React, {useContext} from 'react';
+import React from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
@@ -7,11 +7,10 @@ import Autocomplete from '~/features/stamdata/components/stationDetails/ressourc
 import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
 import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 
 const Huskeliste = () => {
-  const metadata = useContext(MetadataContext);
-  const loc_id = metadata?.loc_id;
+  const {loc_id} = useAppContext(['loc_id']);
   const {
     relation: {data: related},
   } = useRessourcer(loc_id);

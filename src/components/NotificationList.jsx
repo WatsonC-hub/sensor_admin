@@ -4,14 +4,14 @@ import DoneIcon from '@mui/icons-material/Done';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/components/UpdateNotificationModal';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 
 // Mock data for notifications
 const NotificationList = () => {
@@ -19,14 +19,11 @@ const NotificationList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
-  const metadata = useContext(MetadataContext);
-  console.log(metadata);
-  let loc_id = metadata?.loc_id;
-  const ts_id = metadata?.ts_id;
+  const {ts_id} = useAppContext([], ['ts_id']);
+  let loc_id = undefined;
   const {markAsDone} = useTaskMutation();
 
   const {data, isPending} = useNotificationOverview();
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };

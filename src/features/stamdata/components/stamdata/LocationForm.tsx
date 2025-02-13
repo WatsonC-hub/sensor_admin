@@ -1,6 +1,6 @@
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {ChangeEvent, useContext, useEffect} from 'react';
+import {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
@@ -8,7 +8,6 @@ import LocationGroups from '~/features/stamdata/components/stamdata/LocationGrou
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
 import LocationTypeSelect from '~/features/stamdata/components/stamdata/LocationTypeSelect';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
-import {MetadataContext} from '~/state/contexts';
 import {authStore} from '~/state/store';
 
 interface Props {
@@ -36,7 +35,6 @@ export default function LocationForm({mode, disable = false}: Props) {
 
   const {watch, control, setValue, getValues} = useFormContext();
 
-  const metadata = useContext(MetadataContext);
   const watchTerrainqual = watch('location.terrainqual', '');
 
   // if (mode === 'modal' && getValues().location && getValues().location.loc_id)
@@ -98,7 +96,9 @@ export default function LocationForm({mode, disable = false}: Props) {
                   onBlur={onBlur}
                   error={error}
                   disable={
-                    disable || (metadata?.unit_uuid !== null && metadata?.unit_uuid !== undefined)
+                    disable ||
+                    (getValues().unit.unit_uuid !== null &&
+                      getValues().unit.unit_uuid !== undefined)
                   }
                 />
               )}

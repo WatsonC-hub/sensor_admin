@@ -18,9 +18,7 @@ const Redirecter = () => {
   const {field} = useNavigationFunctions();
   const location = useLocation();
   const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
-
   useNotificationOverview({notifyOnChangeProps: []});
-
   useEffect(() => {
     if (!iotAccess && location.pathname == '/') {
       // navigate('/field');
@@ -43,7 +41,9 @@ const Redirecter = () => {
           path="/"
           element={
             <>
-              <NavBar />
+              <NavBar>
+                <NavBar.Logo />
+              </NavBar>
               <Chooser />
             </>
           }

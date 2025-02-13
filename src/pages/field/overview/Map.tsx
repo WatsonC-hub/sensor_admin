@@ -100,7 +100,12 @@ const Map = () => {
             setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
             setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
 
-            createStamdata();
+            createStamdata(undefined, {
+              state: {
+                x: parseFloat(coords.Easting.toFixed(2)),
+                y: parseFloat(coords.Northing.toFixed(2)),
+              },
+            });
           }
         },
         icon: '/leaflet-images/marker.png',

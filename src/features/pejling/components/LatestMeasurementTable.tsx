@@ -9,22 +9,19 @@ import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
+import {useAppContext} from '~/state/contexts';
 import {stamdataStore} from '~/state/store';
 import {LatestMeasurement} from '~/types';
 
 type LatestMeasurementTableProps = {
   latestMeasurement: LatestMeasurement | undefined;
-  ts_id: number;
   errorMessage: string | undefined;
 };
 
-const LatestMeasurementTable = ({
-  latestMeasurement,
-  ts_id,
-  errorMessage,
-}: LatestMeasurementTableProps) => {
+const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasurementTableProps) => {
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
+  const {ts_id} = useAppContext(['ts_id']);
 
   const columns = useMemo<MRT_ColumnDef<LatestMeasurement>[]>(
     () => [

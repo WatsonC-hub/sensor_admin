@@ -1,3 +1,4 @@
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import {
   Box,
   Checkbox,
@@ -19,6 +20,7 @@ import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationTree from '~/pages/admin/notifikationer/NotificationTree';
 import ServiceMap from '~/pages/admin/notifikationer/ServiceMap';
 import {authStore} from '~/state/store';
@@ -51,6 +53,7 @@ const NotificationPage = () => {
   const [isWatsonCService, setIsWatsonCService] = useAtom(isWatsonCServiceAtom);
   const [isFirstLoad, setIsFirstLoad] = useAtom(isFirstLoadAtom);
   const superUser = authStore((state) => state.superUser);
+  const {field} = useNavigationFunctions();
 
   useEffect(() => {
     if (isFirstLoad) {
@@ -124,7 +127,21 @@ const NotificationPage = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar>
+        <NavBar.GoBack />
+        <NavBar.Title title="Admin" />
+        <NavBar.Menu
+          items={[
+            {
+              title: 'Field',
+              icon: <BuildCircleIcon fontSize="medium" />,
+              onClick: () => {
+                field();
+              },
+            },
+          ]}
+        />
+      </NavBar>
       <Grid container>
         <Grid item xs={12} md={6}>
           <Box sx={{display: 'flex', flexDirection: isTouch && 'column'}}>

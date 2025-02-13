@@ -28,7 +28,6 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import {parseAsBoolean, parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {Suspense, useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -48,11 +47,12 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
-import {useStationPages} from '~/hooks/useStationPages';
+import {useMetadata} from '~/hooks/query/useMetadata';
+import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import TabPanel from '~/pages/field/overview/TabPanel';
+import {useAppContext} from '~/state/contexts';
 import {authStore, stamdataStore} from '~/state/store';
-
 const unitEndSchema = z.object({
   enddate: z.string(),
   change_reason: z.number().optional(),
@@ -67,7 +67,6 @@ interface UnitEndDateDialogProps {
   setOpenDialog: (open: boolean) => void;
   unit: any;
   setUdstyrValue: (key: string, value: string) => void;
-  stationId: number;
 }
 
 type ChangeReason = {
@@ -86,9 +85,9 @@ const UnitEndDateDialog = ({
   setOpenDialog,
   unit,
   setUdstyrValue,
-  stationId,
 }: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
+  const {ts_id} = useAppContext([], ['ts_id']);
   const superUser = authStore((store) => store.superUser);
 
   const formMethods = useForm<UnitEndFormValues>({
@@ -126,7 +125,7 @@ const UnitEndDateDialog = ({
   const takeHomeMutation = useMutation({
     mutationFn: async (payload: UnitEndFormValues) => {
       const {data} = await apiClient.post(
-        `/sensor_field/stamdata/unit_history/end/${stationId}/${unit.gid}`,
+        `/sensor_field/stamdata/unit_history/end/${ts_id}/${unit.gid}`,
         payload
       );
       return data;
@@ -136,7 +135,7 @@ const UnitEndDateDialog = ({
       setUdstyrValue('slutdato', moment(enddate).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
       queryClient.invalidateQueries({
-        queryKey: ['udstyr', stationId],
+        queryKey: ['udstyr', ts_id],
       });
     },
   });
@@ -260,7 +259,8 @@ type UnitHistory = {
   terminal_type: string;
 };
 
-const UdstyrReplace = ({stationId}: {stationId: number}) => {
+const UdstyrReplace = () => {
+  const {ts_id} = useAppContext([], ['ts_id']);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
@@ -272,12 +272,13 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
   const {setValue} = useFormContext();
 
   const {data, isPending} = useQuery<UnitHistory[]>({
-    queryKey: ['udstyr', stationId],
+    queryKey: ['udstyr', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${stationId}`);
+      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${ts_id}`);
       return data;
     },
     refetchOnWindowFocus: false,
+    enabled: ts_id !== undefined,
   });
   const [selected, setselected] = useState<number | ''>(data?.[0]?.gid ?? '');
 
@@ -378,7 +379,6 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
           setOpenDialog={setOpenDialog}
           unit={data?.[0]}
           setUdstyrValue={setUnitValue}
-          stationId={stationId}
         />
         <AddUnitForm
           udstyrDialogOpen={openAddUdstyr}
@@ -391,30 +391,21 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
   );
 };
 
-interface EditStamdataProps {
-  ts_id: number;
-  metadata: any;
-  canEdit: boolean;
-}
-
 type EditValues = z.infer<typeof metadataPutSchema>;
 type Location = EditValues['location'];
 type Timeseries = EditValues['timeseries'];
 type Unit = EditValues['unit'];
 
-const tabValues = ['lokation', 'tidsserie', 'udstyr', 'målepunkt', 'stationsinformation'] as const;
-
-export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataProps) {
+export default function EditStamdata() {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   const queryClient = useQueryClient();
   const [pageToShow, setPageToShow] = useStationPages();
-  const [tabValue, setTabValue] = useQueryState(
-    'tab',
-    parseAsStringLiteral(tabValues).withDefault('lokation')
-  );
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [tabValue, setTabValue] = useEditTabState();
+  const [showForm, setShowForm] = useShowFormState();
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {data: metadata} = useMetadata();
 
   useQuery<UnitHistory[]>({
     queryKey: ['udstyr', ts_id],
@@ -424,9 +415,9 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     },
     refetchOnWindowFocus: false,
     notifyOnChangeProps: [],
+    enabled: ts_id !== undefined,
   });
 
-  const loc_id = metadata?.loc_id;
   useEffect(() => {
     if (pageToShow === stationPages.STAMDATA && ts_id !== prev_ts_id && prev_ts_id !== 0) {
       setPageToShow(stationPages.STAMDATA);
@@ -676,7 +667,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
           </TabPanel>
           <TabPanel value={tabValue} index={'udstyr'}>
             <Suspense fallback={<LoadingSkeleton />}>
-              <UdstyrReplace stationId={ts_id} />
+              <UdstyrReplace />
               <UnitForm mode="edit" />
               <StamdataFooter
                 cancel={resetFormData}
@@ -687,7 +678,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
             </Suspense>
           </TabPanel>
           <TabPanel value={tabValue} index={'målepunkt'}>
-            <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
+            <ReferenceForm />
             <FabWrapper
               icon={<AddCircle />}
               text="Tilføj målepunkt"

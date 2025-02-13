@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 
+import {FieldLocation} from '~/types';
+
 type AuthState = {
   authenticated: boolean;
   user_id: number | null;
@@ -119,7 +121,7 @@ type LocationState = {
   resetLocation: () => void;
   resetTimeseries: () => void;
   resetUnit: () => void;
-  setLocation: (locationData: any) => void;
+  setLocation: (locationData: Partial<FieldLocation>) => void;
   setTimeseries: (timeseriesdata: any) => void;
   setUnit: (unitData: any) => void;
   setUnitValue: (key: string, value: any) => void;

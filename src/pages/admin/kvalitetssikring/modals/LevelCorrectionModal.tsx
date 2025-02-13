@@ -4,15 +4,15 @@ import {Box, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
-import {useContext, useEffect} from 'react';
+import {useEffect} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
+import {useMetadata} from '~/hooks/query/useMetadata';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
 
 interface LevelCorrectionModal {
   onClose: () => void;
@@ -27,7 +27,7 @@ type CorrectionValues = z.infer<typeof schema>;
 
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
-  const metadata = useContext(MetadataContext);
+  const {data: metadata} = useMetadata();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';

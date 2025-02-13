@@ -21,10 +21,9 @@ interface Props {
   data: Maalepunkt[] | undefined;
   handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
 }
 
-export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, canEdit}: Props) {
+export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
@@ -91,7 +90,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={canEdit}
+        canEdit={true}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

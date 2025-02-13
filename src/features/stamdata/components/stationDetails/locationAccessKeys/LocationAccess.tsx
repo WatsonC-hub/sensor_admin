@@ -2,7 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import KeyIcon from '@mui/icons-material/Key';
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid} from '@mui/material';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 
 import Button from '~/components/Button';
@@ -16,14 +16,13 @@ import {
   AdgangsForhold,
 } from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
 const LocationAccess = () => {
-  const metadata = useContext(MetadataContext);
+  const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const {isTablet} = useBreakpoints();
-  const loc_id = metadata?.loc_id;
   const [createNew, setCreateNew] = useState<boolean>(false);
 
   const {

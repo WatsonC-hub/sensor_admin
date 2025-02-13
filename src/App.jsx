@@ -60,7 +60,9 @@ function App() {
   if (!authenticated) {
     return (
       <>
-        <NavBar />
+        <NavBar>
+          <NavBar.Logo />
+        </NavBar>
         <UnAuntenticatedApp />
       </>
     );

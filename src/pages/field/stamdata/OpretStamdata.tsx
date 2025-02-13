@@ -4,10 +4,9 @@ import {BuildRounded, Error, LocationOnRounded, ShowChartRounded} from '@mui/ico
 import {Grid, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import {useMutation, useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import {parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {ReactNode, useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
 
@@ -22,6 +21,7 @@ import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesFo
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useCreateTabState} from '~/hooks/useQueryStateParameters';
 import {stamdataStore} from '~/state/store';
 import {FieldLocation} from '~/types';
 
@@ -54,13 +54,13 @@ type Timeseries = CreateValues['timeseries'];
 type Unit = CreateValues['unit'];
 type Watlevmp = CreateValues['watlevmp'];
 
-const tabValues = ['lokation', 'tidsserie', 'udstyr'] as const;
-
 export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const store = stamdataStore();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const navigate = useNavigate();
+  const {state} = useLocation();
+  console.log('state', state);
 
   const {data: locations} = useQuery({
     queryKey: ['locations'],
@@ -70,23 +70,22 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     },
   });
 
-  useEffect(() => {
-    return () => {
-      store.resetLocation();
-      store.resetTimeseries();
-      store.resetUnit();
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     store.resetLocation();
+  //     store.resetTimeseries();
+  //     store.resetUnit();
+  //   };
+  // }, []);
+  let unit_uuid = '';
+  if ('unit_uuid' in state) unit_uuid = state.unit_uuid;
 
-  const [tabValue, setTabValue] = useQueryState(
-    'tab',
-    parseAsStringLiteral(tabValues).withDefault('lokation')
-  );
+  const [tabValue, setTabValue] = useCreateTabState();
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
       location: {
-        ...store.location,
+        ...state,
       },
       timeseries: {
         tstype_id: -1,
@@ -94,7 +93,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       watlevmp: {},
       unit: {
         startdate: '',
-        unit_uuid: '',
+        unit_uuid: unit_uuid,
       },
     },
     mode: 'onTouched',
@@ -337,7 +336,11 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
   return (
     <>
-      <NavBar />
+      <NavBar>
+        <NavBar.GoBack />
+        <NavBar.Title title="Opret Stamdata" />
+        <NavBar.Menu />
+      </NavBar>
       <div>
         <FormProvider {...formMethods}>
           <Tabs

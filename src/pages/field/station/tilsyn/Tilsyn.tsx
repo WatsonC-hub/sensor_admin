@@ -1,7 +1,6 @@
 import {PlaylistAddRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
-import {parseAsBoolean, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
@@ -11,16 +10,14 @@ import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useShowFormState} from '~/hooks/useQueryStateParameters';
+import {useAppContext} from '~/state/contexts';
 import {stamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
 
-type Props = {
-  ts_id: number;
-  canEdit: boolean;
-};
-
-export default function Tilsyn({ts_id, canEdit}: Props) {
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+export default function Tilsyn() {
+  const {ts_id} = useAppContext(['ts_id']);
+  const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
   const store = stamdataStore();
   const initialData: TilsynItem = {
@@ -111,7 +108,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
         </Box>
       </FormProvider>
       <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
-        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
+        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} />
         <FabWrapper
           icon={<PlaylistAddRounded />}
           text={'Tilføj ' + stationPages.TILSYN}

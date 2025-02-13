@@ -7,13 +7,14 @@ import {apiClient} from '~/apiClient';
 import CaptureDialog from '~/components/CaptureDialog';
 import ScanComponent from '~/components/ScanComponent';
 import LocationRouter from '~/features/station/components/LocationRouter';
-import RoutingParamsWrapper from '~/helpers/RoutingParamsWrapper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
 import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import {captureDialogAtom} from '~/state/atoms';
-import ReactRouterAppProvider from '~/state/ReactRouterAppProvider';
+import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
+import CreateStamdataProvider from '~/state/CreateStamdataProvider';
+import StationRouterProvider from '~/state/StationRouterProvider';
 
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);
@@ -77,40 +78,42 @@ function SensorField() {
         <Route
           path="location/:locid/:ts_id"
           element={
-            <ReactRouterAppProvider>
+            <StationRouterProvider>
               <LocationRouter />
-            </ReactRouterAppProvider>
+            </StationRouterProvider>
           }
         />
         <Route
           path="location/:locid"
           element={
-            <ReactRouterAppProvider>
+            <StationRouterProvider>
               <LocationRouter />
-            </ReactRouterAppProvider>
+            </StationRouterProvider>
           }
         />
         <Route
           path="stamdata"
-          element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
+          element={
+            <CreateStamdataProvider>
+              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
+            </CreateStamdataProvider>
+          }
         />
         <Route path="/:labelid" element={<ScanComponent />} />
         <Route
           path="borehole/:boreholeno/:intakeno"
           element={
-            <RoutingParamsWrapper<'boreholeno' | 'intakeno'>>
-              {({boreholeno, intakeno}) => (
-                <BoreholeRouter boreholeno={boreholeno} intakeno={parseInt(intakeno)} />
-              )}
-            </RoutingParamsWrapper>
+            <BoreholeRouterProvider>
+              <BoreholeRouter />
+            </BoreholeRouterProvider>
           }
         />
         <Route
           path="borehole/:boreholeno"
           element={
-            <RoutingParamsWrapper<'boreholeno'>>
-              {({boreholeno}) => <BoreholeRouter boreholeno={boreholeno} />}
-            </RoutingParamsWrapper>
+            <BoreholeRouterProvider>
+              <BoreholeRouter />
+            </BoreholeRouterProvider>
           }
         />
       </Routes>

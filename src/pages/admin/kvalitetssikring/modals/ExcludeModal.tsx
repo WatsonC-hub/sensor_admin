@@ -5,16 +5,16 @@ import {Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography} from 
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
-import {useContext, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useExclude} from '~/hooks/query/useExclude';
+import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
 
 interface ExcludeModalProps {
   onClose: () => void;
@@ -33,7 +33,7 @@ type ExcludeModalValues = z.infer<typeof schema>;
 const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const [radio, setRadio] = useState('selected');
   const selection = useAtomValue(qaSelection);
-  const metadata = useContext(MetadataContext);
+  const {data: metadata} = useMetadata();
   const {isMobile} = useBreakpoints();
 
   const x0 = moment(selection?.range?.x[0]);

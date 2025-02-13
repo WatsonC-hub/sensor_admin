@@ -4,6 +4,8 @@ import {useEffect, useState} from 'react';
 
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
+import {usePejling} from '~/features/pejling/api/usePejling';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {PejlingItem} from '~/types';
 
@@ -15,19 +17,23 @@ const initRange = [
 ];
 
 interface PlotGraphProps {
-  ts_id: number;
   dynamicMeasurement: Array<string | number> | undefined;
 }
 
-export default function PlotGraph({ts_id, dynamicMeasurement}: PlotGraphProps) {
+export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
   const [controlData, setControlData] =
     useState<Array<PejlingItem & {waterlevel: number | null}>>();
   const [xRange, setXRange] = useState(initRange);
 
+  const {
+    get: {data: watlevmp},
+  } = useMaalepunkt();
+  const {
+    get: {data: measurements},
+  } = usePejling();
   const {isMobile} = useBreakpoints();
 
-  const {layout, data, measurements, watlevmp, fetchRaw, setShowRawData} = useStationGraphHook(
-    ts_id,
+  const {layout, data, fetchRaw, setShowRawData} = useStationGraphHook(
     dynamicMeasurement,
     controlData,
     xRange

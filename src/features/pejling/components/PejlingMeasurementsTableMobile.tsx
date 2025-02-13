@@ -20,10 +20,9 @@ import {PejlingItem} from '~/types';
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete, canEdit}: Props) {
+export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
@@ -85,7 +84,7 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={canEdit}
+                canEdit={true}
               />
             </Box>
           </Box>

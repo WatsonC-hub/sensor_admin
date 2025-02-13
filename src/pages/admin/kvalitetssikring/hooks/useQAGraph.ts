@@ -2,7 +2,7 @@ import {useTheme} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
-import {useContext, useMemo} from 'react';
+import {useMemo} from 'react';
 
 import {apiClient} from '~/apiClient';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
@@ -10,12 +10,12 @@ import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
+import {useMetadata} from '~/hooks/query/useMetadata';
 import {dataToShowAtom} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
 import {QaGraphLabel} from '~/types';
 
 const useQAGraph = (ts_id: number, xRange: Array<string>) => {
-  const metadata = useContext(MetadataContext);
+  const {data: metadata} = useMetadata();
   const dataToShow = useAtomValue(dataToShowAtom);
   const theme = useTheme();
   const loc_name = metadata?.loc_name;

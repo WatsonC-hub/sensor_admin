@@ -1,4 +1,5 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
@@ -15,7 +16,21 @@ const AdminChooser = () => {
 
   return (
     <>
-      <NavBar />
+      <NavBar>
+        <NavBar.GoBack />
+        <NavBar.Title title="Admin" />
+        <NavBar.Menu
+          items={[
+            {
+              title: 'Field',
+              icon: <BuildCircleIcon fontSize="medium" />,
+              onClick: () => {
+                field();
+              },
+            },
+          ]}
+        />
+      </NavBar>
       {!adminAccess && (
         <>
           <Typography variant="h4" sx={{textAlign: 'center', marginTop: 10}}>

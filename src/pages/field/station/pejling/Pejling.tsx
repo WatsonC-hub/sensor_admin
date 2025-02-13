@@ -2,8 +2,7 @@ import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import {parseAsBoolean, parseAsString, useQueryState} from 'nuqs';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
@@ -13,23 +12,27 @@ import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurem
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useStationPages} from '~/hooks/useStationPages';
+import {
+  useCreateTabState,
+  useShowFormState,
+  useStationPages,
+} from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';
+import {useAppContext} from '~/state/contexts';
 import {stamdataStore} from '~/state/store';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
 type Props = {
-  ts_id: number;
   setDynamic: (dynamic: Array<string | number> | undefined) => void;
 };
 
-const Pejling = ({ts_id, setDynamic}: Props) => {
+const Pejling = ({setDynamic}: Props) => {
+  const {ts_id} = useAppContext(['ts_id']);
   const store = stamdataStore();
-  const [canEdit] = useState(true);
   const isWaterlevel = store.timeseries?.tstype_id === 1;
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [showForm, setShowForm] = useShowFormState();
   const [, setPageToShow] = useStationPages();
-  const [, setTabValue] = useQueryState('tab', parseAsString);
+  const [, setTabValue] = useCreateTabState();
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
   const {isTouch, isLaptop} = useBreakpoints();
 
@@ -121,7 +124,6 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     <Box mx={1}>
       <LatestMeasurementTable
         latestMeasurement={latestMeasurement}
-        ts_id={ts_id}
         errorMessage={
           isError && typeof error?.response?.data.detail == 'string'
             ? error?.response?.data.detail
@@ -142,11 +144,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
         </Box>
       </FormProvider>
       <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
-        <PejlingMeasurements
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          canEdit={canEdit}
-        />
+        <PejlingMeasurements handleEdit={handleEdit} handleDelete={handleDelete} />
         <FabWrapper
           icon={<AddCircle />}
           text="Tilføj kontrol"

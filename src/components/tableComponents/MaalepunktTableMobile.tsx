@@ -25,10 +25,9 @@ interface Props {
   data: Maalepunkt[] | undefined;
   handleEdit: (maalepunkt: Maalepunkt) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
 }
 
-export default function MaalepunktTableMobile({data, handleEdit, handleDelete, canEdit}: Props) {
+export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
   const [timeseries] = stamdataStore((state) => [state.timeseries]);
@@ -81,7 +80,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, c
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={canEdit}
+                canEdit={true}
               />
             </Box>
           </Box>
