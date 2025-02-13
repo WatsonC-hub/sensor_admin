@@ -11,6 +11,7 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
+import {useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {
   useCreateTabState,
@@ -19,7 +20,6 @@ import {
 } from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {stamdataStore} from '~/state/store';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
 type Props = {
@@ -27,9 +27,11 @@ type Props = {
 };
 
 const Pejling = ({setDynamic}: Props) => {
-  const {ts_id} = useAppContext(['ts_id']);
-  const store = stamdataStore();
-  const isWaterlevel = store.timeseries?.tstype_id === 1;
+  const {ts_id} = useAppContext([], ['ts_id']);
+  const {
+    get: {data: metadata},
+  } = useMetadata();
+  const isWaterlevel = metadata.timeseries?.tstype_id === 1;
   const [showForm, setShowForm] = useShowFormState();
   const [, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
@@ -72,10 +74,8 @@ const Pejling = ({setDynamic}: Props) => {
   }, [showForm]);
 
   useEffect(() => {
-    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
-      setShowForm(null);
-      reset(initialData);
-    }
+    setShowForm(null);
+    reset(initialData);
   }, [ts_id]);
 
   const handlePejlingSubmit = (values: PejlingItem) => {

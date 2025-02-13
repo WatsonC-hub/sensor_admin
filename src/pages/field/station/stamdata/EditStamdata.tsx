@@ -405,8 +405,13 @@ export default function EditStamdata() {
   const [showForm, setShowForm] = useShowFormState();
   const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
-  const {data: metadata} = useMetadata();
+  const {
+    get: {data: metadata},
+    location_data,
+  } = useMetadata();
 
+  console.log('location_data', location_data);
+  console.log('metadata', metadata);
   useQuery<UnitHistory[]>({
     queryKey: ['udstyr', ts_id],
     queryFn: async () => {
@@ -503,6 +508,8 @@ export default function EditStamdata() {
       enddate: metadata && metadata.slutdato,
     },
   });
+
+  // console.log(schemaData);
 
   const formMethods = useForm<EditValues>({
     resolver: zodResolver(schema),
