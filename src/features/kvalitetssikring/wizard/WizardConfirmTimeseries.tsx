@@ -34,12 +34,9 @@ const schema = z
   })
   .refine(
     ({date, startDate}) => {
-      return !startDate || (startDate && startDate < date);
+      return !startDate || moment(startDate).isBefore(moment(date));
     },
-    {
-      path: ['date'],
-      message: 'Dato må ikke være tidligere end sidst godkendt',
-    }
+    {path: ['date'], message: 'Dato må ikke være tidligere end sidst godkendt'}
   );
 
 type CertifyQaValues = z.infer<typeof schema>;
@@ -63,10 +60,7 @@ const WizardConfirmTimeseries = ({
 
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      startDate: selectedQaData?.date,
-      level: 1,
-    },
+    defaultValues: {startDate: selectedQaData?.date, level: 1},
     mode: 'onTouched',
   });
 
@@ -100,7 +94,7 @@ const WizardConfirmTimeseries = ({
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
     const payload = {
       path: `${metadata?.ts_id}`,
-      data: certifyQa,
+      data: {...certifyQa, date: moment(certifyQa.date).toISOString()},
     };
     postQaData.mutateAsync(payload);
     onClose();
@@ -109,12 +103,7 @@ const WizardConfirmTimeseries = ({
     <FormProvider {...formMethods}>
       <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
         <CardContent
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: 'inherit',
-            alignContent: 'center',
-          }}
+          sx={{display: 'flex', flexDirection: 'column', height: 'inherit', alignContent: 'center'}}
         >
           <Box display={'flex'} flexDirection="row" justifyContent={'center'} mb={1} gap={1}>
             <Typography
@@ -129,16 +118,8 @@ const WizardConfirmTimeseries = ({
               placement="right"
               enterTouchDelay={0}
               slotProps={{
-                tooltip: {
-                  sx: {
-                    bgcolor: 'primary.main',
-                  },
-                },
-                arrow: {
-                  sx: {
-                    color: 'primary.main',
-                  },
-                },
+                tooltip: {sx: {bgcolor: 'primary.main'}},
+                arrow: {sx: {color: 'primary.main'}},
               }}
               arrow={true}
               title={
@@ -177,20 +158,14 @@ const WizardConfirmTimeseries = ({
                 placeholder="Fra start"
                 fullWidth
                 disabled={true}
-                style={{
-                  minWidth: 195,
-                  width: isMobile ? 'fit-content' : 195,
-                }}
+                style={{minWidth: 195, width: isMobile ? 'fit-content' : 195}}
               />
               <FormInput
                 name="date"
                 label="Godkend til"
                 type={'datetime-local'}
                 disabled={!initiateConfirmTimeseries}
-                style={{
-                  minWidth: 195,
-                  width: isMobile ? 'fit-content' : 195,
-                }}
+                style={{minWidth: 195, width: isMobile ? 'fit-content' : 195}}
               />
             </Box>
             {/* <FormInput

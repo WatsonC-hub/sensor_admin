@@ -56,8 +56,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
       {
         path: `${metadata?.ts_id}`,
         data: {
-          startdate: values.startDate,
-          enddate: values.endDate,
+          startdate: moment(values.startDate).toISOString(),
+          enddate: moment(values.endDate).toISOString(),
           min_value: radio == 'selected' ? Number(values.startValue) : null,
           max_value: radio == 'selected' ? Number(values.endValue) : null,
           comment: values.comment ?? '',
