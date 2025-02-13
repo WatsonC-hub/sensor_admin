@@ -41,10 +41,7 @@ export default function Station() {
   });
 
   const changeActiveImageData = (field: string, value: string) => {
-    setActiveImage({
-      ...activeImage,
-      [field]: value,
-    });
+    setActiveImage({...activeImage, [field]: value});
   };
 
   const convertBase64 = (file: File) => {
@@ -107,11 +104,7 @@ export default function Station() {
         >
           <Alert
             severity={'info'}
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+            sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
           >
             <Typography>
               Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen

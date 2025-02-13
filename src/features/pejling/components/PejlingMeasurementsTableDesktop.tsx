@@ -11,7 +11,7 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
 
   const unit = timeseries.tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${timeseries.unit}]`;
 
@@ -54,16 +54,8 @@ export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelet
         id: 'useforcorrection',
         enableColumnFilter: true,
       },
-      {
-        accessorKey: 'comment',
-        header: 'Kommentar',
-        enableColumnFilter: false,
-      },
-      {
-        accessorKey: 'display_name',
-        header: 'Oprettet af',
-        enableColumnFilter: false,
-      },
+      {accessorKey: 'comment', header: 'Kommentar', enableColumnFilter: false},
+      {accessorKey: 'display_name', header: 'Oprettet af', enableColumnFilter: false},
     ],
     [unit]
   );

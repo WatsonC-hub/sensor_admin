@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react';
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
+import {useShallow} from 'zustand/shallow';
 
 import {FieldLocation} from '~/types';
 
@@ -41,13 +42,7 @@ export const authStore = create<AuthState>()(
         Sentry.setUser(null);
       },
       setAuthenticated: (authenticated) =>
-        set(
-          {
-            authenticated: authenticated,
-          },
-          false,
-          'setAuthenticated'
-        ),
+        set({authenticated: authenticated}, false, 'setAuthenticated'),
       setAuthorization: (user) => {
         set(
           {
@@ -65,13 +60,7 @@ export const authStore = create<AuthState>()(
         Sentry.setUser({id: user.user_id});
       },
       setLoginExpired: (loginexpired) =>
-        set(
-          {
-            loginExpired: loginexpired,
-          },
-          false,
-          'setLoginExpired'
-        ),
+        set({loginExpired: loginexpired}, false, 'setLoginExpired'),
     })),
     {
       name: 'calypso-auth-storage', // name of item in the storage (must be unique)
@@ -79,6 +68,10 @@ export const authStore = create<AuthState>()(
     }
   )
 );
+
+export const useAuthStore = <T>(selector: (state: AuthState) => T) => {
+  return authStore(useShallow(selector));
+};
 
 type LocationState = {
   location: {
@@ -234,47 +227,34 @@ const stamdataStore = create<LocationState>()(
       ),
 
     setUnitValue: (key, value) =>
-      set(
-        (state) => ({
-          unit: {
-            ...state.unit,
-            [key]: value,
-          },
-        }),
-        false,
-        'setUnitValue'
-      ),
+      set((state) => ({unit: {...state.unit, [key]: value}}), false, 'setUnitValue'),
     setLocationValue: (key, value) =>
-      set(
-        (state) => ({
-          location: {
-            ...state.location,
-            [key]: value,
-          },
-        }),
-        false,
-        'setLocationValue'
-      ),
+      set((state) => ({location: {...state.location, [key]: value}}), false, 'setLocationValue'),
     setTimeseriesValue: (key, value) =>
       set(
-        (state) => ({
-          timeseries: {
-            ...state.timeseries,
-            [key]: value,
-          },
-        }),
+        (state) => ({timeseries: {...state.timeseries, [key]: value}}),
         false,
         'setTimeseriesValue'
       ),
   }))
 );
 
-export const parkingStore = create<{
+export const useStamdataStore = <T>(selector: (state: LocationState) => T) => {
+  return stamdataStore(useShallow(selector));
+};
+
+type ParkingState = {
   selectedLocId: number | null;
   setSelectedLocId: (loc_id: number | null) => void;
-}>((set) => ({
+};
+
+export const parkingStore = create<ParkingState>((set) => ({
   selectedLocId: null,
   setSelectedLocId: (loc_id: number | null) => set({selectedLocId: loc_id}),
 }));
+
+export const useParkingStore = <T>(selector: (state: ParkingState) => T) => {
+  return parkingStore(useShallow(selector));
+};
 
 export {initialState, stamdataStore};

@@ -83,9 +83,7 @@ export const usePejling = () => {
   const post = useMutation({
     ...pejlingPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['measurements', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
       toast.success('Pejling gemt');
     },
   });
@@ -93,9 +91,7 @@ export const usePejling = () => {
   const put = useMutation({
     ...pejlingPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['measurements', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
       toast.success('Pejling ændret');
     },
   });
@@ -104,9 +100,7 @@ export const usePejling = () => {
     ...pejlingDelOptions,
     onSuccess: () => {
       toast.success('Pejling slettet');
-      queryClient.invalidateQueries({
-        queryKey: ['measurements', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
     },
   });
 

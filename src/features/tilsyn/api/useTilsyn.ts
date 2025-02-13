@@ -89,9 +89,7 @@ export const useTilsyn = () => {
   const post = useMutation({
     ...tilsynPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['service', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
       toast.success('Tilsyn gemt');
     },
   });
@@ -99,9 +97,7 @@ export const useTilsyn = () => {
   const put = useMutation({
     ...tilsynPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['service', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
       toast.success('Tilsyn ændret');
     },
   });
@@ -110,9 +106,7 @@ export const useTilsyn = () => {
     ...tilsynDelOptions,
     onSuccess: () => {
       toast.success('Tilsyn slettet');
-      queryClient.invalidateQueries({
-        queryKey: ['service', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
     },
   });
 

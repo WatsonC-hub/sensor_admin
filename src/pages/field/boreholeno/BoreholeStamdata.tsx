@@ -96,11 +96,9 @@ const BoreholeStamdata = () => {
   };
 
   const handleScan = async (data: any) => {
-    if (
-      data?.text.includes('www.sensor.watsonc.dk/') ||
-      data?.text.includes('https://sensor.watsonc.dk/')
-    ) {
-      const split = data['text'].split('/');
+    const value = data[0]['rawValue'];
+    if (value.includes('www.sensor.watsonc.dk/') || value.includes('https://sensor.watsonc.dk/')) {
+      const split = value.split('/');
       setCalypso_id(Number(split[split.length - 1]));
       setOpenCamera(false);
       setOpenDialog(true);

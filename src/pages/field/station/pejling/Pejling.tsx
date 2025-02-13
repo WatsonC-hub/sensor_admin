@@ -46,9 +46,7 @@ const Pejling = ({setDynamic}: Props) => {
     comment: '',
   };
 
-  const formMethods = useForm<PejlingItem>({
-    defaultValues: initialData,
-  });
+  const formMethods = useForm<PejlingItem>({defaultValues: initialData});
 
   const {reset, getValues} = formMethods;
 
@@ -80,11 +78,7 @@ const Pejling = ({setDynamic}: Props) => {
 
   const handlePejlingSubmit = (values: PejlingItem) => {
     const payload = {
-      data: {
-        ...values,
-        isWaterlevel: isWaterlevel,
-        stationid: ts_id,
-      },
+      data: {...values, isWaterlevel: isWaterlevel, stationid: ts_id},
       path: values.gid === -1 ? `${ts_id}` : `${ts_id}/${values.gid}`,
     };
     payload.data.timeofmeas = moment(payload.data.timeofmeas).toISOString();
@@ -103,9 +97,7 @@ const Pejling = ({setDynamic}: Props) => {
   };
 
   const handleDelete = (gid: number | undefined) => {
-    const payload = {
-      path: `${ts_id}/${gid}`,
-    };
+    const payload = {path: `${ts_id}/${gid}`};
     delPejling.mutate(payload);
   };
 
@@ -151,9 +143,7 @@ const Pejling = ({setDynamic}: Props) => {
           onClick={() => {
             setShowForm(true);
           }}
-          sx={{
-            visibility: showForm === null ? 'visible' : 'hidden',
-          }}
+          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
         ></FabWrapper>
       </Box>
     </Box>

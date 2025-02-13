@@ -12,14 +12,14 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import ErrorPage from '~/pages/field/station/ErrorPage';
 import Station from '~/pages/field/station/Station';
 import {useAppContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 import MinimalSelect from './MinimalSelect';
 
 export default function LocationRouter() {
   const {ts_id} = useAppContext([], ['ts_id']);
   const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
-  const adminAccess = authStore((state) => state.adminAccess);
+  const adminAccess = useAuthStore((state) => state.adminAccess);
 
   const {data: metadata} = useMetadata();
   return (
@@ -69,11 +69,7 @@ export default function LocationRouter() {
         </Box>
       </NavBar>
 
-      <main
-        style={{
-          flexGrow: 1,
-        }}
-      >
+      <main style={{flexGrow: 1}}>
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
           <Station />
         </ErrorBoundary>

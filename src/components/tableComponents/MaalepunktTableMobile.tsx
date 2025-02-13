@@ -18,7 +18,7 @@ import {
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {Maalepunkt} from '~/types';
 
 interface Props {
@@ -30,7 +30,7 @@ interface Props {
 export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);

@@ -25,12 +25,12 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
-  const [resetState] = authStore((state) => [state.resetState]);
+  const [resetState] = useAuthStore((state) => [state.resetState]);
   const queryClient = useQueryClient();
   const {home} = useNavigationFunctions();
 
@@ -46,11 +46,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
     <Box
       onClick={handleLogout}
       width={'100%'}
-      sx={{
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-      }}
+      sx={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
     >
       {children}
     </Box>
@@ -137,11 +133,7 @@ export const NavBarMenu = ({
   items,
 }: {
   highligtFirst?: boolean;
-  items?: {
-    title: string;
-    icon: ReactNode;
-    onClick: () => void;
-  }[];
+  items?: {title: string; icon: ReactNode; onClick: () => void}[];
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 

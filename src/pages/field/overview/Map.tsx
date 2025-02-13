@@ -24,7 +24,7 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {stamdataStore, authStore, parkingStore} from '~/state/store';
+import {useStamdataStore, useAuthStore, useParkingStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -56,14 +56,14 @@ interface LocItems {
 
 const Map = () => {
   const {createStamdata} = useNavigationFunctions();
-  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
+  const [setSelectParking] = useParkingStore((state) => [state.setSelectedLocId]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  const [setLocation, setLocationValue] = stamdataStore((store) => [
+  const [setLocation, setLocationValue] = useStamdataStore((store) => [
     store.setLocation,
     store.setLocationValue,
   ]);
 
-  const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
+  const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
     state.superUser,
     state.iotAccess,
     state.boreholeAccess,
@@ -78,9 +78,7 @@ const Map = () => {
     enabled: boreholeAccess,
   });
 
-  const {data: mapData} = useNotificationOverviewMap({
-    enabled: iotAccess,
-  });
+  const {data: mapData} = useNotificationOverviewMap({enabled: iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -110,10 +108,7 @@ const Map = () => {
         },
         icon: '/leaflet-images/marker.png',
       },
-      {
-        text: 'separator',
-        separator: true,
-      }
+      {text: 'separator', separator: true}
     );
 
   const {
@@ -171,10 +166,7 @@ const Map = () => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          setLocation({
-            loc_id: element.loc_id,
-            loc_name: element.loc_name,
-          });
+          setLocation({loc_id: element.loc_id, loc_name: element.loc_name});
           createStamdata('1');
         },
         icon: '/leaflet-images/marker.png',
@@ -217,10 +209,7 @@ const Map = () => {
 
     locationMenu = [
       ...locationMenu,
-      {
-        text: 'divider',
-        separator: true,
-      },
+      {text: 'divider', separator: true},
       ...defaultContextmenuItems,
     ];
 
@@ -269,9 +258,7 @@ const Map = () => {
 
           if (marker) {
             marker.openPopup();
-            map?.flyTo(marker.getLatLng(), 14, {
-              animate: false,
-            });
+            map?.flyTo(marker.getLatLng(), 14, {animate: false});
             marker.fire('click');
             setSelectedMarker(marker.options.data);
           } else {
@@ -283,9 +270,7 @@ const Map = () => {
               if (hiddenMarker) {
                 // hightlightedMarker = marker;
                 hiddenMarker.openPopup();
-                map?.flyTo(hiddenMarker.getLatLng(), 14, {
-                  animate: false,
-                });
+                map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
                 hiddenMarker.fire('click');
               }
             }
@@ -301,9 +286,7 @@ const Map = () => {
               const marker = createBoreholeMarker(element);
 
               marker.on('add', function () {
-                map?.flyTo(point, 16, {
-                  animate: false,
-                });
+                map?.flyTo(point, 16, {animate: false});
                 marker.fire('click');
                 setSelectedMarker(element);
               });
@@ -340,10 +323,7 @@ const Map = () => {
         const marker = createLocationMarker(element);
 
         if (marker) {
-          marker.bindTooltip(element.loc_name, {
-            direction: 'top',
-            offset: [0, -10],
-          });
+          marker.bindTooltip(element.loc_name, {direction: 'top', offset: [0, -10]});
 
           if (markerLayer) {
             marker.addTo(markerLayer);
@@ -352,10 +332,7 @@ const Map = () => {
       } else {
         const marker = createBoreholeMarker(element);
 
-        marker.bindTooltip(element.boreholeno, {
-          direction: 'top',
-          offset: [0, -10],
-        });
+        marker.bindTooltip(element.boreholeno, {direction: 'top', offset: [0, -10]});
 
         if (markerLayer) {
           marker.addTo(markerLayer);
@@ -393,13 +370,7 @@ const Map = () => {
         <Grid item mobile={11.8}>
           <Box
             id="test"
-            sx={{
-              width: '100%',
-              height: '100%',
-              minHeight: '300px',
-              flexGrow: 1,
-              ml: 0.5,
-            }}
+            sx={{width: '100%', height: '100%', minHeight: '300px', flexGrow: 1, ml: 0.5}}
           />
           <DrawerComponent
             key={getDrawerHeader()}

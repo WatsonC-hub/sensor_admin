@@ -22,7 +22,7 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useCreateTabState} from '~/hooks/useQueryStateParameters';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {FieldLocation} from '~/types';
 
 interface TabPanelProps {
@@ -56,7 +56,7 @@ type Watlevmp = CreateValues['watlevmp'];
 
 export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
-  const store = stamdataStore();
+  const store = useStamdataStore((state) => state);
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const navigate = useNavigate();
   const {state} = useLocation();
@@ -84,17 +84,10 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
-      location: {
-        ...state,
-      },
-      timeseries: {
-        tstype_id: -1,
-      },
+      location: {...state},
+      timeseries: {tstype_id: -1},
       watlevmp: {},
-      unit: {
-        startdate: '',
-        unit_uuid: unit_uuid,
-      },
+      unit: {startdate: '', unit_uuid: unit_uuid},
     },
     mode: 'onTouched',
   });
@@ -152,10 +145,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
   useEffect(() => {
     store.resetUnit();
-    setValue('unit', {
-      startdate: '',
-      unit_uuid: '',
-    });
+    setValue('unit', {startdate: '', unit_uuid: ''});
     trigger('unit');
   }, [watchtstype_id]);
 
@@ -186,9 +176,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   const showErrorMessage = (updateType?: string) => {
     console.log(getValues('location'));
     console.log(locationSchema);
-    let result = locationSchema.safeParse({
-      location: getValues('location'),
-    });
+    let result = locationSchema.safeParse({location: getValues('location')});
 
     if (updateType === 'timeseries') {
       const isWaterlevel = getValues()?.timeseries.tstype_id === 1;
@@ -207,12 +195,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       console.log(errorMessage);
       toast.error(errorMessage, {
         toastId: 'fejlVedOpretStamdata',
-        style: {
-          width: '20%',
-          minWidth: '300px',
-          marginRight: '0%',
-          whiteSpace: 'pre-line',
-        },
+        style: {width: '20%', minWidth: '300px', marginRight: '0%', whiteSpace: 'pre-line'},
         autoClose: 5000,
       });
     }
@@ -255,12 +238,8 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     }
 
     const form: {location: FieldLocation; timeseries: Timeseries; watlevmp?: Watlevmp} = {
-      location: {
-        ...getValues().location,
-      },
-      timeseries: {
-        ...getValues().timeseries,
-      },
+      location: {...getValues().location},
+      timeseries: {...getValues().timeseries},
     };
 
     if (isWaterlevel) {
@@ -295,16 +274,9 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
     const form: {location: FieldLocation; timeseries: Timeseries; unit: Unit; watlevmp?: Watlevmp} =
       {
-        location: {
-          ...getValues().location,
-        },
-        timeseries: {
-          ...getValues().timeseries,
-        },
-        unit: {
-          startdate: store.unit.startdato,
-          unit_uuid: store.unit.uuid,
-        },
+        location: {...getValues().location},
+        timeseries: {...getValues().timeseries},
+        unit: {startdate: store.unit.startdato, unit_uuid: store.unit.uuid},
       };
 
     if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
@@ -350,13 +322,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
             }}
             variant="fullWidth"
             aria-label="simple tabs example"
-            sx={{
-              '& .MuiTab-root': {
-                height: tabsHeight,
-                minHeight: tabsHeight,
-                marginTop: 1,
-              },
-            }}
+            sx={{'& .MuiTab-root': {height: tabsHeight, minHeight: tabsHeight, marginTop: 1}}}
           >
             <Tab
               value={'lokation'}
@@ -399,14 +365,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
             />
           </Tabs>
           <Divider />
-          <Box
-            display="flex"
-            flexDirection="column"
-            sx={{
-              maxWidth: '1200px',
-              margin: 'auto',
-            }}
-          >
+          <Box display="flex" flexDirection="column" sx={{maxWidth: '1200px', margin: 'auto'}}>
             <TabPanel value={tabValue} index={'lokation'}>
               <Grid container>
                 <LocationForm disable={loc_id == null ? false : true} mode={'normal'} />
@@ -430,20 +389,12 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
               />
             </TabPanel>
             <TabPanel value={tabValue} index={'udstyr'}>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'start',
-                }}
-              >
+              <Box sx={{display: 'flex', alignItems: 'baseline', justifyContent: 'start'}}>
                 <Button
                   disabled={watchtstype_id === -1}
                   bttype="primary"
                   size="small"
-                  sx={{
-                    ml: 1,
-                  }}
+                  sx={{ml: 1}}
                   onClick={() => setUdstyrDialogOpen(true)}
                 >
                   {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}

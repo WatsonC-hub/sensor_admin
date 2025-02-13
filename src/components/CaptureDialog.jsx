@@ -5,16 +5,17 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
-import React, {useState} from 'react';
-import QrReader from 'react-qr-scanner';
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
+import React, {useEffect, useState} from 'react';
+function Transition(props) {
+  console.log(props);
+  return <Slide direction="up" ref={props.ref} {...props} />;
+}
 
 var running = false;
 
 export default function CaptureDialog({handleClose, handleScan, open}) {
-  const [showText, setShowText] = useState(true);
+  const [hasPermission, setHasPermission] = useState(true);
 
   async function handleScanning(data) {
     if (data !== null && !running) {
@@ -28,7 +29,23 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
     }
   }
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
+        if (permissionStatus.state == 'granted') {
+          setHasPermission(true);
+          clearInterval(intervalId);
+        } else {
+          setHasPermission(false);
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   const camStyle = {
+    marginTop: '56px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -38,7 +55,7 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
   const handleError = (error) => console.error(error);
 
   return (
-    <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+    <Dialog fullScreen open={open} onClose={handleClose} slots={{transition: Transition}}>
       <AppBar>
         <Toolbar>
           <IconButton
@@ -53,24 +70,21 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
         </Toolbar>
       </AppBar>
       <div style={camStyle}>
-        {showText && (
+        {!hasPermission ? (
           <Typography variant="subtitle2" component="h3" align="center" display="block">
             Der skal gives rettigheder til at bruge kameraet. Tjek om du har fået en forespørgsel
             eller ændre indstillinger i din browser.
           </Typography>
+        ) : (
+          <QrReader
+            scanDelay={100}
+            style={{paddingTop: '64px'}}
+            onError={handleError}
+            onScan={handleScanning}
+            // onLoad={() => setShowText(false)}
+            constraints={{video: {facingMode: 'environment'}}}
+          />
         )}
-        <QrReader
-          delay={100}
-          // style={previewStyle}
-          onError={handleError}
-          onScan={handleScanning}
-          onLoad={() => setShowText(false)}
-          constraints={{
-            video: {
-              facingMode: 'environment',
-            },
-          }}
-        />
       </div>
     </Dialog>
   );

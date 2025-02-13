@@ -32,7 +32,7 @@ function SensorField() {
   };
 
   const handleScan = async (data: any) => {
-    const split = data['text'].split('/');
+    const split = data[0]['rawValue'].split('/');
     const calypso_id = split[split.length - 1];
 
     const options = {replace: true};

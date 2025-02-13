@@ -18,7 +18,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeTable from '~/pages/field/overview/components/BoreholeTable';
 import StationTable from '~/pages/field/overview/components/StationTable';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 import {TableData, BoreholeData} from '~/types';
 
 import Map from './Map';
@@ -30,7 +30,10 @@ export default function OverviewPage() {
   const {isMobile} = useBreakpoints();
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
-  const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
+  const [iotAccess, boreholeAccess] = useAuthStore((state) => [
+    state.iotAccess,
+    state.boreholeAccess,
+  ]);
   const {admin, createStamdata} = useNavigationFunctions();
 
   const {data: tabledata} = useQuery<TableData[]>({
@@ -87,10 +90,7 @@ export default function OverviewPage() {
   }
 
   function a11yProps(index: number) {
-    return {
-      id: `full-width-tab-${index}`,
-      'aria-controls': `full-width-tabpanel-${index}`,
-    };
+    return {id: `full-width-tab-${index}`, 'aria-controls': `full-width-tabpanel-${index}`};
   }
 
   return (

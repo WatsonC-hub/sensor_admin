@@ -14,7 +14,7 @@ import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/help
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useQueryTable} from '~/hooks/useTable';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
@@ -25,7 +25,7 @@ interface Props {
 export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
   // const [height, setHeight] = useState<number>();
 
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
@@ -50,11 +50,7 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
         enableHide: false,
         Cell: ({row, table, staticRowIndex}) => (
           <Box
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
+            style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
             sx={{width: '100%'}}
             gap={1}
             height={26}
