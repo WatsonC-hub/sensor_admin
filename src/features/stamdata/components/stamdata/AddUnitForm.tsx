@@ -209,7 +209,7 @@ export default function AddUnitForm({
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
           handleScan={(data: any) => {
-            const split = data['text'].split('/');
+            const split = data[0]['rawValue'].split('/');
             const calypso_id = parseInt(split[split.length - 1]);
 
             if (isNaN(calypso_id)) {

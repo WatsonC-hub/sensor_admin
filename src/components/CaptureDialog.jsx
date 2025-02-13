@@ -5,7 +5,7 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
-import {Scanner as QrReader, useDevices} from '@yudiel/react-qr-scanner';
+import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useEffect, useState} from 'react';
 function Transition(props) {
   console.log(props);
