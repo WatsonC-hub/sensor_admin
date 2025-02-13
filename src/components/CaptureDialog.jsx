@@ -5,8 +5,8 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
-import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
-import React, {useState} from 'react';
+import {Scanner as QrReader, useDevices} from '@yudiel/react-qr-scanner';
+import React from 'react';
 function Transition(props) {
   console.log(props);
   return <Slide direction="up" ref={props.ref} {...props} />;
@@ -15,7 +15,7 @@ function Transition(props) {
 var running = false;
 
 export default function CaptureDialog({handleClose, handleScan, open}) {
-  const [showText, setShowText] = useState(true);
+  const devices = useDevices();
 
   async function handleScanning(data) {
     if (data !== null && !running) {
@@ -30,6 +30,7 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
   }
 
   const camStyle = {
+    marginTop: '56px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -54,20 +55,21 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
         </Toolbar>
       </AppBar>
       <div style={camStyle}>
-        {showText && (
+        {devices?.length == 1 && devices[0].deviceId == '' ? (
           <Typography variant="subtitle2" component="h3" align="center" display="block">
             Der skal gives rettigheder til at bruge kameraet. Tjek om du har fået en forespørgsel
             eller ændre indstillinger i din browser.
           </Typography>
+        ) : (
+          <QrReader
+            scanDelay={100}
+            style={{paddingTop: '64px'}}
+            onError={handleError}
+            onScan={handleScanning}
+            // onLoad={() => setShowText(false)}
+            constraints={{video: {facingMode: 'environment'}}}
+          />
         )}
-        <QrReader
-          scanDelay={100}
-          // style={previewStyle}
-          onError={handleError}
-          onScan={handleScanning}
-          // onLoad={() => setShowText(false)}
-          constraints={{video: {facingMode: 'environment'}}}
-        />
       </div>
     </Dialog>
   );
