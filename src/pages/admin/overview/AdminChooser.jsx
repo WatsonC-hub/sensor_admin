@@ -1,6 +1,5 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 
@@ -83,19 +82,6 @@ const AdminChooser = () => {
             title="Kvalitetssikring"
             text="Kvalitetssikre tidsserier"
             icon={AutoGraphIcon}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={10}
-          sm={5}
-          sx={{pointerEvents: adminAccess ? 'auto' : 'none', opacity: adminAccess ? 1 : 0.8}}
-        >
-          <ChoiseCard
-            navigateTo="notifikationer"
-            title="Notifikationer"
-            text="Se notifikationer"
-            icon={NotificationsActiveIcon}
           />
         </Grid>
         {/* <Grid
