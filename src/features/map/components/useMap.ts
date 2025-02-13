@@ -1,6 +1,9 @@
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
@@ -502,7 +505,7 @@ const useMap = <TData extends object>(
   useEffect(() => {
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup();
-    markerLayerRef.current = L.featureGroup().addTo(mapRef.current);
+    markerLayerRef.current = L.markerClusterGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup();
 
