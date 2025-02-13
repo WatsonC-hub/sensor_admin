@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
 import {Scanner as QrReader, useDevices} from '@yudiel/react-qr-scanner';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 function Transition(props) {
   console.log(props);
   return <Slide direction="up" ref={props.ref} {...props} />;
@@ -15,7 +15,7 @@ function Transition(props) {
 var running = false;
 
 export default function CaptureDialog({handleClose, handleScan, open}) {
-  const devices = useDevices();
+  const [hasPermission, setHasPermission] = useState(true);
 
   async function handleScanning(data) {
     if (data !== null && !running) {
@@ -28,6 +28,21 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
       // navigate(`${calypso_id}`);
     }
   }
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
+        if (permissionStatus.state == 'granted') {
+          setHasPermission(true);
+          clearInterval(intervalId);
+        } else {
+          setHasPermission(false);
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const camStyle = {
     marginTop: '56px',
@@ -55,7 +70,7 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
         </Toolbar>
       </AppBar>
       <div style={camStyle}>
-        {devices?.length == 1 && devices[0].deviceId == '' ? (
+        {!hasPermission ? (
           <Typography variant="subtitle2" component="h3" align="center" display="block">
             Der skal gives rettigheder til at bruge kameraet. Tjek om du har fået en forespørgsel
             eller ændre indstillinger i din browser.
