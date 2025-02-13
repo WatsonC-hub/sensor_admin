@@ -1,6 +1,7 @@
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import 'leaflet.locatecontrol';
+import {LocateControl} from 'leaflet.locatecontrol';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
@@ -47,7 +48,7 @@ const useMap = <TData extends object>(
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const geoJsonRef = useRef<L.FeatureGroup | null>(null);
   const mutateParkingRef = useRef<boolean>(false);
-  const mutateLeafletMapRouteRef = useRef<number | boolean | null>();
+  const mutateLeafletMapRouteRef = useRef<number | boolean | null>(null);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
   const [setSelectParking] = useParkingStore((state) => [state.setSelectedLocId]);
@@ -124,7 +125,7 @@ const useMap = <TData extends object>(
       center: [56.215868, 8.228759],
       zoom: 7,
       layers: [outdormapbox],
-      tap: false,
+      tapHold: false,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
@@ -142,15 +143,12 @@ const useMap = <TData extends object>(
 
     L.control.layers(baseMaps).addTo(map);
 
-    L.control
-      // @ts-expect-error Locate is injected
-      .locate({
-        showPopup: false,
-        strings: {title: 'Find mig'},
-        circleStyle: {interactive: false},
-        locateOptions: {enableHighAccuracy: true},
-      })
-      .addTo(map);
+    new LocateControl({
+      showPopup: false,
+      strings: {title: 'Find mig'},
+      circleStyle: {interactive: false},
+      locateOptions: {enableHighAccuracy: true},
+    }).addTo(map);
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
