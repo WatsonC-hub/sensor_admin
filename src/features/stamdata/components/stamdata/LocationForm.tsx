@@ -9,7 +9,7 @@ import LocationProjects from '~/features/stamdata/components/stamdata/LocationPr
 import LocationTypeSelect from '~/features/stamdata/components/stamdata/LocationTypeSelect';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
 import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 interface Props {
   mode: 'modal' | 'normal';
@@ -47,7 +47,7 @@ export default function LocationForm({mode, disable = false}: Props) {
   //   });
 
   const gridsize = mode === 'modal' ? 12 : 6;
-  const superUser = authStore((store) => store.superUser);
+  const superUser = useAuthStore((store) => store.superUser);
   return (
     // <FormProvider {...formMethods}>
     <Grid container spacing={2} alignItems="center">
@@ -58,9 +58,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           required
           fullWidth
           placeholder="f.eks. Engsø"
-          sx={{
-            mb: 2,
-          }}
+          sx={{mb: 2}}
           disabled={disable}
         />
       </Grid>
@@ -70,9 +68,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           label="Hoved lokation"
           fullWidth
           placeholder="f.eks. Aarhus Kommune"
-          sx={{
-            mb: 2,
-          }}
+          sx={{mb: 2}}
           disabled={disable}
         />
       </Grid>
@@ -119,9 +115,7 @@ export default function LocationForm({mode, disable = false}: Props) {
               return 'X-koordinat er uden for Danmark';
             }
           }}
-          sx={{
-            mb: 2,
-          }}
+          sx={{mb: 2}}
           onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
@@ -142,9 +136,7 @@ export default function LocationForm({mode, disable = false}: Props) {
               return 'Y-koordinat er uden for Danmark';
             }
           }}
-          sx={{
-            mb: 2,
-          }}
+          sx={{mb: 2}}
           onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
@@ -158,13 +150,9 @@ export default function LocationForm({mode, disable = false}: Props) {
           name="location.terrainlevel"
           label="Terrænkote"
           type="number"
-          InputProps={{
-            endAdornment: <InputAdornment position="start">m</InputAdornment>,
-          }}
+          InputProps={{endAdornment: <InputAdornment position="start">m</InputAdornment>}}
           fullWidth
-          sx={{
-            mb: 2,
-          }}
+          sx={{mb: 2}}
           disabled={disable}
         />
       </Grid>
@@ -174,9 +162,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           label="Type af terrænkote"
           select
           fullWidth
-          sx={{
-            mb: 2,
-          }}
+          sx={{mb: 2}}
           disabled={disable}
           onChangeCallback={(e) => {
             if ((e as ChangeEvent<HTMLTextAreaElement>).target.value === 'DTM') {
@@ -197,9 +183,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           name="location.description"
           label="Beskrivelse"
           fullWidth
-          sx={{
-            mb: 2,
-          }}
+          sx={{mb: 2}}
           disabled={disable}
           placeholder="f.eks. ligger tæt ved broen"
         />

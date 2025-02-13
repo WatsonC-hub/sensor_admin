@@ -11,7 +11,7 @@ import FormToggleSwitch from '~/components/FormToggleSwitch';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 interface FilterOptionsProps {
   filters: Filter;
@@ -20,15 +20,13 @@ interface FilterOptionsProps {
 }
 
 const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
-  const [boreholeAccess, iotAccess, superUser] = authStore((state) => [
+  const [boreholeAccess, iotAccess, superUser] = useAuthStore((state) => [
     state.boreholeAccess,
     state.iotAccess,
     state.superUser,
   ]);
 
-  const formMethods = useForm<Filter>({
-    values: filters,
-  });
+  const formMethods = useForm<Filter>({values: filters});
 
   const submit = (data: Filter) => {
     onSubmit(data);
@@ -37,10 +35,7 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
   const reset = () => {
     const mapFilter: Filter = {
       ...defaultMapFilter,
-      sensor: {
-        ...defaultMapFilter.sensor,
-        isCustomerService: superUser ? false : true,
-      },
+      sensor: {...defaultMapFilter.sensor, isCustomerService: superUser ? false : true},
     };
 
     formMethods.reset(mapFilter);
@@ -121,11 +116,7 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
                 <Typography
                   variant="body1"
                   component="span"
-                  sx={{
-                    display: 'flex',
-                    gap: 1,
-                    alignItems: 'center',
-                  }}
+                  sx={{display: 'flex', gap: 1, alignItems: 'center'}}
                 >
                   <NotificationIcon iconDetails={{color: 'grey'}} />
                   Vis inaktive lokationer
@@ -161,13 +152,7 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
         />
       </Grid>
 
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: 1,
-        }}
-      >
+      <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
         <Button bttype="tertiary" onClick={reset} startIcon={<RestartAlt />}>
           Nulstil
         </Button>

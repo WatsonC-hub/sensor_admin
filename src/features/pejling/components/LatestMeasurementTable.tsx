@@ -9,7 +9,7 @@ import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {LatestMeasurement} from '~/types';
 
 type LatestMeasurementTableProps = {
@@ -23,7 +23,7 @@ const LatestMeasurementTable = ({
   ts_id,
   errorMessage,
 }: LatestMeasurementTableProps) => {
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
 
   const columns = useMemo<MRT_ColumnDef<LatestMeasurement>[]>(
@@ -101,27 +101,14 @@ const LatestMeasurementTable = ({
     enableStickyHeader: false,
     enableGlobalFilterRankedResults: false,
     muiTableContainerProps: {},
-    muiTableHeadCellProps: {
-      sx: {
-        m: 0,
-        py: 0,
-      },
-    },
-    muiTableBodyCellProps: {
-      sx: {
-        m: 0,
-        py: 0,
-        whiteSpace: 'pre-line',
-      },
-    },
+    muiTableHeadCellProps: {sx: {m: 0, py: 0}},
+    muiTableBodyCellProps: {sx: {m: 0, py: 0, whiteSpace: 'pre-line'}},
     renderRowActions: () => (
       <IconButton
         sx={{p: 0.5, marginRight: 0.5}}
         edge="end"
         onClick={async () => {
-          await queryClient.invalidateQueries({
-            queryKey: ['latest_measurement', ts_id],
-          });
+          await queryClient.invalidateQueries({queryKey: ['latest_measurement', ts_id]});
           toast.success('Genindlæst seneste måling');
         }}
         size="large"
@@ -140,12 +127,8 @@ const LatestMeasurementTable = ({
         size: 0, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
         grow: false,
         header: '',
-        muiTableHeadCellProps: {
-          align: 'right',
-        },
-        muiTableBodyCellProps: {
-          align: 'right',
-        },
+        muiTableHeadCellProps: {align: 'right'},
+        muiTableBodyCellProps: {align: 'right'},
       },
     },
   };

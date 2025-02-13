@@ -5,7 +5,7 @@ import {useFormContext} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
 import FormTextField from '~/components/FormTextField';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 
 interface UnitFormProps {
   mode: string;
@@ -15,7 +15,7 @@ export default function UnitForm({mode}: UnitFormProps) {
   const {watch, trigger, getFieldState} = useFormContext();
   const editMode = mode === 'edit';
 
-  const [unit] = stamdataStore((store) => [store.unit]);
+  const [unit] = useStamdataStore((store) => [store.unit]);
   const startdate = watch('unit.startdate');
   const enddate = watch('unit.enddate');
 
@@ -68,9 +68,7 @@ export default function UnitForm({mode}: UnitFormProps) {
             disabled={unit && !startdate}
             type="datetime-local"
             required
-            inputProps={{
-              min: moment(startdate).format('YYYY-MM-DDTHH:mm'),
-            }}
+            inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}
           />
         )}
       </Grid>

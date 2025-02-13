@@ -11,18 +11,15 @@ import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
 
-type Props = {
-  ts_id: number;
-  canEdit: boolean;
-};
+type Props = {ts_id: number; canEdit: boolean};
 
 export default function Tilsyn({ts_id, canEdit}: Props) {
   const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
   const {isTouch, isLaptop} = useBreakpoints();
-  const store = stamdataStore();
+  const store = useStamdataStore((state) => state);
   const initialData: TilsynItem = {
     dato: moment().format('YYYY-MM-DDTHH:mm'),
     gid: -1,
@@ -32,19 +29,14 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
     user_id: null,
   };
 
-  const formMethods = useForm<TilsynItem>({
-    defaultValues: initialData,
-  });
+  const formMethods = useForm<TilsynItem>({defaultValues: initialData});
 
   const {reset, getValues} = formMethods;
 
   const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn();
 
   const handleServiceSubmit = (values: TilsynItem) => {
-    const tilsyn = {
-      ...values,
-      dato: moment(values.dato).toISOString(),
-    };
+    const tilsyn = {...values, dato: moment(values.dato).toISOString()};
 
     const mutationOptions = {
       onSuccess: () => {
@@ -53,16 +45,10 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
     };
 
     if (tilsyn.gid === -1) {
-      const payload = {
-        data: tilsyn,
-        path: `${ts_id}`,
-      };
+      const payload = {data: tilsyn, path: `${ts_id}`};
       postTilsyn.mutate(payload, mutationOptions);
     } else {
-      const payload = {
-        data: tilsyn,
-        path: `${ts_id}/${tilsyn.gid}`,
-      };
+      const payload = {data: tilsyn, path: `${ts_id}/${tilsyn.gid}`};
       putTilsyn.mutate(payload, mutationOptions);
     }
   };
@@ -73,9 +59,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   };
 
   const handleDelete = (gid: number | undefined) => {
-    const payload = {
-      path: `${ts_id}/${gid}`,
-    };
+    const payload = {path: `${ts_id}/${gid}`};
     delTilsyn.mutate(payload, {
       onSuccess: () => {
         resetFormData();
@@ -118,9 +102,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
           onClick={() => {
             setShowForm(true);
           }}
-          sx={{
-            visibility: showForm === null ? 'visible' : 'hidden',
-          }}
+          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
         />
       </Box>
     </Box>

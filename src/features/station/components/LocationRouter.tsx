@@ -19,13 +19,13 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import ErrorPage from '~/pages/field/station/ErrorPage';
 import Station from '~/pages/field/station/Station';
 import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 export default function LocationRouter() {
   const params = useParams();
   const navigate = useNavigate();
   const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
-  const adminAccess = authStore((state) => state.adminAccess);
+  const adminAccess = useAuthStore((state) => state.adminAccess);
 
   const {data, error, isPending} = useQuery({
     queryKey: ['stations', params.locid],
@@ -152,11 +152,7 @@ export default function LocationRouter() {
         </Box>
       </AppBarLayout>
 
-      <main
-        style={{
-          flexGrow: 1,
-        }}
-      >
+      <main style={{flexGrow: 1}}>
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
           <Station ts_id={params.ts_id ? parseInt(params.ts_id) : -1} stamdata={stamdata} />
         </ErrorBoundary>

@@ -7,10 +7,10 @@ import ChoiseCard from '~/components/ChoiseCard';
 import GenericCard from '~/components/GenericCard';
 import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 const AdminChooser = () => {
-  const adminAccess = authStore((state) => state.adminAccess);
+  const adminAccess = useAuthStore((state) => state.adminAccess);
   const {field} = useNavigationFunctions();
 
   return (
@@ -37,11 +37,7 @@ const AdminChooser = () => {
       <Grid
         container
         spacing={8}
-        sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 10,
-        }}
+        sx={{justifyContent: 'center', alignItems: 'center', marginTop: 10}}
       >
         {/* {iotAccess && (
           <Grid
@@ -65,10 +61,7 @@ const AdminChooser = () => {
           item
           xs={10}
           sm={5}
-          sx={{
-            pointerEvents: adminAccess ? 'auto' : 'none',
-            opacity: adminAccess ? 1 : 0.8,
-          }}
+          sx={{pointerEvents: adminAccess ? 'auto' : 'none', opacity: adminAccess ? 1 : 0.8}}
         >
           <ChoiseCard
             navigateTo="kvalitetssikring"
@@ -81,10 +74,7 @@ const AdminChooser = () => {
           item
           xs={10}
           sm={5}
-          sx={{
-            pointerEvents: adminAccess ? 'auto' : 'none',
-            opacity: adminAccess ? 1 : 0.8,
-          }}
+          sx={{pointerEvents: adminAccess ? 'auto' : 'none', opacity: adminAccess ? 1 : 0.8}}
         >
           <ChoiseCard
             navigateTo="notifikationer"

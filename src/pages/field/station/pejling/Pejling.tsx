@@ -15,16 +15,13 @@ import PejlingMeasurements from '~/features/pejling/components/PejlingMeasuremen
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useStationPages';
 import {APIError} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
-type Props = {
-  ts_id: number;
-  setDynamic: (dynamic: Array<string | number> | undefined) => void;
-};
+type Props = {ts_id: number; setDynamic: (dynamic: Array<string | number> | undefined) => void};
 
 const Pejling = ({ts_id, setDynamic}: Props) => {
-  const store = stamdataStore();
+  const store = useStamdataStore((state) => state);
   const [canEdit] = useState(true);
   const isWaterlevel = store.timeseries?.tstype_id === 1;
   const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
@@ -41,9 +38,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     comment: '',
   };
 
-  const formMethods = useForm<PejlingItem>({
-    defaultValues: initialData,
-  });
+  const formMethods = useForm<PejlingItem>({defaultValues: initialData});
 
   const {reset, getValues} = formMethods;
 
@@ -77,11 +72,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
 
   const handlePejlingSubmit = (values: PejlingItem) => {
     const payload = {
-      data: {
-        ...values,
-        isWaterlevel: isWaterlevel,
-        stationid: ts_id,
-      },
+      data: {...values, isWaterlevel: isWaterlevel, stationid: ts_id},
       path: values.gid === -1 ? `${ts_id}` : `${ts_id}/${values.gid}`,
     };
     payload.data.timeofmeas = moment(payload.data.timeofmeas).toISOString();
@@ -100,9 +91,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   };
 
   const handleDelete = (gid: number | undefined) => {
-    const payload = {
-      path: `${ts_id}/${gid}`,
-    };
+    const payload = {path: `${ts_id}/${gid}`};
     delPejling.mutate(payload);
   };
 
@@ -153,9 +142,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
           onClick={() => {
             setShowForm(true);
           }}
-          sx={{
-            visibility: showForm === null ? 'visible' : 'hidden',
-          }}
+          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
         ></FabWrapper>
       </Box>
     </Box>

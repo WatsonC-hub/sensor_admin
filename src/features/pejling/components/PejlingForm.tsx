@@ -17,7 +17,7 @@ import {useFormContext, get} from 'react-hook-form';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 import {LatestMeasurement, Maalepunkt, PejlingItem} from '~/types';
 
 import Correction from './Correction';
@@ -41,7 +41,7 @@ export default function PejlingForm({
   setDynamic,
   latestMeasurement,
 }: PejlingFormProps) {
-  const store = stamdataStore();
+  const store = useStamdataStore((state) => state);
   const tstype_id = store.timeseries.tstype_id;
   const isWaterlevel = tstype_id === 1;
   const isFlow = tstype_id === 2;
@@ -62,7 +62,7 @@ export default function PejlingForm({
 
   const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
 
-  const [stationUnit] = stamdataStore((state) => [state.timeseries.unit]);
+  const [stationUnit] = useStamdataStore((state) => [state.timeseries.unit]);
   const measurement = watch('measurement');
   const date = watch('timeofmeas');
   const [elevationDiff, setElevationDiff] = useState<number>();
@@ -118,10 +118,7 @@ export default function PejlingForm({
         setCurrentMP(mp[0]);
         clearErrors('timeofmeas');
       } else {
-        setError('timeofmeas', {
-          type: 'outOfRange',
-          message: 'Tidspunkt er uden for et målepunkt',
-        });
+        setError('timeofmeas', {type: 'outOfRange', message: 'Tidspunkt er uden for et målepunkt'});
       }
     }
   };
@@ -188,9 +185,7 @@ export default function PejlingForm({
             fullWidth
             type="datetime-local"
             required
-            sx={{
-              mb: 2,
-            }}
+            sx={{mb: 2}}
             onChangeCallback={(e) =>
               handleDateChange((e as ChangeEvent<HTMLTextAreaElement>).target.value)
             }
@@ -207,9 +202,7 @@ export default function PejlingForm({
             fullWidth
             multiline
             rows={4}
-            sx={{
-              mb: 2,
-            }}
+            sx={{mb: 2}}
           />
         </Grid>
         <Actions

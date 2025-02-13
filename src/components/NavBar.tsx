@@ -31,12 +31,12 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
 import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
-  const [resetState] = authStore((state) => [state.resetState]);
+  const [resetState] = useAuthStore((state) => [state.resetState]);
   const queryClient = useQueryClient();
   const {home} = useNavigationFunctions();
 
@@ -52,11 +52,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
     <Box
       onClick={handleLogout}
       width={'100%'}
-      sx={{
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-      }}
+      sx={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
     >
       {children}
     </Box>
@@ -143,11 +139,7 @@ export const NavBarMenu = ({
   items,
 }: {
   highligtFirst?: boolean;
-  items?: {
-    title: string;
-    icon: ReactNode;
-    onClick: () => void;
-  }[];
+  items?: {title: string; icon: ReactNode; onClick: () => void}[];
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -245,7 +237,10 @@ const GoBack = () => {
 };
 
 const NavBar = () => {
-  const [authenticated, iotAccess] = authStore((state) => [state.authenticated, state.iotAccess]);
+  const [authenticated, iotAccess] = useAuthStore((state) => [
+    state.authenticated,
+    state.iotAccess,
+  ]);
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
   const {admin, createStamdata, field, station} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
@@ -277,11 +272,7 @@ const NavBar = () => {
         <Logo />
         {isMobile ? (
           <IconButton
-            sx={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }}
+            sx={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}}
             color="inherit"
             onClick={() => setOpenQRScanner(true)}
             size="large"
@@ -290,11 +281,7 @@ const NavBar = () => {
           </IconButton>
         ) : (
           <Typography
-            sx={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }}
+            sx={{position: 'absolute', left: '50%', transform: 'translateX(-50%)'}}
             variant="h4"
           >
             Field
@@ -383,13 +370,7 @@ const NavBar = () => {
         <GoBack />
         <Typography variant={isMobile ? 'h6' : 'h4'}>Kvalitetssikring</Typography>
 
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <NotificationList />
           <NavBarMenu
             highligtFirst={!isMobile}

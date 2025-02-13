@@ -11,7 +11,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SensorAdmin from '~/pages/admin/SensorAdmin';
 import SensorField from '~/pages/field/SensorField';
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
 
@@ -20,7 +20,7 @@ const Redirecter = () => {
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const {field} = useNavigationFunctions();
   const location = useLocation();
-  const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
+  const [iotAccess, adminAccess] = useAuthStore((state) => [state.iotAccess, state.adminAccess]);
 
   useNotificationOverview({notifyOnChangeProps: []});
 

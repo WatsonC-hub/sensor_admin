@@ -18,7 +18,7 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
-import {authStore, stamdataStore} from '~/state/store';
+import {useAuthStore, useStamdataStore} from '~/state/store';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;
@@ -33,7 +33,7 @@ export default function AddUnitForm({
   tstype_id,
   mode,
 }: AddUnitFormProps) {
-  const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
+  const [timeseries, setUnit] = useStamdataStore((store) => [store.timeseries, store.setUnit]);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [invoiceData, setInvoiceData] = useState<{
     terminal_id: number;
@@ -44,7 +44,7 @@ export default function AddUnitForm({
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
   // const params = useParams();
 
-  const superUser = authStore((state) => state.superUser);
+  const superUser = useAuthStore((state) => state.superUser);
 
   const {
     get: {data: availableUnits, isLoading},
@@ -110,18 +110,12 @@ export default function AddUnitForm({
   };
 
   const handleSensorUUID = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUnitData({
-      ...unitData,
-      uuid: event.target.value,
-    });
+    setUnitData({...unitData, uuid: event.target.value});
   };
 
   const handleDateChange = (date: Date) => {
     trigger('unit');
-    setUnitData({
-      ...unitData,
-      fra: date,
-    });
+    setUnitData({...unitData, fra: date});
   };
 
   const handleAddUnit = (payload: UnitPost) => {
@@ -252,14 +246,8 @@ export default function AddUnitForm({
                 <Autocomplete
                   id="calypso_id"
                   labelKey="label"
-                  textFieldsProps={{
-                    label: 'Calypso ID',
-                    placeholder: 'Søg Calypso ID',
-                  }}
-                  options={uniqueCalypsoIds.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
+                  textFieldsProps={{label: 'Calypso ID', placeholder: 'Søg Calypso ID'}}
+                  options={uniqueCalypsoIds.map((option) => ({value: option, label: option}))}
                   selectValue={
                     unitData.calypso_id
                       ? {value: unitData.calypso_id, label: unitData.calypso_id}

@@ -21,7 +21,7 @@ import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import NotificationTree from '~/pages/admin/notifikationer/NotificationTree';
 import ServiceMap from '~/pages/admin/notifikationer/ServiceMap';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 const getNavigation = (item) => {
   switch (item.color) {
@@ -50,7 +50,7 @@ const NotificationPage = () => {
   const [isCustomerService, setIsCustomerService] = useAtom(isCustomerServiceAtom);
   const [isWatsonCService, setIsWatsonCService] = useAtom(isWatsonCServiceAtom);
   const [isFirstLoad, setIsFirstLoad] = useAtom(isFirstLoadAtom);
-  const superUser = authStore((state) => state.superUser);
+  const superUser = useAuthStore((state) => state.superUser);
 
   useEffect(() => {
     if (isFirstLoad) {
@@ -107,11 +107,7 @@ const NotificationPage = () => {
 
   const notifications = data
     ?.map((item, index) => {
-      return {
-        ...item,
-        id: index,
-        navigateTo: getNavigation(item),
-      };
+      return {...item, id: index, navigateTo: getNavigation(item)};
     })
     .filter((item) => (lassoFilter.size > 0 ? lassoFilter.has(item.locid) : data.length < 20));
 

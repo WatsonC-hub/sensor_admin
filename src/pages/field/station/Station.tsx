@@ -18,7 +18,7 @@ import {useStationPages} from '~/hooks/useStationPages';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
-import {stamdataStore} from '~/state/store';
+import {useStamdataStore} from '~/state/store';
 
 interface StationProps {
   ts_id: number;
@@ -43,7 +43,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
     public: false,
     date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
   });
-  const store = stamdataStore();
+  const store = useStamdataStore((state) => state);
 
   useEffect(() => {
     if (stamdata) {
@@ -59,10 +59,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
   }, [stamdata]);
 
   const changeActiveImageData = (field: string, value: string) => {
-    setActiveImage({
-      ...activeImage,
-      [field]: value,
-    });
+    setActiveImage({...activeImage, [field]: value});
   };
 
   const convertBase64 = (file: File) => {
@@ -125,11 +122,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
         >
           <Alert
             severity={'info'}
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+            sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
           >
             <Typography>
               Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen
@@ -167,13 +160,7 @@ export default function Station({ts_id, stamdata}: StationProps) {
           <Divider />
         </Box>
       )}
-      <Box
-        sx={{
-          maxWidth: '1080px',
-          width: isTouch ? '100%' : 'fit-content',
-          alignSelf: 'center',
-        }}
-      >
+      <Box sx={{maxWidth: '1080px', width: isTouch ? '100%' : 'fit-content', alignSelf: 'center'}}>
         {pageToShow === 'pejling' && ts_id !== -1 && (
           <Pejling ts_id={ts_id} setDynamic={setDynamic} />
         )}

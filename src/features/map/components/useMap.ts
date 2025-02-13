@@ -11,7 +11,7 @@ import {toast} from 'react-toastify';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {authStore, parkingStore} from '~/state/store';
+import {useAuthStore, useParkingStore, parkingStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
 import {
@@ -50,14 +50,14 @@ const useMap = <TData extends object>(
   const mutateLeafletMapRouteRef = useRef<number | boolean | null>();
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
-  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
+  const [setSelectParking] = useParkingStore((state) => [state.setSelectedLocId]);
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const [hightlightedMarker, setHightlightedMarker] = useState<L.CircleMarker | null>();
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
-  const [superUser] = authStore((state) => [state.superUser]);
+  const [superUser] = useAuthStore((state) => [state.superUser]);
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -146,15 +146,9 @@ const useMap = <TData extends object>(
       // @ts-expect-error Locate is injected
       .locate({
         showPopup: false,
-        strings: {
-          title: 'Find mig',
-        },
-        circleStyle: {
-          interactive: false,
-        },
-        locateOptions: {
-          enableHighAccuracy: true,
-        },
+        strings: {title: 'Find mig'},
+        circleStyle: {interactive: false},
+        locateOptions: {enableHighAccuracy: true},
       })
       .addTo(map);
 
@@ -174,26 +168,19 @@ const useMap = <TData extends object>(
         setHightlightedMarker(null);
       }
 
-      if (
-        parkingStore.getState().selectedLocId &&
-        parkingStore.getState().selectedLocId !== null &&
-        mutateParkingRef.current
-      ) {
+      const loc_id = parkingStore.getState().selectedLocId;
+
+      if (loc_id && loc_id !== null && mutateParkingRef.current) {
         // @ts-expect-error error in type definition
         const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
         if (typeof coords == 'object') {
-          const loc_id = parkingStore.getState().selectedLocId;
-
           const parkering: PartialBy<Parking, 'parking_id'> = {
             loc_id: loc_id as number,
             x: parseFloat(coords.Easting.toFixed(2)),
             y: parseFloat(coords.Northing.toFixed(2)),
           };
-          const payload = {
-            path: '',
-            data: parkering,
-          };
+          const payload = {path: '', data: parkering};
 
           postParkering.mutate(payload, {
             onSettled: () => {
@@ -212,18 +199,11 @@ const useMap = <TData extends object>(
   const onCreateRouteEvent = (map: L.Map) => {
     map.on('pm:create', async (e) => {
       const layer: L.Layer = e.layer;
-
-      if (
-        geoJsonRef &&
-        geoJsonRef.current &&
-        parkingStore.getState().selectedLocId !== null &&
-        mutateLeafletMapRouteRef.current
-      ) {
+      const loc_id = parkingStore.getState().selectedLocId;
+      if (geoJsonRef && geoJsonRef.current && loc_id !== null && mutateLeafletMapRouteRef.current) {
         const payload = {
-          path: (parkingStore.getState().selectedLocId as number).toString(),
-          data: {
-            geo_route: (layer.toGeoJSON() as GeoJSON.Feature).geometry,
-          },
+          path: loc_id.toString(),
+          data: {geo_route: (layer.toGeoJSON() as GeoJSON.Feature).geometry},
         };
 
         postLeafletMapRoute.mutate(payload, {
@@ -339,10 +319,7 @@ const useMap = <TData extends object>(
                         },
                         icon: '/mapRoute.png',
                       },
-                      {
-                        text: 'divider',
-                        separator: true,
-                      },
+                      {text: 'divider', separator: true},
                       ...items.slice(2),
                     ],
                   });
@@ -441,12 +418,7 @@ const useMap = <TData extends object>(
             const loc_id = parkingStore.getState().selectedLocId;
 
             if (loc_id != null && mutateParkingRef.current) {
-              const payload = {
-                data: {
-                  loc_id: loc_id,
-                },
-                path: parking.parking_id.toString(),
-              };
+              const payload = {data: {loc_id: loc_id}, path: parking.parking_id.toString()};
               putParkering.mutate(payload, {
                 onSettled: () => {
                   highlightParking(parking.loc_id, true);
@@ -474,9 +446,7 @@ const useMap = <TData extends object>(
 
   const deleteParking = (parking_id: string | undefined) => {
     if (parking_id) {
-      const payload = {
-        path: parking_id.toString(),
-      };
+      const payload = {path: parking_id.toString()};
       deleteParkering.mutate(payload, {
         onSettled: () => {
           setSelectParking(null);
@@ -492,9 +462,7 @@ const useMap = <TData extends object>(
 
   const deleteRoute = (route_id: string | undefined) => {
     if (mutateLeafletMapRouteRef.current && mutateLeafletMapRouteRef.current !== null && route_id) {
-      const payload = {
-        path: mutateLeafletMapRouteRef.current.toString() + '/' + route_id,
-      };
+      const payload = {path: mutateLeafletMapRouteRef.current.toString() + '/' + route_id};
       deleteLeafletMapRoute.mutate(payload);
     }
   };
@@ -578,9 +546,7 @@ const useMap = <TData extends object>(
     map: mapRef.current,
     selectedMarker,
     setSelectedMarker,
-    layers: {
-      markerLayer: markerLayerRef.current,
-    },
+    layers: {markerLayer: markerLayerRef.current},
     mutateLayers: {
       mutateRoutesLayer: mutateLeafletMapRouteRef,
       mutateParkingLayer: mutateParkingRef,
@@ -596,10 +562,7 @@ const useMap = <TData extends object>(
       setDeleteTitle,
       type,
     },
-    warning: {
-      displayAlert,
-      setDisplayAlert,
-    },
+    warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
   };
 };
