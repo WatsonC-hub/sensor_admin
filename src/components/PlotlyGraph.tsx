@@ -97,11 +97,6 @@ export default function PlotlyGraph({
   const handleRelayout = (e: any) => {
     const doubleclick = e['xaxis.autorange'] === true && e['yaxis.autorange'] === true;
 
-    // if (e['selections']) {
-    //   console.log('e', e);
-    //   plotEventProps?.onSelected && plotEventProps.onSelected(e);
-    // }
-
     if (doubleclick) {
       graphLayout('all');
       return;

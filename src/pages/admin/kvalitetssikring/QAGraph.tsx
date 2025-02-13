@@ -3,7 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 import {useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
 import {Layout} from 'plotly.js';
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {useContext, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -211,11 +211,11 @@ export default function PlotGraph({
     }
   };
 
-  useEffect(() => {
-    return () => {
-      setSelection({});
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     setSelection({});
+  //   };
+  // }, []);
 
   const handleRelayout = (e: any) => {
     if (e['selections'] && e['selections'].length === 0) {

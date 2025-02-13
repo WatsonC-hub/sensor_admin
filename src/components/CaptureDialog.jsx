@@ -13,14 +13,40 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 var running = false;
 
+// Different formats
+
+//  "www.sensor.watsonc.dk/1234",
+//  "https://sensor.watsonc.dk/1234",
+//  "https://sensor.watsonc.dk/1234/"
+
+function extractNumber(url) {
+  try {
+    // Ensure the URL has a valid format by adding "https://" if missing
+    if (!url.startsWith('http')) {
+      url = 'https://' + url;
+    }
+
+    // Use URL API to parse the path
+    const urlObj = new URL(url);
+    const path = urlObj.pathname.replace(/^\/|\/$/g, ''); // Remove leading/trailing slashes
+
+    // Ensure the path is purely numeric
+    return /^\d+$/.test(path) ? Number(path) : null;
+  } catch (error) {
+    return null;
+  }
+}
+
 export default function CaptureDialog({handleClose, handleScan, open}) {
   const [showText, setShowText] = useState(true);
 
-  async function handleScanning(data) {
-    if (data !== null && !running) {
+  async function handleScanning(raw_data) {
+    if (raw_data !== null && !running) {
       running = true;
 
-      await handleScan(data);
+      const calypso_id = extractNumber(raw_data);
+
+      await handleScan(raw_data, calypso_id);
 
       running = false;
 
@@ -65,11 +91,7 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
           onError={handleError}
           onScan={handleScanning}
           onLoad={() => setShowText(false)}
-          constraints={{
-            video: {
-              facingMode: 'environment',
-            },
-          }}
+          constraints={{video: {facingMode: 'environment'}}}
         />
       </div>
     </Dialog>
