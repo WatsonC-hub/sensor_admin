@@ -28,10 +28,8 @@ type Props = {
 
 const Pejling = ({setDynamic}: Props) => {
   const {ts_id} = useAppContext([], ['ts_id']);
-  const {
-    get: {data: metadata},
-  } = useMetadata();
-  const isWaterlevel = metadata.timeseries?.tstype_id === 1;
+  const {metadata} = useMetadata();
+  const isWaterlevel = metadata?.timeseries?.tstype_id === 1;
   const [showForm, setShowForm] = useShowFormState();
   const [, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();

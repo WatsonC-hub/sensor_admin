@@ -33,7 +33,7 @@ type ExcludeModalValues = z.infer<typeof schema>;
 const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const [radio, setRadio] = useState('selected');
   const selection = useAtomValue(qaSelection);
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   const {isMobile} = useBreakpoints();
 
   const x0 = moment(selection?.range?.x[0]);

@@ -45,7 +45,7 @@ const AdjustmentDataTable = ({data}: Props) => {
   const [type, setType] = useState<string>('');
   const [index, setIndex] = useState<number | undefined>();
   const {isMobile} = useBreakpoints();
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   // const loc_name = metadata?.loc_name;
   const tstype_id = metadata?.tstype_id;
   const unit = tstype_id === 1 ? ' m' : metadata?.unit;

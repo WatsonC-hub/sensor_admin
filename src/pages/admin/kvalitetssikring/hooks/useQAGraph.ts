@@ -15,7 +15,7 @@ import {dataToShowAtom} from '~/state/atoms';
 import {QaGraphLabel} from '~/types';
 
 const useQAGraph = (ts_id: number, xRange: Array<string>) => {
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   const dataToShow = useAtomValue(dataToShowAtom);
   const theme = useTheme();
   const loc_name = metadata?.loc_name;

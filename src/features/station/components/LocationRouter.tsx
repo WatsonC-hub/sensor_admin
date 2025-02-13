@@ -21,7 +21,7 @@ export default function LocationRouter() {
   const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
   const adminAccess = useAuthStore((state) => state.adminAccess);
 
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   return (
     <>
       <CssBaseline />

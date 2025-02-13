@@ -22,7 +22,7 @@ import {useAppContext} from '~/state/contexts';
 
 export default function Station() {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   const {ts_list} = useStationList(loc_id);
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
@@ -116,9 +116,7 @@ export default function Station() {
             onClick={() => {
               createStamdata(ts_id ? '2' : '1', {
                 state: {
-                  location: {
-                    ...metadata,
-                  },
+                  ...metadata,
                 },
               });
             }}

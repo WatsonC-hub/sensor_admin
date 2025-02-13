@@ -76,7 +76,7 @@ export const pejlingGetOptions = <TData>(ts_id: number | undefined): GetQueryOpt
 
 export const usePejling = () => {
   const queryClient = useQueryClient();
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id} = useAppContext([], ['ts_id']);
 
   const get = useQuery(pejlingGetOptions<Array<PejlingItem>>(ts_id));
 

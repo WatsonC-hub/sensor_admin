@@ -2,7 +2,7 @@ import {DevTool} from '@hookform/devtools';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {BuildRounded, Error, LocationOnRounded, ShowChartRounded} from '@mui/icons-material';
 import {Grid, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
-import {useMutation, useQuery} from '@tanstack/react-query';
+import {useMutation} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {ReactNode, useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
@@ -22,7 +22,6 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useCreateTabState} from '~/hooks/useQueryStateParameters';
-import {useStamdataStore} from '~/state/store';
 import {FieldLocation} from '~/types';
 
 interface TabPanelProps {
@@ -56,27 +55,10 @@ type Watlevmp = CreateValues['watlevmp'];
 
 export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
-  const store = useStamdataStore((state) => state);
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const navigate = useNavigate();
   const {state} = useLocation();
-  console.log('state', state);
 
-  const {data: locations} = useQuery({
-    queryKey: ['locations'],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<FieldLocation>>('/sensor_field/stamdata/locations');
-      return data;
-    },
-  });
-
-  // useEffect(() => {
-  //   return () => {
-  //     store.resetLocation();
-  //     store.resetTimeseries();
-  //     store.resetUnit();
-  //   };
-  // }, []);
   let unit_uuid = '';
   if ('unit_uuid' in state) unit_uuid = state.unit_uuid;
 
@@ -84,7 +66,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
-      location: {...state},
+      location: {...state, initial_project_no: state.projectno},
       timeseries: {tstype_id: -1},
       watlevmp: {},
       unit: {startdate: '', unit_uuid: unit_uuid},
@@ -99,13 +81,6 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     setValue,
     trigger,
   } = formMethods;
-
-  useEffect(() => {
-    if (store.location.loc_id != undefined && locations != undefined) {
-      const location = locations.find((item) => item.loc_id === store.location.loc_id);
-      if (location) setValue('location', location);
-    }
-  }, [store.location.loc_id, locations]);
 
   const watchtstype_id = watch('timeseries.tstype_id');
   const loc_id = watch('location.loc_id');
@@ -144,7 +119,6 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   });
 
   useEffect(() => {
-    store.resetUnit();
     setValue('unit', {startdate: '', unit_uuid: ''});
     trigger('unit');
   }, [watchtstype_id]);
@@ -212,7 +186,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     const location = {
       location: {
         ...getValues().location,
-        // initial_project_no: getValues().location.projectno,
+        initial_project_no: getValues().location.projectno,
       },
     };
 
@@ -276,13 +250,13 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       {
         location: {...getValues().location},
         timeseries: {...getValues().timeseries},
-        unit: {startdate: store.unit.startdato, unit_uuid: store.unit.uuid},
+        unit: {startdate: getValues().unit.startdate, unit_uuid: getValues().unit.unit_uuid},
       };
 
     if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
       const watlevmp = getValues('watlevmp') as Watlevmp;
       form['watlevmp'] = {
-        startdate: moment(store.unit.startdato).format('YYYY-MM-DD'),
+        startdate: moment(getValues().unit.startdate).format('YYYY-MM-DD'),
         description: watlevmp?.description ?? '',
         elevation: watlevmp?.elevation ?? 0,
       };
@@ -397,7 +371,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
                   sx={{ml: 1}}
                   onClick={() => setUdstyrDialogOpen(true)}
                 >
-                  {store.unit.calypso_id === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
+                  {getValues().unit.unit_uuid === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
                 </Button>
                 {errors && 'unit' in errors && (
                   <Typography variant="caption" color="error">

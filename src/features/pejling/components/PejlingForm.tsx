@@ -41,8 +41,10 @@ export default function PejlingForm({
   setDynamic,
   latestMeasurement,
 }: PejlingFormProps) {
-  const store = useStamdataStore((state) => state);
-  const tstype_id = store.timeseries.tstype_id;
+  const [tstype_id, stationUnit] = useStamdataStore((state) => [
+    state.timeseries.tstype_id,
+    state.timeseries.unit,
+  ]);
   const isWaterlevel = tstype_id === 1;
   const isFlow = tstype_id === 2;
 
@@ -62,7 +64,6 @@ export default function PejlingForm({
 
   const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
 
-  const [stationUnit] = useStamdataStore((state) => [state.timeseries.unit]);
   const measurement = watch('measurement');
   const date = watch('timeofmeas');
   const [elevationDiff, setElevationDiff] = useState<number>();

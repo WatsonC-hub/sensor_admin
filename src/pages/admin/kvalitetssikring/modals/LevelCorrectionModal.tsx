@@ -27,7 +27,7 @@ type CorrectionValues = z.infer<typeof schema>;
 
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';

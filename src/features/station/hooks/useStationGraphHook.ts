@@ -17,7 +17,7 @@ const useStationGraphHook = (
 ) => {
   const {ts_id} = useAppContext(['ts_id']);
 
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   const loc_name = metadata?.loc_name;
   const ts_name = metadata?.ts_name;
   let data: Array<Partial<PlotData>> = [];

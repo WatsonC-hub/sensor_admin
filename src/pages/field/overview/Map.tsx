@@ -24,7 +24,7 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {useStamdataStore, useAuthStore, useParkingStore} from '~/state/store';
+import {useAuthStore, useParkingStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -58,10 +58,6 @@ const Map = () => {
   const {createStamdata} = useNavigationFunctions();
   const [setSelectParking] = useParkingStore((state) => [state.setSelectedLocId]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  const [setLocation, setLocationValue] = useStamdataStore((store) => [
-    store.setLocation,
-    store.setLocationValue,
-  ]);
 
   const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
     state.superUser,
@@ -95,9 +91,6 @@ const Map = () => {
           const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
           if (typeof coords == 'object') {
-            setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
-            setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
-
             createStamdata(undefined, {
               state: {
                 x: parseFloat(coords.Easting.toFixed(2)),
@@ -166,8 +159,7 @@ const Map = () => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          setLocation({loc_id: element.loc_id, loc_name: element.loc_name});
-          createStamdata('1');
+          createStamdata('1', {state: element});
         },
         icon: '/leaflet-images/marker.png',
       },

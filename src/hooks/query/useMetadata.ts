@@ -8,7 +8,15 @@ export const useMetadata = (ts_id?: number) => {
 
   const inner_ts_id = ts_id ?? app_ts_id;
 
-  const get = useQuery({
+  let metadata = undefined;
+  let error = undefined;
+  let pending = undefined;
+
+  const {
+    data,
+    error: error2,
+    isPending: pending2,
+  } = useQuery({
     queryKey: ['metadata', inner_ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata/${inner_ts_id}`);
@@ -18,7 +26,11 @@ export const useMetadata = (ts_id?: number) => {
     refetchOnWindowFocus: false,
   });
 
-  const {data: location_data} = useQuery({
+  const {
+    data: data2,
+    error: error3,
+    isPending: pending3,
+  } = useQuery({
     queryKey: ['location_data', loc_id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/metadata_location/${loc_id}`);
@@ -28,5 +40,9 @@ export const useMetadata = (ts_id?: number) => {
     refetchOnWindowFocus: false,
   });
 
-  return {get, location_data};
+  metadata = data ?? (data2 && data2[0]) ?? data2;
+  error = error2 ?? error3;
+  pending = data ? pending2 : pending3;
+
+  return {metadata, error, pending};
 };

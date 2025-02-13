@@ -381,15 +381,10 @@ export default function EditStamdata() {
   const [pageToShow, setPageToShow] = useStationPages();
   const [tabValue, setTabValue] = useEditTabState();
   const [showForm, setShowForm] = useShowFormState();
-  const prev_ts_id = useStamdataStore((store) => store.timeseries.ts_id);
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
-  const {
-    get: {data: metadata},
-    location_data,
-  } = useMetadata();
+  const {metadata, pending} = useMetadata();
 
-  console.log('location_data', location_data);
-  console.log('metadata', metadata);
+  console.log(metadata);
   useQuery<UnitHistory[]>({
     queryKey: ['udstyr', ts_id],
     queryFn: async () => {
@@ -402,7 +397,7 @@ export default function EditStamdata() {
   });
 
   useEffect(() => {
-    if (pageToShow === stationPages.STAMDATA && ts_id !== prev_ts_id && prev_ts_id !== 0) {
+    if (pageToShow === stationPages.STAMDATA) {
       setPageToShow(stationPages.STAMDATA);
       setShowForm(null);
     }
@@ -478,8 +473,6 @@ export default function EditStamdata() {
     },
   });
 
-  // console.log(schemaData);
-
   const formMethods = useForm<EditValues>({
     resolver: zodResolver(schema),
     defaultValues: schemaData.success ? schemaData.data : {},
@@ -541,6 +534,8 @@ export default function EditStamdata() {
     }
   };
 
+  if (pending) return <LoadingSkeleton />;
+
   return (
     <Box
       sx={{boxShadow: 2, margin: 'auto', width: {xs: window.innerWidth, md: 1080}, height: '100%'}}
@@ -564,7 +559,7 @@ export default function EditStamdata() {
         />
         <Tab
           value={'tidsserie'}
-          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === undefined))}
           icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -574,7 +569,7 @@ export default function EditStamdata() {
         />
         <Tab
           value={'udstyr'}
-          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === undefined))}
           icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>

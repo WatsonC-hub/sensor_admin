@@ -21,8 +21,8 @@ const navIconStyle = (isSelected: boolean) => {
 export default function ActionArea() {
   const {loc_id} = useAppContext(['loc_id']);
   const {ts_list} = useStationList(loc_id);
-  const {data: stamdata} = useMetadata();
-  const isCalculated = stamdata ? stamdata?.calculated : false;
+  const {metadata} = useMetadata();
+  const isCalculated = metadata ? metadata?.calculated : false;
   const [pageToShow, setPageToShow] = useStationPages();
   const [showForm, setShowForm] = useShowFormState();
   const handleChange = (event: any, newValue: any) => {

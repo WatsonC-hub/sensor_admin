@@ -18,6 +18,7 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
+import {useAppContext} from '~/state/contexts';
 import {useAuthStore, useStamdataStore} from '~/state/store';
 
 interface AddUnitFormProps {
@@ -33,7 +34,8 @@ export default function AddUnitForm({
   tstype_id,
   mode,
 }: AddUnitFormProps) {
-  const [timeseries, setUnit] = useStamdataStore((store) => [store.timeseries, store.setUnit]);
+  const [setUnit] = useStamdataStore((store) => [store.setUnit]);
+  const {ts_id} = useAppContext([], ['ts_id']);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [invoiceData, setInvoiceData] = useState<{
     terminal_id: number;
@@ -118,10 +120,11 @@ export default function AddUnitForm({
   };
 
   const handleAddUnit = (payload: UnitPost) => {
+    console.log(payload);
     addUnit.mutate(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
-        queryClient.invalidateQueries({queryKey: ['metadata', timeseries.ts_id]});
+        queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
         setUdstyrDialogOpen(false);
         setConfirmDialogOpen(false);
       },
@@ -136,7 +139,7 @@ export default function AddUnitForm({
 
       if (!unit) return;
       const payload = {
-        path: `${timeseries.ts_id}`,
+        path: `${ts_id}`,
         data: {
           unit_uuid: unit.unit_uuid,
           startdate: moment(unitData.fra).toISOString(),
@@ -145,7 +148,7 @@ export default function AddUnitForm({
       };
       if (superUser) {
         const {data} = await apiClient.get(
-          `/sensor_field/stamdata/check-unit-invoice/${timeseries.ts_id}/${unit.unit_uuid}`
+          `/sensor_field/stamdata/check-unit-invoice/${ts_id}/${unit.unit_uuid}`
         );
 
         if ('ignoreInvoice' in data && data.ignoreInvoice) {
@@ -325,7 +328,7 @@ export default function AddUnitForm({
           <Button
             onClick={() =>
               handleAddUnit({
-                path: `${timeseries.ts_id}`,
+                path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
                   startdate: moment(unitData.fra).toISOString(),
@@ -341,7 +344,7 @@ export default function AddUnitForm({
           <Button
             onClick={() =>
               handleAddUnit({
-                path: `${timeseries.ts_id}`,
+                path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
                   startdate: moment(unitData.fra).toISOString(),

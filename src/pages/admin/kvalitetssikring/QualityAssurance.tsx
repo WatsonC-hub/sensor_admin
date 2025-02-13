@@ -184,7 +184,7 @@ const Layout = ({
   const {isMobile} = useBreakpoints();
   const {ts_id} = useAppContext(['ts_id']);
   const {field, station} = useNavigationFunctions();
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   const handleChange = (event: any, newValue: (typeof qaPagesLiteral)[number]) => {
     setPageToShow(newValue);
   };

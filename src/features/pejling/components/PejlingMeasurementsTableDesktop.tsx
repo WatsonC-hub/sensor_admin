@@ -22,9 +22,12 @@ interface Props {
 export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
+  const [tstype_id, stationUnit] = useStamdataStore((state) => [
+    state.timeseries.tstype_id,
+    state.timeseries.unit,
+  ]);
 
-  const unit = timeseries.tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${timeseries.unit}]`;
+  const unit = tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${stationUnit}]`;
 
   const {get} = usePejling();
 

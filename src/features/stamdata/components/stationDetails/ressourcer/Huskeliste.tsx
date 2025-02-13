@@ -7,26 +7,28 @@ import Autocomplete from '~/features/stamdata/components/stationDetails/ressourc
 import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
 import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAppContext} from '~/state/contexts';
+import LoadingSkeleton from '~/LoadingSkeleton';
 
 const Huskeliste = () => {
-  const {loc_id} = useAppContext(['loc_id']);
+  const {isMobile} = useBreakpoints();
   const {
-    relation: {data: related},
-  } = useRessourcer(loc_id);
+    relation: {data: related, isPending},
+  } = useRessourcer();
 
   const schema = ressourcer;
+  const result = schema.safeParse(related);
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      ressourcer: related,
+      ressourcer: result.success ? result.data : [],
     },
     mode: 'onSubmit',
   });
 
+  if (isPending) return <LoadingSkeleton />;
+
   const {control} = formMethods;
 
-  const {isMobile} = useBreakpoints();
   return (
     <FormProvider {...formMethods}>
       <Controller
@@ -36,10 +38,10 @@ const Huskeliste = () => {
         render={
           !isMobile
             ? ({field: {onChange, value}}) => (
-                <TransferList value={value ?? []} setValue={onChange} loc_id={loc_id} />
+                <TransferList value={value ?? []} setValue={onChange} />
               )
             : ({field: {onChange, value}}) => (
-                <Autocomplete value={value ?? []} setValue={onChange} loc_id={loc_id} />
+                <Autocomplete value={value ?? []} setValue={onChange} />
               )
         }
       />

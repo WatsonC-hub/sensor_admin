@@ -31,7 +31,7 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
 
   const formMethods = useForm<YRangeValues>({
     resolver: zodResolver(schema),

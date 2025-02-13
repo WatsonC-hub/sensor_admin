@@ -12,8 +12,6 @@ const AdminRouterProvider = ({children}: Props) => {
 
   const ts_id = params.ts_id ? parseInt(params.ts_id) : undefined;
 
-  //   const {data} = useMetadata(ts_id);
-
   return <AppContext.Provider value={{ts_id: ts_id}}>{children}</AppContext.Provider>;
 };
 

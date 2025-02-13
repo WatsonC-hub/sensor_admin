@@ -59,7 +59,7 @@ export default function PlotlyGraph({
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
-  const {data: metadata} = useMetadata();
+  const {metadata} = useMetadata();
   // const loc_name = metadata?.loc_name;
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;

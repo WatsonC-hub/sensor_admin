@@ -38,10 +38,13 @@ interface Props {
 export default function PejlingMeasurementsTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
+  const [tstype_id, stationUnit] = useStamdataStore((state) => [
+    state.timeseries.tstype_id,
+    state.timeseries.unit,
+  ]);
   const org_id = useAuthStore((store) => store.org_id);
 
-  const unit = timeseries.tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${timeseries.unit}]`;
+  const unit = tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${stationUnit}]`;
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);

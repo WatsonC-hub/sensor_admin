@@ -25,10 +25,12 @@ interface Props {
 export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
-  // const [height, setHeight] = useState<number>();
+  const [tstype_id, stationUnit] = useStamdataStore((state) => [
+    state.timeseries.tstype_id,
+    state.timeseries.unit,
+  ]); // const [height, setHeight] = useState<number>();
 
-  const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
+  const unit = tstype_id === 1 ? ' m' : ' ' + stationUnit;
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);

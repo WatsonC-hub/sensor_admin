@@ -24,7 +24,6 @@ const useStationList = (loc_id: number) => {
     enabled: loc_id !== undefined,
   });
 
-  console.log(ts_list);
   return {ts_list, error, isPending};
 };
 
