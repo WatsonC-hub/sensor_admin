@@ -110,18 +110,12 @@ export default function AddUnitForm({
   };
 
   const handleSensorUUID = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUnitData({
-      ...unitData,
-      uuid: event.target.value,
-    });
+    setUnitData({...unitData, uuid: event.target.value});
   };
 
   const handleDateChange = (date: Date) => {
     trigger('unit');
-    setUnitData({
-      ...unitData,
-      fra: date,
-    });
+    setUnitData({...unitData, fra: date});
   };
 
   const handleAddUnit = (payload: UnitPost) => {
@@ -208,11 +202,8 @@ export default function AddUnitForm({
         <CaptureDialog
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
-          handleScan={(data: any) => {
-            const split = data['text'].split('/');
-            const calypso_id = parseInt(split[split.length - 1]);
-
-            if (isNaN(calypso_id)) {
+          handleScan={(data: any, calypso_id: number) => {
+            if (calypso_id === null) {
               toast.error('Ugyldigt Calypso ID');
               setOpenCaptureDialog(false);
               return;
@@ -252,14 +243,8 @@ export default function AddUnitForm({
                 <Autocomplete
                   id="calypso_id"
                   labelKey="label"
-                  textFieldsProps={{
-                    label: 'Calypso ID',
-                    placeholder: 'Søg Calypso ID',
-                  }}
-                  options={uniqueCalypsoIds.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
+                  textFieldsProps={{label: 'Calypso ID', placeholder: 'Søg Calypso ID'}}
+                  options={uniqueCalypsoIds.map((option) => ({value: option, label: option}))}
                   selectValue={
                     unitData.calypso_id
                       ? {value: unitData.calypso_id, label: unitData.calypso_id}
