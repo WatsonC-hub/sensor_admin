@@ -4,6 +4,7 @@ import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
+import LoadingSkeleton from '~/LoadingSkeleton';
 
 interface LocationTypeSelectProps {
   disable: boolean;
@@ -15,7 +16,7 @@ type locationType = {
 };
 
 export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
-  const {data} = useQuery({
+  const {data, isPending} = useQuery({
     queryKey: ['location_types'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
@@ -23,6 +24,8 @@ export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
     },
     refetchOnWindowFocus: false,
   });
+
+  if (isPending) return <LoadingSkeleton />;
 
   return (
     <FormInput
