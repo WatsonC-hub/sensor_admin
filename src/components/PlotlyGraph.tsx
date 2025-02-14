@@ -2,8 +2,9 @@ import {Box} from '@mui/material';
 import moment from 'moment';
 import {Layout, PlotData, PlotMouseEvent, PlotRelayoutEvent, PlotSelectionEvent} from 'plotly.js';
 import React, {useEffect} from 'react';
-import Plot from 'react-plotly.js';
+import createPlotlyComponent from 'react-plotly.js/factory';
 
+import Plotly from 'plotly.js/lib/core';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
 import {MergeType} from '~/helpers/EnumHelper';
 import {
@@ -46,6 +47,8 @@ interface PlotlyGraphProps {
   setXRange?: (range: Array<string>) => void;
   showRaw?: () => void;
 }
+
+const Plot = createPlotlyComponent(Plotly);
 
 export default function PlotlyGraph({
   plotEventProps,

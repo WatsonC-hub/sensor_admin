@@ -4,6 +4,7 @@ import {defineConfig} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
+import {visualizer} from 'rollup-plugin-visualizer';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {
@@ -131,9 +132,13 @@ export default defineConfig({
       // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
       apply: 'build',
     },
+    visualizer(),
     // removeConsole(),
     // sentryVitePlugin(sentryOptions),
   ],
+  define: {
+    global: 'window',
+  },
   build: {
     sourcemap: true,
     rollupOptions: {
@@ -147,8 +152,9 @@ export default defineConfig({
             } else if (id.includes('@material-ui')) {
               return 'vendor_mui';
             }
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
 
-            return 'vendor'; // all other package goes here
+            // return 'vendor'; // all other package goes here
           }
         },
       },
