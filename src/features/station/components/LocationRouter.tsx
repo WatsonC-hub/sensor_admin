@@ -24,9 +24,8 @@ export default function LocationRouter() {
 
   const {metadata} = useMetadata();
 
-  if (!metadata) {
-    return <LoadingSkeleton />;
-  }
+  if (!metadata) return <LoadingSkeleton />;
+
   return (
     <>
       <CssBaseline />

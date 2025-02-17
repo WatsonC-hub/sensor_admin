@@ -15,7 +15,7 @@ const useStationGraphHook = (
   controlData: Array<PejlingItem & {waterlevel: number | null}> | undefined,
   xRange: Array<string>
 ) => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id} = useAppContext([], ['ts_id']);
 
   const {metadata} = useMetadata();
   const loc_name = metadata?.loc_name;

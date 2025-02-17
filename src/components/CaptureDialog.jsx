@@ -12,7 +12,7 @@ function Transition(props) {
   return <Slide direction="up" ref={props.ref} {...props} />;
 }
 
-var running = false;
+let running = false;
 
 export default function CaptureDialog({handleClose, handleScan, open}) {
   const [hasPermission, setHasPermission] = useState(true);
