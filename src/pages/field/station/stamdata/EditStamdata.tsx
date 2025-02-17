@@ -24,8 +24,6 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
@@ -48,6 +46,7 @@ import StationDetails from '~/features/stamdata/components/StationDetails';
 import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {Metadata, TimeseriesMetadata, useMetadata} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import {useAppContext} from '~/state/contexts';
@@ -374,8 +373,7 @@ type Timeseries = EditValues['timeseries'];
 type Unit = EditValues['unit'];
 
 export default function EditStamdata() {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const {isTablet} = useBreakpoints();
   const queryClient = useQueryClient();
   const [pageToShow, setPageToShow] = useStationPages();
   const [tabValue, setTabValue] = useEditTabState();
@@ -491,6 +489,7 @@ export default function EditStamdata() {
   const {
     formState: {dirtyFields, isSubmitting},
     getValues,
+    setValue,
     reset,
     control,
   } = formMethods;
@@ -503,6 +502,17 @@ export default function EditStamdata() {
     });
     reset(result.success ? result.data : {});
   };
+
+  useEffect(() => {
+    if (udstyr) {
+      setValue('unit', {
+        unit_uuid: udstyr[0].uuid,
+        gid: udstyr?.length > 0 ? udstyr[0].gid : -1,
+        startdate: udstyr?.[0].startdato,
+        enddate: udstyr?.[0].slutdato,
+      });
+    }
+  }, udstyr);
 
   useEffect(() => {
     if (metadata) {
@@ -550,7 +560,7 @@ export default function EditStamdata() {
       <Tabs
         value={tabValue ?? 'lokation'}
         onChange={(_, newValue) => setTabValue(newValue)}
-        variant={matches ? 'scrollable' : 'fullWidth'}
+        variant={isTablet ? 'scrollable' : 'fullWidth'}
         aria-label="simple tabs example"
         scrollButtons="auto"
         sx={{'& .MuiTab-root': {height: tabsHeight, minHeight: tabsHeight}, marginTop: 1}}

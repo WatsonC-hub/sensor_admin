@@ -36,7 +36,6 @@ const MinimalSelect = () => {
   });
 
   useEffect(() => {
-    console.log(data);
     if (data && boreholeno) {
       if (intakeno) {
         setSelectedItem(intakeno);
@@ -51,7 +50,6 @@ const MinimalSelect = () => {
   }, [data]);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    console.log(event.target.value);
     if (selectedItem?.toString() !== event.target.value)
       boreholeIntake(boreholeno, event.target.value, {replace: true});
     handleClose();
@@ -61,7 +59,6 @@ const MinimalSelect = () => {
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    console.log(selectedItem);
     if (selectedItem !== undefined) {
       setIsOpen(false);
     } else {

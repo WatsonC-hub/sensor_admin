@@ -93,7 +93,7 @@ export default function LocationRouter() {
           <NavBar.Menu
             highligtFirst={false}
             items={[
-              ...(adminAccess && ts_id && calculated
+              ...(adminAccess && !calculated
                 ? [
                     {
                       title: 'Til QA',

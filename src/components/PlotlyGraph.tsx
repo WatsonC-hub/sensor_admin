@@ -71,10 +71,8 @@ export default function PlotlyGraph({
 }: PlotlyGraphProps) {
   let {metadata} = useMetadata();
   metadata = metadata as Metadata;
-  // const loc_name = metadata?.loc_name;
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
-  // const ts_name = metadata?.ts_name;
 
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 

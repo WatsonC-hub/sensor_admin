@@ -168,7 +168,6 @@ const Boreholeno = () => {
   });
 
   const handlePejlingSubmit = () => {
-    console.log(pejlingData);
     const payload = {...pejlingData};
     if (payload.service) payload.pumpstop = null;
     addOrEditPejling.mutate(payload, {
@@ -296,6 +295,7 @@ const Boreholeno = () => {
     if (openSave !== true && fileInputRef.current && 'value' in fileInputRef.current)
       fileInputRef.current.value = '';
   };
+
   if (!intakeno) return '';
 
   return (
