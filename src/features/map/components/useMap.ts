@@ -1,11 +1,11 @@
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import {LocateControl} from 'leaflet.locatecontrol';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
 import L from 'leaflet';
+import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';

@@ -69,7 +69,7 @@ const SensorContent = ({data}: SensorContentProps) => {
             {[data, ...data.otherNotifications]
               .filter((item) => item.opgave !== null)
               .map((notification, index) => {
-                notification.notification_id;
+                // notification.notification_id;
                 const splitted = notification.ts_name.split(notification.loc_name);
                 return (
                   <Box

@@ -424,7 +424,7 @@ const Boreholeno = () => {
             icon={<AddAPhotoRounded />}
             text="Tilføj billede"
             onClick={() => {
-              fileInputRef.current && fileInputRef.current.click();
+              if (fileInputRef.current) fileInputRef.current.click();
             }}
           />
           <div>

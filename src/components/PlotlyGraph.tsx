@@ -7,11 +7,11 @@ import type {
   PlotRelayoutEvent,
   PlotSelectionEvent,
 } from 'plotly.js';
+// @ts-expect-error not part of type
+import Plotly from 'plotly.js/dist/plotly-gl2d';
 import React, {useEffect} from 'react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 
-// @ts-expect-error not part of type
-import Plotly from 'plotly.js/dist/plotly-gl2d';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
 import {MergeType} from '~/helpers/EnumHelper';
 import {
@@ -22,7 +22,7 @@ import {
   rerunIcon,
 } from '~/helpers/plotlyIcons';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
-import {useMetadata} from '~/hooks/query/useMetadata';
+import {Metadata, useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
@@ -69,7 +69,8 @@ export default function PlotlyGraph({
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
-  const {metadata} = useMetadata();
+  let {metadata} = useMetadata();
+  metadata = metadata as Metadata;
   // const loc_name = metadata?.loc_name;
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
@@ -291,7 +292,7 @@ export default function PlotlyGraph({
       <Plot
         onSelected={(e) => {
           console.log('onselected', e);
-          plotEventProps?.onSelected && plotEventProps.onSelected(e);
+          if (plotEventProps?.onSelected) plotEventProps.onSelected(e);
         }}
         divId="qagraphDiv"
         onRelayout={handleRelayout}

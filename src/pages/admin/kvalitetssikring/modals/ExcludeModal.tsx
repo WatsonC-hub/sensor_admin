@@ -12,7 +12,7 @@ import {z} from 'zod';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useExclude} from '~/hooks/query/useExclude';
-import {useMetadata} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
 
@@ -33,7 +33,7 @@ type ExcludeModalValues = z.infer<typeof schema>;
 const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const [radio, setRadio] = useState('selected');
   const selection = useAtomValue(qaSelection);
-  const {metadata} = useMetadata();
+  const {timeseries_data} = useTimeseriesData();
   const {isMobile} = useBreakpoints();
 
   const x0 = moment(selection?.range?.x[0]);
@@ -54,7 +54,7 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const onAccept: SubmitHandler<ExcludeModalValues> = (values: ExcludeModalValues) => {
     excludeMutation.mutate(
       {
-        path: `${metadata?.ts_id}`,
+        path: `${timeseries_data?.ts_id}`,
         data: {
           startdate: values.startDate,
           enddate: values.endDate,

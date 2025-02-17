@@ -12,7 +12,7 @@ const MinimalSelect = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const [isOpen, setIsOpen] = useState(ts_id ? false : true);
   const {station} = useNavigationFunctions();
-  const {ts_list, error, isPending} = useStationList(loc_id);
+  const {data: ts_list, error, isPending} = useStationList(loc_id);
 
   const hasTimeseries = ts_list && ts_list.some((stamdata) => stamdata.ts_id !== null);
 

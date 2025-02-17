@@ -9,7 +9,7 @@ import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useMetadata} from '~/hooks/query/useMetadata';
+import {TimeseriesMetadata, useMetadata} from '~/hooks/query/useMetadata';
 import useStationList from '~/hooks/query/useStationList';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
@@ -19,10 +19,10 @@ const navIconStyle = (isSelected: boolean) => {
 };
 
 export default function ActionArea() {
-  const {loc_id} = useAppContext(['loc_id']);
-  const {ts_list} = useStationList(loc_id);
-  const {metadata} = useMetadata();
-  const isCalculated = metadata ? metadata?.calculated : false;
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {data: ts_list} = useStationList(loc_id);
+  const {metadata} = useMetadata(ts_id);
+  const isCalculated = metadata ? (metadata as TimeseriesMetadata).calculated : false;
   const [pageToShow, setPageToShow] = useStationPages();
   const [showForm, setShowForm] = useShowFormState();
   const handleChange = (event: any, newValue: any) => {

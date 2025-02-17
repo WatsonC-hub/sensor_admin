@@ -1,19 +1,16 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
-import {Alert, Box, Divider, Typography} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import moment from 'moment';
 import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
 
-import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useMetadata} from '~/hooks/query/useMetadata';
-import useStationList from '~/hooks/query/useStationList';
+import {TimeseriesMetadata, useMetadata} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
@@ -23,14 +20,12 @@ import {useAppContext} from '~/state/contexts';
 export default function Station() {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {metadata} = useMetadata();
-  const {ts_list} = useStationList(loc_id);
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
   const fileInputRef = createRef<HTMLInputElement>();
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
   const [openSave, setOpenSave] = useState(false);
-  const {createStamdata} = useNavigationFunctions();
   const {isTouch} = useBreakpoints();
   const [activeImage, setActiveImage] = useState({
     gid: -1,
@@ -85,61 +80,21 @@ export default function Station() {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (metadata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
+    if ((metadata as TimeseriesMetadata)?.calculated && pageToShow == 'tilsyn')
+      setPageToShow('pejling');
 
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
 
-  if (ts_list && ts_list.length === 0 && pageToShow === stationPages.PEJLING) {
-    return (
-      <Layout>
-        <Box
-          display={'flex'}
-          alignSelf={'center'}
-          flexDirection={'column'}
-          marginX={'auto'}
-          maxWidth={400}
-          gap={2}
-          marginY={4}
-        >
-          <Alert
-            severity={'info'}
-            sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-          >
-            <Typography>
-              Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen
-              nedenfor for at påbegynde oprettelse af tidsserie og/eller tilknytning af udstyr
-            </Typography>
-          </Alert>
-          <Button
-            bttype="primary"
-            onClick={() => {
-              createStamdata(ts_id ? '2' : '1', {
-                state: {
-                  ...metadata,
-                },
-              });
-            }}
-          >
-            Opret tidsserie og/eller udstyr
-          </Button>
-        </Box>
-      </Layout>
-    );
-  }
-
-  if (!ts_id && ts_list && ts_list.length > 0) return '';
-
   return (
     <Layout>
-      {pageToShow !== 'billeder' && metadata && pageToShow !== 'stamdata' && (
-        <>
-          <PlotGraph
-            dynamicMeasurement={
-              pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
-            }
-          />
-        </>
+      {pageToShow !== 'billeder' && pageToShow !== 'stamdata' && (
+        <PlotGraph
+          key={ts_id}
+          dynamicMeasurement={
+            pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
+          }
+        />
       )}
       <Divider />
       <Box

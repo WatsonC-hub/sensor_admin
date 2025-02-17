@@ -9,7 +9,7 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import {useMetadata} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import {qaSelection} from '~/state/atoms';
 
@@ -31,7 +31,7 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const {metadata} = useMetadata();
+  const {timeseries_data} = useTimeseriesData();
 
   const formMethods = useForm<YRangeValues>({
     resolver: zodResolver(schema),
@@ -41,14 +41,14 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const {handleSubmit, setValue, reset} = formMethods;
 
-  const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';
+  const unit = timeseries_data && 'unit' in timeseries_data ? timeseries_data.unit : '';
 
   const {post: yRangeMutation} = useYRangeMutations();
 
   const onAccept: SubmitHandler<YRangeValues> = (values) => {
     yRangeMutation.mutate(
       {
-        path: `${metadata?.ts_id}`,
+        path: `${timeseries_data?.ts_id}`,
         data: {mincutoff: Number(values.min), maxcutoff: Number(values.max)},
       },
       {

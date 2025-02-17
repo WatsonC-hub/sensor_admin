@@ -1,8 +1,8 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {GetQueryOptions} from '~/queryClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
@@ -58,27 +58,30 @@ export const pejlingDelOptions = {
   },
 };
 
-export const pejlingGetOptions = <TData>(ts_id: number | undefined): GetQueryOptions<TData> => ({
-  queryKey: ['measurements', ts_id],
-  queryFn: async () => {
-    const {data} = await apiClient.get<TData>(`/sensor_field/station/measurements/${ts_id}`);
+export const pejlingGetOptions = (ts_id: number | undefined) =>
+  queryOptions<Array<PejlingItem>, APIError>({
+    queryKey: ['measurements', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<PejlingItem>>(
+        `/sensor_field/station/measurements/${ts_id}`
+      );
 
-    return data;
-    // return data.map((m) => {
-    //   return {
-    //     ...m,
-    //     timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss'),
-    //   };
-    // });
-  },
-  enabled: ts_id !== null && ts_id !== undefined,
-});
+      return data;
+      // return data.map((m) => {
+      //   return {
+      //     ...m,
+      //     timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss'),
+      //   };
+      // });
+    },
+    enabled: ts_id !== null && ts_id !== undefined,
+  });
 
 export const usePejling = () => {
   const queryClient = useQueryClient();
   const {ts_id} = useAppContext([], ['ts_id']);
 
-  const get = useQuery(pejlingGetOptions<Array<PejlingItem>>(ts_id));
+  const get = useQuery(pejlingGetOptions(ts_id));
 
   const post = useMutation({
     ...pejlingPostOptions,

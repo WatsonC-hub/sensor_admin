@@ -10,16 +10,16 @@ import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
-import {useMetadata} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {dataToShowAtom} from '~/state/atoms';
 import {QaGraphLabel} from '~/types';
 
 const useQAGraph = (ts_id: number, xRange: Array<string>) => {
-  const {metadata} = useMetadata();
+  const {timeseries_data} = useTimeseriesData();
   const dataToShow = useAtomValue(dataToShowAtom);
   const theme = useTheme();
-  const loc_name = metadata?.loc_name;
-  const ts_name = metadata?.ts_name;
+  const loc_name = timeseries_data?.loc_name;
+  const ts_name = timeseries_data?.ts_name;
   const {data: adjustmentData} = useAdjustmentData(ts_id);
   const {data: controlData} = useControlData(ts_id);
 

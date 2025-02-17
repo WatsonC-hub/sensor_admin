@@ -355,7 +355,7 @@ export type QaAllData = {
   dataexclude: Array<DataExclude>;
 };
 
-export type QaGraphData = {
+export type GraphData = {
   x: Array<string>;
   y: Array<number>;
 };
