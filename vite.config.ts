@@ -1,10 +1,10 @@
 import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
+import {visualizer} from 'rollup-plugin-visualizer';
 import {defineConfig} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
-import {visualizer} from 'rollup-plugin-visualizer';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   devOptions: {
@@ -132,7 +132,7 @@ export default defineConfig({
       // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
       apply: 'build',
     },
-    visualizer(),
+    visualizer({filename: 'stats.html', open: true}),
     // removeConsole(),
     // sentryVitePlugin(sentryOptions),
   ],
@@ -149,12 +149,11 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             if (id.includes('plotly')) {
               return 'vendor_plotly';
-            } else if (id.includes('@material-ui')) {
+            } else if (id.includes('mui')) {
               return 'vendor_mui';
             }
-            return id.toString().split('node_modules/')[1].split('/')[0].toString();
 
-            // return 'vendor'; // all other package goes here
+            return 'vendor'; // all other package goes here
           }
         },
       },
