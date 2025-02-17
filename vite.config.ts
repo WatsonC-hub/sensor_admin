@@ -7,18 +7,12 @@ import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 const pwaOptions: Partial<VitePWAOptions> = {
-  devOptions: {
-    enabled: true,
-    type: 'module',
-  },
+  devOptions: {enabled: true, type: 'module'},
   strategies: 'injectManifest',
   srcDir: 'src',
   filename: 'sw.js',
   registerType: 'autoUpdate',
-  injectManifest: {
-    globPatterns: ['**/*'],
-    maximumFileSizeToCacheInBytes: 5000000,
-  },
+  injectManifest: {globPatterns: ['**/!(*.map)'], maximumFileSizeToCacheInBytes: 5000000},
   includeAssets: ['**/*'],
   manifest: {
     name: 'Calypso @ Field',
@@ -62,47 +56,25 @@ const pwaOptions: Partial<VitePWAOptions> = {
         name: 'Field',
         url: '/field',
         description: 'Åben Field',
-        icons: [
-          {
-            src: 'android-launchericon-96-96.png',
-            sizes: '96x96',
-            type: 'image/png',
-          },
-        ],
+        icons: [{src: 'android-launchericon-96-96.png', sizes: '96x96', type: 'image/png'}],
       },
       {
         name: 'Admin',
         url: '/admin',
         description: 'Åben Admin',
-        icons: [
-          {
-            src: 'android-launchericon-96-96.png',
-            sizes: '96x96',
-            type: 'image/png',
-          },
-        ],
+        icons: [{src: 'android-launchericon-96-96.png', sizes: '96x96', type: 'image/png'}],
       },
     ],
 
     icons: [
-      {
-        src: 'manifest-icon-192.maskable.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'any',
-      },
+      {src: 'manifest-icon-192.maskable.png', sizes: '192x192', type: 'image/png', purpose: 'any'},
       {
         src: 'manifest-icon-192.maskable.png',
         sizes: '192x192',
         type: 'image/png',
         purpose: 'maskable',
       },
-      {
-        src: 'manifest-icon-512.maskable.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'any',
-      },
+      {src: 'manifest-icon-512.maskable.png', sizes: '512x512', type: 'image/png', purpose: 'any'},
       {
         src: 'manifest-icon-512.maskable.png',
         sizes: '512x512',
@@ -136,9 +108,7 @@ export default defineConfig({
     // removeConsole(),
     // sentryVitePlugin(sentryOptions),
   ],
-  define: {
-    global: 'window',
-  },
+  // define: {global: 'window'},
   build: {
     sourcemap: true,
     rollupOptions: {
@@ -151,6 +121,10 @@ export default defineConfig({
               return 'vendor_plotly';
             } else if (id.includes('mui')) {
               return 'vendor_mui';
+            } else if (id.includes('leaflet')) {
+              return 'vendor_leaflet';
+            } else if (id.includes('react')) {
+              return 'vendor_react';
             }
 
             return 'vendor'; // all other package goes here

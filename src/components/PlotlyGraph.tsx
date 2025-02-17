@@ -1,10 +1,17 @@
 import {Box} from '@mui/material';
 import moment from 'moment';
-import {Layout, PlotData, PlotMouseEvent, PlotRelayoutEvent, PlotSelectionEvent} from 'plotly.js';
+import type {
+  Layout,
+  PlotData,
+  PlotMouseEvent,
+  PlotRelayoutEvent,
+  PlotSelectionEvent,
+} from 'plotly.js';
 import React, {useEffect} from 'react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 
-import Plotly from 'plotly.js/lib/core';
+// @ts-expect-error not part of type
+import Plotly from 'plotly.js/dist/plotly-gl2d';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
 import {MergeType} from '~/helpers/EnumHelper';
 import {
@@ -78,12 +85,7 @@ export default function PlotlyGraph({
 
   useEffect(() => {
     if (xRange != undefined) {
-      const layout = {
-        xaxis: {
-          autorange: false,
-          range: xRange,
-        },
-      };
+      const layout = {xaxis: {autorange: false, range: xRange}};
 
       setLayout(layout);
     }
@@ -159,16 +161,9 @@ export default function PlotlyGraph({
         setXRange(range);
       }
       const layout: Partial<Layout> = {
-        xaxis: {
-          autorange: false,
-          range: range,
-        },
-        yaxis: {
-          autorange: true,
-        },
-        yaxis2: {
-          autorange: true,
-        },
+        xaxis: {autorange: false, range: range},
+        yaxis: {autorange: true},
+        yaxis2: {autorange: true},
       };
       setLayout(layout);
     }
@@ -238,9 +233,7 @@ export default function PlotlyGraph({
     icon: rawDataIcon,
     click: function () {
       if (showRaw) showRaw();
-      setLayout({
-        yaxis2: {visible: true},
-      });
+      setLayout({yaxis2: {visible: true}});
     },
   };
 
@@ -303,11 +296,7 @@ export default function PlotlyGraph({
         divId="qagraphDiv"
         onRelayout={handleRelayout}
         data={data}
-        layout={{
-          ...mergedLayout,
-          shapes: shapes,
-          annotations: annotations,
-        }}
+        layout={{...mergedLayout, shapes: shapes, annotations: annotations}}
         config={{
           doubleClick: false,
           responsive: true,

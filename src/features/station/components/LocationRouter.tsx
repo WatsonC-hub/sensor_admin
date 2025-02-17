@@ -15,6 +15,7 @@ import {useAppContext} from '~/state/contexts';
 import {useAuthStore} from '~/state/store';
 
 import MinimalSelect from './MinimalSelect';
+import LoadingSkeleton from '~/LoadingSkeleton';
 
 export default function LocationRouter() {
   const {ts_id} = useAppContext([], ['ts_id']);
@@ -22,6 +23,10 @@ export default function LocationRouter() {
   const adminAccess = useAuthStore((state) => state.adminAccess);
 
   const {metadata} = useMetadata();
+
+  if (!metadata) {
+    return <LoadingSkeleton />;
+  }
   return (
     <>
       <CssBaseline />
@@ -57,11 +62,7 @@ export default function LocationRouter() {
                 onClick: () => {
                   console.log('station', metadata);
                   console.log('ts_id', ts_id);
-                  createStamdata(undefined, {
-                    state: {
-                      ...metadata,
-                    },
-                  });
+                  createStamdata(undefined, {state: {...metadata}});
                 },
               },
             ]}
