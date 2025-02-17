@@ -7,12 +7,11 @@ import Autocomplete from '~/features/stamdata/components/stationDetails/ressourc
 import TransferList from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/TransferList';
 import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import LoadingSkeleton from '~/LoadingSkeleton';
 
 const Huskeliste = () => {
   const {isMobile} = useBreakpoints();
   const {
-    relation: {data: related, isPending},
+    relation: {data: related},
   } = useRessourcer();
 
   const schema = ressourcer;
@@ -24,8 +23,6 @@ const Huskeliste = () => {
     },
     mode: 'onSubmit',
   });
-
-  if (isPending) return <LoadingSkeleton />;
 
   const {control} = formMethods;
 

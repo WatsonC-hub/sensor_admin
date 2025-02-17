@@ -9,6 +9,7 @@ import NotificationList from '~/components/NotificationList';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import LoadingSkeleton from '~/LoadingSkeleton';
 import ErrorPage from '~/pages/field/station/ErrorPage';
 import Station from '~/pages/field/station/Station';
 import {useAppContext} from '~/state/contexts';
@@ -22,6 +23,9 @@ export default function LocationRouter() {
   const adminAccess = useAuthStore((state) => state.adminAccess);
 
   const {metadata} = useMetadata();
+
+  if (!metadata) return <LoadingSkeleton />;
+
   return (
     <>
       <CssBaseline />

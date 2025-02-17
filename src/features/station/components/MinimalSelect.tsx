@@ -6,7 +6,6 @@ import {Navigate} from 'react-router-dom';
 import NavBar from '~/components/NavBar';
 import useStationList from '~/hooks/query/useStationList';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import LoadingSkeleton from '~/LoadingSkeleton';
 import {useAppContext} from '~/state/contexts';
 
 const MinimalSelect = () => {
@@ -52,7 +51,6 @@ const MinimalSelect = () => {
           <NavBar.GoBack />
           <NavBar.Menu />
         </NavBar>
-        <LoadingSkeleton />
       </>
     );
 
@@ -66,7 +64,6 @@ const MinimalSelect = () => {
           <NavBar.GoBack />
           <NavBar.Menu />
         </NavBar>
-        <LoadingSkeleton />
         <Navigate to={`../location/${loc_id}/${ts_list[0].ts_id}`} replace />
       </>
     );

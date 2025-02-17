@@ -28,7 +28,7 @@ import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -49,7 +49,6 @@ import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useMetadata} from '~/hooks/query/useMetadata';
 import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import LoadingSkeleton from '~/LoadingSkeleton';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import {useAppContext} from '~/state/contexts';
 import {useAuthStore, useStamdataStore} from '~/state/store';
@@ -382,7 +381,7 @@ export default function EditStamdata() {
   const [tabValue, setTabValue] = useEditTabState();
   const [showForm, setShowForm] = useShowFormState();
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
-  const {metadata, pending} = useMetadata();
+  const {metadata} = useMetadata();
 
   console.log(metadata);
   useQuery<UnitHistory[]>({
@@ -534,8 +533,6 @@ export default function EditStamdata() {
     }
   };
 
-  if (pending) return <LoadingSkeleton />;
-
   return (
     <Box
       sx={{boxShadow: 2, margin: 'auto', width: {xs: window.innerWidth, md: 1080}, height: '100%'}}
@@ -621,16 +618,14 @@ export default function EditStamdata() {
             />
           </TabPanel>
           <TabPanel value={tabValue} index={'udstyr'}>
-            <Suspense fallback={<LoadingSkeleton />}>
-              <UdstyrReplace />
-              <UnitForm mode="edit" />
-              <StamdataFooter
-                cancel={resetFormData}
-                handleOpret={() => handleUpdate('unit')}
-                saveTitle="Gem udstyr"
-                disabled={isSubmitting || !('unit' in dirtyFields)}
-              />
-            </Suspense>
+            <UdstyrReplace />
+            <UnitForm mode="edit" />
+            <StamdataFooter
+              cancel={resetFormData}
+              handleOpret={() => handleUpdate('unit')}
+              saveTitle="Gem udstyr"
+              disabled={isSubmitting || !('unit' in dirtyFields)}
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={'målepunkt'}>
             <ReferenceForm />
