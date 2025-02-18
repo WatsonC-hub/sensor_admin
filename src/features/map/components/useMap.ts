@@ -178,16 +178,19 @@ const useMap = <TData extends object>(
             x: parseFloat(coords.Easting.toFixed(2)),
             y: parseFloat(coords.Northing.toFixed(2)),
           };
+
           const payload = {path: '', data: parkering};
+
+          mutateParkingRef.current = false;
+          highlightParking(loc_id as number, true);
+          setSelectParking(null);
 
           postParkering.mutate(payload, {
             onSettled: () => {
-              highlightParking(loc_id as number, true);
-              setSelectParking(null);
-              mutateParkingRef.current = false;
               toast.dismiss('tilknytParking');
             },
           });
+
           if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
         }
       }
@@ -203,12 +206,9 @@ const useMap = <TData extends object>(
           path: loc_id.toString(),
           data: {geo_route: (layer.toGeoJSON() as GeoJSON.Feature).geometry},
         };
+        mutateLeafletMapRouteRef.current = false;
 
-        postLeafletMapRoute.mutate(payload, {
-          onSettled: () => {
-            mutateLeafletMapRouteRef.current = false;
-          },
-        });
+        postLeafletMapRoute.mutate(payload);
       }
       layer.remove();
     });
@@ -515,7 +515,6 @@ const useMap = <TData extends object>(
 
     return () => {
       markerLayerRef.current?.removeEventListener('click');
-      mapRef.current?.removeEventListener('click');
       mapRef.current?.removeEventListener('pm:create');
     };
   }, [hightlightedMarker]);

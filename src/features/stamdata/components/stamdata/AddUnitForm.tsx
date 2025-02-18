@@ -111,6 +111,7 @@ export default function AddUnitForm({
 
   const handleSensorUUID = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setUnitData({...unitData, uuid: event.target.value});
+    setUnitData({...unitData, uuid: event.target.value});
   };
 
   const handleDateChange = (date: Date) => {

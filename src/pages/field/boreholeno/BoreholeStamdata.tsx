@@ -23,14 +23,7 @@ const schema = z.object({
     .min(0, {message: 'Antal kontroller skal være 0 eller større'})
     .nullish(),
   description: z.string().nullish().optional(),
-  groups: z
-    .array(
-      z.object({
-        id: z.string(),
-        group_name: z.string(),
-      })
-    )
-    .nullish(),
+  groups: z.array(z.object({id: z.string(), group_name: z.string()})).nullish(),
 });
 
 type Stamdata = z.infer<typeof schema>;
@@ -65,16 +58,11 @@ const BoreholeStamdata = () => {
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['borehole_stamdata'],
-      });
+      queryClient.invalidateQueries({queryKey: ['borehole_stamdata']});
     },
   });
 
-  const formMethods = useForm<Stamdata>({
-    resolver: zodResolver(schema),
-    defaultValues: stamdata,
-  });
+  const formMethods = useForm<Stamdata>({resolver: zodResolver(schema), defaultValues: stamdata});
 
   useEffect(() => {
     formMethods.reset(stamdata);
@@ -90,9 +78,7 @@ const BoreholeStamdata = () => {
   };
 
   const handleErrors = () => {
-    toast.error('Der skete en fejl', {
-      autoClose: 2000,
-    });
+    toast.error('Der skete en fejl', {autoClose: 2000});
   };
 
   const handleScan = async (data: any) => {
@@ -103,9 +89,7 @@ const BoreholeStamdata = () => {
       setOpenCamera(false);
       setOpenDialog(true);
     } else {
-      toast.error('QR-koden er ikke gyldig', {
-        autoClose: 2000,
-      });
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
     }
   };
 
@@ -131,19 +115,9 @@ const BoreholeStamdata = () => {
           calypso_id={calypso_id}
         />
       )}
-      <Card
-        sx={{
-          textAlign: 'center',
-          justifyContent: 'center',
-          alignContent: 'center',
-        }}
-      >
+      <Card sx={{textAlign: 'center', justifyContent: 'center', alignContent: 'center'}}>
         <CardContent>
-          <Box
-            sx={{
-              display: 'flex',
-            }}
-          >
+          <Box sx={{display: 'flex'}}>
             <EditRounded />
             <Typography gutterBottom variant="h5" component="h2">
               Stamdata
@@ -186,11 +160,7 @@ const BoreholeStamdata = () => {
                     disabled
                   />
                   <Button
-                    sx={{
-                      width: '80%',
-                      textTransform: 'initial',
-                      borderRadius: 15,
-                    }}
+                    sx={{width: '80%', textTransform: 'initial', borderRadius: 15}}
                     bttype="primary"
                     color="primary"
                     startIcon={<PhotoCameraRounded />}
@@ -202,10 +172,7 @@ const BoreholeStamdata = () => {
                 <Typography
                   variant="caption"
                   gutterBottom
-                  sx={{
-                    float: 'left',
-                    textTransform: 'initial',
-                  }}
+                  sx={{float: 'left', textTransform: 'initial'}}
                 >
                   Calypso ID er et unikt nummer, der identificerer boringen samt indtag
                 </Typography>

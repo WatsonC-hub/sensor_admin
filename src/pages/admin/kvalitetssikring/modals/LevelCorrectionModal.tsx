@@ -18,10 +18,7 @@ interface LevelCorrectionModal {
   onClose: () => void;
 }
 
-const schema = z.object({
-  date: z.string(),
-  comment: z.string().optional(),
-});
+const schema = z.object({date: z.string(), comment: z.string().optional()});
 
 type CorrectionValues = z.infer<typeof schema>;
 
@@ -41,10 +38,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
 
   const {post: levelCorrectionMutation} = useLevelCorrection();
 
-  const formMethods = useForm<CorrectionValues>({
-    resolver: zodResolver(schema),
-    mode: 'onTouched',
-  });
+  const formMethods = useForm<CorrectionValues>({resolver: zodResolver(schema), mode: 'onTouched'});
 
   const {handleSubmit, setValue, watch, reset} = formMethods;
 
@@ -52,7 +46,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
     levelCorrectionMutation.mutate(
       {
         path: `${timeseries_data?.ts_id}`,
-        data: {date: values.date, comment: values.comment},
+        data: {date: moment(values.date).toISOString(), comment: values.comment},
       },
       {
         onSuccess: () => {

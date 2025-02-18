@@ -74,6 +74,8 @@ export default function PejlingFormBorehole({
         }
       });
       if (mp.length > 0) {
+        console.log(mp);
+
         setPejlingOutOfRange(false);
         setCurrentMP({elevation: mp[0].elevation, mp_description: mp[0].mp_description});
       } else {
@@ -217,7 +219,9 @@ export default function PejlingFormBorehole({
                   InputLabelProps={{shrink: true}}
                   value={formData.disttowatertable_m}
                   onChange={(e) => changeFormData('disttowatertable_m', e.target.value)}
-                  disabled={notPossible || currentMP.elevation === null}
+                  disabled={
+                    notPossible || currentMP.elevation === undefined || currentMP.elevation === null
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={7} mt={-1}>

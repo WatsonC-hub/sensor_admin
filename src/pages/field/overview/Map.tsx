@@ -56,7 +56,7 @@ interface LocItems {
 
 const Map = () => {
   const {createStamdata} = useNavigationFunctions();
-  const [setSelectParking] = useParkingStore((state) => [state.setSelectedLocId]);
+  const [setSelectLocId] = useParkingStore((state) => [state.setSelectedLocId]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
 
   const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
@@ -172,7 +172,7 @@ const Map = () => {
           text: 'Tegn rute',
           callback: () => {
             if (map) {
-              setSelectParking(element.loc_id);
+              setSelectLocId(element.loc_id);
               mutateRoutesLayer.current = true;
 
               map.pm.enableDraw('Line');
@@ -185,7 +185,7 @@ const Map = () => {
           callback: () => {
             if (map) map.getContainer().style.cursor = 'pointer';
 
-            setSelectParking(element.loc_id);
+            setSelectLocId(element.loc_id);
             mutateParkingLayer.current = true;
             toast('Vælg parkering for at tilknytte den lokationen', {
               toastId: 'tilknytParking',

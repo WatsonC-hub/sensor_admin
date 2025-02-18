@@ -22,7 +22,7 @@ function SensorField() {
   const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
 
-  async function getData(labelid: string) {
+  async function getData(labelid: string | number) {
     const {data} = await apiClient.get(`/sensor_field/calypso_id/${labelid}`);
     return data;
   }
@@ -38,6 +38,12 @@ function SensorField() {
     const calypso_id = split[split.length - 1];
 
     const options = {replace: true};
+
+    if (!calypso_id) {
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
+      handleClose();
+      return;
+    }
 
     try {
       const resp = await getData(calypso_id);
@@ -59,9 +65,7 @@ function SensorField() {
           borehole(resp.boreholeno, options);
         }
       } else {
-        toast.error('Ukendt fejl', {
-          autoClose: 2000,
-        });
+        toast.error('Ukendt fejl', {autoClose: 2000});
       }
       handleClose();
     } catch (e: any) {
