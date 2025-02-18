@@ -1,19 +1,21 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import {Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
+import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
-import {TimeseriesMetadata, useMetadata, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {TimeseriesMetadata, useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -22,11 +24,10 @@ import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
 import {useAuthStore} from '~/state/store';
-import BatteryStatus from '~/features/station/components/BatteryStatus';
 
 export default function Station() {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
-  const {timeseries_data: metadata} = useTimeseriesData();
+  const {data: metadata} = useTimeseriesData();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
@@ -163,7 +164,7 @@ interface LayoutProps {
 
 const Layout = ({children}: LayoutProps) => {
   const {ts_id} = useAppContext(['ts_id']);
-  const {timeseries_data: metadata} = useTimeseriesData();
+  const {data: metadata} = useTimeseriesData();
   const adminAccess = useAuthStore((state) => state.adminAccess);
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
   console.log(metadata);

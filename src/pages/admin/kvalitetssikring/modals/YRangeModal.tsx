@@ -31,7 +31,7 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const {timeseries_data} = useTimeseriesData();
+  const {data: timeseries_data} = useTimeseriesData();
 
   const formMethods = useForm<YRangeValues>({
     resolver: zodResolver(schema),
@@ -41,7 +41,7 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const {handleSubmit, setValue, reset} = formMethods;
 
-  const unit = timeseries_data && 'unit' in timeseries_data ? timeseries_data.unit : '';
+  const unit = timeseries_data?.unit ?? '';
 
   const {post: yRangeMutation} = useYRangeMutations();
 

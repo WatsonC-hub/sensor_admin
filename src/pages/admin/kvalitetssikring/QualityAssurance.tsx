@@ -184,7 +184,7 @@ const Layout = ({
   const {isMobile} = useBreakpoints();
   const {ts_id} = useAppContext(['ts_id']);
   const {field, station} = useNavigationFunctions();
-  const {timeseries_data} = useTimeseriesData();
+  const {data: timeseries_data} = useTimeseriesData();
   const handleChange = (event: any, newValue: (typeof qaPagesLiteral)[number]) => {
     setPageToShow(newValue);
   };

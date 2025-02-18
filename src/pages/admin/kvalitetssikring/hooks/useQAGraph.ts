@@ -15,7 +15,7 @@ import {dataToShowAtom} from '~/state/atoms';
 import {QaGraphLabel} from '~/types';
 
 const useQAGraph = (ts_id: number, xRange: Array<string>) => {
-  const {timeseries_data} = useTimeseriesData();
+  const {data: timeseries_data} = useTimeseriesData();
   const dataToShow = useAtomValue(dataToShowAtom);
   const theme = useTheme();
   const loc_name = timeseries_data?.loc_name;

@@ -116,34 +116,30 @@ export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
   });
 };
 
-export const useTimeseriesData = () => {
-  const {metadata, error, pending} = useMetadata();
-  const timeseries_data = metadata as TimeseriesMetadata;
-  return {timeseries_data, error, pending};
-};
-
-export const useLocationData = () => {
-  const {loc_id} = useAppContext([], ['loc_id']);
-
-  const {
-    data: location_data,
-    error: error,
-    isPending: pending,
-  } = useQuery(locationMetadtaQueryOptions(loc_id));
-
-  return {location_data, error, pending};
-};
-
-export const useMetadata = (ts_id?: number) => {
-  const {ts_id: app_ts_id, loc_id} = useAppContext([], ['ts_id', 'loc_id']);
+export const useTimeseriesData = (ts_id?: number) => {
+  const {ts_id: app_ts_id} = useAppContext([], ['ts_id']);
 
   const inner_ts_id = ts_id ?? app_ts_id;
 
-  const {
-    data: metadata,
-    error: error,
-    isPending: pending,
-  } = useQuery(metadataQueryOptions(inner_ts_id));
+  if (inner_ts_id === undefined) {
+    throw new Error('ts_id is undefined');
+  }
 
-  return {metadata, error, pending};
+  const query = useQuery(metadataQueryOptions(inner_ts_id));
+
+  return query;
+};
+
+export const useLocationData = (loc_id?: number) => {
+  const {loc_id: app_loc_id} = useAppContext([], ['loc_id']);
+
+  const inner_loc_id = loc_id ?? app_loc_id;
+
+  if (inner_loc_id === undefined) {
+    throw new Error('loc_id is undefined');
+  }
+
+  const query = useQuery(locationMetadtaQueryOptions(inner_loc_id));
+
+  return query;
 };

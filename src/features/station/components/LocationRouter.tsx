@@ -1,41 +1,39 @@
+import {PhotoLibraryRounded, ConstructionRounded} from '@mui/icons-material';
 import {Alert, Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
+import {startCase} from 'lodash';
 import {ErrorBoundary} from 'react-error-boundary';
 
+import CustomBottomNavigation from '~/components/BottomNavigation';
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
-import {metadataQueryOptions, useLocationData, useMetadata} from '~/hooks/query/useMetadata';
-import useStationList from '~/hooks/query/useStationList';
+import {navIconStyle} from '~/consts';
+import {stationPages} from '~/helpers/EnumHelper';
+import {metadataQueryOptions, useLocationData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import ErrorPage from '~/pages/field/station/ErrorPage';
 import {useAppContext} from '~/state/contexts';
 
 import MinimalSelect from './MinimalSelect';
-import CustomBottomNavigation from '~/components/BottomNavigation';
-import {PhotoLibraryRounded, ConstructionRounded} from '@mui/icons-material';
-import {startCase} from 'lodash';
-import {stationPages} from '~/helpers/EnumHelper';
-import {navIconStyle} from '~/consts';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {createStamdata} = useNavigationFunctions();
-  const {data: ts_list} = useStationList(loc_id);
   const [pageToShow, setPageToShow] = useStationPages();
-  const {location_data: metadata, pending} = useLocationData();
+  const {data: metadata, isPending: pending} = useLocationData();
 
   if (pending) return <LoadingSkeleton />;
 
-  if (ts_list && ts_list.length > 0)
-    ts_list.forEach((item) => {
+  if (metadata != undefined && metadata.timeseries.length > 0)
+    metadata.timeseries.forEach((item) => {
       queryClient.prefetchQuery(metadataQueryOptions(item.ts_id));
     });
 
-  if (ts_list && ts_list.length === 0) {
+  if (metadata != undefined && metadata.timeseries.length === 0) {
     return (
       <Box
         display={'flex'}

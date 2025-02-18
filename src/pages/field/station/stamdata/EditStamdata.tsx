@@ -45,7 +45,7 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
-import {Metadata, TimeseriesMetadata, useMetadata} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import TabPanel from '~/pages/field/overview/TabPanel';
@@ -379,7 +379,7 @@ export default function EditStamdata() {
   const [tabValue, setTabValue] = useEditTabState();
   const [showForm, setShowForm] = useShowFormState();
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
-  const {metadata} = useMetadata();
+  const {data: metadata} = useTimeseriesData();
 
   const {data: udstyr} = useQuery<UnitHistory[]>({
     queryKey: ['udstyr', ts_id],
@@ -399,16 +399,12 @@ export default function EditStamdata() {
     }
     if (tabValue === null) {
       setTabValue('lokation');
-    } else if (
-      tabValue === 'målepunkt' &&
-      metadata &&
-      (metadata as TimeseriesMetadata).tstype_id !== 1
-    ) {
+    } else if (tabValue === 'målepunkt' && metadata && metadata.tstype_id !== 1) {
       setTabValue('lokation');
     } else if (
       (tabValue === 'udstyr' || tabValue === 'tidsserie') &&
       metadata &&
-      (metadata as TimeseriesMetadata).calculated
+      metadata.calculated
     ) {
       setTabValue('lokation');
     } else setTabValue(tabValue);
@@ -420,7 +416,7 @@ export default function EditStamdata() {
     return () => {
       setTabValue(null);
     };
-  }, [ts_id, (metadata as TimeseriesMetadata)?.calculated, tabValue]);
+  }, [ts_id, metadata?.calculated, tabValue]);
 
   const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -458,20 +454,14 @@ export default function EditStamdata() {
   let schema: typeof locationSchema | typeof timeseriesSchema | typeof metadataPutSchema;
   schema = locationSchema;
 
-  if (
-    metadata &&
-    (metadata as TimeseriesMetadata).ts_id &&
-    udstyr &&
-    udstyr.length > 0 &&
-    !udstyr[0].uuid
-  ) {
+  if (metadata && metadata.ts_id && udstyr && udstyr.length > 0 && !udstyr[0].uuid) {
     schema = timeseriesSchema;
   } else if (metadata && udstyr && udstyr.length > 0 && udstyr[0].uuid) {
     schema = metadataPutSchema;
   }
 
   const schemaData = schema.safeParse({
-    location: {...metadata, initial_project_no: (metadata as Metadata)?.projectno},
+    location: {...metadata, initial_project_no: metadata?.projectno},
     timeseries: {...metadata},
     unit: {
       unit_uuid: udstyr && udstyr.length > 0 ? udstyr[0].uuid : '',
@@ -500,7 +490,7 @@ export default function EditStamdata() {
   const resetFormData = () => {
     const result = schema.safeParse({
       ...getValues(),
-      location: {...metadata, initial_project_no: (metadata as Metadata)?.projectno},
+      location: {...metadata, initial_project_no: metadata?.projectno},
       timeseries: {...metadata},
     });
     reset(result.success ? result.data : {});
@@ -579,10 +569,7 @@ export default function EditStamdata() {
         />
         <Tab
           value={'tidsserie'}
-          disabled={
-            !metadata ||
-            (metadata && ((metadata as TimeseriesMetadata).calculated || ts_id === undefined))
-          }
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === undefined))}
           icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -592,10 +579,7 @@ export default function EditStamdata() {
         />
         <Tab
           value={'udstyr'}
-          disabled={
-            !metadata ||
-            (metadata && ((metadata as TimeseriesMetadata).calculated || ts_id === undefined))
-          }
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === undefined))}
           icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -605,7 +589,7 @@ export default function EditStamdata() {
         />
         <Tab
           value={'målepunkt'}
-          disabled={!metadata || (metadata && (metadata as TimeseriesMetadata).tstype_id !== 1)}
+          disabled={!metadata || (metadata && metadata.tstype_id !== 1)}
           icon={
             <StraightenRounded sx={{transform: 'rotate(90deg)', marginTop: 1}} fontSize="small" />
           }

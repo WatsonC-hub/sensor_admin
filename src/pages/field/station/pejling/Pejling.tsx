@@ -28,7 +28,7 @@ type Props = {
 
 const Pejling = ({setDynamic}: Props) => {
   const {ts_id} = useAppContext(['ts_id']);
-  const {timeseries_data} = useTimeseriesData();
+  const {data: timeseries_data} = useTimeseriesData();
   const isWaterlevel = timeseries_data?.tstype_id === 1;
   const [showForm, setShowForm] = useShowFormState();
   const [, setPageToShow] = useStationPages();

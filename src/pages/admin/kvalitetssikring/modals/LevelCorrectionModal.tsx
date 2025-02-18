@@ -27,7 +27,7 @@ type CorrectionValues = z.infer<typeof schema>;
 
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
-  const {timeseries_data} = useTimeseriesData();
+  const {data: timeseries_data} = useTimeseriesData();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const unit = timeseries_data && 'unit' in timeseries_data ? timeseries_data.unit : '';

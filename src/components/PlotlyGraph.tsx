@@ -22,7 +22,7 @@ import {
   rerunIcon,
 } from '~/helpers/plotlyIcons';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
-import {Metadata, useMetadata} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
@@ -69,8 +69,7 @@ export default function PlotlyGraph({
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
-  let {metadata} = useMetadata();
-  metadata = metadata as Metadata;
+  const {data: metadata} = useTimeseriesData();
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
 

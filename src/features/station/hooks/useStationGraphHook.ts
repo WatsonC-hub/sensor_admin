@@ -5,7 +5,7 @@ import {useState} from 'react';
 import {apiClient} from '~/apiClient';
 import {correction_map} from '~/consts';
 import {useGraphData} from '~/hooks/query/useGraphData';
-import {TimeseriesMetadata, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
@@ -17,9 +17,9 @@ const useStationGraphHook = (
 ) => {
   const {ts_id} = useAppContext(['ts_id']);
 
-  const {timeseries_data} = useTimeseriesData();
+  const {data: timeseries_data} = useTimeseriesData();
   const loc_name = timeseries_data?.loc_name;
-  const ts_name = (timeseries_data as TimeseriesMetadata)?.ts_name;
+  const ts_name = timeseries_data?.ts_name;
   let data: Array<Partial<PlotData>> = [];
 
   const {isTouch} = useBreakpoints();

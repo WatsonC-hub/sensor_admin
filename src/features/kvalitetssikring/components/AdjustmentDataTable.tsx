@@ -14,7 +14,7 @@ import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
-import {Metadata, useMetadata} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTable} from '~/hooks/useTable';
@@ -45,8 +45,8 @@ const AdjustmentDataTable = ({data}: Props) => {
   const [type, setType] = useState<string>('');
   const [index, setIndex] = useState<number | undefined>();
   const {isMobile} = useBreakpoints();
-  let {metadata} = useMetadata();
-  metadata = metadata as Metadata;
+  const {data: metadata} = useTimeseriesData();
+
   // const loc_name = metadata?.loc_name;
   const tstype_id = metadata?.tstype_id;
   const unit = tstype_id === 1 ? ' m' : metadata?.unit;
