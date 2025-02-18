@@ -119,7 +119,6 @@ export default function AddUnitForm({
   };
 
   const handleAddUnit = (payload: UnitPost) => {
-    console.log(payload);
     addUnit.mutate(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');

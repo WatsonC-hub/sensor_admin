@@ -17,7 +17,6 @@ export default function UnitForm({mode}: UnitFormProps) {
   const {watch, trigger, getFieldState} = useFormContext();
   const editMode = mode === 'edit';
 
-  // const [unit] = useStamdataStore((store) => [store.unit]);
   const startdate = watch('unit.startdate');
   const enddate = watch('unit.enddate');
   const unit_uuid: string = watch('unit.unit_uuid');
@@ -33,8 +32,6 @@ export default function UnitForm({mode}: UnitFormProps) {
   } else {
     unit = availableUnits?.find((u) => u.unit_uuid === unit_uuid);
   }
-
-  console.log(unit);
 
   useEffect(() => {
     if (getFieldState('unit.startdate').error || getFieldState('unit.enddate').error)

@@ -61,7 +61,6 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
   state = state ?? {};
 
-  console.log(state);
   const [tabValue, setTabValue] = useCreateTabState();
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
@@ -148,8 +147,6 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   }, [tabValue]);
 
   const showErrorMessage = (updateType?: string) => {
-    console.log(getValues('location'));
-    console.log(locationSchema);
     let result = locationSchema.safeParse({location: getValues('location')});
 
     if (updateType === 'timeseries') {
@@ -164,9 +161,8 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     }
 
     if (!result.success) {
-      console.log(result);
       const errorMessage = result.error.issues.map((error) => error.message).join('\n');
-      console.log(errorMessage);
+
       toast.error(errorMessage, {
         toastId: 'fejlVedOpretStamdata',
         style: {width: '20%', minWidth: '300px', marginRight: '0%', whiteSpace: 'pre-line'},

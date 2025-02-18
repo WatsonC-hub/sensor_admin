@@ -210,7 +210,6 @@ export const NavBarMenu = ({
 
 const Logo = () => {
   const {isMobile} = useBreakpoints();
-  console.log('test logo');
 
   return isMobile ? <SmallLogo /> : <LogoSvg />;
 };

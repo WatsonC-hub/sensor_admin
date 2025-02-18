@@ -17,7 +17,7 @@ interface Props {
 
 export default function LocationForm({mode, disable = false}: Props) {
   const {watch, control, setValue, getValues} = useFormContext();
-  console.log(getValues());
+
   const {
     data: DTMData,
     isSuccess,
@@ -31,7 +31,6 @@ export default function LocationForm({mode, disable = false}: Props) {
   });
 
   useEffect(() => {
-    console.log(DTMData);
     if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
       setValue('location.terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
     }
