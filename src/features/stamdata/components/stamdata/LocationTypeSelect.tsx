@@ -16,7 +16,7 @@ type locationType = {
 };
 
 export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
-  const {data, isPending} = useQuery({
+  const {data} = useQuery({
     queryKey: ['location_types'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
@@ -25,7 +25,7 @@ export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
     refetchOnWindowFocus: false,
   });
 
-  if (isPending) return <LoadingSkeleton />;
+  // if (isPending) return <LoadingSkeleton />;
 
   return (
     <FormInput

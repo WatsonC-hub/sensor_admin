@@ -17,8 +17,8 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
-import {useStamdataStore} from '~/state/store';
 import {Maalepunkt} from '~/types';
 
 interface Props {
@@ -30,14 +30,14 @@ interface Props {
 export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
-  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
+  const {data: timeseries} = useTimeseriesData();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
     setDialogOpen(true);
   };
 
-  const unit = timeseries.tstype_id === 1 ? ' m' : ` [${timeseries.unit}]`;
+  const unit = timeseries?.tstype_id === 1 ? ' m' : ` [${timeseries?.unit}]`;
 
   const columns = useMemo<MRT_ColumnDef<Maalepunkt>[]>(
     () => [

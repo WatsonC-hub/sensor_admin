@@ -7,10 +7,10 @@ import {toast} from 'react-toastify';
 
 import {limitDecimalNumbers, splitTimeFromDate} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
 import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {useStamdataStore} from '~/state/store';
 import {LatestMeasurement} from '~/types';
 
 type LatestMeasurementTableProps = {
@@ -19,9 +19,9 @@ type LatestMeasurementTableProps = {
 };
 
 const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasurementTableProps) => {
-  const [timeseries] = useStamdataStore((state) => [state.timeseries]);
-  const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
   const {ts_id} = useAppContext(['ts_id']);
+  const {data: timeseries} = useTimeseriesData();
+  const unit = timeseries?.tstype_id === 1 ? ' m' : ' ' + timeseries?.unit;
 
   const columns = useMemo<MRT_ColumnDef<LatestMeasurement>[]>(
     () => [

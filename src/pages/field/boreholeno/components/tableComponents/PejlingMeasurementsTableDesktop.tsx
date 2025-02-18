@@ -12,9 +12,10 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {useAuthStore, useStamdataStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 export type Kontrol = {
   comment: string;
@@ -38,10 +39,9 @@ interface Props {
 export default function PejlingMeasurementsTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [tstype_id, stationUnit] = useStamdataStore((state) => [
-    state.timeseries.tstype_id,
-    state.timeseries.unit,
-  ]);
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
+  const stationUnit = timeseries?.unit;
   const org_id = useAuthStore((store) => store.org_id);
 
   const unit = tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${stationUnit}]`;

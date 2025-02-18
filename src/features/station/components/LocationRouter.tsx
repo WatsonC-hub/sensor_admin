@@ -3,6 +3,7 @@ import {Alert, Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
 import {startCase} from 'lodash';
+import React from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
@@ -13,7 +14,6 @@ import {stationPages} from '~/helpers/EnumHelper';
 import {metadataQueryOptions, useLocationData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
-import LoadingSkeleton from '~/LoadingSkeleton';
 import ErrorPage from '~/pages/field/station/ErrorPage';
 import {useAppContext} from '~/state/contexts';
 
@@ -24,9 +24,7 @@ export default function LocationRouter() {
   const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {createStamdata} = useNavigationFunctions();
   const [pageToShow, setPageToShow] = useStationPages();
-  const {data: metadata, isPending: pending} = useLocationData();
-
-  if (pending) return <LoadingSkeleton />;
+  const {data: metadata} = useLocationData();
 
   if (metadata != undefined && metadata.timeseries.length > 0)
     metadata.timeseries.forEach((item) => {
@@ -35,37 +33,39 @@ export default function LocationRouter() {
 
   if (metadata != undefined && metadata.timeseries.length === 0) {
     return (
-      <Box
-        display={'flex'}
-        alignSelf={'center'}
-        flexDirection={'column'}
-        marginX={'auto'}
-        maxWidth={400}
-        gap={2}
-        marginY={4}
-      >
-        <Alert
-          severity={'info'}
-          sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+      <Layout>
+        <Box
+          display={'flex'}
+          alignSelf={'center'}
+          flexDirection={'column'}
+          marginX={'auto'}
+          maxWidth={400}
+          gap={2}
+          marginY={4}
         >
-          <Typography>
-            Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen
-            nedenfor for at påbegynde oprettelse af tidsserie og/eller tilknytning af udstyr
-          </Typography>
-        </Alert>
-        <Button
-          bttype="primary"
-          onClick={() => {
-            createStamdata(ts_id ? '2' : '1', {
-              state: {
-                ...metadata,
-              },
-            });
-          }}
-        >
-          Opret tidsserie og/eller udstyr
-        </Button>
-      </Box>
+          <Alert
+            severity={'info'}
+            sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+          >
+            <Typography>
+              Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen
+              nedenfor for at påbegynde oprettelse af tidsserie og/eller tilknytning af udstyr
+            </Typography>
+          </Alert>
+          <Button
+            bttype="primary"
+            onClick={() => {
+              createStamdata(ts_id ? '2' : '1', {
+                state: {
+                  ...metadata,
+                },
+              });
+            }}
+          >
+            Opret tidsserie og/eller udstyr
+          </Button>
+        </Box>
+      </Layout>
     );
   }
   const navigationItems = [];
@@ -90,6 +90,23 @@ export default function LocationRouter() {
   );
 
   return (
+    <Layout>
+      <CustomBottomNavigation
+        pageToShow={pageToShow}
+        onChange={handleChange}
+        items={navigationItems}
+      />
+    </Layout>
+  );
+}
+
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout = ({children}: LayoutProps) => {
+  const {data: metadata} = useLocationData();
+  return (
     <>
       <CssBaseline />
       <NavBar>
@@ -108,13 +125,9 @@ export default function LocationRouter() {
 
       <main style={{flexGrow: 1}}>
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          <CustomBottomNavigation
-            pageToShow={pageToShow}
-            onChange={handleChange}
-            items={navigationItems}
-          />
+          {children}
         </ErrorBoundary>
       </main>
     </>
   );
-}
+};

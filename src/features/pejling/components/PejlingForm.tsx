@@ -17,7 +17,7 @@ import {useFormContext, get} from 'react-hook-form';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import {useStamdataStore} from '~/state/store';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {LatestMeasurement, Maalepunkt, PejlingItem} from '~/types';
 
 import Correction from './Correction';
@@ -41,10 +41,10 @@ export default function PejlingForm({
   setDynamic,
   latestMeasurement,
 }: PejlingFormProps) {
-  const [tstype_id, stationUnit] = useStamdataStore((state) => [
-    state.timeseries.tstype_id,
-    state.timeseries.unit,
-  ]);
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
+  const stationUnit = timeseries?.unit;
+
   const isWaterlevel = tstype_id === 1;
   const isFlow = tstype_id === 2;
 

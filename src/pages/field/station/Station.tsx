@@ -15,7 +15,7 @@ import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
-import {TimeseriesMetadata, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -88,8 +88,7 @@ export default function Station() {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if ((metadata as TimeseriesMetadata)?.calculated && pageToShow == 'tilsyn')
-      setPageToShow('pejling');
+    if (metadata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
 
     if (showForm === null) setDynamic([]);
   }, [ts_id, showForm]);
@@ -167,9 +166,8 @@ const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useTimeseriesData();
   const adminAccess = useAuthStore((state) => state.adminAccess);
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
-  console.log(metadata);
   return (
-    <Box display="flex" flexDirection={'column'} gap={1}>
+    <>
       <NavBar>
         <NavBar.GoBack />
         <Box display="block" flexGrow={1} overflow="hidden">
@@ -207,8 +205,12 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-      {children}
-      <ActionArea />
-    </Box>
+      <main style={{flexGrow: 1}}>
+        <Box display="flex" flexDirection={'column'} gap={1}>
+          {children}
+          <ActionArea />
+        </Box>
+      </main>
+    </>
   );
 };

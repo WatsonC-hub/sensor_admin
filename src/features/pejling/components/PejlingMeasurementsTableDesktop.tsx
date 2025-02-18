@@ -9,9 +9,9 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {useStamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
@@ -22,10 +22,9 @@ interface Props {
 export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [tstype_id, stationUnit] = useStamdataStore((state) => [
-    state.timeseries.tstype_id,
-    state.timeseries.unit,
-  ]);
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
+  const stationUnit = timeseries?.unit;
 
   const unit = tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${stationUnit}]`;
 

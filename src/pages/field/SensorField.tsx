@@ -15,6 +15,7 @@ import {captureDialogAtom} from '~/state/atoms';
 import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
 import CreateStamdataProvider from '~/state/CreateStamdataProvider';
 import StationRouterProvider from '~/state/StationRouterProvider';
+
 import Station from './station/Station';
 
 function SensorField() {
@@ -80,7 +81,7 @@ function SensorField() {
           path="location/:locid/:ts_id"
           element={
             <StationRouterProvider>
-              <Station />
+              <Station key="station" />
             </StationRouterProvider>
           }
         />
@@ -88,7 +89,7 @@ function SensorField() {
           path="location/:locid"
           element={
             <StationRouterProvider>
-              <LocationRouter />
+              <LocationRouter key="location" />
             </StationRouterProvider>
           }
         />

@@ -12,14 +12,12 @@ import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
-import {useStamdataStore} from '~/state/store';
 import {TilsynItem} from '~/types';
 
 export default function Tilsyn() {
   const {ts_id} = useAppContext(['ts_id']);
   const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
-  const store = useStamdataStore((state) => state);
   const initialData: TilsynItem = {
     dato: moment().format('YYYY-MM-DDTHH:mm'),
     gid: -1,
@@ -79,10 +77,8 @@ export default function Tilsyn() {
   }, [showForm]);
 
   useEffect(() => {
-    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
-      setShowForm(null);
-      reset(initialData);
-    }
+    setShowForm(null);
+    reset(initialData);
   }, [ts_id]);
 
   return (

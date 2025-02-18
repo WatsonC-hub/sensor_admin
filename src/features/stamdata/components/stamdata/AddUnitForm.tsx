@@ -19,12 +19,12 @@ import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore, useStamdataStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;
   setUdstyrDialogOpen: (open: boolean) => void;
-  tstype_id: number;
+  tstype_id?: number;
   mode: string;
 }
 
@@ -34,7 +34,6 @@ export default function AddUnitForm({
   tstype_id,
   mode,
 }: AddUnitFormProps) {
-  const [setUnit] = useStamdataStore((store) => [store.setUnit]);
   const {ts_id} = useAppContext([], ['ts_id']);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [invoiceData, setInvoiceData] = useState<{
@@ -173,19 +172,19 @@ export default function AddUnitForm({
         startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
       });
 
-      setUnit({
-        terminal_type: unit.terminal_type,
-        terminal_id: unit.terminal_id,
-        sensor_id: unit.sensor_id,
-        sensorinfo: unit.sensorinfo,
-        parameter: unit.sensorinfo,
-        calypso_id: unit.calypso_id,
-        batteriskift: unit.batteriskift,
-        startdato: unitData.fra,
-        slutdato: '2099-01-01 12:00:00',
-        uuid: unit.unit_uuid,
-        gid: -1,
-      });
+      // setUnit({
+      //   terminal_type: unit.terminal_type,
+      //   terminal_id: unit.terminal_id,
+      //   sensor_id: unit.sensor_id,
+      //   sensorinfo: unit.sensorinfo,
+      //   parameter: unit.sensorinfo,
+      //   calypso_id: unit.calypso_id,
+      //   batteriskift: unit.batteriskift,
+      //   startdato: unitData.fra,
+      //   slutdato: '2099-01-01 12:00:00',
+      //   uuid: unit.unit_uuid,
+      //   gid: -1,
+      // });
     };
   }
 
@@ -296,7 +295,7 @@ export default function AddUnitForm({
                 startIcon={mode === 'edit' ? <Save /> : undefined}
                 disabled={unitData.calypso_id === '-1' || unitData.uuid === ''}
               >
-                {mode === 'edit' ? 'Gem' : 'tilføj'}
+                {mode === 'edit' ? 'Gem' : 'Tilføj'}
               </Button>
             </DialogActions>
           </>

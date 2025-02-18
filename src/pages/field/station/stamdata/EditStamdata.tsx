@@ -37,6 +37,7 @@ import FabWrapper from '~/components/FabWrapper';
 import FormInput from '~/components/FormInput';
 import StamdataFooter from '~/components/StamdataFooter';
 import {tabsHeight} from '~/consts';
+import {UnitHistory, useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
@@ -50,7 +51,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore, useStamdataStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 const unitEndSchema = z.object({
   enddate: z.string(),
   change_reason: z.number().optional(),
@@ -64,19 +65,13 @@ interface UnitEndDateDialogProps {
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
   unit: any;
-  setUdstyrValue: (key: string, value: string) => void;
 }
 
 type ChangeReason = {id: number; reason: string; default_actions: string | null};
 
 type Action = {action: string; label: string};
 
-const UnitEndDateDialog = ({
-  openDialog,
-  setOpenDialog,
-  unit,
-  setUdstyrValue,
-}: UnitEndDateDialogProps) => {
+const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
   const {ts_id} = useAppContext(['ts_id']);
   const superUser = useAuthStore((store) => store.superUser);
@@ -117,9 +112,8 @@ const UnitEndDateDialog = ({
       );
       return data;
     },
-    onSuccess: (_, {enddate}) => {
+    onSuccess: () => {
       handleClose();
-      setUdstyrValue('slutdato', moment(enddate).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
       queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
     },
@@ -222,46 +216,22 @@ const UnitEndDateDialog = ({
   );
 };
 
-type UnitHistory = {
-  calypso_id: number;
-  gid: number;
-  slutdato: string;
-  sensor_id: string;
-  sensorinfo: string;
-  ts_id: number;
-  uuid: string;
-  startdato: string;
-  terminal_id: string;
-  terminal_type: string;
-};
-
 const UdstyrReplace = () => {
-  const {ts_id} = useAppContext(['ts_id']);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-  const [tstype_id, setUnitValue, setUnit] = useStamdataStore((store) => [
-    store.timeseries.tstype_id,
-    store.setUnitValue,
-    store.setUnit,
-  ]);
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
 
   const {setValue} = useFormContext();
 
-  const {data, isPending} = useQuery<UnitHistory[]>({
-    queryKey: ['udstyr', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${ts_id}`);
-      return data;
-    },
-    refetchOnWindowFocus: false,
-    enabled: ts_id !== undefined,
-  });
-  const [selected, setselected] = useState<number | ''>(data?.[0]?.gid ?? '');
+  const {data, isPending} = useUnitHistory();
+
+  const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');
 
   const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
     const unit = localUnit ?? data[0];
-    setUnit(unit);
+    // setUnit(unit);
     setValue(
       'unit',
       {
@@ -272,11 +242,11 @@ const UdstyrReplace = () => {
       },
       {shouldValidate: true, shouldDirty: true}
     );
-    setselected(unit.gid);
+    setSelected(unit.gid);
   };
 
   const handleChange = (event: SelectChangeEvent<number | null>) => {
-    if (selected !== event.target.value && data) setselected(Number(event.target.value));
+    if (selected !== event.target.value && data) setSelected(Number(event.target.value));
   };
 
   useEffect(() => {
@@ -350,12 +320,7 @@ const UdstyrReplace = () => {
             )}
           </Grid>
         )}
-        <UnitEndDateDialog
-          openDialog={openDialog}
-          setOpenDialog={setOpenDialog}
-          unit={data?.[0]}
-          setUdstyrValue={setUnitValue}
-        />
+        <UnitEndDateDialog openDialog={openDialog} setOpenDialog={setOpenDialog} unit={data?.[0]} />
         <AddUnitForm
           udstyrDialogOpen={openAddUdstyr}
           setUdstyrDialogOpen={setOpenAddUdstyr}

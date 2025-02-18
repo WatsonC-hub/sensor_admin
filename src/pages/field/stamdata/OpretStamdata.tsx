@@ -57,11 +57,11 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const navigate = useNavigate();
-  const {state} = useLocation();
+  let {state} = useLocation();
 
-  let unit_uuid = '';
-  if ('unit_uuid' in state) unit_uuid = state.unit_uuid;
+  state = state ?? {};
 
+  console.log(state);
   const [tabValue, setTabValue] = useCreateTabState();
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
@@ -69,7 +69,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       location: {...state, initial_project_no: state.projectno},
       timeseries: {tstype_id: -1},
       watlevmp: {},
-      unit: {startdate: '', unit_uuid: unit_uuid},
+      unit: {startdate: '', unit_uuid: ''},
     },
     mode: 'onTouched',
   });
