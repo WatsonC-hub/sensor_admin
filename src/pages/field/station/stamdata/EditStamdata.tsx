@@ -78,7 +78,7 @@ const UnitEndDateDialog = ({
   setUdstyrValue,
 }: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const superUser = useAuthStore((store) => store.superUser);
 
   const formMethods = useForm<UnitEndFormValues>({
@@ -236,7 +236,7 @@ type UnitHistory = {
 };
 
 const UdstyrReplace = () => {
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const [tstype_id, setUnitValue, setUnit] = useStamdataStore((store) => [
@@ -441,7 +441,8 @@ export default function EditStamdata() {
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['stations', loc_id.toString()]});
+      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
+      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
     },
   });
 
@@ -473,12 +474,14 @@ export default function EditStamdata() {
     location: {...metadata, initial_project_no: (metadata as Metadata)?.projectno},
     timeseries: {...metadata},
     unit: {
-      ...metadata,
-      gid: -1,
-      startdate: udstyr?.[0].startdato,
-      enddate: udstyr?.[0].slutdato,
+      unit_uuid: udstyr && udstyr.length > 0 ? udstyr[0].uuid : '',
+      gid: udstyr && udstyr?.length > 0 ? udstyr[0].gid : -1,
+      startdate: udstyr && udstyr.length > 0 && udstyr?.[0].startdato,
+      enddate: udstyr && udstyr.length > 0 && udstyr?.[0].slutdato,
     },
   });
+
+  console.log(schemaData);
 
   const formMethods = useForm<EditValues>({
     resolver: zodResolver(schema),
@@ -504,7 +507,7 @@ export default function EditStamdata() {
   };
 
   useEffect(() => {
-    if (udstyr) {
+    if (udstyr && udstyr.length > 0) {
       setValue('unit', {
         unit_uuid: udstyr[0].uuid,
         gid: udstyr?.length > 0 ? udstyr[0].gid : -1,
@@ -512,7 +515,7 @@ export default function EditStamdata() {
         enddate: udstyr?.[0].slutdato,
       });
     }
-  }, udstyr);
+  }, [udstyr]);
 
   useEffect(() => {
     if (metadata) {

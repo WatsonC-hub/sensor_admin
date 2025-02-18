@@ -53,7 +53,7 @@ export const maalepunktDelOptions = {
 };
 
 export const useMaalepunkt = () => {
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
 
   const get = useQuery({
     queryKey: ['watlevmp', ts_id],

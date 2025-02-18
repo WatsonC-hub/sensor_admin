@@ -8,15 +8,12 @@ import RuleIcon from '@mui/icons-material/Rule';
 import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
+import {navIconStyle} from '~/consts';
 import {stationPages} from '~/helpers/EnumHelper';
 import {TimeseriesMetadata, useMetadata} from '~/hooks/query/useMetadata';
 import useStationList from '~/hooks/query/useStationList';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
-
-const navIconStyle = (isSelected: boolean) => {
-  return isSelected ? 'secondary.main' : 'white';
-};
 
 export default function ActionArea() {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);

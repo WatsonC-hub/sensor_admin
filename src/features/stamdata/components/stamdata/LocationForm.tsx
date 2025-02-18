@@ -16,6 +16,8 @@ interface Props {
 }
 
 export default function LocationForm({mode, disable = false}: Props) {
+  const {watch, control, setValue, getValues} = useFormContext();
+  console.log(getValues());
   const {
     data: DTMData,
     isSuccess,
@@ -24,16 +26,16 @@ export default function LocationForm({mode, disable = false}: Props) {
     queryKey: ['dtm'],
     queryFn: () => getDTMQuota(getValues('location.x'), getValues('location.y')),
     refetchOnWindowFocus: false,
-    enabled: !disable,
+    enabled:
+      !disable && getValues('location.x') !== undefined && getValues('location.y') !== undefined,
   });
 
   useEffect(() => {
+    console.log(DTMData);
     if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
       setValue('location.terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
     }
   }, [DTMData]);
-
-  const {watch, control, setValue, getValues} = useFormContext();
 
   const watchTerrainqual = watch('location.terrainqual', '');
 

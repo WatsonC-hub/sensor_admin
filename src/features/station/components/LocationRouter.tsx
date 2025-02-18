@@ -1,5 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import {Alert, Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
@@ -7,28 +5,28 @@ import {ErrorBoundary} from 'react-error-boundary';
 
 import Button from '~/components/Button';
 import NavBar from '~/components/NavBar';
-import NotificationList from '~/components/NotificationList';
-import BatteryStatus from '~/features/station/components/BatteryStatus';
-import {metadataQueryOptions, useMetadata} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions, useLocationData, useMetadata} from '~/hooks/query/useMetadata';
 import useStationList from '~/hooks/query/useStationList';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import ErrorPage from '~/pages/field/station/ErrorPage';
-import Station from '~/pages/field/station/Station';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore} from '~/state/store';
 
 import MinimalSelect from './MinimalSelect';
+import CustomBottomNavigation from '~/components/BottomNavigation';
+import {PhotoLibraryRounded, ConstructionRounded} from '@mui/icons-material';
+import {startCase} from 'lodash';
+import {stationPages} from '~/helpers/EnumHelper';
+import {navIconStyle} from '~/consts';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
-  const {createStamdata, adminKvalitetssikring} = useNavigationFunctions();
-  const adminAccess = useAuthStore((state) => state.adminAccess);
+  const {createStamdata} = useNavigationFunctions();
   const {data: ts_list} = useStationList(loc_id);
-  const {metadata, pending} = useMetadata();
-  const loc_name = metadata && 'loc_name' in metadata ? metadata.loc_name : '';
-  const calculated = metadata && 'calculated' in metadata ? metadata.calculated : undefined;
+  const [pageToShow, setPageToShow] = useStationPages();
+  const {location_data: metadata, pending} = useLocationData();
 
   if (pending) return <LoadingSkeleton />;
 
@@ -72,8 +70,26 @@ export default function LocationRouter() {
       </Box>
     );
   }
+  const navigationItems = [];
 
-  // if (ts_id == undefined && ts_list && ts_list.length > 0) return '';
+  const handleChange = (event: any, newValue: any) => {
+    setPageToShow(newValue);
+  };
+
+  navigationItems.push(
+    {
+      text: startCase(stationPages.BILLEDER),
+      value: stationPages.BILLEDER,
+      icon: <PhotoLibraryRounded />,
+      color: navIconStyle(pageToShow === stationPages.BILLEDER),
+    },
+    {
+      text: startCase(stationPages.STAMDATA),
+      value: stationPages.STAMDATA,
+      icon: <ConstructionRounded />,
+      color: navIconStyle(pageToShow === stationPages.STAMDATA),
+    }
+  );
 
   return (
     <>
@@ -82,43 +98,23 @@ export default function LocationRouter() {
         <NavBar.GoBack />
         <Box display="block" flexGrow={1} overflow="hidden">
           <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-            {loc_name}
+            {metadata?.loc_name}
           </Typography>
           <MinimalSelect />
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
-          <BatteryStatus />
           <NavBar.Home />
-          {adminAccess && <NotificationList />}
-          <NavBar.Menu
-            highligtFirst={false}
-            items={[
-              ...(adminAccess && !calculated
-                ? [
-                    {
-                      title: 'Til QA',
-                      onClick: () => {
-                        adminKvalitetssikring(ts_id ?? -1);
-                      },
-                      icon: <AutoGraphIcon />,
-                    },
-                  ]
-                : []),
-              {
-                title: 'Opret tidsserie',
-                icon: <AddIcon />,
-                onClick: () => {
-                  createStamdata(undefined, {state: {...metadata}});
-                },
-              },
-            ]}
-          />
+          <NavBar.Menu highligtFirst={false} />
         </Box>
       </NavBar>
 
       <main style={{flexGrow: 1}}>
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
-          {ts_id && <Station />}
+          <CustomBottomNavigation
+            pageToShow={pageToShow}
+            onChange={handleChange}
+            items={navigationItems}
+          />
         </ErrorBoundary>
       </main>
     </>

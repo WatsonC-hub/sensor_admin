@@ -1,25 +1,32 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
-import {Box, Divider} from '@mui/material';
+import {Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
-
+import AddIcon from '@mui/icons-material/Add';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
+import NavBar from '~/components/NavBar';
+import NotificationList from '~/components/NotificationList';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
+import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
-import {TimeseriesMetadata, useMetadata} from '~/hooks/query/useMetadata';
+import {TimeseriesMetadata, useMetadata, useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
+import {useAuthStore} from '~/state/store';
+import BatteryStatus from '~/features/station/components/BatteryStatus';
 
 export default function Station() {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
-  const {metadata} = useMetadata();
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {timeseries_data: metadata} = useTimeseriesData();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
@@ -155,8 +162,50 @@ interface LayoutProps {
 }
 
 const Layout = ({children}: LayoutProps) => {
+  const {ts_id} = useAppContext(['ts_id']);
+  const {timeseries_data: metadata} = useTimeseriesData();
+  const adminAccess = useAuthStore((state) => state.adminAccess);
+  const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
+  console.log(metadata);
   return (
     <Box display="flex" flexDirection={'column'} gap={1}>
+      <NavBar>
+        <NavBar.GoBack />
+        <Box display="block" flexGrow={1} overflow="hidden">
+          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+            {metadata?.loc_name}
+          </Typography>
+          <MinimalSelect />
+        </Box>
+        <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          <BatteryStatus />
+          <NavBar.Home />
+          {adminAccess && <NotificationList />}
+          <NavBar.Menu
+            highligtFirst={false}
+            items={[
+              ...(adminAccess && !metadata?.calculated
+                ? [
+                    {
+                      title: 'Til QA',
+                      onClick: () => {
+                        adminKvalitetssikring(ts_id ?? -1);
+                      },
+                      icon: <AutoGraphIcon />,
+                    },
+                  ]
+                : []),
+              {
+                title: 'Opret tidsserie',
+                icon: <AddIcon />,
+                onClick: () => {
+                  createStamdata(undefined, {state: {...metadata}});
+                },
+              },
+            ]}
+          />
+        </Box>
+      </NavBar>
       {children}
       <ActionArea />
     </Box>

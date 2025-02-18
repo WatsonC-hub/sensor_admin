@@ -14,6 +14,7 @@ export default function BoreholeRouter() {
         <Box display="block" flexGrow={1} overflow="hidden">
           <MinimalSelectBorehole />
         </Box>
+        <NavBar.Home />
         <NavBar.Menu highligtFirst={false} />
       </NavBar>
 

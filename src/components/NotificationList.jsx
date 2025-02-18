@@ -19,7 +19,7 @@ const NotificationList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
   let loc_id = undefined;
   const {markAsDone} = useTaskMutation();
 

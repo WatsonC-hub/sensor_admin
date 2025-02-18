@@ -25,7 +25,7 @@ export type Metadata = {
   calculated: boolean;
   boreholeno: string;
   intakeno: number;
-  group: JSON;
+  group: string[];
   unit: string;
 };
 
@@ -54,12 +54,13 @@ export type LocationMetadata = {
   y: number;
   terrainlevel: number;
   terrainqual: string;
-  group: JSON;
+  group: string[];
   projectno: string | undefined;
   timeseries: Array<{
     ts_id: number | undefined;
     tstype_id: number;
     ts_name: string;
+    calculated: boolean;
   }>;
 };
 
@@ -75,6 +76,46 @@ export const metadataQueryOptions = (ts_id?: number) => {
   });
 };
 
+export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
+  return queryOptions({
+    queryKey: ['location_data', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<Metadata>>(
+        `/sensor_field/station/metadata_location/${loc_id}`
+      );
+      return data;
+    },
+    select: (data) => {
+      const location_data: LocationMetadata = {
+        loc_id: data[0].loc_id,
+        loc_name: data[0].loc_name,
+        loctype_id: data[0].loctype_id,
+        group: data[0].group,
+        description: data[0].description,
+        mainloc: data[0].mainloc,
+        projectno: data[0].projectno,
+        subloc: data[0].subloc,
+        terrainlevel: data[0].terrainlevel,
+        terrainqual: data[0].terrainqual,
+        x: data[0].x,
+        y: data[0].y,
+        timeseries: data.map((data) => {
+          return {
+            ts_id: data.ts_id,
+            tstype_id: data.tstype_id,
+            ts_name: data.ts_name,
+            calculated: data.calculated,
+          };
+        }),
+      };
+      console.log(location_data);
+      return location_data;
+    },
+    enabled: loc_id !== undefined,
+    refetchOnWindowFocus: false,
+  });
+};
+
 export const useTimeseriesData = () => {
   const {metadata, error, pending} = useMetadata();
   const timeseries_data = metadata as TimeseriesMetadata;
@@ -82,22 +123,13 @@ export const useTimeseriesData = () => {
 };
 
 export const useLocationData = () => {
-  const {metadata, error, pending} = useMetadata();
-  const data = metadata as Metadata[];
-  let location_data: LocationMetadata | undefined = undefined;
+  const {loc_id} = useAppContext([], ['loc_id']);
 
-  if (!data) return {location_data, error, pending};
-
-  location_data = {
-    ...data[0],
-    timeseries: data.map((data) => {
-      return {
-        ts_id: data.ts_id,
-        tstype_id: data.tstype_id,
-        ts_name: data.ts_name,
-      };
-    }),
-  };
+  const {
+    data: location_data,
+    error: error,
+    isPending: pending,
+  } = useQuery(locationMetadtaQueryOptions(loc_id));
 
   return {location_data, error, pending};
 };
@@ -107,31 +139,11 @@ export const useMetadata = (ts_id?: number) => {
 
   const inner_ts_id = ts_id ?? app_ts_id;
 
-  let metadata = undefined;
-  let error = undefined;
-  let pending = undefined;
-
-  const {data, error: error2, isPending: pending2} = useQuery(metadataQueryOptions(inner_ts_id));
-
   const {
-    data: data2,
-    error: error3,
-    isPending: pending3,
-  } = useQuery({
-    queryKey: ['location_data', loc_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<Metadata>>(
-        `/sensor_field/station/metadata_location/${loc_id}`
-      );
-      return data;
-    },
-    enabled: loc_id !== undefined && inner_ts_id === undefined,
-    refetchOnWindowFocus: false,
-  });
-
-  metadata = data ?? data2;
-  error = error2 ?? error3;
-  pending = data ? pending2 : pending3;
+    data: metadata,
+    error: error,
+    isPending: pending,
+  } = useQuery(metadataQueryOptions(inner_ts_id));
 
   return {metadata, error, pending};
 };

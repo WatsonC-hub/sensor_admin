@@ -15,6 +15,7 @@ import {captureDialogAtom} from '~/state/atoms';
 import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
 import CreateStamdataProvider from '~/state/CreateStamdataProvider';
 import StationRouterProvider from '~/state/StationRouterProvider';
+import Station from './station/Station';
 
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);
@@ -79,7 +80,7 @@ function SensorField() {
           path="location/:locid/:ts_id"
           element={
             <StationRouterProvider>
-              <LocationRouter />
+              <Station />
             </StationRouterProvider>
           }
         />

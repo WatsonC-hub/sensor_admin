@@ -21,7 +21,7 @@ type LatestMeasurementTableProps = {
 const LatestMeasurementTable = ({latestMeasurement, errorMessage}: LatestMeasurementTableProps) => {
   const [timeseries] = useStamdataStore((state) => [state.timeseries]);
   const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
 
   const columns = useMemo<MRT_ColumnDef<LatestMeasurement>[]>(
     () => [

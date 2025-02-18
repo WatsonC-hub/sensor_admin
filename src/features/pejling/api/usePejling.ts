@@ -79,7 +79,7 @@ export const pejlingGetOptions = (ts_id: number | undefined) =>
 
 export const usePejling = () => {
   const queryClient = useQueryClient();
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id} = useAppContext(['ts_id']);
 
   const get = useQuery(pejlingGetOptions(ts_id));
 
