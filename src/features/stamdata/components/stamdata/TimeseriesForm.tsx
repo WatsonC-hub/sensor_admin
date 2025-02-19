@@ -50,7 +50,7 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
     },
   });
 
-  const {watch, unregister, getValues} = useFormContext();
+  const {watch, unregister} = useFormContext();
 
   const loc_name = watch('location.loc_name');
   const tstype_id = watch('timeseries.tstype_id');
@@ -61,7 +61,6 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
     }
   }, [tstype_id]);
 
-  console.log('tstype_id', getValues());
   return (
     // <FormProvider {...formMethods}>
     <Grid container spacing={2}>
