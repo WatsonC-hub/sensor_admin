@@ -15,6 +15,7 @@ interface Props {
 }
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
+  console.log(typeId);
   const imageType: string = type === 'borehole' ? 'image' : 'images';
   const {data: images} = useQuery({
     queryKey: ['images', typeId], //() => getImage(props.locationId));

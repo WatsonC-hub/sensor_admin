@@ -1,7 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import React from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import Autocomplete from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/Autocomplete';
@@ -10,24 +9,23 @@ import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchem
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const Huskeliste = () => {
-  const params = useParams();
-  const loc_id = params.locid;
+  const {isMobile} = useBreakpoints();
   const {
     relation: {data: related},
-  } = useRessourcer(parseInt(loc_id!));
+  } = useRessourcer();
 
   const schema = ressourcer;
+  const result = schema.safeParse(related);
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      ressourcer: related,
+      ressourcer: result.success ? result.data : [],
     },
     mode: 'onSubmit',
   });
 
   const {control} = formMethods;
 
-  const {isMobile} = useBreakpoints();
   return (
     <FormProvider {...formMethods}>
       <Controller
@@ -37,10 +35,10 @@ const Huskeliste = () => {
         render={
           !isMobile
             ? ({field: {onChange, value}}) => (
-                <TransferList value={value ?? []} setValue={onChange} loc_id={loc_id ?? ''} />
+                <TransferList value={value ?? []} setValue={onChange} />
               )
             : ({field: {onChange, value}}) => (
-                <Autocomplete value={value ?? []} setValue={onChange} loc_id={loc_id ?? ''} />
+                <Autocomplete value={value ?? []} setValue={onChange} />
               )
         }
       />

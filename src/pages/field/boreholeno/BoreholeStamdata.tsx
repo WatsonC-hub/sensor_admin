@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {EditRounded, PhotoCameraRounded, Save} from '@mui/icons-material';
 import {Box, Card, CardContent, Grid, InputAdornment, Typography} from '@mui/material';
-import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useEffect, useState} from 'react';
 import {Controller, FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -13,6 +13,7 @@ import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
+import {useAppContext} from '~/state/contexts';
 
 const schema = z.object({
   calypso_id: z.number().int().min(1).optional().nullish(),
@@ -22,30 +23,31 @@ const schema = z.object({
     .min(0, {message: 'Antal kontroller skal være 0 eller større'})
     .nullish(),
   description: z.string().nullish().optional(),
-  groups: z
-    .array(
-      z.object({
-        id: z.string(),
-        group_name: z.string(),
-      })
-    )
-    .nullish(),
+  groups: z.array(z.object({id: z.string(), group_name: z.string()})).nullish(),
 });
 
 type Stamdata = z.infer<typeof schema>;
 
-interface BoreholeStamdataProps {
-  boreholeno: string;
-  intakeno: number;
-  stamdata: Stamdata;
-}
-
-const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProps) => {
+const BoreholeStamdata = () => {
+  const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
   const [openCamera, setOpenCamera] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [calypso_id, setCalypso_id] = useState(stamdata?.calypso_id);
 
   const queryClient = useQueryClient();
+
+  const {data: stamdata} = useQuery({
+    queryKey: ['borehole_stamdata', boreholeno, intakeno],
+    queryFn: async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
+    refetchOnWindowFocus: false,
+    enabled: boreholeno !== '-1' && intakeno !== -1,
+  });
+
+  const [calypso_id, setCalypso_id] = useState(stamdata?.calypso_id);
 
   const changeStamdata = useMutation({
     mutationFn: async (data: Stamdata) => {
@@ -56,16 +58,11 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['borehole_stamdata'],
-      });
+      queryClient.invalidateQueries({queryKey: ['borehole_stamdata']});
     },
   });
 
-  const formMethods = useForm<Stamdata>({
-    resolver: zodResolver(schema),
-    defaultValues: stamdata,
-  });
+  const formMethods = useForm<Stamdata>({resolver: zodResolver(schema), defaultValues: stamdata});
 
   useEffect(() => {
     formMethods.reset(stamdata);
@@ -81,24 +78,18 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
   };
 
   const handleErrors = () => {
-    toast.error('Der skete en fejl', {
-      autoClose: 2000,
-    });
+    toast.error('Der skete en fejl', {autoClose: 2000});
   };
 
   const handleScan = async (data: any) => {
-    if (
-      data?.text.includes('www.sensor.watsonc.dk/') ||
-      data?.text.includes('https://sensor.watsonc.dk/')
-    ) {
-      const split = data['text'].split('/');
+    const value = data[0]['rawValue'];
+    if (value.includes('www.sensor.watsonc.dk/') || value.includes('https://sensor.watsonc.dk/')) {
+      const split = value.split('/');
       setCalypso_id(Number(split[split.length - 1]));
       setOpenCamera(false);
       setOpenDialog(true);
     } else {
-      toast.error('QR-koden er ikke gyldig', {
-        autoClose: 2000,
-      });
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
     }
   };
 
@@ -124,19 +115,9 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
           calypso_id={calypso_id}
         />
       )}
-      <Card
-        sx={{
-          textAlign: 'center',
-          justifyContent: 'center',
-          alignContent: 'center',
-        }}
-      >
+      <Card sx={{textAlign: 'center', justifyContent: 'center', alignContent: 'center'}}>
         <CardContent>
-          <Box
-            sx={{
-              display: 'flex',
-            }}
-          >
+          <Box sx={{display: 'flex'}}>
             <EditRounded />
             <Typography gutterBottom variant="h5" component="h2">
               Stamdata
@@ -179,11 +160,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
                     disabled
                   />
                   <Button
-                    sx={{
-                      width: '80%',
-                      textTransform: 'initial',
-                      borderRadius: 15,
-                    }}
+                    sx={{width: '80%', textTransform: 'initial', borderRadius: 15}}
                     bttype="primary"
                     color="primary"
                     startIcon={<PhotoCameraRounded />}
@@ -195,10 +172,7 @@ const BoreholeStamdata = ({boreholeno, intakeno, stamdata}: BoreholeStamdataProp
                 <Typography
                   variant="caption"
                   gutterBottom
-                  sx={{
-                    float: 'left',
-                    textTransform: 'initial',
-                  }}
+                  sx={{float: 'left', textTransform: 'initial'}}
                 >
                   Calypso ID er et unikt nummer, der identificerer boringen samt indtag
                 </Typography>

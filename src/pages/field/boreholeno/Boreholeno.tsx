@@ -2,7 +2,6 @@ import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import {parseAsBoolean, useQueryState} from 'nuqs';
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
@@ -14,7 +13,7 @@ import SaveImageDialog from '~/components/SaveImageDialog';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
-import {useStationPages} from '~/hooks/useStationPages';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import ActionAreaBorehole from '~/pages/field/boreholeno/ActionAreaBorehole';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import BoreholeStamdata from '~/pages/field/boreholeno/BoreholeStamdata';
@@ -22,6 +21,7 @@ import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
 import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingFormBorehole';
 import MaalepunktTable from '~/pages/field/boreholeno/MaalepunktTable';
 import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
+import {useAppContext} from '~/state/contexts';
 import {
   Kontrol,
   Maalepunkt,
@@ -30,16 +30,12 @@ import {
   BoreholeMeasurement,
 } from '~/types';
 
-interface boreholenoProps {
-  boreholeno: string;
-  intakeno: number;
-}
-
-const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
+const Boreholeno = () => {
+  const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
   const queryClient = useQueryClient();
   const [canEdit, setCanEdit] = useState(false);
   const {isMobile, isTouch} = useBreakpoints();
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const {data: permissions} = useQuery({
     queryKey: ['borehole_permissions'],
@@ -47,7 +43,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       const {data} = await apiClient.get(`/auth/me/permissions`);
       return data;
     },
-    enabled: intakeno !== -1,
+    enabled: intakeno !== undefined,
   });
 
   useEffect(() => {
@@ -96,20 +92,8 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       );
       return data;
     },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
+    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
     placeholderData: [],
-  });
-
-  const {data: stamdata} = useQuery({
-    queryKey: ['borehole_stamdata', boreholeno, intakeno],
-    queryFn: async () => {
-      const {data} = await apiClient.get(
-        `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`
-      );
-      return data;
-    },
-    refetchOnWindowFocus: false,
-    enabled: boreholeno !== '-1' && intakeno !== -1,
   });
 
   const {data: watlevmp} = useQuery({
@@ -120,7 +104,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       );
       return data;
     },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
+    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
     placeholderData: [],
   });
 
@@ -184,7 +168,6 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
   });
 
   const handlePejlingSubmit = () => {
-    console.log(pejlingData);
     const payload = {...pejlingData};
     if (payload.service) payload.pumpstop = null;
     addOrEditPejling.mutate(payload, {
@@ -313,6 +296,8 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
       fileInputRef.current.value = '';
   };
 
+  if (!intakeno) return '';
+
   return (
     <Box display="flex" height={'max-content'} flexDirection={'column'}>
       {pageToShow !== 'billeder' && pageToShow !== 'stamdata' && (
@@ -323,8 +308,6 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
           sx={{marginBottom: 0.5, marginTop: 0.2}}
         >
           <PlotGraph
-            boreholeno={boreholeno}
-            intakeno={intakeno}
             ourData={control ?? []}
             dynamicMeasurement={pageToShow === 'pejling' && showForm ? dynamic : undefined}
           />
@@ -369,8 +352,6 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             gap={1}
           >
             <LastJupiterMP
-              boreholeno={boreholeno}
-              intakeno={intakeno}
               lastOurMP={watlevmp?.[0]}
               watlevmpMutate={addOrEditWatlevmp}
               setAddMPOpen={setShowForm}
@@ -427,9 +408,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             />
           </Box>
         )}
-        {pageToShow === 'stamdata' && canEdit && (
-          <BoreholeStamdata boreholeno={boreholeno} intakeno={intakeno} stamdata={stamdata} />
-        )}
+        {pageToShow === 'stamdata' && <BoreholeStamdata />}
       </Box>
 
       {pageToShow === 'billeder' && (
@@ -445,7 +424,7 @@ const Boreholeno = ({boreholeno, intakeno}: boreholenoProps) => {
             icon={<AddAPhotoRounded />}
             text="Tilføj billede"
             onClick={() => {
-              fileInputRef.current && fileInputRef.current.click();
+              if (fileInputRef.current) fileInputRef.current.click();
             }}
           />
           <div>

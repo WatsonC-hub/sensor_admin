@@ -17,6 +17,7 @@ import type {
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
 import {CategoryType} from '~/helpers/EnumHelper';
+import {useAppContext} from '~/state/contexts';
 
 function not(a: Ressourcer[], b: Ressourcer[]) {
   return a.filter((value) => b.map((option) => option.navn).indexOf(value.navn) === -1);
@@ -47,10 +48,9 @@ function categoryNot(a: Array<Ressourcer>, b: Array<Ressourcer>) {
 interface TransferListProps extends MultiSelectProps {
   value: Array<Ressourcer>;
   setValue: (ressourcer: Array<Ressourcer>) => void;
-  loc_id: string;
 }
 
-export default function TranserList({value, setValue, loc_id}: TransferListProps) {
+export default function TranserList({value, setValue}: TransferListProps) {
   const [checked, setChecked] = useState<Ressourcer[]>([]);
   const [selected, setSelected] = useState<Ressourcer[]>(value);
   const [selectedCategory, setSelectedCategory] = useState<Array<string>>([]);
@@ -61,11 +61,12 @@ export default function TranserList({value, setValue, loc_id}: TransferListProps
     )
   );
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
+  const {loc_id} = useAppContext(['loc_id']);
   const {
     get: {data: options},
     post: postRessourcer,
     relation: {data: related},
-  } = useRessourcer(parseInt(loc_id!));
+  } = useRessourcer();
 
   useEffect(() => {
     if (value && value.length > 0) {

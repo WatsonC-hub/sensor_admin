@@ -1,9 +1,9 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {GetQueryOptions} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import {APIError} from '~/queryClient';
+import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface PejlingBase {
@@ -58,28 +58,29 @@ export const pejlingDelOptions = {
   },
 };
 
-export const pejlingGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> => ({
-  queryKey: ['measurements', ts_id],
-  queryFn: async () => {
-    const {data} = await apiClient.get<TData>(`/sensor_field/station/measurements/${ts_id}`);
+export const pejlingGetOptions = (ts_id: number | undefined) =>
+  queryOptions<Array<PejlingItem>, APIError>({
+    queryKey: ['measurements', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<PejlingItem>>(
+        `/sensor_field/station/measurements/${ts_id}`
+      );
 
-    return data;
-  },
-  enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
-});
+      return data;
+    },
+    enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
+  });
 
 export const usePejling = () => {
   const queryClient = useQueryClient();
+  const {ts_id} = useAppContext(['ts_id']);
 
-  const ts_id = stamdataStore((store) => store.timeseries.ts_id);
-  const get = useQuery(pejlingGetOptions<Array<PejlingItem>>(ts_id));
+  const get = useQuery(pejlingGetOptions(ts_id));
 
   const post = useMutation({
     ...pejlingPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['measurements', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
       toast.success('Pejling gemt');
     },
   });
@@ -87,9 +88,7 @@ export const usePejling = () => {
   const put = useMutation({
     ...pejlingPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['measurements', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
       toast.success('Pejling ændret');
     },
   });
@@ -98,9 +97,7 @@ export const usePejling = () => {
     ...pejlingDelOptions,
     onSuccess: () => {
       toast.success('Pejling slettet');
-      queryClient.invalidateQueries({
-        queryKey: ['measurements', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
     },
   });
 

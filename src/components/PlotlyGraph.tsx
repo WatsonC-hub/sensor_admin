@@ -1,8 +1,16 @@
 import {Box} from '@mui/material';
 import moment from 'moment';
-import {Layout, PlotData, PlotMouseEvent, PlotRelayoutEvent, PlotSelectionEvent} from 'plotly.js';
-import React, {useContext, useEffect} from 'react';
-import Plot from 'react-plotly.js';
+import type {
+  Layout,
+  PlotData,
+  PlotMouseEvent,
+  PlotRelayoutEvent,
+  PlotSelectionEvent,
+} from 'plotly.js';
+// @ts-expect-error not part of type
+import Plotly from 'plotly.js/dist/plotly-gl2d';
+import React, {useEffect} from 'react';
+import createPlotlyComponent from 'react-plotly.js/factory';
 
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
 import {MergeType} from '~/helpers/EnumHelper';
@@ -14,10 +22,10 @@ import {
   rerunIcon,
 } from '~/helpers/plotlyIcons';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
-import {MetadataContext} from '~/state/contexts';
 
 import Button from './Button';
 
@@ -47,6 +55,8 @@ interface PlotlyGraphProps {
   showRaw?: () => void;
 }
 
+const Plot = createPlotlyComponent(Plotly);
+
 export default function PlotlyGraph({
   plotEventProps,
   plotModebarButtons,
@@ -59,11 +69,9 @@ export default function PlotlyGraph({
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
-  const metadata = useContext(MetadataContext);
-  // const loc_name = metadata?.loc_name;
+  const {data: metadata} = useTimeseriesData();
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
-  // const ts_name = metadata?.ts_name;
 
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
@@ -75,12 +83,7 @@ export default function PlotlyGraph({
 
   useEffect(() => {
     if (xRange != undefined) {
-      const layout = {
-        xaxis: {
-          autorange: false,
-          range: xRange,
-        },
-      };
+      const layout = {xaxis: {autorange: false, range: xRange}};
 
       setLayout(layout);
     }
@@ -96,11 +99,6 @@ export default function PlotlyGraph({
 
   const handleRelayout = (e: any) => {
     const doubleclick = e['xaxis.autorange'] === true && e['yaxis.autorange'] === true;
-
-    // if (e['selections']) {
-    //   console.log('e', e);
-    //   plotEventProps?.onSelected && plotEventProps.onSelected(e);
-    // }
 
     if (doubleclick) {
       graphLayout('all');
@@ -161,16 +159,9 @@ export default function PlotlyGraph({
         setXRange(range);
       }
       const layout: Partial<Layout> = {
-        xaxis: {
-          autorange: false,
-          range: range,
-        },
-        yaxis: {
-          autorange: true,
-        },
-        yaxis2: {
-          autorange: true,
-        },
+        xaxis: {autorange: false, range: range},
+        yaxis: {autorange: true},
+        yaxis2: {autorange: true},
       };
       setLayout(layout);
     }
@@ -240,9 +231,7 @@ export default function PlotlyGraph({
     icon: rawDataIcon,
     click: function () {
       if (showRaw) showRaw();
-      setLayout({
-        yaxis2: {visible: true},
-      });
+      setLayout({yaxis2: {visible: true}});
     },
   };
 
@@ -300,18 +289,13 @@ export default function PlotlyGraph({
       <Plot
         onSelected={(e) => {
           console.log('onselected', e);
-          plotEventProps?.onSelected && plotEventProps.onSelected(e);
+          if (plotEventProps?.onSelected) plotEventProps.onSelected(e);
         }}
         divId="qagraphDiv"
         onRelayout={handleRelayout}
         data={data}
-        layout={{
-          ...mergedLayout,
-          shapes: shapes,
-          annotations: annotations,
-        }}
+        layout={{...mergedLayout, shapes: shapes, annotations: annotations}}
         config={{
-          // showTips: false,
           doubleClick: false,
           responsive: true,
           modeBarButtons: [
@@ -326,7 +310,7 @@ export default function PlotlyGraph({
         }}
         onClick={plotEventProps && plotEventProps.onClick}
         useResizeHandler={true}
-        style={{width: '100%', height: '100%'}}
+        style={{width: '99.863%', height: '90%'}}
       />
     </>
   );

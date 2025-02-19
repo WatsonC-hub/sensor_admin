@@ -12,19 +12,20 @@ import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import {useAppContext} from '~/state/contexts';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
   value: Array<Ressourcer>;
   setValue: (value: Array<Ressourcer>) => void;
-  loc_id: string;
 }
 
-export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTagsProps) {
+export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
+  const {loc_id} = useAppContext(['loc_id']);
   const {
     get: {data: options},
     post: postRessourcer,
     relation: {data: related},
-  } = useRessourcer(parseInt(loc_id));
+  } = useRessourcer();
 
   const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
   const {trigger, watch} = useFormContext();
@@ -107,7 +108,7 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
             renderGroup={({key, group, children}) => {
               return (
                 <>
-                  <ListItemText id={key} onClick={() => handleClick(group)}>
+                  <ListItemText id={key.toString()} onClick={() => handleClick(group)}>
                     <Typography ml={2} fontWeight={'bold'} display={'flex'} flexDirection={'row'}>
                       {group}
                       <Typography>

@@ -72,7 +72,7 @@ const queryClient = new QueryClient({
               errorString += `${item.loc.join('.')} - ${item.msg}\n`;
             });
             toast.error(errorString, {
-              bodyStyle: {whiteSpace: 'pre-line'},
+              style: {whiteSpace: 'pre-line'},
             });
 
             return;
@@ -99,7 +99,7 @@ const queryClient = new QueryClient({
 });
 
 queryClient.setMutationDefaults(['pejling'], {
-  mutationFn: async (data) => {
+  mutationFn: async (data: {gid: number; stationid: number}) => {
     await queryClient.cancelQueries({queryKey: ['measurements']});
     if (data.gid === -1) {
       return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);

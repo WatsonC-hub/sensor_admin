@@ -15,6 +15,8 @@ const UserAdmin = () => {
     },
   });
 
+  console.log(data);
+
   return (
     <>
       <NavBar />

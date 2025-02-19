@@ -2,10 +2,7 @@ import axios from 'axios';
 
 import {authStore} from '~/state/store';
 
-const apiClient = axios.create({
-  baseURL: '/api',
-  withCredentials: true,
-});
+const apiClient = axios.create({baseURL: '/api', withCredentials: true});
 
 apiClient.interceptors.request.use(
   function (config) {

@@ -7,6 +7,7 @@ import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
 import {BoreholeMeasurement} from '~/types';
 
 type JupiterData = {
@@ -18,18 +19,13 @@ type JupiterData = {
 };
 
 interface PlotGraphProps {
-  boreholeno: string;
-  intakeno: number;
   ourData: Array<BoreholeMeasurement>;
   dynamicMeasurement: Array<string | number> | undefined;
 }
 
-export default function PlotGraph({
-  ourData,
-  dynamicMeasurement,
-  boreholeno,
-  intakeno,
-}: PlotGraphProps) {
+export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps) {
+  const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
+
   const {isMobile} = useBreakpoints();
   const xOurData = ourData?.map((d) => d.timeofmeas);
   const yOurData = ourData?.map((d) => (d.waterlevel ? d.waterlevel : null));
@@ -45,7 +41,7 @@ export default function PlotGraph({
       );
       return data;
     },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== -1,
+    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
   });
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import {
   MRT_RowData,
   MRT_TableOptions,
 } from 'material-react-table';
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {setTableBoxStyle} from '~/consts';
@@ -14,13 +14,13 @@ import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTable} from '~/hooks/useTable';
 import ExcludeRow from '~/pages/admin/kvalitetssikring/components/ExcludeRow';
 import LevelCorrectionRow from '~/pages/admin/kvalitetssikring/components/LevelCorrectionRow';
 import YRangeRow from '~/pages/admin/kvalitetssikring/components/YRangeRow';
-import {MetadataContext} from '~/state/contexts';
 import {DataExclude, LevelCorrection, MinMaxCutoff} from '~/types';
 
 import {CertifyQa} from '../api/useCertifyQa';
@@ -45,7 +45,8 @@ const AdjustmentDataTable = ({data}: Props) => {
   const [type, setType] = useState<string>('');
   const [index, setIndex] = useState<number | undefined>();
   const {isMobile} = useBreakpoints();
-  const metadata = useContext(MetadataContext);
+  const {data: metadata} = useTimeseriesData();
+
   // const loc_name = metadata?.loc_name;
   const tstype_id = metadata?.tstype_id;
   const unit = tstype_id === 1 ? ' m' : metadata?.unit;

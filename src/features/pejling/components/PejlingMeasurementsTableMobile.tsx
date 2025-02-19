@@ -13,23 +13,23 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDate, convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
-import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete, canEdit}: Props) {
+export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  // const [height, setHeight] = useState<number>();
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
+  const stationUnit = timeseries?.unit;
 
-  const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
+  const unit = tstype_id === 1 ? ' m' : ' ' + stationUnit;
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -51,11 +51,7 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
         enableHide: false,
         Cell: ({row, table, staticRowIndex}) => (
           <Box
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
+            style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}
             sx={{width: '100%'}}
             gap={1}
             height={26}
@@ -85,7 +81,7 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={canEdit}
+                canEdit={true}
               />
             </Box>
           </Box>

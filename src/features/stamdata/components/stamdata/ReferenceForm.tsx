@@ -1,6 +1,5 @@
 import {Box} from '@mui/material';
 import moment from 'moment';
-import {parseAsBoolean, useQueryState} from 'nuqs';
 
 import MaalepunktForm from '~/components/MaalepunktForm';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
@@ -8,15 +7,13 @@ import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableM
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
+import {useShowFormState} from '~/hooks/useQueryStateParameters';
+import {useAppContext} from '~/state/contexts';
 
-interface Props {
-  canEdit: boolean;
-  ts_id: number;
-}
-
-export default function ReferenceForm({canEdit, ts_id}: Props) {
+export default function ReferenceForm() {
+  const {ts_id} = useAppContext(['ts_id']);
   const {isMobile} = useBreakpoints();
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [showForm, setShowForm] = useShowFormState();
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
     startdate: () => moment().format('YYYY-MM-DDTHH:mm'),
@@ -84,7 +81,7 @@ export default function ReferenceForm({canEdit, ts_id}: Props) {
 
   return (
     <>
-      {showForm && canEdit && (
+      {showForm && (
         <Box
           sx={{
             display: 'flex',
@@ -105,14 +102,12 @@ export default function ReferenceForm({canEdit, ts_id}: Props) {
             data={watlevmp}
             handleEdit={handleEdit}
             handleDelete={handleDeleteMaalepunkt}
-            canEdit={canEdit}
           />
         ) : (
           <MaalepunktTableDesktop
             data={watlevmp}
             handleEdit={handleEdit}
             handleDelete={handleDeleteMaalepunkt}
-            canEdit={canEdit}
           />
         )}
       </Box>

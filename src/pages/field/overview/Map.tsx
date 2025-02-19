@@ -24,7 +24,7 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {stamdataStore, authStore, parkingStore} from '~/state/store';
+import {useAuthStore, useParkingStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -103,17 +103,13 @@ interface MapProps {
 
 const Map = ({clickCallback}: MapProps) => {
   const {createStamdata} = useNavigationFunctions();
-  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
+  const [setSelectLocId] = useParkingStore((state) => [state.setSelectedLocId]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  const [setLocation, setLocationValue] = stamdataStore((store) => [
-    store.setLocation,
-    store.setLocationValue,
-  ]);
   // const user_id = authStore().user_id;
   // const {hiddenTasks, shownTasks} = useTaskStore();
   // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
 
-  const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
+  const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
     state.superUser,
     state.iotAccess,
     state.boreholeAccess,
@@ -128,9 +124,7 @@ const Map = ({clickCallback}: MapProps) => {
     enabled: boreholeAccess,
   });
 
-  const {data: mapData} = useNotificationOverviewMap({
-    enabled: iotAccess,
-  });
+  const {data: mapData} = useNotificationOverviewMap({enabled: iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -147,10 +141,12 @@ const Map = ({clickCallback}: MapProps) => {
           const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
           if (typeof coords == 'object') {
-            setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
-            setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
-
-            createStamdata();
+            createStamdata(undefined, {
+              state: {
+                x: parseFloat(coords.Easting.toFixed(2)),
+                y: parseFloat(coords.Northing.toFixed(2)),
+              },
+            });
           }
         },
         icon: '/leaflet-images/marker.png',
@@ -256,11 +252,7 @@ const Map = ({clickCallback}: MapProps) => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          setLocation({
-            loc_id: element.loc_id,
-            loc_name: element.loc_name,
-          });
-          createStamdata('1');
+          createStamdata('1', {state: element});
         },
         icon: '/leaflet-images/marker.png',
       },
@@ -273,8 +265,8 @@ const Map = ({clickCallback}: MapProps) => {
           text: 'Tegn rute',
           callback: () => {
             if (map) {
-              setSelectParking(element.loc_id);
-              setMutateRoutes(true);
+              setSelectLocId(element.loc_id);
+              mutateRoutesLayer.current = true;
 
               map.pm.enableDraw('Line');
             }
@@ -286,8 +278,8 @@ const Map = ({clickCallback}: MapProps) => {
           callback: () => {
             if (map) map.getContainer().style.cursor = 'pointer';
 
-            setSelectParking(element.loc_id);
-            setMutateParking(true);
+            setSelectLocId(element.loc_id);
+            mutateParkingLayer.current = true;
             toast('Vælg parkering for at tilknytte den lokationen', {
               toastId: 'tilknytParking',
               type: 'info',
@@ -302,10 +294,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     locationMenu = [
       ...locationMenu,
-      {
-        text: 'divider',
-        separator: true,
-      },
+      {text: 'divider', separator: true},
       ...defaultContextmenuItems,
     ];
 
@@ -354,9 +343,7 @@ const Map = ({clickCallback}: MapProps) => {
 
           if (marker) {
             marker.openPopup();
-            map?.flyTo(marker.getLatLng(), 14, {
-              animate: false,
-            });
+            map?.flyTo(marker.getLatLng(), 14, {animate: false});
             marker.fire('click');
             setSelectedMarker(marker.options.data);
           } else {
@@ -368,9 +355,7 @@ const Map = ({clickCallback}: MapProps) => {
               if (hiddenMarker) {
                 // hightlightedMarker = marker;
                 hiddenMarker.openPopup();
-                map?.flyTo(hiddenMarker.getLatLng(), 14, {
-                  animate: false,
-                });
+                map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
                 hiddenMarker.fire('click');
               }
             }
@@ -386,9 +371,7 @@ const Map = ({clickCallback}: MapProps) => {
               const marker = createBoreholeMarker(element);
 
               marker.on('add', function () {
-                map?.flyTo(point, 16, {
-                  animate: false,
-                });
+                map?.flyTo(point, 16, {animate: false});
                 marker.fire('click');
                 setSelectedMarker(element);
               });
@@ -425,10 +408,7 @@ const Map = ({clickCallback}: MapProps) => {
         const marker = createLocationMarker(element);
 
         if (marker) {
-          marker.bindTooltip(element.loc_name, {
-            direction: 'top',
-            offset: [0, -10],
-          });
+          marker.bindTooltip(element.loc_name, {direction: 'top', offset: [0, -10]});
 
           if (markerLayer) {
             marker.addTo(markerLayer);
@@ -437,10 +417,7 @@ const Map = ({clickCallback}: MapProps) => {
       } else {
         const marker = createBoreholeMarker(element);
 
-        marker.bindTooltip(element.boreholeno, {
-          direction: 'top',
-          offset: [0, -10],
-        });
+        marker.bindTooltip(element.boreholeno, {direction: 'top', offset: [0, -10]});
 
         if (markerLayer) {
           marker.addTo(markerLayer);
@@ -478,13 +455,7 @@ const Map = ({clickCallback}: MapProps) => {
         <Grid item mobile={11.8}>
           <Box
             id="test"
-            sx={{
-              width: '100%',
-              height: '100%',
-              minHeight: '300px',
-              flexGrow: 1,
-              ml: 0.5,
-            }}
+            sx={{width: '100%', height: '100%', minHeight: '300px', flexGrow: 1, ml: 0.5}}
           />
           <DrawerComponent
             key={getDrawerHeader()}

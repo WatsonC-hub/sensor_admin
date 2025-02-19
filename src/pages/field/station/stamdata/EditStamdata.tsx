@@ -24,12 +24,9 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
-import {useTheme} from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import moment from 'moment';
-import {parseAsBoolean, parseAsStringLiteral, useQueryState} from 'nuqs';
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm, useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -40,6 +37,7 @@ import FabWrapper from '~/components/FabWrapper';
 import FormInput from '~/components/FormInput';
 import StamdataFooter from '~/components/StamdataFooter';
 import {tabsHeight} from '~/consts';
+import {UnitHistory, useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
@@ -48,11 +46,12 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {stationPages} from '~/helpers/EnumHelper';
 import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
-import {useStationPages} from '~/hooks/useStationPages';
-import LoadingSkeleton from '~/LoadingSkeleton';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import TabPanel from '~/pages/field/overview/TabPanel';
-import {authStore, stamdataStore} from '~/state/store';
-
+import {useAppContext} from '~/state/contexts';
+import {useAuthStore} from '~/state/store';
 const unitEndSchema = z.object({
   enddate: z.string(),
   change_reason: z.number().optional(),
@@ -66,43 +65,25 @@ interface UnitEndDateDialogProps {
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
   unit: any;
-  setUdstyrValue: (key: string, value: string) => void;
-  stationId: number;
 }
 
-type ChangeReason = {
-  id: number;
-  reason: string;
-  default_actions: string | null;
-};
+type ChangeReason = {id: number; reason: string; default_actions: string | null};
 
-type Action = {
-  action: string;
-  label: string;
-};
+type Action = {action: string; label: string};
 
-const UnitEndDateDialog = ({
-  openDialog,
-  setOpenDialog,
-  unit,
-  setUdstyrValue,
-  stationId,
-}: UnitEndDateDialogProps) => {
+const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
-  const superUser = authStore((store) => store.superUser);
+  const {ts_id} = useAppContext(['ts_id']);
+  const superUser = useAuthStore((store) => store.superUser);
 
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
-    defaultValues: {
-      enddate: moment().toISOString(),
-    },
+    defaultValues: {enddate: moment().toISOString()},
   });
 
   const handleClose = () => {
     setOpenDialog(false);
-    formMethods.reset({
-      enddate: moment().toISOString(),
-    });
+    formMethods.reset({enddate: moment().toISOString()});
   };
 
   const {data: changeReasons} = useQuery<ChangeReason[]>({
@@ -126,18 +107,15 @@ const UnitEndDateDialog = ({
   const takeHomeMutation = useMutation({
     mutationFn: async (payload: UnitEndFormValues) => {
       const {data} = await apiClient.post(
-        `/sensor_field/stamdata/unit_history/end/${stationId}/${unit.gid}`,
+        `/sensor_field/stamdata/unit_history/end/${ts_id}/${unit.gid}`,
         payload
       );
       return data;
     },
-    onSuccess: (_, {enddate}) => {
+    onSuccess: () => {
       handleClose();
-      setUdstyrValue('slutdato', moment(enddate).format('YYYY-MM-DD HH:mm'));
       toast.success('Udstyret er hjemtaget');
-      queryClient.invalidateQueries({
-        queryKey: ['udstyr', stationId],
-      });
+      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
     },
   });
 
@@ -149,14 +127,7 @@ const UnitEndDateDialog = ({
   return (
     <Dialog open={openDialog}>
       <DialogTitle>Angiv information</DialogTitle>
-      <DialogContent
-        sx={{
-          width: 300,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 1,
-        }}
-      >
+      <DialogContent sx={{width: 300, display: 'flex', flexDirection: 'column', gap: 1}}>
         <FormProvider {...formMethods}>
           <FormInput
             name="enddate"
@@ -169,9 +140,7 @@ const UnitEndDateDialog = ({
                 return 'Vælg dato efter startdato';
               }
             }}
-            inputProps={{
-              min: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
-            }}
+            inputProps={{min: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm')}}
           />
 
           {superUser && (
@@ -247,44 +216,22 @@ const UnitEndDateDialog = ({
   );
 };
 
-type UnitHistory = {
-  calypso_id: number;
-  gid: number;
-  slutdato: string;
-  sensor_id: string;
-  sensorinfo: string;
-  ts_id: number;
-  uuid: string;
-  startdato: string;
-  terminal_id: string;
-  terminal_type: string;
-};
-
-const UdstyrReplace = ({stationId}: {stationId: number}) => {
+const UdstyrReplace = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-  const [tstype_id, setUnitValue, setUnit] = stamdataStore((store) => [
-    store.timeseries.tstype_id,
-    store.setUnitValue,
-    store.setUnit,
-  ]);
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
 
   const {setValue} = useFormContext();
 
-  const {data, isPending} = useQuery<UnitHistory[]>({
-    queryKey: ['udstyr', stationId],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${stationId}`);
-      return data;
-    },
-    refetchOnWindowFocus: false,
-  });
-  const [selected, setselected] = useState<number | ''>(data?.[0]?.gid ?? '');
+  const {data, isPending} = useUnitHistory();
+
+  const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');
 
   const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];
     const unit = localUnit ?? data[0];
-    setUnit(unit);
+    // setUnit(unit);
     setValue(
       'unit',
       {
@@ -295,11 +242,11 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
       },
       {shouldValidate: true, shouldDirty: true}
     );
-    setselected(unit.gid);
+    setSelected(unit.gid);
   };
 
   const handleChange = (event: SelectChangeEvent<number | null>) => {
-    if (selected !== event.target.value && data) setselected(Number(event.target.value));
+    if (selected !== event.target.value && data) setSelected(Number(event.target.value));
   };
 
   useEffect(() => {
@@ -373,13 +320,7 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
             )}
           </Grid>
         )}
-        <UnitEndDateDialog
-          openDialog={openDialog}
-          setOpenDialog={setOpenDialog}
-          unit={data?.[0]}
-          setUdstyrValue={setUnitValue}
-          stationId={stationId}
-        />
+        <UnitEndDateDialog openDialog={openDialog} setOpenDialog={setOpenDialog} unit={data?.[0]} />
         <AddUnitForm
           udstyrDialogOpen={openAddUdstyr}
           setUdstyrDialogOpen={setOpenAddUdstyr}
@@ -391,32 +332,21 @@ const UdstyrReplace = ({stationId}: {stationId: number}) => {
   );
 };
 
-interface EditStamdataProps {
-  ts_id: number;
-  metadata: any;
-  canEdit: boolean;
-}
-
 type EditValues = z.infer<typeof metadataPutSchema>;
 type Location = EditValues['location'];
 type Timeseries = EditValues['timeseries'];
 type Unit = EditValues['unit'];
 
-const tabValues = ['lokation', 'tidsserie', 'udstyr', 'målepunkt', 'stationsinformation'] as const;
-
-export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataProps) {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+export default function EditStamdata() {
+  const {isTablet} = useBreakpoints();
   const queryClient = useQueryClient();
   const [pageToShow, setPageToShow] = useStationPages();
-  const [tabValue, setTabValue] = useQueryState(
-    'tab',
-    parseAsStringLiteral(tabValues).withDefault('lokation')
-  );
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
-  const prev_ts_id = stamdataStore((store) => store.timeseries.ts_id);
+  const [tabValue, setTabValue] = useEditTabState();
+  const [showForm, setShowForm] = useShowFormState();
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {data: metadata} = useTimeseriesData();
 
-  useQuery<UnitHistory[]>({
+  const {data: udstyr} = useQuery<UnitHistory[]>({
     queryKey: ['udstyr', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${ts_id}`);
@@ -424,11 +354,11 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
     },
     refetchOnWindowFocus: false,
     notifyOnChangeProps: [],
+    enabled: ts_id !== undefined,
   });
 
-  const loc_id = metadata?.loc_id;
   useEffect(() => {
-    if (pageToShow === stationPages.STAMDATA && ts_id !== prev_ts_id && prev_ts_id !== 0) {
+    if (pageToShow === stationPages.STAMDATA) {
       setPageToShow(stationPages.STAMDATA);
       setShowForm(null);
     }
@@ -472,9 +402,8 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['stations', loc_id.toString()],
-      });
+      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
+      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
     },
   });
 
@@ -484,34 +413,30 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['udstyr', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
     },
   });
   let schema: typeof locationSchema | typeof timeseriesSchema | typeof metadataPutSchema;
   schema = locationSchema;
 
-  if (metadata && metadata.ts_id && !metadata.unit_uuid) {
+  if (metadata && metadata.ts_id && udstyr && udstyr.length > 0 && !udstyr[0].uuid) {
     schema = timeseriesSchema;
-  } else if (metadata && metadata.unit_uuid) {
+  } else if (metadata && udstyr && udstyr.length > 0 && udstyr[0].uuid) {
     schema = metadataPutSchema;
   }
+
   const schemaData = schema.safeParse({
-    location: {
-      ...metadata,
-      initial_project_no: metadata?.projectno,
-    },
-    timeseries: {
-      ...metadata,
-    },
+    location: {...metadata, initial_project_no: metadata?.projectno},
+    timeseries: {...metadata},
     unit: {
-      ...metadata,
-      gid: -1,
-      startdate: metadata && metadata.startdato,
-      enddate: metadata && metadata.slutdato,
+      unit_uuid: udstyr && udstyr.length > 0 ? udstyr[0].uuid : '',
+      gid: udstyr && udstyr?.length > 0 ? udstyr[0].gid : -1,
+      startdate: udstyr && udstyr.length > 0 && udstyr?.[0].startdato,
+      enddate: udstyr && udstyr.length > 0 && udstyr?.[0].slutdato,
     },
   });
+
+  console.log(schemaData);
 
   const formMethods = useForm<EditValues>({
     resolver: zodResolver(schema),
@@ -522,6 +447,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   const {
     formState: {dirtyFields, isSubmitting},
     getValues,
+    setValue,
     reset,
     control,
   } = formMethods;
@@ -529,16 +455,22 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
   const resetFormData = () => {
     const result = schema.safeParse({
       ...getValues(),
-      location: {
-        ...metadata,
-        initial_project_no: metadata?.projectno,
-      },
-      timeseries: {
-        ...metadata,
-      },
+      location: {...metadata, initial_project_no: metadata?.projectno},
+      timeseries: {...metadata},
     });
     reset(result.success ? result.data : {});
   };
+
+  useEffect(() => {
+    if (udstyr && udstyr.length > 0) {
+      setValue('unit', {
+        unit_uuid: udstyr[0].uuid,
+        gid: udstyr?.length > 0 ? udstyr[0].gid : -1,
+        startdate: udstyr?.[0].startdato,
+        enddate: udstyr?.[0].slutdato,
+      });
+    }
+  }, [udstyr]);
 
   useEffect(() => {
     if (metadata) {
@@ -581,26 +513,15 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
 
   return (
     <Box
-      sx={{
-        boxShadow: 2,
-        margin: 'auto',
-        width: {xs: window.innerWidth, md: 1080},
-        height: '100%',
-      }}
+      sx={{boxShadow: 2, margin: 'auto', width: {xs: window.innerWidth, md: 1080}, height: '100%'}}
     >
       <Tabs
         value={tabValue ?? 'lokation'}
         onChange={(_, newValue) => setTabValue(newValue)}
-        variant={matches ? 'scrollable' : 'fullWidth'}
+        variant={isTablet ? 'scrollable' : 'fullWidth'}
         aria-label="simple tabs example"
         scrollButtons="auto"
-        sx={{
-          '& .MuiTab-root': {
-            height: tabsHeight,
-            minHeight: tabsHeight,
-          },
-          marginTop: 1,
-        }}
+        sx={{'& .MuiTab-root': {height: tabsHeight, minHeight: tabsHeight}, marginTop: 1}}
       >
         <Tab
           value={'lokation'}
@@ -613,7 +534,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
         />
         <Tab
           value={'tidsserie'}
-          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === undefined))}
           icon={<ShowChartRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -623,7 +544,7 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
         />
         <Tab
           value={'udstyr'}
-          disabled={!metadata || (metadata && (metadata.calculated || ts_id === -1))}
+          disabled={!metadata || (metadata && (metadata.calculated || ts_id === undefined))}
           icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
           label={
             <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
@@ -675,28 +596,24 @@ export default function EditStamdata({ts_id, metadata, canEdit}: EditStamdataPro
             />
           </TabPanel>
           <TabPanel value={tabValue} index={'udstyr'}>
-            <Suspense fallback={<LoadingSkeleton />}>
-              <UdstyrReplace stationId={ts_id} />
-              <UnitForm mode="edit" />
-              <StamdataFooter
-                cancel={resetFormData}
-                handleOpret={() => handleUpdate('unit')}
-                saveTitle="Gem udstyr"
-                disabled={isSubmitting || !('unit' in dirtyFields)}
-              />
-            </Suspense>
+            <UdstyrReplace />
+            <UnitForm mode="edit" />
+            <StamdataFooter
+              cancel={resetFormData}
+              handleOpret={() => handleUpdate('unit')}
+              saveTitle="Gem udstyr"
+              disabled={isSubmitting || !('unit' in dirtyFields)}
+            />
           </TabPanel>
           <TabPanel value={tabValue} index={'målepunkt'}>
-            <ReferenceForm canEdit={canEdit} ts_id={Number(ts_id)} />
+            <ReferenceForm />
             <FabWrapper
               icon={<AddCircle />}
               text="Tilføj målepunkt"
               onClick={() => {
                 setShowForm(true);
               }}
-              sx={{
-                visibility: showForm === null ? 'visible' : 'hidden',
-              }}
+              sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
             />
           </TabPanel>
         </FormProvider>
