@@ -221,7 +221,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
               ),
             }}
             placeholder="Søg efter lokation..."
-            sx={{'& .MuiOutlinedInput-root': {borderRadius: '9999px'}}}
+            sx={{'& .MuiOutlinedInput-root': {borderRadius: '9999px', backgroundColor: 'white'}}}
           />
         )}
         sx={{

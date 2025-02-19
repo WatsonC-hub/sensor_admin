@@ -1,4 +1,4 @@
-import {Box, Grid} from '@mui/material';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
@@ -353,34 +353,33 @@ const Map = () => {
         message="Vælg venligst hvor parkeringen skal oprettes."
         handleOpret={() => null}
       />
-      <SearchAndFilterMap
-        data={data}
-        setData={setFilteredData}
-        handleSearchSelect={handleSearchSelect}
-      />
-      <Grid container height={'100%'} mb={0.5} spacing={1} flexGrow={1}>
-        <Grid item mobile={11.8}>
-          <Box
-            id="test"
-            sx={{width: '100%', height: '100%', minHeight: '300px', flexGrow: 1, ml: 0.5}}
-          />
-          <DrawerComponent
-            key={getDrawerHeader()}
-            enableFull={selectedMarker != null ? true : false}
-            isMarkerSelected={selectedMarker !== null}
-            header={getDrawerHeader()}
-            actions={getDrawerActions(selectedMarker)}
-          >
-            {selectedMarker && 'notification_id' in selectedMarker && (
-              <SensorContent data={selectedMarker} />
-            )}
-            {selectedMarker == null && <LegendContent />}
-            {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
-              <BoreholeContent data={selectedMarker} />
-            )}
-          </DrawerComponent>
-        </Grid>
-      </Grid>
+      <Box
+      //position={'absolute'} zIndex={1000} p={1} width={'100%'}
+      >
+        <SearchAndFilterMap
+          data={data}
+          setData={setFilteredData}
+          handleSearchSelect={handleSearchSelect}
+        />
+      </Box>
+      <Box display="flex" position="relative" flexGrow={1} mb={0.5}>
+        <Box id="test" position="absolute" sx={{height: '100%', width: '100%'}} />
+        <DrawerComponent
+          key={getDrawerHeader()}
+          enableFull={selectedMarker != null ? true : false}
+          isMarkerSelected={selectedMarker !== null}
+          header={getDrawerHeader()}
+          actions={getDrawerActions(selectedMarker)}
+        >
+          {selectedMarker && 'notification_id' in selectedMarker && (
+            <SensorContent data={selectedMarker} />
+          )}
+          {selectedMarker == null && <LegendContent />}
+          {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
+            <BoreholeContent data={selectedMarker} />
+          )}
+        </DrawerComponent>
+      </Box>
     </>
   );
 };
