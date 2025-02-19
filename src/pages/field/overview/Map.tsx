@@ -362,7 +362,7 @@ const Map = () => {
           handleSearchSelect={handleSearchSelect}
         />
       </Box>
-      <Box display="flex" position="relative" flexGrow={1} mb={0.5}>
+      <Box display="flex" position="relative" flexGrow={1}>
         <Box id="test" position="absolute" sx={{height: '100%', width: '100%'}} />
         <DrawerComponent
           key={getDrawerHeader()}
