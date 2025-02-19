@@ -74,8 +74,6 @@ export default function PejlingFormBorehole({
         }
       });
       if (mp.length > 0) {
-        console.log(mp);
-
         setPejlingOutOfRange(false);
         setCurrentMP({elevation: mp[0].elevation, mp_description: mp[0].mp_description});
       } else {

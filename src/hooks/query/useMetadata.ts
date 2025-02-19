@@ -25,7 +25,7 @@ export type Metadata = {
   calculated: boolean;
   boreholeno: string;
   intakeno: number;
-  group: string[];
+  groups: string[];
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
@@ -56,7 +56,7 @@ export type LocationMetadata = {
   y: number;
   terrainlevel: number;
   terrainqual: string;
-  group: string[];
+  groups: string[];
   projectno: string | undefined;
   timeseries: Array<{
     ts_id: number | undefined;
@@ -94,7 +94,7 @@ export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
         loc_id: data[0].loc_id,
         loc_name: data[0].loc_name,
         loctype_id: data[0].loctype_id,
-        group: data[0].group,
+        groups: data[0].groups,
         description: data[0].description,
         mainloc: data[0].mainloc,
         projectno: data[0].projectno,
