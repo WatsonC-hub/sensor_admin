@@ -28,6 +28,7 @@ export type Metadata = {
   group: string[];
   unit: string;
   prefix: string | null;
+  unit_uuid: string | null;
 };
 
 export type TimeseriesMetadata = {
@@ -102,18 +103,19 @@ export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
         terrainqual: data[0].terrainqual,
         x: data[0].x,
         y: data[0].y,
-        timeseries: data.map((data) => {
-          return {
-            ts_id: data.ts_id,
-            tstype_id: data.tstype_id,
-            ts_name: data.ts_name,
-            calculated: data.calculated,
-            prefix: data.prefix,
-            tstype_name: data.tstype_name,
-          };
-        }),
+        timeseries: data
+          .filter((item) => item.ts_id)
+          .map((data) => {
+            return {
+              ts_id: data.ts_id,
+              tstype_id: data.tstype_id,
+              ts_name: data.ts_name,
+              calculated: data.calculated,
+              prefix: data.prefix,
+              tstype_name: data.tstype_name,
+            };
+          }),
       };
-      console.log(location_data);
       return location_data;
     },
     enabled: loc_id !== undefined,
@@ -126,10 +128,6 @@ export const useTimeseriesData = (ts_id?: number) => {
 
   const inner_ts_id = ts_id ?? app_ts_id;
 
-  if (inner_ts_id === undefined) {
-    throw new Error('ts_id is undefined');
-  }
-
   const query = useQuery(metadataQueryOptions(inner_ts_id));
 
   return query;
@@ -139,10 +137,6 @@ export const useLocationData = (loc_id?: number) => {
   const {loc_id: app_loc_id} = useAppContext([], ['loc_id']);
 
   const inner_loc_id = loc_id ?? app_loc_id;
-
-  if (inner_loc_id === undefined) {
-    throw new Error('loc_id is undefined');
-  }
 
   const query = useQuery(locationMetadtaQueryOptions(inner_loc_id));
 

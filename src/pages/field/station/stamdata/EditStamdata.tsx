@@ -1,5 +1,3 @@
-import {DevTool} from '@hookform/devtools';
-import {zodResolver} from '@hookform/resolvers/zod';
 import {
   AddCircle,
   BuildRounded,
@@ -8,354 +6,34 @@ import {
   StraightenRounded,
   SettingsPhoneRounded,
 } from '@mui/icons-material';
-import SaveIcon from '@mui/icons-material/Save';
-import {
-  Box,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
-  MenuItem,
-  Tab,
-  Typography,
-  Tabs,
-  Select,
-  SelectChangeEvent,
-} from '@mui/material';
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
-import React, {useEffect, useState} from 'react';
-import {FormProvider, useForm, useFormContext} from 'react-hook-form';
-import {toast} from 'react-toastify';
-import {z} from 'zod';
+import {Box, Divider, Tab, Typography, Tabs} from '@mui/material';
+import {useEffect} from 'react';
 
-import {apiClient} from '~/apiClient';
-import Button from '~/components/Button';
 import FabWrapper from '~/components/FabWrapper';
-import FormInput from '~/components/FormInput';
-import StamdataFooter from '~/components/StamdataFooter';
 import {tabsHeight} from '~/consts';
-import {UnitHistory, useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
-import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
-import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
-import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
 import {stationPages} from '~/helpers/EnumHelper';
-import {locationSchema, metadataPutSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import TabPanel from '~/pages/field/overview/TabPanel';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore} from '~/state/store';
-const unitEndSchema = z.object({
-  enddate: z.string(),
-  change_reason: z.number().optional(),
-  action: z.string().optional(),
-  comment: z.string().optional(),
-});
 
-type UnitEndFormValues = z.infer<typeof unitEndSchema>;
-
-interface UnitEndDateDialogProps {
-  openDialog: boolean;
-  setOpenDialog: (open: boolean) => void;
-  unit: any;
-}
-
-type ChangeReason = {id: number; reason: string; default_actions: string | null};
-
-type Action = {action: string; label: string};
-
-const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
-  const queryClient = useQueryClient();
-  const {ts_id} = useAppContext(['ts_id']);
-  const superUser = useAuthStore((store) => store.superUser);
-
-  const formMethods = useForm<UnitEndFormValues>({
-    resolver: zodResolver(unitEndSchema),
-    defaultValues: {enddate: moment().toISOString()},
-  });
-
-  const handleClose = () => {
-    setOpenDialog(false);
-    formMethods.reset({enddate: moment().toISOString()});
-  };
-
-  const {data: changeReasons} = useQuery<ChangeReason[]>({
-    queryKey: ['change_reasons'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
-      return data;
-    },
-    enabled: superUser,
-  });
-
-  const {data: actions} = useQuery<Action[]>({
-    queryKey: ['actions', unit?.uuid],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit.uuid}`);
-      return data;
-    },
-    enabled: superUser && !!unit?.uuid,
-  });
-
-  const takeHomeMutation = useMutation({
-    mutationFn: async (payload: UnitEndFormValues) => {
-      const {data} = await apiClient.post(
-        `/sensor_field/stamdata/unit_history/end/${ts_id}/${unit.gid}`,
-        payload
-      );
-      return data;
-    },
-    onSuccess: () => {
-      handleClose();
-      toast.success('Udstyret er hjemtaget');
-      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
-    },
-  });
-
-  const submit = (values: UnitEndFormValues) => {
-    values.enddate = moment(values.enddate).toISOString();
-    takeHomeMutation.mutate(values);
-  };
-
-  return (
-    <Dialog open={openDialog}>
-      <DialogTitle>Angiv information</DialogTitle>
-      <DialogContent sx={{width: 300, display: 'flex', flexDirection: 'column', gap: 1}}>
-        <FormProvider {...formMethods}>
-          <FormInput
-            name="enddate"
-            label="Fra"
-            fullWidth
-            type="datetime-local"
-            required
-            warning={(value) => {
-              if (moment(value) < moment(unit?.startdato)) {
-                return 'Vælg dato efter startdato';
-              }
-            }}
-            inputProps={{min: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm')}}
-          />
-
-          {superUser && (
-            <>
-              <FormInput
-                name="change_reason"
-                fullWidth
-                select
-                label="Årsag"
-                placeholder="Vælg årsag"
-                onChangeCallback={(e) => {
-                  const reason = changeReasons?.find(
-                    (reason) =>
-                      reason.id === Number((e as React.ChangeEvent<HTMLInputElement>).target.value)
-                  );
-                  if (reason) {
-                    if (reason.default_actions?.includes('CLOSE')) {
-                      const action = actions?.find((action) => action.action.includes('CLOSE'));
-                      formMethods.setValue('action', action?.action);
-                    } else {
-                      formMethods.setValue('action', reason.default_actions ?? 'DO_NOTHING');
-                    }
-                  }
-                }}
-              >
-                {changeReasons?.map((reason) => (
-                  <MenuItem key={reason.id} value={reason.id}>
-                    {reason.reason}
-                  </MenuItem>
-                ))}
-              </FormInput>
-
-              <FormInput
-                name="action"
-                fullWidth
-                select
-                label="Handling"
-                placeholder="Handling"
-                // disabled={formMethods.watch('change_reason') !== 1}
-              >
-                {actions?.map((action) => (
-                  <MenuItem key={action.action} value={action.action}>
-                    {action.label}
-                  </MenuItem>
-                ))}
-              </FormInput>
-
-              <FormInput
-                name="comment"
-                label="Kommentar"
-                fullWidth
-                multiline
-                rows={4}
-                placeholder="Skriv en kommentar"
-              />
-            </>
-          )}
-        </FormProvider>
-        <DialogActions>
-          <Button bttype="tertiary" onClick={handleClose}>
-            Annuller
-          </Button>
-          <Button
-            bttype="primary"
-            startIcon={<SaveIcon />}
-            onClick={formMethods.handleSubmit(submit)}
-          >
-            Gem
-          </Button>
-        </DialogActions>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-const UdstyrReplace = () => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
-  const {data: timeseries} = useTimeseriesData();
-  const tstype_id = timeseries?.tstype_id;
-
-  const {setValue} = useFormContext();
-
-  const {data, isPending} = useUnitHistory();
-
-  const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');
-
-  const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
-    const localUnit = data.filter((elem) => elem.gid === gid)[0];
-    const unit = localUnit ?? data[0];
-    // setUnit(unit);
-    setValue(
-      'unit',
-      {
-        gid: unit.gid,
-        unit_uuid: unit.uuid,
-        startdate: moment(unit.startdato).format('YYYY-MM-DDTHH:mm'),
-        enddate: moment(unit.slutdato).format('YYYY-MM-DDTHH:mm'),
-      },
-      {shouldValidate: true, shouldDirty: true}
-    );
-    setSelected(unit.gid);
-  };
-
-  const handleChange = (event: SelectChangeEvent<number | null>) => {
-    if (selected !== event.target.value && data) setSelected(Number(event.target.value));
-  };
-
-  useEffect(() => {
-    if (data && data.length > 0) {
-      onSelectionChange(data, selected === '' ? data[0].gid : selected);
-    }
-  }, [data, selected]);
-
-  return (
-    <>
-      <Grid container spacing={2}>
-        {isPending && (
-          <Grid item xs={12} sm={6}>
-            <Typography align={'center'} display={'inline-block'}>
-              Henter udstyr...
-            </Typography>
-          </Grid>
-        )}
-        {!isPending && (
-          <Grid item xs={12} sm={6}>
-            {data && data.length > 0 ? (
-              <Select
-                id="udstyr_select"
-                value={
-                  data.map((item) => item.gid).includes(selected == '' ? 0 : selected)
-                    ? selected
-                    : ''
-                }
-                onChange={handleChange}
-                className="swiper-no-swiping"
-              >
-                {data?.map((item) => {
-                  const endDate =
-                    moment(new Date()) < moment(item.slutdato)
-                      ? 'nu'
-                      : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
-
-                  return (
-                    <MenuItem id={item.gid.toString()} key={item.gid.toString()} value={item.gid}>
-                      {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            ) : (
-              <Typography align={'center'} display={'inline-block'}>
-                Tilknyt venligst et udstyr
-              </Typography>
-            )}
-
-            {data && data.length && moment(data?.[0].slutdato) > moment(new Date()) ? (
-              <Button
-                bttype="primary"
-                sx={{marginLeft: 1}}
-                onClick={() => {
-                  setOpenDialog(true);
-                }}
-              >
-                Hjemtag udstyr
-              </Button>
-            ) : (
-              <Button
-                bttype="primary"
-                sx={{marginLeft: 1}}
-                onClick={() => {
-                  setOpenAddUdstyr(true);
-                }}
-              >
-                Tilføj udstyr
-              </Button>
-            )}
-          </Grid>
-        )}
-        <UnitEndDateDialog openDialog={openDialog} setOpenDialog={setOpenDialog} unit={data?.[0]} />
-        <AddUnitForm
-          udstyrDialogOpen={openAddUdstyr}
-          setUdstyrDialogOpen={setOpenAddUdstyr}
-          tstype_id={tstype_id}
-          mode="edit"
-        />
-      </Grid>
-    </>
-  );
-};
-
-type EditValues = z.infer<typeof metadataPutSchema>;
-type Location = EditValues['location'];
-type Timeseries = EditValues['timeseries'];
-type Unit = EditValues['unit'];
+import EditLocation from './EditLocation';
+import EditTimeseries from './EditTimeseries';
+import EditUnit from './EditUnit';
 
 export default function EditStamdata() {
   const {isTablet} = useBreakpoints();
-  const queryClient = useQueryClient();
+
   const [pageToShow, setPageToShow] = useStationPages();
   const [tabValue, setTabValue] = useEditTabState();
   const [showForm, setShowForm] = useShowFormState();
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {data: metadata} = useTimeseriesData();
 
-  const {data: udstyr} = useQuery<UnitHistory[]>({
-    queryKey: ['udstyr', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/unit_history/${ts_id}`);
-      return data;
-    },
-    refetchOnWindowFocus: false,
-    notifyOnChangeProps: [],
-    enabled: ts_id !== undefined,
-  });
+  // const {data: udstyr} = useUnitHistory();
 
   useEffect(() => {
     if (pageToShow === stationPages.STAMDATA) {
@@ -382,134 +60,6 @@ export default function EditStamdata() {
       setTabValue(null);
     };
   }, [ts_id, metadata?.calculated, tabValue]);
-
-  const metadataEditTimeseriesMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: out} = await apiClient.put(
-        `/sensor_field/stamdata/update_timeseries/${ts_id}`,
-        data
-      );
-      return out;
-    },
-  });
-
-  const metadataEditLocationMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: out} = await apiClient.put(
-        `/sensor_field/stamdata/update_location/${loc_id}`,
-        data
-      );
-      return out;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
-      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
-    },
-  });
-
-  const metadataEditUnitMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
-      return out;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
-    },
-  });
-  let schema: typeof locationSchema | typeof timeseriesSchema | typeof metadataPutSchema;
-  schema = locationSchema;
-
-  if (metadata && metadata.ts_id && udstyr && udstyr.length > 0 && !udstyr[0].uuid) {
-    schema = timeseriesSchema;
-  } else if (metadata && udstyr && udstyr.length > 0 && udstyr[0].uuid) {
-    schema = metadataPutSchema;
-  }
-
-  const schemaData = schema.safeParse({
-    location: {...metadata, initial_project_no: metadata?.projectno},
-    timeseries: {...metadata},
-    unit: {
-      unit_uuid: udstyr && udstyr.length > 0 ? udstyr[0].uuid : '',
-      gid: udstyr && udstyr?.length > 0 ? udstyr[0].gid : -1,
-      startdate: udstyr && udstyr.length > 0 && udstyr?.[0].startdato,
-      enddate: udstyr && udstyr.length > 0 && udstyr?.[0].slutdato,
-    },
-  });
-
-  console.log(schemaData);
-
-  const formMethods = useForm<EditValues>({
-    resolver: zodResolver(schema),
-    defaultValues: schemaData.success ? schemaData.data : {},
-    mode: 'onTouched',
-  });
-
-  const {
-    formState: {dirtyFields, isSubmitting},
-    getValues,
-    setValue,
-    reset,
-    control,
-  } = formMethods;
-
-  const resetFormData = () => {
-    const result = schema.safeParse({
-      ...getValues(),
-      location: {...metadata, initial_project_no: metadata?.projectno},
-      timeseries: {...metadata},
-    });
-    reset(result.success ? result.data : {});
-  };
-
-  useEffect(() => {
-    if (udstyr && udstyr.length > 0) {
-      setValue('unit', {
-        unit_uuid: udstyr[0].uuid,
-        gid: udstyr?.length > 0 ? udstyr[0].gid : -1,
-        startdate: udstyr?.[0].startdato,
-        enddate: udstyr?.[0].slutdato,
-      });
-    }
-  }, [udstyr]);
-
-  useEffect(() => {
-    if (metadata) {
-      resetFormData();
-    }
-  }, [ts_id, metadata]);
-
-  const handleUpdate = (type: 'location' | 'timeseries' | 'unit') => {
-    if (type === 'location') {
-      const locationData = getValues('location') as Location;
-      metadataEditLocationMutation.mutate(locationData, {
-        onSuccess: () => {
-          toast.success('Lokation er opdateret');
-        },
-      });
-    } else if (type === 'timeseries') {
-      const timeseriesData = getValues('timeseries') as Timeseries;
-      metadataEditTimeseriesMutation.mutate(timeseriesData, {
-        onSuccess: () => {
-          toast.success('Tidsserie er opdateret');
-        },
-      });
-    } else {
-      const unitData = getValues('unit') as Unit;
-
-      metadataEditUnitMutation.mutate(
-        {
-          ...unitData,
-          startdate: moment(unitData.startdate).toISOString(),
-          enddate: moment(unitData.enddate).toISOString(),
-        },
-        {
-          onSuccess: () => {
-            toast.success('Udstyr er opdateret');
-          },
-        }
-      );
-    }
-  };
 
   return (
     <Box
@@ -576,52 +126,32 @@ export default function EditStamdata() {
       </Tabs>
       <Divider />
       <Box>
-        <FormProvider {...formMethods}>
-          <TabPanel value={tabValue} index={'lokation'}>
-            <LocationForm mode="normal" />
-            <StamdataFooter
-              cancel={resetFormData}
-              handleOpret={() => handleUpdate('location')}
-              saveTitle="Gem lokation"
-              disabled={isSubmitting || !('location' in dirtyFields)}
-            />
-          </TabPanel>
-          <TabPanel value={tabValue} index={'tidsserie'}>
-            <TimeseriesForm mode="" />
-            <StamdataFooter
-              cancel={resetFormData}
-              handleOpret={() => handleUpdate('timeseries')}
-              saveTitle="Gem tidsserie"
-              disabled={isSubmitting || !('timeseries' in dirtyFields)}
-            />
-          </TabPanel>
-          <TabPanel value={tabValue} index={'udstyr'}>
-            <UdstyrReplace />
-            <UnitForm mode="edit" />
-            <StamdataFooter
-              cancel={resetFormData}
-              handleOpret={() => handleUpdate('unit')}
-              saveTitle="Gem udstyr"
-              disabled={isSubmitting || !('unit' in dirtyFields)}
-            />
-          </TabPanel>
-          <TabPanel value={tabValue} index={'målepunkt'}>
-            <ReferenceForm />
-            <FabWrapper
-              icon={<AddCircle />}
-              text="Tilføj målepunkt"
-              onClick={() => {
-                setShowForm(true);
-              }}
-              sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-            />
-          </TabPanel>
-        </FormProvider>
+        <TabPanel value={tabValue} index={'lokation'}>
+          <EditLocation />
+        </TabPanel>
+        <TabPanel value={tabValue} index={'tidsserie'}>
+          <EditTimeseries />
+        </TabPanel>
+        <TabPanel value={tabValue} index={'udstyr'}>
+          <EditUnit />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={'målepunkt'}>
+          <ReferenceForm />
+          <FabWrapper
+            icon={<AddCircle />}
+            text="Tilføj målepunkt"
+            onClick={() => {
+              setShowForm(true);
+            }}
+            sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+          />
+        </TabPanel>
+
         <TabPanel value={tabValue} index={'stationsinformation'}>
           <StationDetails mode={'normal'} />
         </TabPanel>
       </Box>
-      {import.meta.env.DEV && <DevTool control={control} />}
     </Box>
   );
 }

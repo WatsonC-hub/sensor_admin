@@ -1,4 +1,5 @@
 import {PhotoLibraryRounded, ConstructionRounded} from '@mui/icons-material';
+import RuleIcon from '@mui/icons-material/Rule';
 import {Alert, Box, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
@@ -15,6 +16,8 @@ import {metadataQueryOptions, useLocationData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import ErrorPage from '~/pages/field/station/ErrorPage';
+import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
+import ImagePage from '~/pages/field/station/stamdata/ImagePage';
 import {useAppContext} from '~/state/contexts';
 
 import MinimalSelect from './MinimalSelect';
@@ -23,7 +26,7 @@ export default function LocationRouter() {
   const queryClient = useQueryClient();
   const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {createStamdata} = useNavigationFunctions();
-  const [pageToShow, setPageToShow] = useStationPages();
+  const [pageToShow] = useStationPages();
   const {data: metadata} = useLocationData();
 
   if (metadata != undefined && metadata.timeseries.length > 0)
@@ -31,9 +34,9 @@ export default function LocationRouter() {
       queryClient.prefetchQuery(metadataQueryOptions(item.ts_id));
     });
 
-  if (metadata != undefined && metadata.timeseries.length === 0) {
-    return (
-      <Layout>
+  return (
+    <Layout>
+      {metadata != undefined && metadata.timeseries.length === 0 && pageToShow === 'pejling' && (
         <Box
           display={'flex'}
           alignSelf={'center'}
@@ -65,16 +68,31 @@ export default function LocationRouter() {
             Opret tidsserie og/eller udstyr
           </Button>
         </Box>
-      </Layout>
-    );
-  }
-  const navigationItems = [];
+      )}
+      {pageToShow === 'stamdata' && <EditStamdata />}
+      {pageToShow === 'billeder' && <ImagePage />}
+    </Layout>
+  );
+}
 
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout = ({children}: LayoutProps) => {
+  const {data: metadata} = useLocationData();
+  const [pageToShow, setPageToShow] = useStationPages();
   const handleChange = (event: any, newValue: any) => {
     setPageToShow(newValue);
   };
-
+  const navigationItems = [];
   navigationItems.push(
+    {
+      text: 'Tidsserie',
+      value: stationPages.PEJLING,
+      icon: <RuleIcon />,
+      color: navIconStyle(pageToShow === stationPages.PEJLING),
+    },
     {
       text: startCase(stationPages.BILLEDER),
       value: stationPages.BILLEDER,
@@ -88,24 +106,6 @@ export default function LocationRouter() {
       color: navIconStyle(pageToShow === stationPages.STAMDATA),
     }
   );
-
-  return (
-    <Layout>
-      <CustomBottomNavigation
-        pageToShow={pageToShow}
-        onChange={handleChange}
-        items={navigationItems}
-      />
-    </Layout>
-  );
-}
-
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const Layout = ({children}: LayoutProps) => {
-  const {data: metadata} = useLocationData();
   return (
     <>
       <CssBaseline />
@@ -126,6 +126,11 @@ const Layout = ({children}: LayoutProps) => {
       <main style={{flexGrow: 1}}>
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
           {children}
+          <CustomBottomNavigation
+            pageToShow={pageToShow}
+            onChange={handleChange}
+            items={navigationItems}
+          />
         </ErrorBoundary>
       </main>
     </>
