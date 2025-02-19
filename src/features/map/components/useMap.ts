@@ -160,54 +160,6 @@ const useMap = <TData extends object>(
       locateOptions: {enableHighAccuracy: true},
     }).addTo(map);
 
-    // const selectControl = new L.Control.StyleSelect({position: 'topright'});
-    // map.addControl(selectControl);
-    // const lassoControl = new LassoControl({position: 'topleft'});
-    // map.addControl(lassoControl);
-    // map.on('lasso.finished', (event) => {
-    //   console.log(
-    //     (event as LassoHandlerFinishedEvent).layers.map(
-    //       (layer) => layer.options as L.CircleMarkerOptions<TData>
-    //     )
-    //   );
-    //   const ids = new Set(
-    //     (event as LassoHandlerFinishedEvent).layers
-    //       .filter((layer) => (layer.options as L.CircleMarkerOptions<TData>).data !== undefined)
-    //       .map((layer) => {
-    //         const data = (layer.options as L.CircleMarkerOptions<TData>).data;
-    //         if (data && 'ts_id' in data) return data?.ts_id;
-    //       })
-    //       .flat()
-    //   );
-    //   const task_ids = shownTasks.filter((task) => ids.has(task.ts_id)).map((task) => task.id);
-
-    //   setShownMapTaskIds(task_ids);
-    // });
-
-    // const selectControl = new L.Control.StyleSelect({position: 'topright'});
-    // map.addControl(selectControl);
-    // const lassoControl = new LassoControl({position: 'topleft'});
-    // map.addControl(lassoControl);
-    // map.on('lasso.finished', (event) => {
-    //   console.log(
-    //     (event as LassoHandlerFinishedEvent).layers.map(
-    //       (layer) => layer.options as L.CircleMarkerOptions<TData>
-    //     )
-    //   );
-    //   const ids = new Set(
-    //     (event as LassoHandlerFinishedEvent).layers
-    //       .filter((layer) => (layer.options as L.CircleMarkerOptions<TData>).data !== undefined)
-    //       .map((layer) => {
-    //         const data = (layer.options as L.CircleMarkerOptions<TData>).data;
-    //         if (data && 'ts_id' in data) return data?.ts_id;
-    //       })
-    //       .flat()
-    //   );
-    //   const task_ids = shownTasks.filter((task) => ids.has(task.ts_id)).map((task) => task.id);
-
-    //   setShownMapTaskIds(task_ids);
-    // });
-
     onMapClickEvent(map);
     onCreateRouteEvent(map);
     onMapMoveEndEvent(map);

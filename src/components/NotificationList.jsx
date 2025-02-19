@@ -3,7 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
@@ -21,15 +21,12 @@ const NotificationList = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
   const [selectedNotification /*, setSelectedNotification*/] = useState(null);
-  const {ts_id} = useAppContext(['ts_id']);
-  let loc_id = undefined;
+  const {loc_id} = useAppContext(['loc_id']);
+
   const {setSelectedTask, activeTasks} = useTaskStore();
   const {tasks: tasksNavigation} = useNavigationFunctions();
 
-  // const {data, isPending} = useNotificationOverview();
-  const metadata = useContext(MetadataContext);
-
-  const {data, isPending} = useLocationNotificationOverview(params.locid || metadata?.loc_id);
+  const {data, isPending} = useLocationNotificationOverview(loc_id);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -56,18 +53,14 @@ const NotificationList = () => {
     setUpdateModalOpen(false);
   };
 
-  const handleMarkAsDone = (notification) => {
-    markAsDone.mutate({
-      path: ts_id,
-      data: {
-        opgave: notification.opgave,
-      },
-    });
-  };
-
-  if (loc_id == undefined) {
-    loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
-  }
+  // const handleMarkAsDone = (notification) => {
+  //   markAsDone.mutate({
+  //     path: ts_id,
+  //     data: {
+  //       opgave: notification.opgave,
+  //     },
+  //   });
+  // };
 
   const grouped = groupBy(
     data?.filter((elem) => elem.notification_id != 0),
