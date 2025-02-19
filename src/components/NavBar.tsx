@@ -16,11 +16,12 @@ import {
 import {useQueryClient} from '@tanstack/react-query';
 import {useSetAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
-import {useNavigate} from 'react-router-dom';
+// import {useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import {appBarHeight} from '~/consts';
+import {drawerOpenAtom} from '~/features/station/components/StationDrawer';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
@@ -215,13 +216,14 @@ const Logo = () => {
 };
 
 const GoBack = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  const setDrawerOpen = useSetAtom(drawerOpenAtom);
 
   return (
     <IconButton
       color="inherit"
       onClick={() => {
-        navigate(-1);
+        setDrawerOpen(true);
       }}
       size="large"
     >

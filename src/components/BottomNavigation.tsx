@@ -39,7 +39,7 @@ const CustomBottomNavigation = <T extends string>({
   const visibleItems = items.slice(0, threshold);
 
   return (
-    <Box sx={{mt: isMobile ? 15 : 8, zIndex: (theme) => theme.zIndex.drawer + 2}}>
+    <Box sx={{mt: isMobile ? 15 : 8, zIndex: (theme) => theme.zIndex.drawer + 8}}>
       <Paper sx={{position: 'fixed', bottom: 0, width: '100%'}} elevation={3}>
         <BottomNavigation
           value={pageToShow}

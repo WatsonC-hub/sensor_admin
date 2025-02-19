@@ -21,6 +21,7 @@ import ImagePage from '~/pages/field/station/stamdata/ImagePage';
 import {useAppContext} from '~/state/contexts';
 
 import MinimalSelect from './MinimalSelect';
+import StationDrawer from './StationDrawer';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
@@ -124,6 +125,7 @@ const Layout = ({children}: LayoutProps) => {
       </NavBar>
 
       <main style={{flexGrow: 1}}>
+        <StationDrawer />
         <ErrorBoundary FallbackComponent={(props) => <ErrorPage {...props} />}>
           {children}
           <CustomBottomNavigation

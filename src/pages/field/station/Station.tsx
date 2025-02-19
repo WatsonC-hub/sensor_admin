@@ -11,8 +11,10 @@ import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import ActionArea from '~/features/station/components/ActionArea';
+// import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
+import StationDrawer from '~/features/station/components/StationDrawer';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -206,12 +208,13 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-      <main style={{flexGrow: 1}}>
-        <Box display="flex" flexDirection={'column'} gap={1}>
+      <Box component="main" sx={{flexGrow: 1, display: 'flex', flexDirection: 'row'}}>
+        <StationDrawer />
+        <Box display="flex" flexGrow={1} flexDirection={'column'} gap={1}>
           {children}
           <ActionArea />
         </Box>
-      </main>
+      </Box>
     </>
   );
 };

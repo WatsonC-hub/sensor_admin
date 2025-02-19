@@ -60,14 +60,14 @@ export default function ActionArea() {
       value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
       color: navIconStyle(pageToShow === stationPages.BILLEDER),
-    },
-    {
-      text: startCase(stationPages.STAMDATA),
-      value: stationPages.STAMDATA,
-      icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === stationPages.STAMDATA),
-      isCalculated: isCalculated,
     }
+    // {
+    //   text: startCase(stationPages.STAMDATA),
+    //   value: stationPages.STAMDATA,
+    //   icon: <ConstructionRounded />,
+    //   color: navIconStyle(pageToShow === stationPages.STAMDATA),
+    //   isCalculated: isCalculated,
+    // }
   );
 
   return (
