@@ -76,8 +76,6 @@ const EditUnit = () => {
     },
   });
 
-  console.log(parsed);
-
   const {data: defaultValues = {}} = parsed;
 
   const formMethods = useForm<Unit>({
