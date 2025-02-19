@@ -4,7 +4,6 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
@@ -17,6 +16,7 @@ import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
+import {useAppContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
 type Props = {
@@ -34,7 +34,7 @@ const onDeleteBtnClick = (
 };
 
 const ContactInfoTable = ({delContact, editContact}: Props) => {
-  const params = useParams();
+  const {loc_id} = useAppContext(['loc_id']);
   const [contactID, setContactID] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
@@ -45,7 +45,6 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
-  const loc_id: number | undefined = parseInt(params.locid!);
 
   const {get} = useContactInfo(loc_id);
 
@@ -221,6 +220,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const handleSave: SubmitHandler<InferContactInfoTable> = async (details) => {
     editContact({
       ...details,
+      email: details.email ?? '',
       telefonnummer: details.telefonnummer ? details.telefonnummer.toString() : null,
     });
     setOpenContactInfoDialog(false);

@@ -4,7 +4,6 @@ import KeyIcon from '@mui/icons-material/Key';
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid} from '@mui/material';
 import React, {useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import {initialLocationAccessData} from '~/consts';
@@ -17,20 +16,20 @@ import {
   AdgangsForhold,
 } from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
 const LocationAccess = () => {
+  const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const {isTablet} = useBreakpoints();
-  const params = useParams();
-  const loc_id = parseInt(params.locid!);
   const [createNew, setCreateNew] = useState<boolean>(false);
 
   const {
     post: postLocationAccess,
     put: editLocationAccess,
     del: delLocationAccess,
-  } = useLocationAccess(parseInt(params.locid!));
+  } = useLocationAccess(loc_id);
 
   const formMethods = useForm({
     resolver: zodResolver(adgangsforhold),

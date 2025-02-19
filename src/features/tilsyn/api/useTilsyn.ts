@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {GetQueryOptions} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
 
 interface TilsynBase {
@@ -60,7 +60,7 @@ export const tilsynDelOptions = {
   },
 };
 
-export const tilsynGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> => ({
+export const tilsynGetOptions = <TData>(ts_id: number | undefined): GetQueryOptions<TData> => ({
   queryKey: ['service', ts_id],
   queryFn: async () => {
     // try {
@@ -77,21 +77,19 @@ export const tilsynGetOptions = <TData>(ts_id: number): GetQueryOptions<TData> =
     //   return null;
     // }
   },
-  enabled: ts_id !== undefined && ts_id !== 0 && ts_id !== null,
+  enabled: ts_id !== undefined && ts_id !== null,
 });
 
 export const useTilsyn = () => {
   const queryClient = useQueryClient();
 
-  const ts_id = stamdataStore((store) => store.timeseries.ts_id);
+  const {ts_id} = useAppContext(['ts_id']);
   const get = useQuery(tilsynGetOptions<Array<TilsynItem>>(ts_id));
 
   const post = useMutation({
     ...tilsynPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['service', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
       toast.success('Tilsyn gemt');
     },
   });
@@ -99,9 +97,7 @@ export const useTilsyn = () => {
   const put = useMutation({
     ...tilsynPutOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['service', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
       toast.success('Tilsyn ændret');
     },
   });
@@ -110,9 +106,7 @@ export const useTilsyn = () => {
     ...tilsynDelOptions,
     onSuccess: () => {
       toast.success('Tilsyn slettet');
-      queryClient.invalidateQueries({
-        queryKey: ['service', ts_id],
-      });
+      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
     },
   });
 

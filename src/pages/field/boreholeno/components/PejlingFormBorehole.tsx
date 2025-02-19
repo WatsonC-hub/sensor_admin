@@ -217,7 +217,9 @@ export default function PejlingFormBorehole({
                   InputLabelProps={{shrink: true}}
                   value={formData.disttowatertable_m}
                   onChange={(e) => changeFormData('disttowatertable_m', e.target.value)}
-                  disabled={notPossible || !currentMP.elevation}
+                  disabled={
+                    notPossible || currentMP.elevation === undefined || currentMP.elevation === null
+                  }
                 />
               </Grid>
               <Grid item xs={12} sm={7} mt={-1}>

@@ -18,12 +18,13 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
-import {authStore, stamdataStore} from '~/state/store';
+import {useAppContext} from '~/state/contexts';
+import {useAuthStore} from '~/state/store';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;
   setUdstyrDialogOpen: (open: boolean) => void;
-  tstype_id: number;
+  tstype_id?: number;
   mode: string;
 }
 
@@ -33,7 +34,7 @@ export default function AddUnitForm({
   tstype_id,
   mode,
 }: AddUnitFormProps) {
-  const [timeseries, setUnit] = stamdataStore((store) => [store.timeseries, store.setUnit]);
+  const {ts_id} = useAppContext([], ['ts_id']);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [invoiceData, setInvoiceData] = useState<{
     terminal_id: number;
@@ -42,9 +43,8 @@ export default function AddUnitForm({
   } | null>(null);
   const queryClient = useQueryClient();
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
-  // const params = useParams();
 
-  const superUser = authStore((state) => state.superUser);
+  const superUser = useAuthStore((state) => state.superUser);
 
   const {
     get: {data: availableUnits, isLoading},
@@ -110,25 +110,20 @@ export default function AddUnitForm({
   };
 
   const handleSensorUUID = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setUnitData({
-      ...unitData,
-      uuid: event.target.value,
-    });
+    setUnitData({...unitData, uuid: event.target.value});
+    setUnitData({...unitData, uuid: event.target.value});
   };
 
   const handleDateChange = (date: Date) => {
     trigger('unit');
-    setUnitData({
-      ...unitData,
-      fra: date,
-    });
+    setUnitData({...unitData, fra: date});
   };
 
   const handleAddUnit = (payload: UnitPost) => {
     addUnit.mutate(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
-        queryClient.invalidateQueries({queryKey: ['metadata', timeseries.ts_id]});
+        queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
         setUdstyrDialogOpen(false);
         setConfirmDialogOpen(false);
       },
@@ -143,7 +138,7 @@ export default function AddUnitForm({
 
       if (!unit) return;
       const payload = {
-        path: `${timeseries.ts_id}`,
+        path: `${ts_id}`,
         data: {
           unit_uuid: unit.unit_uuid,
           startdate: moment(unitData.fra).toISOString(),
@@ -152,7 +147,7 @@ export default function AddUnitForm({
       };
       if (superUser) {
         const {data} = await apiClient.get(
-          `/sensor_field/stamdata/check-unit-invoice/${timeseries.ts_id}/${unit.unit_uuid}`
+          `/sensor_field/stamdata/check-unit-invoice/${ts_id}/${unit.unit_uuid}`
         );
 
         if ('ignoreInvoice' in data && data.ignoreInvoice) {
@@ -177,19 +172,19 @@ export default function AddUnitForm({
         startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
       });
 
-      setUnit({
-        terminal_type: unit.terminal_type,
-        terminal_id: unit.terminal_id,
-        sensor_id: unit.sensor_id,
-        sensorinfo: unit.sensorinfo,
-        parameter: unit.sensorinfo,
-        calypso_id: unit.calypso_id,
-        batteriskift: unit.batteriskift,
-        startdato: unitData.fra,
-        slutdato: '2099-01-01 12:00:00',
-        uuid: unit.unit_uuid,
-        gid: -1,
-      });
+      // setUnit({
+      //   terminal_type: unit.terminal_type,
+      //   terminal_id: unit.terminal_id,
+      //   sensor_id: unit.sensor_id,
+      //   sensorinfo: unit.sensorinfo,
+      //   parameter: unit.sensorinfo,
+      //   calypso_id: unit.calypso_id,
+      //   batteriskift: unit.batteriskift,
+      //   startdato: unitData.fra,
+      //   slutdato: '2099-01-01 12:00:00',
+      //   uuid: unit.unit_uuid,
+      //   gid: -1,
+      // });
     };
   }
 
@@ -209,7 +204,7 @@ export default function AddUnitForm({
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
           handleScan={(data: any) => {
-            const split = data['text'].split('/');
+            const split = data[0]['rawValue'].split('/');
             const calypso_id = parseInt(split[split.length - 1]);
 
             if (isNaN(calypso_id)) {
@@ -252,14 +247,8 @@ export default function AddUnitForm({
                 <Autocomplete
                   id="calypso_id"
                   labelKey="label"
-                  textFieldsProps={{
-                    label: 'Calypso ID',
-                    placeholder: 'Søg Calypso ID',
-                  }}
-                  options={uniqueCalypsoIds.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
+                  textFieldsProps={{label: 'Calypso ID', placeholder: 'Søg Calypso ID'}}
+                  options={uniqueCalypsoIds.map((option) => ({value: option, label: option}))}
                   selectValue={
                     unitData.calypso_id
                       ? {value: unitData.calypso_id, label: unitData.calypso_id}
@@ -306,7 +295,7 @@ export default function AddUnitForm({
                 startIcon={mode === 'edit' ? <Save /> : undefined}
                 disabled={unitData.calypso_id === '-1' || unitData.uuid === ''}
               >
-                {mode === 'edit' ? 'Gem' : 'tilføj'}
+                {mode === 'edit' ? 'Gem' : 'Tilføj'}
               </Button>
             </DialogActions>
           </>
@@ -338,7 +327,7 @@ export default function AddUnitForm({
           <Button
             onClick={() =>
               handleAddUnit({
-                path: `${timeseries.ts_id}`,
+                path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
                   startdate: moment(unitData.fra).toISOString(),
@@ -354,7 +343,7 @@ export default function AddUnitForm({
           <Button
             onClick={() =>
               handleAddUnit({
-                path: `${timeseries.ts_id}`,
+                path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
                   startdate: moment(unitData.fra).toISOString(),

@@ -1,5 +1,5 @@
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 
@@ -7,15 +7,29 @@ import ChoiseCard from '~/components/ChoiseCard';
 import GenericCard from '~/components/GenericCard';
 import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 const AdminChooser = () => {
-  const adminAccess = authStore((state) => state.adminAccess);
+  const adminAccess = useAuthStore((state) => state.adminAccess);
   const {field} = useNavigationFunctions();
 
   return (
     <>
-      <NavBar />
+      <NavBar>
+        <NavBar.GoBack />
+        <NavBar.Title title="Admin" />
+        <NavBar.Menu
+          items={[
+            {
+              title: 'Field',
+              icon: <BuildCircleIcon fontSize="medium" />,
+              onClick: () => {
+                field();
+              },
+            },
+          ]}
+        />
+      </NavBar>
       {!adminAccess && (
         <>
           <Typography variant="h4" sx={{textAlign: 'center', marginTop: 10}}>
@@ -37,11 +51,7 @@ const AdminChooser = () => {
       <Grid
         container
         spacing={8}
-        sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 10,
-        }}
+        sx={{justifyContent: 'center', alignItems: 'center', marginTop: 10}}
       >
         {/* {iotAccess && (
           <Grid
@@ -65,32 +75,13 @@ const AdminChooser = () => {
           item
           xs={10}
           sm={5}
-          sx={{
-            pointerEvents: adminAccess ? 'auto' : 'none',
-            opacity: adminAccess ? 1 : 0.8,
-          }}
+          sx={{pointerEvents: adminAccess ? 'auto' : 'none', opacity: adminAccess ? 1 : 0.8}}
         >
           <ChoiseCard
             navigateTo="kvalitetssikring"
             title="Kvalitetssikring"
             text="Kvalitetssikre tidsserier"
             icon={AutoGraphIcon}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={10}
-          sm={5}
-          sx={{
-            pointerEvents: adminAccess ? 'auto' : 'none',
-            opacity: adminAccess ? 1 : 0.8,
-          }}
-        >
-          <ChoiseCard
-            navigateTo="notifikationer"
-            title="Notifikationer"
-            text="Se notifikationer"
-            icon={NotificationsActiveIcon}
           />
         </Grid>
         {/* <Grid

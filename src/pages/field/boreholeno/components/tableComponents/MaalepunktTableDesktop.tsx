@@ -10,7 +10,7 @@ import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 import {MaalepunktTableData} from '~/types';
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const org_id = authStore((store) => store.org_id);
+  const org_id = useAuthStore((store) => store.org_id);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -52,9 +52,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         accessorKey: 'organisationname',
         header: 'Organisation',
         Cell: ({row, renderedCellValue}) => (
-          <Typography>
-            {row.original.organisationid === org_id ? renderedCellValue : '-'}
-          </Typography>
+          <Typography>{row.original.organisationid == org_id ? renderedCellValue : '-'}</Typography>
         ),
       },
       {
@@ -62,10 +60,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         accessorKey: 'mp_description',
         Cell: ({row}) => <Typography>{row.getValue('mp_description')}</Typography>,
       },
-      {
-        header: 'Oprettet af',
-        accessorKey: 'display_name',
-      },
+      {header: 'Oprettet af', accessorKey: 'display_name'},
     ],
     []
   );

@@ -1,48 +1,33 @@
 import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {Navigate} from 'react-router-dom';
 
+import {useLocationData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useAppContext} from '~/state/contexts';
 
-interface MinimalSelectProps {
-  locid: number | undefined;
-  stationList: Array<{
-    ts_id: number;
-    ts_name: string;
-    prefix: string;
-    tstype_name: string;
-  }>;
-}
-
-const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
-  const params = useParams();
-
-  const [isOpen, setIsOpen] = useState(params.ts_id ? false : true);
+const MinimalSelect = () => {
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const [isOpen, setIsOpen] = useState(ts_id ? false : true);
   const {station} = useNavigationFunctions();
+  const {data: metadata, error, isPending} = useLocationData();
+
+  const hasTimeseries = metadata && metadata.timeseries.some((ts) => ts.ts_id !== null);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    if (params.ts_id != event.target.value)
-      station(locid, parseInt(event.target.value), {replace: true});
-    // navigate(`../location/${locid}/${event.target.value}`, {
-    //   replace: true,
-    // });
+    if (ts_id?.toString() != event.target.value)
+      station(loc_id, parseInt(event.target.value), {replace: true});
     setIsOpen(false);
   };
 
   const handleClose = () => {
-    const value = hasTimeseries && stationList && params.ts_id ? parseInt(params.ts_id) : '';
+    const value = hasTimeseries && ts_id ? ts_id : '';
     if (typeof value == 'number') {
       setIsOpen(false);
     }
   };
   const handleOpen = () => setIsOpen(true);
-
-  useEffect(() => {
-    if (params.ts_id) {
-      setIsOpen(false);
-    }
-  }, [params.ts_id]);
 
   const menuProps = {
     PaperProps: {
@@ -52,11 +37,28 @@ const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
     },
   };
 
-  const hasTimeseries = stationList && stationList.some((stamdata) => stamdata.ts_id !== null);
+  useEffect(() => {
+    if (ts_id) {
+      setIsOpen(false);
+    }
+  }, [ts_id]);
+
+  if (error || isPending) return;
+
+  if (!hasTimeseries) return 'Ingen tidsserie på locationen';
+
+  if (metadata.timeseries.length == 1 && ts_id === undefined) {
+    return (
+      <>
+        <Navigate to={`../location/${loc_id}/${metadata.timeseries[0].ts_id}`} replace />
+      </>
+    );
+  }
+
   return (
     <Select
       MenuProps={menuProps}
-      value={hasTimeseries && stationList && params.ts_id ? params.ts_id : ''}
+      value={hasTimeseries && ts_id ? ts_id.toString() : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}
@@ -78,20 +80,17 @@ const MinimalSelect = ({locid, stationList}: MinimalSelectProps) => {
         pb: 0,
       }}
     >
-      {stationList &&
-        stationList
-          .filter((t) => t.ts_name !== null)
-          .map((station) => (
-            <MenuItem
-              key={station.ts_id}
-              value={station.ts_id}
-              sx={{
-                color: 'white',
-              }}
-            >
-              {(station.prefix ? station.prefix + ' - ' : '') + ' ' + station.tstype_name}
-            </MenuItem>
-          ))}
+      {metadata.timeseries.map((station) => (
+        <MenuItem
+          key={station.ts_id}
+          value={station.ts_id}
+          sx={{
+            color: 'white',
+          }}
+        >
+          {(station.prefix ? station.prefix + ' - ' : '') + ' ' + station.tstype_name}
+        </MenuItem>
+      ))}
     </Select>
   );
 };

@@ -23,6 +23,15 @@ const FormInput = <TFieldValues extends FieldValues>({
   onChangeCallback,
   onBlurCallback,
   type,
+  margin = 'dense',
+  variant = 'outlined',
+  sx,
+  className,
+  InputLabelProps,
+  InputProps,
+  onKeyDown,
+  helperText,
+  fullWidth = true,
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
   const {
@@ -52,32 +61,13 @@ const FormInput = <TFieldValues extends FieldValues>({
         return (
           <TextField
             {...otherProps}
-            onKeyDown={(e) => {
-              if (type === 'number' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
-                e.preventDefault();
-              }
-            }}
-            InputProps={
-              type === 'number'
-                ? {
-                    sx: {
-                      '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                        display: 'none',
-                      },
-                      '& input[type=number]': {
-                        MozAppearance: 'textfield',
-                      },
-                    },
-                  }
-                : undefined
-            }
             key={name}
             name={name}
             type={type}
             value={value ?? ''}
             onBlur={(e) => {
               onBlur();
-              onBlurCallback && onBlurCallback(e);
+              if (onBlurCallback) onBlurCallback(e);
             }}
             ref={ref}
             sx={{
@@ -97,25 +87,47 @@ const FormInput = <TFieldValues extends FieldValues>({
                 position: 'absolute',
                 top: 'calc(100% - 8px)',
               },
+              ...sx,
             }}
-            className="swiper-no-swiping"
-            variant="outlined"
-            InputLabelProps={{shrink: true, style: {zIndex: 0}}}
-            fullWidth
-            margin="dense"
+            className={'swiper-no-swiping' + (className ? ' ' + className : '')}
+            variant={variant}
+            InputLabelProps={{shrink: true, style: {zIndex: 0}, ...InputLabelProps}}
+            fullWidth={fullWidth}
+            margin={margin}
+            onKeyDown={(e) => {
+              if (type === 'number' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                e.preventDefault();
+              }
+              if (onKeyDown) onKeyDown(e);
+            }}
+            InputProps={
+              type === 'number'
+                ? {
+                    sx: {
+                      '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                        display: 'none',
+                      },
+                      '& input[type=number]': {
+                        MozAppearance: 'textfield',
+                      },
+                    },
+                    ...InputProps,
+                  }
+                : InputProps
+            }
             onChange={(e) => {
               if (type === 'number' && e.target.value !== '') {
                 onChange(transform(Number(e.target.value)));
-                onChangeCallback && onChangeCallback(Number(e.target.value));
+                if (onChangeCallback) onChangeCallback(Number(e.target.value));
               } else if (type === 'number' && e.target.value === '') {
                 onChange(null);
               } else {
                 onChange(transform(e));
-                onChangeCallback && onChangeCallback(e);
+                if (onChangeCallback) onChangeCallback(e);
               }
             }}
             error={!!errorMessage}
-            helperText={errorMessage || warningMessage || (otherProps?.helperText ?? '')}
+            helperText={errorMessage || warningMessage || (helperText ?? '')}
           >
             {children}
           </TextField>

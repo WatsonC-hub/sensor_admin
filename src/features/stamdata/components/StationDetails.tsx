@@ -4,14 +4,12 @@ import React from 'react';
 import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
 import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
-type Props = {
-  mode: string;
-};
+type Props = {mode: string};
 
 const StationDetails = ({mode}: Props) => {
-  const superUser = authStore().superUser;
+  const superUser = useAuthStore((state) => state.superUser);
 
   return (
     <Grid container spacing={1}>

@@ -1,93 +1,112 @@
+import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
-import {useContext, useEffect, useState} from 'react';
+import {useEffect} from 'react';
+import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
 
 interface YRangeModalProps {
   onClose: () => void;
 }
+
+const schema = z.object({
+  min: z.string(),
+  max: z.string(),
+});
+
+type YRangeValues = z.infer<typeof schema>;
 
 const YRangeModal = ({onClose}: YRangeModalProps) => {
   const selection = useAtomValue(qaSelection);
   const y1 = selection?.selections?.[0]?.y1 as number;
   const y0 = selection?.selections?.[0]?.y0 as number;
 
-  const [minY, setMinY] = useState(Math.min(y1, y0).toFixed(4));
-  const [maxY, setMaxY] = useState(Math.max(y1, y0).toFixed(4));
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const metadata = useContext(MetadataContext);
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    onAccept();
-    // onClose();
-  };
-  const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';
+  const {data: timeseries_data} = useTimeseriesData();
+
+  const formMethods = useForm<YRangeValues>({
+    resolver: zodResolver(schema),
+
+    mode: 'onTouched',
+  });
+
+  const {handleSubmit, setValue, reset} = formMethods;
+
+  const unit = timeseries_data?.unit ?? '';
 
   const {post: yRangeMutation} = useYRangeMutations();
 
-  const onAccept = () => {
-    yRangeMutation.mutate({
-      path: `${metadata?.ts_id}`,
-      data: {mincutoff: Number(minY), maxcutoff: Number(maxY)},
-    });
+  const onAccept: SubmitHandler<YRangeValues> = (values) => {
+    yRangeMutation.mutate(
+      {
+        path: `${timeseries_data?.ts_id}`,
+        data: {mincutoff: Number(values.min), maxcutoff: Number(values.max)},
+      },
+      {
+        onSuccess: () => {
+          reset();
+        },
+      }
+    );
   };
 
   useEffect(() => {
-    setMinY(Math.min(y1, y0).toFixed(4));
-    setMaxY(Math.max(y1, y0).toFixed(4));
+    setValue('min', Math.min(y1, y0).toFixed(4));
+    setValue('max', Math.max(y1, y0).toFixed(4));
   }, [selection]);
 
   return (
     <div>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 0.5,
-        }}
-        my={1}
-      >
-        <Typography variant="h6" gutterBottom={true}>
-          Område: {unit}
-        </Typography>
+      <FormProvider {...formMethods}>
         <Box
-          display={'flex'}
-          flexDirection={'row'}
-          gap={1}
-          alignItems={'center'}
-          justifyContent={'center'}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 0.5,
+          }}
+          my={1}
         >
-          <TextField
-            label="Minimum"
-            variant="outlined"
-            value={minY}
-            size="small"
-            type="number"
-            onChange={(e) => setMinY(e.target.value)}
-            sx={{maxWidth: '120px', zIndex: 0}}
-          />
-          <Typography gutterBottom> - </Typography>
-          <TextField
-            label="Maximum"
-            variant="outlined"
-            value={maxY}
-            size="small"
-            type="number"
-            onChange={(e) => setMaxY(e.target.value)}
-            sx={{maxWidth: '120px', zIndex: 0}}
-          />
+          <Typography variant="h6" gutterBottom={true}>
+            Område: {unit}
+          </Typography>
+          <Box
+            display={'flex'}
+            flexDirection={'row'}
+            gap={1}
+            alignItems={'center'}
+            justifyContent={'center'}
+          >
+            <FormInput<YRangeValues>
+              name="min"
+              label="Minimum"
+              variant="outlined"
+              size="small"
+              type="number"
+              sx={{maxWidth: '120px', zIndex: 0}}
+            />
+            <Typography gutterBottom> - </Typography>
+            <FormInput<YRangeValues>
+              name="max"
+              label="Maximum"
+              variant="outlined"
+              size="small"
+              type="number"
+              sx={{maxWidth: '120px', zIndex: 0}}
+            />
+          </Box>
         </Box>
-      </Box>
+      </FormProvider>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'center'}>
         <Button
           bttype="tertiary"
@@ -99,7 +118,12 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
         >
           Annuller
         </Button>
-        <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit} color="secondary">
+        <Button
+          bttype="primary"
+          startIcon={<Save />}
+          onClick={handleSubmit(onAccept, (e) => console.log(e))}
+          color="secondary"
+        >
           Gem
         </Button>
       </Box>

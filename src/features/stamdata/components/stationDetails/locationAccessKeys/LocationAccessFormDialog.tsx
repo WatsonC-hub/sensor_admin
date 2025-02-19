@@ -40,7 +40,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
               onClick={() => {
                 if (createNew) {
                   reset(initialLocationAccessData);
-                  setValue('id', null);
+                  setValue('id', -1);
                 }
                 setCreateNew && setCreateNew(!createNew);
               }}

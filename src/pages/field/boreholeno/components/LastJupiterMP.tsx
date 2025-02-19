@@ -6,23 +6,18 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
+import {useAppContext} from '~/state/contexts';
 import {Maalepunkt, MaalepunktPost} from '~/types';
 
 interface JupiterMPProps {
-  boreholeno: string;
-  intakeno: number;
   lastOurMP: Maalepunkt;
   watlevmpMutate: UseMutationResult<void, Error, MaalepunktPost, unknown>;
   setAddMPOpen: (open: boolean | null) => void;
 }
 
-const LastJupiterMP = ({
-  boreholeno,
-  intakeno,
-  lastOurMP,
-  watlevmpMutate,
-  setAddMPOpen,
-}: JupiterMPProps) => {
+const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps) => {
+  const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
+
   const queryClient = useQueryClient();
   const {data, isLoading, isError, isSuccess} = useQuery({
     queryKey: ['last_jupiter_mp', boreholeno, intakeno],
@@ -32,7 +27,7 @@ const LastJupiterMP = ({
       );
       return data;
     },
-    enabled: boreholeno !== '-1' && boreholeno !== null && intakeno !== undefined,
+    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
   });
 
   const showQuickAdd = data

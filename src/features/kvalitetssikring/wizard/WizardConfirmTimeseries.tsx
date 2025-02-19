@@ -6,7 +6,7 @@ import {Box, CardContent, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
@@ -15,7 +15,7 @@ import FormInput from '~/components/FormInput';
 // import {QaStampLevel} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 
 import {CertifyQa, useCertifyQa} from '../api/useCertifyQa';
 
@@ -34,12 +34,9 @@ const schema = z
   })
   .refine(
     ({date, startDate}) => {
-      return !startDate || (startDate && startDate < date);
+      return !startDate || moment(startDate).isBefore(moment(date));
     },
-    {
-      path: ['date'],
-      message: 'Dato må ikke være tidligere end sidst godkendt',
-    }
+    {path: ['date'], message: 'Dato må ikke være tidligere end sidst godkendt'}
   );
 
 type CertifyQaValues = z.infer<typeof schema>;
@@ -48,7 +45,7 @@ const WizardConfirmTimeseries = ({
   initiateConfirmTimeseries,
   onClose,
 }: WizardConfirmTimeseriesProps) => {
-  const metadata = useContext(MetadataContext);
+  const {ts_id} = useAppContext(['ts_id']);
   const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
   const {isMobile} = useBreakpoints();
   const selection = useAtomValue(qaSelection);
@@ -56,17 +53,14 @@ const WizardConfirmTimeseries = ({
   const {
     get: {data: qaData},
     post: postQaData,
-  } = useCertifyQa(metadata?.ts_id);
+  } = useCertifyQa(ts_id);
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      startDate: selectedQaData?.date,
-      level: 1,
-    },
+    defaultValues: {startDate: selectedQaData?.date, level: 1},
     mode: 'onTouched',
   });
 
@@ -99,8 +93,8 @@ const WizardConfirmTimeseries = ({
 
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
     const payload = {
-      path: `${metadata?.ts_id}`,
-      data: certifyQa,
+      path: `${ts_id}`,
+      data: {...certifyQa, date: moment(certifyQa.date).toISOString()},
     };
     postQaData.mutateAsync(payload);
     onClose();
@@ -109,12 +103,7 @@ const WizardConfirmTimeseries = ({
     <FormProvider {...formMethods}>
       <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
         <CardContent
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: 'inherit',
-            alignContent: 'center',
-          }}
+          sx={{display: 'flex', flexDirection: 'column', height: 'inherit', alignContent: 'center'}}
         >
           <Box display={'flex'} flexDirection="row" justifyContent={'center'} mb={1} gap={1}>
             <Typography
@@ -129,16 +118,8 @@ const WizardConfirmTimeseries = ({
               placement="right"
               enterTouchDelay={0}
               slotProps={{
-                tooltip: {
-                  sx: {
-                    bgcolor: 'primary.main',
-                  },
-                },
-                arrow: {
-                  sx: {
-                    color: 'primary.main',
-                  },
-                },
+                tooltip: {sx: {bgcolor: 'primary.main'}},
+                arrow: {sx: {color: 'primary.main'}},
               }}
               arrow={true}
               title={
@@ -176,22 +157,15 @@ const WizardConfirmTimeseries = ({
                 label={'Sidst godkendt'}
                 placeholder="Fra start"
                 fullWidth
-                InputLabelProps={{shrink: true}}
                 disabled={true}
-                style={{
-                  minWidth: 195,
-                  width: isMobile ? 'fit-content' : 195,
-                }}
+                style={{minWidth: 195, width: isMobile ? 'fit-content' : 195}}
               />
               <FormInput
                 name="date"
                 label="Godkend til"
                 type={'datetime-local'}
                 disabled={!initiateConfirmTimeseries}
-                style={{
-                  minWidth: 195,
-                  width: isMobile ? 'fit-content' : 195,
-                }}
+                style={{minWidth: 195, width: isMobile ? 'fit-content' : 195}}
               />
             </Box>
             {/* <FormInput

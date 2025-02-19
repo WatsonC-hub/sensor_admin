@@ -1,4 +1,4 @@
-import {Box, CardContent, Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -12,35 +12,18 @@ const WizardValueBounds = ({onClose}: WizardValueBoundsProps) => {
   const {isMobile} = useBreakpoints();
   return (
     <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
-      <CardContent
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          height: 'inherit',
-          alignContent: 'center',
-        }}
+      <Typography
+        alignSelf={'center'}
+        variant={isMobile ? 'h6' : 'h5'}
+        component="h2"
+        textAlign={'center'}
+        fontWeight={'bold'}
       >
-        <Box
-          display={'flex'}
-          flexDirection="row"
-          justifyContent={'center'}
-          mb={1}
-          gap={1}
-          alignItems={'end'}
-        >
-          <Typography
-            alignSelf={'center'}
-            variant={isMobile ? 'h6' : 'h5'}
-            component="h2"
-            fontWeight={'bold'}
-          >
-            Øvre og nedre værdigrænser
-          </Typography>
-        </Box>
-        <Box alignSelf={'center'}>
-          <YRangeModal onClose={onClose} />
-        </Box>
-      </CardContent>
+        Øvre og nedre værdigrænser
+      </Typography>
+      <Box alignSelf={'center'}>
+        <YRangeModal onClose={onClose} />
+      </Box>
     </Box>
   );
 };

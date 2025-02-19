@@ -1,12 +1,8 @@
 import {MapRounded, Person} from '@mui/icons-material';
-import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
   AppBar,
   Box,
@@ -19,24 +15,22 @@ import {
 } from '@mui/material';
 import {useQueryClient} from '@tanstack/react-query';
 import {useSetAtom} from 'jotai';
-import {useState, ReactNode, useContext, MouseEventHandler} from 'react';
+import {useState, ReactNode, MouseEventHandler} from 'react';
 import {useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
-import NotificationList from '~/components/NotificationList';
 import {appBarHeight} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
-  const [resetState] = authStore((state) => [state.resetState]);
+  const [resetState] = useAuthStore((state) => [state.resetState]);
   const queryClient = useQueryClient();
   const {home} = useNavigationFunctions();
 
@@ -52,11 +46,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
     <Box
       onClick={handleLogout}
       width={'100%'}
-      sx={{
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-      }}
+      sx={{cursor: 'pointer', display: 'flex', alignItems: 'center'}}
     >
       {children}
     </Box>
@@ -143,11 +133,7 @@ export const NavBarMenu = ({
   items,
 }: {
   highligtFirst?: boolean;
-  items?: {
-    title: string;
-    icon: ReactNode;
-    onClick: () => void;
-  }[];
+  items?: {title: string; icon: ReactNode; onClick: () => void}[];
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -244,178 +230,51 @@ const GoBack = () => {
   );
 };
 
-const NavBar = () => {
-  const [authenticated, iotAccess] = authStore((state) => [state.authenticated, state.iotAccess]);
+const ScannerAsTitle = () => {
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
-  const {admin, createStamdata, field, station} = useNavigationFunctions();
-  const {isMobile} = useBreakpoints();
-  const metadata = useContext(MetadataContext);
 
-  let content;
-
-  const url = window.location.pathname.replace(/\/$/, '');
-
-  if (!authenticated) {
-    return (
-      <AppBarLayout>
-        <Logo />
-      </AppBarLayout>
-    );
-  }
-
-  if (url.includes('/location') || url.includes('/borehole')) {
-    return null;
-  }
-
-  if (url == '') {
-    content = <Logo />;
-  }
-
-  if (url == '/field') {
-    content = (
-      <>
-        <Logo />
-        {isMobile ? (
-          <IconButton
-            sx={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }}
-            color="inherit"
-            onClick={() => setOpenQRScanner(true)}
-            size="large"
-          >
-            <QrCodeScannerIcon />
-          </IconButton>
-        ) : (
-          <Typography
-            sx={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-            }}
-            variant="h4"
-          >
-            Field
-          </Typography>
-        )}
-        <Box>
-          {/* {adminAccess && <NavBarNotifications />} */}
-          <NavBarMenu
-            items={[
-              {
-                title: 'Admin',
-                icon: <AdminPanelSettingsIcon fontSize="medium" />,
-                onClick: () => {
-                  admin();
-                },
-              },
-              ...(iotAccess
-                ? [
-                    {
-                      title: 'Opret lokation',
-                      icon: <AddLocationAltIcon fontSize="medium" />,
-                      onClick: () => {
-                        createStamdata();
-                      },
-                    },
-                  ]
-                : []),
-            ]}
-          />
-        </Box>
-      </>
-    );
-  }
-
-  if (url == '/field/stamdata') {
-    content = (
-      <>
-        <GoBack />
-
-        {/* <Typography
-          sx={{
-            position: 'absolute',
-            left: '50%',
-            transform: 'translateX(-50%)',
-          }}
-          variant="h4"
-        >
-          Opret station
-        </Typography> */}
-
-        <Box>
-          {/* {adminAccess && <NavBarNotifications />} */}
-          <NavBarMenu />
-        </Box>
-      </>
-    );
-  }
-
-  if (url.includes('/admin')) {
-    content = (
-      <>
-        <GoBack />
-        <Typography variant="h4">Admin</Typography>
-
-        <Box>
-          {/* {adminAccess && <NavBarNotifications />} */}
-          <NavBarMenu
-            items={[
-              {
-                title: 'Field',
-                icon: <BuildCircleIcon fontSize="medium" />,
-                onClick: () => {
-                  field();
-                },
-              },
-            ]}
-          />
-        </Box>
-      </>
-    );
-  }
-
-  if (url.includes('/admin/kvalitetssikring/')) {
-    content = (
-      <>
-        <GoBack />
-        <Typography variant={isMobile ? 'h6' : 'h4'}>Kvalitetssikring</Typography>
-
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <NotificationList />
-          <NavBarMenu
-            highligtFirst={!isMobile}
-            items={[
-              {
-                title: 'Til service',
-                icon: <QueryStatsIcon />,
-                onClick: () => {
-                  station(metadata?.loc_id, metadata?.ts_id);
-                },
-              },
-              {
-                title: 'Field',
-                icon: <BuildCircleIcon fontSize="medium" />,
-                onClick: () => {
-                  field();
-                },
-              },
-            ]}
-          />
-        </Box>
-      </>
-    );
-  }
-
-  return <AppBarLayout>{content}</AppBarLayout>;
+  return (
+    <IconButton
+      sx={{
+        position: 'absolute',
+        left: '50%',
+        transform: 'translateX(-50%)',
+      }}
+      color="inherit"
+      onClick={() => setOpenQRScanner(true)}
+      size="large"
+    >
+      <QrCodeScannerIcon />
+    </IconButton>
+  );
 };
+
+const Title = ({title}: {title: string}) => {
+  return (
+    <>
+      <Typography
+        sx={{
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }}
+        variant="h4"
+      >
+        {title}
+      </Typography>
+    </>
+  );
+};
+
+const NavBar = ({children}: {children?: ReactNode}) => {
+  return <AppBarLayout>{children}</AppBarLayout>;
+};
+
+NavBar.Logo = Logo;
+NavBar.GoBack = GoBack;
+NavBar.Menu = NavBarMenu;
+NavBar.Home = HomeButton;
+NavBar.Title = Title;
+NavBar.Scanner = ScannerAsTitle;
 
 export default NavBar;

@@ -1,14 +1,13 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem} from '@mui/material';
-import React from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+import {useAppContext} from '~/state/contexts';
 
 interface Props {
   open: boolean;
@@ -27,7 +26,7 @@ const zodSchema = z.object({
 type FormValues = z.infer<typeof zodSchema>;
 
 const CreateManuelTaskModal = ({open, closeModal}: Props) => {
-  const params = useParams();
+  const {ts_id} = useAppContext(['ts_id']);
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
@@ -42,7 +41,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
   const submitTask = async (values: FormValues) => {
     await createTask.mutateAsync(
       {
-        path: params.ts_id,
+        path: ts_id,
         data: {
           opgave: values.description,
           flag: Number(values.flag),

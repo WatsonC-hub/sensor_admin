@@ -67,17 +67,14 @@ const StepWizard = ({
         <Card
           raised={true}
           sx={{
-            width: 'inherit',
-            height: 'inherit',
             display: 'flex',
             flexDirection: 'column',
-            flex: '1 0 auto',
             borderRadius: 4,
           }}
           elevation={2}
         >
-          <CardContent sx={{height: '95%'}}>
-            <Box width={'inherit'} height={'inherit'}>
+          <CardContent sx={{height: '100%'}}>
+            <Box>
               {dataAdjustment === 'confirm' && (
                 <WizardConfirmTimeseries
                   initiateConfirmTimeseries={initiateConfirmTimeseries}
