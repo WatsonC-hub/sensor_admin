@@ -6,6 +6,9 @@ import QualityAssuranceOverview from '~/pages/admin/kvalitetssikring/QualityAssu
 import AdminChooser from '~/pages/admin/overview/AdminChooser';
 import AdminRouterProvider from '~/state/AdminRouterProvider';
 
+import TasksPage from './opgaver/TasksPage';
+import Trip from './opgaver/Trip';
+
 const SensorAdmin = () => {
   return (
     <>
@@ -27,6 +30,9 @@ const SensorAdmin = () => {
             </AdminRouterProvider>
           }
         />
+        <Route path="/opgaver" element={<TasksPage />} />
+        <Route path="/opgaver/tur" element={<Trip />} />
+        <Route path="/opgaver/tur/:trip_id" element={<Trip />} />
       </Routes>
     </>
   );
