@@ -63,7 +63,7 @@ export default function UnitForm({mode}: UnitFormProps) {
         <FormInput
           name="unit.startdate"
           label="Startdato"
-          disabled={unit && !startdate}
+          disabled={!unit || startdate === undefined}
           fullWidth
           type="datetime-local"
           required
@@ -75,7 +75,7 @@ export default function UnitForm({mode}: UnitFormProps) {
             name="unit.enddate"
             label="Slutdato"
             fullWidth
-            disabled={unit && !startdate}
+            disabled={!unit || startdate === undefined}
             type="datetime-local"
             required
             inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}

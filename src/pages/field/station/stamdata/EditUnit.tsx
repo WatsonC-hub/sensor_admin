@@ -21,10 +21,10 @@ import UdstyrReplace from './UdstyrReplace';
 const unitSchema = z.object({
   unit: z
     .object({
-      unit_uuid: z.string(),
-      startdate: z.string(),
+      unit_uuid: z.string().optional(),
+      startdate: z.string().optional(),
       gid: z.number().optional(),
-      enddate: z.string(),
+      enddate: z.string().optional(),
     })
     .superRefine((unit, ctx) => {
       if (moment(unit.startdate) > moment(unit.enddate)) {
@@ -59,6 +59,7 @@ const EditUnit = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
+      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
     },
   });
 
@@ -85,7 +86,8 @@ const EditUnit = () => {
   });
 
   const {
-    formState: {isDirty, isValid},
+    formState: {isDirty},
+    getValues,
     reset,
   } = formMethods;
 
@@ -93,7 +95,7 @@ const EditUnit = () => {
     if (metadata != undefined) {
       reset(defaultValues);
     }
-  }, [metadata, unit_history]);
+  }, [metadata, unit_history, ts_id]);
 
   const handleSubmit = async (data: Unit) => {
     const payload = {
@@ -124,7 +126,7 @@ const EditUnit = () => {
 
             <Button
               bttype="primary"
-              disabled={!isDirty || !isValid}
+              disabled={!isDirty || !getValues('unit.unit_uuid')}
               onClick={formMethods.handleSubmit(handleSubmit)}
               startIcon={<SaveIcon />}
               sx={{marginRight: 1}}
