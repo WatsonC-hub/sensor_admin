@@ -9,6 +9,7 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
 import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
@@ -21,12 +22,13 @@ const NotificationList = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
   const [selectedNotification /*, setSelectedNotification*/] = useState(null);
-  const {loc_id} = useAppContext(['loc_id']);
-
+  const {ts_id} = useAppContext(['ts_id']);
+  let loc_id = undefined;
   const {setSelectedTask, activeTasks} = useTaskStore();
   const {tasks: tasksNavigation} = useNavigationFunctions();
+  const {data: metadata} = useTimeseriesData();
 
-  const {data, isPending} = useLocationNotificationOverview(loc_id);
+  const {data, isPending} = useLocationNotificationOverview(metadata?.loc_id);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -53,14 +55,9 @@ const NotificationList = () => {
     setUpdateModalOpen(false);
   };
 
-  // const handleMarkAsDone = (notification) => {
-  //   markAsDone.mutate({
-  //     path: ts_id,
-  //     data: {
-  //       opgave: notification.opgave,
-  //     },
-  //   });
-  // };
+  if (loc_id == undefined) {
+    loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
+  }
 
   const grouped = groupBy(
     data?.filter((elem) => elem.notification_id != 0),

@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
+import {useShallow} from 'zustand/shallow';
 
 import {ID} from './types';
 
@@ -49,3 +50,7 @@ export const taskStore = create<TaskState>()(
     }
   )
 );
+
+export const useRawTaskStore = <T>(selector: (state: TaskState) => T) => {
+  return taskStore(useShallow(selector));
+};

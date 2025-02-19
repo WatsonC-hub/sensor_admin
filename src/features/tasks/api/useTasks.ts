@@ -5,7 +5,7 @@ import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
 import {APIError, GetQueryOptions} from '~/queryClient';
 
-import {taskStore} from '../store';
+import {useRawTaskStore} from '../store';
 import {
   type Task,
   type PatchTask,
@@ -118,7 +118,8 @@ export const moveTaskToItineraryOptions = {
 // /location_related_tasks/{loc_id}
 export const useTasks = () => {
   const queryClient = useQueryClient();
-  const [setSelectedTask, include_closed, shownMapTaskIds, setShownMapTaskIds] = taskStore(
+
+  const [setSelectedTask, include_closed, shownMapTaskIds, setShownMapTaskIds] = useRawTaskStore(
     (state) => [
       state.setSelectedTask,
       state.includeClosedTasks,
@@ -126,6 +127,7 @@ export const useTasks = () => {
       state.setShownMapTaskIds,
     ]
   );
+
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks', include_closed],
     queryFn: async () => {
