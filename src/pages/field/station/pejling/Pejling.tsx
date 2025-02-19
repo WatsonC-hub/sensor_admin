@@ -133,7 +133,7 @@ const Pejling = ({setDynamic}: Props) => {
           )}
         </Box>
       </FormProvider>
-      <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+      <Box display={'flex'} flexDirection={'column'}>
         <PejlingMeasurements handleEdit={handleEdit} handleDelete={handleDelete} />
         <FabWrapper
           icon={<AddCircle />}
