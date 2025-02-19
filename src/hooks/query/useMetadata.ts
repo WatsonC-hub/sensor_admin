@@ -27,6 +27,7 @@ export type Metadata = {
   intakeno: number;
   group: string[];
   unit: string;
+  prefix: string | null;
 };
 
 export type TimeseriesMetadata = {
@@ -61,6 +62,8 @@ export type LocationMetadata = {
     tstype_id: number;
     ts_name: string;
     calculated: boolean;
+    prefix: string | null;
+    tstype_name: string;
   }>;
 };
 
@@ -105,6 +108,8 @@ export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
             tstype_id: data.tstype_id,
             ts_name: data.ts_name,
             calculated: data.calculated,
+            prefix: data.prefix,
+            tstype_name: data.tstype_name,
           };
         }),
       };

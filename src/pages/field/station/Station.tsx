@@ -15,7 +15,7 @@ import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -163,6 +163,7 @@ interface LayoutProps {
 
 const Layout = ({children}: LayoutProps) => {
   const {ts_id} = useAppContext(['ts_id']);
+  const {data: locationdata} = useLocationData();
   const {data: metadata} = useTimeseriesData();
   const adminAccess = useAuthStore((state) => state.adminAccess);
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
@@ -172,7 +173,7 @@ const Layout = ({children}: LayoutProps) => {
         <NavBar.GoBack />
         <Box display="block" flexGrow={1} overflow="hidden">
           <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-            {metadata?.loc_name}
+            {locationdata?.loc_name}
           </Typography>
           <MinimalSelect />
         </Box>
