@@ -19,12 +19,15 @@ import {useAppContext} from '~/state/contexts';
 import UdstyrReplace from './UdstyrReplace';
 
 const unitSchema = z.object({
+  timeseries: z.object({
+    tstype_id: z.number(),
+  }),
   unit: z
     .object({
-      unit_uuid: z.string().optional(),
-      startdate: z.string().optional(),
+      unit_uuid: z.string(),
       gid: z.number().optional(),
-      enddate: z.string().optional(),
+      startdate: z.string(),
+      enddate: z.string(),
     })
     .superRefine((unit, ctx) => {
       if (moment(unit.startdate) > moment(unit.enddate)) {
@@ -40,9 +43,6 @@ const unitSchema = z.object({
         });
       }
     }),
-  timeseries: z.object({
-    tstype_id: z.number(),
-  }),
 });
 
 type Unit = z.infer<typeof unitSchema>;
@@ -70,8 +70,8 @@ const EditUnit = () => {
       tstype_id: metadata?.tstype_id,
     },
     unit: {
-      startdate: unit?.startdato,
-      enddate: unit?.slutdato,
+      startdate: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
+      enddate: moment(unit?.slutdato).format('YYYY-MM-DDTHH:mm'),
       gid: unit?.gid,
       unit_uuid: unit?.uuid,
     },
@@ -92,7 +92,8 @@ const EditUnit = () => {
   } = formMethods;
 
   useEffect(() => {
-    if (metadata != undefined) {
+    if (metadata != undefined && unit !== undefined && ts_id !== undefined) {
+      console.log(defaultValues);
       reset(defaultValues);
     }
   }, [metadata, unit_history, ts_id]);
@@ -113,6 +114,9 @@ const EditUnit = () => {
     });
   };
 
+  console.log(getValues('unit'));
+  console.log(defaultValues.unit);
+
   return (
     <>
       <FormProvider {...formMethods}>
@@ -120,7 +124,13 @@ const EditUnit = () => {
         <UnitForm mode="edit" />
         <footer>
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button bttype="tertiary" onClick={() => reset(defaultValues)}>
+            <Button
+              bttype="tertiary"
+              onClick={() => {
+                console.log(defaultValues);
+                reset(defaultValues);
+              }}
+            >
               Annuller
             </Button>
 

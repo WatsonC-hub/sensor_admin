@@ -17,8 +17,8 @@ export default function UnitForm({mode}: UnitFormProps) {
   const {watch, trigger, getFieldState} = useFormContext();
   const editMode = mode === 'edit';
 
-  const startdate = watch('unit.startdate');
-  const enddate = watch('unit.enddate');
+  // const startdate = watch('unit.startdate');
+  // const enddate = watch('unit.enddate');
   const unit_uuid: string = watch('unit.unit_uuid');
 
   const {
@@ -33,10 +33,10 @@ export default function UnitForm({mode}: UnitFormProps) {
     unit = availableUnits?.find((u) => u.unit_uuid === unit_uuid);
   }
 
-  useEffect(() => {
-    if (getFieldState('unit.startdate').error || getFieldState('unit.enddate').error)
-      trigger('unit');
-  }, [startdate, enddate]);
+  // useEffect(() => {
+  //   if (getFieldState('unit.startdate').error || getFieldState('unit.enddate').error)
+  //     trigger('unit');
+  // }, [startdate, enddate]);
 
   return (
     <Grid container spacing={2} alignItems="center" justifyContent="center">
@@ -63,7 +63,7 @@ export default function UnitForm({mode}: UnitFormProps) {
         <FormInput
           name="unit.startdate"
           label="Startdato"
-          disabled={!unit || startdate === undefined}
+          // disabled={!unit || startdate === undefined}
           fullWidth
           type="datetime-local"
           required
@@ -75,10 +75,10 @@ export default function UnitForm({mode}: UnitFormProps) {
             name="unit.enddate"
             label="Slutdato"
             fullWidth
-            disabled={!unit || startdate === undefined}
+            // disabled={!unit || startdate === undefined}
             type="datetime-local"
             required
-            inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}
+            // inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}
           />
         )}
       </Grid>

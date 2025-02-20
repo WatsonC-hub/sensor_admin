@@ -33,8 +33,6 @@ export default function EditStamdata() {
   const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {data: metadata} = useTimeseriesData();
 
-  // const {data: udstyr} = useUnitHistory();
-
   useEffect(() => {
     if (pageToShow === stationPages.STAMDATA) {
       setPageToShow(stationPages.STAMDATA);
