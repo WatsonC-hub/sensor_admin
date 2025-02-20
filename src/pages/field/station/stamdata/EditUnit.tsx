@@ -65,7 +65,7 @@ const EditUnit = () => {
 
   const unit = unit_history?.[0];
 
-  const parsed = unitSchema.safeParse({
+  const {data: defaultValues} = unitSchema.safeParse({
     timeseries: {
       tstype_id: metadata?.tstype_id,
     },
@@ -76,8 +76,6 @@ const EditUnit = () => {
       unit_uuid: unit?.uuid,
     },
   });
-
-  const {data: defaultValues = {}} = parsed;
 
   const formMethods = useForm<Unit>({
     resolver: zodResolver(unitSchema),
@@ -93,7 +91,6 @@ const EditUnit = () => {
 
   useEffect(() => {
     if (metadata != undefined && unit !== undefined && ts_id !== undefined) {
-      console.log(defaultValues);
       reset(defaultValues);
     }
   }, [metadata, unit_history, ts_id]);
@@ -114,9 +111,6 @@ const EditUnit = () => {
     });
   };
 
-  console.log(getValues('unit'));
-  console.log(defaultValues.unit);
-
   return (
     <>
       <FormProvider {...formMethods}>
@@ -127,7 +121,6 @@ const EditUnit = () => {
             <Button
               bttype="tertiary"
               onClick={() => {
-                console.log(defaultValues);
                 reset(defaultValues);
               }}
             >

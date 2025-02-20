@@ -20,7 +20,7 @@ const timeseriesSchema = z.object({
   }),
   timeseries: z.object({
     prefix: z.string().nullable(),
-    sensor_depth_m: z.number().optional(),
+    sensor_depth_m: z.number().nullable(),
     tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
   }),
 });
@@ -41,7 +41,7 @@ const EditTimeseries = () => {
     },
   });
 
-  const defaultValues = {
+  const {data: defaultValues} = timeseriesSchema.safeParse({
     timeseries: {
       prefix: metadata?.prefix,
       sensor_depth_m: metadata?.sensor_depth_m,
@@ -50,7 +50,7 @@ const EditTimeseries = () => {
     location: {
       loc_name: metadata?.loc_name,
     },
-  };
+  });
 
   const formMethods = useForm<Timeseries>({
     resolver: zodResolver(timeseriesSchema),

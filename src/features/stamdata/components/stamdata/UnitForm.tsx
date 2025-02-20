@@ -1,6 +1,5 @@
 import {Grid} from '@mui/material';
-import moment from 'moment';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
@@ -14,7 +13,7 @@ interface UnitFormProps {
 }
 
 export default function UnitForm({mode}: UnitFormProps) {
-  const {watch, trigger, getFieldState} = useFormContext();
+  const {watch} = useFormContext();
   const editMode = mode === 'edit';
 
   // const startdate = watch('unit.startdate');
