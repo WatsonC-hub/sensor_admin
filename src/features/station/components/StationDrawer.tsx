@@ -92,9 +92,18 @@ const StationDrawer = () => {
       color: navIconStyle(pageToShow === 'tilsyn'),
     },
     {
-      text: 'Kvalitetssikring',
+      text: 'Datajusteringer',
       onClick: () => {
         adminKvalitetssikring(ts_id!);
+      },
+      icon: <AutoGraphIcon />,
+      // color: navIconStyle(pageToShow === 'kvalitetssikring'),
+    },
+    {
+      text: 'Algoritmer',
+      onClick: () => {
+        adminKvalitetssikring(ts_id!);
+        setPageToShow('algoritmer');
       },
       icon: <AutoGraphIcon />,
       // color: navIconStyle(pageToShow === 'kvalitetssikring'),
