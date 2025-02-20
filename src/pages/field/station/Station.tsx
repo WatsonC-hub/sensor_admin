@@ -149,6 +149,7 @@ export default function Station() {
       <input
         type="file"
         ref={fileInputRef}
+        accept="image/*"
         style={{display: 'none'}}
         onChange={handleFileRead}
         onClick={handleFileInputClick}

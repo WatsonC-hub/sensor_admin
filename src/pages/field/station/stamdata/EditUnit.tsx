@@ -3,7 +3,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -51,6 +51,7 @@ const EditUnit = () => {
   const {ts_id} = useAppContext(['ts_id']);
   const {data: metadata} = useTimeseriesData();
   const {data: unit_history} = useUnitHistory();
+  const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
 
   const metadataEditUnitMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -63,7 +64,7 @@ const EditUnit = () => {
     },
   });
 
-  const unit = unit_history?.[0];
+  const unit = unit_history?.find((item) => item.gid == selectedUnit);
 
   const {data: defaultValues} = unitSchema.safeParse({
     timeseries: {
@@ -90,10 +91,16 @@ const EditUnit = () => {
   } = formMethods;
 
   useEffect(() => {
+    if (unit_history != undefined) {
+      reset(defaultValues);
+    }
+  }, [unit_history]);
+
+  useEffect(() => {
     if (metadata != undefined && unit !== undefined && ts_id !== undefined) {
       reset(defaultValues);
     }
-  }, [metadata, unit_history, ts_id]);
+  }, [selectedUnit]);
 
   const handleSubmit = async (data: Unit) => {
     const payload = {
@@ -114,7 +121,7 @@ const EditUnit = () => {
   return (
     <>
       <FormProvider {...formMethods}>
-        <UdstyrReplace />
+        <UdstyrReplace selected={selectedUnit} setSelected={setSelectedUnit} />
         <UnitForm mode="edit" />
         <footer>
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
