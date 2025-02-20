@@ -41,6 +41,8 @@ export default function LocationForm({mode, disable = false}: Props) {
   const gridsize = mode === 'modal' ? 12 : 6;
   const superUser = useAuthStore((store) => store.superUser);
 
+  console.log(getValues().unit);
+
   return (
     <Grid container spacing={2} alignItems="center">
       <Grid item xs={12} sm={gridsize}>
@@ -86,6 +88,7 @@ export default function LocationForm({mode, disable = false}: Props) {
                   disable={
                     disable ||
                     (getValues().unit !== undefined &&
+                      getValues('unit').unit_uuid !== '' &&
                       getValues().unit.unit_uuid !== null &&
                       getValues().unit.unit_uuid !== undefined)
                   }
