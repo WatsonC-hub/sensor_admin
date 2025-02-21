@@ -1,11 +1,11 @@
 import {SelectChangeEvent, Grid, Typography, Select, MenuItem} from '@mui/material';
-import moment from 'moment';
 import {useState, useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {useUnitHistory, UnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
+import {convertDate, currentDate, isAfter, isBefore} from '~/helpers/dateConverter';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 import UnitEndDateDialog from './UnitEndDialog';
@@ -36,8 +36,8 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
       {
         gid: unit.gid,
         unit_uuid: unit.uuid,
-        startdate: moment(unit.startdato).format('YYYY-MM-DDTHH:mm'),
-        enddate: moment(unit.slutdato).format('YYYY-MM-DDTHH:mm'),
+        startdate: convertDate(unit.startdato, 'YYYY-MM-DDTHH:mm'),
+        enddate: convertDate(unit.slutdato, 'YYYY-MM-DDTHH:mm'),
       },
       {shouldValidate: true, shouldDirty: true}
     );
@@ -78,14 +78,13 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
                 className="swiper-no-swiping"
               >
                 {data?.map((item) => {
-                  const endDate =
-                    moment(new Date()) < moment(item.slutdato)
-                      ? 'nu'
-                      : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
+                  const endDate = isBefore(currentDate(), item.slutdato)
+                    ? 'nu'
+                    : convertDate(item?.slutdato, 'YYYY-MM-DD HH:mm');
 
                   return (
                     <MenuItem id={item.gid.toString()} key={item.gid.toString()} value={item.gid}>
-                      {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
+                      {`${convertDate(item?.startdato, 'YYYY-MM-DD HH:mm')} - ${endDate}`}
                     </MenuItem>
                   );
                 })}
@@ -96,7 +95,7 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
               </Typography>
             )}
 
-            {data && data.length && moment(data?.[0].slutdato) > moment(new Date()) ? (
+            {data && data.length && isAfter(data?.[0].slutdato, currentDate()) ? (
               <Button
                 bttype="primary"
                 sx={{marginLeft: 1}}

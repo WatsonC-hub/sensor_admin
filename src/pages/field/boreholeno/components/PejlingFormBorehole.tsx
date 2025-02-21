@@ -16,12 +16,12 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {alertHeight} from '~/consts';
+import {isBefore, isDateValid, isSameOrAfter} from '~/helpers/dateConverter';
 import {Maalepunkt, PejlingItem} from '~/types';
 
 interface BoreholePejlingFormProps {
@@ -67,8 +67,8 @@ export default function PejlingFormBorehole({
     if (mpData.length > 0) {
       const mp: Array<Maalepunkt> = mpData.filter((elem) => {
         if (
-          moment(formData.timeofmeas).isSameOrAfter(elem.startdate) &&
-          moment(formData.timeofmeas).isBefore(elem.enddate)
+          isSameOrAfter(formData.timeofmeas, elem.startdate) &&
+          isBefore(formData.timeofmeas, elem.enddate)
         ) {
           return true;
         }
@@ -83,12 +83,12 @@ export default function PejlingFormBorehole({
   }, [formData.gid, mpData]);
 
   const handleDateChange = (date: string) => {
-    if (moment(date).isValid()) {
+    if (isDateValid(date)) {
       changeFormData('timeofmeas', date);
     }
 
     const mp = mpData?.filter((elem) => {
-      if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
+      if (isSameOrAfter(date, elem.startdate) && isBefore(date, elem.enddate)) {
         return true;
       }
     });

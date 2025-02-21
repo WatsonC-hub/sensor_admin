@@ -8,12 +8,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import {useTheme} from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import moment from 'moment';
 import React from 'react';
 import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
+import {convertDate, toISOString, toMoment} from '~/helpers/dateConverter';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 
 function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
@@ -31,7 +31,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
-          date: moment(activeImage.date).toISOString(),
+          date: toISOString(activeImage.date),
           uri: dataUri,
         },
       };
@@ -52,7 +52,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         data: {
           comment: activeImage.comment,
           public: activeImage.public.toString(),
-          date: moment(activeImage.date).toISOString(),
+          date: toISOString(activeImage.date),
         },
       };
 
@@ -120,8 +120,8 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
             />
             <OwnDatePicker
               label={'Dato'}
-              value={moment(activeImage.date)}
-              onChange={(date) => changeData('date', moment(date).format('YYYY-MM-DD HH:mm'))}
+              value={toMoment(activeImage.date)}
+              onChange={(date) => changeData('date', convertDate(date, 'YYYY-MM-DD HH:mm'))}
             />
           </Grid>
         </Grid>

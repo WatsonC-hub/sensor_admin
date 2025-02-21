@@ -1,5 +1,6 @@
-import moment from 'moment';
 import {z} from 'zod';
+
+import {isAfter} from './dateConverter';
 
 const locationSchema = z.object({
   location: z.object({
@@ -68,7 +69,7 @@ const metadataPutSchema = metadataBaseSchema.extend({
       enddate: z.string(),
     })
     .superRefine((unit, ctx) => {
-      if (moment(unit.startdate) > moment(unit.enddate)) {
+      if (isAfter(unit.startdate, unit.enddate)) {
         ctx.addIssue({
           code: z.ZodIssueCode.invalid_date,
           message: 'start dato må ikke være senere end slut dato',

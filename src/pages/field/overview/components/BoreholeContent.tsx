@@ -1,8 +1,8 @@
 import {Box, Divider, Typography} from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 
 import {boreholeColors} from '~/consts';
+import {convertDate} from '~/helpers/dateConverter';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useDrawerContext} from '~/state/contexts';
 import {BoreholeMapData} from '~/types';
@@ -36,7 +36,7 @@ const BoreholeContent = ({data}: BoreholeContentProps) => {
                 </Typography>
                 <Typography variant="body2">{data.measurement[index]} m</Typography>
                 <Typography variant="body2">
-                  {moment(data.timeofmeas[index]).format('YYYY-MM-DD')}
+                  {convertDate(data.timeofmeas[index], 'YYYY-MM-DD')}
                 </Typography>
                 {/* 
               <TaskIcon color={boreholeColors[data.status[index]].color} />

@@ -1,8 +1,8 @@
 import {useQuery, useMutation} from '@tanstack/react-query';
-import moment from 'moment';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {convertDate} from '~/helpers/dateConverter';
 import {useAppContext} from '~/state/contexts';
 import {Maalepunkt} from '~/types';
 
@@ -65,8 +65,8 @@ export const useMaalepunkt = () => {
       return data.map((m) => {
         return {
           ...m,
-          startdate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
-          enddate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
+          startdate: convertDate(m.startdate, 'YYYY-MM-DD HH:mm:ss'),
+          enddate: convertDate(m.enddate, 'YYYY-MM-DD HH:mm:ss'),
         };
       });
     },

@@ -7,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import {useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -18,6 +17,7 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
+import {convertDate, toISOString} from '~/helpers/dateConverter';
 import {useAppContext} from '~/state/contexts';
 import {useAuthStore} from '~/state/store';
 
@@ -135,14 +135,14 @@ export default function AddUnitForm({
   if (mode === 'edit') {
     handleSave = async () => {
       const unit = availableUnits && availableUnits.find((x) => x.unit_uuid === unitData.uuid);
-
+      console.log(unitData.fra);
       if (!unit) return;
       const payload = {
         path: `${ts_id}`,
         data: {
           unit_uuid: unit.unit_uuid,
-          startdate: moment(unitData.fra).toISOString(),
-          enddate: moment('2099-01-01T12:00:00').toISOString(),
+          startdate: toISOString(unitData.fra),
+          enddate: toISOString('2099-01-01T12:00:00'),
         },
       };
       if (superUser) {
@@ -169,7 +169,7 @@ export default function AddUnitForm({
 
       setValue('unit', {
         unit_uuid: unit.unit_uuid,
-        startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
+        startdate: convertDate(unitData.fra, 'YYYY-MM-DD HH:mm:ss'),
       });
 
       // setUnit({
@@ -330,8 +330,8 @@ export default function AddUnitForm({
                 path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
-                  startdate: moment(unitData.fra).toISOString(),
-                  enddate: moment('2099-01-01T12:00:00').toISOString(),
+                  startdate: toISOString(unitData.fra),
+                  enddate: toISOString('2099-01-01T12:00:00'),
                   inherit_invoice: false,
                 },
               })
@@ -346,8 +346,8 @@ export default function AddUnitForm({
                 path: `${ts_id}`,
                 data: {
                   unit_uuid: unitData?.uuid,
-                  startdate: moment(unitData.fra).toISOString(),
-                  enddate: moment('2099-01-01T12:00:00').toISOString(),
+                  startdate: toISOString(unitData.fra),
+                  enddate: toISOString('2099-01-01T12:00:00'),
                   inherit_invoice: true,
                 },
               })

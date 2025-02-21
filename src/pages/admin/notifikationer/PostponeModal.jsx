@@ -5,16 +5,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import moment from 'moment';
 import * as React from 'react';
+
+import {addValueToDate, currentDate} from '~/helpers/dateConverter';
 
 export default function PostponeModal({open, setOpen, onPostpone}) {
   const [postponeDate, setPostponeDate] = React.useState(
-    moment().add(7, 'days').format('YYYY-MM-DD')
+    addValueToDate(currentDate(), 7, 'days').format('YYYY-MM-DD')
   );
   const handleClose = () => {
     setOpen(false);
-    setPostponeDate(moment().add(7, 'days').format('YYYY-MM-DD'));
+    setPostponeDate(addValueToDate(currentDate(), 7, 'days').format('YYYY-MM-DD'));
   };
 
   const handleSubmit = (e) => {
@@ -39,8 +40,8 @@ export default function PostponeModal({open, setOpen, onPostpone}) {
             onChange={(e) => setPostponeDate(e.target.value)}
             InputProps={{
               inputProps: {
-                max: moment().add(1, 'month').format('YYYY-MM-DD'),
-                min: moment().format('YYYY-MM-DD'),
+                max: addValueToDate(currentDate(), 1, 'month').format('YYYY-MM-DD'),
+                min: currentDate('YYYY-MM-DD'),
               },
             }}
           />

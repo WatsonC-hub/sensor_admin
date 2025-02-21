@@ -1,7 +1,6 @@
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
@@ -10,6 +9,7 @@ import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import MaalepunktForm from '~/components/MaalepunktForm';
 import SaveImageDialog from '~/components/SaveImageDialog';
+import {isBefore, isSameOrAfter, toISOString} from '~/helpers/dateConverter';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
@@ -54,7 +54,7 @@ const Boreholeno = () => {
 
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
-    timeofmeas: () => moment().toISOString(),
+    timeofmeas: () => toISOString(),
     pumpstop: null,
     disttowatertable_m: 0,
     service: false,
@@ -70,13 +70,13 @@ const Boreholeno = () => {
     type: boreholeno,
     comment: '',
     public: false,
-    date: moment().toISOString(),
+    date: toISOString(),
   });
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
-    startdate: () => moment().toISOString(),
-    enddate: () => moment('2099-01-01').toISOString(),
+    startdate: () => toISOString(),
+    enddate: () => toISOString('2099-01-01'),
     elevation: null,
     mp_description: '',
   });
@@ -112,8 +112,8 @@ const Boreholeno = () => {
     if (watlevmp.length > 0) {
       const elev: number = watlevmp.filter((e2: Maalepunkt) => {
         return (
-          moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
-          moment(pejlingData.timeofmeas) < moment(e2.enddate)
+          isSameOrAfter(pejlingData.timeofmeas, e2.startdate) &&
+          isBefore(pejlingData.timeofmeas, e2.enddate)
         );
       })[0]?.elevation;
 
@@ -128,10 +128,7 @@ const Boreholeno = () => {
     if (watlevmp.length > 0) {
       ctrls = measurements.map((e: BoreholeMeasurement) => {
         const elev = watlevmp.filter((e2: Maalepunkt) => {
-          return (
-            moment(e.timeofmeas) >= moment(e2.startdate) &&
-            moment(e.timeofmeas) < moment(e2.enddate)
-          );
+          return isSameOrAfter(e.timeofmeas, e2.startdate) && isBefore(e.timeofmeas, e2.enddate);
         })[0].elevation;
 
         return {
@@ -215,14 +212,14 @@ const Boreholeno = () => {
 
   const handleEditPejling = (data: Kontrol) => {
     setShowForm(true);
-    data.timeofmeas = moment(data.timeofmeas).toISOString();
+    data.timeofmeas = toISOString(data.timeofmeas);
     setPejlingData(data);
   };
 
   const handleEditWatlevmp = (data: MaalepunktTableData) => {
     setShowForm(true);
-    data.startdate = moment(data.startdate).toISOString();
-    data.enddate = moment(data.enddate).toISOString();
+    data.startdate = toISOString(data.startdate);
+    data.enddate = toISOString(data.enddate);
     setMpData(data);
   };
 
@@ -277,7 +274,7 @@ const Boreholeno = () => {
       type: boreholeno,
       comment: '',
       public: false,
-      date: moment().toISOString(),
+      date: toISOString(),
     });
     setOpenSave(true);
   };

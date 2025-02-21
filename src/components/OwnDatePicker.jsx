@@ -2,8 +2,9 @@ import {TextField} from '@mui/material';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import daLocale from 'dayjs/locale/da';
-import moment from 'moment/moment';
 import React from 'react';
+
+import {convertDate, toMoment} from '~/helpers/dateConverter';
 
 const OwnDatePicker = (props) => {
   return (
@@ -15,14 +16,14 @@ const OwnDatePicker = (props) => {
         error={props.error}
         helperText={props.helperText}
         disabled={props.disabled}
-        value={moment(props.value).format('YYYY-MM-DDTHH:mm')}
+        value={convertDate(props.value, 'YYYY-MM-DDTHH:mm')}
         onChange={(e) => {
-          props.onChange(moment(e.target.value).toDate());
+          props.onChange(toMoment(e.target.value).toDate());
         }}
         sx={props.error ? {} : props.sx}
         inputProps={{
-          max: props.max ? moment(props.max).format('YYYY-MM-DDTHH:mm:ss') : null,
-          min: props.min ? moment(props.min).format('YYYY-MM-DDTHH:mm:ss') : null,
+          max: props.max ? convertDate(props.max, 'YYYY-MM-DDTHH:mm:ss') : null,
+          min: props.min ? convertDate(props.min, 'YYYY-MM-DDTHH:mm:ss') : null,
         }}
         InputLabelProps={{
           shrink: true,

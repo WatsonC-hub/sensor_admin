@@ -2,7 +2,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Dialog, DialogTitle, DialogContent, MenuItem, DialogActions} from '@mui/material';
 import {useQueryClient, useQuery, useMutation} from '@tanstack/react-query';
-import moment from 'moment';
 import {useForm, FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -10,6 +9,7 @@ import {z} from 'zod';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {convertDate, isBefore, toISOString} from '~/helpers/dateConverter';
 import {useAppContext} from '~/state/contexts';
 import {useAuthStore} from '~/state/store';
 
@@ -39,12 +39,12 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
 
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
-    defaultValues: {enddate: moment().toISOString()},
+    defaultValues: {enddate: toISOString()},
   });
 
   const handleClose = () => {
     setOpenDialog(false);
-    formMethods.reset({enddate: moment().toISOString()});
+    formMethods.reset({enddate: toISOString()});
   };
 
   const {data: changeReasons} = useQuery<ChangeReason[]>({
@@ -81,7 +81,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   });
 
   const submit = (values: UnitEndFormValues) => {
-    values.enddate = moment(values.enddate).toISOString();
+    values.enddate = toISOString(values.enddate);
     takeHomeMutation.mutate(values);
   };
 
@@ -97,11 +97,11 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
             type="datetime-local"
             required
             warning={(value) => {
-              if (moment(value) < moment(unit?.startdato)) {
+              if (isBefore(value, unit?.startdato)) {
                 return 'Vælg dato efter startdato';
               }
             }}
-            inputProps={{min: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm')}}
+            inputProps={{min: convertDate(unit?.startdato, 'YYYY-MM-DDTHH:mm')}}
           />
 
           {superUser && (

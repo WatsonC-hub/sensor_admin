@@ -4,8 +4,6 @@ import {Save} from '@mui/icons-material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import {Box, CardContent, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
-import {parseAsString, useQueryState} from 'nuqs';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
@@ -13,7 +11,9 @@ import {z} from 'zod';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 // import {QaStampLevel} from '~/helpers/EnumHelper';
+import {convertDate, isAfter, isBefore, toISOString} from '~/helpers/dateConverter';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {qaSelection} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 
@@ -34,7 +34,7 @@ const schema = z
   })
   .refine(
     ({date, startDate}) => {
-      return !startDate || moment(startDate).isBefore(moment(date));
+      return !startDate || isBefore(startDate, date);
     },
     {path: ['date'], message: 'Dato må ikke være tidligere end sidst godkendt'}
   );
@@ -56,7 +56,7 @@ const WizardConfirmTimeseries = ({
   } = useCertifyQa(ts_id);
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
-  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
+  const [, setDataAdjustment] = useAdjustmentState();
 
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
@@ -79,7 +79,7 @@ const WizardConfirmTimeseries = ({
   useEffect(() => {
     if (selection.points && selection.points.length > 0) {
       const x = selection.points[0].x;
-      if (x) setValue('date', moment(x.toString()).format('YYYY-MM-DD HH:mm'));
+      if (x) setValue('date', convertDate(x.toString(), 'YYYY-MM-DD HH:mm'));
     } else {
       setValue('date', '');
     }
@@ -94,7 +94,7 @@ const WizardConfirmTimeseries = ({
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
     const payload = {
       path: `${ts_id}`,
-      data: {...certifyQa, date: moment(certifyQa.date).toISOString()},
+      data: {...certifyQa, date: toISOString(certifyQa.date)},
     };
     postQaData.mutateAsync(payload);
     onClose();
@@ -217,7 +217,7 @@ const WizardConfirmTimeseries = ({
                 bttype="primary"
                 startIcon={<Save />}
                 disabled={
-                  moment(selectedQaData?.date).isAfter(enddateWatch) &&
+                  (selectedQaData?.date ? isAfter(selectedQaData?.date, enddateWatch) : false) &&
                   selectedQaData?.date != undefined
                 }
                 onClick={handleSubmit(handleSave, (e) => {

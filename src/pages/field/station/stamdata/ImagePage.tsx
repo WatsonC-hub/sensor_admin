@@ -1,11 +1,11 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
-import moment from 'moment';
 import React, {createRef, useState} from 'react';
 
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
+import {currentDate} from '~/helpers/dateConverter';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
@@ -20,7 +20,7 @@ const ImagePage = () => {
     type: loc_id?.toString(),
     comment: '',
     public: false,
-    date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+    date: currentDate('YYYY-MM-DD HH:mm'),
   });
 
   const changeActiveImageData = (field: string, value: string) => {

@@ -1,11 +1,11 @@
 import {useTheme} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
 import {useMemo} from 'react';
 
 import {apiClient} from '~/apiClient';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
+import {convertDate, dateDiff} from '~/helpers/dateConverter';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useControlData} from '~/hooks/query/useControlData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
@@ -56,8 +56,8 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
   const {data: precipitation_data} = useQuery({
     queryKey: ['precipitation_data', ts_id],
     queryFn: async () => {
-      const starttime = moment(edgeDates?.firstDate).format('YYYY-MM-DDTHH:mm');
-      const stoptime = moment(edgeDates?.lastDate).format('YYYY-MM-DDTHH:mm');
+      const starttime = convertDate(edgeDates?.firstDate, 'YYYY-MM-DDTHH:mm');
+      const stoptime = convertDate(edgeDates?.lastDate, 'YYYY-MM-DDTHH:mm');
       const {data} = await apiClient.get(
         `/data/timeseries/${ts_id}/precipitation/1?start=${starttime}&stop=${stoptime}`
       );
@@ -104,7 +104,7 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
               return {
                 type: 'rect',
                 x0: edgeDates?.firstDate,
-                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x1: convertDate(d.date, 'YYYY-MM-DD HH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -123,7 +123,7 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
               return {
                 xref: 'x',
                 yref: 'paper',
-                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x: convertDate(d.date, 'YYYY-MM-DD HH:mm'),
                 xanchor: 'right',
                 yanchor: 'bottom',
                 showarrow: false,
@@ -199,8 +199,8 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
             ...(adjustmentData?.levelcorrection?.map((d) => {
               return {
                 type: 'line',
-                x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
-                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x0: convertDate(d.date, 'YYYY-MM-DD HH:mm'),
+                x1: convertDate(d.date, 'YYYY-MM-DD HH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -217,7 +217,7 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
               return {
                 xref: 'x',
                 yref: 'paper',
-                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x: convertDate(d.date, 'YYYY-MM-DD HH:mm'),
                 xanchor: 'left',
                 yanchor: 'bottom',
                 showarrow: false,
@@ -233,8 +233,8 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
             ...(certifedData?.map((data) => {
               return {
                 type: 'line',
-                x0: moment(data.date).format('YYYY-MM-DD HH:mm'),
-                x1: moment(data.date).format('YYYY-MM-DD HH:mm'),
+                x0: convertDate(data.date, 'YYYY-MM-DD HH:mm'),
+                x1: convertDate(data.date, 'YYYY-MM-DD HH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -357,7 +357,7 @@ const transformQAData = (data: Array<QaGraphLabel>) => {
   });
 
   const annotateList = data
-    ?.sort((a, b) => moment(a.startdate).diff(moment(b.startdate)))
+    ?.sort((a, b) => dateDiff(a.startdate, b.startdate))
     .map((d, index) => {
       let y;
       switch (index % 4) {

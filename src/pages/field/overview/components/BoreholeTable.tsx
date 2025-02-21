@@ -10,13 +10,12 @@ import {
   MaterialReactTable,
   MRT_TableInstance,
 } from 'material-react-table';
-import moment from 'moment';
 import React, {useMemo} from 'react';
 
 import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {calculateContentHeight, boreholeColors} from '~/consts';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -94,7 +93,7 @@ const BoreholeTable = ({data}: Props) => {
               header: 'Seneste pejling',
               accessorFn: (row) => {
                 if (row.timeofmeas) {
-                  return `${moment(row.timeofmeas).format('DD-MM-YYYY HH:mm')}`;
+                  return `${convertDate(row.timeofmeas, 'DD-MM-YYYY HH:mm')}`;
                 } else {
                   return 'Ingen pejling';
                 }

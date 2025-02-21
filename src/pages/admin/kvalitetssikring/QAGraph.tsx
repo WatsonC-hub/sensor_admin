@@ -1,20 +1,17 @@
 import {useSetAtom} from 'jotai';
-import moment from 'moment';
 import {Layout} from 'plotly.js';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
+import {convertDate, currentDate, toISOString} from '~/helpers/dateConverter';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
 
 import useQAGraph from './hooks/useQAGraph';
 
-const initRange = [
-  moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
-  moment().format('YYYY-MM-DDTHH:mm'),
-];
+const initRange = [convertDate('1900-01-01', 'YYYY-MM-DDTHH:mm'), currentDate('YYYY-MM-DDTHH:mm')];
 
 interface PlotGraphProps {
   ts_id: number;
@@ -52,9 +49,7 @@ export default function PlotGraph({
         eventData.points.length === 1
       ) {
         const prevIndex =
-          graphData.x
-            .map((x) => moment(x).toISOString())
-            .indexOf(moment(eventData.points[0].x).toISOString()) - 1;
+          graphData.x.map((x) => toISOString(x)).indexOf(toISOString(eventData.points[0].x)) - 1;
         const prevDate = graphData.x.at(prevIndex);
         const prevValue = graphData.y.at(prevIndex);
 

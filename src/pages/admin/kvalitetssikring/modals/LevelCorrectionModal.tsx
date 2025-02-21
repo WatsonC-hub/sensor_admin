@@ -2,16 +2,21 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
-import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {
+  convertDateWithTimeStamp,
+  formatMoment,
+  toISOString,
+  toMoment,
+} from '~/helpers/dateConverter';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {qaSelection} from '~/state/atoms';
 
 interface LevelCorrectionModal {
@@ -25,13 +30,13 @@ type CorrectionValues = z.infer<typeof schema>;
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
   const {data: timeseries_data} = useTimeseriesData();
-  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
+  const [, setDataAdjustment] = useAdjustmentState();
 
   const unit = timeseries_data && 'unit' in timeseries_data ? timeseries_data.unit : '';
   const prevY = (
     selection?.points?.[0]?.data?.y[selection?.points?.[0]?.pointIndex - 1] as number
   )?.toFixed(4);
-  const prevX = moment(
+  const prevX = toMoment(
     selection?.points?.[0]?.data?.x[selection?.points?.[0]?.pointIndex - 1] as string
   );
   const y = (selection?.points?.[0]?.y as number)?.toFixed(4);
@@ -46,7 +51,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
     levelCorrectionMutation.mutate(
       {
         path: `${timeseries_data?.ts_id}`,
-        data: {date: moment(values.date).toISOString(), comment: values.comment},
+        data: {date: toISOString(values.date), comment: values.comment},
       },
       {
         onSuccess: () => {
@@ -59,7 +64,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const x = watch('date');
 
   useEffect(() => {
-    setValue('date', moment(selection?.points?.[0]?.x).format('YYYY-MM-DD HH:mm'));
+    setValue('date', convertDateWithTimeStamp(selection?.points?.[0]?.x as string));
   }, [selection]);
 
   return (
@@ -76,7 +81,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
           <Box display={'flex'} flexDirection={'row'}>
             <b style={{width: 150}}>Forrige punkt:</b>
             <Typography gutterBottom>
-              {prevX.format('YYYY-MM-DD HH:mm')} - {prevY + ' '}
+              {formatMoment(prevX)} - {prevY + ' '}
               {unit}
             </Typography>
           </Box>

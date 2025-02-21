@@ -1,7 +1,6 @@
 import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
@@ -11,6 +10,7 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
+import {currentDate, toISOString} from '~/helpers/dateConverter';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {
   useCreateTabState,
@@ -36,7 +36,7 @@ const Pejling = ({setDynamic}: Props) => {
 
   const initialData = {
     gid: -1,
-    timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
+    timeofmeas: currentDate('YYYY-MM-DDTHH:mm'),
     measurement: 0,
     useforcorrection: 0,
     comment: '',
@@ -77,7 +77,7 @@ const Pejling = ({setDynamic}: Props) => {
       data: {...values, isWaterlevel: isWaterlevel, stationid: ts_id},
       path: values.gid === -1 ? `${ts_id}` : `${ts_id}/${values.gid}`,
     };
-    payload.data.timeofmeas = moment(payload.data.timeofmeas).toISOString();
+    payload.data.timeofmeas = toISOString(payload.data.timeofmeas);
 
     if (values.gid === -1) postPejling.mutate(payload);
     else putPejling.mutate(payload);

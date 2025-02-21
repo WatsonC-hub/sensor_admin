@@ -2,7 +2,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -12,6 +11,7 @@ import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
+import {convertDate, isAfter, toISOString} from '~/helpers/dateConverter';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
@@ -30,7 +30,7 @@ const unitSchema = z.object({
       enddate: z.string(),
     })
     .superRefine((unit, ctx) => {
-      if (moment(unit.startdate) > moment(unit.enddate)) {
+      if (isAfter(unit.startdate, unit.enddate)) {
         ctx.addIssue({
           code: z.ZodIssueCode.invalid_date,
           message: 'start dato må ikke være senere end slut dato',
@@ -71,8 +71,8 @@ const EditUnit = () => {
       tstype_id: metadata?.tstype_id,
     },
     unit: {
-      startdate: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
-      enddate: moment(unit?.slutdato).format('YYYY-MM-DDTHH:mm'),
+      startdate: convertDate(unit?.startdato, 'YYYY-MM-DDTHH:mm'),
+      enddate: convertDate(unit?.slutdato, 'YYYY-MM-DDTHH:mm'),
       gid: unit?.gid,
       unit_uuid: unit?.uuid,
     },
@@ -105,8 +105,8 @@ const EditUnit = () => {
   const handleSubmit = async (data: Unit) => {
     const payload = {
       ...data.unit,
-      startdate: moment(data.unit.startdate).toISOString(),
-      enddate: moment(data.unit.enddate).toISOString(),
+      startdate: toISOString(data.unit.startdate),
+      enddate: toISOString(data.unit.enddate),
     };
     metadataEditUnitMutation.mutate(payload, {
       onSuccess: () => {

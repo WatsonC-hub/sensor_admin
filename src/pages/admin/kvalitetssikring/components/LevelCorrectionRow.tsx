@@ -1,13 +1,13 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Grid} from '@mui/material';
-import moment from 'moment';
 import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {toISOString} from '~/helpers/dateConverter';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {LevelCorrection} from '~/types';
 
@@ -24,7 +24,7 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
     date: z
       .string()
       .min(1, {message: 'Dato ugyldig'})
-      .transform((value) => moment(value).toISOString()),
+      .transform((value) => toISOString(value)),
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
   });
 
@@ -53,7 +53,7 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
         },
       });
     }
-    setOpen && setOpen();
+    if (setOpen) setOpen();
   };
 
   return (
@@ -96,7 +96,7 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
                 size="small"
                 onClick={() => {
                   reset(data);
-                  setOpen && setOpen();
+                  if (setOpen) setOpen();
                 }}
               >
                 Annuller

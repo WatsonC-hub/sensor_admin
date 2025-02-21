@@ -1,12 +1,12 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 import {useForm, FormProvider} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {toISOString} from '~/helpers/dateConverter';
 import {Notification} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 
@@ -46,7 +46,7 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
         ts_id: values.ts_id,
         notification_id: values.notification_id,
         status: values.status,
-        enddate: moment(values.enddate).toISOString(),
+        enddate: values.enddate ? toISOString(values.enddate) : null,
         notify_type: values.notify_type,
       },
     ]);

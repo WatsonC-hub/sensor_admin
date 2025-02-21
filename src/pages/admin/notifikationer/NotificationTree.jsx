@@ -3,19 +3,19 @@ import {TreeItem, TreeView} from '@mui/lab';
 import {Box, Button} from '@mui/material';
 import {atom, useAtom} from 'jotai';
 import {groupBy, map, maxBy, sortBy, uniqBy} from 'lodash';
-import moment from 'moment';
 import React, {useEffect} from 'react';
 
+import {convertDate, currentDate} from '~/helpers/dateConverter';
 import NotificationRow from '~/pages/admin/notifikationer/NotificationRow';
 
 const expandedAtom = atom([]);
-const typeAheadAtom = atom('');
+// const typeAheadAtom = atom('');
 
 const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
   const [expanded, setExpanded] = useAtom(expandedAtom);
   // const [typeAhead, settypeAhead] = useAtom(typeAheadAtom);
 
-  var rows = [];
+  let rows = [];
   // filter data based on typeAhead and columns
   if (notifications) {
     const grouped = groupBy(notifications, (item) => {
@@ -116,7 +116,7 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
                                     ts_id: notification.stationid,
                                     notification_id: notification.notification_id,
                                     status: 'POSTPONED',
-                                    enddate: moment(date).format('YYYY-MM-DDTHH:mm'),
+                                    enddate: convertDate(date, 'YYYY-MM-DDTHH:mm'),
                                   },
                                 ])
                               }
@@ -137,7 +137,7 @@ const NotificationTree = ({notifications, statusMutate, trelloMutate}) => {
                                     ts_id: notification.stationid,
                                     notification_id: notification.notification_id,
                                     status: 'SCHEDULED',
-                                    enddate: moment().format('YYYY-MM-DDTHH:mm:ss'),
+                                    enddate: currentDate('YYYY-MM-DDTHH:mm:ss'),
                                   },
                                 ]);
                               }}

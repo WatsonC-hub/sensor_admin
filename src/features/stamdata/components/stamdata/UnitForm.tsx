@@ -1,10 +1,10 @@
 import {Grid} from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
 import FormTextField from '~/components/FormTextField';
+import {convertDate} from '~/helpers/dateConverter';
 
 import {Unit, useUnit} from '../../api/useAddUnit';
 import {UnitHistory, useUnitHistory} from '../../api/useUnitHistory';
@@ -78,7 +78,7 @@ export default function UnitForm({mode}: UnitFormProps) {
             disabled={!unit || startdate === undefined}
             type="datetime-local"
             required
-            inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}
+            inputProps={{min: convertDate(startdate, 'YYYY-MM-DDTHH:mm')}}
           />
         )}
       </Grid>

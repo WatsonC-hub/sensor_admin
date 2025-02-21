@@ -1,10 +1,10 @@
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import {UseMutationResult, useQuery, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
 import React from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {convertDate, isAfter, toISOString} from '~/helpers/dateConverter';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 import {useAppContext} from '~/state/contexts';
 import {Maalepunkt, MaalepunktPost} from '~/types';
@@ -32,15 +32,15 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
 
   const showQuickAdd = data
     ? lastOurMP
-      ? moment(data?.startdate).isAfter(moment(lastOurMP?.startdate))
+      ? isAfter(data?.startdate, lastOurMP?.startdate)
       : true
     : false;
 
   const handleQuickAdd = () => {
     const payload: MaalepunktPost = {
       gid: -1,
-      startdate: moment(data.startdate).toISOString(),
-      enddate: moment('2099-01-01').toISOString(),
+      startdate: toISOString(data.startdate),
+      enddate: toISOString('2099-01-01'),
       elevation: data.elevation,
       mp_description: data.descriptio,
     };
@@ -75,7 +75,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
           )}
           {lastOurMP && (
             <Typography color="grey.400" ml={1}>
-              {moment(lastOurMP?.startdate).format('YYYY-MM-DD')}
+              {convertDate(lastOurMP?.startdate, 'YYYY-MM-DD')}
             </Typography>
           )}
         </Box>
@@ -106,7 +106,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
 
           {isSuccess && (
             <Typography color="grey.400" ml={1}>
-              {moment(data.startdate).format('YYYY-MM-DD')}
+              {convertDate(data.startdate, 'YYYY-MM-DD')}
             </Typography>
           )}
         </Box>

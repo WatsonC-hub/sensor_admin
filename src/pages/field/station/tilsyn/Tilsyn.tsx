@@ -1,6 +1,5 @@
 import {PlaylistAddRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
-import moment from 'moment';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
@@ -8,6 +7,7 @@ import FabWrapper from '~/components/FabWrapper';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
+import {currentDate, toISOString} from '~/helpers/dateConverter';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
@@ -19,7 +19,7 @@ export default function Tilsyn() {
   const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
   const initialData: TilsynItem = {
-    dato: moment().format('YYYY-MM-DDTHH:mm'),
+    dato: currentDate('YYYY-MM-DDTHH:mm'),
     gid: -1,
     batteriskift: false,
     kommentar: '',
@@ -34,7 +34,7 @@ export default function Tilsyn() {
   const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn();
 
   const handleServiceSubmit = (values: TilsynItem) => {
-    const tilsyn = {...values, dato: moment(values.dato).toISOString()};
+    const tilsyn = {...values, dato: toISOString(values.dato)};
 
     const mutationOptions = {
       onSuccess: () => {

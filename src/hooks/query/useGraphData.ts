@@ -1,12 +1,12 @@
 import {useQuery} from '@tanstack/react-query';
-import moment from 'moment';
 
 import {apiClient} from '~/apiClient';
+import {toMoment} from '~/helpers/dateConverter';
 import {GraphData} from '~/types';
 
 export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) => {
-  const x0 = moment(xRange[0]);
-  const x1 = moment(xRange[1]);
+  const x0 = toMoment(xRange[0]);
+  const x1 = toMoment(xRange[1]);
   const daysdiff = x1.diff(x0, 'days');
 
   const start = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DDTHH:mm');

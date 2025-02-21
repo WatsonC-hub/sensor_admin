@@ -1,20 +1,17 @@
 import {Box} from '@mui/material';
-import moment from 'moment';
 import {useEffect, useState} from 'react';
 
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
+import {addValueToDate, convertDate, currentDate, subtractFromDate} from '~/helpers/dateConverter';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {PejlingItem} from '~/types';
 
 import useStationGraphHook from '../hooks/useStationGraphHook';
 
-const initRange = [
-  moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
-  moment().format('YYYY-MM-DDTHH:mm'),
-];
+const initRange = [convertDate('1900-01-01', 'YYYY-MM-DDTHH:mm'), currentDate('YYYY-MM-DDTHH:mm')];
 
 interface PlotGraphProps {
   dynamicMeasurement: Array<string | number> | undefined;
@@ -62,8 +59,8 @@ export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
   useEffect(() => {
     if (dynamicMeasurement?.[0] != undefined) {
       setXRange([
-        moment(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DD'),
-        moment(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DD'),
+        subtractFromDate(dynamicMeasurement?.[0] as string, 4, 'day').format('YYYY-MM-DD'),
+        addValueToDate(dynamicMeasurement?.[0] as string, 3, 'day').format('YYYY-MM-DD'),
       ]);
     }
   }, [dynamicMeasurement?.[0]]);

@@ -1,7 +1,8 @@
 import {TextField, TextFieldProps} from '@mui/material';
-import moment from 'moment';
 import {ChangeEvent, FocusEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
+
+import {convertDate} from '~/helpers/dateConverter';
 
 type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
@@ -52,7 +53,7 @@ const FormInput = <TFieldValues extends FieldValues>({
       rules={rules}
       render={({field: {value, onChange, onBlur, ref, name}}) => {
         if (type === 'datetime-local' && value) {
-          value = moment(value).format('YYYY-MM-DDTHH:mm') as any;
+          value = convertDate(value, 'YYYY-MM-DDTHH:mm') as any;
         }
 
         const errorMessage = !!get(errors, name) && get(errors, name).message;

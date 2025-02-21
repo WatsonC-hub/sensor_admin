@@ -10,12 +10,12 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import moment from 'moment';
 import React, {ChangeEvent, ReactNode, useEffect, useState} from 'react';
 import {useFormContext, get} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {dateDiff, isBefore, isSameOrAfter} from '~/helpers/dateConverter';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {LatestMeasurement, Maalepunkt, PejlingItem} from '~/types';
@@ -74,8 +74,8 @@ export default function PejlingForm({
     if (mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
         if (
-          moment(getValues('timeofmeas')).isSameOrAfter(elem.startdate) &&
-          moment(getValues('timeofmeas')).isBefore(elem.enddate)
+          isSameOrAfter(getValues('timeofmeas'), elem.startdate) &&
+          isBefore(getValues('timeofmeas'), elem.enddate)
         ) {
           return true;
         }
@@ -91,7 +91,7 @@ export default function PejlingForm({
           const latestmeas =
             latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
           setElevationDiff(Math.abs(dynamicMeas - latestmeas));
-          const diff = moment(dynamicDate).diff(moment(latestMeasurement?.timeofmeas), 'days');
+          const diff = dateDiff(dynamicDate, latestMeasurement?.timeofmeas ?? '', 'days');
           setHide(Math.abs(diff) > 1);
         } else {
           setDynamic([]);
@@ -111,7 +111,7 @@ export default function PejlingForm({
   const handleDateChange = (date: string) => {
     if (isWaterlevel && mpData !== undefined) {
       const mp = mpData.filter((elem) => {
-        if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
+        if (isSameOrAfter(date, elem.startdate) && isBefore(date, elem.enddate)) {
           return true;
         }
       });

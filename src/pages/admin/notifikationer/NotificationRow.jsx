@@ -1,9 +1,10 @@
 import {ErrorOutlineOutlined} from '@mui/icons-material';
 import {Box, Button, Typography} from '@mui/material';
-import moment from 'moment';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {isValid} from 'zod';
 
+import {convertDate} from '~/helpers/dateConverter';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import PostponeModal from '~/pages/admin/notifikationer/PostponeModal';
 import TrelloModal from '~/pages/admin/notifikationer/TrelloModal';
@@ -38,8 +39,7 @@ const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
           <ErrorOutlineOutlined sx={{color: notification.color}} />
           <Typography>{notification.opgave}</Typography>
           <Typography>
-            {moment(notification.dato).isValid() &&
-              moment(notification.dato).format('DD-MM-YYYY HH:mm')}
+            {isValid(notification.dato) && convertDate(notification.dato, 'DD-MM-YYYY HH:mm')}
           </Typography>
         </Box>
         <Box gap={1} display="inline-flex" height="40px">
@@ -61,7 +61,7 @@ const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
           </Button>
           {notification.status === 'IGNORED' ? (
             <Button
-              onClick={() => onIgnore(moment(notification.dato).format('YYYY-MM-DDTHH:mm:ss'))}
+              onClick={() => onIgnore(convertDate(notification.dato, 'YYYY-MM-DDTHH:mm:ss'))}
               variant="contained"
               color={notification.status === 'IGNORED' ? 'success' : 'warning'}
             >

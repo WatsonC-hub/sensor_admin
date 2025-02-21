@@ -2,7 +2,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
-import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
@@ -11,6 +10,7 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
+import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {qaSelection} from '~/state/atoms';
 
 interface YRangeModalProps {
@@ -29,7 +29,7 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
   const y1 = selection?.selections?.[0]?.y1 as number;
   const y0 = selection?.selections?.[0]?.y0 as number;
 
-  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
+  const [, setDataAdjustment] = useAdjustmentState();
 
   const {data: timeseries_data} = useTimeseriesData();
 

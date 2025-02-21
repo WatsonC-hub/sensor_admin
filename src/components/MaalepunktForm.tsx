@@ -1,10 +1,10 @@
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Card, CardContent, Grid, InputAdornment, TextField, Typography} from '@mui/material';
-import moment from 'moment';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
+import {isDateValid} from '~/helpers/dateConverter';
 import {Maalepunkt} from '~/types';
 
 interface MaalepunktFormProps {
@@ -30,13 +30,13 @@ export default function MaalepunktForm({
   };
 
   const handleStartdateChange = (date: string) => {
-    if (moment(date).isValid()) {
+    if (isDateValid(date)) {
       changeFormData('startdate', date);
     }
   };
 
   const handleEnddateChange = (date: string) => {
-    if (moment(date).isValid()) {
+    if (isDateValid(date)) {
       changeFormData('enddate', date);
     }
   };

@@ -12,11 +12,11 @@ import {
 } from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
 import {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {convertDate, maxDate, minDate, toMoment} from '~/helpers/dateConverter';
 import {qaSelection} from '~/state/atoms';
 
 const AnnotationConfiguration = ({stationId}) => {
@@ -48,9 +48,9 @@ const AnnotationConfiguration = ({stationId}) => {
   const handleSelectionAnnotate = () => {
     if (annotationConfiguration.annotateDateRange) {
       // Annotate date range
-      const moments = selection.points.map((d) => moment(d.x));
-      const startdate = moment.min(moments).format('YYYY-MM-DD HH:mm:ss');
-      const enddate = moment.max(moments).format('YYYY-MM-DD HH:mm:ss');
+      const moments = selection.points.map((d) => toMoment(d.x));
+      const startdate = minDate(moments[0], moments[moments.length], 'YYYY-MM-DD HH:mm:ss');
+      const enddate = maxDate(moments[0], moments[moments.length], 'YYYY-MM-DD HH:mm:ss');
       labelMutation.mutate(
         [
           {
@@ -72,8 +72,8 @@ const AnnotationConfiguration = ({stationId}) => {
       // Annotate point selection
       const payload = selection.points.map((d) => ({
         label_id: annotationConfiguration?.label,
-        startdate: moment(d.x).format('YYYY-MM-DD HH:mm:ss'),
-        enddate: moment(d.x).format('YYYY-MM-DD HH:mm:ss'),
+        startdate: convertDate(d.x, 'YYYY-MM-DD HH:mm:ss'),
+        enddate: convertDate(d.x, 'YYYY-MM-DD HH:mm:ss'),
       }));
       labelMutation.mutate(payload, {
         onSuccess: () => {

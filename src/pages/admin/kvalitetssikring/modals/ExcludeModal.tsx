@@ -3,17 +3,17 @@ import {Save} from '@mui/icons-material';
 // import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import {Box, FormControl, FormControlLabel, Radio, RadioGroup, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
-import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {maxDate, minDate, toISOString, toMoment} from '~/helpers/dateConverter';
 import {useExclude} from '~/hooks/query/useExclude';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {qaSelection} from '~/state/atoms';
 
 interface ExcludeModalProps {
@@ -36,8 +36,9 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const {data: timeseries_data} = useTimeseriesData();
   const {isMobile} = useBreakpoints();
 
-  const x0 = moment(selection?.range?.x[0]);
-  const x1 = moment(selection?.range?.x[1]);
+  const x0 = toMoment(selection?.range?.x[0]);
+  const x1 = toMoment(selection?.range?.x[1]);
+
   const y0 = selection?.range ? selection?.range.y[0] : 0;
   const y1 = selection?.range ? selection?.range.y[1] : 0;
 
@@ -47,7 +48,7 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   });
 
   const {handleSubmit, setValue, reset} = formMethods;
-  const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
+  const [, setDataAdjustment] = useAdjustmentState();
 
   const {post: excludeMutation} = useExclude();
 
@@ -56,8 +57,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
       {
         path: `${timeseries_data?.ts_id}`,
         data: {
-          startdate: moment(values.startDate).toISOString(),
-          enddate: moment(values.endDate).toISOString(),
+          startdate: values.startDate ? toISOString(values.startDate) : null,
+          enddate: values.endDate ? toISOString(values.endDate) : null,
           min_value: radio == 'selected' ? Number(values.startValue) : null,
           max_value: radio == 'selected' ? Number(values.endValue) : null,
           comment: values.comment ?? '',
@@ -72,10 +73,12 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   };
 
   useEffect(() => {
-    setValue('startDate', moment.min(x0, x1).format('YYYY-MM-DD HH:mm'));
-    setValue('endDate', moment.max(x0, x1).format('YYYY-MM-DD HH:mm'));
-    setValue('startValue', Math.min(y0, y1).toFixed(4));
-    setValue('endValue', Math.max(y0, y1).toFixed(4));
+    if (selection) {
+      setValue('startDate', minDate(x0, x1, 'YYYY-MM-DD HH:mm'));
+      setValue('endDate', maxDate(x0, x1, 'YYYY-MM-DD HH:mm'));
+      setValue('startValue', Math.min(y0, y1).toFixed(4));
+      setValue('endValue', Math.max(y0, y1).toFixed(4));
+    }
   }, [selection]);
 
   return (

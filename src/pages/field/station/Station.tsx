@@ -2,7 +2,6 @@ import {AddAPhotoRounded} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import {Box, Divider, Typography} from '@mui/material';
-import moment from 'moment';
 import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
 
 import FabWrapper from '~/components/FabWrapper';
@@ -14,6 +13,7 @@ import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
+import {currentDate} from '~/helpers/dateConverter';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -40,7 +40,7 @@ export default function Station() {
     type: loc_id?.toString(),
     comment: '',
     public: false,
-    date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+    date: currentDate('YYYY-MM-DD HH:mm'),
   });
 
   const changeActiveImageData = (field: string, value: string) => {
@@ -67,7 +67,7 @@ export default function Station() {
       type: loc_id?.toString(),
       comment: '',
       public: false,
-      date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+      date: currentDate('YYYY-MM-DD HH:mm'),
     });
     setOpenSave(true);
   };

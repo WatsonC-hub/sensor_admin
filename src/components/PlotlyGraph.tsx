@@ -1,5 +1,4 @@
 import {Box} from '@mui/material';
-import moment from 'moment';
 import type {
   Layout,
   PlotData,
@@ -13,6 +12,7 @@ import React, {useEffect} from 'react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
+import {convertDate, subtractFromDate} from '~/helpers/dateConverter';
 import {MergeType} from '~/helpers/EnumHelper';
 import {
   rerunQAIcon,
@@ -140,18 +140,18 @@ export default function PlotlyGraph({
 
     if (dates.firstDate && dates.lastDate) {
       let range: Array<string> = [];
-      const lastDate = moment(dates.lastDate).format('YYYY-MM-DDTHH:mm');
+      const lastDate = convertDate(dates.lastDate, 'YYYY-MM-DDTHH:mm');
       if (type === 'all') {
-        const startDate = moment(dates.firstDate).format('YYYY-MM-DDTHH:mm');
+        const startDate = convertDate(dates.firstDate, 'YYYY-MM-DDTHH:mm');
         range = [startDate, lastDate];
       } else if (type === 'year') {
-        const x = moment(dates.lastDate).subtract(1, 'year').format('YYYY-MM-DDTHH:mm');
+        const x = subtractFromDate(dates.lastDate, 1, 'year').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       } else if (type === 'month') {
-        const x = moment(dates.lastDate).subtract(1, 'month').format('YYYY-MM-DDTHH:mm');
+        const x = subtractFromDate(dates.lastDate, 1, 'month').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       } else if (type === 'week') {
-        const x = moment(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
+        const x = subtractFromDate(dates.lastDate, 7, 'days').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       }
 

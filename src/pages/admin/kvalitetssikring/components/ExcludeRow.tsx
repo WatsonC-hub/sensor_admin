@@ -1,13 +1,13 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Grid} from '@mui/material';
-import moment from 'moment';
 import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {toISOString} from '~/helpers/dateConverter';
 import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -26,11 +26,11 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
     startdate: z
       .string()
       .min(1, {message: 'Dato ugyldig'})
-      .transform((value) => moment(value).toISOString()),
+      .transform((value) => toISOString(value)),
     enddate: z
       .string()
       .min(1, {message: 'Dato ugyldig'})
-      .transform((value) => moment(value).toISOString()),
+      .transform((value) => toISOString(value)),
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
   });
 
@@ -44,7 +44,6 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
       }),
     });
   }
-  console.log(data);
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
@@ -74,7 +73,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
         },
       });
     }
-    setOpen && setOpen(false);
+    if (setOpen) setOpen(false);
   };
 
   // const handleDelete = () => {
@@ -151,7 +150,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
                 size="small"
                 onClick={() => {
                   reset(data);
-                  setOpen && setOpen(false);
+                  if (setOpen) setOpen(false);
                 }}
               >
                 Annuller

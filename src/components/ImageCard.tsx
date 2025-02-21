@@ -7,12 +7,12 @@ import CardMedia from '@mui/material/CardMedia';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import type {UseMutationResult} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
+import {convertDate} from '~/helpers/dateConverter';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
 
@@ -87,7 +87,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         }}
       >
         <Typography variant="body2" color="textSecondary" align="right" component="p">
-          {moment(image.date).format('YYYY-MM-DD HH:mm')}
+          {convertDate(image.date, 'YYYY-MM-DD HH:mm')}
         </Typography>
         <Typography
           variant="body2"

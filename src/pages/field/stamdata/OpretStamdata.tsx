@@ -3,7 +3,6 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {BuildRounded, Error, LocationOnRounded, ShowChartRounded} from '@mui/icons-material';
 import {Grid, Typography, Box, Tabs, Tab, Divider} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {ReactNode, useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {useLocation, useNavigate} from 'react-router-dom';
@@ -19,6 +18,7 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
+import {convertDate, currentDate} from '~/helpers/dateConverter';
 import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useCreateTabState} from '~/hooks/useQueryStateParameters';
@@ -215,7 +215,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     if (isWaterlevel) {
       const watlevmp = getValues('watlevmp') as Watlevmp;
       form['watlevmp'] = {
-        startdate: moment().format('YYYY-MM-DD'),
+        startdate: currentDate('YYYY-MM-DD'),
         description: watlevmp?.description ?? '',
         elevation: watlevmp?.elevation ?? null,
       };
@@ -252,7 +252,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
       const watlevmp = getValues('watlevmp') as Watlevmp;
       form['watlevmp'] = {
-        startdate: moment(getValues().unit.startdate).format('YYYY-MM-DD'),
+        startdate: convertDate(getValues().unit.startdate, 'YYYY-MM-DD'),
         description: watlevmp?.description ?? '',
         elevation: watlevmp?.elevation ?? null,
       };
