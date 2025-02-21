@@ -77,7 +77,7 @@ const Boreholeno = () => {
     gid: -1,
     startdate: () => moment().toISOString(),
     enddate: () => moment('2099-01-01').toISOString(),
-    elevation: 0,
+    elevation: null,
     mp_description: '',
   });
 

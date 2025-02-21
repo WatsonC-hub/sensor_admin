@@ -18,7 +18,7 @@ export default function ReferenceForm() {
     gid: -1,
     startdate: () => moment().format('YYYY-MM-DDTHH:mm'),
     enddate: () => moment('2099-01-01').format('YYYY-MM-DDTHH:mm'),
-    elevation: 0,
+    elevation: null,
     mp_description: '',
   });
 
