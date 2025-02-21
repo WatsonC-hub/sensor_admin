@@ -92,7 +92,7 @@ export default function TilsynTableDesktop({handleEdit, handleDelete}: Props) {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={true}
+        disabled={false}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

@@ -76,7 +76,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={row.original.organisationid == org_id}
+        disabled={row.original.organisationid !== org_id}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

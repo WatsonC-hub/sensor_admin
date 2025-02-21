@@ -80,7 +80,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={true}
+        disabled={false}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

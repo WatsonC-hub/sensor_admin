@@ -26,7 +26,8 @@ type Props = {
 };
 
 const Pejling = ({setDynamic}: Props) => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, permissions} = useAppContext(['ts_id']);
+  console.log(permissions);
   const {data: timeseries_data} = useTimeseriesData();
   const isWaterlevel = timeseries_data?.tstype_id === 1;
   const [showForm, setShowForm] = useShowFormState();
@@ -136,6 +137,7 @@ const Pejling = ({setDynamic}: Props) => {
         <FabWrapper
           icon={<AddCircle />}
           text="Tilføj kontrol"
+          disabled={permissions === 'read' || permissions === undefined}
           onClick={() => {
             setShowForm(true);
           }}

@@ -105,7 +105,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={row.original.organisationid == org_id}
+        disabled={row.original.organisationid !== org_id}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

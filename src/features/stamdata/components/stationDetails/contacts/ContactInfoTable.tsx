@@ -181,7 +181,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
         }}
-        canEdit={true}
+        disabled={false}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

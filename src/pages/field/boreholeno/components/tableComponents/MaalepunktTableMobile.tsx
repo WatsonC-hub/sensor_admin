@@ -79,7 +79,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={row.original.organisationid == org_id}
+                disabled={row.original.organisationid !== org_id}
               />
             </Box>
           </Box>

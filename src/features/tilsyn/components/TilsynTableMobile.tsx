@@ -86,7 +86,7 @@ export default function TilsynTableMobile({handleEdit, handleDelete}: Props) {
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={true}
+                disabled={false}
               />
             </Box>
           </Box>

@@ -82,7 +82,7 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={row.original.organisationid == org_id}
+                disabled={row.original.organisationid !== org_id}
               />
             </Box>
           </Box>
