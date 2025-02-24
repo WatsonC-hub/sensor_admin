@@ -43,7 +43,7 @@ const EditLocation = () => {
     },
   });
 
-  const parsed = editLocationSchema.safeParse({
+  const {data: defaultValues} = editLocationSchema.safeParse({
     location: {
       ...metadata,
       initial_project_no: metadata?.projectno,
@@ -52,8 +52,6 @@ const EditLocation = () => {
       unit_uuid: unit_history?.[0]?.uuid,
     },
   });
-
-  const {data: defaultValues = {}} = parsed;
 
   const formMethods = useForm<Location>({
     resolver: zodResolver(editLocationSchema),

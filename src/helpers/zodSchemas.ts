@@ -35,7 +35,7 @@ const timeseriesSchema = locationSchema.extend({
   watlevmp: z
     .object({
       startdate: z.string().optional(),
-      elevation: z.number({required_error: 'Målepunkt skal udfyldes'}),
+      elevation: z.number({required_error: 'Målepunkt skal udfyldes'}).nullable(),
       description: z
         .string({required_error: 'Beskrivelse skal udfyldes'})
         .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),

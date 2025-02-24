@@ -133,7 +133,7 @@ const BoreholeStamdata = () => {
                   name="groups"
                   control={formMethods.control}
                   render={({field: {onChange, value, onBlur}}) => (
-                    <LocationGroups value={value} setValue={onChange} onBlur={onBlur} />
+                    <LocationGroups value={value} setValue={onChange} onBlur={onBlur} disableLink />
                   )}
                 />
               </Grid>

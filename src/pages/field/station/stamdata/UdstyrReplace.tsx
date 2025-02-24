@@ -10,7 +10,12 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 import UnitEndDateDialog from './UnitEndDialog';
 
-const UdstyrReplace = () => {
+interface UdstyrReplaceProps {
+  selected: number | '';
+  setSelected: (selected: number | '') => void;
+}
+
+const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const {data: timeseries} = useTimeseriesData();
@@ -20,7 +25,7 @@ const UdstyrReplace = () => {
 
   const {data, isPending} = useUnitHistory();
 
-  const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');
+  // const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');
 
   const onSelectionChange = (data: UnitHistory[], gid: number | '') => {
     const localUnit = data.filter((elem) => elem.gid === gid)[0];

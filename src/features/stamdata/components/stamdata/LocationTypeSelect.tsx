@@ -4,7 +4,6 @@ import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
-import LoadingSkeleton from '~/LoadingSkeleton';
 
 interface LocationTypeSelectProps {
   disable: boolean;
@@ -25,8 +24,6 @@ export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
     refetchOnWindowFocus: false,
   });
 
-  // if (isPending) return <LoadingSkeleton />;
-
   return (
     <FormInput
       name="location.loctype_id"
@@ -34,9 +31,6 @@ export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
       select
       required
       fullWidth
-      sx={{
-        mb: 2,
-      }}
       disabled={disable}
     >
       <MenuItem value={-1} key={-1}>

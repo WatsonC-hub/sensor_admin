@@ -21,16 +21,7 @@ const TimeseriesTypeSelect = ({stationTypes}: TimeseriesTypeSelectProps) => {
     ));
 
   return (
-    <FormInput
-      name="timeseries.tstype_id"
-      label="Tidsserietype"
-      select
-      required
-      fullWidth
-      sx={{
-        mb: 2,
-      }}
-    >
+    <FormInput name="timeseries.tstype_id" label="Tidsserietype" select required fullWidth>
       <MenuItem value={-1}>Vælg type</MenuItem>
       {menuItems}
     </FormInput>
@@ -73,9 +64,6 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
           }}
           placeholder="f.eks. indtag 1"
           fullWidth
-          sx={{
-            mb: 2,
-          }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -102,9 +90,6 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
               name="watlevmp.elevation"
               required
               fullWidth
-              sx={{
-                mb: 2,
-              }}
               InputProps={{
                 endAdornment: <InputAdornment position="start">m</InputAdornment>,
               }}
@@ -116,9 +101,6 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
               name="watlevmp.description"
               required
               fullWidth
-              sx={{
-                mb: 2,
-              }}
               placeholder="f.eks. top af rør"
             />
           </Grid>
@@ -130,9 +112,6 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
           label="Evt. loggerdybde under målepunkt"
           name="timeseries.sensor_depth_m"
           fullWidth
-          sx={{
-            mb: 2,
-          }}
           InputProps={{
             endAdornment: <InputAdornment position="start">m</InputAdornment>,
           }}

@@ -12,7 +12,6 @@ import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurem
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {
   useCreateTabState,
   useShowFormState,
@@ -34,7 +33,6 @@ const Pejling = ({setDynamic}: Props) => {
   const [, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
-  const {isTouch, isLaptop} = useBreakpoints();
 
   const initialData = {
     gid: -1,
