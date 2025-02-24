@@ -5,12 +5,11 @@ import {
   ConstructionRounded,
 } from '@mui/icons-material';
 import {startCase} from 'lodash';
-import {parseAsBoolean, useQueryState} from 'nuqs';
 import React from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useStationPages} from '~/hooks/useStationPages';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
@@ -21,7 +20,7 @@ interface ActionAreaProps {
 
 export default function ActionArea({canEdit}: ActionAreaProps) {
   const [pageToShow, setPageToShow] = useStationPages();
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [showForm, setShowForm] = useShowFormState();
   const handleChange = (event: React.ChangeEvent<object>, newValue: any) => {
     setPageToShow(newValue);
     if (showForm !== null) {

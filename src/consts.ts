@@ -8,6 +8,10 @@ if (import.meta.env.PROD) {
     'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY20zbjE0eWN6MTV5aDJxcXo3aXFpZ2kzYyJ9.UVPpejPboVyzBKCYupxOxw';
 }
 
+export const navIconStyle = (isSelected: boolean) => {
+  return isSelected ? 'secondary.main' : 'white';
+};
+
 export const mapboxToken = mapToken;
 
 export const boreholeColors: Record<

@@ -12,6 +12,11 @@ import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
 import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import {captureDialogAtom} from '~/state/atoms';
+import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
+import CreateStamdataProvider from '~/state/CreateStamdataProvider';
+import StationRouterProvider from '~/state/StationRouterProvider';
+
+import Station from './station/Station';
 
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);
@@ -28,7 +33,10 @@ function SensorField() {
     setOpen(false);
   };
 
-  const handleScan = async (data: any, calypso_id: number) => {
+  const handleScan = async (data: any) => {
+    const split = data[0]['rawValue'].split('/');
+    const calypso_id = split[split.length - 1];
+
     const options = {replace: true};
 
     if (!calypso_id) {
@@ -73,15 +81,47 @@ function SensorField() {
       {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
       <Routes>
         <Route path="/" element={<OverviewPage />} />
-        <Route path="location/:locid/:ts_id" element={<LocationRouter />} />
-        <Route path="location/:locid" element={<LocationRouter />} />
+        <Route
+          path="location/:locid/:ts_id"
+          element={
+            <StationRouterProvider>
+              <Station key="station" />
+            </StationRouterProvider>
+          }
+        />
+        <Route
+          path="location/:locid"
+          element={
+            <StationRouterProvider>
+              <LocationRouter key="location" />
+            </StationRouterProvider>
+          }
+        />
         <Route
           path="stamdata"
-          element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
+          element={
+            <CreateStamdataProvider>
+              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
+            </CreateStamdataProvider>
+          }
         />
         <Route path="/:labelid" element={<ScanComponent />} />
-        <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeRouter />} />
-        <Route path="borehole/:boreholeno" element={<BoreholeRouter />} />
+        <Route
+          path="borehole/:boreholeno/:intakeno"
+          element={
+            <BoreholeRouterProvider>
+              <BoreholeRouter />
+            </BoreholeRouterProvider>
+          }
+        />
+        <Route
+          path="borehole/:boreholeno"
+          element={
+            <BoreholeRouterProvider>
+              <BoreholeRouter />
+            </BoreholeRouterProvider>
+          }
+        />
       </Routes>
     </div>
   );

@@ -5,13 +5,11 @@ import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import BatteryIndicator from '~/components/BatteryIndicator';
+import {useAppContext} from '~/state/contexts';
 import {BatteryStatusType} from '~/types';
 
-type BatteryStatusProps = {
-  ts_id: string;
-};
-
-const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
+const BatteryStatus = () => {
+  const {ts_id} = useAppContext([], ['ts_id']);
   const {data: battery_status} = useQuery({
     queryKey: ['battery_status', ts_id],
     queryFn: async () => {
@@ -20,7 +18,7 @@ const BatteryStatus = ({ts_id}: BatteryStatusProps) => {
       );
       return data;
     },
-    enabled: ts_id !== undefined && ts_id !== null && ts_id !== '',
+    enabled: ts_id !== undefined && ts_id !== null,
   });
 
   let tooltipText = '';

@@ -3,7 +3,7 @@ import {merge} from 'lodash';
 import React, {ReactElement, useState} from 'react';
 
 type Props = CardProps & {
-  identity: string | null;
+  id: string | null;
   // data?: TValues;
   shadowIn?: number;
   shadowOut?: number;
@@ -15,7 +15,7 @@ const GenericCard = ({
   shadowOut = 1,
   shadowClick = 6,
   children,
-  identity,
+  id,
   ...props
 }: Props): ReactElement => {
   const [shadow, setShadow] = useState<number>(1);
@@ -46,7 +46,7 @@ const GenericCard = ({
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
         onMouseDown={onMouseClick}
-        key={identity}
+        id={id}
       >
         {children}
       </Card>

@@ -11,7 +11,6 @@ import {
 } from '@mui/material';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Controller, FormProvider, SubmitHandler, useForm} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
@@ -20,6 +19,7 @@ import FormInput from '~/components/FormInput';
 import GenericCard from '~/components/GenericCard';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {useRunQA} from '~/hooks/useRunQA';
+import {useAppContext} from '~/state/contexts';
 import {QaAlgorithmParameters, QaAlgorithms, QaAlgorithmsPut} from '~/types';
 
 interface AlgorithCardProps {
@@ -27,11 +27,11 @@ interface AlgorithCardProps {
 }
 
 const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
-  const params = useParams();
-  const {mutation: rerunQAMutation} = useRunQA(parseInt(params.ts_id ?? ''));
+  const {ts_id} = useAppContext(['ts_id']);
+  const {mutation: rerunQAMutation} = useRunQA(ts_id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const {put: submitData, revert: revertToDefaults} = useAlgorithms(params.ts_id);
+  const {put: submitData, revert: revertToDefaults} = useAlgorithms(ts_id);
 
   const handleRevert = () => {
     setDeleteDialogOpen(true);
@@ -39,7 +39,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
 
   const submit: SubmitHandler<QaAlgorithmsPut> = (data) => {
     const payload = {
-      path: `${params.ts_id}`,
+      path: `${ts_id}`,
       data: {
         algorithm: qaAlgorithm.algorithm,
         parameters: data.parameters,
@@ -57,7 +57,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
 
   const handleOkDelete = () => {
     const payload = {
-      path: `${params.ts_id}/${qaAlgorithm.algorithm}`,
+      path: `${ts_id}/${qaAlgorithm.algorithm}`,
       data: {algorithm: qaAlgorithm.algorithm},
     };
     revertToDefaults.mutate(payload, {

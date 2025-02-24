@@ -6,7 +6,7 @@ import {Box, CardContent, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
@@ -15,7 +15,7 @@ import FormInput from '~/components/FormInput';
 // import {QaStampLevel} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 
 import {CertifyQa, useCertifyQa} from '../api/useCertifyQa';
 
@@ -45,7 +45,7 @@ const WizardConfirmTimeseries = ({
   initiateConfirmTimeseries,
   onClose,
 }: WizardConfirmTimeseriesProps) => {
-  const metadata = useContext(MetadataContext);
+  const {ts_id} = useAppContext(['ts_id']);
   const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
   const {isMobile} = useBreakpoints();
   const selection = useAtomValue(qaSelection);
@@ -53,7 +53,7 @@ const WizardConfirmTimeseries = ({
   const {
     get: {data: qaData},
     post: postQaData,
-  } = useCertifyQa(metadata?.ts_id);
+  } = useCertifyQa(ts_id);
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
@@ -93,7 +93,7 @@ const WizardConfirmTimeseries = ({
 
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
     const payload = {
-      path: `${metadata?.ts_id}`,
+      path: `${ts_id}`,
       data: {...certifyQa, date: moment(certifyQa.date).toISOString()},
     };
     postQaData.mutateAsync(payload);

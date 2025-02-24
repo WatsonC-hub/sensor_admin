@@ -9,27 +9,24 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {stamdataStore} from '~/state/store';
 import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
 }
 
-export default function PejlingMeasurementsTableDesktop({
-  handleEdit,
-  handleDelete,
-  canEdit,
-}: Props) {
+export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
+  const stationUnit = timeseries?.unit;
 
-  const unit = timeseries.tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${timeseries.unit}]`;
+  const unit = tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${stationUnit}]`;
 
   const {get} = usePejling();
 
@@ -37,7 +34,6 @@ export default function PejlingMeasurementsTableDesktop({
     setMpId(id);
     setDialogOpen(true);
   };
-
   const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
       {
@@ -60,16 +56,8 @@ export default function PejlingMeasurementsTableDesktop({
         id: 'useforcorrection',
         enableColumnFilter: true,
       },
-      {
-        accessorKey: 'comment',
-        header: 'Kommentar',
-        enableColumnFilter: false,
-      },
-      {
-        accessorKey: 'display_name',
-        header: 'Oprettet af',
-        enableColumnFilter: false,
-      },
+      {accessorKey: 'comment', header: 'Kommentar', enableColumnFilter: false},
+      {accessorKey: 'display_name', header: 'Oprettet af', enableColumnFilter: false},
     ],
     [unit]
   );
@@ -88,7 +76,7 @@ export default function PejlingMeasurementsTableDesktop({
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={canEdit}
+        canEdit={true}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

@@ -1,6 +1,6 @@
 import {useMemo} from 'react';
 
-import {taskStore} from '../store';
+import {useRawTaskStore} from '../store';
 import {ID, Task} from '../types';
 
 import {useTasks} from './useTasks';
@@ -41,7 +41,7 @@ export const useTaskStore = () => {
     setIncludeClosedTasks,
     resetFilter,
     resetState,
-  } = taskStore();
+  } = useRawTaskStore((state) => state);
 
   const {
     get: {data: tasks},

@@ -6,7 +6,7 @@ import {useQuery} from '@tanstack/react-query';
 import {FieldError, Noop} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 interface Project {
   project_no: string;
@@ -38,7 +38,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     },
   });
 
-  const superUser = authStore((store) => store.superUser);
+  const superUser = useAuthStore((store) => store.superUser);
 
   const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 
@@ -61,7 +61,11 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               {...params}
               fullWidth
               onBlur={onBlur}
-              InputLabelProps={{shrink: true}}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
               variant="outlined"
               error={Boolean(error) && superUser}
               helperText={Boolean(error) && superUser && error?.message}
@@ -69,18 +73,11 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               placeholder="Vælg projektnummer..."
               sx={{
                 pb: 0,
-                '& .MuiInputBase-input.Mui-disabled': {
-                  WebkitTextFillColor: '#000000',
-                },
+                '& .MuiInputBase-input.Mui-disabled': {WebkitTextFillColor: '#000000'},
                 '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
                 '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-                '.MuiFormHelperText-root': {
-                  position: 'absolute',
-                  top: '90%',
-                },
+                '& .MuiOutlinedInput-root': {'& > fieldset': {borderColor: 'primary.main'}},
+                '.MuiFormHelperText-root': {position: 'absolute', top: '90%'},
               }}
             />
           )}
@@ -92,36 +89,33 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
       {disable == true && (
         <TextField
           fullWidth
-          InputLabelProps={{shrink: true}}
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+            input: {
+              endAdornment: (
+                <Link
+                  href={`https://www.watsonc.dk/calypso/projekt/?project=${selectedValue?.project_no}`}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  <OpenInNewIcon />
+                </Link>
+              ),
+            },
+          }}
           variant="outlined"
           label="Projektnummer"
           value={getLabel(selectedValue)}
           disabled
-          InputProps={{
-            endAdornment: (
-              <Link
-                href={`https://www.watsonc.dk/calypso/projekt/?project=${selectedValue?.project_no}`}
-                target="_blank"
-                rel="noopener"
-              >
-                <OpenInNewIcon />
-              </Link>
-            ),
-          }}
           sx={{
             pb: 0,
-            '& .MuiInputBase-input.Mui-disabled': {
-              WebkitTextFillColor: '#000000',
-            },
+            '& .MuiInputBase-input.Mui-disabled': {WebkitTextFillColor: '#000000'},
             '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
             '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-            '& .MuiOutlinedInput-root': {
-              '& > fieldset': {borderColor: 'primary.main'},
-            },
-            '.MuiFormHelperText-root': {
-              position: 'absolute',
-              top: '90%',
-            },
+            '& .MuiOutlinedInput-root': {'& > fieldset': {borderColor: 'primary.main'}},
+            '.MuiFormHelperText-root': {position: 'absolute', top: '90%'},
           }}
         />
       )}

@@ -16,8 +16,9 @@ import {
 } from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useTable} from '~/hooks/useTable';
-import {authStore, stamdataStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 import {Kontrol} from '~/types';
 
 interface Props {
@@ -29,10 +30,12 @@ interface Props {
 export default function PejlingMeasurementsTableMobile({data, handleEdit, handleDelete}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  const org_id = authStore((store) => store.org_id);
+  const {data: timeseries} = useTimeseriesData();
+  const tstype_id = timeseries?.tstype_id;
+  const stationUnit = timeseries?.unit;
+  const org_id = useAuthStore((store) => store.org_id);
 
-  const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
+  const unit = tstype_id === 1 ? ' m' : ' ' + stationUnit;
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);

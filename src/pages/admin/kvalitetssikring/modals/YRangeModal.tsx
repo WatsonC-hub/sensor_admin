@@ -3,15 +3,15 @@ import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import {parseAsString, useQueryState} from 'nuqs';
-import {useContext, useEffect} from 'react';
+import {useEffect} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useYRangeMutations} from '~/hooks/query/useYRangeMutations';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
 
 interface YRangeModalProps {
   onClose: () => void;
@@ -31,7 +31,7 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const metadata = useContext(MetadataContext);
+  const {data: timeseries_data} = useTimeseriesData();
 
   const formMethods = useForm<YRangeValues>({
     resolver: zodResolver(schema),
@@ -41,14 +41,14 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
 
   const {handleSubmit, setValue, reset} = formMethods;
 
-  const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';
+  const unit = timeseries_data?.unit ?? '';
 
   const {post: yRangeMutation} = useYRangeMutations();
 
   const onAccept: SubmitHandler<YRangeValues> = (values) => {
     yRangeMutation.mutate(
       {
-        path: `${metadata?.ts_id}`,
+        path: `${timeseries_data?.ts_id}`,
         data: {mincutoff: Number(values.min), maxcutoff: Number(values.max)},
       },
       {

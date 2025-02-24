@@ -4,15 +4,15 @@ import {Box, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
-import {useContext, useEffect} from 'react';
+import {useEffect} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
 
 interface LevelCorrectionModal {
   onClose: () => void;
@@ -24,10 +24,10 @@ type CorrectionValues = z.infer<typeof schema>;
 
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
-  const metadata = useContext(MetadataContext);
+  const {data: timeseries_data} = useTimeseriesData();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';
+  const unit = timeseries_data && 'unit' in timeseries_data ? timeseries_data.unit : '';
   const prevY = (
     selection?.points?.[0]?.data?.y[selection?.points?.[0]?.pointIndex - 1] as number
   )?.toFixed(4);
@@ -45,7 +45,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const onAccept: SubmitHandler<CorrectionValues> = (values) => {
     levelCorrectionMutation.mutate(
       {
-        path: `${metadata?.ts_id}`,
+        path: `${timeseries_data?.ts_id}`,
         data: {date: moment(values.date).toISOString(), comment: values.comment},
       },
       {

@@ -7,12 +7,16 @@ import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import Redirecter from '~/Redirecter';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
+
+import useBreakpoints from './hooks/useBreakpoints';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = authStore(
+  const {field} = useNavigationFunctions();
+  const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = useAuthStore(
     (state) => [
       state.authenticated,
       state.setAuthenticated,
@@ -20,6 +24,14 @@ function App() {
       state.setAuthorization,
     ]
   );
+  const {isMobile} = useBreakpoints();
+
+  useEffect(() => {
+    if (isMobile && location.pathname == '/') {
+      // navigate('/field');
+      field();
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     apiClient
@@ -48,7 +60,9 @@ function App() {
   if (!authenticated) {
     return (
       <>
-        <NavBar />
+        <NavBar>
+          <NavBar.Logo />
+        </NavBar>
         <UnAuntenticatedApp />
       </>
     );

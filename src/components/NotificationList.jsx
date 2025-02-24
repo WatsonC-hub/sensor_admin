@@ -3,17 +3,17 @@ import AddIcon from '@mui/icons-material/Add';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
-import React, {useContext, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import React, {useState} from 'react';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
 import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 
 // Mock data for notifications
 const NotificationList = () => {
@@ -22,17 +22,13 @@ const NotificationList = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
   const [selectedNotification /*, setSelectedNotification*/] = useState(null);
-
+  const {ts_id} = useAppContext(['ts_id']);
+  let loc_id = undefined;
   const {setSelectedTask, activeTasks} = useTaskStore();
   const {tasks: tasksNavigation} = useNavigationFunctions();
+  const {data: metadata} = useTimeseriesData();
 
-  const params = useParams();
-
-  // const {data, isPending} = useNotificationOverview();
-  const metadata = useContext(MetadataContext);
-
-  const {data, isPending} = useLocationNotificationOverview(params.locid || metadata?.loc_id);
-
+  const {data, isPending} = useLocationNotificationOverview(metadata?.loc_id);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -59,9 +55,8 @@ const NotificationList = () => {
     setUpdateModalOpen(false);
   };
 
-  let loc_id = params.locid;
   if (loc_id == undefined) {
-    loc_id = data?.filter((elem) => elem.ts_id == params.ts_id)[0]?.loc_id;
+    loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
   }
 
   const grouped = groupBy(
@@ -216,7 +211,7 @@ const NotificationList = () => {
           );
         })}
       </Menu>
-      <CreateManualTaskModal open={isModalOpen} closeModal={closeModal} />
+      {isModalOpen && <CreateManualTaskModal open={isModalOpen} closeModal={closeModal} />}
       {isUpdateModalOpen && (
         <UpdateNotificationModal
           open={isUpdateModalOpen}

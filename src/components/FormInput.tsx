@@ -67,7 +67,7 @@ const FormInput = <TFieldValues extends FieldValues>({
             value={value ?? ''}
             onBlur={(e) => {
               onBlur();
-              onBlurCallback && onBlurCallback(e);
+              if (onBlurCallback) onBlurCallback(e);
             }}
             ref={ref}
             sx={{
@@ -98,7 +98,7 @@ const FormInput = <TFieldValues extends FieldValues>({
               if (type === 'number' && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
                 e.preventDefault();
               }
-              onKeyDown && onKeyDown(e);
+              if (onKeyDown) onKeyDown(e);
             }}
             InputProps={
               type === 'number'
@@ -118,12 +118,12 @@ const FormInput = <TFieldValues extends FieldValues>({
             onChange={(e) => {
               if (type === 'number' && e.target.value !== '') {
                 onChange(transform(Number(e.target.value)));
-                onChangeCallback && onChangeCallback(Number(e.target.value));
+                if (onChangeCallback) onChangeCallback(Number(e.target.value));
               } else if (type === 'number' && e.target.value === '') {
                 onChange(null);
               } else {
                 onChange(transform(e));
-                onChangeCallback && onChangeCallback(e);
+                if (onChangeCallback) onChangeCallback(e);
               }
             }}
             error={!!errorMessage}

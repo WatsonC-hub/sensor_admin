@@ -11,7 +11,7 @@ import useMap from '~/features/map/components/useMap';
 import {defaultCircleMarkerStyle} from '~/features/map/mapConsts';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {Task} from '~/features/tasks/types';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 type TaskStyling = 'dato' | 'ansvarlig' | '';
 
@@ -65,7 +65,7 @@ const TaskMap = ({clickCallback}: TaskMapProps) => {
   const {shownTasks, hiddenTasks, setSelectedTask, setShownMapTaskIds} = useTaskStore();
 
   const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
-  const user_id = authStore((state) => state.user_id);
+  const user_id = useAuthStore((state) => state.user_id);
   const shownByLocid = useMemo(() => {
     return Object.values(
       shownTasks

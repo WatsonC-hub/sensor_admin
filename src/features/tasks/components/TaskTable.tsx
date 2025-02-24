@@ -28,7 +28,8 @@ import {
 } from 'material-react-table';
 import moment from 'moment';
 import React, {useEffect, useMemo, useState} from 'react';
-import {ErrorBoundary, FallbackProps} from 'react-error-boundary';
+import {ErrorBoundary} from 'react-error-boundary';
+import type {FallbackProps} from 'react-error-boundary';
 
 import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
@@ -40,7 +41,7 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {authStore} from '~/state/store';
+import {useAuthStore} from '~/state/store';
 
 import MassEditDialog from './MassEditDialog';
 
@@ -112,7 +113,7 @@ const TaskTable = () => {
     patch,
   } = useTasks();
 
-  const userAuthId = authStore().user_id;
+  const userAuthId = useAuthStore((state) => state.user_id);
 
   const handleBlurSubmit = (id: string, ts_id: number, values: any) => {
     const payload = {
