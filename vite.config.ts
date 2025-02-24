@@ -84,17 +84,16 @@ const pwaOptions: Partial<VitePWAOptions> = {
   },
 };
 
-// const sentryOptions = {
-//   org: 'watsonc',
-//   project: 'calypso-field',
-//   include: ['./dist'],
-//   authToken: process.env.SENTRY_AUTH_TOKEN,
-// };
-
-// https://vitejs.dev/config/
+const ReactCompilerConfig = {
+  target: '19',
+};
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: [['babel-plugin-react-compiler', ReactCompilerConfig]],
+      },
+    }),
     svgrPlugin(),
     VitePWA(pwaOptions),
     viteTsconfigPaths(),
