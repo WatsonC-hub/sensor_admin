@@ -4,7 +4,7 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import daLocale from 'dayjs/locale/da';
 import React from 'react';
 
-import {convertDate, toMoment} from '~/helpers/dateConverter';
+import {convertDate, toDate} from '~/helpers/dateConverter';
 
 const OwnDatePicker = (props) => {
   return (
@@ -18,7 +18,7 @@ const OwnDatePicker = (props) => {
         disabled={props.disabled}
         value={convertDate(props.value, 'YYYY-MM-DDTHH:mm')}
         onChange={(e) => {
-          props.onChange(toMoment(e.target.value).toDate());
+          props.onChange(toDate(e.target.value).toDate());
         }}
         sx={props.error ? {} : props.sx}
         inputProps={{

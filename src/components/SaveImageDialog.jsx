@@ -13,7 +13,7 @@ import {toast} from 'react-toastify';
 
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
-import {convertDate, toISOString, toMoment} from '~/helpers/dateConverter';
+import {convertDate, toDate, toISOString} from '~/helpers/dateConverter';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 
 function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
@@ -120,7 +120,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
             />
             <OwnDatePicker
               label={'Dato'}
-              value={toMoment(activeImage.date)}
+              value={toDate(activeImage.date)}
               onChange={(date) => changeData('date', convertDate(date, 'YYYY-MM-DD HH:mm'))}
             />
           </Grid>

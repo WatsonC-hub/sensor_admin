@@ -1,16 +1,18 @@
 import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
-import {toMoment} from '~/helpers/dateConverter';
+import {addValueToDate, dateDiff, subtractFromDate} from '~/helpers/dateConverter';
 import {GraphData} from '~/types';
 
 export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) => {
-  const x0 = toMoment(xRange[0]);
-  const x1 = toMoment(xRange[1]);
-  const daysdiff = x1.diff(x0, 'days');
+  const x0 = xRange[0];
+  const x1 = xRange[1];
+  const daysdiff = dateDiff(x1, x0, 'days');
 
-  const start = x0.subtract(Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DDTHH:mm');
-  const end = x1.add(Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DDTHH:mm');
+  const start = subtractFromDate(x0, Math.max(daysdiff * 0.2, 1), 'days').format(
+    'YYYY-MM-DDTHH:mm'
+  );
+  const end = addValueToDate(x1, Math.max(daysdiff * 0.2, 1), 'days').format('YYYY-MM-DDTHH:mm');
 
   const query = useQuery({
     queryKey: ['graphData', ts_id, [start, end]],

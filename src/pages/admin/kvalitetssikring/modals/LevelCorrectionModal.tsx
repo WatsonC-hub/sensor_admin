@@ -8,12 +8,7 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import {
-  convertDateWithTimeStamp,
-  formatMoment,
-  toISOString,
-  toMoment,
-} from '~/helpers/dateConverter';
+import {convertDateWithTimeStamp, formatMoment, toISOString} from '~/helpers/dateConverter';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
@@ -36,9 +31,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const prevY = (
     selection?.points?.[0]?.data?.y[selection?.points?.[0]?.pointIndex - 1] as number
   )?.toFixed(4);
-  const prevX = toMoment(
-    selection?.points?.[0]?.data?.x[selection?.points?.[0]?.pointIndex - 1] as string
-  );
+  const prevX = selection?.points?.[0]?.data?.x[selection?.points?.[0]?.pointIndex - 1] as string;
   const y = (selection?.points?.[0]?.y as number)?.toFixed(4);
 
   const {post: levelCorrectionMutation} = useLevelCorrection();

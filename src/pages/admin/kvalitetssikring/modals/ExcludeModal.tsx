@@ -9,7 +9,7 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
-import {maxDate, minDate, toISOString, toMoment} from '~/helpers/dateConverter';
+import {maxDate, minDate, toISOString} from '~/helpers/dateConverter';
 import {useExclude} from '~/hooks/query/useExclude';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -36,8 +36,8 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   const {data: timeseries_data} = useTimeseriesData();
   const {isMobile} = useBreakpoints();
 
-  const x0 = toMoment(selection?.range?.x[0]);
-  const x1 = toMoment(selection?.range?.x[1]);
+  const x0 = selection?.range?.x[0];
+  const x1 = selection?.range?.x[1];
 
   const y0 = selection?.range ? selection?.range.y[0] : 0;
   const y1 = selection?.range ? selection?.range.y[1] : 0;
@@ -73,7 +73,7 @@ const ExcludeModal = ({onClose}: ExcludeModalProps) => {
   };
 
   useEffect(() => {
-    if (selection) {
+    if (selection && x0 && x1) {
       setValue('startDate', minDate(x0, x1, 'YYYY-MM-DD HH:mm'));
       setValue('endDate', maxDate(x0, x1, 'YYYY-MM-DD HH:mm'));
       setValue('startValue', Math.min(y0, y1).toFixed(4));

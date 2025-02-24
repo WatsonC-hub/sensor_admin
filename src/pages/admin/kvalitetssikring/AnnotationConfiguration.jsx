@@ -16,7 +16,7 @@ import {useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {convertDate, maxDate, minDate, toMoment} from '~/helpers/dateConverter';
+import {convertDate, maxDate, minDate} from '~/helpers/dateConverter';
 import {qaSelection} from '~/state/atoms';
 
 const AnnotationConfiguration = ({stationId}) => {
@@ -48,9 +48,9 @@ const AnnotationConfiguration = ({stationId}) => {
   const handleSelectionAnnotate = () => {
     if (annotationConfiguration.annotateDateRange) {
       // Annotate date range
-      const moments = selection.points.map((d) => toMoment(d.x));
-      const startdate = minDate(moments[0], moments[moments.length], 'YYYY-MM-DD HH:mm:ss');
-      const enddate = maxDate(moments[0], moments[moments.length], 'YYYY-MM-DD HH:mm:ss');
+      const dateArray = selection.points.map((d) => d.x);
+      const startdate = minDate(dateArray[0], dateArray[dateArray.length], 'YYYY-MM-DD HH:mm:ss');
+      const enddate = maxDate(dateArray[0], dateArray[dateArray.length], 'YYYY-MM-DD HH:mm:ss');
       labelMutation.mutate(
         [
           {

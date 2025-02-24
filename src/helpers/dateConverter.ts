@@ -2,57 +2,62 @@
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 
-import moment, {DurationInputArg2, Moment, unitOfTime} from 'moment';
+import dayjs, {ManipulateType, OpUnitType, QUnitType} from 'dayjs';
+import dayJsIsSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import minMax from 'dayjs/plugin/minMax';
+
+dayjs.extend(dayJsIsSameOrAfter);
+dayjs.extend(minMax);
 
 const convertDate = (
   date: string | Date | undefined = undefined,
   format: string = 'DD-MM-YYYY'
 ) => {
-  return moment(date).format(format);
+  return dayjs(date).format(format);
 };
 
-const currentDate = (format?: string) => moment().format(format);
+const currentDate = (format?: string) => dayjs().format(format);
 
-const toMoment = (date: string | undefined = undefined) => moment(date);
+const toDate = (date: string | undefined = undefined) => dayjs(date);
 
-const minDate = (min: Moment, max: Moment, format = 'DD-MM-YYYY HH:mm') =>
-  moment.min(min, max).format(format);
+const minDate = (min: string, max: string, format = 'DD-MM-YYYY HH:mm') => {
+  return dayjs.min(dayjs(), dayjs(min), dayjs(max)).format(format);
+};
+const maxDate = (min: string, max: string, format = 'DD-MM-YYYY HH:mm') => {
+  return dayjs.max(dayjs(), dayjs(min), dayjs(max)).format(format);
+};
 
-const maxDate = (min: Moment, max: Moment, format = 'DD-MM-YYYY HH:mm') =>
-  moment.max(min, max).format(format);
+const toISOString = (date: string | Date | undefined = undefined) => dayjs(date).toISOString();
 
-const toISOString = (date: string | Date | undefined = undefined) => moment(date).toISOString();
+const isDateValid = (date: string) => dayjs(date).isValid();
 
-const isDateValid = (date: string) => moment(date).isValid();
+const isBefore = (startDate: string, endDate: string) => dayjs(startDate).isBefore(dayjs(endDate));
 
-const isBefore = (startDate: string, endDate: string) =>
-  moment(startDate).isBefore(moment(endDate));
-
-const isAfter = (startDate: string, endDate: string) => moment(startDate).isAfter(moment(endDate));
+const isAfter = (startDate: string, endDate: string) => dayjs(startDate).isAfter(dayjs(endDate));
 
 const isSameOrAfter = (startDate: string, endDate: string) =>
-  moment(startDate).isSameOrAfter(moment(endDate));
+  dayjs(startDate).isSameOrAfter(dayjs(endDate));
 
-const subtractFromDate = (date: string, value: number, type: DurationInputArg2) =>
-  moment(date).subtract(value, type);
+const subtractFromDate = (date: string, value: number, type: ManipulateType) =>
+  dayjs(date).subtract(value, type);
 
-const addValueToDate = (date: string, value: number, type: DurationInputArg2) =>
-  moment(date).add(value, type);
+const addValueToDate = (date: string, value: number, type: ManipulateType) =>
+  dayjs(date).add(value, type);
 
 const dateDiff = (
   date: string | undefined = undefined,
   dateToDiff: string | undefined = undefined,
-  type?: unitOfTime.Diff
-) => moment(date).diff(moment(dateToDiff), type);
+  type?: OpUnitType | QUnitType
+) => dayjs(date).diff(dayjs(dateToDiff), type);
 
 const convertDateWithTimeStamp = (dateString: string | null) => {
   if (dateString === null || dateString === undefined) {
     return '';
   }
-  return moment(dateString).format('DD-MM-YYYY HH:mm');
+  return dayjs(dateString).format('DD-MM-YYYY HH:mm');
 };
 
-const formatMoment = (moment: Moment) => moment.format('DD-MM-YYYY HH:mm');
+const formatMoment = (date: string) => dayjs(date).format('DD-MM-YYYY HH:mm');
 
 const checkEndDateIsUnset = (dateString: string) => {
   const date: Date = new Date(dateString);
@@ -61,14 +66,14 @@ const checkEndDateIsUnset = (dateString: string) => {
 
 const calculatePumpstop = (timeofmeas: string, pumpstop: string, service: boolean) => {
   return pumpstop !== null
-    ? moment(timeofmeas).diff(moment(pumpstop), 'hours') + ' timer siden'
+    ? dayjs(timeofmeas).diff(dayjs(pumpstop), 'hours') + ' timer siden'
     : service === true
       ? 'I drift'
       : '-';
 };
 
 const splitTimeFromDate = (dateString: string) => {
-  const date = moment(dateString).format('DD-MM-YYYY HH:mm');
+  const date = dayjs(dateString).format('DD-MM-YYYY HH:mm');
   const time = date.split(' ');
   return time;
 };
@@ -84,7 +89,7 @@ const limitDecimalNumbers = (value: number | null) => {
 };
 
 const estimatedBatteryStatus = (estimated_date: string | undefined) => {
-  const currentDate = moment().toString();
+  const currentDate = dayjs().toString();
 
   const years = dateDiff(estimated_date, undefined, 'years');
   addValueToDate(currentDate, years, 'years');
@@ -115,7 +120,7 @@ export {
   calculatePumpstop,
   limitDecimalNumbers,
   splitTimeFromDate,
-  toMoment,
+  toDate,
   minDate,
   maxDate,
   toISOString,
