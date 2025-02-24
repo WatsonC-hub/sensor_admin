@@ -30,9 +30,6 @@ export default function ReferenceForm() {
   } = useMaalepunkt();
 
   const handleMaalepunktSubmit = () => {
-    mpData.startdate = moment(mpData.startdate).toISOString();
-    mpData.enddate = moment(mpData.enddate).toISOString();
-
     const mutationOptions = {
       onSuccess: () => {
         resetMpData();
@@ -42,7 +39,11 @@ export default function ReferenceForm() {
 
     if (mpData.gid === -1) {
       const payload = {
-        data: mpData,
+        data: {
+          ...mpData,
+          startdate: moment(mpData.startdate).toISOString(),
+          enddate: moment(mpData.enddate).toISOString(),
+        },
         path: `${ts_id}`,
       };
       postWatlevmp.mutate(payload, mutationOptions);

@@ -3,6 +3,7 @@ import checkFile from 'eslint-plugin-check-file';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import react from 'eslint-plugin-react';
+import reactCompiler from 'eslint-plugin-react-compiler';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import globals from 'globals';
@@ -30,7 +31,12 @@ export default tseslint.config(
 
     languageOptions: {ecmaVersion: 2020, globals: globals.browser},
     // specify used plugins
-    plugins: {'react-hooks': reactHooks, 'react-refresh': reactRefresh, 'check-file': checkFile},
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+      'check-file': checkFile,
+      'react-compiler': reactCompiler,
+    },
     settings: {
       // for eslint-plugin-react to auto detect react version
       react: {version: 'detect'},
@@ -38,6 +44,7 @@ export default tseslint.config(
       'import/resolver': {typescript: {project: './tsconfig.json'}},
     },
     rules: {
+      'react-compiler/react-compiler': 'error',
       // set of custom rules
       'react/prop-types': 'off',
       'no-console': 'warn',
@@ -50,14 +57,15 @@ export default tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': ['off'],
       '@typescript-eslint/no-empty-function': ['off'],
       '@typescript-eslint/no-explicit-any': ['off'],
-      'import/order': [
-        'error',
-        {
-          groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
-          'newlines-between': 'always',
-          alphabetize: {order: 'asc', caseInsensitive: true},
-        },
-      ],
+      // 'import/order': [
+      //   'error',
+      //   {
+      //     groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object'],
+      //     'newlines-between': 'always',
+      //     alphabetize: {order: 'asc', caseInsensitive: true},
+      //   },
+      // ],
+      'import/no-unresolved': 'off',
       'import/no-cycle': 'error',
       'import/default': 'off',
       'import/no-named-as-default-member': 'off',
