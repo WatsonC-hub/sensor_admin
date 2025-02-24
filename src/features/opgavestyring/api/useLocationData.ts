@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
 import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
-import {FieldLocation, PejlingItem, TilsynItem} from '~/types';
+import {FieldLocation, TilsynItem} from '~/types';
 interface LocationData {
   data: Array<FieldLocation>;
   pending: boolean;
@@ -36,7 +36,7 @@ export const useLocationData = (combinedQueries: LocationData) => {
     queries: combinedQueries.ts_ids
       .flat()
       .filter((ts_id) => ts_id !== null)
-      .map((ts_id) => pejlingGetOptions<Array<PejlingItem>>(ts_id)),
+      .map((ts_id) => pejlingGetOptions(ts_id)),
     combine: (results) => {
       return {
         data: results.map(

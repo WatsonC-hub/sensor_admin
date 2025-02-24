@@ -55,7 +55,7 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
               color: 'primary.contrastText',
               cursor: 'pointer',
             }}
-            identity={itinerary.id}
+            id={itinerary.id}
             shadowIn={8}
             shadowOut={2}
             shadowClick={12}
