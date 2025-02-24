@@ -57,9 +57,6 @@ const DrawerComponent = ({
         }}
       />
       <Drawer
-        sx={{
-          position: 'relative',
-        }}
         anchor="bottom"
         open={open !== 'closed'}
         onClose={() => setOpen('closed')}
