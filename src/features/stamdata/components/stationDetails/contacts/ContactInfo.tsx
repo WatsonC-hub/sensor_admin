@@ -37,13 +37,14 @@ const ContactInfo = () => {
   };
 
   const handleEdit = (contactInfo: ContactTable) => {
+    const email = contactInfo.email !== '' ? contactInfo.email : null;
     const payload = {
       path: `${loc_id}`,
       data: {
         id: contactInfo.id,
         navn: contactInfo.navn,
         telefonnummer: contactInfo.telefonnummer,
-        email: contactInfo.email,
+        email: email,
         contact_role: contactInfo.contact_role,
         comment: contactInfo.comment,
         org: contactInfo.org,
