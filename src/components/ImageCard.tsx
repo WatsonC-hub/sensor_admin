@@ -54,7 +54,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         width: 'fit-content',
         height: 'fit-content',
       }}
-      id={image.gid.toString()}
+      key={image.gid.toString()}
     >
       <DeleteAlert
         title="Vil du slette billedet?"
