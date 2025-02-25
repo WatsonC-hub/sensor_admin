@@ -45,7 +45,11 @@ export default function ReferenceForm() {
 
     if (mpData.gid === -1) {
       const payload = {
-        data: data,
+        data: {
+          ...data,
+          startdate: moment(mpData.startdate).toISOString(),
+          enddate: moment(mpData.enddate).toISOString(),
+        },
         path: `${ts_id}`,
       };
       postWatlevmp.mutate(payload, mutationOptions);
