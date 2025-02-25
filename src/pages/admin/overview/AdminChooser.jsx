@@ -4,7 +4,6 @@ import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 
 import ChoiseCard from '~/components/ChoiseCard';
-import GenericCard from '~/components/GenericCard';
 import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAuthStore} from '~/state/store';
@@ -101,7 +100,6 @@ const AdminChooser = () => {
           />
         </Grid> */}
       </Grid>
-      <GenericCard />
     </>
   );
 };
