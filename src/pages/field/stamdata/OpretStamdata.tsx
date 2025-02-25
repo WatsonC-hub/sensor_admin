@@ -217,7 +217,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       form['watlevmp'] = {
         startdate: moment().format('YYYY-MM-DD'),
         description: watlevmp?.description ?? '',
-        elevation: watlevmp?.elevation ?? 0,
+        elevation: watlevmp?.elevation ?? null,
       };
     }
 
@@ -254,7 +254,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       form['watlevmp'] = {
         startdate: moment(getValues().unit.startdate).format('YYYY-MM-DD'),
         description: watlevmp?.description ?? '',
-        elevation: watlevmp?.elevation ?? 0,
+        elevation: watlevmp?.elevation ?? null,
       };
     }
 

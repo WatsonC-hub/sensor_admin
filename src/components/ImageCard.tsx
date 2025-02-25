@@ -26,7 +26,6 @@ type ImageCardProps = {
 
 function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
   const {isMobile} = useBreakpoints();
-
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -79,19 +78,12 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         >
           <CircularProgress />
         </div>
-        <img
-          src={imageUrl}
-          alt={image.title}
-          loading="lazy"
-          onLoad={() => setIsLoaded(true)}
-          // style={isLoaded ? {} : {display: `none`}}
-        />
+        <img src={imageUrl} alt={image.title} onLoad={() => setIsLoaded(true)} />
       </CardMedia>
       <CardContent
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          // flexGrow: 1,
         }}
       >
         <Typography variant="body2" color="textSecondary" align="right" component="p">
@@ -103,7 +95,6 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
           component="p"
           sx={{
             minHeight: {md: '60px'},
-            // flexGrow: 1,
           }}
         >
           {image.comment}

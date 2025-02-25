@@ -3,7 +3,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import moment from 'moment';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
@@ -19,12 +19,15 @@ import {useAppContext} from '~/state/contexts';
 import UdstyrReplace from './UdstyrReplace';
 
 const unitSchema = z.object({
+  timeseries: z.object({
+    tstype_id: z.number(),
+  }),
   unit: z
     .object({
-      unit_uuid: z.string().optional(),
-      startdate: z.string().optional(),
+      unit_uuid: z.string(),
       gid: z.number().optional(),
-      enddate: z.string().optional(),
+      startdate: z.string(),
+      enddate: z.string(),
     })
     .superRefine((unit, ctx) => {
       if (moment(unit.startdate) > moment(unit.enddate)) {
@@ -40,9 +43,6 @@ const unitSchema = z.object({
         });
       }
     }),
-  timeseries: z.object({
-    tstype_id: z.number(),
-  }),
 });
 
 type Unit = z.infer<typeof unitSchema>;
@@ -51,6 +51,7 @@ const EditUnit = () => {
   const {ts_id} = useAppContext(['ts_id']);
   const {data: metadata} = useTimeseriesData();
   const {data: unit_history} = useUnitHistory();
+  const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
 
   const metadataEditUnitMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -63,21 +64,19 @@ const EditUnit = () => {
     },
   });
 
-  const unit = unit_history?.[0];
+  const unit = unit_history?.find((item) => item.gid == selectedUnit);
 
-  const parsed = unitSchema.safeParse({
+  const {data: defaultValues} = unitSchema.safeParse({
     timeseries: {
       tstype_id: metadata?.tstype_id,
     },
     unit: {
-      startdate: unit?.startdato,
-      enddate: unit?.slutdato,
+      startdate: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
+      enddate: moment(unit?.slutdato).format('YYYY-MM-DDTHH:mm'),
       gid: unit?.gid,
       unit_uuid: unit?.uuid,
     },
   });
-
-  const {data: defaultValues = {}} = parsed;
 
   const formMethods = useForm<Unit>({
     resolver: zodResolver(unitSchema),
@@ -92,10 +91,16 @@ const EditUnit = () => {
   } = formMethods;
 
   useEffect(() => {
-    if (metadata != undefined) {
+    if (unit_history != undefined) {
       reset(defaultValues);
     }
-  }, [metadata, unit_history, ts_id]);
+  }, [unit_history]);
+
+  useEffect(() => {
+    if (metadata != undefined && unit !== undefined && ts_id !== undefined) {
+      reset(defaultValues);
+    }
+  }, [selectedUnit]);
 
   const handleSubmit = async (data: Unit) => {
     const payload = {
@@ -116,11 +121,16 @@ const EditUnit = () => {
   return (
     <>
       <FormProvider {...formMethods}>
-        <UdstyrReplace />
+        <UdstyrReplace selected={selectedUnit} setSelected={setSelectedUnit} />
         <UnitForm mode="edit" />
         <footer>
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button bttype="tertiary" onClick={() => reset(defaultValues)}>
+            <Button
+              bttype="tertiary"
+              onClick={() => {
+                reset(defaultValues);
+              }}
+            >
               Annuller
             </Button>
 

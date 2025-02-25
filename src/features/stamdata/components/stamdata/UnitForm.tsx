@@ -1,6 +1,6 @@
 import {Grid} from '@mui/material';
 import moment from 'moment';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
@@ -14,11 +14,11 @@ interface UnitFormProps {
 }
 
 export default function UnitForm({mode}: UnitFormProps) {
-  const {watch, trigger, getFieldState} = useFormContext();
+  const {watch} = useFormContext();
   const editMode = mode === 'edit';
 
   const startdate = watch('unit.startdate');
-  const enddate = watch('unit.enddate');
+  // const enddate = watch('unit.enddate');
   const unit_uuid: string = watch('unit.unit_uuid');
 
   const {
@@ -33,10 +33,10 @@ export default function UnitForm({mode}: UnitFormProps) {
     unit = availableUnits?.find((u) => u.unit_uuid === unit_uuid);
   }
 
-  useEffect(() => {
-    if (getFieldState('unit.startdate').error || getFieldState('unit.enddate').error)
-      trigger('unit');
-  }, [startdate, enddate]);
+  // useEffect(() => {
+  //   if (getFieldState('unit.startdate').error || getFieldState('unit.enddate').error)
+  //     trigger('unit');
+  // }, [startdate, enddate]);
 
   return (
     <Grid container spacing={2} alignItems="center" justifyContent="center">

@@ -48,7 +48,7 @@ self.addEventListener('push', receivePushNotification);
 
 function receivePushNotification(event) {
   console.log('[Service Worker] Push Received.');
-  const promise = isClientFocused().then((focused) => {
+  const promise = isClientFocused().then(() => {
     // if (focused) {
     //   // browser is focused, do something
     //   console.log('browser is focused, do something');
