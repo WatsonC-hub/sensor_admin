@@ -64,41 +64,7 @@ const TasksPage = () => {
           ]}
         />
       </NavBar>
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: 'auto 1fr',
-          gridTemplateRows: 'auto 1fr',
-          height: `calc(100vh - ${appBarHeight} )`,
-        }}
-      >
-        <Box
-          className="horizontal"
-          sx={{
-            gridColumn: '1',
-            gridRow: '1 / span 2',
-            border: '1px solid black',
-            resize: 'horizontal',
-            width: '50vw',
-            overflow: 'auto',
-          }}
-        >
-          <TasksOverview />
-        </Box>
-        <Box>
-          <TaskInfo />
-        </Box>
-        {/* <Box
-          sx={{
-            gridColumn: '2',
-            gridRow: '2',
-            height: '100%',
-            border: '1px solid black',
-          }}
-        >
-          <TaskItiniaries />
-        </Box> */}
-      </Box>
+      <TasksOverview />
     </>
   );
 };

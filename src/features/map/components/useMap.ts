@@ -145,9 +145,19 @@ const useMap = <TData extends object>(
       contextmenuItems: items,
     });
 
+    map.zoomControl.setPosition('topleft');
+
     map.pm.setLang('da');
 
     map.attributionControl.setPrefix(false);
+
+    new LocateControl({
+      showPopup: false,
+      strings: {title: 'Find mig'},
+      circleStyle: {interactive: false},
+      locateOptions: {enableHighAccuracy: true},
+      position: 'topleft',
+    }).addTo(map);
 
     const baseMaps = {
       OpenStreetMap: outdormapbox,
@@ -155,14 +165,7 @@ const useMap = <TData extends object>(
       Satelit: satelitemapbox,
     };
 
-    L.control.layers(baseMaps).addTo(map);
-
-    new LocateControl({
-      showPopup: false,
-      strings: {title: 'Find mig'},
-      circleStyle: {interactive: false},
-      locateOptions: {enableHighAccuracy: true},
-    }).addTo(map);
+    L.control.layers(baseMaps, {}, {position: 'topleft'}).addTo(map);
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
