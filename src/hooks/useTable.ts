@@ -275,30 +275,28 @@ export const useQueryTable = <TData extends MRT_RowData>(
   const {data, isFetched, error} = queryResult;
 
   const tableOptions = useMemo(() => {
-    let tableOptions: Partial<MRT_TableOptions<TData>> = options;
+    let localtableOptions: Partial<MRT_TableOptions<TData>> = {...options};
     if (merge_method === MergeType.SHALLOWMERGE)
-      tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+      localtableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
     else if (merge_method === MergeType.RECURSIVEMERGE)
-      tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+      localtableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
 
-    return tableOptions;
-  }, [options, breakpoints, merge_method, type]);
-
-  const localization = {...tableOptions.localization};
-  if (error != null) {
-    if (tableOptions.localization) {
-      localization.noRecordsToDisplay =
-        typeof error.response?.data.detail == 'string'
-          ? error.response?.data.detail
-          : tableOptions.localization.noRecordsToDisplay;
+    if (error != null) {
+      if (localtableOptions.localization) {
+        localtableOptions.localization.noRecordsToDisplay =
+          typeof error.response?.data.detail == 'string'
+            ? error.response?.data.detail
+            : localtableOptions.localization.noRecordsToDisplay;
+      }
     }
-  }
+
+    return localtableOptions;
+  }, [options, breakpoints, merge_method, type, error]);
 
   const table = useMaterialReactTable({
     columns,
     data: data ?? [],
     ...tableOptions,
-    localization,
     ...state,
     state: {
       ...state?.state,
