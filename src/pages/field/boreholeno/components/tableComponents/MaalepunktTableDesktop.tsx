@@ -5,24 +5,25 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
 import {convertDate, checkEndDateIsUnset, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {useAuthStore} from '~/state/store';
 import {MaalepunktTableData} from '~/types';
 
 interface Props {
   data: MaalepunktTableData[];
   handleEdit: (maalepuntk: MaalepunktTableData) => void;
   handleDelete: (gid: number) => void;
+  disabled: boolean;
 }
 
-export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}: Props) {
+export default function MaalepunktTableDesktop({data, handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const org_id = useAuthStore((store) => store.org_id);
+  const user = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -52,7 +53,9 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         accessorKey: 'organisationname',
         header: 'Organisation',
         Cell: ({row, renderedCellValue}) => (
-          <Typography>{row.original.organisationid == org_id ? renderedCellValue : '-'}</Typography>
+          <Typography>
+            {row.original.organisationid == user?.org_id ? renderedCellValue : '-'}
+          </Typography>
         ),
       },
       {
@@ -76,7 +79,7 @@ export default function MaalepunktTableDesktop({data, handleEdit, handleDelete}:
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={row.original.organisationid !== org_id}
+        disabled={disabled || row.original.organisationid != user?.org_id}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

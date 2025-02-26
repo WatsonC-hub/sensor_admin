@@ -9,6 +9,7 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {renderDetailStyle} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
 import {
   convertDate,
   checkEndDateIsUnset,
@@ -18,19 +19,19 @@ import {
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {useAuthStore} from '~/state/store';
 import {MaalepunktTableData} from '~/types';
 
 interface Props {
   data: MaalepunktTableData[];
   handleEdit: (maalepunkt: MaalepunktTableData) => void;
   handleDelete: (gid: number) => void;
+  disabled: boolean;
 }
 
-export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: Props) {
+export default function MaalepunktTableMobile({data, handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState<number>(-1);
-  const org_id = useAuthStore((store) => store.org_id);
+  const user = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -79,7 +80,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete}: 
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={row.original.organisationid !== org_id}
+                disabled={disabled || row.original.organisationid != user?.org_id}
               />
             </Box>
           </Box>

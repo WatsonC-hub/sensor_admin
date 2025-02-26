@@ -1,7 +1,7 @@
-import {queryOptions, useQuery} from '@tanstack/react-query';
+// import {useQuery} from '@tanstack/react-query';
 import {createContext, useContext} from 'react';
 
-import {apiClient} from '~/apiClient';
+// import {usePermissionsQueryOptions} from '~/features/permissions/api/usePermissions';
 
 // import {StationDetails} from '~/types';
 
@@ -20,22 +20,7 @@ export type AppContextType = {
   intakeno?: number;
 };
 
-export type LocationPermissions = Record<number, 'read' | 'edit'>;
-
 export const AppContext = createContext<AppContextType | null>(null);
-
-export const usePermissionsQueryOptions = (loc_id?: number) => {
-  return queryOptions({
-    queryKey: ['permissions', loc_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<LocationPermissions>(
-        `/auth/me/location_permissions/${loc_id}`
-      );
-      return data;
-    },
-    enabled: loc_id !== undefined,
-  });
-};
 
 // Utility type to make required keys non-optional while keeping optional ones unchanged
 type EnforceRequired<T, K extends keyof T> = {[P in K]-?: T[P]};
@@ -50,10 +35,10 @@ export function useAppContext<
     throw new Error('useAppContext must be used within an AppProvider');
   }
 
-  const {data: permissions} = useQuery(usePermissionsQueryOptions(context.loc_id));
+  // const {data: permissions} = useQuery(usePermissionsQueryOptions(context.loc_id));
 
-  if (context.ts_id && permissions && permissions[context.ts_id] === undefined)
-    throw new Error(`Missing permissions on timeseries: ${String(context.ts_id)}`);
+  // if (context.ts_id && permissions && permissions[context.ts_id] === undefined)
+  //   throw new Error(`Missing permissions on timeseries: ${String(context.ts_id)}`);
 
   // Ensure required keys exist in the context
   requiredKeys?.forEach((key) => {
@@ -77,6 +62,6 @@ export function useAppContext<
 
   return {
     ...(selectedContext as EnforceRequired<AppContextType, K> & Partial<Pick<AppContextType, O>>),
-    permissions: context.ts_id ? permissions?.[context.ts_id] : undefined,
+    // permissions: context.ts_id ? permissions?.[context.ts_id] : undefined,
   };
 }

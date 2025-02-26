@@ -11,6 +11,7 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {
   useCreateTabState,
@@ -26,14 +27,17 @@ type Props = {
 };
 
 const Pejling = ({setDynamic}: Props) => {
-  const {ts_id, permissions} = useAppContext(['ts_id']);
-  console.log(permissions);
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: timeseries_data} = useTimeseriesData();
   const isWaterlevel = timeseries_data?.tstype_id === 1;
   const [showForm, setShowForm] = useShowFormState();
   const [, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
+
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(loc_id);
 
   const initialData = {
     gid: -1,
@@ -133,11 +137,15 @@ const Pejling = ({setDynamic}: Props) => {
         </Box>
       </FormProvider>
       <Box display={'flex'} flexDirection={'column'}>
-        <PejlingMeasurements handleEdit={handleEdit} handleDelete={handleDelete} />
+        <PejlingMeasurements
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          disabled={permissions?.[ts_id] !== 'edit'}
+        />
         <FabWrapper
           icon={<AddCircle />}
           text="Tilføj kontrol"
-          disabled={permissions === 'read' || permissions === undefined}
+          disabled={permissions?.[ts_id] !== 'edit'}
           onClick={() => {
             setShowForm(true);
           }}

@@ -1,9 +1,12 @@
+import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
+import FabWrapper from '~/components/FabWrapper';
 
 import MaalepunktForm from '~/components/MaalepunktForm';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
@@ -11,7 +14,7 @@ import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
 export default function ReferenceForm() {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
@@ -21,6 +24,12 @@ export default function ReferenceForm() {
     elevation: null,
     mp_description: '',
   });
+
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(loc_id);
+
+  const disabled = permissions?.[ts_id] !== 'edit';
 
   const {
     get: {data: watlevmp},
@@ -100,14 +109,25 @@ export default function ReferenceForm() {
             data={watlevmp}
             handleEdit={handleEdit}
             handleDelete={handleDeleteMaalepunkt}
+            disabled={disabled}
           />
         ) : (
           <MaalepunktTableDesktop
             data={watlevmp}
             handleEdit={handleEdit}
             handleDelete={handleDeleteMaalepunkt}
+            disabled={disabled}
           />
         )}
+        <FabWrapper
+          icon={<AddCircle />}
+          text="Tilføj målepunkt"
+          onClick={() => {
+            setShowForm(true);
+          }}
+          disabled={permissions?.[ts_id] !== 'edit'}
+          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+        />
       </Box>
     </>
   );

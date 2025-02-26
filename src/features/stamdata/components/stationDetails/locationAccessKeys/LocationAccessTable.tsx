@@ -8,6 +8,7 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {initialLocationAccessData} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
 import {AdgangsforholdTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
@@ -45,6 +46,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const {loc_id} = useAppContext(['loc_id']);
   const {isMobile} = useBreakpoints();
+  const user = useUser();
 
   const {get} = useLocationAccess(loc_id);
 
@@ -184,7 +186,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.id, setDialogOpen, setLocationAccessID);
         }}
-        disabled={false}
+        disabled={!user?.contactKeysPermission}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

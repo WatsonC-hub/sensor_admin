@@ -6,6 +6,7 @@ import {FormProvider, useForm} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
@@ -19,6 +20,8 @@ const ContactInfo = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
   const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
+
+  const user = useUser();
 
   const formMethods = useForm({
     resolver: zodResolver(contact_info),
@@ -76,6 +79,7 @@ const ContactInfo = () => {
                 reset();
                 setOpenContactInfoDialog(true);
               }}
+              disabled={!user?.contactKeysPermission}
             >
               Tilføj kontakt
             </Button>

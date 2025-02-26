@@ -1,5 +1,4 @@
 import {
-  AddCircle,
   BuildRounded,
   LocationOnRounded,
   ShowChartRounded,
@@ -9,7 +8,6 @@ import {
 import {Box, Divider, Tab, Typography, Tabs} from '@mui/material';
 import {useEffect} from 'react';
 
-import FabWrapper from '~/components/FabWrapper';
 import {tabsHeight} from '~/consts';
 import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
@@ -136,14 +134,6 @@ export default function EditStamdata() {
 
         <TabPanel value={tabValue} index={'målepunkt'}>
           <ReferenceForm />
-          <FabWrapper
-            icon={<AddCircle />}
-            text="Tilføj målepunkt"
-            onClick={() => {
-              setShowForm(true);
-            }}
-            sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-          />
         </TabPanel>
 
         <TabPanel value={tabValue} index={'stationsinformation'}>

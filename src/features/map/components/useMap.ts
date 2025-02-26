@@ -12,7 +12,7 @@ import {toast} from 'react-toastify';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {useAuthStore, useMapUtilityStore, mapUtilityStore} from '~/state/store';
+import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
 import {
@@ -34,6 +34,7 @@ import {
   highlightRadius,
   markerNumThreshold,
 } from '../mapConsts';
+import {useUser} from '~/features/auth/useUser';
 
 // const highlightedParking: L.Marker | null = null;
 
@@ -47,8 +48,6 @@ const useMap = <TData extends object>(
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const geoJsonRef = useRef<L.FeatureGroup | null>(null);
-  // const mutateParkingRef = useRef<boolean>(false);
-  // const mutateLeafletMapRouteRef = useRef<number | boolean | null>(null);
   const [setSelectParking, setEditParkingLayer, setEditRouteLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
     state.setEditParkingLayer,
@@ -62,7 +61,7 @@ const useMap = <TData extends object>(
   const [hightlightedMarker, setHightlightedMarker] = useState<L.CircleMarker | null>();
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
-  const [superUser] = useAuthStore((state) => [state.superUser]);
+  const user = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -313,7 +312,7 @@ const useMap = <TData extends object>(
               const geo = L.geoJSON(route.geo_route, {
                 onEachFeature: function onEachFeature(feature, layer) {
                   layer.bindContextMenu({
-                    contextmenu: superUser,
+                    contextmenu: user?.superUser,
                     contextmenuInheritItems: false,
                     contextmenuItems: [
                       {
@@ -414,7 +413,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: superUser,
+            contextmenu: user?.superUser,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,

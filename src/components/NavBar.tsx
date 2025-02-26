@@ -25,18 +25,14 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
-import {useAuthStore} from '~/state/store';
 
 import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
-  const [resetState] = useAuthStore((state) => [state.resetState]);
   const queryClient = useQueryClient();
   const {home} = useNavigationFunctions();
 
   const handleLogout = () => {
-    resetState();
-    // navigate('/');
     home();
     apiClient.get('/auth/logout/secure');
     queryClient.clear();

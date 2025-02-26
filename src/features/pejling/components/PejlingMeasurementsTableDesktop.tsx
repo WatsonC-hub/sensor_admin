@@ -12,16 +12,19 @@ import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
+  disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelete}: Props) {
-  const {permissions} = useAppContext();
+export default function PejlingMeasurementsTableDesktop({
+  handleEdit,
+  handleDelete,
+  disabled,
+}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
@@ -76,7 +79,7 @@ export default function PejlingMeasurementsTableDesktop({handleEdit, handleDelet
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        disabled={permissions !== 'edit'}
+        disabled={disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

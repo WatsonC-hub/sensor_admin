@@ -15,22 +15,24 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
 import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
+  disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete}: Props) {
-  const {permissions} = useAppContext();
+export default function PejlingMeasurementsTableMobile({
+  handleEdit,
+  handleDelete,
+  disabled,
+}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
   const stationUnit = timeseries?.unit;
-
   const unit = tstype_id === 1 ? ' m' : ' ' + stationUnit;
 
   const onDeleteBtnClick = (id: number) => {
@@ -83,7 +85,7 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                disabled={permissions !== 'edit'}
+                disabled={disabled}
               />
             </Box>
           </Box>

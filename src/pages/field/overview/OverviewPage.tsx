@@ -18,10 +18,10 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeTable from '~/pages/field/overview/components/BoreholeTable';
 import StationTable from '~/pages/field/overview/components/StationTable';
-import {useAuthStore} from '~/state/store';
 import {TableData, BoreholeData} from '~/types';
 
 import Map from './Map';
+import {useUser} from '~/features/auth/useUser';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -30,10 +30,7 @@ export default function OverviewPage() {
   const {isMobile} = useBreakpoints();
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
-  const [iotAccess, boreholeAccess] = useAuthStore((state) => [
-    state.iotAccess,
-    state.boreholeAccess,
-  ]);
+  const user = useUser();
   const {admin, createStamdata} = useNavigationFunctions();
 
   const {data: tabledata} = useQuery<TableData[]>({
@@ -42,7 +39,7 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
       return data;
     },
-    enabled: iotAccess,
+    enabled: user?.iotAccess,
     // refetchInterval: 10000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -55,7 +52,7 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
       return data;
     },
-    enabled: boreholeAccess,
+    enabled: user?.boreholeAccess,
   });
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
@@ -107,7 +104,7 @@ export default function OverviewPage() {
                 admin();
               },
             },
-            ...(iotAccess
+            ...(user?.iotAccess
               ? [
                   {
                     title: 'Opret lokation',
@@ -157,17 +154,19 @@ export default function OverviewPage() {
           variant={isMobile ? 'fullWidth' : 'standard'}
           aria-label="full width tabs example"
         >
-          {iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
-          {boreholeAccess && <Tab label="Mine DGU boringer" {...a11yProps(iotAccess ? 1 : 0)} />}
+          {user?.iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
+          {user?.boreholeAccess && (
+            <Tab label="Mine DGU boringer" {...a11yProps(user?.iotAccess ? 1 : 0)} />
+          )}
         </Tabs>
 
-        {iotAccess && (
+        {user?.iotAccess && (
           <TabPanel value={tabValueInner} index={0}>
             <StationTable data={tabledata} />
           </TabPanel>
         )}
-        {boreholeAccess && (
-          <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0}>
+        {user?.boreholeAccess && (
+          <TabPanel value={tabValueInner} index={user?.iotAccess ? 1 : 0}>
             <BoreholeTable data={boreholetabledata} />
           </TabPanel>
         )}
