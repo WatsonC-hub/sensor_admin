@@ -17,8 +17,7 @@ export default function TabPanel({children, value, index, ...other}: TabPanelPro
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {index == value ? <Box p={0.5}>{children}</Box> : null}
-      {/* {children} */}
+      {value === index ? <Box p={0.5}>{children}</Box> : null}
     </div>
   );
 }

@@ -24,7 +24,7 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {useAuthStore, useParkingStore} from '~/state/store';
+import {useAuthStore, useMapUtilityStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -103,7 +103,11 @@ interface MapProps {
 
 const Map = ({clickCallback}: MapProps) => {
   const {createStamdata} = useNavigationFunctions();
-  const [setSelectLocId] = useParkingStore((state) => [state.setSelectedLocId]);
+  const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
+    state.setSelectedLocId,
+    state.setEditRouteLayer,
+    state.setEditParkingLayer,
+  ]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
   // const user_id = authStore().user_id;
   // const {hiddenTasks, shownTasks} = useTaskStore();
@@ -194,7 +198,6 @@ const Map = ({clickCallback}: MapProps) => {
     selectedMarker,
     setSelectedMarker,
     layers: {markerLayer},
-    mutateLayers: {setMutateParking, setMutateRoutes},
     delete: {
       deleteId,
       deleteParking,
@@ -266,7 +269,8 @@ const Map = ({clickCallback}: MapProps) => {
           callback: () => {
             if (map) {
               setSelectLocId(element.loc_id);
-              setMutateRoutes(true);
+              console.log('test');
+              setEditRouteLayer('create');
 
               map.pm.enableDraw('Line');
             }
@@ -276,16 +280,18 @@ const Map = ({clickCallback}: MapProps) => {
         {
           text: 'Tilknyt parkering',
           callback: () => {
-            if (map) map.getContainer().style.cursor = 'pointer';
+            if (map) {
+              map.getContainer().style.cursor = 'pointer';
 
-            setSelectLocId(element.loc_id);
-            setMutateParking(true);
-            toast('Vælg parkering for at tilknytte den lokationen', {
-              toastId: 'tilknytParking',
-              type: 'info',
-              autoClose: false,
-              draggable: false,
-            });
+              setSelectLocId(element.loc_id);
+              setEditParkingLayer('create');
+              toast('Vælg parkering for at tilknytte den lokationen', {
+                toastId: 'tilknytParking',
+                type: 'info',
+                autoClose: false,
+                draggable: false,
+              });
+            }
           },
           icon: '/parking-icon.png',
         },
