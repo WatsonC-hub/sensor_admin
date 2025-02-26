@@ -254,9 +254,10 @@ export const useQueryTable = <TData extends MRT_RowData>(
     return tableOptions;
   }, [options, breakpoints, merge_method, type]);
 
+  const localization = {...tableOptions.localization};
   if (error != null) {
     if (tableOptions.localization) {
-      tableOptions.localization.noRecordsToDisplay =
+      localization.noRecordsToDisplay =
         typeof error.response?.data.detail == 'string'
           ? error.response?.data.detail
           : tableOptions.localization.noRecordsToDisplay;
@@ -267,6 +268,7 @@ export const useQueryTable = <TData extends MRT_RowData>(
     columns,
     data: data ?? [],
     ...tableOptions,
+    localization,
     ...state,
     state: {
       ...state?.state,

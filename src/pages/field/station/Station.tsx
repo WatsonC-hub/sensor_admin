@@ -81,11 +81,6 @@ export default function Station() {
     }
   };
 
-  const handleFileInputClick = () => {
-    if (openSave !== true && fileInputRef.current && 'value' in fileInputRef.current)
-      fileInputRef.current.value = '';
-  };
-
   useEffect(() => {
     setPageToShow(pageToShow);
     if (metadata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
@@ -152,7 +147,6 @@ export default function Station() {
         accept="image/jpeg, image/png, image/webp, image/avif, image/svg, image/gif, image/tif"
         style={{display: 'none'}}
         onChange={handleFileRead}
-        onClick={handleFileInputClick}
       />
     </Layout>
   );
