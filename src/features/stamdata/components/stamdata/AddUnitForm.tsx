@@ -17,9 +17,9 @@ import Autocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
+import {useUser} from '~/features/auth/useUser';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore} from '~/state/store';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;
@@ -43,8 +43,7 @@ export default function AddUnitForm({
   } | null>(null);
   const queryClient = useQueryClient();
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
-
-  const superUser = useAuthStore((state) => state.superUser);
+  const user = useUser();
 
   const {
     get: {data: availableUnits, isLoading},
@@ -145,7 +144,7 @@ export default function AddUnitForm({
           enddate: moment('2099-01-01T12:00:00').toISOString(),
         },
       };
-      if (superUser) {
+      if (user?.superUser) {
         const {data} = await apiClient.get(
           `/sensor_field/stamdata/check-unit-invoice/${ts_id}/${unit.unit_uuid}`
         );

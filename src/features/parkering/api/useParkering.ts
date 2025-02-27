@@ -60,6 +60,7 @@ export const useParkering = () => {
 
       return data;
     },
+    staleTime: 10 * 1000,
   });
 
   const post = useMutation({

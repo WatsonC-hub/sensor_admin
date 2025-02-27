@@ -17,9 +17,10 @@ import {TilsynItem} from '~/types';
 interface Props {
   handleEdit: (tilsyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
+  disabled: boolean;
 }
 
-export default function TilsynTableDesktop({handleEdit, handleDelete}: Props) {
+export default function TilsynTableDesktop({handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {get} = useTilsyn();
@@ -92,7 +93,7 @@ export default function TilsynTableDesktop({handleEdit, handleDelete}: Props) {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={true}
+        disabled={disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

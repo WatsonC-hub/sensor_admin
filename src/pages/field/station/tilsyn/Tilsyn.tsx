@@ -5,6 +5,7 @@ import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
@@ -15,7 +16,7 @@ import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
 
 export default function Tilsyn() {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
   const initialData: TilsynItem = {
@@ -26,6 +27,10 @@ export default function Tilsyn() {
     tilsyn: false,
     user_id: null,
   };
+
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(loc_id);
 
   const formMethods = useForm<TilsynItem>({defaultValues: initialData});
 
@@ -98,7 +103,11 @@ export default function Tilsyn() {
           </Box>
         </FormProvider>
         <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
-          <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} />
+          <TilsynTable
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            disabled={permissions?.[ts_id] !== 'edit'}
+          />
         </Box>
       </Box>
       <FabWrapper
@@ -107,6 +116,7 @@ export default function Tilsyn() {
         onClick={() => {
           setShowForm(true);
         }}
+        disabled={permissions?.[ts_id] !== 'edit'}
         sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
       />
     </>

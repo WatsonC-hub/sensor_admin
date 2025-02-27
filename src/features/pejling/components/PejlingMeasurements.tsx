@@ -8,17 +8,30 @@ import {PejlingItem} from '~/types';
 interface PejlingMeasurementsProps {
   handleEdit: (data: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
+  disabled: boolean;
 }
 
-export default function PejlingMeasurements({handleEdit, handleDelete}: PejlingMeasurementsProps) {
+export default function PejlingMeasurements({
+  handleEdit,
+  handleDelete,
+  disabled,
+}: PejlingMeasurementsProps) {
   const {isMobile} = useBreakpoints();
 
   return isMobile ? (
     <>
       <Typography variant="h6">Kontrol pejlinger</Typography>
-      <PejlingMeasurementsTableMobile handleEdit={handleEdit} handleDelete={handleDelete} />
+      <PejlingMeasurementsTableMobile
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        disabled={disabled}
+      />
     </>
   ) : (
-    <PejlingMeasurementsTableDesktop handleEdit={handleEdit} handleDelete={handleDelete} />
+    <PejlingMeasurementsTableDesktop
+      handleEdit={handleEdit}
+      handleDelete={handleDelete}
+      disabled={disabled}
+    />
   );
 }

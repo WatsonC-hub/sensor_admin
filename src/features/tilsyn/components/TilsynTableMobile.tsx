@@ -20,9 +20,10 @@ import {TilsynItem} from '~/types';
 interface Props {
   handleEdit: (tilyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
+  disabled: boolean;
 }
 
-export default function TilsynTableMobile({handleEdit, handleDelete}: Props) {
+export default function TilsynTableMobile({handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {get} = useTilsyn();
@@ -86,7 +87,7 @@ export default function TilsynTableMobile({handleEdit, handleDelete}: Props) {
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={true}
+                disabled={disabled}
               />
             </Box>
           </Box>

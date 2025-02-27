@@ -24,7 +24,6 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {useAuthStore, useMapUtilityStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -37,6 +36,8 @@ import {
   defaultRadius,
   utm,
 } from '../../../features/map/mapConsts';
+import {useMapUtilityStore} from '~/state/store';
+import {useUser} from '~/features/auth/useUser';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
@@ -63,11 +64,7 @@ const Map = () => {
   ]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
 
-  const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
-    state.superUser,
-    state.iotAccess,
-    state.boreholeAccess,
-  ]);
+  const user = useUser();
 
   const {data: boreholeMapdata} = useQuery<BoreholeMapData[]>({
     queryKey: ['borehole_map'],
@@ -75,10 +72,11 @@ const Map = () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);
       return data;
     },
-    enabled: boreholeAccess,
+    staleTime: 10 * 1000,
+    enabled: user?.boreholeAccess,
   });
 
-  const {data: mapData} = useNotificationOverviewMap({enabled: iotAccess});
+  const {data: mapData} = useNotificationOverviewMap({enabled: user?.iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -86,7 +84,7 @@ const Map = () => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (iotAccess)
+  if (user?.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -168,7 +166,7 @@ const Map = () => {
       },
     ];
 
-    if (superUser) {
+    if (user?.superUser) {
       locationMenu = [
         ...locationMenu,
         {
@@ -381,7 +379,7 @@ const Map = () => {
             <SensorContent data={selectedMarker} />
           )}
           {selectedMarker == null && <LegendContent />}
-          {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
+          {selectedMarker && 'boreholeno' in selectedMarker && user?.boreholeAccess && (
             <BoreholeContent data={selectedMarker} />
           )}
         </DrawerComponent>
