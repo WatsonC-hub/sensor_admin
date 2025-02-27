@@ -9,6 +9,7 @@ import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {apiClient, loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
 
@@ -20,7 +21,7 @@ export default function Login() {
   const [passReset, setPassReset] = useState('');
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
-
+  const {home} = useNavigationFunctions();
   const loginMutation = useMutation({mutationKey: ['login'], mutationFn: loginAPI});
 
   const passwordResetMutation = useMutation({
@@ -34,7 +35,10 @@ export default function Login() {
       {
         onSuccess: (data) => {
           setLoginError('');
-          queryClient.setQueryData(['user'], data);
+          const mutatedData = {...data};
+          queryClient.setQueryData(['user'], mutatedData, {
+            updatedAt: Date.now(),
+          });
           queryClient.prefetchQuery({
             queryKey: ['overblik'],
             queryFn: async ({signal}) => {
@@ -42,6 +46,7 @@ export default function Login() {
               return data;
             },
           });
+          home();
         },
       }
     );

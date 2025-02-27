@@ -72,6 +72,7 @@ const Map = () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);
       return data;
     },
+    staleTime: 10 * 1000,
     enabled: user?.boreholeAccess,
   });
 

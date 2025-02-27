@@ -79,7 +79,7 @@ const ContactInfo = () => {
                 reset();
                 setOpenContactInfoDialog(true);
               }}
-              disabled={!user?.contactKeysPermission}
+              disabled={!user?.contactAndKeysPermission}
             >
               Tilføj kontakt
             </Button>

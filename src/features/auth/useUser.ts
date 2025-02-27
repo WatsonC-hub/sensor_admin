@@ -2,7 +2,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 
-type User = {
+export type User = {
   user_id: number | null;
   org_id: number | null;
   boreholeAccess: boolean;
@@ -12,17 +12,20 @@ type User = {
   advancedTaskPermission: boolean;
   simpleTaskPermission: boolean;
   QAPermission: boolean;
-  contactKeysPermission: boolean;
+  contactAndKeysPermission: boolean;
   ressourcePermission: boolean;
 };
 
-const userQueryOptions = queryOptions({
+export const userQueryOptions = queryOptions({
   queryKey: ['user'],
   queryFn: async () => {
-    const {data} = await apiClient.get<User>(`auth/me/secure`);
+    const {data} = await apiClient.get<User>(`/auth/me/secure`);
     return data;
   },
   refetchOnWindowFocus: false,
+  refetchInterval: Infinity,
+  refetchOnMount: false,
+  refetchOnReconnect: false,
 });
 
 export const useUser = () => {

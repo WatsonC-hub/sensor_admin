@@ -183,7 +183,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
         }}
-        disabled={!user?.contactKeysPermission}
+        disabled={!user?.contactAndKeysPermission}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

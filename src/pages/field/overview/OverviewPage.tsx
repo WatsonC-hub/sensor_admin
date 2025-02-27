@@ -44,6 +44,7 @@ export default function OverviewPage() {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
+    staleTime: 10 * 1000,
   });
 
   const {data: boreholetabledata} = useQuery<BoreholeData[]>({
@@ -52,6 +53,7 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
       return data;
     },
+    staleTime: 10 * 1000,
     enabled: user?.boreholeAccess,
   });
 
