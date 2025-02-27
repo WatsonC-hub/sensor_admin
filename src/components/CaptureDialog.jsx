@@ -33,7 +33,7 @@ function extractNumber(url) {
 
     // Ensure the path is purely numeric
     return /^\d+$/.test(path) ? Number(path) : null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

@@ -10,8 +10,8 @@ import {z} from 'zod';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore} from '~/state/store';
 
 const unitEndSchema = z.object({
   enddate: z.string(),
@@ -35,7 +35,7 @@ type Action = {action: string; label: string};
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
   const {ts_id} = useAppContext(['ts_id']);
-  const superUser = useAuthStore((store) => store.superUser);
+  const user = useUser();
 
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
@@ -53,7 +53,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
       return data;
     },
-    enabled: superUser,
+    enabled: user?.superUser,
   });
 
   const {data: actions} = useQuery<Action[]>({
@@ -62,7 +62,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit.uuid}`);
       return data;
     },
-    enabled: superUser && !!unit?.uuid,
+    enabled: user?.superUser && !!unit?.uuid,
   });
 
   const takeHomeMutation = useMutation({
@@ -104,7 +104,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
             inputProps={{min: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm')}}
           />
 
-          {superUser && (
+          {user?.superUser && (
             <>
               <FormInput
                 name="change_reason"

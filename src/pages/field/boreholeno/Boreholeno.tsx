@@ -33,24 +33,9 @@ import {
 const Boreholeno = () => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
   const queryClient = useQueryClient();
-  const [canEdit, setCanEdit] = useState(false);
   const {isMobile, isTouch} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
-  const {data: permissions} = useQuery({
-    queryKey: ['borehole_permissions'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/auth/me/permissions`);
-      return data;
-    },
-    enabled: intakeno !== undefined,
-  });
-
-  useEffect(() => {
-    if (permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)) {
-      setCanEdit(true);
-    }
-  }, [permissions]);
 
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
@@ -451,7 +436,7 @@ const Boreholeno = () => {
         onChange={handleFileRead}
         onClick={handleFileInputClick}
       />
-      <ActionAreaBorehole canEdit={canEdit} />
+      <ActionAreaBorehole />
     </Box>
   );
 };

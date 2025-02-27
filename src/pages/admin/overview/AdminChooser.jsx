@@ -5,11 +5,11 @@ import React from 'react';
 
 import ChoiseCard from '~/components/ChoiseCard';
 import NavBar from '~/components/NavBar';
+import {useUser} from '~/features/auth/useUser';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useAuthStore} from '~/state/store';
 
 const AdminChooser = () => {
-  const adminAccess = useAuthStore((state) => state.adminAccess);
+  const user = useUser();
   const {field} = useNavigationFunctions();
 
   return (
@@ -29,7 +29,7 @@ const AdminChooser = () => {
           ]}
         />
       </NavBar>
-      {!adminAccess && (
+      {!user?.adminAccess && (
         <>
           <Typography variant="h4" sx={{textAlign: 'center', marginTop: 10}}>
             Denne side er under rivende udvikling og er ikke klar til produktion endnu. 👨‍💻

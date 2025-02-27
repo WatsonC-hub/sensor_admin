@@ -24,7 +24,6 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {useAuthStore, useParkingStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -37,6 +36,8 @@ import {
   defaultRadius,
   utm,
 } from '../../../features/map/mapConsts';
+import {useMapUtilityStore} from '~/state/store';
+import {useUser} from '~/features/auth/useUser';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
@@ -56,14 +57,14 @@ interface LocItems {
 
 const Map = () => {
   const {createStamdata} = useNavigationFunctions();
-  const [setSelectLocId] = useParkingStore((state) => [state.setSelectedLocId]);
+  const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
+    state.setSelectedLocId,
+    state.setEditRouteLayer,
+    state.setEditParkingLayer,
+  ]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
 
-  const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
-    state.superUser,
-    state.iotAccess,
-    state.boreholeAccess,
-  ]);
+  const user = useUser();
 
   const {data: boreholeMapdata} = useQuery<BoreholeMapData[]>({
     queryKey: ['borehole_map'],
@@ -71,10 +72,11 @@ const Map = () => {
       const {data} = await apiClient.get(`/sensor_field/borehole_map`);
       return data;
     },
-    enabled: boreholeAccess,
+    staleTime: 10 * 1000,
+    enabled: user?.boreholeAccess,
   });
 
-  const {data: mapData} = useNotificationOverviewMap({enabled: iotAccess});
+  const {data: mapData} = useNotificationOverviewMap({enabled: user?.iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -82,7 +84,7 @@ const Map = () => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (iotAccess)
+  if (user?.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -109,7 +111,6 @@ const Map = () => {
     selectedMarker,
     setSelectedMarker,
     layers: {markerLayer},
-    mutateLayers: {mutateParkingLayer, mutateRoutesLayer},
     delete: {
       deleteId,
       deleteParking,
@@ -165,7 +166,7 @@ const Map = () => {
       },
     ];
 
-    if (superUser) {
+    if (user?.superUser) {
       locationMenu = [
         ...locationMenu,
         {
@@ -173,7 +174,8 @@ const Map = () => {
           callback: () => {
             if (map) {
               setSelectLocId(element.loc_id);
-              mutateRoutesLayer.current = true;
+              console.log('test');
+              setEditRouteLayer('create');
 
               map.pm.enableDraw('Line');
             }
@@ -183,16 +185,18 @@ const Map = () => {
         {
           text: 'Tilknyt parkering',
           callback: () => {
-            if (map) map.getContainer().style.cursor = 'pointer';
+            if (map) {
+              map.getContainer().style.cursor = 'pointer';
 
-            setSelectLocId(element.loc_id);
-            mutateParkingLayer.current = true;
-            toast('Vælg parkering for at tilknytte den lokationen', {
-              toastId: 'tilknytParking',
-              type: 'info',
-              autoClose: false,
-              draggable: false,
-            });
+              setSelectLocId(element.loc_id);
+              setEditParkingLayer('create');
+              toast('Vælg parkering for at tilknytte den lokationen', {
+                toastId: 'tilknytParking',
+                type: 'info',
+                autoClose: false,
+                draggable: false,
+              });
+            }
           },
           icon: '/parking-icon.png',
         },
@@ -375,7 +379,7 @@ const Map = () => {
             <SensorContent data={selectedMarker} />
           )}
           {selectedMarker == null && <LegendContent />}
-          {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
+          {selectedMarker && 'boreholeno' in selectedMarker && user?.boreholeAccess && (
             <BoreholeContent data={selectedMarker} />
           )}
         </DrawerComponent>

@@ -59,7 +59,7 @@ export type LocationMetadata = {
   groups: string[];
   projectno: string | undefined;
   timeseries: Array<{
-    ts_id: number | undefined;
+    ts_id: number;
     tstype_id: number;
     ts_name: string;
     calculated: boolean;
@@ -80,7 +80,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
   });
 };
 
-export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
+export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
   return queryOptions({
     queryKey: ['location_data', loc_id],
     queryFn: async () => {
@@ -107,7 +107,7 @@ export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
           .filter((item) => item.ts_id)
           .map((data) => {
             return {
-              ts_id: data.ts_id,
+              ts_id: data.ts_id!,
               tstype_id: data.tstype_id,
               ts_name: data.ts_name,
               calculated: data.calculated,
@@ -138,7 +138,7 @@ export const useLocationData = (loc_id?: number) => {
 
   const inner_loc_id = loc_id ?? app_loc_id;
 
-  const query = useQuery(locationMetadtaQueryOptions(inner_loc_id));
+  const query = useQuery(locationMetadataQueryOptions(inner_loc_id));
 
   return query;
 };
