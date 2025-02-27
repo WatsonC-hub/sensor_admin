@@ -26,6 +26,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
 import {useAuthStore} from '~/state/store';
+import CloseIcon from '@mui/icons-material/Close';
 
 import Button from './Button';
 
@@ -131,9 +132,13 @@ export const AppBarLayout = ({children}: {children?: ReactNode}) => {
 export const NavBarMenu = ({
   highligtFirst,
   items,
+  disableLogout = false,
+  disableProfile = true,
 }: {
   highligtFirst?: boolean;
   items?: {title: string; icon: ReactNode; onClick: () => void}[];
+  disableLogout?: boolean;
+  disableProfile?: boolean;
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -184,25 +189,29 @@ export const NavBarMenu = ({
             </MenuItem>
           ))}
 
-        <MenuItem
-          key="profile"
-          onClick={() => {
-            window.location.href = 'https://admin.watsonc.dk/profile';
-          }}
-        >
-          <ListItemIcon>
-            <Person />
-          </ListItemIcon>
-          Profil
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <LogOut>
+        {!disableProfile && (
+          <MenuItem
+            key="profile"
+            onClick={() => {
+              window.location.href = 'https://admin.watsonc.dk/profile';
+            }}
+          >
             <ListItemIcon>
-              <LogoutIcon fontSize="medium" />
+              <Person />
             </ListItemIcon>
-            {'Logout'}
-          </LogOut>
-        </MenuItem>
+            Profil
+          </MenuItem>
+        )}
+        {!disableLogout && (
+          <MenuItem onClick={handleClose}>
+            <LogOut>
+              <ListItemIcon>
+                <LogoutIcon fontSize="medium" />
+              </ListItemIcon>
+              {'Logout'}
+            </LogOut>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );
@@ -226,6 +235,14 @@ const GoBack = () => {
       size="large"
     >
       <KeyboardBackspaceIcon />
+    </IconButton>
+  );
+};
+
+const Close = ({onClick}: {onClick: () => void}) => {
+  return (
+    <IconButton color="inherit" onClick={onClick} size="large">
+      <CloseIcon />
     </IconButton>
   );
 };
@@ -276,5 +293,6 @@ NavBar.Menu = NavBarMenu;
 NavBar.Home = HomeButton;
 NavBar.Title = Title;
 NavBar.Scanner = ScannerAsTitle;
+NavBar.Close = Close;
 
 export default NavBar;

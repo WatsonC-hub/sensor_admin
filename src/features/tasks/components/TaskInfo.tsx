@@ -33,7 +33,7 @@ const TaskInfo = () => {
     };
   }, [selectedTask]);
 
-  if (!selectedTask) return <div></div>;
+  if (!selectedTask) return null;
 
   return (
     <Grid container spacing={2} p={1}>

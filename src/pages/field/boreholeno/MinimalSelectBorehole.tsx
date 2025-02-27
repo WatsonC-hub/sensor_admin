@@ -12,7 +12,7 @@ const MinimalSelect = () => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
   const [isOpen, setIsOpen] = useState(intakeno ? false : true);
   const {boreholeIntake} = useNavigationFunctions();
-  const [selectedItem, setSelectedItem] = useState<number | undefined>();
+  // const [selectedItem, setSelectedItem] = useState<number | undefined>();
 
   // moves the menu below the select input
   const menuProps = {
@@ -38,11 +38,11 @@ const MinimalSelect = () => {
   useEffect(() => {
     if (data && boreholeno) {
       if (intakeno) {
-        setSelectedItem(intakeno);
+        // setSelectedItem(intakeno);
         boreholeIntake(boreholeno, intakeno, {replace: true});
       } else {
         if (data.length === 1) {
-          setSelectedItem(data[0].intakeno);
+          // setSelectedItem(data[0].intakeno);
           boreholeIntake(boreholeno, data[0].intakeno, {replace: true});
         }
       }
@@ -50,8 +50,8 @@ const MinimalSelect = () => {
   }, [data]);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    if (selectedItem?.toString() !== event.target.value)
-      boreholeIntake(boreholeno, event.target.value, {replace: true});
+    if (intakeno?.toString() !== event.target.value)
+      boreholeIntake(boreholeno, parseInt(event.target.value), {replace: true});
     handleClose();
   };
 
@@ -59,17 +59,17 @@ const MinimalSelect = () => {
   const handleOpen = () => setIsOpen(true);
 
   useEffect(() => {
-    if (selectedItem !== undefined) {
+    if (intakeno !== undefined) {
       setIsOpen(false);
     } else {
       setIsOpen(true);
     }
-  }, [selectedItem]);
+  }, [intakeno]);
 
   return (
     <Select
       MenuProps={menuProps}
-      value={selectedItem !== undefined ? selectedItem.toString() : ''}
+      value={intakeno !== undefined ? intakeno.toString() : ''}
       onChange={handleChange}
       open={isOpen}
       onOpen={handleOpen}

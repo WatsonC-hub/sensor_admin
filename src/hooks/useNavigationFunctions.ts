@@ -1,15 +1,24 @@
-import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
+// import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
+import {parseAsInteger, useQueryState} from 'nuqs';
 import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
 
 import {ID} from '~/features/tasks/types';
+import {
+  useDisplayBoreholeInfo,
+  useDisplayBoreholePage,
+  useDisplayLocationInfo,
+  useDisplayStation,
+} from './ui';
+
+const FieldPage = '/admin/opgaver';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
-  // const [loc_ids, setLocIds] = useQueryState(
-  //   'loc_ids',
-  //   parseAsArrayOf(parseAsInteger).withDefault([])
-  // );
+  const {setLocId} = useDisplayLocationInfo();
+  const {setTsId} = useDisplayStation();
+  const {setBoreholeNo} = useDisplayBoreholeInfo();
+  const {setIntakeNo} = useDisplayBoreholePage();
   const homeFunctions = {
     home: () => navigate('/'),
     register: () => navigate('/register'),
@@ -37,19 +46,15 @@ export const useNavigationFunctions = () => {
 
   const fieldFunctions = {
     field: () => navigate('/field'),
-    location: (loc_id: number, options?: NavigateOptions) =>
-      navigate('/field/location/' + loc_id, options),
-    station: (
-      loc_id: number | undefined,
-      station_id: number | undefined,
-      options?: NavigateOptions
-    ) =>
-      navigate(
-        {
-          pathname: '/field/location/' + loc_id + '/' + station_id,
-        },
-        options
-      ),
+    location: (loc_id: number) => setLocId(loc_id),
+    station: (ts_id: number) => setTsId(ts_id),
+    // navigate(
+    //   {
+    //     pathname: FieldPage,
+    //   },
+    //   options
+    // ),
+
     stamdata: (
       loc_id: number,
       station_id: number,
@@ -62,8 +67,10 @@ export const useNavigationFunctions = () => {
       ),
     borehole: (boreholeno: string, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno, options),
-    boreholeIntake: (boreholeno: string, intake: string | number, options?: NavigateOptions) =>
-      navigate('/field/borehole/' + boreholeno + '/' + intake, options),
+    boreholeIntake: (boreholeno: string, intake: number, options?: NavigateOptions) => {
+      setBoreholeNo(boreholeno);
+      setIntakeNo(intake);
+    },
     createStamdata: (tabValue?: string, options?: NavigateOptions) => {
       if (tabValue) navigate('/field/stamdata?tab=' + tabValue, options);
       else navigate('/field/stamdata', options);

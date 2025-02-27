@@ -299,7 +299,7 @@ const Boreholeno = () => {
   if (!intakeno) return '';
 
   return (
-    <Box display="flex" height={'max-content'} flexDirection={'column'}>
+    <Box display="flex" height={'max-content'} flexDirection={'column'} position={'relative'}>
       {pageToShow !== 'billeder' && pageToShow !== 'stamdata' && (
         <Box
           display={'flex'}

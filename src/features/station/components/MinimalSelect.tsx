@@ -17,7 +17,7 @@ const MinimalSelect = () => {
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     if (ts_id?.toString() != event.target.value)
-      station(loc_id, parseInt(event.target.value), {replace: true});
+      station(parseInt(event.target.value), {replace: true});
     setIsOpen(false);
   };
 
@@ -48,11 +48,7 @@ const MinimalSelect = () => {
   if (!hasTimeseries) return 'Ingen tidsserie på locationen';
 
   if (metadata.timeseries.length == 1 && ts_id === undefined) {
-    return (
-      <>
-        <Navigate to={`../location/${loc_id}/${metadata.timeseries[0].ts_id}`} replace />
-      </>
-    );
+    station(metadata.timeseries[0].ts_id, {replace: true});
   }
 
   return (

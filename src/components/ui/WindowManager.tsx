@@ -1,6 +1,5 @@
-import React, {Children} from 'react';
+import React, {Children, cloneElement, useEffect, useState} from 'react';
 import {Box} from '@mui/material';
-import useWindowDimensions from '~/hooks/useWindowDimensions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 type WindowManagerProps = {
@@ -16,35 +15,62 @@ const WindowContext = React.createContext<Context>({});
 
 const useWindowContext = () => React.useContext(WindowContext);
 
-const WindowManager = ({children, columnWidth}: WindowManagerProps) => {
-  const {width} = useWindowDimensions();
+function getWindowDimensions() {
+  const {innerWidth: width, innerHeight: height} = window;
+  return {
+    width,
+    height,
+  };
+}
 
+const useColumns = (columnWidth: number) => {
   const {isMobile} = useBreakpoints();
+  const [maxColumns, setMaxColumns] = useState(
+    isMobile ? 1 : Math.floor(getWindowDimensions().width / columnWidth)
+  );
 
-  const maxColumns = isMobile ? 1 : Math.floor(width / columnWidth);
+  useEffect(() => {
+    function handleResize() {
+      const newMaxColumns = isMobile ? 1 : Math.floor(getWindowDimensions().width / columnWidth);
+
+      setMaxColumns((prev) => {
+        if (prev !== newMaxColumns) {
+          return newMaxColumns;
+        }
+        return prev;
+      });
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return maxColumns;
+};
+
+const WindowManager = ({children, columnWidth}: WindowManagerProps) => {
+  //   const {width} = useWindowDimensions();
+
+  //   const {isMobile} = useBreakpoints();
+
+  const maxColumns = useColumns(columnWidth);
 
   const arrayedChildren = Children.toArray(children).filter(
-    (child) => child?.type === Window
+    (child) => typeof child == 'object' && 'type' in child && child.type === Window
   ) as React.ReactElement<WindowProps>[];
 
   const shownChildren = [];
 
   let usedColumns = 0;
 
-  console.log('maxColumns', maxColumns);
-
   for (let index = arrayedChildren.length - 1; index >= 0; index--) {
     const child = arrayedChildren[index];
-    if (usedColumns + child.props.size > maxColumns) {
-      break;
-    }
 
     if (child.props.show) {
-      shownChildren.push(
-        React.cloneElement(child, {
-          key: index,
-        })
-      );
+      if (usedColumns + child.props.size > maxColumns) {
+        break;
+      }
+      shownChildren.push(cloneElement(child));
       usedColumns += child.props.size;
     }
   }
@@ -71,14 +97,14 @@ const WindowManager = ({children, columnWidth}: WindowManagerProps) => {
 };
 
 type WindowProps = {
-  size?: number;
+  size: number;
   children?: React.ReactNode;
   show: boolean;
   onClose?: () => void;
   fullScreen?: boolean;
 };
 
-const Window = ({size = 1, children, show, onClose}: WindowProps) => {
+const Window = ({size, children, show, onClose}: WindowProps) => {
   const {columnWidth} = useWindowContext();
   if (!columnWidth) {
     throw new Error('Window must be a child of WindowManager');
@@ -96,6 +122,7 @@ const Window = ({size = 1, children, show, onClose}: WindowProps) => {
         display: 'flex',
         flexDirection: 'column',
         height: 'fit-content',
+        maxHeight: '100%',
         overflow: 'auto',
         border: '1px solid black',
         width: columnWidth * size,

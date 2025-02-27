@@ -17,26 +17,26 @@ const fabTextStyle = {
 const FabWrapper = ({text, icon, onClick, ...otherProps}: Props) => {
   const {isTouch} = useBreakpoints();
   return (
-    <div>
-      <Fab
-        color="secondary"
-        aria-label="add"
-        onClick={onClick}
-        sx={{
-          position: 'fixed',
-          bottom: 65,
-          right: 20,
-          width: isTouch ? 75 : 200,
-          height: 60,
-          borderRadius: 4.5,
-          color: 'white',
-          ...otherProps.sx,
-        }}
-      >
-        {icon}
-        {!isTouch && <Typography sx={fabTextStyle}>{text}</Typography>}
-      </Fab>
-    </div>
+    // <div>
+    <Fab
+      color="secondary"
+      aria-label="add"
+      onClick={onClick}
+      sx={{
+        position: 'sticky',
+        bottom: '64px',
+        ml: 'auto',
+        width: isTouch ? 75 : 200,
+        height: 60,
+        borderRadius: 4.5,
+        color: 'white',
+        ...otherProps.sx,
+      }}
+    >
+      {icon}
+      {!isTouch && <Typography sx={fabTextStyle}>{text}</Typography>}
+    </Fab>
+    // </div>
   );
 };
 

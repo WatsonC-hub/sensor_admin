@@ -39,41 +39,44 @@ const CustomBottomNavigation = <T extends string>({
   const visibleItems = items.slice(0, threshold);
 
   return (
-    <Box sx={{mt: isMobile ? 15 : 8, zIndex: 3}}>
-      <Paper sx={{position: 'fixed', bottom: 0, width: '100%'}} elevation={3}>
-        <BottomNavigation
-          value={pageToShow}
-          showLabels
-          onChange={(event, newValue) => {
-            onChange(event, newValue);
-          }}
-          sx={{
-            backgroundColor: 'primary.main',
-          }}
-        >
-          {visibleItems.map((item) => {
-            if (
-              item.isCalculated !== undefined &&
-              item.isCalculated &&
-              item.value === stationPages.TILSYN
-            ) {
-              return;
-            }
+    // <Box sx={{mt: isMobile ? 15 : 8, zIndex: 3}}>
+    // <Paper sx={{position: 'sticky', bottom: 0, display: 'flex', height: '40px'}} elevation={3}>
+    <BottomNavigation
+      value={pageToShow}
+      showLabels
+      onChange={(event, newValue) => {
+        onChange(event, newValue);
+      }}
+      sx={{
+        position: 'sticky',
+        bottom: 0,
 
-            return (
-              <BottomNavigationAction
-                key={item.value}
-                label={<CustomBottomNavigationActionLabel {...item} />}
-                value={item.value}
-                sx={bottomNavStyle}
-                onFocus={item.handlePrefetch}
-                onMouseEnter={item.handlePrefetch}
-              />
-            );
-          })}
-        </BottomNavigation>
-      </Paper>
-    </Box>
+        backgroundColor: 'primary.main',
+      }}
+    >
+      {visibleItems.map((item) => {
+        if (
+          item.isCalculated !== undefined &&
+          item.isCalculated &&
+          item.value === stationPages.TILSYN
+        ) {
+          return;
+        }
+
+        return (
+          <BottomNavigationAction
+            key={item.value}
+            label={<CustomBottomNavigationActionLabel {...item} />}
+            value={item.value}
+            sx={bottomNavStyle}
+            onFocus={item.handlePrefetch}
+            onMouseEnter={item.handlePrefetch}
+          />
+        );
+      })}
+    </BottomNavigation>
+    // </Paper>
+    // </Box>
   );
 };
 

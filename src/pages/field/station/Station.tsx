@@ -16,6 +16,7 @@ import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useDisplayStation} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -162,10 +163,11 @@ const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useTimeseriesData();
   const adminAccess = useAuthStore((state) => state.adminAccess);
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
+  const {setTsId} = useDisplayStation();
+
   return (
     <>
       <NavBar>
-        <NavBar.GoBack />
         <Box display="block" flexGrow={1} overflow="hidden">
           <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
             {locationdata?.loc_name}
@@ -174,9 +176,10 @@ const Layout = ({children}: LayoutProps) => {
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
-          <NavBar.Home />
           {adminAccess && <NotificationList />}
           <NavBar.Menu
+            disableLogout
+            disableProfile
             highligtFirst={false}
             items={[
               ...(adminAccess && !metadata?.calculated
@@ -199,10 +202,11 @@ const Layout = ({children}: LayoutProps) => {
               },
             ]}
           />
+          <NavBar.Close onClick={() => setTsId(null)} />
         </Box>
       </NavBar>
       <main style={{flexGrow: 1}}>
-        <Box display="flex" flexDirection={'column'} gap={1}>
+        <Box display="flex" flexDirection={'column'} gap={1} position={'relative'}>
           {children}
           <ActionArea />
         </Box>
