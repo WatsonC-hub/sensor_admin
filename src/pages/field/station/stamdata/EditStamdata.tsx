@@ -135,15 +135,17 @@ export default function EditStamdata() {
         </TabPanel>
 
         <TabPanel value={tabValue} index={'målepunkt'}>
-          <ReferenceForm />
-          <FabWrapper
-            icon={<AddCircle />}
-            text="Tilføj målepunkt"
-            onClick={() => {
-              setShowForm(true);
-            }}
-            sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-          />
+          <Box position="relative" display="flex" flexDirection="column" gap={1}>
+            <ReferenceForm />
+            <FabWrapper
+              icon={<AddCircle />}
+              text="Tilføj målepunkt"
+              onClick={() => {
+                setShowForm(true);
+              }}
+              sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+            />
+          </Box>
         </TabPanel>
 
         <TabPanel value={tabValue} index={'stationsinformation'}>

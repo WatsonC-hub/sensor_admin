@@ -109,40 +109,48 @@ const Pejling = ({setDynamic}: Props) => {
   };
 
   return (
-    <Box mx={1}>
-      <LatestMeasurementTable
-        latestMeasurement={latestMeasurement}
-        errorMessage={
-          isError && typeof error?.response?.data.detail == 'string'
-            ? error?.response?.data.detail
-            : undefined
-        }
-      />
-      <FormProvider {...formMethods}>
-        <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
-          {showForm === true && (
-            <PejlingForm
-              openAddMP={openAddMP}
-              submit={handlePejlingSubmit}
-              resetFormData={resetFormData}
-              setDynamic={setDynamic}
-              latestMeasurement={latestMeasurement}
-            />
-          )}
+    <>
+      <Box
+        mx={'auto'}
+        position={'relative'}
+        width="fit-content"
+        display={'flex'}
+        flexDirection={'column'}
+      >
+        <LatestMeasurementTable
+          latestMeasurement={latestMeasurement}
+          errorMessage={
+            isError && typeof error?.response?.data.detail == 'string'
+              ? error?.response?.data.detail
+              : undefined
+          }
+        />
+        <FormProvider {...formMethods}>
+          <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
+            {showForm === true && (
+              <PejlingForm
+                openAddMP={openAddMP}
+                submit={handlePejlingSubmit}
+                resetFormData={resetFormData}
+                setDynamic={setDynamic}
+                latestMeasurement={latestMeasurement}
+              />
+            )}
+          </Box>
+        </FormProvider>
+        <Box display={'flex'} flexDirection={'column'}>
+          <PejlingMeasurements handleEdit={handleEdit} handleDelete={handleDelete} />
         </Box>
-      </FormProvider>
-      <Box display={'flex'} flexDirection={'column'}>
-        <PejlingMeasurements handleEdit={handleEdit} handleDelete={handleDelete} />
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj kontrol"
-          onClick={() => {
-            setShowForm(true);
-          }}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        ></FabWrapper>
       </Box>
-    </Box>
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj kontrol"
+        onClick={() => {
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
+    </>
   );
 };
 
