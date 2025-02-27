@@ -1,5 +1,4 @@
 // import {parseAsArrayOf, parseAsInteger, useQueryState} from 'nuqs';
-import {parseAsInteger, useQueryState} from 'nuqs';
 import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
 
@@ -10,8 +9,6 @@ import {
   useDisplayLocationInfo,
   useDisplayStation,
 } from './ui';
-
-const FieldPage = '/admin/opgaver';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
@@ -67,7 +64,7 @@ export const useNavigationFunctions = () => {
       ),
     borehole: (boreholeno: string, options?: NavigateOptions) =>
       navigate('/field/borehole/' + boreholeno, options),
-    boreholeIntake: (boreholeno: string, intake: number, options?: NavigateOptions) => {
+    boreholeIntake: (boreholeno: string, intake: number) => {
       setBoreholeNo(boreholeno);
       setIntakeNo(intake);
     },

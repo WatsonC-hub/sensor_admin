@@ -7,7 +7,6 @@ import {calculateContentHeight} from '~/consts';
 import TaskMap from '~/pages/admin/opgaver/TaskMap';
 import TaskInfo from './TaskInfo';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
-import {parseAsInteger, useQueryState} from 'nuqs';
 import {AppContext} from '~/state/contexts';
 import Station from '~/pages/field/station/Station';
 
@@ -23,7 +22,6 @@ import {
   useDisplayLocationInfo,
   useDisplayStation,
 } from '~/hooks/ui';
-import Boreholeno from '~/pages/field/boreholeno/Boreholeno';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';

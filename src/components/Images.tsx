@@ -1,4 +1,4 @@
-import {Box, Grid} from '@mui/material';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
@@ -35,11 +35,7 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
 
   return (
     <Box sx={{marginBottom: 1, marginTop: 1}}>
-      <Grid container spacing={3} justifyContent="center">
-        <Grid item mobile={12} tablet={12} laptop={12} desktop={12} xl={6}>
-          <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />
-        </Grid>
-      </Grid>
+      <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />
     </Box>
   );
 }

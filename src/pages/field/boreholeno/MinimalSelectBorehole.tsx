@@ -39,11 +39,11 @@ const MinimalSelect = () => {
     if (data && boreholeno) {
       if (intakeno) {
         // setSelectedItem(intakeno);
-        boreholeIntake(boreholeno, intakeno, {replace: true});
+        boreholeIntake(boreholeno, intakeno);
       } else {
         if (data.length === 1) {
           // setSelectedItem(data[0].intakeno);
-          boreholeIntake(boreholeno, data[0].intakeno, {replace: true});
+          boreholeIntake(boreholeno, data[0].intakeno);
         }
       }
     }
@@ -51,7 +51,7 @@ const MinimalSelect = () => {
 
   const handleChange = (event: SelectChangeEvent<string>) => {
     if (intakeno?.toString() !== event.target.value)
-      boreholeIntake(boreholeno, parseInt(event.target.value), {replace: true});
+      boreholeIntake(boreholeno, parseInt(event.target.value));
     handleClose();
   };
 

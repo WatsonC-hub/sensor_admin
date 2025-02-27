@@ -1,14 +1,13 @@
 import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {useEffect, useState} from 'react';
-import {Navigate} from 'react-router-dom';
 
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
 
 const MinimalSelect = () => {
-  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const [isOpen, setIsOpen] = useState(ts_id ? false : true);
   const {station} = useNavigationFunctions();
   const {data: metadata, error, isPending} = useLocationData();
@@ -16,8 +15,7 @@ const MinimalSelect = () => {
   const hasTimeseries = metadata && metadata.timeseries.some((ts) => ts.ts_id !== null);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    if (ts_id?.toString() != event.target.value)
-      station(parseInt(event.target.value), {replace: true});
+    if (ts_id?.toString() != event.target.value) station(parseInt(event.target.value));
     setIsOpen(false);
   };
 
@@ -48,7 +46,7 @@ const MinimalSelect = () => {
   if (!hasTimeseries) return 'Ingen tidsserie på locationen';
 
   if (metadata.timeseries.length == 1 && ts_id === undefined) {
-    station(metadata.timeseries[0].ts_id, {replace: true});
+    station(metadata.timeseries[0].ts_id);
   }
 
   return (

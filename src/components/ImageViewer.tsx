@@ -12,7 +12,7 @@ type ImageViewerProps = {
 
 function ImageViewer({images, deleteMutation, handleEdit}: ImageViewerProps) {
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={1}>
       {images?.map((elem) => {
         return (
           <Grid item mobile={12} tablet={12} laptop={6} desktop={6} xl={6} key={elem.gid}>

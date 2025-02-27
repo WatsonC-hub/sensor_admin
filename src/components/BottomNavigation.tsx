@@ -1,4 +1,4 @@
-import {BottomNavigation, BottomNavigationAction, Paper, SvgIconProps, Box} from '@mui/material';
+import {BottomNavigation, BottomNavigationAction, SvgIconProps} from '@mui/material';
 import React from 'react';
 
 import {stationPages} from '~/helpers/EnumHelper';
@@ -50,7 +50,6 @@ const CustomBottomNavigation = <T extends string>({
       sx={{
         position: 'sticky',
         bottom: 0,
-
         backgroundColor: 'primary.main',
       }}
     >
