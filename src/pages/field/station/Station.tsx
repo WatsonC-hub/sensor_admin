@@ -99,19 +99,12 @@ export default function Station() {
         />
       )}
       <Divider />
-      <Box
-        sx={{
-          maxWidth: '1080px',
-          width: isTouch ? '100%' : 'fit-content',
-          alignSelf: 'center',
-        }}
-      >
-        {pageToShow === 'pejling' && ts_id !== -1 && <Pejling setDynamic={setDynamic} />}
-        {pageToShow === 'tilsyn' && <Tilsyn />}
-      </Box>
+
+      {pageToShow === 'pejling' && ts_id !== -1 && <Pejling setDynamic={setDynamic} />}
+      {pageToShow === 'tilsyn' && <Tilsyn />}
       {pageToShow === 'stamdata' && <EditStamdata />}
       {pageToShow === 'billeder' && (
-        <Box>
+        <>
           <Images
             type={'station'}
             typeId={loc_id ? loc_id.toString() : ''}
@@ -139,15 +132,15 @@ export default function Station() {
               setShowForm(null);
             }}
           />
-        </Box>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/jpeg, image/png, image/webp, image/avif, image/svg, image/gif, image/tif"
+            style={{display: 'none'}}
+            onChange={handleFileRead}
+          />
+        </>
       )}
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept="image/jpeg, image/png, image/webp, image/avif, image/svg, image/gif, image/tif"
-        style={{display: 'none'}}
-        onChange={handleFileRead}
-      />
     </Layout>
   );
 }

@@ -82,25 +82,33 @@ export default function Tilsyn() {
   }, [ts_id]);
 
   return (
-    <Box>
-      <FormProvider {...formMethods}>
-        <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
-          {showForm === true && (
-            <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
-          )}
+    <>
+      <Box
+        mx={'auto'}
+        position={'relative'}
+        width="fit-content"
+        display={'flex'}
+        flexDirection={'column'}
+      >
+        <FormProvider {...formMethods}>
+          <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+            {showForm === true && (
+              <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
+            )}
+          </Box>
+        </FormProvider>
+        <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+          <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} />
         </Box>
-      </FormProvider>
-      <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
-        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} />
-        <FabWrapper
-          icon={<PlaylistAddRounded />}
-          text={'Tilføj ' + stationPages.TILSYN}
-          onClick={() => {
-            setShowForm(true);
-          }}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        />
       </Box>
-    </Box>
+      <FabWrapper
+        icon={<PlaylistAddRounded />}
+        text={'Tilføj ' + stationPages.TILSYN}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
+    </>
   );
 }
