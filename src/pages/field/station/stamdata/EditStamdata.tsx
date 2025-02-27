@@ -4,6 +4,7 @@ import {
   ShowChartRounded,
   StraightenRounded,
   SettingsPhoneRounded,
+  AddCircle,
 } from '@mui/icons-material';
 import {Box, Divider, Tab, Typography, Tabs} from '@mui/material';
 import {useEffect} from 'react';
@@ -21,6 +22,7 @@ import {useAppContext} from '~/state/contexts';
 import EditLocation from './EditLocation';
 import EditTimeseries from './EditTimeseries';
 import EditUnit from './EditUnit';
+import FabWrapper from '~/components/FabWrapper';
 
 export default function EditStamdata() {
   const {isTablet} = useBreakpoints();
