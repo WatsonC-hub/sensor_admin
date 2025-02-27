@@ -536,7 +536,7 @@ const TaskTable = () => {
                 cursor: 'pointer',
                 textDecoration: 'underline',
               }}
-              onClick={() => station(undefined, row.original.ts_id)}
+              onClick={() => station(row.original.ts_id)}
             >
               {renderedCellValue}
             </Box>
