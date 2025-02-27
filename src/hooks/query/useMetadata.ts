@@ -59,7 +59,7 @@ export type LocationMetadata = {
   groups: string[];
   projectno: string | undefined;
   timeseries: Array<{
-    ts_id: number | undefined;
+    ts_id: number;
     tstype_id: number;
     ts_name: string;
     calculated: boolean;
@@ -107,7 +107,7 @@ export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
           .filter((item) => item.ts_id)
           .map((data) => {
             return {
-              ts_id: data.ts_id,
+              ts_id: data.ts_id!,
               tstype_id: data.tstype_id,
               ts_name: data.ts_name,
               calculated: data.calculated,
