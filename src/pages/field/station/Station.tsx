@@ -1,10 +1,11 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import {Box, Divider, Typography} from '@mui/material';
+import {Box, Divider, IconButton, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
-
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import NavBar from '~/components/NavBar';
@@ -25,6 +26,8 @@ import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
 import {useAuthStore} from '~/state/store';
+import {useAtom, useSetAtom} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
 
 export default function Station() {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -157,7 +160,7 @@ const Layout = ({children}: LayoutProps) => {
   const adminAccess = useAuthStore((state) => state.adminAccess);
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
   const {setTsId} = useDisplayStation();
-
+  const [fullScreen, setFullScreen] = useAtom(fullScreenAtom);
   return (
     <>
       <NavBar>
@@ -195,11 +198,18 @@ const Layout = ({children}: LayoutProps) => {
               },
             ]}
           />
+          <IconButton
+            onClick={() => {
+              setFullScreen((prev) => !prev);
+            }}
+          >
+            {fullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+          </IconButton>
           <NavBar.Close onClick={() => setTsId(null)} />
         </Box>
       </NavBar>
       <main style={{flexGrow: 1}}>
-        <Box display="flex" flexDirection={'column'} gap={1} position={'relative'}>
+        <Box display="flex" flexDirection={'column'} gap={1} position={'relative'} height={'100%'}>
           {children}
           <ActionArea />
         </Box>

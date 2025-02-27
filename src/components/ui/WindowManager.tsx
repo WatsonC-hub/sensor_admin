@@ -1,118 +1,149 @@
-import React, {Children, cloneElement, useEffect, useState} from 'react';
-import {Box} from '@mui/material';
+import React, {Children, cloneElement} from 'react';
+import {Box, IconButton} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import useWindowDimensions from '~/hooks/useWindowDimensions';
 
 type WindowManagerProps = {
   children: React.ReactElement<WindowProps>[];
-  columnWidth: number;
+  minColumnWidth: number;
 };
 
-type Context = {
-  columnWidth?: number;
-};
-
-const WindowContext = React.createContext<Context>({});
-
-const useWindowContext = () => React.useContext(WindowContext);
-
-function getWindowDimensions() {
-  const {innerWidth: width, innerHeight: height} = window;
-  return {
-    width,
-    height,
-  };
-}
-
-const useColumns = (columnWidth: number) => {
+const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
+  const {width} = useWindowDimensions();
   const {isMobile} = useBreakpoints();
-  const [maxColumns, setMaxColumns] = useState(
-    isMobile ? 1 : Math.floor(getWindowDimensions().width / columnWidth)
-  );
 
-  useEffect(() => {
-    function handleResize() {
-      const newMaxColumns = isMobile ? 1 : Math.floor(getWindowDimensions().width / columnWidth);
+  const maxColumns = Math.max(Math.floor(width / minColumnWidth), 1);
 
-      setMaxColumns((prev) => {
-        if (prev !== newMaxColumns) {
-          return newMaxColumns;
-        }
-        return prev;
-      });
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  return maxColumns;
-};
-
-const WindowManager = ({children, columnWidth}: WindowManagerProps) => {
-  //   const {width} = useWindowDimensions();
-
-  //   const {isMobile} = useBreakpoints();
-
-  const maxColumns = useColumns(columnWidth);
+  const columnWidth = width / maxColumns;
 
   const arrayedChildren = Children.toArray(children).filter(
-    (child) => typeof child == 'object' && 'type' in child && child.type === Window
+    (child) =>
+      typeof child === 'object' && 'type' in child && child.type === Window && child?.props?.show
   ) as React.ReactElement<WindowProps>[];
 
-  const shownChildren = [];
+  if (isMobile && arrayedChildren.length > 0) {
+    return (
+      <Box
+        zIndex={1001}
+        height="100%"
+        sx={{
+          width: '100%',
+          pointerEvents: 'none',
+          ml: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {cloneElement(arrayedChildren[arrayedChildren.length - 1], {width: '100%'})}
+      </Box>
+    );
+  }
+  // Check if any window is fullscreened
+  const fullScreenWindow = arrayedChildren.find((child) => child.props.fullScreen);
 
-  let usedColumns = 0;
+  if (fullScreenWindow) {
+    return (
+      <Box
+        zIndex={1001}
+        height="100%"
+        sx={{
+          width: '100%',
+          pointerEvents: 'none',
+          ml: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {' '}
+        {cloneElement(fullScreenWindow, {width: '100%'})}
+      </Box>
+    );
+  }
+
+  let usedWidth = 0;
+  const includedChildren: React.ReactElement<WindowProps>[] = [];
+  const shownChildren: React.ReactElement<WindowProps>[] = [];
 
   for (let index = arrayedChildren.length - 1; index >= 0; index--) {
     const child = arrayedChildren[index];
+    if (usedWidth + child.props.minSize * minColumnWidth > width) {
+      break;
+    }
+    includedChildren.push(child);
+    const innerwidth = child.props.minSize * columnWidth;
+    //   shownChildren.push(cloneElement(child, {width: innerwidth}));
+    usedWidth += innerwidth;
+  }
 
-    if (child.props.show) {
-      if (usedColumns + child.props.size > maxColumns) {
-        break;
+  usedWidth = 0;
+  for (let index = includedChildren.length - 1; index >= 0; index--) {
+    const child = includedChildren[index];
+
+    if (index === 0) {
+      const innerwidth = Math.min(
+        width - usedWidth,
+        child.props.maxSize ? child.props.maxSize * columnWidth : child.props.minSize * columnWidth
+      );
+      if (innerWidth == 0) {
+        continue;
       }
-      shownChildren.push(cloneElement(child));
-      usedColumns += child.props.size;
+
+      shownChildren.push(
+        cloneElement(child, {
+          width: innerwidth,
+        })
+      );
+    } else {
+      const innerwidth = child.props.minSize * columnWidth;
+      shownChildren.push(cloneElement(child, {width: innerwidth}));
+      usedWidth += innerwidth;
     }
   }
 
+  console.log('windowmanager', width, columnWidth, maxColumns);
+
   return (
-    <WindowContext.Provider value={{columnWidth}}>
-      <Box
-        zIndex={402}
-        // position={'absolute'}
-        height={'100%'}
-        // width={'100%'}
-        sx={{
-          pointerEvents: 'none',
-          ml: 'auto',
-          mr: 0,
-          display: 'flex',
-          flexDirection: 'row-reverse',
-        }}
-      >
-        {shownChildren.slice().reverse()}
-      </Box>
-    </WindowContext.Provider>
+    // <WindowContext.Provider value={{columnWidth: minColumnWidth}}>
+    <Box
+      zIndex={1001}
+      height="100%"
+      sx={{
+        width: '100%',
+        pointerEvents: 'none',
+        ml: 'auto',
+        display: 'flex',
+        flexDirection: 'row-reverse',
+      }}
+    >
+      {shownChildren}
+    </Box>
+    // </WindowContext.Provider>
   );
 };
 
 type WindowProps = {
-  size: number;
   children?: React.ReactNode;
   show: boolean;
+  height?: 'fit-content' | '100%';
   onClose?: () => void;
   fullScreen?: boolean;
+  minSize: number;
+  maxSize?: number;
+  maxColumns?: number; // Injected by WindowManager
+  width?: number | string;
 };
 
-const Window = ({size, children, show, onClose}: WindowProps) => {
-  const {columnWidth} = useWindowContext();
-  if (!columnWidth) {
-    throw new Error('Window must be a child of WindowManager');
-  }
-
-  if (!show) {
-    return null;
-  }
+const Window = ({
+  children,
+  show,
+  onClose,
+  fullScreen,
+  width,
+  height = 'fit-content',
+}: WindowProps) => {
+  //   const {columnWidth} = useWindowContext();
+  //   if (!columnWidth) throw new Error('Window must be a child of WindowManager');
+  if (!show) return null;
 
   return (
     <Box
@@ -121,36 +152,35 @@ const Window = ({size, children, show, onClose}: WindowProps) => {
         pointerEvents: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        height: 'fit-content',
+        height: fullScreen ? '100vh' : height,
         maxHeight: '100%',
         overflow: 'auto',
         border: '1px solid black',
-        width: columnWidth * size,
+        // width: fullScreen ? '100%' : '100%',
+        width: fullScreen ? '100%' : width,
         backgroundColor: 'white',
+        // transition: 'all 0.3s ease',
       }}
     >
-      {onClose != undefined && (
-        <Box
-          sx={{
-            position: 'absolute',
-            right: 0,
-            top: 0,
-
-            cursor: 'pointer',
-            backgroundColor: 'red',
-            color: 'white',
-            padding: 1,
-          }}
-          onClick={onClose}
-        >
-          Close
-        </Box>
-      )}
+      <Box
+        sx={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          cursor: 'pointer',
+          backgroundColor: 'red',
+          color: 'white',
+          //   padding: 1,
+          display: 'flex',
+          gap: 1,
+        }}
+      >
+        {onClose && <IconButton onClick={onClose}>X</IconButton>}
+      </Box>
       {children}
     </Box>
   );
 };
 
 WindowManager.Window = Window;
-
 export default WindowManager;

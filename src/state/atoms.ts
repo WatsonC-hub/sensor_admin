@@ -194,3 +194,5 @@ export const dataToShowAtom = atom({
   'Valide værdier': false,
   'Fjernet data': false,
 });
+
+export const fullScreenAtom = atom(false);

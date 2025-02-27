@@ -48,6 +48,7 @@ const CustomBottomNavigation = <T extends string>({
         onChange(event, newValue);
       }}
       sx={{
+        zIndex: 3,
         position: 'sticky',
         bottom: 0,
         backgroundColor: 'primary.main',

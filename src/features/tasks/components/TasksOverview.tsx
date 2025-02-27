@@ -23,6 +23,8 @@ import {
   useDisplayStation,
 } from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
+import {useAtomValue} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {BoreholeMapData} from '~/types';
@@ -38,6 +40,7 @@ const TasksOverview = () => {
   const {intakeno, setIntakeNo} = useDisplayBoreholePage();
   const [selectedData, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
+  const fullScreen = useAtomValue(fullScreenAtom);
 
   const clickCallback = (data: NotificationMap | BoreholeMapData) => {
     if ('loc_id' in data) {
@@ -78,11 +81,11 @@ const TasksOverview = () => {
           <TaskMap key="taskmap" clickCallback={clickCallback} />
         </Box>
 
-        <WindowManager columnWidth={400}>
+        <WindowManager minColumnWidth={400}>
           <WindowManager.Window
             key="location"
             show={loc_id !== null}
-            size={2}
+            minSize={1}
             onClose={() => {
               setSelectedData(null);
               closeLocation();
@@ -96,7 +99,7 @@ const TasksOverview = () => {
           <WindowManager.Window
             key="boreholeinfo"
             show={boreholeno !== null}
-            size={2}
+            minSize={1}
             onClose={() => {
               setSelectedData(null);
               setBoreholeNo(null);
@@ -110,7 +113,7 @@ const TasksOverview = () => {
           <WindowManager.Window
             key="taskinfo"
             show={selectedTask !== null}
-            size={2}
+            minSize={2}
             onClose={() => setSelectedTask(null)}
           >
             <TaskInfo />
@@ -129,8 +132,10 @@ const TasksOverview = () => {
           <WindowManager.Window
             key="boreholepage"
             show={boreholeno !== null && intakeno !== null}
-            size={4}
+            minSize={2}
+            maxSize={4}
             onClose={() => setIntakeNo(null)}
+            height="100%"
           >
             <AppContext.Provider value={{boreholeno, intakeno}}>
               <BoreholeRouter />
@@ -140,8 +145,11 @@ const TasksOverview = () => {
           <WindowManager.Window
             key="station"
             show={ts_id !== null}
-            size={3}
+            minSize={2}
+            maxSize={3}
+            fullScreen={fullScreen}
             onClose={() => setSelectedTask(null)}
+            height="100%"
           >
             <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id}}>
               <Station />

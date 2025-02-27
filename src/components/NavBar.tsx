@@ -27,7 +27,6 @@ import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
 import {useAuthStore} from '~/state/store';
 import CloseIcon from '@mui/icons-material/Close';
-
 import Button from './Button';
 
 const LogOut = ({children}: {children?: ReactNode}) => {

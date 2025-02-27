@@ -114,6 +114,7 @@ const Pejling = ({setDynamic}: Props) => {
         mx={'auto'}
         position={'relative'}
         width="fit-content"
+        maxWidth={'100%'}
         display={'flex'}
         flexDirection={'column'}
       >
