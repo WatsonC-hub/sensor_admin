@@ -19,14 +19,13 @@ import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayStation} from '~/hooks/ui';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
-import {useAtom, useSetAtom} from 'jotai';
+import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 
 export default function Station() {
@@ -38,7 +37,7 @@ export default function Station() {
   const fileInputRef = createRef<HTMLInputElement>();
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
   const [openSave, setOpenSave] = useState(false);
-  const {isTouch} = useBreakpoints();
+
   const [activeImage, setActiveImage] = useState({
     gid: -1,
     type: loc_id?.toString(),
@@ -199,6 +198,7 @@ const Layout = ({children}: LayoutProps) => {
             ]}
           />
           <IconButton
+            color="inherit"
             onClick={() => {
               setFullScreen((prev) => !prev);
             }}

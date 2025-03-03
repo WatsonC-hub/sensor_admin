@@ -19,7 +19,10 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
 
   const arrayedChildren = Children.toArray(children).filter(
     (child) =>
-      typeof child === 'object' && 'type' in child && child.type === Window && child?.props?.show
+      typeof child === 'object' &&
+      'type' in child &&
+      child.type === Window &&
+      (child as React.ReactElement<WindowProps>)?.props?.show
   ) as React.ReactElement<WindowProps>[];
 
   if (isMobile && arrayedChildren.length > 0) {

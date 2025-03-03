@@ -121,16 +121,16 @@ export default function ReferenceForm() {
             disabled={disabled}
           />
         )}
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj målepunkt"
-          onClick={() => {
-            setShowForm(true);
-          }}
-          disabled={permissions?.[ts_id] !== 'edit'}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        />
       </Box>
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj målepunkt"
+        onClick={() => {
+          setShowForm(true);
+        }}
+        disabled={permissions?.[ts_id] !== 'edit'}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
     </>
   );
 }

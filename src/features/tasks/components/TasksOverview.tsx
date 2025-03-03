@@ -1,6 +1,6 @@
 import {Box} from '@mui/material';
 
-import React, {useState} from 'react';
+import React from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 
 import {calculateContentHeight} from '~/consts';
@@ -38,7 +38,7 @@ const TasksOverview = () => {
   const {ts_id} = useDisplayStation();
   const {boreholeno, setBoreholeNo} = useDisplayBoreholeInfo();
   const {intakeno, setIntakeNo} = useDisplayBoreholePage();
-  const [selectedData, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
+  // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const fullScreen = useAtomValue(fullScreenAtom);
 
@@ -49,7 +49,7 @@ const TasksOverview = () => {
     } else if ('boreholeno' in data) {
       setBoreholeNo(data.boreholeno);
     }
-    setSelectedData(data);
+    // setSelectedData(data);
   };
 
   return (
@@ -87,11 +87,11 @@ const TasksOverview = () => {
             show={loc_id !== null}
             minSize={1}
             onClose={() => {
-              setSelectedData(null);
+              // setSelectedData(null);
               closeLocation();
             }}
           >
-            <AppContext.Provider value={{loc_id}}>
+            <AppContext.Provider value={{loc_id: loc_id!}}>
               <Box p={1}>
                 <SensorContent />
               </Box>
@@ -103,12 +103,12 @@ const TasksOverview = () => {
             show={boreholeno !== null}
             minSize={1}
             onClose={() => {
-              setSelectedData(null);
+              // setSelectedData(null);
               setBoreholeNo(null);
             }}
           >
-            <AppContext.Provider value={{boreholeno}}>
-              <BoreholeContent data={selectedData} />
+            <AppContext.Provider value={{boreholeno: boreholeno!}}>
+              <BoreholeContent />
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -141,7 +141,7 @@ const TasksOverview = () => {
             onClose={() => setIntakeNo(null)}
             height="100%"
           >
-            <AppContext.Provider value={{boreholeno, intakeno}}>
+            <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
               <BoreholeRouter />
             </AppContext.Provider>
           </WindowManager.Window>
@@ -155,7 +155,7 @@ const TasksOverview = () => {
             onClose={() => setSelectedTask(null)}
             height="100%"
           >
-            <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id}}>
+            <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
               <Station />
             </AppContext.Provider>
           </WindowManager.Window>

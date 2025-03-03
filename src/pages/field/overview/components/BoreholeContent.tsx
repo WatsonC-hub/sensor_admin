@@ -4,17 +4,22 @@ import React from 'react';
 import Button from '~/components/Button';
 
 import {boreholeColors} from '~/consts';
+import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
-import {BoreholeMapData} from '~/types';
+import {useAppContext} from '~/state/contexts';
 
-interface BoreholeContentProps {
-  data: BoreholeMapData;
-}
-
-const BoreholeContent = ({data}: BoreholeContentProps) => {
-  const maxStatus = Math.max(...data.status);
+const BoreholeContent = () => {
+  const {boreholeno} = useAppContext(['boreholeno']);
+  const {data} = useBoreholeMap((data) => data.find((item) => item.boreholeno === boreholeno));
   const {boreholeIntake} = useNavigationFunctions();
+
+  if (data === undefined) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  const maxStatus = Math.max(...data.status);
+
   return (
     <>
       <Box display="flex" alignItems="center" gap={1}>

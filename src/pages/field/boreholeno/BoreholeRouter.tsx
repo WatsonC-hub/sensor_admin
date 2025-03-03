@@ -5,6 +5,7 @@ import NavBar from '~/components/NavBar';
 import {useDisplayBoreholePage} from '~/hooks/ui';
 import Boreholeno from '~/pages/field/boreholeno/Boreholeno';
 import MinimalSelectBorehole from '~/pages/field/boreholeno/MinimalSelectBorehole';
+import ActionAreaBorehole from './ActionAreaBorehole';
 
 export default function BoreholeRouter() {
   const {setIntakeNo} = useDisplayBoreholePage();
@@ -20,13 +21,19 @@ export default function BoreholeRouter() {
         <NavBar.Close onClick={() => setIntakeNo(null)} />
       </NavBar>
 
-      <main
-        style={{
-          flexGrow: 1,
-        }}
-      >
-        <Boreholeno />
+      <main style={{flexGrow: 1, overflow: 'auto'}}>
+        <Box
+          display="flex"
+          flexDirection={'column'}
+          gap={1}
+          position={'relative'}
+          // height={'100%'}
+          //
+        >
+          <Boreholeno />
+        </Box>
       </main>
+      <ActionAreaBorehole />
     </>
   );
 }

@@ -14,7 +14,6 @@ import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import ActionAreaBorehole from '~/pages/field/boreholeno/ActionAreaBorehole';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import BoreholeStamdata from '~/pages/field/boreholeno/BoreholeStamdata';
 import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
@@ -284,7 +283,7 @@ const Boreholeno = () => {
   if (!intakeno) return '';
 
   return (
-    <Box display="flex" height={'max-content'} flexDirection={'column'} position={'relative'}>
+    <>
       {pageToShow !== 'billeder' && pageToShow !== 'stamdata' && (
         <Box
           display={'flex'}
@@ -353,7 +352,7 @@ const Boreholeno = () => {
           </Box>
         )}
         {pageToShow === 'maalepunkt' && (
-          <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
+          <>
             <MaalepunktTable
               watlevmp={watlevmp}
               handleEdit={handleEditWatlevmp}
@@ -370,7 +369,7 @@ const Boreholeno = () => {
                 visibility: pageToShow === 'maalepunkt' && showForm === null ? 'visible' : 'hidden',
               }}
             />
-          </Box>
+          </>
         )}
         {pageToShow === 'pejling' && (
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
@@ -436,8 +435,7 @@ const Boreholeno = () => {
         onChange={handleFileRead}
         onClick={handleFileInputClick}
       />
-      <ActionAreaBorehole />
-    </Box>
+    </>
   );
 };
 
