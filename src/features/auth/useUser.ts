@@ -30,5 +30,6 @@ export const userQueryOptions = queryOptions({
 
 export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
-  return data;
+
+  return data as User;
 };
