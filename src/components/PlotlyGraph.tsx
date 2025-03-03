@@ -73,6 +73,10 @@ export default function PlotlyGraph({
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
 
+  const plot = document.getElementById('graph');
+  if (plot) Plotly.Plots.resize(plot);
+  // console.log('plot', Plotly.rezi);
+
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
@@ -99,7 +103,6 @@ export default function PlotlyGraph({
 
   const handleRelayout = (e: any) => {
     const doubleclick = e['xaxis.autorange'] === true && e['yaxis.autorange'] === true;
-
     if (doubleclick) {
       graphLayout('all');
       return;
@@ -291,7 +294,7 @@ export default function PlotlyGraph({
           console.log('onselected', e);
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);
         }}
-        divId="qagraphDiv"
+        divId="graph"
         onRelayout={handleRelayout}
         data={data}
         layout={{...mergedLayout, shapes: shapes, annotations: annotations}}

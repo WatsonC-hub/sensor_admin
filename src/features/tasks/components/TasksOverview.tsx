@@ -92,7 +92,9 @@ const TasksOverview = () => {
             }}
           >
             <AppContext.Provider value={{loc_id}}>
-              <SensorContent data={selectedData} />
+              <Box p={1}>
+                <SensorContent />
+              </Box>
             </AppContext.Provider>
           </WindowManager.Window>
 
@@ -116,7 +118,9 @@ const TasksOverview = () => {
             minSize={2}
             onClose={() => setSelectedTask(null)}
           >
-            <TaskInfo />
+            <Box p={1}>
+              <TaskInfo />
+            </Box>
           </WindowManager.Window>
 
           {/* <WindowManager.Window

@@ -210,7 +210,7 @@ const Layout = ({children}: LayoutProps) => {
       </NavBar>
       <main style={{flexGrow: 1}}>
         <Box display="flex" flexDirection={'column'} gap={1} position={'relative'} height={'100%'}>
-          {children}
+          <Box p={1}>{children}</Box>
           <ActionArea />
         </Box>
       </main>

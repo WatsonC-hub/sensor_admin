@@ -2,6 +2,7 @@ import React, {Children, cloneElement} from 'react';
 import {Box, IconButton} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useWindowDimensions from '~/hooks/useWindowDimensions';
+import CloseIcon from '@mui/icons-material/Close';
 
 type WindowManagerProps = {
   children: React.ReactElement<WindowProps>[];
@@ -78,7 +79,7 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
   usedWidth = 0;
   for (let index = includedChildren.length - 1; index >= 0; index--) {
     const child = includedChildren[index];
-
+    const firstElement = index === includedChildren.length - 1;
     if (index === 0) {
       const innerwidth = Math.min(
         width - usedWidth,
@@ -91,11 +92,14 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
       shownChildren.push(
         cloneElement(child, {
           width: innerwidth,
+          height: firstElement ? '100%' : child.props.height,
         })
       );
     } else {
       const innerwidth = child.props.minSize * columnWidth;
-      shownChildren.push(cloneElement(child, {width: innerwidth}));
+      shownChildren.push(
+        cloneElement(child, {width: innerwidth, height: firstElement ? '100%' : child.props.height})
+      );
       usedWidth += innerwidth;
     }
   }
@@ -113,6 +117,7 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
         ml: 'auto',
         display: 'flex',
         flexDirection: 'row-reverse',
+        gap: 1,
       }}
     >
       {shownChildren}
@@ -159,7 +164,9 @@ const Window = ({
         // width: fullScreen ? '100%' : '100%',
         width: fullScreen ? '100%' : width,
         backgroundColor: 'white',
-        // transition: 'all 0.3s ease',
+        borderRadius: height == '100%' ? 0 : 4,
+        // p: 1,
+        // m: 1,
       }}
     >
       <Box
@@ -168,14 +175,17 @@ const Window = ({
           right: 0,
           top: 0,
           cursor: 'pointer',
-          backgroundColor: 'red',
           color: 'white',
           //   padding: 1,
           display: 'flex',
           gap: 1,
         }}
       >
-        {onClose && <IconButton onClick={onClose}>X</IconButton>}
+        {onClose && (
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        )}
       </Box>
       {children}
     </Box>
