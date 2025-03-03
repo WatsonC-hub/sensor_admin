@@ -208,12 +208,19 @@ const Layout = ({children}: LayoutProps) => {
           <NavBar.Close onClick={() => setTsId(null)} />
         </Box>
       </NavBar>
-      <main style={{flexGrow: 1}}>
-        <Box display="flex" flexDirection={'column'} gap={1} position={'relative'} height={'100%'}>
-          <Box p={1}>{children}</Box>
-          <ActionArea />
+      <main style={{flexGrow: 1, overflow: 'auto'}}>
+        <Box
+          display="flex"
+          flexDirection={'column'}
+          gap={1}
+          position={'relative'}
+          // height={'100%'}
+          //
+        >
+          {children}
         </Box>
       </main>
+      <ActionArea />
     </>
   );
 };
