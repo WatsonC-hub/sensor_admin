@@ -10,6 +10,7 @@ import Images from '~/components/Images';
 import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
 import SaveImageDialog from '~/components/SaveImageDialog';
+import {useUser} from '~/features/auth/useUser';
 import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
@@ -23,7 +24,6 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore} from '~/state/store';
 
 export default function Station() {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -99,19 +99,12 @@ export default function Station() {
         />
       )}
       <Divider />
-      <Box
-        sx={{
-          maxWidth: '1080px',
-          width: isTouch ? '100%' : 'fit-content',
-          alignSelf: 'center',
-        }}
-      >
-        {pageToShow === 'pejling' && ts_id !== -1 && <Pejling setDynamic={setDynamic} />}
-        {pageToShow === 'tilsyn' && <Tilsyn />}
-      </Box>
+
+      {pageToShow === 'pejling' && ts_id !== -1 && <Pejling setDynamic={setDynamic} />}
+      {pageToShow === 'tilsyn' && <Tilsyn />}
       {pageToShow === 'stamdata' && <EditStamdata />}
       {pageToShow === 'billeder' && (
-        <Box>
+        <>
           <Images
             type={'station'}
             typeId={loc_id ? loc_id.toString() : ''}
@@ -139,15 +132,15 @@ export default function Station() {
               setShowForm(null);
             }}
           />
-        </Box>
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/jpeg, image/png, image/webp, image/avif, image/svg, image/gif, image/tif"
+            style={{display: 'none'}}
+            onChange={handleFileRead}
+          />
+        </>
       )}
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept="image/jpeg, image/png, image/webp, image/avif, image/svg, image/gif, image/tif"
-        style={{display: 'none'}}
-        onChange={handleFileRead}
-      />
     </Layout>
   );
 }
@@ -160,7 +153,7 @@ const Layout = ({children}: LayoutProps) => {
   const {ts_id} = useAppContext(['ts_id']);
   const {data: locationdata} = useLocationData();
   const {data: metadata} = useTimeseriesData();
-  const adminAccess = useAuthStore((state) => state.adminAccess);
+  const user = useUser();
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
   return (
     <>
@@ -175,11 +168,11 @@ const Layout = ({children}: LayoutProps) => {
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
           <NavBar.Home />
-          {adminAccess && <NotificationList />}
+          {user?.adminAccess && <NotificationList />}
           <NavBar.Menu
             highligtFirst={false}
             items={[
-              ...(adminAccess && !metadata?.calculated
+              ...(user?.adminAccess && !metadata?.calculated
                 ? [
                     {
                       title: 'Til QA',

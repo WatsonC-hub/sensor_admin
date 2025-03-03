@@ -277,7 +277,7 @@ const AdjustmentDataTable = ({data}: Props) => {
             setIndex(staticRowIndex);
             table.setEditingRow(row);
           }}
-          canEdit={true}
+          disabled={false}
           onDeleteBtnClick={() => {
             setDialogOpen(true);
             setType(row.original.type);

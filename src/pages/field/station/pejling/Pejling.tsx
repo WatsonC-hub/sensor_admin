@@ -11,6 +11,7 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {
   useCreateTabState,
@@ -26,13 +27,17 @@ type Props = {
 };
 
 const Pejling = ({setDynamic}: Props) => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: timeseries_data} = useTimeseriesData();
   const isWaterlevel = timeseries_data?.tstype_id === 1;
   const [showForm, setShowForm] = useShowFormState();
   const [, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
+
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(loc_id);
 
   const initialData = {
     gid: -1,
@@ -109,40 +114,53 @@ const Pejling = ({setDynamic}: Props) => {
   };
 
   return (
-    <Box mx={1}>
-      <LatestMeasurementTable
-        latestMeasurement={latestMeasurement}
-        errorMessage={
-          isError && typeof error?.response?.data.detail == 'string'
-            ? error?.response?.data.detail
-            : undefined
-        }
-      />
-      <FormProvider {...formMethods}>
-        <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
-          {showForm === true && (
-            <PejlingForm
-              openAddMP={openAddMP}
-              submit={handlePejlingSubmit}
-              resetFormData={resetFormData}
-              setDynamic={setDynamic}
-              latestMeasurement={latestMeasurement}
-            />
-          )}
+    <>
+      <Box
+        mx={'auto'}
+        position={'relative'}
+        width="fit-content"
+        display={'flex'}
+        flexDirection={'column'}
+      >
+        <LatestMeasurementTable
+          latestMeasurement={latestMeasurement}
+          errorMessage={
+            isError && typeof error?.response?.data.detail == 'string'
+              ? error?.response?.data.detail
+              : undefined
+          }
+        />
+        <FormProvider {...formMethods}>
+          <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
+            {showForm === true && (
+              <PejlingForm
+                openAddMP={openAddMP}
+                submit={handlePejlingSubmit}
+                resetFormData={resetFormData}
+                setDynamic={setDynamic}
+                latestMeasurement={latestMeasurement}
+              />
+            )}
+          </Box>
+        </FormProvider>
+        <Box display={'flex'} flexDirection={'column'}>
+          <PejlingMeasurements
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            disabled={permissions?.[ts_id] !== 'edit'}
+          />
         </Box>
-      </FormProvider>
-      <Box display={'flex'} flexDirection={'column'}>
-        <PejlingMeasurements handleEdit={handleEdit} handleDelete={handleDelete} />
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj kontrol"
-          onClick={() => {
-            setShowForm(true);
-          }}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        ></FabWrapper>
       </Box>
-    </Box>
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj kontrol"
+        disabled={permissions?.[ts_id] !== 'edit'}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
+    </>
   );
 };
 
