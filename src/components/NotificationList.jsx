@@ -21,9 +21,6 @@ const NotificationList = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
-  const {
-    feature_permission_query: {data: permissions},
-  } = usePermissions(app_loc_id);
 
   let loc_id = undefined;
   const {markAsDone} = useTaskMutation();
@@ -67,6 +64,10 @@ const NotificationList = () => {
   if (loc_id == undefined) {
     loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
   }
+
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(app_loc_id ?? loc_id);
 
   const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
   const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
