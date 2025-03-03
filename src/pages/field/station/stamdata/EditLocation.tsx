@@ -82,7 +82,7 @@ const EditLocation = () => {
   };
 
   return (
-    <>
+    <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
         <LocationForm mode="normal" />
         <footer>
@@ -103,7 +103,7 @@ const EditLocation = () => {
           </Box>
         </footer>
       </FormProvider>
-    </>
+    </Box>
   );
 };
 

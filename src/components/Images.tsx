@@ -36,7 +36,7 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
   return (
     <Box sx={{marginBottom: 1, marginTop: 1}}>
       <Grid container spacing={3} justifyContent="center">
-        <Grid item mobile={12} tablet={12} laptop={12} desktop={12} xl={6}>
+        <Grid item mobile={12} tablet={12} laptop={12} desktop={12} xl={7}>
           <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />
         </Grid>
       </Grid>

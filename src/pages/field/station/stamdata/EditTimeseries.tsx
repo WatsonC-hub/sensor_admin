@@ -86,7 +86,7 @@ const EditTimeseries = () => {
   };
 
   return (
-    <>
+    <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
         <TimeseriesForm mode="edit" />
         <footer>
@@ -107,7 +107,7 @@ const EditTimeseries = () => {
           </Box>
         </footer>
       </FormProvider>
-    </>
+    </Box>
   );
 };
 

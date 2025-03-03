@@ -300,7 +300,7 @@ const AdjustmentDataTable = ({data}: Props) => {
   );
 
   return (
-    <Box sx={isMobile ? {} : setTableBoxStyle(740)}>
+    <Box mb={2} sx={isMobile ? {} : setTableBoxStyle(740)}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}

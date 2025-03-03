@@ -119,7 +119,7 @@ const EditUnit = () => {
   };
 
   return (
-    <>
+    <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
         <UdstyrReplace selected={selectedUnit} setSelected={setSelectedUnit} />
         <UnitForm mode="edit" />
@@ -146,7 +146,7 @@ const EditUnit = () => {
           </Box>
         </footer>
       </FormProvider>
-    </>
+    </Box>
   );
 };
 

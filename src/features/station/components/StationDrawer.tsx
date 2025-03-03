@@ -1,6 +1,10 @@
-import {ConstructionRounded} from '@mui/icons-material';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
+import {
+  AddCircle,
+  Menu,
+  PhotoLibraryRounded,
+  PlaylistAddCheck,
+  StraightenRounded,
+} from '@mui/icons-material';
 import {
   Drawer,
   Toolbar,
@@ -11,19 +15,140 @@ import {
   ListItemText,
   Divider,
   ListItemButton,
+  ClickAwayListener,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
-import {atom, useAtom} from 'jotai';
-import React from 'react';
-
-import {stationPages} from '~/helpers/EnumHelper';
+import {useAtom} from 'jotai';
+import React, {ReactNode} from 'react';
+import FunctionsIcon from '@mui/icons-material/Functions';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import {StationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useStationPages, useEditTabState} from '~/hooks/useQueryStateParameters';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import PersonIcon from '@mui/icons-material/Person';
+import BackpackIcon from '@mui/icons-material/Backpack';
+import KeyIcon from '@mui/icons-material/Key';
+import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 
 const drawerWidth = 240;
 
-export const drawerOpenAtom = atom<boolean>(false);
+type Item = {
+  text: string;
+  items?: Item[];
+  page: StationPages;
+  icon: ReactNode;
+  requiredTsId: boolean;
+};
+
+type DrawerItems = {
+  text?: string;
+  items: Item[];
+};
+
+const items: DrawerItems[] = [
+  {
+    text: 'Tidsserie',
+    items: [
+      {
+        text: 'Generelt',
+        page: 'generelt tidsserie',
+        icon: <QuestionMarkIcon />,
+        requiredTsId: true,
+      },
+      {
+        text: 'Pejling',
+        page: 'pejling',
+        icon: <AddCircle />,
+        requiredTsId: false,
+      },
+      {
+        text: 'Tilsyn',
+        page: 'tilsyn',
+        icon: <PlaylistAddCheck />,
+        requiredTsId: true,
+      },
+      {
+        text: 'Målepunkt',
+        page: 'målepunkt',
+        icon: <StraightenRounded />,
+        requiredTsId: true,
+      },
+    ],
+  },
+  {
+    text: 'Udstyr',
+    items: [
+      {
+        text: 'Generelt',
+        page: 'generelt udstyr',
+        icon: <QuestionMarkIcon />,
+        requiredTsId: true,
+      },
+      {
+        text: 'Sendeinterval',
+        page: 'sendeinterval',
+        icon: <ScheduleSendIcon />,
+        requiredTsId: true,
+      },
+    ],
+  },
+  {
+    text: 'Lokation',
+    items: [
+      {
+        text: 'Generelt',
+        page: 'generelt lokation',
+        icon: <QuestionMarkIcon />,
+        requiredTsId: false,
+      },
+      {
+        text: 'Kontakter',
+        page: 'kontakter',
+        icon: <PersonIcon />,
+        requiredTsId: false,
+      },
+      {
+        text: 'Nøgler',
+        page: 'nøgler',
+        icon: <KeyIcon />,
+        requiredTsId: false,
+      },
+      {
+        text: 'Huskeliste',
+        page: 'huskeliste',
+        icon: <BackpackIcon />,
+        requiredTsId: false,
+      },
+      {
+        text: 'Billeder',
+        page: 'billeder',
+        icon: <PhotoLibraryRounded />,
+        requiredTsId: false,
+      },
+    ],
+  },
+  {
+    text: 'Kvalitetssikring',
+    items: [
+      {
+        text: 'Justeringer',
+        page: 'justeringer',
+        icon: <QueryStatsIcon />,
+        requiredTsId: true,
+      },
+      {
+        text: 'Algoritmer',
+        page: 'algoritmer',
+        icon: <FunctionsIcon />,
+        requiredTsId: true,
+      },
+    ],
+  },
+];
 
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
@@ -31,182 +156,141 @@ const navIconStyle = (isSelected: boolean) => {
 const StationDrawer = () => {
   const {ts_id} = useAppContext([], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
-  const [, setEditTab] = useEditTabState();
-  const {adminKvalitetssikring} = useNavigationFunctions();
-  const [open, setOpen] = useAtom(drawerOpenAtom);
+  const [openAtom, setOpen] = useAtom(drawerOpenAtom);
+  const {isMobile, isMonitor} = useBreakpoints();
 
-  const udstyrItems = [
-    {
-      text: 'Stamdata',
-      onClick: () => {
-        setPageToShow(stationPages.STAMDATA);
-        setEditTab('udstyr');
-      },
-      icon: <InboxIcon />,
-      color: navIconStyle(pageToShow === 'stamdata'),
-    },
-    {
-      text: 'Sendeinterval',
-      onClick: () => {
-        setPageToShow(stationPages.STAMDATA);
-        setEditTab('udstyr');
-      },
-      icon: <InboxIcon />,
-      color: navIconStyle(pageToShow === 'stamdata'),
-    },
-  ];
+  const toggleDrawer = (newOpen: boolean) => {
+    setOpen(newOpen);
+  };
 
-  const tidsserieItems = [
-    {
-      text: 'Stamdata',
-      onClick: () => {
-        setPageToShow(stationPages.STAMDATA);
-        setEditTab('tidsserie');
-      },
-      icon: <AutoGraphIcon />,
-      color: navIconStyle(pageToShow === 'stamdata'),
-    },
-    {
-      text: 'Pejling',
-      onClick: () => {
-        setPageToShow(stationPages.PEJLING);
-      },
-      icon: <InboxIcon />,
-      color: navIconStyle(pageToShow === 'pejling'),
-    },
-    {
-      text: 'Tilsyn',
-      onClick: () => {
-        setPageToShow(stationPages.TILSYN);
-      },
-      icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === 'tilsyn'),
-    },
-    {
-      text: 'Målepunkt',
-      onClick: () => {
-        setPageToShow(stationPages.STAMDATA);
-        setEditTab('målepunkt');
-      },
-      icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === 'tilsyn'),
-    },
-    {
-      text: 'Datajusteringer',
-      onClick: () => {
-        adminKvalitetssikring(ts_id!);
-      },
-      icon: <AutoGraphIcon />,
-      // color: navIconStyle(pageToShow === 'kvalitetssikring'),
-    },
-    {
-      text: 'Algoritmer',
-      onClick: () => {
-        adminKvalitetssikring(ts_id!);
-        setPageToShow('algoritmer');
-      },
-      icon: <AutoGraphIcon />,
-      // color: navIconStyle(pageToShow === 'kvalitetssikring'),
-    },
-  ];
+  const open = isMonitor || openAtom;
 
-  const lokationItems = [
-    {
-      text: 'Stamdata',
-      onClick: () => {
-        setPageToShow(stationPages.STAMDATA);
-        setEditTab('lokation');
-      },
-      icon: <InboxIcon />,
-      color: navIconStyle(pageToShow === 'pejling'),
-    },
-    {
-      text: 'Kontakter',
-      onClick: () => {
-        setPageToShow(stationPages.STAMDATA);
-        setEditTab('stationsinformation');
-      },
-      icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === 'stamdata'),
-    },
-    {
-      text: 'Billeder',
-      onClick: () => {
-        setPageToShow(stationPages.BILLEDER);
-      },
-      icon: <AutoGraphIcon />,
-      color: navIconStyle(pageToShow === 'stamdata'),
-    },
-  ];
-  const {isMobile} = useBreakpoints();
+  /**
+   * Loop alle kategorier igennem og genere items for hver kategori
+   * Loop items igennem og generer en ListItem for hver side
+   * Hvis siden er valgt, så vises den med en anden farve
+   * Hvis telefon: skift navbar backspace med menu - Se station.tsx
+   * Hvis Desktop vises menuen altid i rail eller full width
+   * Clickawaylistener lukker menuen hvis der klikkes udenfor
+   */
+  const drawerItems = items
+    .filter((category) =>
+      category.items.some((item) => (!ts_id && !item.requiredTsId ? true : ts_id))
+    )
+    .map((category) => {
+      return (
+        <>
+          {open && (
+            <ListItem key={category.text} sx={{borderRadius: '9999px'}}>
+              <ListItemText sx={{color: 'white'}} primary={category.text} />
+            </ListItem>
+          )}
+          {category.items.map((item) => {
+            if (!ts_id && item.requiredTsId) {
+              return;
+            }
+
+            return (
+              <ListItem
+                key={item.text}
+                disablePadding
+                sx={{
+                  borderRadius: '9999px',
+                  py: 1,
+                }}
+              >
+                <Tooltip title={!open ? item.text : ''} placement="right">
+                  <ListItemButton
+                    sx={{
+                      borderRadius: '9999px',
+                      color: navIconStyle(pageToShow === item.page),
+                      py: 0,
+                    }}
+                    onClick={() => {
+                      setPageToShow(item.page);
+                      if (open) toggleDrawer(false);
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    {open && <ListItemText>{item.text}</ListItemText>}
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            );
+          })}
+          {items.indexOf(category) !== items.length - 1 && <Divider />}
+        </>
+      );
+    });
+
+  if (isMobile) {
+    return (
+      <Layout variant="temporary">
+        <List>{drawerItems}</List>
+      </Layout>
+    );
+  }
+
+  if (isMonitor) {
+    return (
+      <Layout variant="permanent">
+        <List>{drawerItems}</List>
+      </Layout>
+    );
+  }
+
   return (
-    <Drawer
-      variant={isMobile ? 'temporary' : 'permanent'}
-      open={open}
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {width: drawerWidth, boxSizing: 'border-box'},
-      }}
-      ModalProps={{
-        onClick: () => {
-          setOpen(false);
-        },
-        onBackdropClick: () => {
-          setOpen(false);
-        },
-      }}
-    >
-      <Toolbar />
-      <Box sx={{overflow: 'auto'}}>
-        <List>
-          <ListItem key={123} sx={{borderRadius: '9999px'}}>
-            <ListItemText primary="Lokation" />
-          </ListItem>
+    <Layout variant="permanent">
+      <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
+        <IconButton sx={{color: 'white'}}>
+          <Menu />
+        </IconButton>
+      </Toolbar>
+      <List>{drawerItems}</List>
+    </Layout>
+  );
+};
 
-          {lokationItems.map((item, index) => {
-            return (
-              <ListItem key={index} onClick={item.onClick} sx={{borderRadius: '9999px'}}>
-                <ListItemButton sx={{borderRadius: '9999px'}} color={item.color}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-          <Divider />
-          <ListItem key={123} sx={{borderRadius: '9999px'}}>
-            <ListItemText primary="Tidsserie  " />
-          </ListItem>
+type LayoutProps = {
+  children: ReactNode;
+  variant?: 'temporary' | 'permanent';
+};
 
-          {tidsserieItems.map((item, index) => {
-            return (
-              <ListItem key={index} onClick={item.onClick} sx={{borderRadius: '9999px'}}>
-                <ListItemButton sx={{borderRadius: '9999px'}} color={item.color}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-          <Divider />
-          <ListItem key={123} sx={{borderRadius: '9999px'}}>
-            <ListItemText primary="Udstyr" />
-          </ListItem>
+const Layout = ({children, variant}: LayoutProps) => {
+  const [openAtom, setOpen] = useAtom(drawerOpenAtom);
 
-          {udstyrItems.map((item, index) => {
-            return (
-              <ListItem key={index} onClick={item.onClick} sx={{borderRadius: '9999px'}}>
-                <ListItemButton sx={{borderRadius: '9999px'}} color={item.color}>
-                  <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      </Box>
-    </Drawer>
+  const {isMonitor, isMobile} = useBreakpoints();
+  const open = isMonitor || openAtom;
+  const width = open ? drawerWidth : 48;
+  const toggleDrawer = (newOpen: boolean) => {
+    setOpen(newOpen);
+  };
+
+  return (
+    <Box>
+      <Drawer
+        variant={variant}
+        open={open}
+        sx={{
+          width: width,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: width,
+            backgroundColor: 'primary.main',
+            pt: '64px',
+            pb: isMobile ? '64px' : '0px',
+          },
+        }}
+      >
+        <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
+          <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
+        </ClickAwayListener>
+      </Drawer>
+    </Box>
   );
 };
 

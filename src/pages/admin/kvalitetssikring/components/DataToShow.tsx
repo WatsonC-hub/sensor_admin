@@ -25,7 +25,7 @@ export default function DataToShow() {
                 checked={Object.entries(dataToShow).find((item) => item[0] === key)?.[1] === true}
                 onChange={handleChange}
                 name={key}
-                size="small"
+                size={'small'}
                 color="primary"
               />
             }

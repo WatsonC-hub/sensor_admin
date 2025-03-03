@@ -1,4 +1,4 @@
-import {MapRounded, Person} from '@mui/icons-material';
+import {MapRounded, Person, Menu as MenuIcon} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -13,19 +13,19 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+
 import {useQueryClient} from '@tanstack/react-query';
-import {useSetAtom} from 'jotai';
+import {useAtom, useSetAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
 // import {useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
 import {appBarHeight} from '~/consts';
-import {drawerOpenAtom} from '~/features/station/components/StationDrawer';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
-import {captureDialogAtom} from '~/state/atoms';
+import {captureDialogAtom, drawerOpenAtom} from '~/state/atoms';
 
 import Button from './Button';
 
@@ -211,6 +211,23 @@ const Logo = () => {
   return isMobile ? <SmallLogo /> : <LogoSvg />;
 };
 
+const StationDrawerMenu = () => {
+  const [open, setOpen] = useAtom(drawerOpenAtom);
+  return (
+    <Box>
+      <IconButton
+        color="inherit"
+        onClick={() => {
+          setOpen(!open);
+        }}
+        size="large"
+      >
+        <MenuIcon />
+      </IconButton>
+    </Box>
+  );
+};
+
 const GoBack = () => {
   // const navigate = useNavigate();
   const setDrawerOpen = useSetAtom(drawerOpenAtom);
@@ -274,5 +291,6 @@ NavBar.Menu = NavBarMenu;
 NavBar.Home = HomeButton;
 NavBar.Title = Title;
 NavBar.Scanner = ScannerAsTitle;
+NavBar.StationDrawerMenu = StationDrawerMenu;
 
 export default NavBar;

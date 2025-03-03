@@ -6,7 +6,7 @@ const editTabValues = [
   'lokation',
   'tidsserie',
   'udstyr',
-  'målepunkt',
+  'maalepunkt',
   'stationsinformation',
 ] as const;
 

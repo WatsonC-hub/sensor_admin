@@ -17,7 +17,7 @@ const initRange = [
 ];
 
 interface PlotGraphProps {
-  dynamicMeasurement: Array<string | number> | undefined;
+  dynamicMeasurement?: Array<string | number>;
 }
 
 export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {

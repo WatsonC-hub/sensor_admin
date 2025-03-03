@@ -1,10 +1,21 @@
 export const stationPages = {
+  GENERELTLOKATION: 'generelt lokation',
+  GENERELTUDSTYR: 'generelt udstyr',
+  GENERELTIDSSERIE: 'generelt tidsserie',
+  SENDEINTERVAL: 'sendeinterval',
   PEJLING: 'pejling',
   TILSYN: 'tilsyn',
-  STAMDATA: 'stamdata',
+  KONTAKTER: 'kontakter',
+  NØGLER: 'nøgler',
+  HUSKELISTE: 'huskeliste',
   BILLEDER: 'billeder',
-  MAALEPUNKT: 'maalepunkt',
-} as const;
+  MAALEPUNKT: 'målepunkt',
+  UDSTYR: 'udstyr',
+  ALGORITHMS: 'algoritmer',
+  JUSTERINGER: 'justeringer',
+} as const satisfies Record<string, string>;
+
+export type StationPages = (typeof stationPages)[keyof typeof stationPages];
 
 export const qaPages = {
   ALGORITHMS: 'algoritmer',
