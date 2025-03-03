@@ -38,6 +38,7 @@ import {
 } from '../../../features/map/mapConsts';
 import {useMapUtilityStore} from '~/state/store';
 import {useUser} from '~/features/auth/useUser';
+import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
@@ -116,15 +117,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const user = useUser();
 
-  const {data: boreholeMapdata} = useQuery<BoreholeMapData[]>({
-    queryKey: ['borehole_map'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
-      return data;
-    },
-    staleTime: 10 * 1000,
-    enabled: user?.boreholeAccess,
-  });
+  const {data: boreholeMapdata} = useBoreholeMap();
 
   const {data: mapData} = useNotificationOverviewMap({enabled: user?.iotAccess});
 
