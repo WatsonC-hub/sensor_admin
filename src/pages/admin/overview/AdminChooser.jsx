@@ -10,7 +10,7 @@ import {useUser} from '~/features/auth/useUser';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const AdminChooser = () => {
-  const user = useUser();
+  const {adminAccess} = useUser();
   const {field} = useNavigationFunctions();
 
   return (
@@ -30,7 +30,7 @@ const AdminChooser = () => {
           ]}
         />
       </NavBar>
-      {!user?.adminAccess && (
+      {!adminAccess && (
         <>
           <Typography variant="h4" sx={{textAlign: 'center', marginTop: 10}}>
             Denne side er under rivende udvikling og er ikke klar til produktion endnu. 👨‍💻
