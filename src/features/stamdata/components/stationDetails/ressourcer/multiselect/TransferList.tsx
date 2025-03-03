@@ -11,6 +11,7 @@ import * as React from 'react';
 import {useEffect, useState} from 'react';
 
 import Button from '~/components/Button';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import type {
   MultiSelectProps,
@@ -60,8 +61,9 @@ export default function TranserList({value, setValue}: TransferListProps) {
       Object.keys(CategoryType).length
     )
   );
-  const [collapsed, setCollapsed] = useState<Array<string>>([]);
   const {loc_id} = useAppContext(['loc_id']);
+  const {location_permissions} = usePermissions(loc_id);
+  const [collapsed, setCollapsed] = useState<Array<string>>([]);
   const {
     get: {data: options},
     post: postRessourcer,
@@ -268,7 +270,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
                 bttype="secondary"
                 size="small"
                 onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0}
+                disabled={leftChecked.length === 0 || location_permissions !== 'edit'}
                 aria-label="move selected right"
               >
                 &gt;
@@ -278,7 +280,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
                 bttype="secondary"
                 size="small"
                 onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0}
+                disabled={rightChecked.length === 0 || location_permissions !== 'edit'}
                 aria-label="move selected left"
               >
                 &lt;

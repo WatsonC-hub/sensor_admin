@@ -8,6 +8,7 @@ import React, {useState} from 'react';
 
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/components/UpdateNotificationModal';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
@@ -19,7 +20,11 @@ const NotificationList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(app_loc_id);
+
   let loc_id = undefined;
   const {markAsDone} = useTaskMutation();
 
@@ -113,7 +118,12 @@ const NotificationList = () => {
         keepMounted
         disableScrollLock
       >
-        <MenuItem key="0" onClick={openModal} sx={{gap: 0.5}}>
+        <MenuItem
+          disabled={permissions?.[ts_id] !== 'edit'}
+          key="0"
+          onClick={openModal}
+          sx={{gap: 0.5}}
+        >
           <ListItemIcon>
             <Avatar sx={{bgcolor: 'primary'}}>
               <AddIcon fontSize="small" />

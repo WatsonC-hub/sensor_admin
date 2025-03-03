@@ -11,6 +11,7 @@ import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
@@ -34,7 +35,7 @@ export default function Station() {
   const fileInputRef = createRef<HTMLInputElement>();
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
   const [openSave, setOpenSave] = useState(false);
-  const {isTouch} = useBreakpoints();
+  const {location_permissions} = usePermissions(loc_id);
   const [activeImage, setActiveImage] = useState({
     gid: -1,
     type: loc_id?.toString(),
@@ -118,6 +119,7 @@ export default function Station() {
             onClick={() => {
               if (fileInputRef.current) fileInputRef.current.click();
             }}
+            disabled={location_permissions !== 'edit'}
           />
           <SaveImageDialog
             activeImage={activeImage}
