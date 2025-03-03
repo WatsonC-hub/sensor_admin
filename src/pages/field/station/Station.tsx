@@ -18,7 +18,6 @@ import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Pejling from '~/pages/field/station/pejling/Pejling';
@@ -119,7 +118,7 @@ export default function Station() {
             onClick={() => {
               if (fileInputRef.current) fileInputRef.current.click();
             }}
-            disabled={location_permissions !== 'edit'}
+            disabled={location_permissions === undefined}
           />
           <SaveImageDialog
             activeImage={activeImage}

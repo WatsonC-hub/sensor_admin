@@ -270,7 +270,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
                 bttype="secondary"
                 size="small"
                 onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0 || location_permissions !== 'edit'}
+                disabled={leftChecked.length === 0 || location_permissions === undefined}
                 aria-label="move selected right"
               >
                 &gt;
@@ -280,7 +280,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
                 bttype="secondary"
                 size="small"
                 onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0 || location_permissions !== 'edit'}
+                disabled={rightChecked.length === 0 || location_permissions === undefined}
                 aria-label="move selected left"
               >
                 &lt;

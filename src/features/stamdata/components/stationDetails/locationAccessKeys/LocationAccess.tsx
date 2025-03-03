@@ -115,7 +115,7 @@ const LocationAccess = () => {
                   sx={isTablet ? {ml: 1} : {textTransform: 'none', ml: '12px'}}
                   startIcon={<KeyIcon />}
                   onClick={() => setOpenDialog(true)}
-                  disabled={!user?.contactAndKeysPermission || location_permissions !== 'edit'}
+                  disabled={!user?.contactAndKeysPermission || location_permissions === undefined}
                 >
                   Tilføj nøgle eller kode
                 </Button>

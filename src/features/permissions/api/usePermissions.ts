@@ -42,7 +42,14 @@ const usePermissions = (loc_id?: number) => {
   const feature_permission_query = useQuery(usePermissionsQueryOptions(loc_id));
 
   const {data} = feature_permission_query;
-  const location_permissions = data ? Object.values(data).some((v) => v === 'edit') : undefined;
+  const location_permissions =
+    data && Object.values(data).length > 0
+      ? Object.values(data).some((v) => v === 'edit')
+      : data && Object.values(data).length === 0
+        ? false
+        : undefined;
+
+  console.log('location_permissions', location_permissions);
 
   return {
     borehole_permission_query,

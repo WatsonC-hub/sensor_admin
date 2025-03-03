@@ -25,6 +25,8 @@ const ContactInfo = () => {
 
   const user = useUser();
 
+  console.log(user?.contactAndKeysPermission);
+
   const formMethods = useForm({
     resolver: zodResolver(contact_info),
     defaultValues: initialContactData,
@@ -81,7 +83,7 @@ const ContactInfo = () => {
                 reset();
                 setOpenContactInfoDialog(true);
               }}
-              disabled={!user?.contactAndKeysPermission || location_permissions !== 'edit'}
+              disabled={!user?.contactAndKeysPermission || location_permissions === undefined}
             >
               Tilføj kontakt
             </Button>
