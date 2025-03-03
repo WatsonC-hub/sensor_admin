@@ -11,6 +11,7 @@ import Images from '~/components/Images';
 import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
 import SaveImageDialog from '~/components/SaveImageDialog';
+import {useUser} from '~/features/auth/useUser';
 import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
@@ -25,7 +26,6 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore} from '~/state/store';
 import {useAtom, useSetAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 
@@ -157,7 +157,7 @@ const Layout = ({children}: LayoutProps) => {
   const {ts_id} = useAppContext(['ts_id']);
   const {data: locationdata} = useLocationData();
   const {data: metadata} = useTimeseriesData();
-  const adminAccess = useAuthStore((state) => state.adminAccess);
+  const user = useUser();
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
   const {setTsId} = useDisplayStation();
   const [fullScreen, setFullScreen] = useAtom(fullScreenAtom);
@@ -172,13 +172,13 @@ const Layout = ({children}: LayoutProps) => {
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
-          {adminAccess && <NotificationList />}
+          {user?.adminAccess && <NotificationList />}
           <NavBar.Menu
             disableLogout
             disableProfile
             highligtFirst={false}
             items={[
-              ...(adminAccess && !metadata?.calculated
+              ...(user?.adminAccess && !metadata?.calculated
                 ? [
                     {
                       title: 'Til QA',

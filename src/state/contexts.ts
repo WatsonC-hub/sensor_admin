@@ -1,4 +1,7 @@
+// import {useQuery} from '@tanstack/react-query';
 import {createContext, useContext} from 'react';
+
+// import {usePermissionsQueryOptions} from '~/features/permissions/api/usePermissions';
 
 // import {StationDetails} from '~/types';
 
@@ -23,20 +26,22 @@ export const AppContext = createContext<AppContextType | null>(null);
 type EnforceRequired<T, K extends keyof T> = {[P in K]-?: T[P]};
 
 export function useAppContext<
-  K extends keyof AppContextType,
+  K extends keyof AppContextType = never,
   O extends keyof AppContextType = never,
->(
-  requiredKeys: K[],
-  optionalKeys?: O[]
-): EnforceRequired<AppContextType, K> & Partial<Pick<AppContextType, O>> {
+>(requiredKeys?: K[], optionalKeys?: O[]) {
   const context = useContext(AppContext);
 
   if (!context) {
     throw new Error('useAppContext must be used within an AppProvider');
   }
 
+  // const {data: permissions} = useQuery(usePermissionsQueryOptions(context.loc_id));
+
+  // if (context.ts_id && permissions && permissions[context.ts_id] === undefined)
+  //   throw new Error(`Missing permissions on timeseries: ${String(context.ts_id)}`);
+
   // Ensure required keys exist in the context
-  requiredKeys.forEach((key) => {
+  requiredKeys?.forEach((key) => {
     if (!(key in context) || context[key] === undefined) {
       throw new Error(`Missing required context key: ${String(key)}`);
     }
@@ -44,7 +49,7 @@ export function useAppContext<
 
   // Select required keys
   const selectedContext: AppContextType = {};
-  requiredKeys.forEach((key) => {
+  requiredKeys?.forEach((key) => {
     selectedContext[key] = context[key] as AppContextType[K];
   });
 
@@ -55,5 +60,8 @@ export function useAppContext<
     }
   });
 
-  return selectedContext as EnforceRequired<AppContextType, K> & Partial<Pick<AppContextType, O>>;
+  return {
+    ...(selectedContext as EnforceRequired<AppContextType, K> & Partial<Pick<AppContextType, O>>),
+    // permissions: context.ts_id ? permissions?.[context.ts_id] : undefined,
+  };
 }

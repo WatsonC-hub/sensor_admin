@@ -4,11 +4,11 @@ import {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
+import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
 import LocationTypeSelect from '~/features/stamdata/components/stamdata/LocationTypeSelect';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
-import {useAuthStore} from '~/state/store';
 
 interface Props {
   mode: 'modal' | 'normal';
@@ -39,7 +39,7 @@ export default function LocationForm({mode, disable = false}: Props) {
   const watchTerrainqual = watch('location.terrainqual', '');
 
   const gridsize = mode === 'modal' ? 12 : 6;
-  const superUser = useAuthStore((store) => store.superUser);
+  const user = useUser();
 
   console.log(getValues().unit);
 
@@ -73,7 +73,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           )}
         />
       </Grid>
-      {superUser && (
+      {user?.superUser && (
         <>
           <Grid item xs={12} sm={gridsize}>
             <Controller

@@ -5,6 +5,7 @@ import React, {useMemo, useState} from 'react';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
 import {
   calculatePumpstop,
   convertDateWithTimeStamp,
@@ -12,10 +13,8 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {useAuthStore} from '~/state/store';
 
 export type Kontrol = {
   comment: string;
@@ -34,17 +33,19 @@ interface Props {
   data: Kontrol[];
   handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number) => void;
+  disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableDesktop({data, handleEdit, handleDelete}: Props) {
+export default function PejlingMeasurementsTableDesktop({
+  data,
+  handleEdit,
+  handleDelete,
+  disabled,
+}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const {data: timeseries} = useTimeseriesData();
-  const tstype_id = timeseries?.tstype_id;
-  const stationUnit = timeseries?.unit;
-  const org_id = useAuthStore((store) => store.org_id);
-
-  const unit = tstype_id === 1 ? 'Pejling (nedstik) [m]' : `Måling [${stationUnit}]`;
+  const unit = 'Pejling (nedstik) [m]';
+  const user = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -106,7 +107,7 @@ export default function PejlingMeasurementsTableDesktop({data, handleEdit, handl
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.gid);
         }}
-        canEdit={row.original.organisationid == org_id}
+        disabled={disabled || row.original.organisationid != user?.org_id}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

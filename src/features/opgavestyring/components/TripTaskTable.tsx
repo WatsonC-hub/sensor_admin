@@ -120,7 +120,8 @@ const TripTaskTable = ({tasks, trip_id}: Props) => {
             setTaskId(row.original.id);
             setDialogOpen(true);
           }}
-          canEdit={trip_id ? true : false}
+          handleEdit={() => null}
+          disabled={trip_id ? true : false}
         />
       ),
       muiTableBodyCellProps: {

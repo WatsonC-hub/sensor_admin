@@ -80,7 +80,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
   });
 };
 
-export const locationMetadtaQueryOptions = (loc_id: number | undefined) => {
+export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
   return queryOptions({
     queryKey: ['location_data', loc_id],
     queryFn: async () => {
@@ -138,7 +138,7 @@ export const useLocationData = (loc_id?: number) => {
 
   const inner_loc_id = loc_id ?? app_loc_id;
 
-  const query = useQuery(locationMetadtaQueryOptions(inner_loc_id));
+  const query = useQuery(locationMetadataQueryOptions(inner_loc_id));
 
   return query;
 };
