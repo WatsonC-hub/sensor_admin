@@ -4,7 +4,7 @@ import {useFormContext} from 'react-hook-form';
 
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import {initialLocationAccessData} from '~/consts';
-import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
+import {useSearchLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {Access} from '~/types';
 
@@ -20,8 +20,7 @@ const SelectLocationAccess = ({loc_id, createNew, setCreateNew}: Props) => {
   const debouncedSearch = useDebouncedValue(search, 500);
   const {reset} = useFormContext();
 
-  const {useSearchLocationAccess} = useLocationAccess(loc_id);
-  const {data, isFetching} = useSearchLocationAccess(debouncedSearch);
+  const {data, isFetching} = useSearchLocationAccess(loc_id, debouncedSearch);
 
   useEffect(() => {
     if (!createNew) {

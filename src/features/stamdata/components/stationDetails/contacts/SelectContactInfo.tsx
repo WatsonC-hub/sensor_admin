@@ -16,7 +16,7 @@ import {SubmitHandler, useFormContext} from 'react-hook-form';
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
-import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import {useContactInfo, useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
@@ -38,9 +38,9 @@ const SelectContactInfo = ({open, setOpen}: SelectContactInfoProps) => {
   const [createNew, setCreateNew] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const {post: postContact, useSearchContact} = useContactInfo(loc_id);
+  const {post: postContact} = useContactInfo(loc_id);
 
-  const {data, isFetching} = useSearchContact(deboundedSearch);
+  const {data, isFetching} = useSearchContact(loc_id, deboundedSearch);
 
   const handleClose = () => {
     reset(initialContactData);

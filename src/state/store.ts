@@ -241,16 +241,24 @@ export const useAuthStore = <T>(selector: (state: AuthState) => T) => {
 //   return stamdataStore(useShallow(selector));
 // };
 
-type ParkingState = {
+type MapUtilityState = {
   selectedLocId: number | null;
+  editParkingLayer: 'create' | number | null;
+  editRouteLayer: 'create' | number | null;
   setSelectedLocId: (loc_id: number | null) => void;
+  setEditParkingLayer: (editLayer: 'create' | number | null) => void;
+  setEditRouteLayer: (editLayer: 'create' | number | null) => void;
 };
 
-export const parkingStore = create<ParkingState>((set) => ({
+export const mapUtilityStore = create<MapUtilityState>((set) => ({
   selectedLocId: null,
   setSelectedLocId: (loc_id: number | null) => set({selectedLocId: loc_id}),
+  editParkingLayer: null,
+  editRouteLayer: null,
+  setEditParkingLayer: (editLayer: 'create' | number | null) => set({editParkingLayer: editLayer}),
+  setEditRouteLayer: (editLayer: 'create' | number | null) => set({editRouteLayer: editLayer}),
 }));
 
-export const useParkingStore = <T>(selector: (state: ParkingState) => T) => {
-  return parkingStore(useShallow(selector));
+export const useMapUtilityStore = <T>(selector: (state: MapUtilityState) => T) => {
+  return mapUtilityStore(useShallow(selector));
 };

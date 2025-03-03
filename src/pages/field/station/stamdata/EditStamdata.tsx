@@ -1,15 +1,14 @@
 import {
-  AddCircle,
   BuildRounded,
   LocationOnRounded,
   ShowChartRounded,
   StraightenRounded,
   SettingsPhoneRounded,
+  AddCircle,
 } from '@mui/icons-material';
 import {Box, Divider, Tab, Typography, Tabs} from '@mui/material';
 import {useEffect} from 'react';
 
-import FabWrapper from '~/components/FabWrapper';
 import {tabsHeight} from '~/consts';
 import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
 import StationDetails from '~/features/stamdata/components/StationDetails';
@@ -23,6 +22,7 @@ import {useAppContext} from '~/state/contexts';
 import EditLocation from './EditLocation';
 import EditTimeseries from './EditTimeseries';
 import EditUnit from './EditUnit';
+import FabWrapper from '~/components/FabWrapper';
 
 export default function EditStamdata() {
   const {isTablet} = useBreakpoints();
@@ -135,15 +135,17 @@ export default function EditStamdata() {
         </TabPanel>
 
         <TabPanel value={tabValue} index={'målepunkt'}>
-          <ReferenceForm />
-          <FabWrapper
-            icon={<AddCircle />}
-            text="Tilføj målepunkt"
-            onClick={() => {
-              setShowForm(true);
-            }}
-            sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-          />
+          <Box position="relative" display="flex" flexDirection="column" gap={1}>
+            <ReferenceForm />
+            <FabWrapper
+              icon={<AddCircle />}
+              text="Tilføj målepunkt"
+              onClick={() => {
+                setShowForm(true);
+              }}
+              sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+            />
+          </Box>
         </TabPanel>
 
         <TabPanel value={tabValue} index={'stationsinformation'}>

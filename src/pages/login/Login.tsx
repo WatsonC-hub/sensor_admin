@@ -9,9 +9,9 @@ import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {apiClient, loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
-import {useAuthStore} from '~/state/store';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -21,12 +21,7 @@ export default function Login() {
   const [passReset, setPassReset] = useState('');
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
-  const [setAuthenticated, setLoginExpired, setAuthorization] = useAuthStore((state) => [
-    state.setAuthenticated,
-    state.setLoginExpired,
-    state.setAuthorization,
-  ]);
-
+  const {home} = useNavigationFunctions();
   const loginMutation = useMutation({mutationKey: ['login'], mutationFn: loginAPI});
 
   const passwordResetMutation = useMutation({
@@ -40,9 +35,10 @@ export default function Login() {
       {
         onSuccess: (data) => {
           setLoginError('');
-          setAuthorization(data);
-          setAuthenticated(true);
-          setLoginExpired(false);
+          const mutatedData = {...data};
+          queryClient.setQueryData(['user'], mutatedData, {
+            updatedAt: Date.now(),
+          });
           queryClient.prefetchQuery({
             queryKey: ['overblik'],
             queryFn: async ({signal}) => {
@@ -50,6 +46,7 @@ export default function Login() {
               return data;
             },
           });
+          home();
         },
       }
     );

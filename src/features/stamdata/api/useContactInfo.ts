@@ -66,6 +66,30 @@ export const ContactInfoGetOptions = <TData>(
   enabled: loc_id !== undefined && loc_id !== null,
 });
 
+export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
+  const searched_contacts = useQuery({
+    queryKey: ['search_contact_info', searchString],
+    queryFn: async () => {
+      let data;
+      if (searchString == '') {
+        const response = await apiClient.get<Array<ContactInfo>>(
+          `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`
+        );
+        data = response.data;
+      } else {
+        const response = await apiClient.get<Array<ContactInfo>>(
+          `/sensor_field/stamdata/contact/search_contact_info/${searchString}`
+        );
+        data = response.data;
+      }
+
+      return data;
+    },
+    staleTime: 10 * 1000,
+  });
+  return searched_contacts;
+};
+
 export const useContactInfo = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery(ContactInfoGetOptions<Array<ContactTable>>(loc_id));
@@ -80,30 +104,6 @@ export const useContactInfo = (loc_id: number | undefined) => {
   //     return data;
   //   },
   // });
-
-  const useSearchContact = (searchString: string) => {
-    const searched_contacts = useQuery({
-      queryKey: ['search_contact_info', searchString],
-      queryFn: async () => {
-        let data;
-        if (searchString == '') {
-          const response = await apiClient.get<Array<ContactInfo>>(
-            `/sensor_field/stamdata/contact/relevant_contacts/${loc_id}`
-          );
-          data = response.data;
-        } else {
-          const response = await apiClient.get<Array<ContactInfo>>(
-            `/sensor_field/stamdata/contact/search_contact_info/${searchString}`
-          );
-          data = response.data;
-        }
-
-        return data;
-      },
-      staleTime: 10 * 1000,
-    });
-    return searched_contacts;
-  };
 
   const post = useMutation({
     ...contactInfoPostOptions,
@@ -137,5 +137,5 @@ export const useContactInfo = (loc_id: number | undefined) => {
     },
   });
 
-  return {get, useSearchContact, post, put, del};
+  return {get, post, put, del};
 };

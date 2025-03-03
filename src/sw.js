@@ -19,7 +19,7 @@ registerRoute(
 );
 
 registerRoute(
-  /\/api\/(?!data).*/,
+  /\/api\/(?!(data|auth)).*/,
   new NetworkFirst({
     cacheName: 'api',
     plugins: [
