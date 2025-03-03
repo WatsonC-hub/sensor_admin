@@ -18,9 +18,9 @@ const fabTextStyle = {
 const FabWrapper = ({text, icon, onClick, ...otherProps}: Props) => {
   const {isTouch} = useBreakpoints();
   let sx = {
-    position: 'fixed',
-    bottom: 65,
-    right: 20,
+    position: 'sticky',
+    bottom: 8,
+    ml: 'auto',
     width: isTouch ? 75 : 200,
     height: 60,
     borderRadius: 4.5,
@@ -30,12 +30,10 @@ const FabWrapper = ({text, icon, onClick, ...otherProps}: Props) => {
   sx = merge(sx, otherProps.sx);
 
   return (
-    <div>
-      <Fab {...otherProps} color="secondary" aria-label="add" onClick={onClick} sx={sx}>
-        {icon}
-        {!isTouch && <Typography sx={fabTextStyle}>{text}</Typography>}
-      </Fab>
-    </div>
+    <Fab {...otherProps} color="secondary" aria-label="add" onClick={onClick} sx={sx}>
+      {icon}
+      {!isTouch && <Typography sx={fabTextStyle}>{text}</Typography>}
+    </Fab>
   );
 };
 
