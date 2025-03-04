@@ -18,7 +18,6 @@ import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
 import {
   outdormapbox,
-  toposkaermkortwmts,
   satelitemapbox,
   defaultCircleMarkerStyle,
   zoomThresholdForParking,
@@ -36,6 +35,7 @@ import {
   markerNumThreshold,
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
+import {useMapFilterStore} from '../store';
 
 // const highlightedParking: L.Marker | null = null;
 
@@ -68,6 +68,7 @@ const useMap = <TData extends object>(
     'Er du sikker du vil slette denne parkering?'
   );
   const [selectedMarker, setSelectedMarker] = useState<TData | null | undefined>(null);
+  const setLocIds = useMapFilterStore((state) => state.setLocIds);
 
   const setSelectedMarkerWithCallback = (data: TData | null | undefined) => {
     setSelectedMarker(data);
@@ -274,6 +275,14 @@ const useMap = <TData extends object>(
         }
       }
     });
+    console.log('WORKING');
+    setLocIds(
+      markersInViewport.map((marker) => {
+        if (marker instanceof L.Marker || marker instanceof L.CircleMarker) {
+          return marker.options.data?.loc_id;
+        }
+      })
+    );
 
     if (zoom < zoomThresholdForSmallMarkers) {
       markersInViewport.forEach(function (layer) {

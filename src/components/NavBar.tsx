@@ -27,6 +27,7 @@ import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom} from '~/state/atoms';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from './Button';
+import {useDisplayState} from '~/hooks/ui';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -242,6 +243,40 @@ const Close = ({onClick}: {onClick: () => void}) => {
   );
 };
 
+const LocationList = () => {
+  const [loc_list, setLocList] = useDisplayState((state) => [state.loc_list, state.setLocList]);
+
+  return (
+    <Button
+      sx={{
+        color: loc_list ? 'secondary.main' : 'inherit',
+      }}
+      bttype={'primary'}
+      onClick={() => setLocList(!loc_list)}
+      startIcon={<MapRounded />}
+    >
+      Lokationsliste
+    </Button>
+  );
+};
+
+const TripList = () => {
+  const [trip_list, setTripList] = useDisplayState((state) => [state.trip_list, state.setTripList]);
+
+  return (
+    <Button
+      sx={{
+        color: trip_list ? 'secondary.main' : 'inherit',
+      }}
+      bttype={'primary'}
+      onClick={() => setTripList(!trip_list)}
+      startIcon={<MapRounded />}
+    >
+      Ture
+    </Button>
+  );
+};
+
 const ScannerAsTitle = () => {
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
 
@@ -289,5 +324,7 @@ NavBar.Home = HomeButton;
 NavBar.Title = Title;
 NavBar.Scanner = ScannerAsTitle;
 NavBar.Close = Close;
+NavBar.LocationList = LocationList;
+NavBar.TripList = TripList;
 
 export default NavBar;

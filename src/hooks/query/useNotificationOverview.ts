@@ -2,6 +2,7 @@ import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-qu
 import {reverse, sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
+import {useUser} from '~/features/auth/useUser';
 import {Group} from '~/types';
 
 export interface Notification {
@@ -67,6 +68,7 @@ const nullState: Partial<Notification> = {
 };
 
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
+  const {iotAccess} = useUser();
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async () => {
@@ -76,6 +78,7 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
     staleTime: 10 * 1000,
+    enabled: iotAccess,
     ...options,
   });
   return query;

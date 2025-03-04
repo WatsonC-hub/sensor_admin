@@ -19,6 +19,7 @@ import {useQuery} from '@tanstack/react-query';
 import {useDisplayState} from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import LocationList from './LocationList';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {BoreholeMapData} from '~/types';
@@ -29,8 +30,19 @@ const TasksOverview = () => {
     state.setSelectedTask,
   ]);
 
-  const {loc_id, setLocId, ts_id, closeLocation, boreholeno, setBoreholeNo, intakeno} =
-    useDisplayState((state) => state);
+  const {
+    loc_id,
+    setLocId,
+    ts_id,
+    closeLocation,
+    boreholeno,
+    setBoreholeNo,
+    intakeno,
+    loc_list,
+    setLocList,
+    trip_list,
+    setTripList,
+  } = useDisplayState((state) => state);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
@@ -81,6 +93,33 @@ const TasksOverview = () => {
         </Box>
 
         <WindowManager minColumnWidth={400}>
+          <WindowManager.Window
+            key="triplist"
+            show={trip_list}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setTripList(false);
+            }}
+            height="100%"
+          >
+            <Box p={1}>Trips</Box>
+          </WindowManager.Window>
+          <WindowManager.Window
+            key="locationlist"
+            show={loc_list}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setLocList(false);
+            }}
+            height="100%"
+          >
+            <Box p={1}>
+              <LocationList />
+            </Box>
+          </WindowManager.Window>
+
           <WindowManager.Window
             key="location"
             show={loc_id !== null}

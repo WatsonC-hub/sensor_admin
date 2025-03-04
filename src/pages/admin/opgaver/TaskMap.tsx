@@ -1,5 +1,4 @@
 import {Box} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
@@ -7,14 +6,14 @@ import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import L, {ContextMenuItemClickEvent} from 'leaflet';
 import '~/css/leaflet.css';
-import {useEffect, useState, useMemo, SyntheticEvent, useCallback} from 'react';
+import {useEffect, SyntheticEvent, useCallback} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
 import {boreholeColors} from '~/consts';
-import {NotificationMap, useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
+import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import {getColor} from '~/pages/field/overview/components/NotificationIcon';
@@ -33,7 +32,7 @@ import {
   defaultRadius,
   utm,
 } from '../../../features/map/mapConsts';
-import {LassoControl} from 'leaflet-lasso';
+import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
@@ -105,31 +104,14 @@ const Map = ({clickCallback}: MapProps) => {
     state.setEditRouteLayer,
     state.setEditParkingLayer,
   ]);
-  const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
+  // const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
   // const user_id = authStore().user_id;
   // const {hiddenTasks, shownTasks} = useTaskStore();
   // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
 
-  const [superUser, iotAccess, boreholeAccess] = useAuthStore((state) => [
-    state.superUser,
-    state.iotAccess,
-    state.boreholeAccess,
-  ]);
+  const [superUser, iotAccess] = useAuthStore((state) => [state.superUser, state.iotAccess]);
 
-  const {data: boreholeMapdata} = useQuery<BoreholeMapData[]>({
-    queryKey: ['borehole_map'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
-      return data;
-    },
-    enabled: boreholeAccess,
-  });
-
-  const {data: mapData} = useNotificationOverviewMap({enabled: iotAccess});
-
-  const data = useMemo(() => {
-    return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
-  }, [mapData, boreholeMapdata]);
+  const {data, mapFilteredData: filteredData, setExtraData} = useFilteredMapData();
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
@@ -231,7 +213,7 @@ const Map = ({clickCallback}: MapProps) => {
           callback: () => {
             if (map) {
               setSelectLocId(element.loc_id);
-              console.log('test');
+
               setEditRouteLayer('create');
 
               map.pm.enableDraw('Line');
@@ -303,10 +285,12 @@ const Map = ({clickCallback}: MapProps) => {
             marker.fire('click');
             setSelectedMarker(marker.options.data);
           } else {
-            const newData = mapData?.find((item) => item.loc_name == value.name);
+            const newData = data
+              ?.filter((item) => 'loc_id' in item)
+              .find((item) => item.loc_name == value.name);
             if (newData) {
               const hiddenMarker = createLocationMarker(newData);
-              setFilteredData((prev) => [...prev, newData]);
+              setExtraData(newData);
               setSelectedMarker(newData);
               if (hiddenMarker) {
                 // hightlightedMarker = marker;
@@ -343,7 +327,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   useEffect(() => {
     markerLayer?.clearLayers();
-    const sorted = filteredData.sort((a, b) => {
+    const sorted = filteredData?.sort((a, b) => {
       if ('loc_id' in a && 'loc_id' in b) {
         if (a.flag === b.flag) {
           if (a.obsNotifications.length === 0 && b.obsNotifications.length === 0) return 0;
@@ -359,7 +343,7 @@ const Map = ({clickCallback}: MapProps) => {
       return 0;
     });
 
-    sorted.forEach((element) => {
+    sorted?.forEach((element) => {
       if ('loc_id' in element) {
         const marker = createLocationMarker(element);
 
@@ -403,11 +387,7 @@ const Map = ({clickCallback}: MapProps) => {
         handleOpret={() => null}
       />
       <Box position={'absolute'} zIndex={401} p={0} width={'100%'} mr={2}>
-        <SearchAndFilterMap
-          data={data}
-          setData={setFilteredData}
-          handleSearchSelect={handleSearchSelect}
-        />
+        <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
       <Box display="flex" position="relative" flexGrow={1}>
         <Box id="test" position="absolute" sx={{height: '100%', width: '100%'}} />

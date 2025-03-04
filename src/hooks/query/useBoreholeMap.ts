@@ -1,4 +1,4 @@
-import {useQuery, UseQueryOptions} from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {BoreholeMapData} from '~/types';
