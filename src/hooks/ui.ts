@@ -1,75 +1,96 @@
+import {create} from 'zustand';
 import {useQueryState, parseAsInteger, parseAsString} from 'nuqs';
-import {useRawTaskStore} from '~/features/tasks/store';
+import {useEffect} from 'react';
+import {useShallow} from 'zustand/shallow';
 
-export const useDisplayStation = () => {
-  const [ts_id, setTsId] = useQueryState('ts_id', parseAsInteger);
-  return {
-    ts_id,
-    setTsId,
-  };
+// Zustand Store for UI state
+interface DisplayState {
+  ts_id: number | null;
+  loc_id: number | null;
+  boreholeno: string | null;
+  intakeno: number | null;
+  selectedTask: string | null;
+
+  setTsId: (id: number | null) => void;
+  setLocId: (id: number | null) => void;
+  closeLocation: () => void;
+  setBoreholeNo: (no: string | null) => void;
+  setIntakeNo: (no: number | null) => void;
+  setSelectedTask: (taskId: string | null) => void;
+}
+
+// Create Zustand store
+export const displayStore = create<DisplayState>((set) => ({
+  ts_id: null,
+  loc_id: null,
+  boreholeno: null,
+  intakeno: null,
+  selectedTask: null,
+
+  setTsId: (ts_id) => set({ts_id}),
+  setLocId: (loc_id) =>
+    set(() => ({
+      loc_id,
+      ts_id: null, // Reset dependent states
+      boreholeno: null,
+      intakeno: null,
+    })),
+  closeLocation: () => set({loc_id: null}),
+  setBoreholeNo: (boreholeno) =>
+    set(() => ({
+      boreholeno,
+      intakeno: null,
+      loc_id: null,
+      ts_id: null,
+    })),
+  setIntakeNo: (intakeno) => set({intakeno}),
+  setSelectedTask: (selectedTask) => set({selectedTask}),
+}));
+
+// Hook to sync Zustand store with URL
+export const useSyncQueryState = () => {
+  // Read from URL
+  const [ts_id, setTsIdQuery] = useQueryState('ts_id', parseAsInteger);
+  const [loc_id, setLocIdQuery] = useQueryState('loc_id', parseAsInteger);
+  const [boreholeno, setBoreholeNoQuery] = useQueryState('boreholeno', parseAsString);
+  const [intakeno, setIntakeNoQuery] = useQueryState('intakeno', parseAsInteger);
+
+  // Zustand store
+  const {setTsId, setLocId, setBoreholeNo, setIntakeNo} = useDisplayState((state) => ({
+    setTsId: state.setTsId,
+    setLocId: state.setLocId,
+    setBoreholeNo: state.setBoreholeNo,
+    setIntakeNo: state.setIntakeNo,
+  }));
+
+  // console.log('ts_id', ts_id);
+  // Sync Zustand with URL params on mount
+  useEffect(() => {
+    if (loc_id) setLocId(loc_id);
+    if (ts_id) setTsId(ts_id);
+    if (boreholeno) setBoreholeNo(boreholeno);
+    if (intakeno) setIntakeNo(intakeno);
+  }, []);
+
+  // Sync Zustand state to URL whenever it changes
+  useEffect(() => {
+    const unsubscribe = displayStore.subscribe((state) => {
+      console.log('state', state);
+      setTsIdQuery(state.ts_id);
+      setLocIdQuery(state.loc_id);
+      setBoreholeNoQuery(state.boreholeno);
+      setIntakeNoQuery(state.intakeno);
+    });
+
+    return () => unsubscribe();
+  }, [setTsIdQuery, setLocIdQuery, setBoreholeNoQuery, setIntakeNoQuery]);
 };
 
-const useLocIdQueryState = () => useQueryState('loc_id', parseAsInteger);
-const useBoreholeNoQueryState = () => useQueryState('boreholeno', parseAsString);
-
-export const useDisplayLocationInfo = () => {
-  const [loc_id, setLocId] = useLocIdQueryState();
-  const {setTsId} = useDisplayStation();
-  const [, setBoreholeNo] = useBoreholeNoQueryState();
-  const {setIntakeNo} = useDisplayBoreholePage();
-
-  const handleSetLocId = (loc_id: number | null) => {
-    setLocId(loc_id);
-    setTsId(null);
-    setBoreholeNo(null);
-    setIntakeNo(null);
-  };
-
-  return {
-    loc_id,
-    setLocId: handleSetLocId,
-    closeLocation: () => setLocId(null),
-  };
+export const useDisplayState = <T>(selector: (state: DisplayState) => T) => {
+  return displayStore(useShallow(selector));
 };
 
-export const useDisplayBoreholeInfo = () => {
-  const [boreholeno, setBoreholeNo] = useBoreholeNoQueryState();
-  const {setIntakeNo} = useDisplayBoreholePage();
-  const [, setLocId] = useLocIdQueryState();
-  const {setTsId} = useDisplayStation();
-
-  const handleSetBoreholeNo = (boreholeno: string | null) => {
-    setBoreholeNo(boreholeno);
-    setIntakeNo(null);
-    setLocId(null);
-    setTsId(null);
-  };
-
-  return {
-    boreholeno,
-    setBoreholeNo: handleSetBoreholeNo,
-  };
+// Call this hook once in the main component (e.g., App.tsx)
+export const useInitializeDisplayState = () => {
+  useSyncQueryState();
 };
-
-export const useDisplayBoreholePage = () => {
-  const [intakeno, setIntakeNo] = useQueryState('intakeno', parseAsInteger);
-
-  return {
-    intakeno,
-    setIntakeNo,
-  };
-};
-
-export const useDisplaySelectedTask = () => {
-  const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
-    state.selectedTaskId,
-    state.setSelectedTask,
-  ]);
-
-  return {
-    selectedTask,
-    setSelectedTask,
-  };
-};
-
-export const useLocationList = () => {};

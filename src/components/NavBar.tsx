@@ -65,9 +65,9 @@ export const HomeButton = () => {
   );
 };
 
-export const AppBarLayout = ({children}: {children?: ReactNode}) => {
+export const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex ?? 1100}}>
       <Toolbar
         sx={{
           height: appBarHeight,
@@ -278,8 +278,8 @@ const Title = ({title}: {title: string}) => {
   );
 };
 
-const NavBar = ({children}: {children?: ReactNode}) => {
-  return <AppBarLayout>{children}</AppBarLayout>;
+const NavBar = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
+  return <AppBarLayout zIndex={zIndex}>{children}</AppBarLayout>;
 };
 
 NavBar.Logo = Logo;

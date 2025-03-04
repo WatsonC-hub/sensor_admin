@@ -153,6 +153,18 @@ const Window = ({
   //   if (!columnWidth) throw new Error('Window must be a child of WindowManager');
   if (!show) return null;
 
+  let fullscreenprops = {};
+  if (fullScreen) {
+    fullscreenprops = {
+      width: '100%',
+      height: '100%',
+      position: 'fixed',
+      zIndex: 1200,
+      top: 0,
+      left: 0,
+    };
+  }
+
   return (
     <Box
       sx={{
@@ -160,16 +172,17 @@ const Window = ({
         pointerEvents: 'auto',
         display: 'flex',
         flexDirection: 'column',
-        height: fullScreen ? '100vh' : height,
-        maxHeight: '100%',
+        height: height,
+        maxHeight: '100vh',
         overflow: 'auto',
         border: '1px solid black',
         // width: fullScreen ? '100%' : '100%',
-        width: fullScreen ? '100%' : width,
+        width: width,
         backgroundColor: 'white',
         borderRadius: height == '100%' ? 0 : 4,
         // p: 1,
         // m: 1,
+        ...fullscreenprops,
       }}
     >
       <Box

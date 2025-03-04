@@ -1,5 +1,4 @@
 import {Box} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';
@@ -39,6 +38,7 @@ import {
 import {useMapUtilityStore} from '~/state/store';
 import {useUser} from '~/features/auth/useUser';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
+import {AppContext} from '~/state/contexts';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
@@ -57,7 +57,7 @@ interface LocItems {
 }
 
 interface MapProps {
-  clickCallback?: (data: NotificationMap | BoreholeMapData) => void;
+  clickCallback?: (data: NotificationMap | BoreholeMapData | null) => void;
 }
 
 // type TaskStyling = 'upcoming' | '';
@@ -462,11 +462,15 @@ const Map = ({clickCallback}: MapProps) => {
           actions={getDrawerActions(selectedMarker)}
         >
           {selectedMarker && 'notification_id' in selectedMarker && (
-            <SensorContent data={selectedMarker} />
+            <AppContext.Provider value={{loc_id: selectedMarker.loc_id}}>
+              <SensorContent />
+            </AppContext.Provider>
           )}
           {selectedMarker == null && <LegendContent />}
           {selectedMarker && 'boreholeno' in selectedMarker && user?.boreholeAccess && (
-            <BoreholeContent data={selectedMarker} />
+            <AppContext.Provider value={{boreholeno: selectedMarker.boreholeno}}>
+              <BoreholeContent />
+            </AppContext.Provider>
           )}
         </DrawerComponent>
       </Box>

@@ -52,7 +52,7 @@ interface LocItems {
 }
 
 interface MapProps {
-  clickCallback?: (data: NotificationMap | BoreholeMapData) => void;
+  clickCallback?: (data: NotificationMap | BoreholeMapData | null) => void;
 }
 
 // type TaskStyling = 'upcoming' | '';
@@ -176,11 +176,11 @@ const Map = ({clickCallback}: MapProps) => {
     defaultContextmenuItems,
   } = useMap('test', data, contextmenuItems, clickCallback);
 
-  useEffect(() => {
-    if (map) {
-      new LassoControl({position: 'topleft'}).addTo(map);
-    }
-  }, [map]);
+  // useEffect(() => {
+  //   if (map) {
+  //     new LassoControl({position: 'bottomleft'}).addTo(map);
+  //   }
+  // }, [map]);
 
   const createBoreholeMarker = (element: BoreholeMapData) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
@@ -402,7 +402,7 @@ const Map = ({clickCallback}: MapProps) => {
         message="Vælg venligst hvor parkeringen skal oprettes."
         handleOpret={() => null}
       />
-      <Box position={'absolute'} zIndex={401} p={1} width={'100%'} mr={6}>
+      <Box position={'absolute'} zIndex={401} p={0} width={'100%'} mr={2}>
         <SearchAndFilterMap
           data={data}
           setData={setFilteredData}
@@ -411,21 +411,6 @@ const Map = ({clickCallback}: MapProps) => {
       </Box>
       <Box display="flex" position="relative" flexGrow={1}>
         <Box id="test" position="absolute" sx={{height: '100%', width: '100%'}} />
-        {/* <DrawerComponent
-          key={getDrawerHeader()}
-          enableFull={selectedMarker != null ? true : false}
-          isMarkerSelected={selectedMarker !== null}
-          header={getDrawerHeader()}
-          actions={getDrawerActions(selectedMarker)}
-        >
-          {selectedMarker && 'notification_id' in selectedMarker && (
-            <SensorContent data={selectedMarker} />
-          )}
-          {selectedMarker == null && <LegendContent />}
-          {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
-            <BoreholeContent data={selectedMarker} />
-          )}
-        </DrawerComponent> */}
       </Box>
     </>
   );

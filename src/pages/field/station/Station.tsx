@@ -1,11 +1,10 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import AutoGraphIcon from '@mui/icons-material/AutoGraph';
-import {Box, Divider, IconButton, Typography} from '@mui/material';
+import {Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
 import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import NavBar from '~/components/NavBar';
@@ -18,15 +17,13 @@ import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useDisplayStation} from '~/hooks/ui';
+import {useDisplayState} from '~/hooks/ui';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import EditStamdata from '~/pages/field/station/stamdata/EditStamdata';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
-import {useAtom} from 'jotai';
-import {fullScreenAtom} from '~/state/atoms';
 
 export default function Station() {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -158,8 +155,7 @@ const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
   const {adminKvalitetssikring, createStamdata} = useNavigationFunctions();
-  const {setTsId} = useDisplayStation();
-  const [fullScreen, setFullScreen] = useAtom(fullScreenAtom);
+  const setTsId = useDisplayState((state) => state.setTsId);
   return (
     <>
       <NavBar>
@@ -197,15 +193,12 @@ const Layout = ({children}: LayoutProps) => {
               },
             ]}
           />
-          <IconButton
-            color="inherit"
+
+          <NavBar.Close
             onClick={() => {
-              setFullScreen((prev) => !prev);
+              setTsId(null);
             }}
-          >
-            {fullScreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
-          </IconButton>
-          <NavBar.Close onClick={() => setTsId(null)} />
+          />
         </Box>
       </NavBar>
       <main style={{flexGrow: 1, overflow: 'auto'}}>

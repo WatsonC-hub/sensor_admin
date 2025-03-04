@@ -15,7 +15,7 @@ const BoreholeContent = () => {
   const {boreholeIntake} = useNavigationFunctions();
 
   if (data === undefined) {
-    return <Typography>Loading...</Typography>;
+      return <Typography>Loading...</Typography>;
   }
 
   const maxStatus = Math.max(...data.status);

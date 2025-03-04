@@ -51,15 +51,15 @@ function SensorField() {
       if (resp.loc_id) {
         if (resp.ts_id) {
           // navigate(`/field/location/${resp.loc_id}/${resp.ts_id}`, {replace: true});
-          station(resp.loc_id, resp.ts_id, options);
+          station(resp.ts_i);
         } else {
           // navigate(`/field/location/${resp.loc_id}`, {replace: true});
-          location(resp.loc_id, options);
+          location(resp.loc_id);
         }
       } else if (resp.boreholeno) {
         if (resp.intakeno) {
           // navigate(`/field/borehole/${resp.boreholeno}/${resp.intakeno}`, {replace: true});
-          boreholeIntake(resp.boreholeno, resp.intakeno, options);
+          boreholeIntake(resp.boreholeno, resp.intakeno);
         } else {
           // navigate(`/field/borehole/${resp.boreholeno}`, {replace: true});
           borehole(resp.boreholeno, options);

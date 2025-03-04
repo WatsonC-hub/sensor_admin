@@ -16,15 +16,9 @@ import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import {useRawTaskStore} from '../store';
 import {metadataQueryOptions} from '~/hooks/query/useMetadata';
 import {useQuery} from '@tanstack/react-query';
-import {
-  useDisplayBoreholeInfo,
-  useDisplayBoreholePage,
-  useDisplayLocationInfo,
-  useDisplayStation,
-} from '~/hooks/ui';
+import {useDisplayState} from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
-import {useAtomValue} from 'jotai';
-import {fullScreenAtom} from '~/state/atoms';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {BoreholeMapData} from '~/types';
@@ -34,22 +28,27 @@ const TasksOverview = () => {
     state.selectedTaskId,
     state.setSelectedTask,
   ]);
-  const {loc_id, setLocId, closeLocation} = useDisplayLocationInfo();
-  const {ts_id} = useDisplayStation();
-  const {boreholeno, setBoreholeNo} = useDisplayBoreholeInfo();
-  const {intakeno, setIntakeNo} = useDisplayBoreholePage();
+
+  const {loc_id, setLocId, ts_id, closeLocation, boreholeno, setBoreholeNo, intakeno} =
+    useDisplayState((state) => state);
+
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
-  const fullScreen = useAtomValue(fullScreenAtom);
+  const {isMobile} = useBreakpoints();
 
-  const clickCallback = (data: NotificationMap | BoreholeMapData) => {
+  const clickCallback = (data: NotificationMap | BoreholeMapData | null) => {
+    if (data === null) {
+      setLocId(null);
+      setBoreholeNo(null);
+      return;
+    }
+
     if ('loc_id' in data) {
       // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
       setLocId(data.loc_id);
     } else if ('boreholeno' in data) {
       setBoreholeNo(data.boreholeno);
     }
-    // setSelectedData(data);
   };
 
   return (
@@ -138,7 +137,7 @@ const TasksOverview = () => {
             show={boreholeno !== null && intakeno !== null}
             minSize={2}
             maxSize={4}
-            onClose={() => setIntakeNo(null)}
+            fullScreen={isMobile}
             height="100%"
           >
             <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
@@ -151,8 +150,7 @@ const TasksOverview = () => {
             show={ts_id !== null}
             minSize={2}
             maxSize={3}
-            fullScreen={fullScreen}
-            onClose={() => setSelectedTask(null)}
+            fullScreen={isMobile}
             height="100%"
           >
             <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>

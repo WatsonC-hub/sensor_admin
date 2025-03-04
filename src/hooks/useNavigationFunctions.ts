@@ -3,19 +3,20 @@ import {useMemo} from 'react';
 import {NavigateOptions, useNavigate} from 'react-router-dom';
 
 import {ID} from '~/features/tasks/types';
-import {
-  useDisplayBoreholeInfo,
-  useDisplayBoreholePage,
-  useDisplayLocationInfo,
-  useDisplayStation,
-} from './ui';
+import {useDisplayState} from './ui';
 
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
-  const {setLocId} = useDisplayLocationInfo();
-  const {setTsId} = useDisplayStation();
-  const {setBoreholeNo} = useDisplayBoreholeInfo();
-  const {setIntakeNo} = useDisplayBoreholePage();
+
+  const {setLocId, setTsId, setBoreholeNo, setIntakeNo} = useDisplayState((state) => {
+    return {
+      setLocId: state.setLocId,
+      setTsId: state.setTsId,
+      setBoreholeNo: state.setBoreholeNo,
+      setIntakeNo: state.setIntakeNo,
+    };
+  });
+
   const homeFunctions = {
     home: () => navigate('/'),
     register: () => navigate('/register'),
@@ -45,12 +46,6 @@ export const useNavigationFunctions = () => {
     field: () => navigate('/field'),
     location: (loc_id: number) => setLocId(loc_id),
     station: (ts_id: number) => setTsId(ts_id),
-    // navigate(
-    //   {
-    //     pathname: FieldPage,
-    //   },
-    //   options
-    // ),
 
     stamdata: (
       loc_id: number,

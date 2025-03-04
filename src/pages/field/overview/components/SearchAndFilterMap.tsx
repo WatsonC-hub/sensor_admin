@@ -233,7 +233,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         )}
         sx={{
           width: isTouch ? '90%' : 300,
-          marginLeft: '5%',
+          marginLeft: '16px',
           marginBottom: '12px',
           marginTop: '12px',
         }}

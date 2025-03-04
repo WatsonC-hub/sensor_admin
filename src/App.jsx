@@ -11,10 +11,11 @@ import UnAuntenticatedApp from '~/UnauthenticatedApp';
 import useBreakpoints from './hooks/useBreakpoints';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import {useUser} from './features/auth/useUser';
+import DisplayStateProvider from './helpers/DisplayStateProvider';
 
 function App() {
   const {field} = useNavigationFunctions();
-
+  console.log('App.jsx: field', field);
   const {isMobile} = useBreakpoints();
   const user = useUser();
 
@@ -69,7 +70,9 @@ function App() {
       }}
     >
       <Suspense fallback={<LoadingSkeleton />}>
-        <Redirecter />
+        <DisplayStateProvider>
+          <Redirecter />
+        </DisplayStateProvider>
       </Suspense>
     </ErrorBoundary>
   );

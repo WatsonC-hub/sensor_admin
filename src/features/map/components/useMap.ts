@@ -7,6 +7,7 @@ import {useAtom} from 'jotai';
 import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
+import './L.basemapControl';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
@@ -42,7 +43,7 @@ const useMap = <TData extends object>(
   id: string,
   data: Array<TData>,
   contextmenuItems: Array<L.ContextMenuItem>,
-  selectCallback?: (data: TData) => void
+  selectCallback?: (data: TData | null) => void
 ) => {
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -137,14 +138,14 @@ const useMap = <TData extends object>(
     const map = L.map(id, {
       center: pan || [56.215868, 8.228759],
       zoom: zoom || 7,
-      layers: [outdormapbox],
+      // layers: [outdormapbox],
       tapHold: false,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
     });
 
-    map.zoomControl.setPosition('topleft');
+    map.zoomControl.setPosition('bottomright');
 
     map.pm.setLang('da');
 
@@ -155,16 +156,13 @@ const useMap = <TData extends object>(
       strings: {title: 'Find mig'},
       circleStyle: {interactive: false},
       locateOptions: {enableHighAccuracy: true},
-      position: 'topleft',
+      position: 'bottomright',
     }).addTo(map);
 
-    const baseMaps = {
-      OpenStreetMap: outdormapbox,
-      'DTK Skærmkort dæmpet': toposkaermkortwmts,
-      Satelit: satelitemapbox,
-    };
-
-    L.control.layers(baseMaps, {}, {position: 'topleft'}).addTo(map);
+    L.basemapControl({
+      position: 'bottomleft',
+      layers: [{layer: outdormapbox}, {layer: satelitemapbox}],
+    }).addTo(map);
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
@@ -176,6 +174,7 @@ const useMap = <TData extends object>(
   const onMapClickEvent = (map: L.Map) => {
     map.on('click', function (e) {
       setSelectedMarkerWithCallback(null);
+      if (selectCallback) selectCallback(null);
       if (hightlightedMarker) {
         hightlightedMarker.setStyle(defaultCircleMarkerStyle);
         highlightParking(hightlightedMarker.options.data.loc_id, false);
