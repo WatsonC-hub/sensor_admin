@@ -29,6 +29,7 @@ export const usePermissionsQueryOptions = (loc_id?: number) => {
       const {data} = await apiClient.get<LocationPermissions>(
         `/auth/me/location_permissions/${loc_id}`
       );
+      console.log(data);
       return data;
     },
     enabled: loc_id !== undefined,
@@ -40,7 +41,25 @@ const usePermissions = (loc_id?: number) => {
 
   const feature_permission_query = useQuery(usePermissionsQueryOptions(loc_id));
 
-  return {borehole_permission_query, feature_permission_query};
+  const {data} = feature_permission_query;
+  const location_permissions =
+    data && Object.values(data).length > 0
+      ? Object.values(data).some((v) => v === 'edit')
+      : data && Object.values(data).length === 0
+        ? false
+        : undefined;
+
+  console.log('location_permissions', location_permissions);
+
+  return {
+    borehole_permission_query,
+    feature_permission_query,
+    location_permissions: location_permissions
+      ? 'edit'
+      : location_permissions === false
+        ? 'read'
+        : undefined,
+  };
 };
 
 export default usePermissions;

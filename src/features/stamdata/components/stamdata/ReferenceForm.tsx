@@ -128,10 +128,10 @@ export default function ReferenceForm() {
         <FabWrapper
           icon={<AddCircle />}
           text="Tilføj målepunkt"
+          disabled={disabled}
           onClick={() => {
             setShowForm(true);
           }}
-          disabled={permissions?.[ts_id] !== 'edit'}
           sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
         />
       </Box>
