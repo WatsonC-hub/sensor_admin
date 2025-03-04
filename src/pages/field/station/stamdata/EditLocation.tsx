@@ -85,23 +85,21 @@ const EditLocation = () => {
     <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
         <LocationForm mode="normal" />
-        <footer>
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button bttype="tertiary" onClick={() => reset(defaultValues)}>
-              Annuller
-            </Button>
+        <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <Button bttype="tertiary" onClick={() => reset(defaultValues)}>
+            Annuller
+          </Button>
 
-            <Button
-              bttype="primary"
-              disabled={!isDirty || !isValid}
-              onClick={formMethods.handleSubmit(handleSubmit)}
-              startIcon={<SaveIcon />}
-              sx={{marginRight: 1}}
-            >
-              Gem
-            </Button>
-          </Box>
-        </footer>
+          <Button
+            bttype="primary"
+            disabled={!isDirty || !isValid}
+            onClick={formMethods.handleSubmit(handleSubmit)}
+            startIcon={<SaveIcon />}
+            sx={{marginRight: 1}}
+          >
+            Gem
+          </Button>
+        </Box>
       </FormProvider>
     </Box>
   );

@@ -1,5 +1,4 @@
 import {Box} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol';

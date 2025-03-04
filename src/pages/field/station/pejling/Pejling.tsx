@@ -116,12 +116,14 @@ const Pejling = () => {
 
   return (
     <>
-      <PlotGraph
-        key={'pejling' + ts_id}
-        dynamicMeasurement={
-          pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
-        }
-      />
+      <Box>
+        <PlotGraph
+          key={'pejling' + ts_id}
+          dynamicMeasurement={
+            pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
+          }
+        />
+      </Box>
       <Divider />
       <StationPageBoxLayout>
         <LatestMeasurementTable

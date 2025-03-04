@@ -33,6 +33,8 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
 import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useUser} from '~/features/auth/useUser';
 
 const drawerWidth = 240;
 
@@ -42,113 +44,18 @@ type Item = {
   page: StationPages;
   icon: ReactNode;
   requiredTsId: boolean;
+  calculated?: boolean;
+  admin?: boolean;
+  contactAndKeyAccess?: boolean;
+  ressourceAccess?: boolean;
 };
 
 type DrawerItems = {
   text?: string;
   items: Item[];
+  admin?: boolean;
+  calculated?: boolean;
 };
-
-const items: DrawerItems[] = [
-  {
-    text: 'Tidsserie',
-    items: [
-      {
-        text: 'Generelt',
-        page: 'generelt tidsserie',
-        icon: <QuestionMarkIcon />,
-        requiredTsId: true,
-      },
-      {
-        text: 'Pejling',
-        page: 'pejling',
-        icon: <AddCircle />,
-        requiredTsId: false,
-      },
-      {
-        text: 'Tilsyn',
-        page: 'tilsyn',
-        icon: <PlaylistAddCheck />,
-        requiredTsId: true,
-      },
-      {
-        text: 'Målepunkt',
-        page: 'målepunkt',
-        icon: <StraightenRounded />,
-        requiredTsId: true,
-      },
-    ],
-  },
-  {
-    text: 'Udstyr',
-    items: [
-      {
-        text: 'Generelt',
-        page: 'generelt udstyr',
-        icon: <QuestionMarkIcon />,
-        requiredTsId: true,
-      },
-      {
-        text: 'Sendeinterval',
-        page: 'sendeinterval',
-        icon: <ScheduleSendIcon />,
-        requiredTsId: true,
-      },
-    ],
-  },
-  {
-    text: 'Lokation',
-    items: [
-      {
-        text: 'Generelt',
-        page: 'generelt lokation',
-        icon: <QuestionMarkIcon />,
-        requiredTsId: false,
-      },
-      {
-        text: 'Kontakter',
-        page: 'kontakter',
-        icon: <PersonIcon />,
-        requiredTsId: false,
-      },
-      {
-        text: 'Nøgler',
-        page: 'nøgler',
-        icon: <KeyIcon />,
-        requiredTsId: false,
-      },
-      {
-        text: 'Huskeliste',
-        page: 'huskeliste',
-        icon: <BackpackIcon />,
-        requiredTsId: false,
-      },
-      {
-        text: 'Billeder',
-        page: 'billeder',
-        icon: <PhotoLibraryRounded />,
-        requiredTsId: false,
-      },
-    ],
-  },
-  {
-    text: 'Kvalitetssikring',
-    items: [
-      {
-        text: 'Justeringer',
-        page: 'justeringer',
-        icon: <QueryStatsIcon />,
-        requiredTsId: true,
-      },
-      {
-        text: 'Algoritmer',
-        page: 'algoritmer',
-        icon: <FunctionsIcon />,
-        requiredTsId: true,
-      },
-    ],
-  },
-];
 
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
@@ -158,6 +65,8 @@ const StationDrawer = () => {
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const {isMobile, isMonitor} = useBreakpoints();
+  const {data: metadata} = useTimeseriesData();
+  const user = useUser();
 
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -165,27 +74,135 @@ const StationDrawer = () => {
 
   const open = isMonitor || openAtom;
 
-  /**
-   * Loop alle kategorier igennem og genere items for hver kategori
-   * Loop items igennem og generer en ListItem for hver side
-   * Hvis siden er valgt, så vises den med en anden farve
-   * Hvis telefon: skift navbar backspace med menu - Se station.tsx
-   * Hvis Desktop vises menuen altid i rail eller full width
-   * Clickawaylistener lukker menuen hvis der klikkes udenfor
-   */
-  const drawerItems = items
+  const items: DrawerItems[] = [
+    {
+      text: 'Tidsserie',
+      items: [
+        {
+          text: 'Generelt',
+          page: 'generelt tidsserie',
+          icon: <QuestionMarkIcon />,
+          requiredTsId: true,
+        },
+        {
+          text: 'Pejling',
+          page: 'pejling',
+          icon: <AddCircle />,
+          requiredTsId: false,
+        },
+        {
+          text: 'Tilsyn',
+          page: 'tilsyn',
+          icon: <PlaylistAddCheck />,
+          requiredTsId: true,
+          calculated: metadata?.calculated,
+        },
+        {
+          text: 'Målepunkt',
+          page: 'målepunkt',
+          icon: <StraightenRounded />,
+          requiredTsId: true,
+        },
+      ],
+    },
+    {
+      text: 'Udstyr',
+      items: [
+        {
+          text: 'Generelt',
+          page: 'generelt udstyr',
+          icon: <QuestionMarkIcon />,
+          requiredTsId: true,
+        },
+        {
+          text: 'Sendeinterval',
+          page: 'sendeinterval',
+          icon: <ScheduleSendIcon />,
+          requiredTsId: true,
+        },
+      ],
+    },
+    {
+      text: 'Lokation',
+      items: [
+        {
+          text: 'Generelt',
+          page: 'generelt lokation',
+          icon: <QuestionMarkIcon />,
+          requiredTsId: false,
+        },
+        {
+          text: 'Kontakter',
+          page: 'kontakter',
+          icon: <PersonIcon />,
+          requiredTsId: false,
+          contactAndKeyAccess: user?.contactAndKeysPermission,
+        },
+        {
+          text: 'Nøgler',
+          page: 'nøgler',
+          icon: <KeyIcon />,
+          requiredTsId: false,
+          contactAndKeyAccess: user?.contactAndKeysPermission,
+        },
+        {
+          text: 'Huskeliste',
+          page: 'huskeliste',
+          icon: <BackpackIcon />,
+          requiredTsId: false,
+          ressourceAccess: user?.ressourcePermission,
+        },
+        {
+          text: 'Billeder',
+          page: 'billeder',
+          icon: <PhotoLibraryRounded />,
+          requiredTsId: false,
+        },
+      ],
+    },
+    {
+      text: 'Kvalitetssikring',
+      admin: user?.QAPermission,
+      calculated: metadata?.calculated,
+      items: [
+        {
+          text: 'Justeringer',
+          page: 'justeringer',
+          icon: <QueryStatsIcon />,
+          requiredTsId: true,
+        },
+        {
+          text: 'Algoritmer',
+          page: 'algoritmer',
+          icon: <FunctionsIcon />,
+          requiredTsId: true,
+        },
+      ],
+    },
+  ];
+
+  const filteredItems = items
     .filter((category) =>
       category.items.some((item) => (!ts_id && !item.requiredTsId ? true : ts_id))
     )
-    .map((category) => {
-      return (
-        <>
-          {open && (
-            <ListItem key={category.text} sx={{borderRadius: '9999px'}}>
-              <ListItemText sx={{color: 'white'}} primary={category.text} />
-            </ListItem>
-          )}
-          {category.items.map((item) => {
+    .filter((category) => category.admin !== false && category.calculated !== true);
+
+  const drawerItems = filteredItems.map((category) => {
+    return (
+      <>
+        {open && (
+          <ListItem key={category.text} sx={{borderRadius: '9999px'}}>
+            <ListItemText sx={{color: 'white'}} primary={category.text} />
+          </ListItem>
+        )}
+        {category.items
+          .filter(
+            (item) =>
+              item.contactAndKeyAccess !== false &&
+              item.ressourceAccess !== false &&
+              (item.calculated === undefined || item.calculated === false)
+          )
+          .map((item) => {
             if (!ts_id && item.requiredTsId) {
               return;
             }
@@ -222,10 +239,10 @@ const StationDrawer = () => {
               </ListItem>
             );
           })}
-          {items.indexOf(category) !== items.length - 1 && <Divider />}
-        </>
-      );
-    });
+        {filteredItems.indexOf(category) !== filteredItems.length - 1 && <Divider />}
+      </>
+    );
+  });
 
   if (isMobile) {
     return (

@@ -13,6 +13,7 @@ export const stationPages = {
   UDSTYR: 'udstyr',
   ALGORITHMS: 'algoritmer',
   JUSTERINGER: 'justeringer',
+  STAMDATA: 'stamdata',
 } as const satisfies Record<string, string>;
 
 export type StationPages = (typeof stationPages)[keyof typeof stationPages];

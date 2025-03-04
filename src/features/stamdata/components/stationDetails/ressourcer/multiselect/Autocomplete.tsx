@@ -42,13 +42,6 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
 
   useEffect(() => {
     if (value && options && options.length > 0 && !related) {
-      // if (value.length === 0) {
-      //   // const test = options.filter(
-      //   //   (ressource) =>
-      //   //     (ressource.loctype_id && ressource.loctype_id.includes(loctype_id)) ||
-      //   //     (ressource.tstype_id && ressource.tstype_id.includes(tstype_id))
-      //   // );
-      // }
       setSelected(value);
     }
   }, [options, value, related]);
@@ -94,7 +87,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             value={selected}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
-            PopperComponent={(props) => <Popper {...props} placement="top" />}
+            PopperComponent={(props) => <Popper {...props} placement="bottom" />}
             componentsProps={{
               popper: {
                 modifiers: [

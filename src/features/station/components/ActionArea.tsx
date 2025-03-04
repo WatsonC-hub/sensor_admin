@@ -11,7 +11,7 @@ import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters
 import {useAppContext} from '~/state/contexts';
 
 export default function ActionArea() {
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {data: ts_list} = useStationList(loc_id);
   const {data: metadata} = useTimeseriesData(ts_id);
   const isCalculated = metadata?.calculated ?? false;

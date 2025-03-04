@@ -1,4 +1,4 @@
-import {Box, Divider, Grid, Skeleton, Typography} from '@mui/material';
+import {Box, Divider, Skeleton, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
@@ -16,7 +16,6 @@ import CustomSpeedDial from '~/components/CustomSpeedDial';
 import {Verified, Delete} from '@mui/icons-material';
 import {DialAction} from '~/types';
 import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
-import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useSetAtom} from 'jotai';
 import {
   initiateConfirmTimeseriesAtom,
@@ -26,6 +25,7 @@ import {
 import StepWizard from '../wizard/StepWizard';
 import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -169,26 +169,21 @@ export default function QAHistory() {
 
   return (
     <>
-      <Box display={'flex'} flexDirection={'row'} sx={{marginBottom: 0.5}}>
-        <Grid container direction={isMobile ? 'column-reverse' : 'row'}>
-          <Grid item tablet={10}>
-            <PlotGraph ts_id={ts_id} />
-          </Grid>
-          <Grid item tablet={1}>
-            <DataToShow />
-          </Grid>
-        </Grid>
-        <Divider />
+      <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
+        <Box width={'100%'}>
+          <PlotGraph ts_id={ts_id} />
+        </Box>
+        <DataToShow />
+      </Box>
+      <Divider />
+      <StationPageBoxLayout>
+        <StepWizard />
+        <Box width={'100%'} m="auto" borderRadius={4}>
+          <Typography variant="h5">Aktive justeringer</Typography>
+          <AdjustmentDataTable data={data} />
+        </Box>
         <CustomSpeedDial actions={speedDialActions} />
-      </Box>
-      <Box maxWidth={isMobile ? '100%' : 1080}>
-        <StationPageBoxLayout>
-          <StepWizard />
-          <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
-            <AdjustmentDataTable data={data} />
-          </Grid>
-        </StationPageBoxLayout>
-      </Box>
+      </StationPageBoxLayout>
     </>
   );
 }

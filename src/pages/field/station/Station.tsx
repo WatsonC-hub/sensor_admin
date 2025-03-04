@@ -1,6 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import {Box, Typography} from '@mui/material';
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
@@ -13,7 +13,6 @@ import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer
 import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
-import StationDrawer from '~/features/station/components/StationDrawer';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -26,6 +25,8 @@ import EditTimeseries from './stamdata/EditTimeseries';
 import EditLocation from './stamdata/EditLocation';
 import ImagePage from './stamdata/ImagePage';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import StationDrawer from '~/features/station/components/StationDrawer';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -42,7 +43,7 @@ export default function Station() {
   return (
     <Layout>
       {pageToShow === 'pejling' && ts_id !== -1 && <Pejling />}
-      {pageToShow === 'tilsyn' && <Tilsyn />}
+      {pageToShow === 'tilsyn' && !metadata?.calculated && <Tilsyn />}
       {pageToShow === 'generelt udstyr' && (
         <StationPageBoxLayout>
           <EditUnit />
@@ -58,23 +59,23 @@ export default function Station() {
           <EditTimeseries />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'algoritmer' && (
+      {pageToShow === 'algoritmer' && user?.QAPermission && (
         <StationPageBoxLayout>
           <Algorithms />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'justeringer' && <QAHistory />}
+      {pageToShow === 'justeringer' && user?.QAPermission && <QAHistory />}
       {pageToShow === 'målepunkt' && (
         <StationPageBoxLayout>
           <ReferenceForm />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'nøgler' && (
+      {pageToShow === 'nøgler' && user?.contactAndKeysPermission && (
         <StationPageBoxLayout>
           <LocationAccess />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'kontakter' && (
+      {pageToShow === 'kontakter' && user?.contactAndKeysPermission && (
         <StationPageBoxLayout>
           <ContactInfo />
         </StationPageBoxLayout>
@@ -128,8 +129,8 @@ const Layout = ({children}: LayoutProps) => {
         </Box>
       </NavBar>
       <Box component="main" sx={{flexGrow: 1, display: 'flex', flexDirection: 'row'}}>
-        {/* <StationDrawer /> */}
-        <Box display="flex" flexGrow={1} gap={1} flexDirection={'column'}>
+        <StationDrawer />
+        <Box display="flex" width={'100%'} flexGrow={1} gap={1} flexDirection={'column'}>
           {children}
           {isMobile && <ActionArea />}
         </Box>

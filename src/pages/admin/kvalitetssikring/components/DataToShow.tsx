@@ -15,7 +15,7 @@ export default function DataToShow() {
   };
 
   return (
-    <FormGroup row={isMobile} sx={{ml: 2, justifyContent: 'space-around'}}>
+    <FormGroup row={isMobile} sx={{ml: 2}}>
       {Object.keys(dataToShow).map((key) => (
         <Box key={key} width={isMobile ? '50%' : '100%'}>
           <FormControlLabel

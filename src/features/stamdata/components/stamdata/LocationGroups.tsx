@@ -48,6 +48,7 @@ const LocationGroups = ({
       sx={{
         marginTop: '8px',
         marginBottom: '4px',
+        pb: 1.5,
       }}
       freeSolo
       forcePopupIcon={false}

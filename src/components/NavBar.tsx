@@ -28,6 +28,7 @@ import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom, drawerOpenAtom} from '~/state/atoms';
 
 import Button from './Button';
+import {useNavigate} from 'react-router-dom';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -229,14 +230,13 @@ const StationDrawerMenu = () => {
 };
 
 const GoBack = () => {
-  // const navigate = useNavigate();
-  const setDrawerOpen = useSetAtom(drawerOpenAtom);
+  const navigate = useNavigate();
 
   return (
     <IconButton
       color="inherit"
       onClick={() => {
-        setDrawerOpen(true);
+        navigate(-1);
       }}
       size="large"
     >

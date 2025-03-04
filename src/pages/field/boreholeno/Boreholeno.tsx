@@ -10,6 +10,7 @@ import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import MaalepunktForm from '~/components/MaalepunktForm';
 import SaveImageDialog from '~/components/SaveImageDialog';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
@@ -36,6 +37,10 @@ const Boreholeno = () => {
   const {isMobile, isTouch} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
+
+  const {
+    borehole_permission_query: {data: permissions},
+  } = usePermissions();
 
   const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
     gid: -1,
@@ -138,7 +143,7 @@ const Boreholeno = () => {
   };
 
   const openAddMP = () => {
-    setPageToShow('maalepunkt');
+    setPageToShow('målepunkt');
     setShowForm(true);
   };
 
@@ -324,7 +329,7 @@ const Boreholeno = () => {
             }
           />
         )}
-        {pageToShow === 'maalepunkt' && (
+        {pageToShow === 'målepunkt' && (
           <Box
             sx={{
               display: 'flex',
@@ -352,7 +357,7 @@ const Boreholeno = () => {
             )}
           </Box>
         )}
-        {pageToShow === 'maalepunkt' && (
+        {pageToShow === 'målepunkt' && (
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <MaalepunktTable
               watlevmp={watlevmp}
@@ -366,8 +371,9 @@ const Boreholeno = () => {
                 setShowForm(true);
                 resetMpData();
               }}
+              disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
               sx={{
-                visibility: pageToShow === 'maalepunkt' && showForm === null ? 'visible' : 'hidden',
+                visibility: pageToShow === 'målepunkt' && showForm === null ? 'visible' : 'hidden',
               }}
             />
           </Box>
@@ -386,6 +392,7 @@ const Boreholeno = () => {
                 resetPejlingData();
                 setShowForm(true);
               }}
+              disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
               sx={{
                 visibility:
                   pageToShow === stationPages.PEJLING && showForm === null ? 'visible' : 'hidden',
@@ -408,6 +415,7 @@ const Boreholeno = () => {
           <FabWrapper
             icon={<AddAPhotoRounded />}
             text="Tilføj billede"
+            disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
             onClick={() => {
               if (fileInputRef.current) fileInputRef.current.click();
             }}
