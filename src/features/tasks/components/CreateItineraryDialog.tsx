@@ -29,7 +29,6 @@ const CreateItineraryDialog = ({ids, dialogOpen, setDialogOpen}: CreateItinerary
     setDialogOpen(false);
   };
 
-  console.log(selectedTasks);
   const onSubmit = (data: FormValues) => {
     if (selectedTasks) {
       //   const lowestDate = selectedTasks.reduce((acc, curr) => {

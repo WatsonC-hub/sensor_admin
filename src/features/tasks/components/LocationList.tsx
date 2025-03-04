@@ -1,6 +1,5 @@
 import {Box} from '@mui/material';
 import React from 'react';
-import Button from '~/components/Button';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {useDisplayState} from '~/hooks/ui';
 

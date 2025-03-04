@@ -20,6 +20,7 @@ import {useDisplayState} from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import LocationList from './LocationList';
+import TaskItiniaries from './TaskItiniaries';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {BoreholeMapData} from '~/types';
@@ -29,6 +30,8 @@ const TasksOverview = () => {
     state.selectedTaskId,
     state.setSelectedTask,
   ]);
+
+  console.log('selectedTask', selectedTask);
 
   const {
     loc_id,
@@ -103,7 +106,9 @@ const TasksOverview = () => {
             }}
             height="100%"
           >
-            <Box p={1}>Trips</Box>
+            <Box p={1}>
+              <TaskItiniaries />
+            </Box>
           </WindowManager.Window>
           <WindowManager.Window
             key="locationlist"

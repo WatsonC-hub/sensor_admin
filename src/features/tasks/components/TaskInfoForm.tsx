@@ -1,4 +1,4 @@
-import {Delete} from '@mui/icons-material';
+import {Delete, DragHandle} from '@mui/icons-material';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
@@ -20,6 +20,7 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useRawTaskStore} from '../store';
 
 // import {useTaskStore} from '../api/useTaskStore';
 
@@ -29,7 +30,7 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  // const {setIsDraggingTask} = useTaskStore();
+  const setIsDraggingTask = useRawTaskStore((state) => state.setIsDraggingTask);
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
@@ -107,7 +108,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   return (
     <Box display={'flex'} flexDirection={'column'} gap={2}>
       <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'}>
-        <Button bttype="tertiary" onClick={() => station(selectedTask.loc_id, selectedTask.ts_id)}>
+        <Button bttype="tertiary" onClick={() => station(selectedTask.ts_id)}>
           <Typography>Gå til tidsserie</Typography>
         </Button>
         <Button bttype="tertiary" onClick={() => adminKvalitetssikring(selectedTask.ts_id)}>
@@ -235,7 +236,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
       </Grid>
 
       <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={2}>
-        {/* <div
+        <div
           id="drag-handle"
           draggable
           style={{
@@ -257,8 +258,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             setIsDraggingTask(false);
           }}
         >
-          <DragHandleIcon fontSize="large" />
-        </div> */}
+          <DragHandle fontSize="large" />
+        </div>
 
         <Box>
           <Tooltip arrow title={deleteTaskTitle}>
