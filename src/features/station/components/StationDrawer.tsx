@@ -160,6 +160,7 @@ const StationDrawer = () => {
           onHover: () => {
             console.log('Nothing yet to prefetch');
           },
+          contactAndKeyAccess: user?.superUser,
         },
       ],
     },
@@ -260,7 +261,7 @@ const StationDrawer = () => {
     return (
       <>
         {open && (
-          <ListItem key={category.text} sx={{borderRadius: '9999px'}}>
+          <ListItem key={category.text} sx={{borderRadius: '9999px', pb: 0}}>
             <ListItemText sx={{color: 'white'}} primary={category.text} />
           </ListItem>
         )}
