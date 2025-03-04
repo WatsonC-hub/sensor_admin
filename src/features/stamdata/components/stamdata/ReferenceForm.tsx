@@ -26,9 +26,10 @@ export default function ReferenceForm() {
 
   const {
     feature_permission_query: {data: permissions},
+    location_permissions,
   } = usePermissions(loc_id);
 
-  const disabled = permissions?.[ts_id] !== 'edit';
+  const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
 
   const {
     get: {data: watlevmp},
