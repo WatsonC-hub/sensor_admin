@@ -17,6 +17,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
 
 import GenericCard from './GenericCard';
+import {useAppContext} from '~/state/contexts';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 type ImageCardProps = {
   image: Image;
@@ -25,6 +27,8 @@ type ImageCardProps = {
 };
 
 function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
+  const {loc_id} = useAppContext(['loc_id']);
+  const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -103,7 +107,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       {(image.loc_id || image.boreholeno) && (
         <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
           <Button
-            disabled={deleteMutation.isPending}
+            disabled={deleteMutation.isPending || location_permissions === undefined}
             onClick={() => setDialogOpen(true)}
             size="small"
             bttype="tertiary"
@@ -112,7 +116,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
               <CircularProgress />
             ) : (
               <Box display="flex" alignItems="center" gap={1}>
-                <Delete></Delete>
+                <Delete />
                 <Typography variant="body2" fontSize={14}>
                   Slet
                 </Typography>
@@ -120,7 +124,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
             )}
           </Button>
           <Button
-            disabled={deleteMutation.isPending}
+            disabled={deleteMutation.isPending || location_permissions === undefined}
             onClick={() => handleEdit(image)}
             size="small"
             bttype="primary"

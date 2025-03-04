@@ -88,7 +88,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
         ),
       },
     ],
-    [unit]
+    [unit, disabled, handleEdit]
   );
 
   const options: Partial<MRT_TableOptions<Maalepunkt>> = {

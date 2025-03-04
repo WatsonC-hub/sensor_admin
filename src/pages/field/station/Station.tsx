@@ -1,14 +1,9 @@
-import {AddAPhotoRounded} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
 import {Box, Typography} from '@mui/material';
-import moment from 'moment';
-import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useEffect, useState} from 'react';
 
-import FabWrapper from '~/components/FabWrapper';
-import Images from '~/components/Images';
 import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
-import SaveImageDialog from '~/components/SaveImageDialog';
 import {useUser} from '~/features/auth/useUser';
 import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import ReferenceForm from '~/features/stamdata/components/stamdata/ReferenceForm';
@@ -20,7 +15,6 @@ import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
