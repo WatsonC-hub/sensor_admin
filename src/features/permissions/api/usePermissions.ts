@@ -29,7 +29,6 @@ export const usePermissionsQueryOptions = (loc_id?: number) => {
       const {data} = await apiClient.get<LocationPermissions>(
         `/auth/me/location_permissions/${loc_id}`
       );
-      console.log(data);
       return data;
     },
     enabled: loc_id !== undefined,
@@ -48,8 +47,6 @@ const usePermissions = (loc_id?: number) => {
       : data && Object.values(data).length === 0
         ? false
         : undefined;
-
-  console.log('location_permissions', location_permissions);
 
   return {
     borehole_permission_query,
