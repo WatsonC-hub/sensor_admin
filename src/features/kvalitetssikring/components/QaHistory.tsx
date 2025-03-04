@@ -1,9 +1,7 @@
 import {Box, Divider, Skeleton, Typography} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
-import {apiClient} from '~/apiClient';
 import {navIconStyle, qaHistorySkeletonHeight} from '~/consts';
 import {AdjustmentTypes, qaAdjustment} from '~/helpers/EnumHelper';
 import {useAppContext} from '~/state/contexts';
@@ -26,6 +24,7 @@ import StepWizard from '../wizard/StepWizard';
 import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
+import useQAHistory from '../api/useQAHistory';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -39,47 +38,7 @@ export default function QAHistory() {
     get: {data: certify},
   } = useCertifyQa(ts_id);
 
-  const {data, isPending} = useQuery({
-    queryKey: ['qa_all', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/qa_all/${ts_id}`);
-      return data;
-    },
-    select: (data) => {
-      const out = [];
-
-      data.levelcorrection.forEach((item: any) => {
-        out.push({
-          data: item,
-          type: AdjustmentTypes.LEVELCORRECTION,
-        });
-      });
-
-      data.dataexclude.forEach((item: any) => {
-        if (item.max_value == null) {
-          out.push({
-            data: item,
-            type: AdjustmentTypes.EXLUDETIME,
-          });
-        } else {
-          out.push({
-            data: item,
-            type: AdjustmentTypes.EXLUDEPOINTS,
-          });
-        }
-      });
-      if (data.min_max_cutoff) {
-        out.push({
-          data: data.min_max_cutoff,
-          type: AdjustmentTypes.MINMAX,
-        });
-      }
-
-      return out;
-    },
-    enabled: typeof ts_id == 'number',
-    refetchOnWindowFocus: false,
-  });
+  const {data, isPending} = useQAHistory(ts_id);
 
   speedDialActions.push(
     {

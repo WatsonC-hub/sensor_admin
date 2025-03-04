@@ -67,12 +67,6 @@ export const pejlingGetOptions = (ts_id: number | undefined) =>
       );
 
       return data;
-      // return data.map((m) => {
-      //   return {
-      //     ...m,
-      //     timeofmeas: moment(m.timeofmeas).format('YYYY-MM-DD HH:mm:ss'),
-      //   };
-      // });
     },
     enabled: ts_id !== null && ts_id !== undefined,
   });

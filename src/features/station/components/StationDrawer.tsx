@@ -33,8 +33,19 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
 import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
+import {OmitKeyof, UseQueryOptions} from '@tanstack/react-query';
+import {APIError, queryClient} from '~/queryClient';
+import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
+import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
+import {getMaalepunktOptions} from '~/hooks/query/useMaalepunkt';
+import {ContactInfoGetOptions} from '~/features/stamdata/api/useContactInfo';
+import {LocationAccessGetOptions} from '~/features/stamdata/api/useLocationAccess';
+import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
+import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
+import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
+import {getImageOptions} from '../api/useImages';
 
 const drawerWidth = 240;
 
@@ -43,6 +54,7 @@ type Item = {
   items?: Item[];
   page: StationPages;
   icon: ReactNode;
+  onHover?: () => void;
   requiredTsId: boolean;
   calculated?: boolean;
   admin?: boolean;
@@ -61,12 +73,18 @@ const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
 const StationDrawer = () => {
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const {isMobile, isMonitor} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
+
+  const handlePrefetch = <TData extends object>(
+    options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
+  ) => {
+    queryClient.prefetchQuery({...options});
+  };
 
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -83,12 +101,20 @@ const StationDrawer = () => {
           page: 'generelt tidsserie',
           icon: <QuestionMarkIcon />,
           requiredTsId: true,
+          onHover: () => {
+            const options = metadataQueryOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Pejling',
           page: 'pejling',
           icon: <AddCircle />,
           requiredTsId: false,
+          onHover: () => {
+            const options = pejlingGetOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Tilsyn',
@@ -96,12 +122,20 @@ const StationDrawer = () => {
           icon: <PlaylistAddCheck />,
           requiredTsId: true,
           calculated: metadata?.calculated,
+          onHover: () => {
+            const options = tilsynGetOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Målepunkt',
           page: 'målepunkt',
           icon: <StraightenRounded />,
           requiredTsId: true,
+          onHover: () => {
+            const options = getMaalepunktOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
       ],
     },
@@ -113,12 +147,19 @@ const StationDrawer = () => {
           page: 'generelt udstyr',
           icon: <QuestionMarkIcon />,
           requiredTsId: true,
+          onHover: () => {
+            const options = metadataQueryOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Sendeinterval',
           page: 'sendeinterval',
           icon: <ScheduleSendIcon />,
           requiredTsId: true,
+          onHover: () => {
+            console.log('Nothing yet to prefetch');
+          },
         },
       ],
     },
@@ -130,6 +171,10 @@ const StationDrawer = () => {
           page: 'generelt lokation',
           icon: <QuestionMarkIcon />,
           requiredTsId: false,
+          onHover: () => {
+            const options = metadataQueryOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Kontakter',
@@ -137,6 +182,10 @@ const StationDrawer = () => {
           icon: <PersonIcon />,
           requiredTsId: false,
           contactAndKeyAccess: user?.contactAndKeysPermission,
+          onHover: () => {
+            const options = ContactInfoGetOptions(loc_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Nøgler',
@@ -144,6 +193,10 @@ const StationDrawer = () => {
           icon: <KeyIcon />,
           requiredTsId: false,
           contactAndKeyAccess: user?.contactAndKeysPermission,
+          onHover: () => {
+            const options = LocationAccessGetOptions(loc_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Huskeliste',
@@ -151,12 +204,20 @@ const StationDrawer = () => {
           icon: <BackpackIcon />,
           requiredTsId: false,
           ressourceAccess: user?.ressourcePermission,
+          onHover: () => {
+            const options = getRessourcerOptions(loc_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Billeder',
           page: 'billeder',
           icon: <PhotoLibraryRounded />,
           requiredTsId: false,
+          onHover: () => {
+            const options = getImageOptions(loc_id, 'images', 'station');
+            handlePrefetch(options);
+          },
         },
       ],
     },
@@ -170,12 +231,20 @@ const StationDrawer = () => {
           page: 'justeringer',
           icon: <QueryStatsIcon />,
           requiredTsId: true,
+          onHover: () => {
+            const options = getQAHistoryOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
         {
           text: 'Algoritmer',
           page: 'algoritmer',
           icon: <FunctionsIcon />,
           requiredTsId: true,
+          onHover: () => {
+            const options = getAlgorithmOptions(ts_id);
+            handlePrefetch(options);
+          },
         },
       ],
     },
@@ -211,6 +280,7 @@ const StationDrawer = () => {
               <ListItem
                 key={item.text}
                 disablePadding
+                onMouseEnter={item.onHover}
                 sx={{
                   borderRadius: '9999px',
                   py: 1,

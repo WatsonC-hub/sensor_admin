@@ -3,6 +3,7 @@ import {useQuery} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import ImageViewer from '~/components/ImageViewer';
+import useImages from '~/features/station/api/useImages';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 import {Image} from '~/types';
 
@@ -16,13 +17,9 @@ interface Props {
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
   const imageType: string = type === 'borehole' ? 'image' : 'images';
-  const {data: images, error} = useQuery({
-    queryKey: ['images', typeId], //() => getImage(props.locationId));
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/${type}/${imageType}/${typeId}`);
-      return data;
-    },
-  });
+  const {
+    get: {data: images, error},
+  } = useImages(typeId, imageType, type);
 
   const endpoint = type === 'borehole' ? 'borehole' : 'station';
   const {del: deleteImage} = useImageUpload(endpoint);
