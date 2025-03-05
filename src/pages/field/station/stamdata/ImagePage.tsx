@@ -75,7 +75,7 @@ const ImagePage = () => {
       <FabWrapper
         icon={<AddAPhotoRounded />}
         text={'Tilføj billeder'}
-        disabled={location_permissions === undefined}
+        disabled={location_permissions !== 'edit'}
         onClick={() => {
           if (fileInputRef.current) fileInputRef.current.click();
         }}

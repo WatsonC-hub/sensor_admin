@@ -28,6 +28,7 @@ const LocationAccess = () => {
   const [createNew, setCreateNew] = useState<boolean>(false);
   const user = useUser();
   const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
   const {
     post: postLocationAccess,
     put: editLocationAccess,
@@ -115,7 +116,7 @@ const LocationAccess = () => {
                   sx={isTablet ? {ml: 1} : {textTransform: 'none', ml: '12px'}}
                   startIcon={<KeyIcon />}
                   onClick={() => setOpenDialog(true)}
-                  disabled={!user?.contactAndKeysPermission || location_permissions === undefined}
+                  disabled={!user?.contactAndKeysPermission || disabled}
                 >
                   Tilføj nøgle eller kode
                 </Button>

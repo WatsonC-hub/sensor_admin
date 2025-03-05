@@ -83,7 +83,7 @@ const ContactInfo = () => {
                 reset();
                 setOpenContactInfoDialog(true);
               }}
-              disabled={!user?.contactAndKeysPermission || location_permissions === undefined}
+              disabled={!user?.contactAndKeysPermission || location_permissions !== 'edit'}
             >
               Tilføj kontakt
             </Button>
