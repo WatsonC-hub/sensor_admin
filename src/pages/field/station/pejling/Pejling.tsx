@@ -106,7 +106,7 @@ const Pejling = () => {
   };
 
   const openAddMP = () => {
-    setPageToShow('generelt udstyr');
+    setPageToShow(stationPages.GENERELTUDSTYR);
     setTabValue('udstyr');
     setShowForm(true);
   };
