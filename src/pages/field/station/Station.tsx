@@ -27,6 +27,7 @@ import ImagePage from './stamdata/ImagePage';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
+import {stationPages} from '~/helpers/EnumHelper';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -42,50 +43,50 @@ export default function Station() {
 
   return (
     <Layout>
-      {pageToShow === 'pejling' && ts_id !== -1 && <Pejling />}
-      {pageToShow === 'tilsyn' && !metadata?.calculated && <Tilsyn />}
-      {pageToShow === 'generelt udstyr' && (
+      {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
+      {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}
+      {pageToShow === stationPages.GENERELTUDSTYR && (
         <StationPageBoxLayout>
           <EditUnit />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'generelt lokation' && (
+      {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
           <EditLocation />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'generelt tidsserie' && (
+      {pageToShow === stationPages.GENERELTIDSSERIE && (
         <StationPageBoxLayout>
           <EditTimeseries />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'algoritmer' && user?.QAPermission && (
+      {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && (
         <StationPageBoxLayout>
           <Algorithms />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'justeringer' && user?.QAPermission && <QAHistory />}
-      {pageToShow === 'målepunkt' && (
+      {pageToShow === stationPages.JUSTERINGER && user?.QAPermission && <QAHistory />}
+      {pageToShow === stationPages.MAALEPUNKT && (
         <StationPageBoxLayout>
           <ReferenceForm />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'nøgler' && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
         <StationPageBoxLayout>
           <LocationAccess />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'kontakter' && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (
         <StationPageBoxLayout>
           <ContactInfo />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'huskeliste' && user?.ressourcePermission && (
+      {pageToShow === stationPages.HUSKELISTE && user?.ressourcePermission && (
         <StationPageBoxLayout>
           <Huskeliste />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'billeder' && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && <ImagePage />}
     </Layout>
   );
 }

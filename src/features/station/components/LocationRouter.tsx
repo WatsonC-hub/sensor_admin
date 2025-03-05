@@ -21,6 +21,7 @@ import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/
 import StationPageBoxLayout from './StationPageBoxLayout';
 import ActionArea from './ActionArea';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {stationPages} from '~/helpers/EnumHelper';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
@@ -36,50 +37,52 @@ export default function LocationRouter() {
 
   return (
     <Layout>
-      {metadata != undefined && metadata.timeseries.length === 0 && pageToShow === 'pejling' && (
-        <Box maxWidth={400} mx={'auto'}>
-          <StationPageBoxLayout>
-            <Alert
-              severity={'info'}
-              sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-            >
-              <Typography>
-                Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen
-                nedenfor for at påbegynde oprettelse af tidsserie og/eller tilknytning af udstyr
-              </Typography>
-            </Alert>
-            <Button
-              bttype="primary"
-              onClick={() => {
-                createStamdata(ts_id ? '2' : '1', {
-                  state: {
-                    ...metadata,
-                  },
-                });
-              }}
-            >
-              Opret tidsserie og/eller udstyr
-            </Button>
-          </StationPageBoxLayout>
-        </Box>
-      )}
-      {pageToShow === 'billeder' && <ImagePage />}
-      {pageToShow === 'generelt lokation' && (
+      {metadata != undefined &&
+        metadata.timeseries.length === 0 &&
+        pageToShow === stationPages.PEJLING && (
+          <Box maxWidth={400} mx={'auto'}>
+            <StationPageBoxLayout>
+              <Alert
+                severity={'info'}
+                sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
+              >
+                <Typography>
+                  Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen
+                  nedenfor for at påbegynde oprettelse af tidsserie og/eller tilknytning af udstyr
+                </Typography>
+              </Alert>
+              <Button
+                bttype="primary"
+                onClick={() => {
+                  createStamdata(ts_id ? '2' : '1', {
+                    state: {
+                      ...metadata,
+                    },
+                  });
+                }}
+              >
+                Opret tidsserie og/eller udstyr
+              </Button>
+            </StationPageBoxLayout>
+          </Box>
+        )}
+      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
           <EditLocation />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'kontakter' && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (
         <StationPageBoxLayout>
           <ContactInfo />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'huskeliste' && user?.ressourcePermission && (
+      {pageToShow === stationPages.HUSKELISTE && user?.ressourcePermission && (
         <StationPageBoxLayout>
           <Huskeliste />
         </StationPageBoxLayout>
       )}
-      {pageToShow === 'nøgler' && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
         <StationPageBoxLayout>
           <LocationAccess />
         </StationPageBoxLayout>

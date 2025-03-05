@@ -23,11 +23,9 @@ import {useAtom} from 'jotai';
 import React, {ReactNode} from 'react';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import {StationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import PersonIcon from '@mui/icons-material/Person';
 import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
@@ -46,6 +44,7 @@ import {getRessourcerOptions} from '~/features/stamdata/api/useRessourcer';
 import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory';
 import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {getImageOptions} from '../api/useImages';
+import {stationPages, StationPages} from '~/helpers/EnumHelper';
 
 const drawerWidth = 240;
 
@@ -97,8 +96,8 @@ const StationDrawer = () => {
       text: 'Tidsserie',
       items: [
         {
-          text: 'Generelt',
-          page: 'generelt tidsserie',
+          text: 'Stamdata',
+          page: stationPages.GENERELTIDSSERIE,
           icon: <QuestionMarkIcon />,
           requiredTsId: true,
           onHover: () => {
@@ -108,7 +107,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Pejling',
-          page: 'pejling',
+          page: stationPages.PEJLING,
           icon: <AddCircle />,
           requiredTsId: false,
           onHover: () => {
@@ -118,7 +117,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Tilsyn',
-          page: 'tilsyn',
+          page: stationPages.TILSYN,
           icon: <PlaylistAddCheck />,
           requiredTsId: true,
           calculated: metadata?.calculated,
@@ -129,7 +128,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Målepunkt',
-          page: 'målepunkt',
+          page: stationPages.MAALEPUNKT,
           icon: <StraightenRounded />,
           requiredTsId: true,
           onHover: () => {
@@ -143,8 +142,8 @@ const StationDrawer = () => {
       text: 'Udstyr',
       items: [
         {
-          text: 'Generelt',
-          page: 'generelt udstyr',
+          text: 'Stamdata',
+          page: stationPages.GENERELTUDSTYR,
           icon: <QuestionMarkIcon />,
           requiredTsId: true,
           onHover: () => {
@@ -152,24 +151,14 @@ const StationDrawer = () => {
             handlePrefetch(options);
           },
         },
-        {
-          text: 'Sendeinterval',
-          page: 'sendeinterval',
-          icon: <ScheduleSendIcon />,
-          requiredTsId: true,
-          onHover: () => {
-            console.log('Nothing yet to prefetch');
-          },
-          contactAndKeyAccess: user?.superUser,
-        },
       ],
     },
     {
       text: 'Lokation',
       items: [
         {
-          text: 'Generelt',
-          page: 'generelt lokation',
+          text: 'Stamdata',
+          page: stationPages.GENERELTLOKATION,
           icon: <QuestionMarkIcon />,
           requiredTsId: false,
           onHover: () => {
@@ -179,7 +168,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Kontakter',
-          page: 'kontakter',
+          page: stationPages.KONTAKTER,
           icon: <PersonIcon />,
           requiredTsId: false,
           contactAndKeyAccess: user?.contactAndKeysPermission,
@@ -190,7 +179,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Nøgler',
-          page: 'nøgler',
+          page: stationPages.NØGLER,
           icon: <KeyIcon />,
           requiredTsId: false,
           contactAndKeyAccess: user?.contactAndKeysPermission,
@@ -201,7 +190,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Huskeliste',
-          page: 'huskeliste',
+          page: stationPages.HUSKELISTE,
           icon: <BackpackIcon />,
           requiredTsId: false,
           ressourceAccess: user?.ressourcePermission,
@@ -212,7 +201,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Billeder',
-          page: 'billeder',
+          page: stationPages.BILLEDER,
           icon: <PhotoLibraryRounded />,
           requiredTsId: false,
           onHover: () => {
@@ -229,7 +218,7 @@ const StationDrawer = () => {
       items: [
         {
           text: 'Justeringer',
-          page: 'justeringer',
+          page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
           onHover: () => {
@@ -239,7 +228,7 @@ const StationDrawer = () => {
         },
         {
           text: 'Algoritmer',
-          page: 'algoritmer',
+          page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
           onHover: () => {

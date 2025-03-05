@@ -290,7 +290,7 @@ const Boreholeno = () => {
 
   return (
     <Box display="flex" height={'max-content'} flexDirection={'column'}>
-      {pageToShow !== 'billeder' && pageToShow !== 'stamdata' && (
+      {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
         <Box
           display={'flex'}
           flexDirection={'column'}
@@ -313,7 +313,7 @@ const Boreholeno = () => {
           alignSelf: 'center',
         }}
       >
-        {pageToShow === 'pejling' && showForm === true && (
+        {pageToShow === stationPages.PEJLING && showForm === true && (
           <PejlingFormBorehole
             formData={pejlingData}
             changeFormData={changePejlingData}
@@ -329,7 +329,7 @@ const Boreholeno = () => {
             }
           />
         )}
-        {pageToShow === 'målepunkt' && (
+        {pageToShow === stationPages.MAALEPUNKT && (
           <Box
             sx={{
               display: 'flex',
@@ -357,7 +357,7 @@ const Boreholeno = () => {
             )}
           </Box>
         )}
-        {pageToShow === 'målepunkt' && (
+        {pageToShow === stationPages.MAALEPUNKT && (
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <MaalepunktTable
               watlevmp={watlevmp}
@@ -378,7 +378,7 @@ const Boreholeno = () => {
             />
           </Box>
         )}
-        {pageToShow === 'pejling' && (
+        {pageToShow === stationPages.PEJLING && (
           <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
             <PejlingMeasurements
               measurements={measurements}
@@ -400,10 +400,10 @@ const Boreholeno = () => {
             />
           </Box>
         )}
-        {pageToShow === 'stamdata' && <BoreholeStamdata />}
+        {pageToShow === stationPages.STAMDATA && <BoreholeStamdata />}
       </Box>
 
-      {pageToShow === 'billeder' && (
+      {pageToShow === stationPages.BILLEDER && (
         <Box>
           <Images
             type={'borehole'}
