@@ -107,7 +107,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       {(image.loc_id || image.boreholeno) && (
         <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
           <Button
-            disabled={deleteMutation.isPending || location_permissions === undefined}
+            disabled={deleteMutation.isPending || location_permissions !== 'edit'}
             onClick={() => setDialogOpen(true)}
             size="small"
             bttype="tertiary"
@@ -124,7 +124,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
             )}
           </Button>
           <Button
-            disabled={deleteMutation.isPending || location_permissions === undefined}
+            disabled={deleteMutation.isPending || location_permissions !== 'edit'}
             onClick={() => handleEdit(image)}
             size="small"
             bttype="primary"

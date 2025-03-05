@@ -9,6 +9,8 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 import UnitEndDateDialog from './UnitEndDialog';
+import {useAppContext} from '~/state/contexts';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 interface UdstyrReplaceProps {
   selected: number | '';
@@ -20,8 +22,11 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
-
+  const {loc_id} = useAppContext([], ['loc_id']);
   const {setValue} = useFormContext();
+
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
 
   const {data, isPending} = useUnitHistory();
 
@@ -100,6 +105,7 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
               <Button
                 bttype="primary"
                 sx={{marginLeft: 1}}
+                disabled={disabled}
                 onClick={() => {
                   setOpenDialog(true);
                 }}
@@ -110,6 +116,7 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
               <Button
                 bttype="primary"
                 sx={{marginLeft: 1}}
+                disabled={disabled}
                 onClick={() => {
                   setOpenAddUdstyr(true);
                 }}
