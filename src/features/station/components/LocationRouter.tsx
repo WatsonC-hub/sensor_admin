@@ -103,7 +103,7 @@ const Layout = ({children}: LayoutProps) => {
     <>
       <CssBaseline />
       <NavBar>
-        <NavBar.GoBack />
+        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
           <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
             {metadata?.loc_name}
