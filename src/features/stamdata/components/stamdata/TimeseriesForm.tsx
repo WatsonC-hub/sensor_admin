@@ -38,7 +38,7 @@ const TimeseriesTypeSelect = ({stationTypes, disabled = false}: TimeseriesTypeSe
 
 interface TimeseriesFormProps {
   mode: string;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 export default function TimeseriesForm({mode, disabled = false}: TimeseriesFormProps) {
