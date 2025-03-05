@@ -100,20 +100,14 @@ const StationDrawer = () => {
           page: stationPages.GENERELTIDSSERIE,
           icon: <QuestionMarkIcon />,
           requiredTsId: true,
-          onHover: () => {
-            const options = metadataQueryOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
         {
           text: 'Pejling',
           page: stationPages.PEJLING,
           icon: <AddCircle />,
           requiredTsId: false,
-          onHover: () => {
-            const options = pejlingGetOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(pejlingGetOptions(ts_id)),
         },
         {
           text: 'Tilsyn',
@@ -121,20 +115,14 @@ const StationDrawer = () => {
           icon: <PlaylistAddCheck />,
           requiredTsId: true,
           calculated: metadata?.calculated,
-          onHover: () => {
-            const options = tilsynGetOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
         },
         {
           text: 'Målepunkt',
           page: stationPages.MAALEPUNKT,
           icon: <StraightenRounded />,
           requiredTsId: true,
-          onHover: () => {
-            const options = getMaalepunktOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(getMaalepunktOptions(ts_id)),
         },
       ],
     },
@@ -146,10 +134,7 @@ const StationDrawer = () => {
           page: stationPages.GENERELTUDSTYR,
           icon: <QuestionMarkIcon />,
           requiredTsId: true,
-          onHover: () => {
-            const options = metadataQueryOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
       ],
     },
@@ -161,10 +146,7 @@ const StationDrawer = () => {
           page: stationPages.GENERELTLOKATION,
           icon: <QuestionMarkIcon />,
           requiredTsId: false,
-          onHover: () => {
-            const options = metadataQueryOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
         {
           text: 'Kontakter',
@@ -172,10 +154,7 @@ const StationDrawer = () => {
           icon: <PersonIcon />,
           requiredTsId: false,
           contactAndKeyAccess: user?.contactAndKeysPermission,
-          onHover: () => {
-            const options = ContactInfoGetOptions(loc_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
         },
         {
           text: 'Nøgler',
@@ -183,10 +162,7 @@ const StationDrawer = () => {
           icon: <KeyIcon />,
           requiredTsId: false,
           contactAndKeyAccess: user?.contactAndKeysPermission,
-          onHover: () => {
-            const options = LocationAccessGetOptions(loc_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
         },
         {
           text: 'Huskeliste',
@@ -194,20 +170,14 @@ const StationDrawer = () => {
           icon: <BackpackIcon />,
           requiredTsId: false,
           ressourceAccess: user?.ressourcePermission,
-          onHover: () => {
-            const options = getRessourcerOptions(loc_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
         },
         {
           text: 'Billeder',
           page: stationPages.BILLEDER,
           icon: <PhotoLibraryRounded />,
           requiredTsId: false,
-          onHover: () => {
-            const options = getImageOptions(loc_id, 'images', 'station');
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(getImageOptions(loc_id, 'images', 'station')),
         },
       ],
     },
@@ -221,20 +191,14 @@ const StationDrawer = () => {
           page: stationPages.JUSTERINGER,
           icon: <QueryStatsIcon />,
           requiredTsId: true,
-          onHover: () => {
-            const options = getQAHistoryOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
         },
         {
           text: 'Algoritmer',
           page: stationPages.ALGORITHMS,
           icon: <FunctionsIcon />,
           requiredTsId: true,
-          onHover: () => {
-            const options = getAlgorithmOptions(ts_id);
-            handlePrefetch(options);
-          },
+          onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
         },
       ],
     },
