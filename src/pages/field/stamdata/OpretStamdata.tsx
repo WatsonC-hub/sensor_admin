@@ -223,7 +223,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
     stamdataNewTimeseriesMutation.mutate(form, {
       onSuccess: (data) => {
-        stationNavigate(data.loc_id, data.ts_id);
+        stationNavigate(data.ts_id);
       },
     });
   };
@@ -268,7 +268,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       () =>
         stamdataNewMutation.mutateAsync(form, {
           onSuccess: (data) => {
-            stationNavigate(data.loc_id, data.ts_id);
+            stationNavigate(data.ts_id);
           },
         }),
       {

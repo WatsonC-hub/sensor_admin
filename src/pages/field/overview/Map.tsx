@@ -446,11 +446,7 @@ const Map = ({clickCallback}: MapProps) => {
       <Box
       //position={'absolute'} zIndex={1000} p={1} width={'100%'}
       >
-        <SearchAndFilterMap
-          data={data}
-          setData={setFilteredData}
-          handleSearchSelect={handleSearchSelect}
-        />
+        <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
       <Box display="flex" position="relative" flexGrow={1}>
         <Box id="test" position="absolute" sx={{height: '100%', width: '100%'}} />

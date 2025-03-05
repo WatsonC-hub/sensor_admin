@@ -262,7 +262,7 @@ export default function StationTable({data}: Props) {
         <Button
           bttype="primary"
           onClick={() => {
-            station(row.original.loc_id, row.original.ts_id);
+            station(row.original.ts_id);
           }}
           startIcon={<ShowChartRoundedIcon />}
         >
@@ -279,7 +279,7 @@ export default function StationTable({data}: Props) {
     muiTableBodyRowProps: ({row}) => {
       return {
         onDoubleClick: () => {
-          station(row.original.loc_id, row.original.ts_id);
+          station(row.original.ts_id);
         },
       };
     },

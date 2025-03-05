@@ -15,7 +15,6 @@ import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
 import {qaAdjustment, qaPages, qaPagesLiteral} from '~/helpers/EnumHelper';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAdjustmentState, useQAPageState} from '~/hooks/useQueryStateParameters';
@@ -184,7 +183,6 @@ const Layout = ({
   const {isMobile} = useBreakpoints();
   const {ts_id} = useAppContext(['ts_id']);
   const {field, station} = useNavigationFunctions();
-  const {data: timeseries_data} = useTimeseriesData();
   const handleChange = (event: any, newValue: (typeof qaPagesLiteral)[number]) => {
     setPageToShow(newValue);
   };
@@ -223,7 +221,7 @@ const Layout = ({
                 title: 'Til service',
                 icon: <QueryStatsIcon />,
                 onClick: () => {
-                  station(timeseries_data?.loc_id, timeseries_data?.ts_id);
+                  station(ts_id);
                 },
               },
               {
