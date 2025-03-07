@@ -91,7 +91,9 @@ export default function Tilsyn() {
 
   return (
     <>
-      <PlotGraph key={'tilsyn' + ts_id} />
+      <Box>
+        <PlotGraph key={'tilsyn' + ts_id} />
+      </Box>
       <Divider />
       <StationPageBoxLayout>
         <FormProvider {...formMethods}>

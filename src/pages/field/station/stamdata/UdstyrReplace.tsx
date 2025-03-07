@@ -114,6 +114,7 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
         disabled={permissions?.[ts_id] !== 'edit'}
         onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
         sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
+        showText={true}
       />
     </>
   );

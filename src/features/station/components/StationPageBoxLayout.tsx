@@ -17,6 +17,7 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
         mx: 'auto',
         height: '100%',
         width: isMobile ? '100%' : undefined,
+        maxWidth: isMobile ? '100%' : 1200,
         gap: 1,
       }}
       px={{

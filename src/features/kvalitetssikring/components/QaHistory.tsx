@@ -9,7 +9,7 @@ import {useAppContext} from '~/state/contexts';
 import {useCertifyQa} from '../api/useCertifyQa';
 
 import AdjustmentDataTable from './AdjustmentDataTable';
-import PlotGraph from '~/pages/admin/kvalitetssikring/QAGraph';
+import QAGraph from '~/pages/admin/kvalitetssikring/QAGraph';
 import CustomSpeedDial from '~/components/CustomSpeedDial';
 import {Verified, Delete} from '@mui/icons-material';
 import {DialAction} from '~/types';
@@ -130,7 +130,7 @@ export default function QAHistory() {
     <>
       <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
         <Box width={'100%'}>
-          <PlotGraph ts_id={ts_id} />
+          <QAGraph />
         </Box>
         <DataToShow />
       </Box>

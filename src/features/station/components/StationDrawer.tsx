@@ -4,6 +4,8 @@ import {
   PhotoLibraryRounded,
   PlaylistAddCheck,
   StraightenRounded,
+  Edit,
+  Router,
 } from '@mui/icons-material';
 import {
   Drawer,
@@ -25,7 +27,6 @@ import FunctionsIcon from '@mui/icons-material/Functions';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import PersonIcon from '@mui/icons-material/Person';
 import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
@@ -82,7 +83,7 @@ const StationDrawer = () => {
   const handlePrefetch = <TData extends object>(
     options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
   ) => {
-    queryClient.prefetchQuery({...options});
+    queryClient.prefetchQuery({...options, staleTime: 1000 * 10});
   };
 
   const toggleDrawer = (newOpen: boolean) => {
@@ -95,13 +96,6 @@ const StationDrawer = () => {
     {
       text: 'Tidsserie',
       items: [
-        {
-          text: 'Stamdata',
-          page: stationPages.GENERELTIDSSERIE,
-          icon: <QuestionMarkIcon />,
-          requiredTsId: true,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-        },
         {
           text: 'Pejling',
           page: stationPages.PEJLING,
@@ -124,30 +118,34 @@ const StationDrawer = () => {
           requiredTsId: true,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id)),
         },
-      ],
-    },
-    {
-      text: 'Udstyr',
-      items: [
+        {
+          text: 'Udstyr',
+          page: stationPages.GENERELTUDSTYR,
+          icon: <Router />,
+          requiredTsId: true,
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        },
         {
           text: 'Stamdata',
-          page: stationPages.GENERELTUDSTYR,
-          icon: <QuestionMarkIcon />,
+          page: stationPages.GENERELTIDSSERIE,
+          icon: <Edit />,
           requiredTsId: true,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
       ],
     },
+
     {
       text: 'Lokation',
       items: [
         {
-          text: 'Stamdata',
-          page: stationPages.GENERELTLOKATION,
-          icon: <QuestionMarkIcon />,
+          text: 'Billeder',
+          page: stationPages.BILLEDER,
+          icon: <PhotoLibraryRounded />,
           requiredTsId: false,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          onHover: () => handlePrefetch(getImageOptions(loc_id, 'images', 'station')),
         },
+
         {
           text: 'Kontakter',
           page: stationPages.KONTAKTER,
@@ -173,11 +171,11 @@ const StationDrawer = () => {
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
         },
         {
-          text: 'Billeder',
-          page: stationPages.BILLEDER,
-          icon: <PhotoLibraryRounded />,
+          text: 'Stamdata',
+          page: stationPages.GENERELTLOKATION,
+          icon: <Edit />,
           requiredTsId: false,
-          onHover: () => handlePrefetch(getImageOptions(loc_id, 'images', 'station')),
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
       ],
     },
@@ -215,7 +213,7 @@ const StationDrawer = () => {
       <>
         {open && (
           <ListItem key={category.text} sx={{borderRadius: '9999px', pb: 0}}>
-            <ListItemText sx={{color: 'white'}} primary={category.text} />
+            <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
           </ListItem>
         )}
         {category.items
@@ -230,11 +228,22 @@ const StationDrawer = () => {
               return;
             }
 
+            let timer = 0;
+
+            const mouseEnter = () => {
+              timer = setTimeout(item.onHover ? item.onHover : () => {}, 100);
+            };
+
+            const mouseLeave = () => {
+              clearTimeout(timer);
+            };
+
             return (
               <ListItem
                 key={item.text}
                 disablePadding
-                onMouseEnter={item.onHover}
+                onMouseEnter={mouseEnter}
+                onMouseLeave={mouseLeave}
                 sx={{
                   borderRadius: '9999px',
                   py: 1,

@@ -15,17 +15,16 @@ import {
 } from '~/state/atoms';
 
 import useQAGraph from './hooks/useQAGraph';
+import {useAppContext} from '~/state/contexts';
 
 const initRange = [
   moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
-interface PlotGraphProps {
-  ts_id: number;
-}
+export default function PlotGraph() {
+  const {ts_id} = useAppContext(['ts_id']);
 
-export default function PlotGraph({ts_id}: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
