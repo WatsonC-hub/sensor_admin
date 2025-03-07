@@ -27,6 +27,7 @@ const LocationAccess = () => {
   const [createNew, setCreateNew] = useState<boolean>(false);
   const user = useUser();
   const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
   const {
     post: postLocationAccess,
     put: editLocationAccess,
@@ -143,7 +144,7 @@ const LocationAccess = () => {
       <FabWrapper
         icon={<KeyIcon />}
         text="Tilføj nøgle eller kode"
-        disabled={!user?.contactAndKeysPermission || location_permissions === undefined}
+        disabled={!user?.contactAndKeysPermission || disabled}
         onClick={() => setOpenDialog(true)}
         sx={{visibility: openDialog ? 'hidden' : 'visible'}}
       />

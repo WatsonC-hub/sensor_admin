@@ -17,6 +17,7 @@ import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 import UdstyrReplace from './UdstyrReplace';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 const unitSchema = z.object({
   timeseries: z.object({
@@ -48,10 +49,13 @@ const unitSchema = z.object({
 type Unit = z.infer<typeof unitSchema>;
 
 const EditUnit = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
   const {data: metadata} = useTimeseriesData();
   const {data: unit_history} = useUnitHistory();
   const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
+
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
 
   const metadataEditUnitMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -127,6 +131,7 @@ const EditUnit = () => {
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
             <Button
               bttype="tertiary"
+              disabled={disabled}
               onClick={() => {
                 reset(defaultValues);
               }}
@@ -136,7 +141,7 @@ const EditUnit = () => {
 
             <Button
               bttype="primary"
-              disabled={!isDirty || !getValues('unit.unit_uuid')}
+              disabled={!isDirty || !getValues('unit.unit_uuid') || disabled}
               onClick={formMethods.handleSubmit(handleSubmit)}
               startIcon={<SaveIcon />}
               sx={{marginRight: 1}}

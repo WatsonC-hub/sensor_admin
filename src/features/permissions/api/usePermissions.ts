@@ -41,21 +41,24 @@ const usePermissions = (loc_id?: number) => {
   const feature_permission_query = useQuery(usePermissionsQueryOptions(loc_id));
 
   const {data} = feature_permission_query;
-  const location_permissions =
-    data && Object.values(data).length > 0
-      ? Object.values(data).some((v) => v === 'edit')
-      : data && Object.values(data).length === 0
-        ? false
-        : undefined;
+
+  const ts_permissions = data && Object.values(data);
+
+  let location_permissions: 'read' | 'edit';
+
+  if (ts_permissions) {
+    if (ts_permissions.length == 0) {
+      location_permissions = 'edit';
+    }
+    location_permissions = ts_permissions.some((v) => v === 'edit') ? 'edit' : 'read';
+  } else {
+    location_permissions = 'edit';
+  }
 
   return {
     borehole_permission_query,
     feature_permission_query,
-    location_permissions: location_permissions
-      ? 'edit'
-      : location_permissions === false
-        ? 'read'
-        : undefined,
+    location_permissions: location_permissions,
   };
 };
 

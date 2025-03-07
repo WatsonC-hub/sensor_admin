@@ -63,6 +63,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
   );
   const {loc_id} = useAppContext(['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
   const {
     get: {data: options},
@@ -198,7 +199,10 @@ export default function TranserList({value, setValue}: TransferListProps) {
                     const labelId = `transfer-list-item-${category}-label`;
                     return (
                       <Box gap={0} display={'flex'} flexDirection={'column'} key={category + 'box'}>
-                        <ListItemText id={labelId} onClick={() => handleClick(category)}>
+                        <ListItemText
+                          id={labelId}
+                          onClick={() => !disabled && handleClick(category)}
+                        >
                           <Typography
                             ml={2}
                             fontWeight={'bold'}
@@ -270,7 +274,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
                 bttype="secondary"
                 size="small"
                 onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0 || location_permissions === undefined}
+                disabled={leftChecked.length === 0 || disabled}
                 aria-label="move selected right"
               >
                 &gt;
@@ -280,7 +284,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
                 bttype="secondary"
                 size="small"
                 onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0 || location_permissions === undefined}
+                disabled={rightChecked.length === 0 || disabled}
                 aria-label="move selected left"
               >
                 &lt;

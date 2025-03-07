@@ -19,16 +19,16 @@ interface UdstyrReplaceProps {
 }
 
 const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
-  const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
+  const {loc_id} = useAppContext(['ts_id'], ['loc_id']);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
+
   const {setValue} = useFormContext();
 
-  const {
-    feature_permission_query: {data: permissions},
-  } = usePermissions(loc_id);
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
 
   const {data, isPending} = useUnitHistory();
   const mode = data && data.length > 0 && moment(data?.[0].slutdato) > moment(new Date());
@@ -111,7 +111,7 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
       <FabWrapper
         icon={<BuildRounded />}
         text={fabText}
-        disabled={permissions?.[ts_id] !== 'edit'}
+        disabled={disabled}
         onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
         sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
         showText={true}

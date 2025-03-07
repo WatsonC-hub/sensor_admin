@@ -153,7 +153,7 @@ const Pejling = () => {
           <PejlingMeasurements
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            disabled={permissions?.[ts_id] !== 'edit' && location_permissions === undefined}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
         <FabWrapper
