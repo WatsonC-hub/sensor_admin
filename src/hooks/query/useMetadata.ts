@@ -1,6 +1,7 @@
 import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 export type Metadata = {
@@ -69,10 +70,10 @@ export type LocationMetadata = {
 };
 
 export const metadataQueryOptions = (ts_id?: number) => {
-  return queryOptions({
+  return queryOptions<Metadata, APIError>({
     queryKey: ['metadata', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Metadata>(`/sensor_field/station/metadata/${ts_id}`);
+      const {data} = await apiClient.get(`/sensor_field/station/metadata/${ts_id}`);
       return data;
     },
     enabled: ts_id !== undefined,

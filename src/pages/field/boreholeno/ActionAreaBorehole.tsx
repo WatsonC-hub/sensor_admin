@@ -42,7 +42,7 @@ export default function ActionArea() {
       text: 'Målepunkt',
       value: stationPages.MAALEPUNKT,
       icon: <StraightenRounded />,
-      color: navIconStyle(pageToShow === 'maalepunkt'),
+      color: navIconStyle(pageToShow === 'målepunkt'),
     },
     {
       text: startCase(stationPages.BILLEDER),

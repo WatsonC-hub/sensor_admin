@@ -1,14 +1,15 @@
-import {SelectChangeEvent, Grid, Typography, Select, MenuItem} from '@mui/material';
+import {SelectChangeEvent, Typography, Select, MenuItem} from '@mui/material';
 import moment from 'moment';
 import {useState, useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
-import Button from '~/components/Button';
 import {useUnitHistory, UnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 import UnitEndDateDialog from './UnitEndDialog';
+import FabWrapper from '~/components/FabWrapper';
+import {BuildRounded} from '@mui/icons-material';
 import {useAppContext} from '~/state/contexts';
 import usePermissions from '~/features/permissions/api/usePermissions';
 
@@ -18,17 +19,20 @@ interface UdstyrReplaceProps {
 }
 
 const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
+  const {loc_id} = useAppContext(['ts_id'], ['loc_id']);
   const [openDialog, setOpenDialog] = useState(false);
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
-  const {loc_id} = useAppContext([], ['loc_id']);
+
   const {setValue} = useFormContext();
 
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
   const {data, isPending} = useUnitHistory();
+  const mode = data && data.length > 0 && moment(data?.[0].slutdato) > moment(new Date());
+  const fabText = mode ? 'Hjemtag udstyr' : 'Tilføj udstyr';
 
   // const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');
 
@@ -61,79 +65,57 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
 
   return (
     <>
-      <Grid container spacing={2}>
-        {isPending && (
-          <Grid item xs={12} sm={6}>
+      {isPending && (
+        <Typography align={'center'} display={'inline-block'}>
+          Henter udstyr...
+        </Typography>
+      )}
+      {!isPending && (
+        <>
+          {data && data.length > 0 ? (
+            <Select
+              id="udstyr_select"
+              value={
+                data.map((item) => item.gid).includes(selected == '' ? 0 : selected) ? selected : ''
+              }
+              onChange={handleChange}
+              className="swiper-no-swiping"
+            >
+              {data?.map((item) => {
+                const endDate =
+                  moment(new Date()) < moment(item.slutdato)
+                    ? 'nu'
+                    : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
+
+                return (
+                  <MenuItem id={item.gid.toString()} key={item.gid.toString()} value={item.gid}>
+                    {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          ) : (
             <Typography align={'center'} display={'inline-block'}>
-              Henter udstyr...
+              Tilknyt venligst et udstyr
             </Typography>
-          </Grid>
-        )}
-        {!isPending && (
-          <Grid item xs={12} sm={6}>
-            {data && data.length > 0 ? (
-              <Select
-                id="udstyr_select"
-                value={
-                  data.map((item) => item.gid).includes(selected == '' ? 0 : selected)
-                    ? selected
-                    : ''
-                }
-                onChange={handleChange}
-                className="swiper-no-swiping"
-              >
-                {data?.map((item) => {
-                  const endDate =
-                    moment(new Date()) < moment(item.slutdato)
-                      ? 'nu'
-                      : moment(item?.slutdato).format('YYYY-MM-DD HH:mm');
-
-                  return (
-                    <MenuItem id={item.gid.toString()} key={item.gid.toString()} value={item.gid}>
-                      {`${moment(item?.startdato).format('YYYY-MM-DD HH:mm')} - ${endDate}`}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            ) : (
-              <Typography align={'center'} display={'inline-block'}>
-                Tilknyt venligst et udstyr
-              </Typography>
-            )}
-
-            {data && data.length && moment(data?.[0].slutdato) > moment(new Date()) ? (
-              <Button
-                bttype="primary"
-                sx={{marginLeft: 1}}
-                disabled={disabled}
-                onClick={() => {
-                  setOpenDialog(true);
-                }}
-              >
-                Hjemtag udstyr
-              </Button>
-            ) : (
-              <Button
-                bttype="primary"
-                sx={{marginLeft: 1}}
-                disabled={disabled}
-                onClick={() => {
-                  setOpenAddUdstyr(true);
-                }}
-              >
-                Tilføj udstyr
-              </Button>
-            )}
-          </Grid>
-        )}
-        <UnitEndDateDialog openDialog={openDialog} setOpenDialog={setOpenDialog} unit={data?.[0]} />
-        <AddUnitForm
-          udstyrDialogOpen={openAddUdstyr}
-          setUdstyrDialogOpen={setOpenAddUdstyr}
-          tstype_id={tstype_id}
-          mode="edit"
-        />
-      </Grid>
+          )}
+        </>
+      )}
+      <UnitEndDateDialog openDialog={openDialog} setOpenDialog={setOpenDialog} unit={data?.[0]} />
+      <AddUnitForm
+        udstyrDialogOpen={openAddUdstyr}
+        setUdstyrDialogOpen={setOpenAddUdstyr}
+        tstype_id={tstype_id}
+        mode="edit"
+      />
+      <FabWrapper
+        icon={<BuildRounded />}
+        text={fabText}
+        disabled={disabled}
+        onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
+        sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
+        showText={true}
+      />
     </>
   );
 };

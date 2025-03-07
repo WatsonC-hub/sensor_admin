@@ -1,4 +1,4 @@
-import {MapRounded, Person} from '@mui/icons-material';
+import {MapRounded, Person, Menu as MenuIcon} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -13,10 +13,11 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
+
 import {useQueryClient} from '@tanstack/react-query';
-import {useSetAtom} from 'jotai';
+import {useAtom, useSetAtom} from 'jotai';
 import {useState, ReactNode, MouseEventHandler} from 'react';
-import {useNavigate} from 'react-router-dom';
+// import {useNavigate} from 'react-router-dom';
 
 import {apiClient} from '~/apiClient';
 import LogoSvg from '~/calypso.svg?react';
@@ -24,9 +25,10 @@ import {appBarHeight} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
-import {captureDialogAtom} from '~/state/atoms';
+import {captureDialogAtom, drawerOpenAtom} from '~/state/atoms';
 
 import Button from './Button';
+import {useNavigate} from 'react-router-dom';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -67,7 +69,7 @@ export const HomeButton = () => {
 
 export const AppBarLayout = ({children}: {children?: ReactNode}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
       <Toolbar
         sx={{
           height: appBarHeight,
@@ -210,6 +212,23 @@ const Logo = () => {
   return isMobile ? <SmallLogo /> : <LogoSvg />;
 };
 
+const StationDrawerMenu = () => {
+  const [open, setOpen] = useAtom(drawerOpenAtom);
+  return (
+    <Box>
+      <IconButton
+        color="inherit"
+        onClick={() => {
+          setOpen(!open);
+        }}
+        size="large"
+      >
+        <MenuIcon />
+      </IconButton>
+    </Box>
+  );
+};
+
 const GoBack = () => {
   const navigate = useNavigate();
 
@@ -272,5 +291,6 @@ NavBar.Menu = NavBarMenu;
 NavBar.Home = HomeButton;
 NavBar.Title = Title;
 NavBar.Scanner = ScannerAsTitle;
+NavBar.StationDrawerMenu = StationDrawerMenu;
 
 export default NavBar;

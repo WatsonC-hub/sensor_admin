@@ -1,7 +1,8 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {APIError} from '~/queryClient';
 import {QaAlgorithms} from '~/types';
 interface AlgorithmsBase {
   path: string;
@@ -61,16 +62,19 @@ export const algorithmsRevertOptions = {
   },
 };
 
-export const useAlgorithms = (ts_id: number | undefined) => {
-  const queryClient = useQueryClient();
-  const get = useQuery({
+export const getAlgorithmOptions = (ts_id: number | undefined) =>
+  queryOptions<Array<QaAlgorithms>, APIError>({
     queryKey: ['algorithms', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<QaAlgorithms>>(`/sensor_admin/algorithms/${ts_id}`);
+      const {data} = await apiClient.get(`/sensor_admin/algorithms/${ts_id}`);
       return data;
     },
     enabled: ts_id !== undefined,
   });
+
+export const useAlgorithms = (ts_id: number | undefined) => {
+  const queryClient = useQueryClient();
+  const get = useQuery(getAlgorithmOptions(ts_id));
 
   const handlePrefetch = () => {
     queryClient.prefetchQuery({
