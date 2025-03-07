@@ -220,7 +220,7 @@ const Layout = ({children}: LayoutProps) => {
             gap={5}
             sx={{marginBottom: 0.5, marginTop: 0.2}}
           >
-            <PlotGraph ts_id={ts_id} />
+            <PlotGraph />
             <Divider />
           </Box>
         </Grid>
