@@ -190,15 +190,20 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
             <Box display="flex" flexDirection={'column'} alignItems="center">
               <Box display="flex" flexDirection={'row'} alignItems="center" gap={0.5}>
                 <Edit fontSize="small" sx={{color: 'grey.700'}} />
-                <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
-                  {convertDate(task.updated_at)}
-                </Typography>
-                <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
-                  {' - '}
-                </Typography>
-                <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
-                  {taskUsers?.find((user) => user.id === task.updated_by)?.display_name}
-                </Typography>
+                {filteredComments && filteredComments.length > 0 && (
+                  <>
+                    <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
+                      {convertDate(filteredComments[filteredComments.length - 1].created_at)}
+                    </Typography>
+
+                    <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
+                      {' - '}
+                    </Typography>
+                    <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
+                      {filteredComments[filteredComments.length - 1].display_name}
+                    </Typography>
+                  </>
+                )}
               </Box>
               <Box display="flex" flexDirection={'row'} alignItems="center" gap={0.5}>
                 <Edit fontSize="small" color="primary" />
