@@ -14,13 +14,14 @@ import {BoreholeMapData} from '~/types';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import {useRawTaskStore} from '../store';
-import {metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {locationMetadataQueryOptions, metadataQueryOptions} from '~/hooks/query/useMetadata';
 import {useQuery} from '@tanstack/react-query';
 import {useDisplayState} from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
+import LocationRouter from '~/features/station/components/LocationRouter';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {BoreholeMapData} from '~/types';
@@ -49,6 +50,7 @@ const TasksOverview = () => {
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
+  const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
   const {isMobile} = useBreakpoints();
 
   const clickCallback = (data: NotificationMap | BoreholeMapData | null) => {
@@ -61,6 +63,7 @@ const TasksOverview = () => {
     if ('loc_id' in data) {
       // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
       setLocId(data.loc_id);
+      console.log(data);
     } else if ('boreholeno' in data) {
       setBoreholeNo(data.boreholeno);
     }
@@ -120,7 +123,7 @@ const TasksOverview = () => {
             }}
             height="100%"
           >
-            <Box p={1}>
+            <Box py={1}>
               <LocationList />
             </Box>
           </WindowManager.Window>
@@ -166,16 +169,6 @@ const TasksOverview = () => {
             </Box>
           </WindowManager.Window>
 
-          {/* <WindowManager.Window
-            key="locationstation"
-            show={loc_id !== null && ts_id === null}
-            size={3}
-            onClose={() => setSelectedTask(null)}
-          >
-            <AppContext.Provider value={{loc_id}}>
-              <LocationRouter />
-            </AppContext.Provider>
-          </WindowManager.Window> */}
           <WindowManager.Window
             key="boreholepage"
             show={boreholeno !== null && intakeno !== null}
@@ -199,6 +192,19 @@ const TasksOverview = () => {
           >
             <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
               <Station />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="locationstation"
+            show={loc_id !== null && locationData?.timeseries.length === 0}
+            minSize={2}
+            maxSize={3}
+            onClose={() => setSelectedTask(null)}
+            height="100%"
+          >
+            <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
+              <LocationRouter />
             </AppContext.Provider>
           </WindowManager.Window>
         </WindowManager>

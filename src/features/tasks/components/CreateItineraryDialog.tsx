@@ -34,19 +34,17 @@ const CreateItineraryDialog = ({ids, dialogOpen, setDialogOpen}: CreateItinerary
       //   const lowestDate = selectedTasks.reduce((acc, curr) => {
       //     if (!curr.due_date) return acc;
       //     if (!acc) return curr.due_date;
-
       //     return acc < curr.due_date ? acc : curr.due_date;
       //   }, selectedTasks[0].due_date);
-
       //   // find assigned to if it is the same for all tasks
       //   const assigned_to = selectedTasks.reduce((acc, curr) => {
       //     if (!acc) return curr.assigned_to;
       //     if (acc !== curr.assigned_to) return '';
       //     return acc;
       //   }, selectedTasks[0].assigned_to);
-
       post.mutate({
         task_ids: [...new Set([...taskIds, ...ids])],
+        loc_ids: [...new Set(selectedTasks.map((task) => task.loc_id))],
         due_date: data.due_date,
         assigned_to: data.assigned_to,
       });

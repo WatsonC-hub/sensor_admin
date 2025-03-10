@@ -60,6 +60,7 @@ export type Task = {
   created_display_name: string;
   created_at: string;
   updated_at: string;
+  updated_by: string;
   tstype_name: string;
   loctypename: string;
   projectno: string | null;
@@ -187,6 +188,7 @@ export type TaskitineraryItem = {
 };
 
 export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'> & {
+  loc_ids: number[];
   task_ids: ID[];
 };
 
@@ -196,6 +198,10 @@ export type AddTasksToitinerary = {
 };
 
 export type DeleteTaskFromItinerary = {
+  path: string;
+};
+
+export type completeItinerary = {
   path: string;
 };
 

@@ -6,6 +6,7 @@ import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
 import type {
+  completeItinerary,
   ID,
   PostTaskitinerary,
   Task,
@@ -23,6 +24,15 @@ export const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
   mutationFn: async (mutation_data: PostTaskitinerary) => {
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries`, mutation_data);
+    return result;
+  },
+};
+
+export const completeItineraryOptions = {
+  mutationKey: ['itinerary_complete'],
+  mutationFn: async (mutation_data: completeItinerary) => {
+    const {path} = mutation_data;
+    const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}/complete`);
     return result;
   },
 };
@@ -81,6 +91,16 @@ export const useTaskItinerary = (id?: ID) => {
     },
   });
 
+  const complete = useMutation<unknown, APIError, completeItinerary>({
+    ...completeItineraryOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['itineraries'],
+      });
+      toast.success('Opgaver udført');
+    },
+  });
+
   // const deleteTaskFromItinerary = useMutation<unknown, APIError, DeleteTaskFromItinerary>({
   //   ...deleteTaskFromItineraryOptions,
   //   onSuccess: () => {
@@ -105,6 +125,7 @@ export const useTaskItinerary = (id?: ID) => {
     get,
     post,
     getItineraryTasks,
+    complete,
     // deleteTaskFromItinerary,
     // moveTasks,
     // getProjects,

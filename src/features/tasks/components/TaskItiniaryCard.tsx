@@ -10,6 +10,7 @@ import {useTaskStore} from '../api/useTaskStore';
 import {Taskitinerary} from '../types';
 
 import Droppable from './Droppable';
+import {useTaskItinerary} from '../api/useTaskItinerary';
 
 interface TaskItineraryCardProps {
   itinerary: Taskitinerary;
@@ -22,6 +23,8 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
     getUsers: {data: users},
     moveTask,
   } = useTasks();
+
+  const {complete} = useTaskItinerary(itinerary.id);
 
   const {selectedTask, isDraggingTask, selectedLocIds, tasks} = useTaskStore();
 
@@ -110,6 +113,21 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
                 bttype="itinerary"
               >
                 Se tur
+              </Button>
+              <Button
+                onClick={() => {
+                  complete.mutate(
+                    {path: `${itinerary.id}`},
+                    {
+                      onSuccess: () => {
+                        console.log('COMPLETED');
+                      },
+                    }
+                  );
+                }}
+                bttype="itinerary"
+              >
+                Afslut
               </Button>
             </CardActions>
           </GenericCard>

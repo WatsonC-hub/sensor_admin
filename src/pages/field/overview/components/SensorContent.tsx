@@ -1,34 +1,16 @@
-import {Box, Typography} from '@mui/material';
-
-import Button from '~/components/Button';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
-import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {useAppContext} from '~/state/contexts';
+import {Box} from '@mui/material';
+import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
+import TaskList from '~/features/station/components/sensorContent/TaskList';
+import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
 
 const SensorContent = () => {
-  const {loc_id} = useAppContext(['loc_id']);
-  const {station} = useNavigationFunctions();
-  const {tasks, setSelectedTask} = useTaskStore();
-  const {data, isPending} = useNotificationOverviewMap();
-
-  const locationData = data?.find((item) => item.loc_id === loc_id);
-  if (isPending || locationData === undefined) {
-    return <Typography>Loading...</Typography>;
-  }
-
-  const all_notifications = [locationData, ...locationData.otherNotifications];
-  const all_tasks =
-    tasks?.filter((task) => task.loc_id === locationData.loc_id && task.is_created) || [];
-  const unique_stations = all_notifications
-    .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
-    .filter((item) => item.ts_id !== null);
-
   return (
-    <>
-      <Box
+    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3}>
+      <LocationInfo />
+      <TimeseriesList />
+      <TaskList />
+
+      {/* <Box
         sx={{
           display: 'flex',
           gap: 1,
@@ -51,9 +33,7 @@ const SensorContent = () => {
               </Button>
               <Box display="flex" gap={0.5}>
                 <NotificationIcon iconDetails={notification} />
-                {/* <Typography variant="body2">{notification.opgave}</Typography> */}
               </Box>
-              {/* <Typography variant="body2">{convertDateWithTimeStamp(notification.dato)}</Typography> */}
             </Box>
           );
         })}
@@ -125,9 +105,9 @@ const SensorContent = () => {
             </Box>
           );
         })}
-      </Box>
+      </Box> */}
       {/* <Typography variant="h6">Opgaver</Typography> */}
-    </>
+    </Box>
   );
 };
 

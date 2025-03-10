@@ -27,8 +27,9 @@ const OwnDatePicker = (props) => {
         InputLabelProps={{
           shrink: true,
         }}
+        size={props.size}
         fullWidth={props.fullWidth}
-        margin="dense"
+        margin={'dense'}
       />
     </LocalizationProvider>
   );
