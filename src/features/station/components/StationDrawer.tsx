@@ -56,17 +56,13 @@ type Item = {
   icon: ReactNode;
   onHover?: () => void;
   requiredTsId: boolean;
-  calculated?: boolean;
-  admin?: boolean;
-  contactAndKeyAccess?: boolean;
-  ressourceAccess?: boolean;
+  disabled?: boolean;
 };
 
 type DrawerItems = {
   text?: string;
   items: Item[];
-  admin?: boolean;
-  calculated?: boolean;
+  disabled?: boolean;
 };
 
 const navIconStyle = (isSelected: boolean) => {
@@ -97,7 +93,7 @@ const StationDrawer = () => {
       text: 'Tidsserie',
       items: [
         {
-          text: 'Pejling',
+          text: 'Kontrol',
           page: stationPages.PEJLING,
           icon: <AddCircle />,
           requiredTsId: false,
@@ -108,7 +104,7 @@ const StationDrawer = () => {
           page: stationPages.TILSYN,
           icon: <PlaylistAddCheck />,
           requiredTsId: true,
-          calculated: metadata?.calculated,
+          disabled: metadata?.calculated,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
         },
         {
@@ -116,6 +112,7 @@ const StationDrawer = () => {
           page: stationPages.MAALEPUNKT,
           icon: <StraightenRounded />,
           requiredTsId: true,
+          disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id)),
         },
         {
@@ -151,7 +148,7 @@ const StationDrawer = () => {
           page: stationPages.KONTAKTER,
           icon: <PersonIcon />,
           requiredTsId: false,
-          contactAndKeyAccess: user?.contactAndKeysPermission,
+          disabled: !user?.contactAndKeysPermission,
           onHover: () => handlePrefetch(ContactInfoGetOptions(loc_id)),
         },
         {
@@ -159,7 +156,7 @@ const StationDrawer = () => {
           page: stationPages.NØGLER,
           icon: <KeyIcon />,
           requiredTsId: false,
-          contactAndKeyAccess: user?.contactAndKeysPermission,
+          disabled: !user?.contactAndKeysPermission,
           onHover: () => handlePrefetch(LocationAccessGetOptions(loc_id)),
         },
         {
@@ -167,7 +164,7 @@ const StationDrawer = () => {
           page: stationPages.HUSKELISTE,
           icon: <BackpackIcon />,
           requiredTsId: false,
-          ressourceAccess: user?.ressourcePermission,
+          disabled: !user?.ressourcePermission,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
         },
         {
@@ -181,8 +178,7 @@ const StationDrawer = () => {
     },
     {
       text: 'Kvalitetssikring',
-      admin: user?.QAPermission,
-      calculated: metadata?.calculated,
+      disabled: !user?.QAPermission || metadata?.calculated,
       items: [
         {
           text: 'Justeringer',
@@ -206,7 +202,7 @@ const StationDrawer = () => {
     .filter((category) =>
       category.items.some((item) => (!ts_id && !item.requiredTsId ? true : ts_id))
     )
-    .filter((category) => category.admin !== false && category.calculated !== true);
+    .filter((category) => category.disabled == undefined || !category.disabled);
 
   const drawerItems = filteredItems.map((category) => {
     return (
@@ -217,12 +213,7 @@ const StationDrawer = () => {
           </ListItem>
         )}
         {category.items
-          .filter(
-            (item) =>
-              item.contactAndKeyAccess !== false &&
-              item.ressourceAccess !== false &&
-              (item.calculated === undefined || item.calculated === false)
-          )
+          .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
             if (!ts_id && item.requiredTsId) {
               return;
