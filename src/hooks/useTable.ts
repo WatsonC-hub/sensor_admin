@@ -298,13 +298,6 @@ export const useQueryTable = <TData extends MRT_RowData>(
     data: data ?? [],
     ...tableOptions,
     ...state,
-    localization: {
-      ...tableOptions.localization,
-      noRecordsToDisplay:
-        error != null && typeof error.response?.data.detail == 'string'
-          ? error.response?.data.detail
-          : tableOptions?.localization?.noRecordsToDisplay,
-    },
     state: {
       ...state?.state,
       isLoading: data === undefined && !isFetched,
