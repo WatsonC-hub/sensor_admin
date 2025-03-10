@@ -94,7 +94,7 @@ export default function TilsynTableMobile({handleEdit, handleDelete, disabled}: 
         ),
       },
     ],
-    []
+    [disabled, handleEdit]
   );
 
   const options: Partial<MRT_TableOptions<TilsynItem>> = {
