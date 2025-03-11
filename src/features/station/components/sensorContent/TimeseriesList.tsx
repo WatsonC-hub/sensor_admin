@@ -1,4 +1,4 @@
-import {Box, Typography} from '@mui/material';
+import {Box, Typography, Link} from '@mui/material';
 import React from 'react';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
@@ -38,14 +38,11 @@ const TimeseriesList = () => {
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">
             <Box display="flex" gap={1} sx={{cursor: 'pointer'}}>
               <NotificationIcon iconDetails={notification} />
-              <Typography
-                variant="caption"
-                onClick={() => station(notification.ts_id)}
-                sx={{color: 'blue'}}
-                width={'fit-content'}
-              >
-                {splitted[splitted.length - 1].replace('-', '').trim()}
-                {hasTask && <Typography variant="caption">{': ' + notification.opgave}</Typography>}
+              <Typography fontSize={'small'} width={'fit-content'}>
+                <Link onClick={() => station(notification.ts_id)}>
+                  {splitted[splitted.length - 1].replace('-', '').trim()}
+                  {hasTask && ': ' + notification.opgave}
+                </Link>
               </Typography>
             </Box>
             {all_tasks.find((task) => task.ts_id === notification.ts_id) !== undefined && (

@@ -42,7 +42,7 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
     sx = {
       textTransform: 'initial',
       my: 0.5,
-      p: '0.5rem 1rem',
+      p: '0.25rem 1rem',
       borderRadius: 9999,
       backgroundColor: 'white',
       color: 'primary.constrastText',

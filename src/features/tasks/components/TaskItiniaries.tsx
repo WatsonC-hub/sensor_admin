@@ -6,7 +6,6 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import {useTaskItinerary} from '../api/useTaskItinerary';
-import {Task} from '../types';
 
 import CreateItineraryDialog from './CreateItineraryDialog';
 import Droppable from './Droppable';
@@ -15,7 +14,8 @@ import TaskItineraryCard from './TaskItiniaryCard';
 const TaskItiniaries = () => {
   const [ids, setIds] = React.useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  const {selectedLocIds} = useTaskStore();
+  const {selectedLocIds, tasks} = useTaskStore();
+  const [locIds, setLocIds] = React.useState<number[]>([]);
   const {taskManagementSearch} = useNavigationFunctions();
   const {
     get: {data},
@@ -35,11 +35,22 @@ const TaskItiniaries = () => {
       </Button>
       <Grid container gap={1} spacing={2} display={'flex'} flexDirection={'row'}>
         <Grid item mobile={12} tablet={3} laptop={2.5} ml={0.5}>
-          <Droppable<Task>
+          <Droppable<{loc_id: number}>
             onDrop={(e, data) => {
               e.preventDefault();
               console.log('DROP');
-              if (!ids.includes(data.id)) setIds([...ids, data.id]);
+              console.log(data);
+
+              if (tasks)
+                setIds(
+                  Array.from(
+                    new Set([
+                      ...ids,
+                      ...tasks.filter((task) => task.loc_id === data.loc_id).map((task) => task.id),
+                    ])
+                  )
+                );
+              setLocIds([...locIds, data.loc_id]);
             }}
           >
             {({isDraggingOver}) => (
@@ -68,7 +79,7 @@ const TaskItiniaries = () => {
                 <Typography variant="h5" component="div">
                   Ny tur
                 </Typography>
-                {ids.map((id) => (
+                {locIds.map((id) => (
                   <Typography key={id} variant="body2" color="text.secondary">
                     {id}
                   </Typography>
