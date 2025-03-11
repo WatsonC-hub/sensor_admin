@@ -25,6 +25,7 @@ const TimeseriesList = () => {
   const unique_stations = all_notifications
     .filter((item, index, self) => index === self.findIndex((t) => t.ts_id === item.ts_id))
     .filter((item) => item.ts_id !== null);
+
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
       <Typography variant="h6" fontSize={'bold'}>
@@ -40,6 +41,7 @@ const TimeseriesList = () => {
               <Typography
                 variant="caption"
                 onClick={() => station(notification.ts_id)}
+                sx={{color: 'blue'}}
                 width={'fit-content'}
               >
                 {splitted[splitted.length - 1].replace('-', '').trim()}

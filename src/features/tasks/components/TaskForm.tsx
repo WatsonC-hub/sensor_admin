@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, MenuItem, Switch, Typography} from '@mui/material';
+import {Box, FormControlLabel, MenuItem, Switch, TextFieldProps, Typography} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -12,6 +12,7 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
 import {useTaskStore} from '../api/useTaskStore';
+import {merge} from 'lodash';
 
 const zodSchema = z.object({
   name: z
@@ -149,6 +150,17 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
     getUsers: {data: taskUsers},
   } = useTasks();
   const {control} = useFormContext<FormValues>();
+
+  const textfieldProps = {
+    label: 'Ansvarlig',
+    placeholder: 'Vælg opgave ansvarlig',
+  };
+
+  let mergedProps: Partial<TextFieldProps> = textfieldProps;
+  if (props.textFieldsProps) {
+    mergedProps = merge(textfieldProps, props.textFieldsProps);
+  }
+
   return (
     <Controller
       name="assigned_to"
@@ -187,10 +199,7 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
               </li>
             );
           }}
-          textFieldsProps={{
-            label: 'Ansvarlig',
-            placeholder: 'Vælg opgave ansvarlig',
-          }}
+          textFieldsProps={mergedProps}
         />
       )}
     />
@@ -243,7 +252,7 @@ const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificati
                     } else {
                       onChange([notification_id]);
                     }
-                    onChangeCallback && onChangeCallback(e);
+                    if (onChangeCallback) onChangeCallback(e);
                   }}
                 />
               }
