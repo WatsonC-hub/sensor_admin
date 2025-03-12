@@ -1,6 +1,9 @@
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
@@ -22,7 +25,6 @@ import {
   defaultCircleMarkerStyle,
   zoomThresholdForParking,
   zoomThresholdForSmallMarkers,
-  smallRadius,
   zoomThreshold,
   defaultRadius,
   zoomAtom,
@@ -36,6 +38,7 @@ import {
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
+import {setIconSize} from '../utils';
 
 // const highlightedParking: L.Marker | null = null;
 
@@ -275,7 +278,7 @@ const useMap = <TData extends object>(
         }
       }
     });
-    console.log('WORKING');
+
     setLocIds(
       markersInViewport.map((marker) => {
         if (marker instanceof L.Marker || marker instanceof L.CircleMarker) {
@@ -285,15 +288,9 @@ const useMap = <TData extends object>(
     );
 
     if (zoom < zoomThresholdForSmallMarkers) {
-      markersInViewport.forEach(function (layer) {
-        if (layer instanceof L.CircleMarker)
-          layer.setRadius(layer.options.data ? smallRadius : smallRadius + 2);
-      });
+      setIconSize(24);
     } else {
-      markersInViewport.forEach(function (layer) {
-        if (layer instanceof L.CircleMarker)
-          layer.setRadius(layer.options.data ? defaultRadius : defaultRadius + 4);
-      });
+      setIconSize(48);
     }
 
     if (zoom > zoomThreshold || markersInViewport.length < markerNumThreshold) {
@@ -499,7 +496,7 @@ const useMap = <TData extends object>(
   useEffect(() => {
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup();
-    markerLayerRef.current = L.featureGroup().addTo(mapRef.current);
+    markerLayerRef.current = L.markerClusterGroup().addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup();
 

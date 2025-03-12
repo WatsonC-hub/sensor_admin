@@ -12,7 +12,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
-import {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import {getColor} from '~/features/notifications/utils';
 
 type Props = {
   task: Task;

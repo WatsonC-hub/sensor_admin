@@ -5,7 +5,7 @@ import {Task} from '~/features/tasks/types';
 import {Edit} from '@mui/icons-material';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
-import {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import {getColor} from '~/features/notifications/utils';
 
 type Props = {
   task: Task;

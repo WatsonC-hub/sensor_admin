@@ -8,15 +8,13 @@ import L, {ContextMenuItemClickEvent} from 'leaflet';
 import '~/css/leaflet.css';
 import {useEffect, SyntheticEvent, useCallback} from 'react';
 import {toast} from 'react-toastify';
-
+import '~/features/map/map.css';
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {boreholeColors} from '~/consts';
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
-import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 
 import {useAuthStore, useMapUtilityStore} from '~/state/store';
@@ -26,23 +24,9 @@ import 'leaflet/dist/leaflet.css';
 
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
 import useMap from '../../../features/map/components/useMap';
-import {
-  boreholeSVG,
-  defaultCircleMarkerStyle,
-  defaultRadius,
-  utm,
-} from '../../../features/map/mapConsts';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
-
-const leafletIcons = Object.keys(boreholeColors).map((key) => {
-  const index = parseInt(key);
-  return new L.DivIcon({
-    className: 'custom-div-icon',
-    html: L.Util.template(boreholeSVG, {color: boreholeColors[index].color}),
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-  });
-});
+import {getBoreholeIcon, getNotificationIcon} from '~/features/map/utils';
+import {utm} from '../../../features/map/mapConsts';
 
 interface LocItems {
   name: string;
@@ -167,10 +151,8 @@ const Map = ({clickCallback}: MapProps) => {
   const createBoreholeMarker = (element: BoreholeMapData) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
 
-    const maxStatus = Math.max(...element.status);
-
     const marker = L.marker(point, {
-      icon: leafletIcons[maxStatus],
+      icon: getBoreholeIcon(element),
       interactive: true,
       riseOnHover: true,
       title: element.boreholeno,
@@ -186,14 +168,26 @@ const Map = ({clickCallback}: MapProps) => {
     const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
     if (typeof coords != 'object') return;
     const point: L.LatLngExpression = [coords.lat, coords.lng];
-    const marker = L.circleMarker(point, {
-      ...defaultCircleMarkerStyle,
+
+    console.log('CREATINGMARKER');
+    const marker = L.marker(point, {
+      icon: getNotificationIcon(element),
       interactive: true,
-      fillColor: getColor(element),
+      riseOnHover: true,
       title: element.loc_name,
       data: element,
       contextmenu: true,
+      contextmenuItems: [],
     });
+
+    // const marker = L.circleMarker(point, {
+    //   ...defaultCircleMarkerStyle,
+    //   interactive: true,
+    //   fillColor: getColor(element),
+    //   title: element.loc_name,
+    //   data: element,
+    //   contextmenu: true,
+    // });
 
     let locationMenu: Array<L.ContextMenuItem> = [
       {
@@ -254,19 +248,19 @@ const Map = ({clickCallback}: MapProps) => {
       contextmenuItems: [...locationMenu],
     });
 
-    if (element.obsNotifications.length > 0) {
-      const smallMarker = L.circleMarker(point, {
-        ...defaultCircleMarkerStyle,
-        radius: defaultRadius + 4,
-        interactive: false,
-        fillOpacity: 1,
-        opacity: 1,
-        fillColor: getColor(element.obsNotifications[0]),
-      });
-      if (markerLayer) {
-        smallMarker.addTo(markerLayer);
-      }
-    }
+    // if (element.obsNotifications.length > 0) {
+    //   const smallMarker = L.circleMarker(point, {
+    //     ...defaultCircleMarkerStyle,
+    //     radius: defaultRadius + 4,
+    //     interactive: false,
+    //     fillOpacity: 1,
+    //     opacity: 1,
+    //     fillColor: getColor(element.obsNotifications[0]),
+    //   });
+    //   if (markerLayer) {
+    //     smallMarker.addTo(markerLayer);
+    //   }
+    // }
 
     return marker;
   };
@@ -342,6 +336,8 @@ const Map = ({clickCallback}: MapProps) => {
       }
       return 0;
     });
+
+    console.log('FILTERED');
 
     sorted?.forEach((element) => {
       if ('loc_id' in element) {

@@ -12,9 +12,9 @@ import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificat
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
-
+import {getColor} from '~/features/notifications/utils';
 // Mock data for notifications
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);

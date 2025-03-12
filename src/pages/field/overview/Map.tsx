@@ -19,7 +19,6 @@ import BoreholeActions from '~/pages/field/overview/components/BoreholeActions';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import DrawerComponent from '~/pages/field/overview/components/DrawerComponent';
 import LegendContent from '~/pages/field/overview/components/LegendContent';
-import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
@@ -39,6 +38,7 @@ import {useMapUtilityStore} from '~/state/store';
 import {useUser} from '~/features/auth/useUser';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {AppContext} from '~/state/contexts';
+import {getColor} from '~/features/notifications/utils';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);

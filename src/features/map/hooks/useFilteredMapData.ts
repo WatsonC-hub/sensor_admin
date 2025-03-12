@@ -93,22 +93,18 @@ export const useFilteredMapData = () => {
 
   const {filters, locIds} = useMapFilterStore((state) => state);
 
-  const [mapFilteredData, listFilteredData] = useMemo(() => {
-    if (!data) {
-      return [undefined, undefined];
-    }
+  const mapFilteredData = useMemo(() => {
     const filteredData = filterData(searchAcrossAll(data, filters.freeText ?? ''), filters);
+    return filteredData;
+  }, [data, filters]);
 
+  const listFilteredData = useMemo(() => {
     if (locIds.length > 0) {
       const filteredLocIds = new Set(locIds);
-      return [
-        filteredData,
-        filteredData.filter((elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id)),
-      ];
+      return mapFilteredData.filter((elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id));
     }
-
-    return [filteredData, filteredData];
-  }, [data, filters, locIds]);
+    return mapFilteredData;
+  }, [mapFilteredData, locIds]);
 
   return {
     data,
