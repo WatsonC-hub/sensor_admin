@@ -67,13 +67,36 @@ const nullState: Partial<Notification> = {
   notify_type: null,
 };
 
+const tmpGetFlag = (item: Notification) => {
+  if (item.notify_type === 'obs' && item.notification_id === 42) {
+    return 2;
+  } else if ([141, 171].includes(item.notification_id)) {
+    return 2;
+  } else if ([12].includes(item.notification_id)) {
+    return 3;
+  } else {
+    return item.flag;
+  }
+};
+
+const tempNotificationTransform = (data: Notification[]): Notification[] => {
+  return data.map((item) => {
+    return {
+      ...item,
+      notify_type: 'primary',
+      flag: tmpGetFlag(item),
+    };
+  });
+};
+
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
   const {iotAccess} = useUser();
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/overblik`);
-      return data;
+
+      return tempNotificationTransform(data);
     },
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,

@@ -2,7 +2,7 @@ import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+// import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
@@ -18,6 +18,7 @@ import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
 import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
+import droplelSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import {
   outdormapbox,
@@ -39,6 +40,7 @@ import {
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
+import {FlagEnum, sensorColors} from '~/features/notifications/consts';
 
 // const highlightedParking: L.Marker | null = null;
 
@@ -49,7 +51,7 @@ const useMap = <TData extends object>(
   selectCallback?: (data: TData | null) => void
 ) => {
   const mapRef = useRef<L.Map | null>(null);
-  const markerLayerRef = useRef<L.FeatureGroup | null>(null);
+  const markerLayerRef = useRef<L.MarkerClusterGroup | null>(null);
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const geoJsonRef = useRef<L.FeatureGroup | null>(null);
@@ -496,7 +498,31 @@ const useMap = <TData extends object>(
   useEffect(() => {
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup();
-    markerLayerRef.current = L.markerClusterGroup().addTo(mapRef.current);
+    markerLayerRef.current = L.markerClusterGroup({
+      disableClusteringAtZoom: 15,
+      spiderfyOnMaxZoom: false,
+      removeOutsideVisibleBounds: true,
+      maxClusterRadius: 50,
+      zoomToBoundsOnClick: true,
+      iconCreateFunction: (cluster) => {
+        const childMarkers = cluster.getAllChildMarkers();
+        const num = childMarkers.length;
+
+        const maxStatus = childMarkers.reduce((acc, marker) => {
+          return Math.max(acc, marker.options.data.flag);
+        }, 0);
+
+        return L.divIcon({
+          className: 'svg-icon',
+          iconAnchor: [12, 24],
+          html: L.Util.template(droplelSVG, {
+            color: sensorColors[maxStatus as FlagEnum]?.color || sensorColors[0].color,
+            icon: '',
+            num: num,
+          }),
+        });
+      },
+    }).addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup();
 
@@ -522,7 +548,6 @@ const useMap = <TData extends object>(
       onCreateRouteEvent(mapRef.current);
     }
     markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
-      console.log(e);
       L.DomEvent.stopPropagation(e);
       setSelectedMarkerWithCallback(e.sourceTarget.options.data);
       if (hightlightedMarker) {

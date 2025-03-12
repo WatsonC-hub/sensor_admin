@@ -169,7 +169,6 @@ const Map = ({clickCallback}: MapProps) => {
     if (typeof coords != 'object') return;
     const point: L.LatLngExpression = [coords.lat, coords.lng];
 
-    console.log('CREATINGMARKER');
     const marker = L.marker(point, {
       icon: getNotificationIcon(element),
       interactive: true,
@@ -178,6 +177,7 @@ const Map = ({clickCallback}: MapProps) => {
       data: element,
       contextmenu: true,
       contextmenuItems: [],
+      zIndexOffset: 1000 * element.flag,
     });
 
     // const marker = L.circleMarker(point, {
@@ -336,8 +336,6 @@ const Map = ({clickCallback}: MapProps) => {
       }
       return 0;
     });
-
-    console.log('FILTERED');
 
     sorted?.forEach((element) => {
       if ('loc_id' in element) {
