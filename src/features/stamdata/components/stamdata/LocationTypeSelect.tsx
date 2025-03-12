@@ -31,9 +31,6 @@ export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
       select
       required
       fullWidth
-      sx={{
-        mb: 2,
-      }}
       disabled={disable}
     >
       <MenuItem value={-1} key={-1}>

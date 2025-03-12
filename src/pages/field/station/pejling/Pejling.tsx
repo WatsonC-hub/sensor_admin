@@ -2,8 +2,7 @@ import {AddCircle} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
-import {parseAsBoolean, parseAsString, useQueryState} from 'nuqs';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
@@ -12,27 +11,36 @@ import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
-import useBreakpoints from '~/hooks/useBreakpoints';
-import {useStationPages} from '~/hooks/useStationPages';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {
+  useCreateTabState,
+  useShowFormState,
+  useStationPages,
+} from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';
-import {stamdataStore} from '~/state/store';
+import {useAppContext} from '~/state/contexts';
 import {LatestMeasurement, PejlingItem} from '~/types';
 
 type Props = {
-  ts_id: number;
   setDynamic: (dynamic: Array<string | number> | undefined) => void;
 };
 
-const Pejling = ({ts_id, setDynamic}: Props) => {
-  const store = stamdataStore();
-  const [canEdit] = useState(true);
-  const isWaterlevel = store.timeseries?.tstype_id === 1;
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+const Pejling = ({setDynamic}: Props) => {
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {data: timeseries_data} = useTimeseriesData();
+  const isWaterlevel = timeseries_data?.tstype_id === 1;
+  const [showForm, setShowForm] = useShowFormState();
   const [, setPageToShow] = useStationPages();
-  const [, setTabValue] = useQueryState('tab', parseAsString);
+  const [, setTabValue] = useCreateTabState();
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
-  const {isTouch, isLaptop} = useBreakpoints();
 
+  const {
+    feature_permission_query: {data: permissions},
+    location_permissions,
+  } = usePermissions(loc_id);
+
+  console.log(location_permissions);
   const initialData = {
     gid: -1,
     timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
@@ -41,9 +49,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
     comment: '',
   };
 
-  const formMethods = useForm<PejlingItem>({
-    defaultValues: initialData,
-  });
+  const formMethods = useForm<PejlingItem>({defaultValues: initialData});
 
   const {reset, getValues} = formMethods;
 
@@ -69,19 +75,13 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   }, [showForm]);
 
   useEffect(() => {
-    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
-      setShowForm(null);
-      reset(initialData);
-    }
+    setShowForm(null);
+    reset(initialData);
   }, [ts_id]);
 
   const handlePejlingSubmit = (values: PejlingItem) => {
     const payload = {
-      data: {
-        ...values,
-        isWaterlevel: isWaterlevel,
-        stationid: ts_id,
-      },
+      data: {...values, isWaterlevel: isWaterlevel, stationid: ts_id},
       path: values.gid === -1 ? `${ts_id}` : `${ts_id}/${values.gid}`,
     };
     payload.data.timeofmeas = moment(payload.data.timeofmeas).toISOString();
@@ -100,9 +100,7 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   };
 
   const handleDelete = (gid: number | undefined) => {
-    const payload = {
-      path: `${ts_id}/${gid}`,
-    };
+    const payload = {path: `${ts_id}/${gid}`};
     delPejling.mutate(payload);
   };
 
@@ -118,47 +116,53 @@ const Pejling = ({ts_id, setDynamic}: Props) => {
   };
 
   return (
-    <Box mx={1}>
-      <LatestMeasurementTable
-        latestMeasurement={latestMeasurement}
-        ts_id={ts_id}
-        errorMessage={
-          isError && typeof error?.response?.data.detail == 'string'
-            ? error?.response?.data.detail
-            : undefined
-        }
-      />
-      <FormProvider {...formMethods}>
-        <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
-          {showForm === true && (
-            <PejlingForm
-              openAddMP={openAddMP}
-              submit={handlePejlingSubmit}
-              resetFormData={resetFormData}
-              setDynamic={setDynamic}
-              latestMeasurement={latestMeasurement}
-            />
-          )}
-        </Box>
-      </FormProvider>
-      <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
-        <PejlingMeasurements
-          handleEdit={handleEdit}
-          handleDelete={handleDelete}
-          canEdit={canEdit}
+    <>
+      <Box
+        mx={'auto'}
+        position={'relative'}
+        width="fit-content"
+        display={'flex'}
+        flexDirection={'column'}
+      >
+        <LatestMeasurementTable
+          latestMeasurement={latestMeasurement}
+          errorMessage={
+            isError && typeof error?.response?.data.detail == 'string'
+              ? error?.response?.data.detail
+              : undefined
+          }
         />
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj kontrol"
-          onClick={() => {
-            setShowForm(true);
-          }}
-          sx={{
-            visibility: showForm === null ? 'visible' : 'hidden',
-          }}
-        ></FabWrapper>
+        <FormProvider {...formMethods}>
+          <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
+            {showForm === true && (
+              <PejlingForm
+                openAddMP={openAddMP}
+                submit={handlePejlingSubmit}
+                resetFormData={resetFormData}
+                setDynamic={setDynamic}
+                latestMeasurement={latestMeasurement}
+              />
+            )}
+          </Box>
+        </FormProvider>
+        <Box display={'flex'} flexDirection={'column'}>
+          <PejlingMeasurements
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+          />
+        </Box>
       </Box>
-    </Box>
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj kontrol"
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
+    </>
   );
 };
 

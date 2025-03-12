@@ -3,6 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import {useAppContext} from '~/state/contexts';
 
 interface RessourcerBase {
   path: string;
@@ -48,7 +49,8 @@ export const ressourcerDelOptions = {
   },
 };
 
-export const useRessourcer = (loc_id: number | undefined) => {
+export const useRessourcer = () => {
+  const {loc_id} = useAppContext(['loc_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: ['ressourcer'],
@@ -57,6 +59,7 @@ export const useRessourcer = (loc_id: number | undefined) => {
 
       return data;
     },
+    enabled: loc_id !== undefined,
   });
 
   const relation = useQuery({
@@ -68,6 +71,7 @@ export const useRessourcer = (loc_id: number | undefined) => {
 
       return data;
     },
+    enabled: loc_id !== undefined,
   });
 
   const post = useMutation({

@@ -57,6 +57,7 @@ export const useLeafletMapRoute = () => {
 
       return data;
     },
+    staleTime: 10 * 1000,
   });
 
   const post = useMutation({

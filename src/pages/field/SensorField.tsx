@@ -12,14 +12,17 @@ import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
 import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import {captureDialogAtom} from '~/state/atoms';
+import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
+import CreateStamdataProvider from '~/state/CreateStamdataProvider';
+import StationRouterProvider from '~/state/StationRouterProvider';
 
-import Opgave from './opgave/Opgave';
+import Station from './station/Station';
 
 function SensorField() {
   const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
 
-  async function getData(labelid: string) {
+  async function getData(labelid: string | number) {
     const {data} = await apiClient.get(`/sensor_field/calypso_id/${labelid}`);
     return data;
   }
@@ -30,11 +33,14 @@ function SensorField() {
     setOpen(false);
   };
 
-  const handleScan = async (data: any) => {
-    const split = data['text'].split('/');
-    const calypso_id = split[split.length - 1];
-
+  const handleScan = async (data: any, calypso_id: number | null) => {
     const options = {replace: true};
+
+    if (!calypso_id) {
+      toast.error('QR-koden er ikke gyldig', {autoClose: 2000});
+      handleClose();
+      return;
+    }
 
     try {
       const resp = await getData(calypso_id);
@@ -56,9 +62,7 @@ function SensorField() {
           borehole(resp.boreholeno, options);
         }
       } else {
-        toast.error('Ukendt fejl', {
-          autoClose: 2000,
-        });
+        toast.error('Ukendt fejl', {autoClose: 2000});
       }
       handleClose();
     } catch (e: any) {
@@ -74,16 +78,47 @@ function SensorField() {
       {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
       <Routes>
         <Route path="/" element={<OverviewPage />} />
-        <Route path="location/:locid/:ts_id" element={<LocationRouter />} />
-        <Route path="location/:locid" element={<LocationRouter />} />
+        <Route
+          path="location/:locid/:ts_id"
+          element={
+            <StationRouterProvider>
+              <Station key="station" />
+            </StationRouterProvider>
+          }
+        />
+        <Route
+          path="location/:locid"
+          element={
+            <StationRouterProvider>
+              <LocationRouter key="location" />
+            </StationRouterProvider>
+          }
+        />
         <Route
           path="stamdata"
-          element={<OpretStamdata setAddStationDisabled={setAddStationDisabled} />}
+          element={
+            <CreateStamdataProvider>
+              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
+            </CreateStamdataProvider>
+          }
         />
-        <Route path="opgave" element={<Opgave />} />
         <Route path="/:labelid" element={<ScanComponent />} />
-        <Route path="borehole/:boreholeno/:intakeno" element={<BoreholeRouter />} />
-        <Route path="borehole/:boreholeno" element={<BoreholeRouter />} />
+        <Route
+          path="borehole/:boreholeno/:intakeno"
+          element={
+            <BoreholeRouterProvider>
+              <BoreholeRouter />
+            </BoreholeRouterProvider>
+          }
+        />
+        <Route
+          path="borehole/:boreholeno"
+          element={
+            <BoreholeRouterProvider>
+              <BoreholeRouter />
+            </BoreholeRouterProvider>
+          }
+        />
       </Routes>
     </div>
   );

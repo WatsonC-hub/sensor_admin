@@ -12,13 +12,13 @@ import IconButton from '@mui/material/IconButton';
 import {atom, useAtom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
 import React, {useState, useRef, SyntheticEvent, MouseEventHandler, useEffect} from 'react';
+import {useUser} from '~/features/auth/useUser';
 
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
-import {authStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 interface LocItems {
@@ -128,7 +128,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isTouch} = useBreakpoints();
-  const [boreholeAccess] = authStore((state) => [state.boreholeAccess]);
+  const user = useUser();
 
   const elasticSearch = (
     e: SyntheticEvent,
@@ -156,18 +156,8 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         .sort((a, b) => a.name.localeCompare(b.name));
 
       let filteredBorehole: LocItems[] = [];
-      if (boreholeAccess) {
-        const search = {
-          query: {
-            bool: {
-              must: {
-                query_string: {
-                  query: search_string,
-                },
-              },
-            },
-          },
-        };
+      if (user?.boreholeAccess) {
+        const search = {query: {bool: {must: {query_string: {query: search_string}}}}};
         postElasticSearch(search).then((res) => {
           filteredBorehole = res.data.hits.hits.map((elem: any) => {
             return {name: elem._source.properties.boreholeno, group: 'Jupiter'};
@@ -214,24 +204,14 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
             InputProps={{
               ...params.InputProps,
               startAdornment: (
-                <InputAdornment
-                  sx={{
-                    pl: 1,
-                  }}
-                  position="start"
-                >
+                <InputAdornment sx={{pl: 1}} position="start">
                   <SearchRoundedIcon />
                 </InputAdornment>
               ),
               endAdornment: params.InputProps.endAdornment ? (
                 params.InputProps.endAdornment
               ) : (
-                <InputAdornment
-                  sx={{
-                    pr: 1,
-                  }}
-                  position="end"
-                >
+                <InputAdornment sx={{pr: 1}} position="end">
                   <IconButton edge="end" onClick={handleOpenFilter}>
                     <Badge badgeContent={numFilters} color="primary">
                       <TuneRoundedIcon color={numFilters > 0 ? 'primary' : undefined} />
@@ -241,11 +221,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
               ),
             }}
             placeholder="Søg efter lokation..."
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '9999px',
-              },
-            }}
+            sx={{'& .MuiOutlinedInput-root': {borderRadius: '9999px', backgroundColor: 'white'}}}
           />
         )}
         sx={{
@@ -265,12 +241,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         onClose={() => {
           handleClose();
         }}
-        sx={{
-          '& .MuiPaper-root': {
-            width: isTouch ? '90%' : 500,
-            p: 1,
-          },
-        }}
+        sx={{'& .MuiPaper-root': {width: isTouch ? '90%' : 500, p: 1}}}
       >
         <FilterOptions
           filters={mapFilter}

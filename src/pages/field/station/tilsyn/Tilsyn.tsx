@@ -1,28 +1,24 @@
 import {PlaylistAddRounded} from '@mui/icons-material';
 import {Box} from '@mui/material';
 import moment from 'moment';
-import {parseAsBoolean, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {stamdataStore} from '~/state/store';
+import {useShowFormState} from '~/hooks/useQueryStateParameters';
+import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
 
-type Props = {
-  ts_id: number;
-  canEdit: boolean;
-};
-
-export default function Tilsyn({ts_id, canEdit}: Props) {
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+export default function Tilsyn() {
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
+  const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
-  const store = stamdataStore();
   const initialData: TilsynItem = {
     dato: moment().format('YYYY-MM-DDTHH:mm'),
     gid: -1,
@@ -32,19 +28,19 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
     user_id: null,
   };
 
-  const formMethods = useForm<TilsynItem>({
-    defaultValues: initialData,
-  });
+  const {
+    feature_permission_query: {data: permissions},
+    location_permissions,
+  } = usePermissions(loc_id);
+
+  const formMethods = useForm<TilsynItem>({defaultValues: initialData});
 
   const {reset, getValues} = formMethods;
 
   const {post: postTilsyn, put: putTilsyn, del: delTilsyn} = useTilsyn();
 
   const handleServiceSubmit = (values: TilsynItem) => {
-    const tilsyn = {
-      ...values,
-      dato: moment(values.dato).toISOString(),
-    };
+    const tilsyn = {...values, dato: moment(values.dato).toISOString()};
 
     const mutationOptions = {
       onSuccess: () => {
@@ -53,16 +49,10 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
     };
 
     if (tilsyn.gid === -1) {
-      const payload = {
-        data: tilsyn,
-        path: `${ts_id}`,
-      };
+      const payload = {data: tilsyn, path: `${ts_id}`};
       postTilsyn.mutate(payload, mutationOptions);
     } else {
-      const payload = {
-        data: tilsyn,
-        path: `${ts_id}/${tilsyn.gid}`,
-      };
+      const payload = {data: tilsyn, path: `${ts_id}/${tilsyn.gid}`};
       putTilsyn.mutate(payload, mutationOptions);
     }
   };
@@ -73,9 +63,7 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   };
 
   const handleDelete = (gid: number | undefined) => {
-    const payload = {
-      path: `${ts_id}/${gid}`,
-    };
+    const payload = {path: `${ts_id}/${gid}`};
     delTilsyn.mutate(payload, {
       onSuccess: () => {
         resetFormData();
@@ -95,34 +83,43 @@ export default function Tilsyn({ts_id, canEdit}: Props) {
   }, [showForm]);
 
   useEffect(() => {
-    if (store.timeseries.ts_id !== 0 && ts_id !== store.timeseries.ts_id) {
-      setShowForm(null);
-      reset(initialData);
-    }
+    setShowForm(null);
+    reset(initialData);
   }, [ts_id]);
 
   return (
-    <Box>
-      <FormProvider {...formMethods}>
-        <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
-          {showForm === true && (
-            <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
-          )}
+    <>
+      <Box
+        mx={'auto'}
+        position={'relative'}
+        width="fit-content"
+        display={'flex'}
+        flexDirection={'column'}
+      >
+        <FormProvider {...formMethods}>
+          <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+            {showForm === true && (
+              <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
+            )}
+          </Box>
+        </FormProvider>
+        <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+          <TilsynTable
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+          />
         </Box>
-      </FormProvider>
-      <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
-        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
-        <FabWrapper
-          icon={<PlaylistAddRounded />}
-          text={'Tilføj ' + stationPages.TILSYN}
-          onClick={() => {
-            setShowForm(true);
-          }}
-          sx={{
-            visibility: showForm === null ? 'visible' : 'hidden',
-          }}
-        />
       </Box>
-    </Box>
+      <FabWrapper
+        icon={<PlaylistAddRounded />}
+        text={'Tilføj ' + stationPages.TILSYN}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
+    </>
   );
 }

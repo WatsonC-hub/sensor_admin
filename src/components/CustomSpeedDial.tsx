@@ -69,7 +69,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
                     toast(<CustomTooltip toastContent={action.toastTip} />, {
                       autoClose: false,
                       toastId: 'juster',
-                      bodyStyle: {
+                      style: {
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'center',

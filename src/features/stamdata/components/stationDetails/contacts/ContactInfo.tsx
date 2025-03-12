@@ -3,23 +3,29 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import {Box, Grid, useMediaQuery, useTheme} from '@mui/material';
 import React, {useState} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import {initialContactData} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import ContactInfoTable from '~/features/stamdata/components/stationDetails/contacts/ContactInfoTable';
 import SelectContactInfo from '~/features/stamdata/components/stationDetails/contacts/SelectContactInfo';
 import {contact_info} from '~/features/stamdata/components/stationDetails/zodSchemas';
+import {useAppContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
 const ContactInfo = () => {
-  const params = useParams();
+  const {loc_id} = useAppContext(['loc_id']);
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
-  const loc_id: number | undefined = parseInt(params.locid!);
   const {del: deleteContact, put: editContact} = useContactInfo(loc_id);
+  const {location_permissions} = usePermissions(loc_id);
+
+  const user = useUser();
+
+  console.log(user?.contactAndKeysPermission);
 
   const formMethods = useForm({
     resolver: zodResolver(contact_info),
@@ -38,13 +44,14 @@ const ContactInfo = () => {
   };
 
   const handleEdit = (contactInfo: ContactTable) => {
+    const email = contactInfo.email !== '' ? contactInfo.email : null;
     const payload = {
       path: `${loc_id}`,
       data: {
         id: contactInfo.id,
         navn: contactInfo.navn,
         telefonnummer: contactInfo.telefonnummer,
-        email: contactInfo.email,
+        email: email,
         contact_role: contactInfo.contact_role,
         comment: contactInfo.comment,
         org: contactInfo.org,
@@ -76,6 +83,7 @@ const ContactInfo = () => {
                 reset();
                 setOpenContactInfoDialog(true);
               }}
+              disabled={!user?.contactAndKeysPermission || location_permissions !== 'edit'}
             >
               Tilføj kontakt
             </Button>

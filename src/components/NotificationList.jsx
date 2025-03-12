@@ -5,13 +5,14 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} from '@mui/material';
 import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
-import {useParams} from 'react-router-dom';
 
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/components/UpdateNotificationModal';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import {useAppContext} from '~/state/contexts';
 
 // Mock data for notifications
 const NotificationList = () => {
@@ -19,12 +20,12 @@ const NotificationList = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
+  const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
 
+  let loc_id = undefined;
   const {markAsDone} = useTaskMutation();
-  const params = useParams();
 
   const {data, isPending} = useNotificationOverview();
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -53,17 +54,20 @@ const NotificationList = () => {
 
   const handleMarkAsDone = (notification) => {
     markAsDone.mutate({
-      path: params.ts_id,
+      path: ts_id,
       data: {
         opgave: notification.opgave,
       },
     });
   };
 
-  let loc_id = params.locid;
   if (loc_id == undefined) {
-    loc_id = data?.filter((elem) => elem.ts_id == params.ts_id)[0]?.loc_id;
+    loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
   }
+
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(app_loc_id ?? loc_id);
 
   const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
   const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
@@ -115,7 +119,12 @@ const NotificationList = () => {
         keepMounted
         disableScrollLock
       >
-        <MenuItem key="0" onClick={openModal} sx={{gap: 0.5}}>
+        <MenuItem
+          disabled={permissions?.[ts_id] !== 'edit'}
+          key="0"
+          onClick={openModal}
+          sx={{gap: 0.5}}
+        >
           <ListItemIcon>
             <Avatar sx={{bgcolor: 'primary'}}>
               <AddIcon fontSize="small" />
@@ -171,7 +180,7 @@ const NotificationList = () => {
           );
         })}
       </Menu>
-      <CreateManualTaskModal open={isModalOpen} closeModal={closeModal} />
+      {isModalOpen && <CreateManualTaskModal open={isModalOpen} closeModal={closeModal} />}
       {isUpdateModalOpen && (
         <UpdateNotificationModal
           open={isUpdateModalOpen}

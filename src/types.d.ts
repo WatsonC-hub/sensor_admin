@@ -219,7 +219,7 @@ export type ContactTable = {
   id: string;
   navn: string;
   telefonnummer: string | null;
-  email: string;
+  email: string | null;
   contact_role: number;
   comment?: string;
   user_id?: string | null;
@@ -355,7 +355,7 @@ export type QaAllData = {
   dataexclude: Array<DataExclude>;
 };
 
-export type QaGraphData = {
+export type GraphData = {
   x: Array<string>;
   y: Array<number>;
 };

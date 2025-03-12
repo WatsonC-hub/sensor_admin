@@ -8,15 +8,15 @@ import {TilsynItem} from '~/types';
 interface TilsynTableProps {
   handleEdit: (data: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
+  disabled: boolean;
 }
 
-export default function TilsynTable({handleEdit, handleDelete, canEdit}: TilsynTableProps) {
+export default function TilsynTable({handleEdit, handleDelete, disabled}: TilsynTableProps) {
   const {isMobile} = useBreakpoints();
 
   return isMobile ? (
-    <TilsynTableMobile handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
+    <TilsynTableMobile handleEdit={handleEdit} handleDelete={handleDelete} disabled={disabled} />
   ) : (
-    <TilsynTableDesktop handleEdit={handleEdit} handleDelete={handleDelete} canEdit={canEdit} />
+    <TilsynTableDesktop handleEdit={handleEdit} handleDelete={handleDelete} disabled={disabled} />
   );
 }

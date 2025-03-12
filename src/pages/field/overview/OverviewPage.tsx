@@ -1,11 +1,11 @@
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import MapIcon from '@mui/icons-material/Map';
 import Box from '@mui/material/Box';
 import type {BoxProps} from '@mui/material/Box';
-import {useTheme} from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import {useQuery} from '@tanstack/react-query';
 import {atom, useAtom} from 'jotai';
 import React, {SyntheticEvent} from 'react';
@@ -14,22 +14,24 @@ import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import ScrollTop from '~/components/ScrollTop';
 import {tabsHeight} from '~/consts';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeTable from '~/pages/field/overview/components/BoreholeTable';
 import StationTable from '~/pages/field/overview/components/StationTable';
-import {authStore} from '~/state/store';
 import {TableData, BoreholeData} from '~/types';
 
 import Map from './Map';
+import {useUser} from '~/features/auth/useUser';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
 
 export default function OverviewPage() {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  const {isMobile} = useBreakpoints();
   const [tabValue, setTabValue] = useAtom<number>(tabAtom);
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
-  const [iotAccess, boreholeAccess] = authStore((state) => [state.iotAccess, state.boreholeAccess]);
+  const user = useUser();
+  const {admin, createStamdata} = useNavigationFunctions();
 
   const {data: tabledata} = useQuery<TableData[]>({
     queryKey: ['station_list'],
@@ -37,11 +39,12 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
       return data;
     },
-    enabled: iotAccess,
+    enabled: user?.iotAccess,
     // refetchInterval: 10000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
+    staleTime: 10 * 1000,
   });
 
   const {data: boreholetabledata} = useQuery<BoreholeData[]>({
@@ -50,7 +53,8 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/borehole_list`);
       return data;
     },
-    enabled: boreholeAccess,
+    staleTime: 10 * 1000,
+    enabled: user?.boreholeAccess,
   });
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
@@ -85,15 +89,37 @@ export default function OverviewPage() {
   }
 
   function a11yProps(index: number) {
-    return {
-      id: `full-width-tab-${index}`,
-      'aria-controls': `full-width-tabpanel-${index}`,
-    };
+    return {id: `full-width-tab-${index}`, 'aria-controls': `full-width-tabpanel-${index}`};
   }
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
-      <NavBar />
+      <NavBar>
+        <NavBar.Logo />
+        {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
+        <NavBar.Menu
+          items={[
+            {
+              title: 'Admin',
+              icon: <AdminPanelSettingsIcon fontSize="medium" />,
+              onClick: () => {
+                admin();
+              },
+            },
+            ...(user?.iotAccess
+              ? [
+                  {
+                    title: 'Opret lokation',
+                    icon: <AddLocationAltIcon fontSize="medium" />,
+                    onClick: () => {
+                      createStamdata();
+                    },
+                  },
+                ]
+              : []),
+          ]}
+        />
+      </NavBar>
       <Tabs
         value={tabValue}
         onChange={handleChange}
@@ -121,32 +147,34 @@ export default function OverviewPage() {
           indicatorColor="primary"
           textColor="primary"
           sx={{
-            margin: matches ? '0' : 'auto',
+            margin: isMobile ? '0' : 'auto',
             '& .MuiTab-root': {
               // height: '48px',
               minHeight: tabsHeight,
             },
           }}
-          variant={matches ? 'fullWidth' : 'standard'}
+          variant={isMobile ? 'fullWidth' : 'standard'}
           aria-label="full width tabs example"
         >
-          {iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
-          {boreholeAccess && <Tab label="Mine DGU boringer" {...a11yProps(iotAccess ? 1 : 0)} />}
+          {user?.iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
+          {user?.boreholeAccess && (
+            <Tab label="Mine DGU boringer" {...a11yProps(user?.iotAccess ? 1 : 0)} />
+          )}
         </Tabs>
 
-        {iotAccess && (
+        {user?.iotAccess && (
           <TabPanel value={tabValueInner} index={0}>
             <StationTable data={tabledata} />
           </TabPanel>
         )}
-        {boreholeAccess && (
-          <TabPanel value={tabValueInner} index={iotAccess ? 1 : 0}>
+        {user?.boreholeAccess && (
+          <TabPanel value={tabValueInner} index={user?.iotAccess ? 1 : 0}>
             <BoreholeTable data={boreholetabledata} />
           </TabPanel>
         )}
       </TabPanel>
 
-      {matches && <ScrollTop threshold={100} />}
+      {isMobile && <ScrollTop threshold={100} />}
     </Box>
   );
 }

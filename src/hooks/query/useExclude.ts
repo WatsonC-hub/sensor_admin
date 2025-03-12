@@ -16,7 +16,7 @@ export type ExcludeData = {
   max_value: number | null;
   startdate: string | null;
   enddate: string | null;
-  comment: string;
+  comment?: string;
 };
 
 interface ExcludePost extends ExcludeBase {

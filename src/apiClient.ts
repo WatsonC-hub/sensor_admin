@@ -1,11 +1,8 @@
 import axios from 'axios';
 
-import {authStore} from '~/state/store';
+import {queryClient} from './queryClient';
 
-const apiClient = axios.create({
-  baseURL: '/api',
-  withCredentials: true,
-});
+const apiClient = axios.create({baseURL: '/api', withCredentials: true});
 
 apiClient.interceptors.request.use(
   function (config) {
@@ -26,7 +23,7 @@ apiClient.interceptors.response.use(
   function (error) {
     // const originalRequest = error.config;
     if (error?.response?.status === 401) {
-      authStore.setState({authenticated: false, loginExpired: true});
+      queryClient.setQueryData(['user'], () => null);
     }
 
     // Any status codes that falls outside the range of 2xx cause this function to trigger

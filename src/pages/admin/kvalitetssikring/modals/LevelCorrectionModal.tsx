@@ -1,33 +1,33 @@
+import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
-import TextField from '@mui/material/TextField';
 import {useAtomValue} from 'jotai';
 import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
-import {useContext, useState} from 'react';
+import {useEffect} from 'react';
+import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
+import {z} from 'zod';
 
 import Button from '~/components/Button';
+import FormInput from '~/components/FormInput';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {qaSelection} from '~/state/atoms';
-import {MetadataContext} from '~/state/contexts';
 
 interface LevelCorrectionModal {
   onClose: () => void;
 }
 
+const schema = z.object({date: z.string(), comment: z.string().optional()});
+
+type CorrectionValues = z.infer<typeof schema>;
+
 const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const selection = useAtomValue(qaSelection);
-  const [comment, setComment] = useState('');
-  const metadata = useContext(MetadataContext);
+  const {data: timeseries_data} = useTimeseriesData();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    onAccept();
-    onClose();
-  };
-  console.log(selection);
-  const unit = metadata && 'unit' in metadata ? (metadata.unit as string) : '';
+  const unit = timeseries_data && 'unit' in timeseries_data ? timeseries_data.unit : '';
   const prevY = (
     selection?.points?.[0]?.data?.y[selection?.points?.[0]?.pointIndex - 1] as number
   )?.toFixed(4);
@@ -35,16 +35,32 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
     selection?.points?.[0]?.data?.x[selection?.points?.[0]?.pointIndex - 1] as string
   );
   const y = (selection?.points?.[0]?.y as number)?.toFixed(4);
-  const x = moment(selection?.points?.[0]?.x);
 
   const {post: levelCorrectionMutation} = useLevelCorrection();
 
-  const onAccept = () => {
-    levelCorrectionMutation.mutate({
-      path: `${metadata?.ts_id}`,
-      data: {date: x.toISOString(), comment: comment},
-    });
+  const formMethods = useForm<CorrectionValues>({resolver: zodResolver(schema), mode: 'onTouched'});
+
+  const {handleSubmit, setValue, watch, reset} = formMethods;
+
+  const onAccept: SubmitHandler<CorrectionValues> = (values) => {
+    levelCorrectionMutation.mutate(
+      {
+        path: `${timeseries_data?.ts_id}`,
+        data: {date: moment(values.date).toISOString(), comment: values.comment},
+      },
+      {
+        onSuccess: () => {
+          reset();
+        },
+      }
+    );
   };
+
+  const x = watch('date');
+
+  useEffect(() => {
+    setValue('date', moment(selection?.points?.[0]?.x).format('YYYY-MM-DD HH:mm'));
+  }, [selection]);
 
   return (
     <div>
@@ -68,25 +84,20 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
         <Box display={'flex'} flexDirection={'row'}>
           <b style={{width: 150}}>Nuværende punkt:</b>
           <Typography gutterBottom>
-            {x.format('YYYY-MM-DD HH:mm')} - {y + ' '} {unit}
+            {x} - {y + ' '} {unit}
           </Typography>
         </Box>
       </Box>
-      <TextField
-        label="Kommentar"
-        InputLabelProps={{shrink: true, style: {zIndex: 0}}}
-        variant="outlined"
-        className="swiper-no-swiping"
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        multiline
-        fullWidth
-        placeholder="Kommentar..."
-        rows={3}
-        sx={{
-          mt: 1,
-        }}
-      />
+      <FormProvider {...formMethods}>
+        <FormInput<CorrectionValues>
+          name="comment"
+          label="Kommentar"
+          multiline
+          fullWidth
+          placeholder="Kommentar..."
+          rows={3}
+        />
+      </FormProvider>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} m={1} gap={1}>
         <Button
           bttype="tertiary"
@@ -97,7 +108,12 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
         >
           Annuller
         </Button>
-        <Button bttype="primary" onClick={handleSubmit} startIcon={<Save />} color="secondary">
+        <Button
+          bttype="primary"
+          onClick={handleSubmit(onAccept, (e) => console.log(e))}
+          startIcon={<Save />}
+          color="secondary"
+        >
           Gem
         </Button>
       </Box>

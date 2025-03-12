@@ -3,7 +3,7 @@ import moment from 'moment';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {stamdataStore} from '~/state/store';
+import {useAppContext} from '~/state/contexts';
 import {Maalepunkt} from '~/types';
 
 interface MaalepunktBase {
@@ -53,7 +53,8 @@ export const maalepunktDelOptions = {
 };
 
 export const useMaalepunkt = () => {
-  const ts_id = stamdataStore((store) => store.timeseries.ts_id);
+  const {ts_id} = useAppContext(['ts_id']);
+
   const get = useQuery({
     queryKey: ['watlevmp', ts_id],
     queryFn: async () => {
@@ -69,7 +70,7 @@ export const useMaalepunkt = () => {
         };
       });
     },
-    enabled: ts_id !== -1 && ts_id !== null,
+    enabled: ts_id !== null || ts_id !== undefined,
   });
 
   const post = useMutation({

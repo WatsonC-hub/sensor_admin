@@ -7,31 +7,32 @@ import {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import type {
   MultiSelectProps,
   Ressourcer,
 } from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import {useAppContext} from '~/state/contexts';
 
 interface CheckboxesTagsProps extends MultiSelectProps {
   value: Array<Ressourcer>;
   setValue: (value: Array<Ressourcer>) => void;
-  loc_id: string;
 }
 
-export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTagsProps) {
+export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
+  const {loc_id} = useAppContext(['loc_id']);
   const {
     get: {data: options},
     post: postRessourcer,
     relation: {data: related},
-  } = useRessourcer(parseInt(loc_id));
+  } = useRessourcer();
 
   const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
-  const {
-    trigger,
-    watch,
-    formState: {errors},
-  } = useFormContext();
+  const {trigger, watch} = useFormContext();
+
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
 
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
 
@@ -90,6 +91,7 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
         <>
           <Autocomplete
             multiple
+            disabled={disabled}
             id="checkboxes-tags-demo"
             options={
               (options && options.sort((a, b) => b.kategori.localeCompare(a.kategori))) ?? []
@@ -111,7 +113,7 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
             renderGroup={({key, group, children}) => {
               return (
                 <>
-                  <ListItemText id={key} onClick={() => handleClick(group)}>
+                  <ListItemText id={key.toString()} onClick={() => handleClick(group)}>
                     <Typography ml={2} fontWeight={'bold'} display={'flex'} flexDirection={'row'}>
                       {group}
                       <Typography>
@@ -150,7 +152,7 @@ export default function CheckboxesTags({value, setValue, loc_id}: CheckboxesTags
               setValue(newValue);
             }}
           />
-          <Button bttype="primary" onClick={handleSave} sx={{mt: 5}}>
+          <Button bttype="primary" disabled={disabled} onClick={handleSave} sx={{mt: 5}}>
             Gem huskeliste
           </Button>
         </>

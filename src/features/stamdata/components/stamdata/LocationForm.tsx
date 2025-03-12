@@ -1,15 +1,14 @@
 import {Grid, InputAdornment, MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {ChangeEvent, useContext, useEffect} from 'react';
+import {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 
 import FormInput from '~/components/FormInput';
+import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
 import LocationTypeSelect from '~/features/stamdata/components/stamdata/LocationTypeSelect';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
-import {MetadataContext} from '~/state/contexts';
-import {authStore} from '~/state/store';
 
 interface Props {
   mode: 'modal' | 'normal';
@@ -17,6 +16,8 @@ interface Props {
 }
 
 export default function LocationForm({mode, disable = false}: Props) {
+  const {watch, control, setValue, getValues} = useFormContext();
+
   const {
     data: DTMData,
     isSuccess,
@@ -25,7 +26,8 @@ export default function LocationForm({mode, disable = false}: Props) {
     queryKey: ['dtm'],
     queryFn: () => getDTMQuota(getValues('location.x'), getValues('location.y')),
     refetchOnWindowFocus: false,
-    enabled: !disable,
+    enabled:
+      !disable && getValues('location.x') !== undefined && getValues('location.y') !== undefined,
   });
 
   useEffect(() => {
@@ -34,22 +36,14 @@ export default function LocationForm({mode, disable = false}: Props) {
     }
   }, [DTMData]);
 
-  const {watch, control, setValue, getValues} = useFormContext();
-
-  const metadata = useContext(MetadataContext);
   const watchTerrainqual = watch('location.terrainqual', '');
 
-  // if (mode === 'modal' && getValues().location && getValues().location.loc_id)
-  //   reset({
-  //     location: stamdataStore().location,
-  //     timeseries: getValues().timeseries,
-  //     unit: getValues().unit,
-  //   });
-
   const gridsize = mode === 'modal' ? 12 : 6;
-  const superUser = authStore((store) => store.superUser);
+  const user = useUser();
+
+  console.log(getValues().unit);
+
   return (
-    // <FormProvider {...formMethods}>
     <Grid container spacing={2} alignItems="center">
       <Grid item xs={12} sm={gridsize}>
         <FormInput
@@ -58,9 +52,6 @@ export default function LocationForm({mode, disable = false}: Props) {
           required
           fullWidth
           placeholder="f.eks. Engsø"
-          sx={{
-            mb: 2,
-          }}
           disabled={disable}
         />
       </Grid>
@@ -70,9 +61,6 @@ export default function LocationForm({mode, disable = false}: Props) {
           label="Hoved lokation"
           fullWidth
           placeholder="f.eks. Aarhus Kommune"
-          sx={{
-            mb: 2,
-          }}
           disabled={disable}
         />
       </Grid>
@@ -85,7 +73,7 @@ export default function LocationForm({mode, disable = false}: Props) {
           )}
         />
       </Grid>
-      {superUser && (
+      {user?.superUser && (
         <>
           <Grid item xs={12} sm={gridsize}>
             <Controller
@@ -98,7 +86,11 @@ export default function LocationForm({mode, disable = false}: Props) {
                   onBlur={onBlur}
                   error={error}
                   disable={
-                    disable || (metadata?.unit_uuid !== null && metadata?.unit_uuid !== undefined)
+                    disable ||
+                    (getValues().unit !== undefined &&
+                      getValues('unit').unit_uuid !== '' &&
+                      getValues().unit.unit_uuid !== null &&
+                      getValues().unit.unit_uuid !== undefined)
                   }
                 />
               )}
@@ -118,9 +110,6 @@ export default function LocationForm({mode, disable = false}: Props) {
             if (value < 400000 || value > 900000) {
               return 'X-koordinat er uden for Danmark';
             }
-          }}
-          sx={{
-            mb: 2,
           }}
           onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
@@ -142,9 +131,6 @@ export default function LocationForm({mode, disable = false}: Props) {
               return 'Y-koordinat er uden for Danmark';
             }
           }}
-          sx={{
-            mb: 2,
-          }}
           onChangeCallback={() => {
             if (watchTerrainqual === 'DTM') {
               refetchDTM();
@@ -158,13 +144,8 @@ export default function LocationForm({mode, disable = false}: Props) {
           name="location.terrainlevel"
           label="Terrænkote"
           type="number"
-          InputProps={{
-            endAdornment: <InputAdornment position="start">m</InputAdornment>,
-          }}
+          InputProps={{endAdornment: <InputAdornment position="start">m</InputAdornment>}}
           fullWidth
-          sx={{
-            mb: 2,
-          }}
           disabled={disable}
         />
       </Grid>
@@ -174,9 +155,6 @@ export default function LocationForm({mode, disable = false}: Props) {
           label="Type af terrænkote"
           select
           fullWidth
-          sx={{
-            mb: 2,
-          }}
           disabled={disable}
           onChangeCallback={(e) => {
             if ((e as ChangeEvent<HTMLTextAreaElement>).target.value === 'DTM') {
@@ -197,9 +175,6 @@ export default function LocationForm({mode, disable = false}: Props) {
           name="location.description"
           label="Beskrivelse"
           fullWidth
-          sx={{
-            mb: 2,
-          }}
           disabled={disable}
           placeholder="f.eks. ligger tæt ved broen"
         />

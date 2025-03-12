@@ -9,9 +9,10 @@ import FormTextField from '~/components/FormTextField';
 
 interface TimeseriesTypeSelectProps {
   stationTypes: Array<{tstype_id: number; tstype_name: string}>;
+  disabled: boolean;
 }
 
-const TimeseriesTypeSelect = ({stationTypes}: TimeseriesTypeSelectProps) => {
+const TimeseriesTypeSelect = ({stationTypes, disabled = false}: TimeseriesTypeSelectProps) => {
   const menuItems = stationTypes
     ?.filter((i) => i.tstype_id !== 0)
     ?.map((item) => (
@@ -24,12 +25,10 @@ const TimeseriesTypeSelect = ({stationTypes}: TimeseriesTypeSelectProps) => {
     <FormInput
       name="timeseries.tstype_id"
       label="Tidsserietype"
+      disabled={disabled}
       select
       required
       fullWidth
-      sx={{
-        mb: 2,
-      }}
     >
       <MenuItem value={-1}>Vælg type</MenuItem>
       {menuItems}
@@ -39,9 +38,10 @@ const TimeseriesTypeSelect = ({stationTypes}: TimeseriesTypeSelectProps) => {
 
 interface TimeseriesFormProps {
   mode: string;
+  disabled?: boolean;
 }
 
-export default function TimeseriesForm({mode}: TimeseriesFormProps) {
+export default function TimeseriesForm({mode, disabled = false}: TimeseriesFormProps) {
   const {data: timeseries_types} = useQuery({
     queryKey: ['timeseries_types'],
     queryFn: async () => {
@@ -68,19 +68,17 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
         <FormInput
           name="timeseries.prefix"
           label="Navn"
+          disabled={disabled}
           InputProps={{
             startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
           }}
           placeholder="f.eks. indtag 1"
           fullWidth
-          sx={{
-            mb: 2,
-          }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         {mode === 'add' ? (
-          <TimeseriesTypeSelect stationTypes={timeseries_types} />
+          <TimeseriesTypeSelect stationTypes={timeseries_types} disabled={disabled} />
         ) : (
           <FormTextField
             disabled
@@ -101,10 +99,8 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
               label="Målepunktskote"
               name="watlevmp.elevation"
               required
+              disabled={disabled}
               fullWidth
-              sx={{
-                mb: 2,
-              }}
               InputProps={{
                 endAdornment: <InputAdornment position="start">m</InputAdornment>,
               }}
@@ -114,11 +110,9 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
             <FormInput
               label="Målepunkt placering"
               name="watlevmp.description"
+              disabled={disabled}
               required
               fullWidth
-              sx={{
-                mb: 2,
-              }}
               placeholder="f.eks. top af rør"
             />
           </Grid>
@@ -129,10 +123,8 @@ export default function TimeseriesForm({mode}: TimeseriesFormProps) {
           type="number"
           label="Evt. loggerdybde under målepunkt"
           name="timeseries.sensor_depth_m"
+          disabled={disabled}
           fullWidth
-          sx={{
-            mb: 2,
-          }}
           InputProps={{
             endAdornment: <InputAdornment position="start">m</InputAdornment>,
           }}

@@ -2,9 +2,9 @@ import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 
 import {apiClient} from '~/apiClient';
-import {QaGraphData} from '~/types';
+import {GraphData} from '~/types';
 
-export const useGraphData = (ts_id: number, xRange: Array<string>) => {
+export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) => {
   const x0 = moment(xRange[0]);
   const x1 = moment(xRange[1]);
   const daysdiff = x1.diff(x0, 'days');
@@ -15,7 +15,7 @@ export const useGraphData = (ts_id: number, xRange: Array<string>) => {
   const query = useQuery({
     queryKey: ['graphData', ts_id, [start, end]],
     queryFn: async () => {
-      const {data} = await apiClient.get<QaGraphData>(`/data/timeseriesV2/${ts_id}`, {
+      const {data} = await apiClient.get<GraphData>(`/data/timeseriesV2/${ts_id}`, {
         params: {
           start: start,
           stop: end,
@@ -24,7 +24,10 @@ export const useGraphData = (ts_id: number, xRange: Array<string>) => {
       });
       return data ?? [];
     },
-    placeholderData: (prev) => prev,
+    placeholderData: (prev, query) => {
+      if (query?.queryKey[1] != ts_id) return undefined;
+      return prev;
+    },
     enabled: ts_id !== null && ts_id !== undefined,
   });
 

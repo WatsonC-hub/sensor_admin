@@ -1,4 +1,4 @@
-import {Box, Grid} from '@mui/material';
+import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
@@ -24,7 +24,6 @@ import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
-import {stamdataStore, authStore, parkingStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -37,6 +36,9 @@ import {
   defaultRadius,
   utm,
 } from '../../../features/map/mapConsts';
+import {useMapUtilityStore} from '~/state/store';
+import {useUser} from '~/features/auth/useUser';
+import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 
 const leafletIcons = Object.keys(boreholeColors).map((key) => {
   const index = parseInt(key);
@@ -56,31 +58,18 @@ interface LocItems {
 
 const Map = () => {
   const {createStamdata} = useNavigationFunctions();
-  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
+  const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
+    state.setSelectedLocId,
+    state.setEditRouteLayer,
+    state.setEditParkingLayer,
+  ]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
-  const [setLocation, setLocationValue] = stamdataStore((store) => [
-    store.setLocation,
-    store.setLocationValue,
-  ]);
 
-  const [superUser, iotAccess, boreholeAccess] = authStore((state) => [
-    state.superUser,
-    state.iotAccess,
-    state.boreholeAccess,
-  ]);
+  const user = useUser();
 
-  const {data: boreholeMapdata} = useQuery<BoreholeMapData[]>({
-    queryKey: ['borehole_map'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole_map`);
-      return data;
-    },
-    enabled: boreholeAccess,
-  });
+  const {data: boreholeMapdata} = useBoreholeMap();
 
-  const {data: mapData} = useNotificationOverviewMap({
-    enabled: iotAccess,
-  });
+  const {data: mapData} = useNotificationOverviewMap({enabled: user?.iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -88,7 +77,7 @@ const Map = () => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (iotAccess)
+  if (user?.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -97,18 +86,17 @@ const Map = () => {
           const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
           if (typeof coords == 'object') {
-            setLocationValue('x', parseFloat(coords.Easting.toFixed(2)));
-            setLocationValue('y', parseFloat(coords.Northing.toFixed(2)));
-
-            createStamdata();
+            createStamdata(undefined, {
+              state: {
+                x: parseFloat(coords.Easting.toFixed(2)),
+                y: parseFloat(coords.Northing.toFixed(2)),
+              },
+            });
           }
         },
         icon: '/leaflet-images/marker.png',
       },
-      {
-        text: 'separator',
-        separator: true,
-      }
+      {text: 'separator', separator: true}
     );
 
   const {
@@ -116,7 +104,6 @@ const Map = () => {
     selectedMarker,
     setSelectedMarker,
     layers: {markerLayer},
-    mutateLayers: {mutateParkingLayer, mutateRoutesLayer},
     delete: {
       deleteId,
       deleteParking,
@@ -166,25 +153,22 @@ const Map = () => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          setLocation({
-            loc_id: element.loc_id,
-            loc_name: element.loc_name,
-          });
-          createStamdata('1');
+          createStamdata('1', {state: element});
         },
         icon: '/leaflet-images/marker.png',
       },
     ];
 
-    if (superUser) {
+    if (user?.superUser) {
       locationMenu = [
         ...locationMenu,
         {
           text: 'Tegn rute',
           callback: () => {
             if (map) {
-              setSelectParking(element.loc_id);
-              mutateRoutesLayer.current = true;
+              setSelectLocId(element.loc_id);
+              console.log('test');
+              setEditRouteLayer('create');
 
               map.pm.enableDraw('Line');
             }
@@ -194,16 +178,18 @@ const Map = () => {
         {
           text: 'Tilknyt parkering',
           callback: () => {
-            if (map) map.getContainer().style.cursor = 'pointer';
+            if (map) {
+              map.getContainer().style.cursor = 'pointer';
 
-            setSelectParking(element.loc_id);
-            mutateParkingLayer.current = true;
-            toast('Vælg parkering for at tilknytte den lokationen', {
-              toastId: 'tilknytParking',
-              type: 'info',
-              autoClose: false,
-              draggable: false,
-            });
+              setSelectLocId(element.loc_id);
+              setEditParkingLayer('create');
+              toast('Vælg parkering for at tilknytte den lokationen', {
+                toastId: 'tilknytParking',
+                type: 'info',
+                autoClose: false,
+                draggable: false,
+              });
+            }
           },
           icon: '/parking-icon.png',
         },
@@ -212,10 +198,7 @@ const Map = () => {
 
     locationMenu = [
       ...locationMenu,
-      {
-        text: 'divider',
-        separator: true,
-      },
+      {text: 'divider', separator: true},
       ...defaultContextmenuItems,
     ];
 
@@ -264,9 +247,7 @@ const Map = () => {
 
           if (marker) {
             marker.openPopup();
-            map?.flyTo(marker.getLatLng(), 14, {
-              animate: false,
-            });
+            map?.flyTo(marker.getLatLng(), 14, {animate: false});
             marker.fire('click');
             setSelectedMarker(marker.options.data);
           } else {
@@ -278,9 +259,7 @@ const Map = () => {
               if (hiddenMarker) {
                 // hightlightedMarker = marker;
                 hiddenMarker.openPopup();
-                map?.flyTo(hiddenMarker.getLatLng(), 14, {
-                  animate: false,
-                });
+                map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
                 hiddenMarker.fire('click');
               }
             }
@@ -296,9 +275,7 @@ const Map = () => {
               const marker = createBoreholeMarker(element);
 
               marker.on('add', function () {
-                map?.flyTo(point, 16, {
-                  animate: false,
-                });
+                map?.flyTo(point, 16, {animate: false});
                 marker.fire('click');
                 setSelectedMarker(element);
               });
@@ -335,10 +312,7 @@ const Map = () => {
         const marker = createLocationMarker(element);
 
         if (marker) {
-          marker.bindTooltip(element.loc_name, {
-            direction: 'top',
-            offset: [0, -10],
-          });
+          marker.bindTooltip(element.loc_name, {direction: 'top', offset: [0, -10]});
 
           if (markerLayer) {
             marker.addTo(markerLayer);
@@ -347,10 +321,7 @@ const Map = () => {
       } else {
         const marker = createBoreholeMarker(element);
 
-        marker.bindTooltip(element.boreholeno, {
-          direction: 'top',
-          offset: [0, -10],
-        });
+        marker.bindTooltip(element.boreholeno, {direction: 'top', offset: [0, -10]});
 
         if (markerLayer) {
           marker.addTo(markerLayer);
@@ -379,40 +350,33 @@ const Map = () => {
         message="Vælg venligst hvor parkeringen skal oprettes."
         handleOpret={() => null}
       />
-      <SearchAndFilterMap
-        data={data}
-        setData={setFilteredData}
-        handleSearchSelect={handleSearchSelect}
-      />
-      <Grid container height={'100%'} mb={0.5} spacing={1} flexGrow={1}>
-        <Grid item mobile={11.8}>
-          <Box
-            id="test"
-            sx={{
-              width: '100%',
-              height: '100%',
-              minHeight: '300px',
-              flexGrow: 1,
-              ml: 0.5,
-            }}
-          />
-          <DrawerComponent
-            key={getDrawerHeader()}
-            enableFull={selectedMarker != null ? true : false}
-            isMarkerSelected={selectedMarker !== null}
-            header={getDrawerHeader()}
-            actions={getDrawerActions(selectedMarker)}
-          >
-            {selectedMarker && 'notification_id' in selectedMarker && (
-              <SensorContent data={selectedMarker} />
-            )}
-            {selectedMarker == null && <LegendContent />}
-            {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
-              <BoreholeContent data={selectedMarker} />
-            )}
-          </DrawerComponent>
-        </Grid>
-      </Grid>
+      <Box
+      //position={'absolute'} zIndex={1000} p={1} width={'100%'}
+      >
+        <SearchAndFilterMap
+          data={data}
+          setData={setFilteredData}
+          handleSearchSelect={handleSearchSelect}
+        />
+      </Box>
+      <Box display="flex" position="relative" flexGrow={1}>
+        <Box id="test" position="absolute" sx={{height: '100%', width: '100%'}} />
+        <DrawerComponent
+          key={getDrawerHeader()}
+          enableFull={selectedMarker != null ? true : false}
+          isMarkerSelected={selectedMarker !== null}
+          header={getDrawerHeader()}
+          actions={getDrawerActions(selectedMarker)}
+        >
+          {selectedMarker && 'notification_id' in selectedMarker && (
+            <SensorContent data={selectedMarker} />
+          )}
+          {selectedMarker == null && <LegendContent />}
+          {selectedMarker && 'boreholeno' in selectedMarker && user?.boreholeAccess && (
+            <BoreholeContent data={selectedMarker} />
+          )}
+        </DrawerComponent>
+      </Box>
     </>
   );
 };

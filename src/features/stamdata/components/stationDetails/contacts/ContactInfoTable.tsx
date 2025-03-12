@@ -4,11 +4,12 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
-import {useParams} from 'react-router-dom';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfoTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
@@ -17,6 +18,7 @@ import RenderActions from '~/helpers/RowActions';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
+import {useAppContext} from '~/state/contexts';
 import {ContactTable} from '~/types';
 
 type Props = {
@@ -34,7 +36,8 @@ const onDeleteBtnClick = (
 };
 
 const ContactInfoTable = ({delContact, editContact}: Props) => {
-  const params = useParams();
+  const {loc_id} = useAppContext(['loc_id']);
+  const user = useUser();
   const [contactID, setContactID] = useState<number>(-1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const {
@@ -45,9 +48,10 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const [isUser, setIsUser] = useState<boolean>(false);
   const {isMobile} = useBreakpoints();
-  const loc_id: number | undefined = parseInt(params.locid!);
 
   const {get} = useContactInfo(loc_id);
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
@@ -147,7 +151,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText) {
+              if ((e.target as HTMLElement).innerText && !disabled) {
                 reset({
                   ...row.original,
                   telefonnummer: row.original.telefonnummer
@@ -182,7 +186,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
         }}
-        canEdit={true}
+        disabled={!user?.contactAndKeysPermission || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

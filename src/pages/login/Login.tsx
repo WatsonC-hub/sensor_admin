@@ -9,9 +9,9 @@ import {useMutation} from '@tanstack/react-query';
 import React, {useState} from 'react';
 
 import Button from '~/components/Button';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {apiClient, loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
-import {authStore} from '~/state/store';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -21,16 +21,8 @@ export default function Login() {
   const [passReset, setPassReset] = useState('');
   const [passResetErr, setPassResetErr] = useState(false);
   const [emailSentMess, setEmailSentMess] = useState(false);
-  const [setAuthenticated, setLoginExpired, setAuthorization] = authStore((state) => [
-    state.setAuthenticated,
-    state.setLoginExpired,
-    state.setAuthorization,
-  ]);
-
-  const loginMutation = useMutation({
-    mutationKey: ['login'],
-    mutationFn: loginAPI,
-  });
+  const {home} = useNavigationFunctions();
+  const loginMutation = useMutation({mutationKey: ['login'], mutationFn: loginAPI});
 
   const passwordResetMutation = useMutation({
     mutationKey: ['resetPassword'],
@@ -39,25 +31,22 @@ export default function Login() {
 
   const handleSubmit = () => {
     loginMutation.mutate(
-      {
-        username: userName,
-        password: password,
-      },
+      {username: userName, password: password},
       {
         onSuccess: (data) => {
           setLoginError('');
-          setAuthorization(data);
-          setAuthenticated(true);
-          setLoginExpired(false);
+          const mutatedData = {...data};
+          queryClient.setQueryData(['user'], mutatedData, {
+            updatedAt: Date.now(),
+          });
           queryClient.prefetchQuery({
             queryKey: ['overblik'],
             queryFn: async ({signal}) => {
-              const {data} = await apiClient.get(`/sensor_admin/overblik`, {
-                signal,
-              });
+              const {data} = await apiClient.get(`/sensor_admin/overblik`, {signal});
               return data;
             },
           });
+          home();
         },
       }
     );
@@ -92,31 +81,16 @@ export default function Login() {
 
   return (
     <Box>
-      <Box
-        sx={{
-          textAlign: 'center',
-          alignSelf: 'center',
-        }}
-      >
+      <Box sx={{textAlign: 'center', alignSelf: 'center'}}>
         <Typography variant="h4">Log ind</Typography>
       </Box>
 
       <Container fixed maxWidth="sm">
-        <Typography
-          style={{
-            textAlign: 'center',
-            alignSelf: 'center',
-          }}
-        >
+        <Typography style={{textAlign: 'center', alignSelf: 'center'}}>
           Med denne applikation kan du indberette pejlinger, se grafer og flytte rundt på dit
           udstyr.
         </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
+        <Box sx={{display: 'flex', flexDirection: 'column'}}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -143,35 +117,18 @@ export default function Login() {
             error={!!loginError}
             helperText={!!loginError && loginError}
           />
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              px: 2,
-            }}
-          >
+          <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2}}>
             <Button
               bttype="link"
               onClick={() => {
                 const currentUrl = window.location.href;
                 window.open(`https://admin.watsonc.dk/register?redirect=${currentUrl}`, '_blank');
               }}
-              sx={{
-                m: 0,
-                p: 0,
-              }}
+              sx={{m: 0, p: 0}}
             >
               Opret konto
             </Button>
-            <Button
-              bttype="link"
-              onClick={handleClickOpen}
-              sx={{
-                m: 0,
-                p: 0,
-              }}
-            >
+            <Button bttype="link" onClick={handleClickOpen} sx={{m: 0, p: 0}}>
               Glemt kodeord?
             </Button>
           </Box>

@@ -1,35 +1,30 @@
 import {Typography} from '@mui/material';
 import * as Sentry from '@sentry/react';
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {Suspense, useEffect} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
-import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
 import Redirecter from '~/Redirecter';
-import {authStore} from '~/state/store';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
+import useBreakpoints from './hooks/useBreakpoints';
+import {useNavigationFunctions} from './hooks/useNavigationFunctions';
+import {useUser} from './features/auth/useUser';
+
 function App() {
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated, setLoginExpired, setAuthorization] = authStore(
-    (state) => [
-      state.authenticated,
-      state.setAuthenticated,
-      state.setLoginExpired,
-      state.setAuthorization,
-    ]
-  );
+  const {field} = useNavigationFunctions();
+
+  const {isMobile} = useBreakpoints();
+  const user = useUser();
 
   useEffect(() => {
-    apiClient
-      .get('/auth/me/secure')
-      .then((res) => {
-        setAuthorization(res.data);
-        setAuthenticated(true);
-        setLoginExpired(false);
-      })
-      .finally(() => setLoading(false));
+    if (isMobile && location.pathname == '/') {
+      field();
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {
       // fade out
@@ -41,14 +36,16 @@ function App() {
     }
   }, []);
 
-  if (loading) {
+  if (user === undefined) {
     return <LoadingSkeleton />;
   }
 
-  if (!authenticated) {
+  if (user === null) {
     return (
       <>
-        <NavBar />
+        <NavBar>
+          <NavBar.Logo />
+        </NavBar>
         <UnAuntenticatedApp />
       </>
     );

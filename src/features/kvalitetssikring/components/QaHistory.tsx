@@ -1,26 +1,26 @@
 import {Box, Skeleton} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import React, {useContext} from 'react';
+import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import {qaHistorySkeletonHeight} from '~/consts';
 import {AdjustmentTypes} from '~/helpers/EnumHelper';
-import {MetadataContext} from '~/state/contexts';
+import {useAppContext} from '~/state/contexts';
 
 import {useCertifyQa} from '../api/useCertifyQa';
 
 import AdjustmentDataTable from './AdjustmentDataTable';
 
 export default function QAHistory2() {
-  const metadata = useContext(MetadataContext);
+  const {ts_id} = useAppContext(['ts_id']);
   const {
     get: {data: certify},
-  } = useCertifyQa(metadata?.ts_id);
+  } = useCertifyQa(ts_id);
 
   const {data, isPending} = useQuery({
-    queryKey: ['qa_all', metadata?.ts_id],
+    queryKey: ['qa_all', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/qa_all/${metadata?.ts_id}`);
+      const {data} = await apiClient.get(`/sensor_admin/qa_all/${ts_id}`);
       return data;
     },
     select: (data) => {
@@ -55,7 +55,7 @@ export default function QAHistory2() {
 
       return out;
     },
-    enabled: typeof metadata?.ts_id == 'number',
+    enabled: typeof ts_id == 'number',
     refetchOnWindowFocus: false,
   });
 

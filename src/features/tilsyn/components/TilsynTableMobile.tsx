@@ -20,10 +20,10 @@ import {TilsynItem} from '~/types';
 interface Props {
   handleEdit: (tilyn: TilsynItem) => void;
   handleDelete: (gid: number | undefined) => void;
-  canEdit: boolean;
+  disabled: boolean;
 }
 
-export default function TilsynTableMobile({handleEdit, handleDelete, canEdit}: Props) {
+export default function TilsynTableMobile({handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {get} = useTilsyn();
@@ -87,14 +87,14 @@ export default function TilsynTableMobile({handleEdit, handleDelete, canEdit}: P
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={canEdit}
+                disabled={disabled}
               />
             </Box>
           </Box>
         ),
       },
     ],
-    []
+    [disabled, handleEdit]
   );
 
   const options: Partial<MRT_TableOptions<TilsynItem>> = {

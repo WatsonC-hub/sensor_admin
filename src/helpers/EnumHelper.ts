@@ -7,10 +7,9 @@ export const stationPages = {
 } as const;
 
 export const qaPages = {
-  DATA: null,
   ALGORITHMS: 'algoritmer',
-  DATAMOBILE: 'Justeringer',
-};
+  JUSTERINGER: 'justeringer',
+} as const;
 
 export const qaPagesLiteral = ['algoritmer', 'justeringer'] as const;
 
@@ -19,7 +18,7 @@ export const qaAdjustment = {
   REMOVE: 'remove',
   BOUNDS: 'bounds',
   CORRECTION: 'correction',
-};
+} as const;
 
 export const qaAdjustmentLiteral = ['confirm', 'remove', 'bounds', 'correction'] as const;
 

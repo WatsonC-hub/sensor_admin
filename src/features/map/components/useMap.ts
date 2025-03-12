@@ -1,17 +1,18 @@
 import 'leaflet-contextmenu';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
-import 'leaflet.locatecontrol';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
 import L from 'leaflet';
+import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
-import {authStore, parkingStore} from '~/state/store';
+import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
 import {
@@ -33,6 +34,7 @@ import {
   highlightRadius,
   markerNumThreshold,
 } from '../mapConsts';
+import {useUser} from '~/features/auth/useUser';
 
 // const highlightedParking: L.Marker | null = null;
 
@@ -46,18 +48,20 @@ const useMap = <TData extends object>(
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const geoJsonRef = useRef<L.FeatureGroup | null>(null);
-  const mutateParkingRef = useRef<boolean>(false);
-  const mutateLeafletMapRouteRef = useRef<number | boolean | null>();
+  const [setSelectParking, setEditParkingLayer, setEditRouteLayer] = useMapUtilityStore((state) => [
+    state.setSelectedLocId,
+    state.setEditParkingLayer,
+    state.setEditRouteLayer,
+  ]);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
-  const [setSelectParking] = parkingStore((state) => [state.setSelectedLocId]);
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
   const [hightlightedMarker, setHightlightedMarker] = useState<L.CircleMarker | null>();
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
-  const [superUser] = authStore((state) => [state.superUser]);
+  const user = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -124,7 +128,7 @@ const useMap = <TData extends object>(
       center: [56.215868, 8.228759],
       zoom: 7,
       layers: [outdormapbox],
-      tap: false,
+      tapHold: false,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
@@ -142,21 +146,12 @@ const useMap = <TData extends object>(
 
     L.control.layers(baseMaps).addTo(map);
 
-    L.control
-      // @ts-expect-error Locate is injected
-      .locate({
-        showPopup: false,
-        strings: {
-          title: 'Find mig',
-        },
-        circleStyle: {
-          interactive: false,
-        },
-        locateOptions: {
-          enableHighAccuracy: true,
-        },
-      })
-      .addTo(map);
+    new LocateControl({
+      showPopup: false,
+      strings: {title: 'Find mig'},
+      circleStyle: {interactive: false},
+      locateOptions: {enableHighAccuracy: true},
+    }).addTo(map);
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
@@ -174,35 +169,32 @@ const useMap = <TData extends object>(
         setHightlightedMarker(null);
       }
 
-      if (
-        parkingStore.getState().selectedLocId &&
-        parkingStore.getState().selectedLocId !== null &&
-        mutateParkingRef.current
-      ) {
+      const loc_id = mapUtilityStore.getState().selectedLocId;
+      const editParkingLayer = mapUtilityStore.getState().editParkingLayer;
+
+      if (loc_id && loc_id !== null && editParkingLayer === 'create') {
         // @ts-expect-error error in type definition
         const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
         if (typeof coords == 'object') {
-          const loc_id = parkingStore.getState().selectedLocId;
-
           const parkering: PartialBy<Parking, 'parking_id'> = {
             loc_id: loc_id as number,
             x: parseFloat(coords.Easting.toFixed(2)),
             y: parseFloat(coords.Northing.toFixed(2)),
           };
-          const payload = {
-            path: '',
-            data: parkering,
-          };
+
+          const payload = {path: '', data: parkering};
+
+          setEditParkingLayer(null);
+          highlightParking(loc_id as number, true);
+          setSelectParking(null);
 
           postParkering.mutate(payload, {
             onSettled: () => {
-              highlightParking(loc_id as number, true);
-              setSelectParking(null);
-              mutateParkingRef.current = false;
               toast.dismiss('tilknytParking');
             },
           });
+
           if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
         }
       }
@@ -212,25 +204,20 @@ const useMap = <TData extends object>(
   const onCreateRouteEvent = (map: L.Map) => {
     map.on('pm:create', async (e) => {
       const layer: L.Layer = e.layer;
+      const loc_id = mapUtilityStore.getState().selectedLocId;
 
-      if (
-        geoJsonRef &&
-        geoJsonRef.current &&
-        parkingStore.getState().selectedLocId !== null &&
-        mutateLeafletMapRouteRef.current
-      ) {
+      const editRouteLayer = mapUtilityStore.getState().editRouteLayer;
+
+      if (geoJsonRef && geoJsonRef.current && loc_id !== null && editRouteLayer === 'create') {
         const payload = {
-          path: (parkingStore.getState().selectedLocId as number).toString(),
-          data: {
-            geo_route: (layer.toGeoJSON() as GeoJSON.Feature).geometry,
-          },
+          path: loc_id.toString(),
+          data: {geo_route: (layer.toGeoJSON() as GeoJSON.Feature).geometry},
         };
 
         postLeafletMapRoute.mutate(payload, {
-          onSettled: () => {
-            mutateLeafletMapRouteRef.current = false;
-          },
+          onSuccess: () => {},
         });
+        setEditRouteLayer(null);
       }
       layer.remove();
     });
@@ -325,24 +312,21 @@ const useMap = <TData extends object>(
               const geo = L.geoJSON(route.geo_route, {
                 onEachFeature: function onEachFeature(feature, layer) {
                   layer.bindContextMenu({
-                    contextmenu: superUser,
+                    contextmenu: user?.superUser,
                     contextmenuInheritItems: false,
                     contextmenuItems: [
                       {
                         text: 'Slet rute',
                         callback: () => {
                           setDeleteId(route.geo_route.route_id);
-                          mutateLeafletMapRouteRef.current = route.geo_route.loc_id;
+                          setEditRouteLayer(route.geo_route.loc_id);
                           setDisplayDelete(true);
                           setType('rute');
                           setDeleteTitle('Er du sikker på at du vil slette denne rute?');
                         },
                         icon: '/mapRoute.png',
                       },
-                      {
-                        text: 'divider',
-                        separator: true,
-                      },
+                      {text: 'divider', separator: true},
                       ...items.slice(2),
                     ],
                   });
@@ -429,7 +413,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: superUser,
+            contextmenu: user?.superUser,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,
@@ -437,24 +421,19 @@ const useMap = <TData extends object>(
               ...items.slice(2),
             ],
           });
+          const editParkingLayer = mapUtilityStore.getState().editParkingLayer;
           parkingMarker.on('click', () => {
-            const loc_id = parkingStore.getState().selectedLocId;
-
-            if (loc_id != null && mutateParkingRef.current) {
-              const payload = {
-                data: {
-                  loc_id: loc_id,
-                },
-                path: parking.parking_id.toString(),
-              };
+            const loc_id = mapUtilityStore.getState().selectedLocId;
+            if (loc_id != null && editParkingLayer !== null) {
+              const payload = {data: {loc_id: loc_id}, path: parking.parking_id.toString()};
               putParkering.mutate(payload, {
                 onSettled: () => {
                   highlightParking(parking.loc_id, true);
                   setSelectParking(null);
-                  mutateParkingRef.current = false;
                   toast.dismiss('tilknytParking');
                 },
               });
+              setEditParkingLayer(null);
               if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
             }
           });
@@ -474,9 +453,7 @@ const useMap = <TData extends object>(
 
   const deleteParking = (parking_id: string | undefined) => {
     if (parking_id) {
-      const payload = {
-        path: parking_id.toString(),
-      };
+      const payload = {path: parking_id.toString()};
       deleteParkering.mutate(payload, {
         onSettled: () => {
           setSelectParking(null);
@@ -491,10 +468,9 @@ const useMap = <TData extends object>(
   };
 
   const deleteRoute = (route_id: string | undefined) => {
-    if (mutateLeafletMapRouteRef.current && mutateLeafletMapRouteRef.current !== null && route_id) {
-      const payload = {
-        path: mutateLeafletMapRouteRef.current.toString() + '/' + route_id,
-      };
+    const editRouteLayer = mapUtilityStore.getState().editRouteLayer;
+    if (editRouteLayer && route_id) {
+      const payload = {path: editRouteLayer.toString() + '/' + route_id};
       deleteLeafletMapRoute.mutate(payload);
     }
   };
@@ -549,7 +525,6 @@ const useMap = <TData extends object>(
 
     return () => {
       markerLayerRef.current?.removeEventListener('click');
-      mapRef.current?.removeEventListener('click');
       mapRef.current?.removeEventListener('pm:create');
     };
   }, [hightlightedMarker]);
@@ -578,13 +553,7 @@ const useMap = <TData extends object>(
     map: mapRef.current,
     selectedMarker,
     setSelectedMarker,
-    layers: {
-      markerLayer: markerLayerRef.current,
-    },
-    mutateLayers: {
-      mutateRoutesLayer: mutateLeafletMapRouteRef,
-      mutateParkingLayer: mutateParkingRef,
-    },
+    layers: {markerLayer: markerLayerRef.current},
     delete: {
       deleteId,
       deleteTitle,
@@ -596,10 +565,7 @@ const useMap = <TData extends object>(
       setDeleteTitle,
       type,
     },
-    warning: {
-      displayAlert,
-      setDisplayAlert,
-    },
+    warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
   };
 };

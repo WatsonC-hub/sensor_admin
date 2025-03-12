@@ -1,4 +1,3 @@
-import {useMediaQuery, useTheme} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Route, Routes, useLocation} from 'react-router-dom';
 
@@ -11,39 +10,29 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SensorAdmin from '~/pages/admin/SensorAdmin';
 import SensorField from '~/pages/field/SensorField';
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
-import {authStore} from '~/state/store';
 
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
+import {useUser} from './features/auth/useUser';
 
 const Redirecter = () => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
   const {field} = useNavigationFunctions();
   const location = useLocation();
-  const [iotAccess, adminAccess] = authStore((state) => [state.iotAccess, state.adminAccess]);
+  const user = useUser();
 
   useNotificationOverview({notifyOnChangeProps: []});
-
   useEffect(() => {
-    if (!iotAccess && location.pathname == '/') {
+    if (user && !user.iotAccess && location.pathname == '/') {
       // navigate('/field');
       field();
     }
-  }, [iotAccess]);
+  }, [user?.iotAccess]);
 
   useEffect(() => {
-    if (matches && location.pathname == '/') {
+    if (user && !user.adminAccess && location.pathname == '/') {
       // navigate('/field');
       field();
     }
-  }, [matches]);
-
-  useEffect(() => {
-    if (!adminAccess && location.pathname == '/') {
-      // navigate('/field');
-      field();
-    }
-  }, [adminAccess]);
+  }, [user?.adminAccess]);
 
   return (
     <>
@@ -53,7 +42,9 @@ const Redirecter = () => {
           path="/"
           element={
             <>
-              <NavBar />
+              <NavBar>
+                <NavBar.Logo />
+              </NavBar>
               <Chooser />
             </>
           }

@@ -8,6 +8,7 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {useUser} from '~/features/auth/useUser';
 import {
   calculatePumpstop,
   convertDate,
@@ -17,22 +18,25 @@ import {
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
-import {authStore, stamdataStore} from '~/state/store';
 import {Kontrol} from '~/types';
 
 interface Props {
   data: Kontrol[];
   handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number) => void;
+  disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({data, handleEdit, handleDelete}: Props) {
+export default function PejlingMeasurementsTableMobile({
+  data,
+  handleEdit,
+  handleDelete,
+  disabled,
+}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
-  const [timeseries] = stamdataStore((state) => [state.timeseries]);
-  const org_id = authStore((store) => store.org_id);
-
-  const unit = timeseries.tstype_id === 1 ? ' m' : ' ' + timeseries.unit;
+  const unit = ' m';
+  const user = useUser();
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -79,14 +83,14 @@ export default function PejlingMeasurementsTableMobile({data, handleEdit, handle
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={row.original.organisationid == org_id}
+                disabled={disabled || row.original.organisationid != user?.org_id}
               />
             </Box>
           </Box>
         ),
       },
     ],
-    [unit]
+    [unit, disabled, handleEdit]
   );
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {

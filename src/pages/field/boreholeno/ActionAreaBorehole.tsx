@@ -5,29 +5,31 @@ import {
   ConstructionRounded,
 } from '@mui/icons-material';
 import {startCase} from 'lodash';
-import {parseAsBoolean, useQueryState} from 'nuqs';
 import React from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useStationPages} from '~/hooks/useStationPages';
+import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
+import {useAppContext} from '~/state/contexts';
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
 };
 
-interface ActionAreaProps {
-  canEdit: boolean;
-}
-
-export default function ActionArea({canEdit}: ActionAreaProps) {
+export default function ActionArea() {
+  const {boreholeno} = useAppContext(['boreholeno']);
   const [pageToShow, setPageToShow] = useStationPages();
-  const [showForm, setShowForm] = useQueryState('showForm', parseAsBoolean);
+  const [showForm, setShowForm] = useShowFormState();
   const handleChange = (event: React.ChangeEvent<object>, newValue: any) => {
     setPageToShow(newValue);
     if (showForm !== null) {
       setShowForm(null);
     }
   };
+
+  const {
+    borehole_permission_query: {data: permissions},
+  } = usePermissions();
 
   const navigationItems = [
     {
@@ -53,6 +55,7 @@ export default function ActionArea({canEdit}: ActionAreaProps) {
       value: stationPages.STAMDATA,
       icon: <ConstructionRounded />,
       color: navIconStyle(pageToShow === 'stamdata'),
+      display: permissions?.borehole_plantids?.boreholenos?.includes(boreholeno),
     },
   ];
 
@@ -61,7 +64,6 @@ export default function ActionArea({canEdit}: ActionAreaProps) {
       pageToShow={pageToShow}
       onChange={handleChange}
       items={navigationItems}
-      canEdit={canEdit}
     />
   );
 }
