@@ -183,6 +183,8 @@ export const useTasks = () => {
           })
         );
         queryClient.invalidateQueries({queryKey: ['overblik']});
+        queryClient.invalidateQueries({queryKey: ['itineraries']});
+        queryClient.invalidateQueries({queryKey: ['tasks', false]});
         setShownMapTaskIds([...shownMapTaskIds, data.id]);
         setSelectedTask(data.id);
       }
@@ -289,6 +291,9 @@ export const useTasks = () => {
       );
       queryClient.invalidateQueries({
         queryKey: ['itineraries', splitted[0]],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['tasks', false],
       });
     },
   });

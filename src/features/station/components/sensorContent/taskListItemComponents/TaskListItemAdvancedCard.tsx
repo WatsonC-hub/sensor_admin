@@ -9,6 +9,7 @@ import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {convertDate} from '~/helpers/dateConverter';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
@@ -89,9 +90,13 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
     };
   }, [task]);
 
-  const cardColor = task.status_id === 1 ? getColor({...notification}) : 'white';
-  const cardHeaderColor = task.status_id === 1 ? getColor({...notification}) : 'primary.main';
-  const cardContrastColor = task.status_id === 1 ? 'white' : '';
+  const cardColor = task.itinerary_id
+    ? '#EADDCA'
+    : task.status_id === 1
+      ? getColor({...notification})
+      : 'white';
+  const cardHeaderColor = 'primary.main';
+  const cardContrastColor = task.itinerary_id ? '' : task.status_id === 1 ? 'white' : '';
 
   const textfieldProps = {
     label: '',
@@ -135,40 +140,42 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
           backgroundColor: cardColor,
         }}
       >
-        <CardHeader
-          sx={{
-            width: '100%',
-            backgroundColor: cardHeaderColor,
-            color: 'white',
-            paddingY: 1,
-            paddingX: 2,
-          }}
-          title={
-            <Box
-              display="flex"
-              flexDirection={'row'}
-              gap={1}
-              alignItems="center"
-              sx={{color: 'white'}}
-              justifyContent={'space-between'}
-            >
-              <Typography variant="caption">{task.name}</Typography>
-              <Box gap={1} sx={{color: 'white'}} display="flex" alignItems={'center'}>
-                <Person />
-                <TaskForm.AssignedTo
-                  onBlur={({target}) => {
-                    if ('value' in target) {
-                      const user = taskUsers?.find((user) => user.display_name === target.value);
-                      if (user !== undefined && task.assigned_to !== user.id)
-                        patchTaskAssignedTo(user.id);
-                    }
-                  }}
-                  textFieldsProps={textfieldProps}
-                />
+        {task.itinerary_id === null && (
+          <CardHeader
+            sx={{
+              width: '100%',
+              backgroundColor: cardHeaderColor,
+              color: 'white',
+              paddingY: 1,
+              paddingX: 2,
+            }}
+            title={
+              <Box
+                display="flex"
+                flexDirection={'row'}
+                gap={1}
+                alignItems="center"
+                sx={{color: 'white'}}
+                justifyContent={'space-between'}
+              >
+                <Typography variant="caption">{task.name}</Typography>
+                <Box gap={1} sx={{color: 'white'}} display="flex" alignItems={'center'}>
+                  <Person />
+                  <TaskForm.AssignedTo
+                    onBlur={({target}) => {
+                      if ('value' in target) {
+                        const user = taskUsers?.find((user) => user.display_name === target.value);
+                        if (user !== undefined && task.assigned_to !== user.id)
+                          patchTaskAssignedTo(user.id);
+                      }
+                    }}
+                    textFieldsProps={textfieldProps}
+                  />
+                </Box>
               </Box>
-            </Box>
-          }
-        />
+            }
+          />
+        )}
         <CardContent
           sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 1.5}}}
         >
@@ -179,14 +186,36 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
             flexDirection={'column'}
             justifyContent={'space-around'}
           >
-            <Box display="flex" gap={1} alignItems="center">
-              <Box display="flex" flexDirection={'row'} width={'60%'} gap={1} alignItems="center">
-                <DescriptionIcon fontSize="small" />
-                <Typography variant="caption" sx={{wordBreak: 'break-all'}} width={'100%'}>
-                  {task.description}
-                </Typography>
+            <Box display="flex" gap={1} alignContent="center">
+              <Box
+                display="flex"
+                flexDirection={'row'}
+                width={'60%'}
+                gap={1}
+                alignItems={task.itinerary_id ? 'start' : 'center'}
+              >
+                {task.itinerary_id === null ? (
+                  <>
+                    <DescriptionIcon fontSize="small" />
+                    <Typography variant="caption" sx={{wordBreak: 'break-all'}} width={'100%'}>
+                      {task.description}
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <AssignmentOutlinedIcon sx={{color: 'grey.700'}} fontSize="small" />
+                    <Box display="flex" flexDirection={'column'} width={'100%'} gap={0.5}>
+                      <Typography variant="caption" color="grey.700">
+                        {task.name}
+                      </Typography>
+                      <Typography variant="caption" color="grey.700" sx={{wordBreak: 'break-all'}}>
+                        {task.description}
+                      </Typography>
+                    </Box>
+                  </>
+                )}
               </Box>
-              <Box display="flex" gap={1} alignItems="center" width={'40%'}>
+              <Box display="flex" gap={1} width={'40%'}>
                 <TaskForm.StatusSelect
                   onBlurCallback={(event) => {
                     if (typeof event !== 'number' && 'target' in event) {
@@ -199,6 +228,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   }}
                   label={''}
                   sx={{
+                    pb: 0,
                     size: 'small',
                     '& .MuiSelect-outlined, .MuiOutlinedInput-root, .MuiOutlinedInput-root, &:hover .MuiOutlinedInput-notchedOutline':
                       {
@@ -215,24 +245,28 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                       color: cardContrastColor,
                     },
                     '& .MuiOutlinedInput-root': {
+                      backgroundColor: task.itinerary_id ? 'white' : '',
                       '& > fieldset': {borderColor: cardContrastColor},
                     },
                     '& .MuiInputLabel-root': {
                       borderColor: cardContrastColor,
                       color: cardContrastColor,
                       fontSize: 'small',
+                      backgroundColor: 'white',
                       transform: 'translate(10px, -9px) scale(0.9)',
                     },
                   }}
                 />
               </Box>
             </Box>
-            <Box display="flex" gap={1} alignItems="center">
-              <PendingActionsIcon fontSize="small" />
-              <Typography variant="caption" color={task.status_id === 1 ? 'white' : 'grey.700'}>
-                {task.due_date && convertDate(task.due_date)}
-              </Typography>
-            </Box>
+            {task.itinerary_id === null && (
+              <Box display="flex" gap={1} alignItems="center">
+                <PendingActionsIcon fontSize="small" />
+                <Typography variant="caption" color={task.status_id === 1 ? 'white' : 'grey.700'}>
+                  {task.due_date && convertDate(task.due_date)}
+                </Typography>
+              </Box>
+            )}
             {filteredComments && filteredComments.length > 0 && (
               <Box display="flex" flexDirection={'row'} gap={1} alignItems="center">
                 <ChatBubbleOutlineIcon fontSize="small" />
