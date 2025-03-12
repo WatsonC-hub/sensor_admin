@@ -202,11 +202,8 @@ export default function AddUnitForm({
         <CaptureDialog
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
-          handleScan={(data: any) => {
-            const split = data[0]['rawValue'].split('/');
-            const calypso_id = parseInt(split[split.length - 1]);
-
-            if (isNaN(calypso_id)) {
+          handleScan={(data: any, calypso_id: number) => {
+            if (calypso_id === null) {
               toast.error('Ugyldigt Calypso ID');
               setOpenCaptureDialog(false);
               return;
