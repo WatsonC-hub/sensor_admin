@@ -63,7 +63,7 @@ export default function AddUnitForm({
     ...new Set(
       availableUnits
         ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id == '0' ? x.terminal_id : x.calypso_id))
+        ?.map((x) => (x.calypso_id == 0 ? x.terminal_id : x.calypso_id.toString()))
     ),
   ].sort((a, b) => {
     if (typeof a == 'number' && typeof b == 'number') {
@@ -83,7 +83,7 @@ export default function AddUnitForm({
     return 0;
   });
 
-  const sensorsForCalyspoId = (id: string) =>
+  const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(
       (unit) =>
         (unit.calypso_id === id || unit.terminal_id === id) && unit.sensortypeid === tstype_id
@@ -208,8 +208,9 @@ export default function AddUnitForm({
               setOpenCaptureDialog(false);
               return;
             }
+            console.log(calypso_id);
             const exists = uniqueCalypsoIds.includes(calypso_id.toString());
-
+            console.log(uniqueCalypsoIds);
             if (!exists) {
               toast.error(`Ingen tilgængelige enheder med Calypso ID: ${calypso_id}`);
               setOpenCaptureDialog(false);
