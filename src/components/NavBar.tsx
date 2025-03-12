@@ -265,6 +265,7 @@ const ScannerAsTitle = () => {
 };
 
 const Title = ({title}: {title: string}) => {
+  const {isMobile} = useBreakpoints();
   return (
     <>
       <Typography
@@ -273,7 +274,7 @@ const Title = ({title}: {title: string}) => {
           left: '50%',
           transform: 'translateX(-50%)',
         }}
-        variant="h4"
+        variant={isMobile ? 'h6' : 'h4'}
       >
         {title}
       </Typography>
