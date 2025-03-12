@@ -1,6 +1,6 @@
 import {Box, Button, Card, Typography} from '@mui/material';
 import React from 'react';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import {Task} from '~/features/tasks/types';
 import {Edit} from '@mui/icons-material';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
@@ -21,29 +21,35 @@ const TaskListItemSimpleCard = ({task}: Props) => {
     locationData &&
     [locationData, ...locationData.otherNotifications].find((item) => item.ts_id === task.ts_id);
 
-  const contrastColor = task.status_id === 1 ? 'white' : 'primary';
-  const color = task.status_id === 1 ? getColor({...notification}) : 'white';
+  const contrastColor = task.itinerary_id ? '' : task.status_id === 1 ? 'white' : 'primary';
+  const color = task.itinerary_id
+    ? '	#EADDCA'
+    : task.status_id === 1
+      ? getColor({...notification})
+      : 'white';
+
   return (
     <Card
       sx={{
-        borderRadius: 4,
+        borderRadius: 2.5,
         display: 'flex',
         padding: 1,
         flexDirection: 'row',
         alignContent: 'center',
         justifyContent: 'space-between',
         backgroundColor: color,
+        opacity: task.itinerary_id ? 0.7 : 1,
       }}
       variant="elevation"
     >
       <Box display="flex" gap={1} alignItems="center" sx={{color: contrastColor}}>
-        <AssignmentIcon fontSize="small" />
+        <AssignmentOutlinedIcon fontSize="small" />
         <Typography variant="caption" width={200}>
           {task.name}
         </Typography>
       </Box>
       <Box display="flex" alignItems="center" sx={{color: contrastColor}}>
-        <Edit fontSize="small" />
+        <Edit sx={{color: task.itinerary_id ? 'primary.main' : ''}} fontSize="small" />
         <Button
           variant="text"
           size="small"

@@ -9,10 +9,15 @@ import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvan
 const TaskList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const {tasks} = useTaskStore();
-  const location_tasks = tasks?.filter((task) => task.loc_id === loc_id);
+  const location_tasks = tasks?.filter(
+    (task) => task.loc_id === loc_id && task.itinerary_id === null
+  );
+
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
-      <Typography variant="h6">Opgaver</Typography>
+      <Typography variant="h6" fontWeight={'bold'}>
+        Opgaver
+      </Typography>
       {location_tasks?.map((task) => {
         const isSimpleTask =
           task.id.includes(':') || task.description === null || task.description === '';

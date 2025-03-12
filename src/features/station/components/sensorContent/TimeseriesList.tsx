@@ -28,7 +28,7 @@ const TimeseriesList = () => {
 
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
-      <Typography variant="h6" fontSize={'bold'}>
+      <Typography variant="h6" fontWeight={'bold'}>
         Tidsserier
       </Typography>
       {unique_stations.map((notification, index) => {

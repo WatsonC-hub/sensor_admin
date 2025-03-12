@@ -9,6 +9,7 @@ import {useAppContext} from '~/state/contexts';
 import {useRawTaskStore} from '~/features/tasks/store';
 import {useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
+import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext([], ['loc_id']);
@@ -19,6 +20,8 @@ const SensorContent = () => {
       <LocationInfo />
       <TimeseriesList />
       <TaskList />
+      <ItineraryCardList />
+
       <Box display="flex" gap={1} flexDirection={'row'} alignSelf={'center'}>
         <Button
           draggable={true}
@@ -33,7 +36,7 @@ const SensorContent = () => {
           startIcon={<DragIndicatorIcon fontSize="small" />}
           sx={{borderRadius: 2.5, cursor: 'move'}}
         >
-          Tilføj lokation til tur
+          Træk lokation til tur
         </Button>
         <Button
           bttype="primary"
@@ -41,7 +44,7 @@ const SensorContent = () => {
           onClick={() => setCreateTaskDialog(true)}
           startIcon={<AssignmentIcon fontSize="small" />}
         >
-          Opret en opgave
+          Opret ny opgave
         </Button>
       </Box>
 
