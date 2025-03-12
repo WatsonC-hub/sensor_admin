@@ -109,7 +109,7 @@ const TasksOverview = () => {
             }}
             height="100%"
           >
-            <Box p={1}>
+            <Box>
               <TaskItiniaries />
             </Box>
           </WindowManager.Window>

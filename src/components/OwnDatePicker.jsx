@@ -29,7 +29,7 @@ const OwnDatePicker = (props) => {
         }}
         size={props.size}
         fullWidth={props.fullWidth}
-        margin={'dense'}
+        margin={props.margin ?? 'dense'}
       />
     </LocalizationProvider>
   );
