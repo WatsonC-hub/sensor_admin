@@ -1,6 +1,8 @@
-import {FlagEnum, NotificationIDEnum} from './consts';
+import {Notification} from '~/hooks/query/useNotificationOverview';
 
-export type IconDetails = {
+export type IconDetails = Partial<Notification>;
+
+/*{
   color?: string | null;
   notification_id?: NotificationIDEnum;
   flag?: FlagEnum;
@@ -11,4 +13,5 @@ export type IconDetails = {
   status?: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   notify_type?: 'obs' | 'station' | 'primary' | null;
   isqa?: boolean;
-};
+  type?: 'task' | 'notification' | 'none'
+}*/

@@ -65,8 +65,6 @@ const NotificationList = () => {
     feature_permission_query: {data: permissions},
   } = usePermissions(app_loc_id ?? loc_id);
 
-  const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
-  const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
     data?.filter((elem) => elem.notification_id != 0),
     'notification_id'

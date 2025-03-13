@@ -3,6 +3,7 @@ import {reverse, sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import {Group} from '~/types';
 
 export interface Notification {
@@ -18,8 +19,8 @@ export interface Notification {
   opgave: string | null;
   dato: string | null;
   color: string | null;
-  flag: number;
-  notification_id: number;
+  flag: FlagEnum;
+  notification_id: NotificationIDEnum;
   status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
   projectno: string | null;
@@ -30,7 +31,7 @@ export interface Notification {
   groups: Group[];
   loctype_id: number;
   calculated: boolean | null;
-  type: 'task' | 'notification' | 'none';
+  type: 'task' | 'notification' | 'itinerary' | 'none';
   parking_id: number;
 }
 
@@ -53,6 +54,19 @@ const sortByNotifyType = (item: Notification) => {
       return 1;
     default:
       return 0;
+  }
+};
+
+const sortByType = (item: Notification) => {
+  switch (item.type) {
+    case 'notification':
+      return 0;
+    case 'task':
+      return 2;
+    case 'itinerary':
+      return 1;
+    default:
+      return 3;
   }
 };
 
@@ -124,25 +138,22 @@ export const useNotificationOverviewMap = (
   // @ts-expect-error - This is a valid use case for the hook
   return useNotificationOverview({
     select: (data) => {
-      const sorted = reverse(
-        sortBy(data, [
-          sortByNotifyType,
-          (item) => (item.status ? item.status : ''),
-          (item) => item.flag,
-          (item) => (item.projectno ? item.projectno : ''),
-        ])
-      );
+      const sorted = sortBy(data, [
+        sortByType,
+        (item) => -item.flag,
+        (item) => (item.projectno ? item.projectno : ''),
+      ]);
 
       const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
         const existing = acc.find((accItem) => accItem.loc_id === item.loc_id);
 
         if (existing) {
-          if (item.type === 'task') {
-            existing.type = 'task';
-          }
-          if (item.type === 'notification' && existing.type !== 'task') {
-            existing.type = 'notification';
-          }
+          // if (item.type === 'task') {
+          //   existing.type = 'task';
+          // }
+          // if (item.type === 'notification' && existing.type !== 'task') {
+          //   existing.type = 'notification';
+          // }
 
           if (item.notify_type === 'obs') {
             existing.obsNotifications.push(item);

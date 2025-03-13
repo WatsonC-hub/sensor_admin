@@ -11,7 +11,7 @@ const rawIcons = Object.fromEntries(
       import: 'default',
     })
   ).map(([key, value]) => [key.split('/').pop()?.split('_')[0], value])
-) as Record<NotificationIDEnum, string>;
+) as Record<NotificationIDEnum | 'task' | 'trip', string>;
 
 const reactIcons = Object.fromEntries(
   Object.entries(
@@ -21,7 +21,10 @@ const reactIcons = Object.fromEntries(
       import: 'default',
     })
   ).map(([key, value]) => [key.split('/').pop()?.split('_')[0], value])
-) as Record<NotificationIDEnum, React.FunctionComponent<React.SVGProps<SVGSVGElement>>>;
+) as Record<
+  NotificationIDEnum | 'task' | 'trip',
+  React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+>;
 
 const defaultStyling = {
   textAlign: 'start',
@@ -40,11 +43,12 @@ export const getColor = (iconDetails: IconDetails) => {
   )
     return sensorLocationTypeColors['-1'].color; // Nyopsætning
   if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color; // Enkeltmålinger
-  if (iconDetails?.notify_type === 'station') return '#4caf50';
-  if (iconDetails?.status == 'POSTPONED') return '#4caf50';
+  // if (iconDetails?.notify_type === 'station') return '#4caf50';
+  // if (iconDetails?.status == 'POSTPONED') return '#4caf50';
   // if (iconDetails?.notification_id == 12) return '#334FFF';
   if (iconDetails?.active === false) return '#C0C0C0';
   // if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
+  if (iconDetails?.type === 'itinerary') return '#4caf50';
   if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
   if (iconDetails?.color) return iconDetails?.color;
   return '#4caf50';
@@ -56,16 +60,35 @@ function getIcon<B extends boolean = false>(
 ): B extends true ? string : JSX.Element;
 function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
   if (raw == true) {
+    if (iconDetails.type === 'itinerary') {
+      return rawIcons['trip'];
+    }
+
     if (iconDetails.notification_id && iconDetails.notification_id in rawIcons) {
       return rawIcons[iconDetails.notification_id];
     }
 
+    if (iconDetails.type === 'task') {
+      return rawIcons['task'];
+    }
+
     return '';
   } else {
+    if (iconDetails.type === 'itinerary') {
+      const Component = reactIcons['trip'];
+      return <Component style={defaultStyling} viewBox="0 0 24 24" />;
+    }
+
     if (iconDetails.notification_id && iconDetails.notification_id in reactIcons) {
       const Component = reactIcons[iconDetails.notification_id];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
+
+    if (iconDetails.type === 'task') {
+      const Component = reactIcons['task'];
+      return <Component style={defaultStyling} viewBox="0 0 24 24" />;
+    }
+
     return <></>;
   }
 }

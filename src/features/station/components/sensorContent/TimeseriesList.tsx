@@ -34,6 +34,7 @@ const TimeseriesList = () => {
       {unique_stations.map((notification, index) => {
         const splitted = notification.ts_name.split(notification.loc_name);
         const hasTask = notification.opgave !== null;
+
         return (
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">
             <Box display="flex" gap={1} sx={{cursor: 'pointer'}}>
