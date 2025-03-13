@@ -130,6 +130,13 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 onChangeCallback={formMethods.handleSubmit(submit)}
               />
             )}
+            {user?.superUser && (
+              <FormToggleSwitch
+                name="sensor.hideLocationsWithoutNotifications"
+                label="Skjul lokationer uden notifikationer"
+                onChangeCallback={formMethods.handleSubmit(submit)}
+              />
+            )}
           </Grid>
         )}
       </Grid>
