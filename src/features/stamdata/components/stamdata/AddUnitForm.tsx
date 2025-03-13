@@ -86,7 +86,8 @@ export default function AddUnitForm({
   const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(
       (unit) =>
-        (unit.calypso_id === id || unit.terminal_id === id) && unit.sensortypeid === tstype_id
+        (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
+        unit.sensortypeid === tstype_id
     );
 
   const handleCalypsoIdNew = (
@@ -208,9 +209,9 @@ export default function AddUnitForm({
               setOpenCaptureDialog(false);
               return;
             }
-            console.log(calypso_id);
+
             const exists = uniqueCalypsoIds.includes(calypso_id.toString());
-            console.log(uniqueCalypsoIds);
+
             if (!exists) {
               toast.error(`Ingen tilgængelige enheder med Calypso ID: ${calypso_id}`);
               setOpenCaptureDialog(false);
