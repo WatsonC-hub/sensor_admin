@@ -6,6 +6,8 @@ import TripKeysTable from '~/features/opgavestyring/components/TripKeysTable';
 import TripRessourcesTable from '~/features/opgavestyring/components/TripRessourcesTable';
 import TripUnitTable from '~/features/opgavestyring/components/TripUnitTable';
 import {TaskCollection} from '~/types';
+import TripTaskTable from './TripTaskTable';
+import TripTaskCardList from './TripTaskCardList';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
@@ -28,6 +30,11 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         Ressourcer
       </Typography>
       <TripRessourcesTable ressources={data?.ressourcer} />
+
+      <TripTaskTable tasks={data?.tasks} />
+      <Box>
+        <TripTaskCardList data={data} />
+      </Box>
 
       <Typography ml={2} variant="h5">
         Udstyr

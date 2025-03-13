@@ -12,6 +12,15 @@ type Props = {
 };
 
 const TripUnitTable = ({units}: Props) => {
+  units?.sort((a, b) => {
+    if (a.name === b.name) {
+      if (a.startdate > b.startdate) return -1;
+      if (a.startdate < b.startdate) return 1;
+    } else if (a.name < b.name) return -1;
+    else if (a.name > b.name) return 1;
+    return 0;
+  });
+
   const columns = useMemo<MRT_ColumnDef<TaskUnits>[]>(
     () => [
       {

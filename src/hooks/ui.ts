@@ -10,6 +10,7 @@ interface DisplayState {
   selectedTask: string | null;
   loc_list: boolean;
   trip_list: boolean;
+  itinerary_id: string | null;
 
   setTsId: (id: number | null) => void;
   setLocId: (id: number | null) => void;
@@ -19,6 +20,7 @@ interface DisplayState {
   setSelectedTask: (taskId: string | null) => void;
   setLocList: (loc_list: boolean) => void;
   setTripList: (trip_list: boolean) => void;
+  setItineraryId: (itinerary_id: string | null) => void;
 }
 
 // Create Zustand store
@@ -30,6 +32,7 @@ export const displayStore = create<DisplayState>((set) => ({
   selectedTask: null,
   loc_list: false,
   trip_list: false,
+  itinerary_id: null,
 
   setTsId: (ts_id) => set({ts_id}),
   setLocId: (loc_id) =>
@@ -51,6 +54,7 @@ export const displayStore = create<DisplayState>((set) => ({
   setSelectedTask: (selectedTask) => set({selectedTask}),
   setLocList: (loc_list) => set({loc_list}),
   setTripList: (trip_list) => set({trip_list}),
+  setItineraryId: (itinerary_id) => set({itinerary_id}),
 }));
 
 export const useDisplayState = <T>(selector: (state: DisplayState) => T) => {

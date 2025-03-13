@@ -22,6 +22,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
 import LocationRouter from '~/features/station/components/LocationRouter';
+import Trip from '~/pages/admin/opgaver/Trip';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {BoreholeMapData} from '~/types';
@@ -46,6 +47,8 @@ const TasksOverview = () => {
     setLocList,
     trip_list,
     setTripList,
+    itinerary_id,
+    setItineraryId,
   } = useDisplayState((state) => state);
 
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
@@ -142,6 +145,16 @@ const TasksOverview = () => {
                 <SensorContent />
               </Box>
             </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="itinerary"
+            show={itinerary_id !== null}
+            minSize={2}
+            onClose={() => setItineraryId(null)}
+            height="100%"
+          >
+            <Trip />
           </WindowManager.Window>
 
           <WindowManager.Window

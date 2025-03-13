@@ -1,24 +1,27 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
+import {getIcon} from '~/features/notifications/utils';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useDisplayState} from '~/hooks/ui';
 import {useTable} from '~/hooks/useTable';
 import {LocationTasks} from '~/types';
 
 type Props = {
   tasks: Array<LocationTasks> | undefined;
-  trip_id: string | undefined;
 };
 
-const TripTaskTable = ({tasks, trip_id}: Props) => {
+const TripTaskTable = ({tasks}: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [taskId, setTaskId] = useState<number>();
+  const [taskId, setTaskId] = useState<string>();
   const {deleteTaskFromItinerary} = useTasks();
-  const onDeleteBtnClick = (id: number) => {
+  const {itinerary_id: trip_id} = useDisplayState((state) => state);
+
+  const onDeleteBtnClick = (id: string) => {
     deleteTaskFromItinerary.mutate(
       {
         path: `${trip_id}/tasks/${id}`,
@@ -48,6 +51,22 @@ const TripTaskTable = ({tasks, trip_id}: Props) => {
     );
     console.log(`itineraries/${trip_id}/tasks/${id}`);
   };
+
+  const value = tasks?.reduce((acc: Record<string, {count: number; name: string}>, task) => {
+    if (task.blocks_notifications !== undefined && task.blocks_notifications.length > 0) {
+      task.blocks_notifications?.forEach((block) => {
+        if (acc[block] === undefined) {
+          acc[block] = {count: 1, name: task.notification_name};
+        } else acc[block].count += 1;
+      });
+      return acc;
+    } else {
+      if (acc[0] === undefined) {
+        acc[0] = {count: 1, name: 'Manuelle opgaver'};
+      } else acc[0].count += 1;
+      return acc;
+    }
+  }, {});
 
   const columns = useMemo<MRT_ColumnDef<LocationTasks>[]>(
     () => [
@@ -145,16 +164,50 @@ const TripTaskTable = ({tasks, trip_id}: Props) => {
   );
 
   return (
-    <Box>
-      <DeleteAlert
-        dialogOpen={dialogOpen}
-        setDialogOpen={setDialogOpen}
-        onOkDelete={() => {
-          if (taskId) onDeleteBtnClick(taskId);
-        }}
-      />
-      <MaterialReactTable table={table} />
-    </Box>
+    <>
+      <Box
+        display="flex"
+        flexDirection="row"
+        pr={2}
+        alignItems={'center'}
+        justifyContent="space-between"
+      >
+        <Typography ml={2} variant="h5">
+          Opgaver
+        </Typography>
+        <Box display="flex" flexDirection="row" gap={1}>
+          {value &&
+            Object.keys(value).map((notification_id) => {
+              const id = parseInt(notification_id);
+              return (
+                <Box key={notification_id} display="flex" flexDirection="row">
+                  <Box width={24} height={24}>
+                    {getIcon({notification_id: id}, false)}
+                  </Box>
+                  <Typography alignContent={'center'} variant="body2">
+                    {value?.[id].count}x
+                  </Typography>
+                  &nbsp;
+                  <Typography variant="body2" alignContent={'center'}>
+                    {value?.[id].name}
+                  </Typography>
+                </Box>
+              );
+            })}
+        </Box>
+      </Box>
+
+      <Box>
+        <DeleteAlert
+          dialogOpen={dialogOpen}
+          setDialogOpen={setDialogOpen}
+          onOkDelete={() => {
+            if (taskId) onDeleteBtnClick(taskId);
+          }}
+        />
+        <MaterialReactTable table={table} />
+      </Box>
+    </>
   );
 };
 

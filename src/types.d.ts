@@ -1,6 +1,7 @@
 import {SvgIconProps} from '@mui/material';
 import {ReactNode} from 'react';
 import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
+import {Task} from './features/tasks/types';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -432,6 +433,7 @@ export type TaskRessources = {
 };
 
 export type TaskUnits = {
+  name: string;
   terminal_type: string;
   sensorinfo: string;
   sensor_id: string;
@@ -454,7 +456,7 @@ export type TaskNotifications = {
 };
 
 export type LocationTasks = {
-  id: number;
+  id: string;
   loc_id: number;
   ts_id: number;
   status_id: number;
@@ -466,4 +468,6 @@ export type LocationTasks = {
   description: string;
   status_name: string;
   display_name: string;
+  blocks_notifications: number[];
+  notification_name: string;
 };

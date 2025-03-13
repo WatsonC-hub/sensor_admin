@@ -10,6 +10,7 @@ import TaskListItemSimpleCard from './TaskListItemSimpleCard';
 import TaskListItemAdvancedCard from './TaskListItemAdvancedCard';
 import Button from '~/components/Button';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+
 const ItineraryCardList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = React.useState(false);

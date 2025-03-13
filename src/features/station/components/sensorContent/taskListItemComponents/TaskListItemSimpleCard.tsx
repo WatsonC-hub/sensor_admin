@@ -19,7 +19,11 @@ const TaskListItemSimpleCard = ({task}: Props) => {
 
   const notification =
     locationData &&
-    [locationData, ...locationData.otherNotifications].find((item) => item.ts_id === task.ts_id);
+    [locationData, ...locationData.otherNotifications].find(
+      (item) => item.ts_id === task.ts_id && !task.is_created
+    );
+
+  console.log(task);
 
   const contrastColor = task.itinerary_id ? '' : task.status_id === 1 ? 'white' : 'primary';
   const color = task.itinerary_id

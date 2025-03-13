@@ -7,7 +7,6 @@ import {APIError} from '~/queryClient';
 
 import type {
   completeItinerary,
-  ID,
   PostTaskitinerary,
   Task,
   Taskitinerary,
@@ -55,7 +54,7 @@ export const completeItineraryOptions = {
 //   },
 // };
 
-export const useTaskItinerary = (id?: ID) => {
+export const useTaskItinerary = (id?: string) => {
   const queryClient = useQueryClient();
 
   const get = useQuery<Taskitinerary[], APIError>({

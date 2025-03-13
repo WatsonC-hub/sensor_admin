@@ -44,6 +44,10 @@ const splitTimeFromDate = (dateString: string) => {
   return time;
 };
 
+const convertToShorthandDate = (date: string | null | undefined) => {
+  return moment(date).format('DD MMM YYYY');
+};
+
 export {
   convertDate,
   checkEndDateIsUnset,
@@ -51,4 +55,5 @@ export {
   calculatePumpstop,
   limitDecimalNumbers,
   splitTimeFromDate,
+  convertToShorthandDate,
 };
