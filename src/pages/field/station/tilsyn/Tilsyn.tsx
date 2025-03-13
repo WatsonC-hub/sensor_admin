@@ -30,6 +30,7 @@ export default function Tilsyn() {
 
   const {
     feature_permission_query: {data: permissions},
+    location_permissions,
   } = usePermissions(loc_id);
 
   const formMethods = useForm<TilsynItem>({defaultValues: initialData});
@@ -107,7 +108,7 @@ export default function Tilsyn() {
           <TilsynTable
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            disabled={permissions?.[ts_id] !== 'edit'}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
       </Box>
@@ -117,7 +118,7 @@ export default function Tilsyn() {
         onClick={() => {
           setShowForm(true);
         }}
-        disabled={permissions?.[ts_id] !== 'edit'}
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
         sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
       />
     </>

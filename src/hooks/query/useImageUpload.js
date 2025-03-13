@@ -44,7 +44,6 @@ export const useImageUpload = (endpoint) => {
       queryClient.invalidateQueries({
         queryKey: ['images'],
       });
-      toast.success('Billedet er blevet gemt');
     },
   });
 

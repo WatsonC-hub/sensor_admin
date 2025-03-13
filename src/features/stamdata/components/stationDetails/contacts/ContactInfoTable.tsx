@@ -9,6 +9,7 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
 import StationContactInfo from '~/features/stamdata/components/stationDetails/contacts/StationContactInfo';
 import {InferContactInfoTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
@@ -49,6 +50,8 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const {isMobile} = useBreakpoints();
 
   const {get} = useContactInfo(loc_id);
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
 
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
@@ -148,7 +151,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         ? {}
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText) {
+              if ((e.target as HTMLElement).innerText && !disabled) {
                 reset({
                   ...row.original,
                   telefonnummer: row.original.telefonnummer
@@ -183,7 +186,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.relation_id, setDialogOpen, setContactID);
         }}
-        disabled={!user?.contactAndKeysPermission}
+        disabled={!user?.contactAndKeysPermission || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

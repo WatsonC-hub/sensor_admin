@@ -8,6 +8,8 @@ import FormTextField from '~/components/FormTextField';
 
 import {Unit, useUnit} from '../../api/useAddUnit';
 import {UnitHistory, useUnitHistory} from '../../api/useUnitHistory';
+import {useAppContext} from '~/state/contexts';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 interface UnitFormProps {
   mode: string;
@@ -16,6 +18,10 @@ interface UnitFormProps {
 export default function UnitForm({mode}: UnitFormProps) {
   const {watch} = useFormContext();
   const editMode = mode === 'edit';
+
+  const {loc_id} = useAppContext([], ['loc_id']);
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
 
   const startdate = watch('unit.startdate');
   // const enddate = watch('unit.enddate');
@@ -63,7 +69,7 @@ export default function UnitForm({mode}: UnitFormProps) {
         <FormInput
           name="unit.startdate"
           label="Startdato"
-          disabled={!unit || startdate === undefined}
+          disabled={!unit || startdate === undefined || disabled}
           fullWidth
           type="datetime-local"
           required
@@ -75,7 +81,7 @@ export default function UnitForm({mode}: UnitFormProps) {
             name="unit.enddate"
             label="Slutdato"
             fullWidth
-            disabled={!unit || startdate === undefined}
+            disabled={!unit || startdate === undefined || disabled}
             type="datetime-local"
             required
             inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}

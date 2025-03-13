@@ -90,7 +90,7 @@ export default function PejlingMeasurementsTableMobile({
         ),
       },
     ],
-    [unit]
+    [unit, disabled, handleEdit]
   );
 
   const options: Partial<MRT_TableOptions<Kontrol>> = {

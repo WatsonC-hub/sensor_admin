@@ -27,9 +27,10 @@ export default function ReferenceForm() {
 
   const {
     feature_permission_query: {data: permissions},
+    location_permissions,
   } = usePermissions(loc_id);
 
-  const disabled = permissions?.[ts_id] !== 'edit';
+  const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
 
   const {
     get: {data: watlevmp},
@@ -121,16 +122,16 @@ export default function ReferenceForm() {
             disabled={disabled}
           />
         )}
+        <FabWrapper
+          icon={<AddCircle />}
+          text="Tilføj målepunkt"
+          disabled={disabled}
+          onClick={() => {
+            setShowForm(true);
+          }}
+          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+        />
       </Box>
-      <FabWrapper
-        icon={<AddCircle />}
-        text="Tilføj målepunkt"
-        onClick={() => {
-          setShowForm(true);
-        }}
-        disabled={permissions?.[ts_id] !== 'edit'}
-        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-      />
     </>
   );
 }

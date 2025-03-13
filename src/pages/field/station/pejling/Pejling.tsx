@@ -37,8 +37,10 @@ const Pejling = ({setDynamic}: Props) => {
 
   const {
     feature_permission_query: {data: permissions},
+    location_permissions,
   } = usePermissions(loc_id);
 
+  console.log(location_permissions);
   const initialData = {
     gid: -1,
     timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
@@ -148,14 +150,14 @@ const Pejling = ({setDynamic}: Props) => {
           <PejlingMeasurements
             handleEdit={handleEdit}
             handleDelete={handleDelete}
-            disabled={permissions?.[ts_id] !== 'edit'}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
       </Box>
       <FabWrapper
         icon={<AddCircle />}
         text="Tilføj kontrol"
-        disabled={permissions?.[ts_id] !== 'edit'}
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
         onClick={() => {
           setShowForm(true);
         }}

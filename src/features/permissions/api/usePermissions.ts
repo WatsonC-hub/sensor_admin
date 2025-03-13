@@ -40,7 +40,26 @@ const usePermissions = (loc_id?: number) => {
 
   const feature_permission_query = useQuery(usePermissionsQueryOptions(loc_id));
 
-  return {borehole_permission_query, feature_permission_query};
+  const {data} = feature_permission_query;
+
+  const ts_permissions = data && Object.values(data);
+
+  let location_permissions: 'read' | 'edit';
+
+  if (ts_permissions) {
+    if (ts_permissions.length == 0) {
+      location_permissions = 'edit';
+    }
+    location_permissions = ts_permissions.some((v) => v === 'edit') ? 'edit' : 'read';
+  } else {
+    location_permissions = 'edit';
+  }
+
+  return {
+    borehole_permission_query,
+    feature_permission_query,
+    location_permissions: location_permissions,
+  };
 };
 
 export default usePermissions;

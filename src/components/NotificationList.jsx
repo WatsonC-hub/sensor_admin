@@ -9,6 +9,7 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
 import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -22,7 +23,8 @@ const NotificationList = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
   const [selectedNotification /*, setSelectedNotification*/] = useState(null);
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
+
   let loc_id = undefined;
   const {setSelectedTask, activeTasks} = useTaskStore();
   const {tasks: tasksNavigation} = useNavigationFunctions();
@@ -59,6 +61,12 @@ const NotificationList = () => {
     loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
   }
 
+  const {
+    feature_permission_query: {data: permissions},
+  } = usePermissions(app_loc_id ?? loc_id);
+
+  const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
+  const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
     data?.filter((elem) => elem.notification_id != 0),
     'notification_id'
@@ -124,7 +132,12 @@ const NotificationList = () => {
         keepMounted
         disableScrollLock
       >
-        <MenuItem key="0" onClick={openModal} sx={{gap: 0.5}}>
+        <MenuItem
+          disabled={permissions?.[ts_id] !== 'edit'}
+          key="0"
+          onClick={openModal}
+          sx={{gap: 0.5}}
+        >
           <ListItemIcon>
             <Avatar sx={{bgcolor: 'primary'}}>
               <AddIcon fontSize="small" />

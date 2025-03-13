@@ -16,7 +16,7 @@ interface Props {
 
 function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props) {
   const imageType: string = type === 'borehole' ? 'image' : 'images';
-  const {data: images} = useQuery({
+  const {data: images, error} = useQuery({
     queryKey: ['images', typeId], //() => getImage(props.locationId));
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/${type}/${imageType}/${typeId}`);
@@ -26,6 +26,10 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
 
   const endpoint = type === 'borehole' ? 'borehole' : 'station';
   const {del: deleteImage} = useImageUpload(endpoint);
+
+  if (error) {
+    return;
+  }
 
   const handleEdit = (image: Image) => {
     setActiveImage(image);

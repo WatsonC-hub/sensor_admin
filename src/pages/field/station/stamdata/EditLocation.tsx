@@ -9,6 +9,7 @@ import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import {locationSchema} from '~/helpers/zodSchemas';
@@ -28,6 +29,7 @@ const EditLocation = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {data: metadata} = useLocationData();
   const {data: unit_history} = useUnitHistory();
+  const {location_permissions} = usePermissions(loc_id);
 
   const metadataEditLocationMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -84,16 +86,20 @@ const EditLocation = () => {
   return (
     <>
       <FormProvider {...formMethods}>
-        <LocationForm mode="normal" />
+        <LocationForm mode="normal" disable={location_permissions !== 'edit'} />
         <footer>
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button bttype="tertiary" onClick={() => reset(defaultValues)}>
+            <Button
+              bttype="tertiary"
+              onClick={() => reset(defaultValues)}
+              disabled={location_permissions !== 'edit'}
+            >
               Annuller
             </Button>
 
             <Button
               bttype="primary"
-              disabled={!isDirty || !isValid}
+              disabled={!isDirty || !isValid || location_permissions !== 'edit'}
               onClick={formMethods.handleSubmit(handleSubmit)}
               startIcon={<SaveIcon />}
               sx={{marginRight: 1}}

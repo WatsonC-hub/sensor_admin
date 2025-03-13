@@ -8,6 +8,7 @@ import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import Button from '~/components/Button';
 import {initialLocationAccessData} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
 import LocationAccessTable from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessTable';
@@ -26,7 +27,8 @@ const LocationAccess = () => {
   const {isTablet} = useBreakpoints();
   const [createNew, setCreateNew] = useState<boolean>(false);
   const user = useUser();
-
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
   const {
     post: postLocationAccess,
     put: editLocationAccess,
@@ -114,7 +116,7 @@ const LocationAccess = () => {
                   sx={isTablet ? {ml: 1} : {textTransform: 'none', ml: '12px'}}
                   startIcon={<KeyIcon />}
                   onClick={() => setOpenDialog(true)}
-                  disabled={!user?.contactAndKeysPermission}
+                  disabled={!user?.contactAndKeysPermission || disabled}
                 >
                   Tilføj nøgle eller kode
                 </Button>
