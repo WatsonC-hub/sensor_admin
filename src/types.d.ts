@@ -1,7 +1,6 @@
 import {SvgIconProps} from '@mui/material';
 import {ReactNode} from 'react';
 import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
-import {Task} from './features/tasks/types';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

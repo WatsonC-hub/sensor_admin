@@ -192,7 +192,11 @@ export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'creat
   task_ids: ID[];
 };
 
-export type PatchTaskitinerary = Partial<Omit<Taskitinerary, 'id' | 'created_at'>>;
+export type PatchTaskitinerary = {
+  path: string;
+  data: Partial<Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'>>;
+};
+
 export type AddTasksToitinerary = {
   task_ids: ID[];
 };

@@ -41,8 +41,6 @@ export default function LocationForm({mode, disable = false}: Props) {
   const gridsize = mode === 'modal' ? 12 : 6;
   const user = useUser();
 
-  console.log(getValues().unit);
-
   return (
     <Grid container spacing={2} alignItems="center">
       <Grid item xs={12} sm={gridsize}>

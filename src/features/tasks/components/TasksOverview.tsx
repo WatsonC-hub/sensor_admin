@@ -33,8 +33,6 @@ const TasksOverview = () => {
     state.setSelectedTask,
   ]);
 
-  console.log('selectedTask', selectedTask);
-
   const {
     loc_id,
     setLocId,
@@ -66,7 +64,6 @@ const TasksOverview = () => {
     if ('loc_id' in data) {
       // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
       setLocId(data.loc_id);
-      console.log(data);
     } else if ('boreholeno' in data) {
       setBoreholeNo(data.boreholeno);
     }
@@ -150,7 +147,7 @@ const TasksOverview = () => {
           <WindowManager.Window
             key="itinerary"
             show={itinerary_id !== null}
-            minSize={2}
+            minSize={1}
             onClose={() => setItineraryId(null)}
             height="100%"
           >

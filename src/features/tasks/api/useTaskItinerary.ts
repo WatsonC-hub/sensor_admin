@@ -7,6 +7,7 @@ import {APIError} from '~/queryClient';
 
 import type {
   completeItinerary,
+  PatchTaskitinerary,
   PostTaskitinerary,
   Task,
   Taskitinerary,
@@ -32,6 +33,15 @@ export const completeItineraryOptions = {
   mutationFn: async (mutation_data: completeItinerary) => {
     const {path} = mutation_data;
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}/complete`);
+    return result;
+  },
+};
+
+export const patchItineraryOptions = {
+  mutationKey: ['itinerary_patch'],
+  mutationFn: async (mutation_data: PatchTaskitinerary) => {
+    const {path, data} = mutation_data;
+    const {data: result} = await apiClient.patch(`/sensor_admin/tasks/itineraries/${path}`, data);
     return result;
   },
 };
@@ -86,7 +96,17 @@ export const useTaskItinerary = (id?: string) => {
       queryClient.invalidateQueries({
         queryKey: ['tasks'],
       });
-      toast.success('Opgaver gemt');
+      toast.success('Tur oprettet');
+    },
+  });
+
+  const patch = useMutation<unknown, APIError, PatchTaskitinerary>({
+    ...patchItineraryOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['itineraries'],
+      });
+      toast.success('Tur opdateret');
     },
   });
 
@@ -96,7 +116,7 @@ export const useTaskItinerary = (id?: string) => {
       queryClient.invalidateQueries({
         queryKey: ['itineraries'],
       });
-      toast.success('Opgaver udført');
+      toast.success('Tur færdiggjort');
     },
   });
 
@@ -123,6 +143,7 @@ export const useTaskItinerary = (id?: string) => {
   return {
     get,
     post,
+    patch,
     getItineraryTasks,
     complete,
     // deleteTaskFromItinerary,

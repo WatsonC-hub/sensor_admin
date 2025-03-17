@@ -291,7 +291,6 @@ export default function PlotlyGraph({
       </Box>
       <Plot
         onSelected={(e) => {
-          console.log('onselected', e);
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);
         }}
         divId="graph"

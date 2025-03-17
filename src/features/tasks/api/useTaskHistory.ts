@@ -27,7 +27,6 @@ export const taskCommentPutOptions = {
   mutationKey: ['taskComments_put'],
   mutationFn: async (mutation_data: TaskCommentPut) => {
     const {path, data} = mutation_data;
-    console.log('path', path, 'data', data);
     const {data: result} = await apiClient.put(`sensor_admin/tasks/comments/${path}`, data);
     return result;
   },

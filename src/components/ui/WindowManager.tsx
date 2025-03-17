@@ -107,8 +107,6 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
     }
   }
 
-  console.log('windowmanager', width, columnWidth, maxColumns);
-
   return (
     // <WindowContext.Provider value={{columnWidth: minColumnWidth}}>
     <Box

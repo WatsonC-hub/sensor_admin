@@ -8,7 +8,6 @@ import Toolbar from '@mui/material/Toolbar';
 import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useEffect, useState} from 'react';
 function Transition(props) {
-  console.log(props);
   return <Slide direction="up" ref={props.ref} {...props} />;
 }
 

@@ -25,8 +25,6 @@ const ContactInfo = () => {
 
   const user = useUser();
 
-  console.log(user?.contactAndKeysPermission);
-
   const formMethods = useForm({
     resolver: zodResolver(contact_info),
     defaultValues: initialContactData,

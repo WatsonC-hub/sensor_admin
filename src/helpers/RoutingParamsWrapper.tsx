@@ -7,7 +7,6 @@ interface Props<T extends string> {
 
 const RoutingParamsWrapper = <T extends string>({children}: Props<T>) => {
   const params = useParams<T>() as Record<T, string>; // ✅ Ensure type safety
-  console.log(params);
   return children(params);
 };
 

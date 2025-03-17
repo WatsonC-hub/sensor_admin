@@ -3,7 +3,6 @@ import {apiClient} from '~/apiClient';
 export async function askPermission() {
   return new Promise(function (resolve, reject) {
     const permissionResult = Notification.requestPermission(function (result) {
-      console.log('User Choice', result);
       resolve(result);
     });
 

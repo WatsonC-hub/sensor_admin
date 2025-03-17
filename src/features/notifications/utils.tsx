@@ -13,7 +13,7 @@ const rawIcons = Object.fromEntries(
   ).map(([key, value]) => [key.split('/').pop()?.split('_')[0], value])
 ) as Record<NotificationIDEnum | 'task' | 'trip', string>;
 
-const reactIcons = Object.fromEntries(
+export const reactIcons = Object.fromEntries(
   Object.entries(
     import.meta.glob('./icons/*.svg', {
       eager: true,

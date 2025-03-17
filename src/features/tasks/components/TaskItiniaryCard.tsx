@@ -32,8 +32,6 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
     <Droppable<{loc_id: number}>
       onDrop={(e, data) => {
         e.preventDefault();
-        console.log('DROP');
-        console.log(e.dataTransfer.getData('text/plain'));
         const addTasks = tasks
           ?.filter(
             (task) =>
@@ -50,7 +48,6 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
               loc_id: [data.loc_id],
             },
           });
-        else console.log('no tasks to add');
       }}
     >
       {({isDraggingOver}) => {
@@ -128,14 +125,7 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
               </Button>
               <Button
                 onClick={() => {
-                  complete.mutate(
-                    {path: `${itinerary.id}`},
-                    {
-                      onSuccess: () => {
-                        console.log('COMPLETED');
-                      },
-                    }
-                  );
+                  complete.mutate({path: `${itinerary.id}`});
                 }}
                 bttype="itinerary"
               >

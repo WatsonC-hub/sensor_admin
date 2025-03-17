@@ -14,7 +14,6 @@ interface LocationData {
 }
 
 export const useLocationData = (combinedQueries: LocationData) => {
-  console.log(combinedQueries);
   const getService = useQueries({
     queries: combinedQueries.ts_ids
       .flat()
