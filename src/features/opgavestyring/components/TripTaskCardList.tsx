@@ -1,4 +1,4 @@
-import {Person} from '@mui/icons-material';
+import {ExpandLess, ExpandMore, Person} from '@mui/icons-material';
 import {Box, Typography, Card, IconButton} from '@mui/material';
 import React, {useState} from 'react';
 import {LocationTasks, TaskCollection} from '~/types';
@@ -65,24 +65,32 @@ const TripTaskCardList = ({data}: TripTaskCardListProps) => {
                   justifyContent={'space-between'}
                   p={0.5}
                   m={0.5}
+                  sx={{cursor: 'pointer'}}
                   onClick={() => {
                     if (!locationClicked) setLocationClicked(parseInt(loc_id));
                     else if (locationClicked === parseInt(loc_id)) setLocationClicked(undefined);
                     else setLocationClicked(parseInt(loc_id));
                   }}
                 >
-                  <Box display={'flex'} flexDirection={'column'} gap={0.5}>
-                    {grouped_data[loc_id].loc_name}
-                    {grouped_data[loc_id].contactMobile && (
-                      <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
-                        <Person fontSize="small" />
-                        {grouped_data[loc_id].contactMobile.includes('+45') ||
-                        (grouped_data[loc_id].contactMobile.includes('45') &&
-                          grouped_data[loc_id].contactMobile.trim().length === 10)
-                          ? '+45 ' + grouped_data[loc_id].contactMobile.split('45')[1]
-                          : `+45 ${grouped_data[loc_id].contactMobile}`}
-                      </Box>
+                  <Box display={'flex'} flexDirection={'row'} gap={0.5} alignItems={'center'}>
+                    {locationClicked && locationClicked === parseInt(loc_id) ? (
+                      <ExpandLess fontSize="small" />
+                    ) : (
+                      <ExpandMore fontSize="small" />
                     )}
+                    <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+                      {grouped_data[loc_id].loc_name}
+                      {grouped_data[loc_id].contactMobile && (
+                        <Box display={'flex'} flexDirection={'row'} alignItems={'center'}>
+                          <Person fontSize="small" />
+                          {grouped_data[loc_id].contactMobile.includes('+45') ||
+                          (grouped_data[loc_id].contactMobile.includes('45') &&
+                            grouped_data[loc_id].contactMobile.trim().length === 10)
+                            ? '+45 ' + grouped_data[loc_id].contactMobile.split('45')[1]
+                            : `+45 ${grouped_data[loc_id].contactMobile}`}
+                        </Box>
+                      )}
+                    </Box>
                   </Box>
                   <Box display={'flex'} flexDirection={'row'} gap={0.5} alignItems={'center'}>
                     <AssignmentOutlinedIcon fontSize="small" />

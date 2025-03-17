@@ -147,6 +147,7 @@ const Window = ({
   width,
   height = 'fit-content',
 }: WindowProps) => {
+  const {isMonitor, isLaptop, isLargeLaptop} = useBreakpoints();
   //   const {columnWidth} = useWindowContext();
   //   if (!columnWidth) throw new Error('Window must be a child of WindowManager');
   if (!show) return null;
@@ -177,7 +178,7 @@ const Window = ({
         // width: fullScreen ? '100%' : '100%',
         width: width,
         backgroundColor: 'white',
-        borderRadius: height == '100%' ? 0 : 4,
+        borderRadius: (isMonitor || isLaptop || isLargeLaptop) && height !== '100%' ? 4 : 0,
         // p: 1,
         // m: 1,
         ...fullscreenprops,
