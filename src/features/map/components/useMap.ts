@@ -138,7 +138,7 @@ const useMap = <TData extends object>(
       center: pan || [56.215868, 8.228759],
       zoom: zoom || 7,
       layers: [outdormapbox],
-      tapHold: false,
+      tapHold: true,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
