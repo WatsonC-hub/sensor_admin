@@ -63,6 +63,13 @@ type DrawerItems = {
   text?: string;
   items: Item[];
   disabled?: boolean;
+  settings?: {
+    icon: ReactNode;
+    page: StationPages;
+    disabled?: boolean;
+    requiredTsId: boolean;
+    onHover?: () => void;
+  };
 };
 
 const navIconStyle = (isSelected: boolean) => {
@@ -91,6 +98,12 @@ const StationDrawer = () => {
   const items: DrawerItems[] = [
     {
       text: 'Tidsserie',
+      settings: {
+        icon: <Edit />,
+        page: stationPages.GENERELTIDSSERIE,
+        requiredTsId: true,
+        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+      },
       items: [
         {
           text: 'Kontrol',
@@ -123,17 +136,39 @@ const StationDrawer = () => {
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
         {
-          text: 'Stamdata',
-          page: stationPages.GENERELTIDSSERIE,
-          icon: <Edit />,
+          text: 'Juster data',
+          page: stationPages.JUSTERINGER,
+          icon: <QueryStatsIcon />,
           requiredTsId: true,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          disabled: !user?.QAPermission || metadata?.calculated,
+          onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
         },
+        {
+          text: 'Juster advarsler',
+          page: stationPages.ALGORITHMS,
+          icon: <FunctionsIcon />,
+          requiredTsId: true,
+          disabled: !user?.QAPermission || metadata?.calculated,
+          onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
+        },
+        // {
+        //   text: 'Stamdata',
+        //   page: stationPages.GENERELTIDSSERIE,
+        //   icon: <Edit />,
+        //   requiredTsId: true,
+        //   onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        // },
       ],
     },
 
     {
       text: 'Lokation',
+      settings: {
+        page: stationPages.GENERELTLOKATION,
+        icon: <Edit />,
+        requiredTsId: false,
+        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+      },
       items: [
         {
           text: 'Billeder',
@@ -167,33 +202,6 @@ const StationDrawer = () => {
           disabled: !user?.ressourcePermission,
           onHover: () => handlePrefetch(getRessourcerOptions(loc_id)),
         },
-        {
-          text: 'Stamdata',
-          page: stationPages.GENERELTLOKATION,
-          icon: <Edit />,
-          requiredTsId: false,
-          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-        },
-      ],
-    },
-    {
-      text: 'Kvalitetssikring',
-      disabled: !user?.QAPermission || metadata?.calculated,
-      items: [
-        {
-          text: 'Justeringer',
-          page: stationPages.JUSTERINGER,
-          icon: <QueryStatsIcon />,
-          requiredTsId: true,
-          onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
-        },
-        {
-          text: 'Algoritmer',
-          page: stationPages.ALGORITHMS,
-          icon: <FunctionsIcon />,
-          requiredTsId: true,
-          onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
-        },
       ],
     },
   ];
@@ -208,8 +216,32 @@ const StationDrawer = () => {
     return (
       <>
         {open && (
-          <ListItem key={category.text} sx={{borderRadius: '9999px', pb: 0}}>
+          <ListItem
+            key={category.text}
+            sx={{
+              borderRadius: '9999px',
+              pb: 0,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
             <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
+            {category.settings && (
+              <ListItemIcon
+                sx={{
+                  color: navIconStyle(pageToShow === category.settings.page),
+                  minWidth: 0,
+                  cursor: 'pointer',
+                }}
+                onClick={() => {
+                  if (category.settings) setPageToShow(category.settings.page);
+                  if (open) toggleDrawer(false);
+                }}
+              >
+                {category.settings.icon}
+              </ListItemIcon>
+            )}
           </ListItem>
         )}
         {category.items

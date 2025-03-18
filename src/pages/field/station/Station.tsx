@@ -47,18 +47,48 @@ export default function Station() {
       {pageToShow === stationPages.PEJLING && ts_id !== -1 && <Pejling />}
       {pageToShow === stationPages.TILSYN && !metadata?.calculated && <Tilsyn />}
       {pageToShow === stationPages.GENERELTUDSTYR && (
-        <StationPageBoxLayout>
-          <EditUnit />
-        </StationPageBoxLayout>
+        <>
+          <Box>
+            <PlotGraph />
+          </Box>
+          <Divider />
+          <StationPageBoxLayout>
+            <Box
+              sx={{
+                borderRadius: 4,
+                boxShadow: 3,
+                padding: '16px',
+              }}
+            >
+              <EditUnit />
+            </Box>
+          </StationPageBoxLayout>
+        </>
       )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
-          <EditLocation />
+          <Box
+            sx={{
+              borderRadius: 4,
+              boxShadow: 3,
+              padding: '16px',
+            }}
+          >
+            <EditLocation />
+          </Box>
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.GENERELTIDSSERIE && (
         <StationPageBoxLayout>
-          <EditTimeseries />
+          <Box
+            sx={{
+              borderRadius: 4,
+              boxShadow: 3,
+              padding: '16px',
+            }}
+          >
+            <EditTimeseries />
+          </Box>
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms />}
