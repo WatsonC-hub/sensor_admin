@@ -4,7 +4,6 @@ import {
   ShowChartRounded,
   StraightenRounded,
   SettingsPhoneRounded,
-  AddCircle,
 } from '@mui/icons-material';
 import {Box, Divider, Tab, Typography, Tabs} from '@mui/material';
 import {useEffect} from 'react';
@@ -22,7 +21,6 @@ import {useAppContext} from '~/state/contexts';
 import EditLocation from './EditLocation';
 import EditTimeseries from './EditTimeseries';
 import EditUnit from './EditUnit';
-import FabWrapper from '~/components/FabWrapper';
 
 export default function EditStamdata() {
   const {isTablet} = useBreakpoints();
@@ -40,7 +38,7 @@ export default function EditStamdata() {
     }
     if (tabValue === null) {
       setTabValue('lokation');
-    } else if (tabValue === 'målepunkt' && metadata && metadata.tstype_id !== 1) {
+    } else if (tabValue === 'maalepunkt' && metadata && metadata.tstype_id !== 1) {
       setTabValue('lokation');
     } else if (
       (tabValue === 'udstyr' || tabValue === 'tidsserie') &&

@@ -84,32 +84,30 @@ const EditLocation = () => {
   };
 
   return (
-    <>
+    <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
         <LocationForm mode="normal" disable={location_permissions !== 'edit'} />
-        <footer>
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button
-              bttype="tertiary"
-              onClick={() => reset(defaultValues)}
-              disabled={location_permissions !== 'edit'}
-            >
-              Annuller
-            </Button>
+        <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <Button
+            bttype="tertiary"
+            onClick={() => reset(defaultValues)}
+            disabled={location_permissions !== 'edit'}
+          >
+            Annuller
+          </Button>
 
-            <Button
-              bttype="primary"
-              disabled={!isDirty || !isValid || location_permissions !== 'edit'}
-              onClick={formMethods.handleSubmit(handleSubmit)}
-              startIcon={<SaveIcon />}
-              sx={{marginRight: 1}}
-            >
-              Gem
-            </Button>
-          </Box>
-        </footer>
+          <Button
+            bttype="primary"
+            disabled={!isDirty || !isValid || location_permissions !== 'edit'}
+            onClick={formMethods.handleSubmit(handleSubmit)}
+            startIcon={<SaveIcon />}
+            sx={{marginRight: 1}}
+          >
+            Gem
+          </Button>
+        </Box>
       </FormProvider>
-    </>
+    </Box>
   );
 };
 

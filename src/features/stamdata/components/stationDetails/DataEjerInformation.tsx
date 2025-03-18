@@ -20,9 +20,6 @@ const DataEjerInformation = () => {
             required
             fullWidth
             disabled={true}
-            sx={{
-              mb: 2,
-            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -33,9 +30,6 @@ const DataEjerInformation = () => {
             required
             fullWidth
             disabled={true}
-            sx={{
-              mb: 2,
-            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -46,9 +40,6 @@ const DataEjerInformation = () => {
             required
             fullWidth
             disabled={true}
-            sx={{
-              mb: 2,
-            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -59,9 +50,6 @@ const DataEjerInformation = () => {
             required
             fullWidth
             disabled={true}
-            sx={{
-              mb: 2,
-            }}
           />
         </Grid>
       </Grid>

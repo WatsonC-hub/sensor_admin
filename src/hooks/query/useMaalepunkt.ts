@@ -1,8 +1,9 @@
-import {useQuery, useMutation} from '@tanstack/react-query';
+import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
 import moment from 'moment';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {Maalepunkt} from '~/types';
 
@@ -52,10 +53,8 @@ export const maalepunktDelOptions = {
   },
 };
 
-export const useMaalepunkt = () => {
-  const {ts_id} = useAppContext(['ts_id']);
-
-  const get = useQuery({
+export const getMaalepunktOptions = (ts_id: number | undefined) =>
+  queryOptions<Array<Maalepunkt>, APIError>({
     queryKey: ['watlevmp', ts_id],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Maalepunkt>>(
@@ -72,6 +71,11 @@ export const useMaalepunkt = () => {
     },
     enabled: ts_id !== null || ts_id !== undefined,
   });
+
+export const useMaalepunkt = () => {
+  const {ts_id} = useAppContext(['ts_id']);
+
+  const get = useQuery(getMaalepunktOptions(ts_id));
 
   const post = useMutation({
     ...maalepunktPostOptions,

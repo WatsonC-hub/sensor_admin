@@ -54,7 +54,7 @@
     "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
     "lint": "eslint src",
     "test": "vitest",
-    "check-types": "tsc --project tsconfig.json --pretty --noEmit"
+    "check-types": "tsc -b --pretty --noEmit"
   },
   "browserslist": {
     "production": [

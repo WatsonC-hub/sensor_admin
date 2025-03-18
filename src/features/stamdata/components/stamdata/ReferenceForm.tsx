@@ -1,5 +1,4 @@
 import {AddCircle} from '@mui/icons-material';
-import {Box} from '@mui/material';
 import moment from 'moment';
 import FabWrapper from '~/components/FabWrapper';
 
@@ -90,46 +89,37 @@ export default function ReferenceForm() {
   return (
     <>
       {showForm && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <MaalepunktForm
-            formData={mpData}
-            changeFormData={changeMpData}
-            handleSubmit={handleMaalepunktSubmit}
-            handleCancel={handleMpCancel}
-          />
-        </Box>
-      )}
-      <Box display="flex" justifyContent={{sm: 'center'}}>
-        {isMobile ? (
-          <MaalepunktTableMobile
-            data={watlevmp}
-            handleEdit={handleEdit}
-            handleDelete={handleDeleteMaalepunkt}
-            disabled={disabled}
-          />
-        ) : (
-          <MaalepunktTableDesktop
-            data={watlevmp}
-            handleEdit={handleEdit}
-            handleDelete={handleDeleteMaalepunkt}
-            disabled={disabled}
-          />
-        )}
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj målepunkt"
-          disabled={disabled}
-          onClick={() => {
-            setShowForm(true);
-          }}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+        <MaalepunktForm
+          formData={mpData}
+          changeFormData={changeMpData}
+          handleSubmit={handleMaalepunktSubmit}
+          handleCancel={handleMpCancel}
         />
-      </Box>
+      )}
+      {isMobile ? (
+        <MaalepunktTableMobile
+          data={watlevmp}
+          handleEdit={handleEdit}
+          handleDelete={handleDeleteMaalepunkt}
+          disabled={disabled}
+        />
+      ) : (
+        <MaalepunktTableDesktop
+          data={watlevmp}
+          handleEdit={handleEdit}
+          handleDelete={handleDeleteMaalepunkt}
+          disabled={disabled}
+        />
+      )}
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj målepunkt"
+        disabled={disabled}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
     </>
   );
 }
