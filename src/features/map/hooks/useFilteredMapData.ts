@@ -4,6 +4,9 @@ import {Filter} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
+import {locationListSortingAtom} from '~/state/atoms';
+import {useAtomValue} from 'jotai';
+import moment from 'moment';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -81,9 +84,33 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
   return filteredData;
 };
 
+const sortByDueDate = (
+  filteredList: (NotificationMap | BoreholeMapData)[],
+  sortingAtom: string
+) => {
+  filteredList.sort((a, b) => {
+    if ('loc_id' in a && 'loc_id' in b) {
+      if (sortingAtom === 'Oldest') {
+        if (a.dato === null) return -1;
+        if (b.dato === null) return 1;
+        return moment(b.dato).diff(moment(a.dato));
+      }
+      if (sortingAtom === 'Newest') {
+        if (a.dato === null) return 1;
+        if (b.dato === null) return -1;
+        return moment(a.dato).diff(moment(b.dato));
+      }
+    } else {
+      return -1;
+    }
+
+    return 0;
+  });
+};
+
 export const useFilteredMapData = () => {
   const {data: mapData} = useMapOverview();
-
+  const sortingAtom = useAtomValue(locationListSortingAtom);
   const {data: boreholeMapdata} = useBoreholeMap();
   const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
 
@@ -99,12 +126,18 @@ export const useFilteredMapData = () => {
   }, [data, filters]);
 
   const listFilteredData = useMemo(() => {
+    let filteredList = mapFilteredData;
     if (locIds.length > 0) {
       const filteredLocIds = new Set(locIds);
-      return mapFilteredData.filter((elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id));
+      filteredList = mapFilteredData.filter(
+        (elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id)
+      );
+
+      sortByDueDate(filteredList, sortingAtom);
     }
-    return mapFilteredData;
-  }, [mapFilteredData, locIds]);
+
+    return filteredList;
+  }, [mapFilteredData, locIds, sortingAtom]);
 
   return {
     data,

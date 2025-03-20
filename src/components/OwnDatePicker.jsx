@@ -15,7 +15,7 @@ const OwnDatePicker = (props) => {
         error={props.error}
         helperText={props.helperText}
         disabled={props.disabled}
-        value={moment(props.value).format('YYYY-MM-DDTHH:mm')}
+        value={props.value && moment(props.value).format('YYYY-MM-DDTHH:mm')}
         onChange={(e) => {
           props.onChange(moment(e.target.value).toDate());
         }}
@@ -30,6 +30,7 @@ const OwnDatePicker = (props) => {
         size={props.size}
         fullWidth={props.fullWidth}
         margin={props.margin ?? 'dense'}
+        placeholder={props.placeholder}
       />
     </LocalizationProvider>
   );

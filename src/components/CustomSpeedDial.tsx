@@ -20,7 +20,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
       <SpeedDial
         ariaLabel="SpeedDial"
         icon={
-          <Box display={'flex'} flexDirection={'row'} gap={1}>
+          <Box display={'flex'} flexDirection={'row'}>
             {' '}
             <ManageSearch />
             {!isMobile && <Typography textTransform={'none'}>Justér</Typography>}
@@ -43,7 +43,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
         }}
         sx={{
           position: 'fixed',
-          bottom: 65,
+          bottom: isMobile ? 65 : 10,
           right: 20,
           borderRadius: 4.5,
           color: 'white',

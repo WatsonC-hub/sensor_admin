@@ -27,12 +27,20 @@ type ImageCardProps = {
 };
 
 function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
-  const {loc_id} = useAppContext(['loc_id']);
-  const {location_permissions} = usePermissions(loc_id);
+  const {loc_id, boreholeno} = useAppContext([], ['loc_id', 'boreholeno']);
+  const {
+    location_permissions,
+    borehole_permission_query: {data: permissions},
+  } = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const isLocation = loc_id !== undefined;
+  const disabled =
+    (location_permissions === 'edit' && isLocation) ||
+    (boreholeno !== undefined && permissions?.borehole_plantids?.boreholenos?.includes(boreholeno));
 
   function handleDelete() {
     deleteMutation.mutateAsync(
@@ -107,7 +115,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       {(image.loc_id || image.boreholeno) && (
         <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
           <Button
-            disabled={deleteMutation.isPending || location_permissions !== 'edit'}
+            disabled={deleteMutation.isPending || !disabled}
             onClick={() => setDialogOpen(true)}
             size="small"
             bttype="tertiary"
@@ -124,7 +132,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
             )}
           </Button>
           <Button
-            disabled={deleteMutation.isPending || location_permissions !== 'edit'}
+            disabled={deleteMutation.isPending || !disabled}
             onClick={() => handleEdit(image)}
             size="small"
             bttype="primary"

@@ -1,8 +1,8 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {GetQueryOptions} from '~/queryClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
 
@@ -60,31 +60,21 @@ export const tilsynDelOptions = {
   },
 };
 
-export const tilsynGetOptions = <TData>(ts_id: number | undefined): GetQueryOptions<TData> => ({
-  queryKey: ['service', ts_id],
-  queryFn: async () => {
-    // try {
-    const {data} = await apiClient.get<TData>(`/sensor_field/station/service/${ts_id}`);
-    return data;
-    // return data.map((m) => {
-    //   return {
-    //     ...m,
-    //   //     dato: moment(m.dato).format('YYYY-MM-DDTHH:mm'),
-    //   //   };
-    //   // });
-    // } catch (error) {
-    //   console.log((error as AxiosError).response?.data.detail);
-    //   return null;
-    // }
-  },
-  enabled: ts_id !== undefined && ts_id !== null,
-});
+export const tilsynGetOptions = (ts_id: number | undefined) =>
+  queryOptions<Array<TilsynItem>, APIError>({
+    queryKey: ['service', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
+      return data;
+    },
+    enabled: ts_id !== undefined && ts_id !== null,
+  });
 
 export const useTilsyn = () => {
   const queryClient = useQueryClient();
 
   const {ts_id} = useAppContext(['ts_id']);
-  const get = useQuery(tilsynGetOptions<Array<TilsynItem>>(ts_id));
+  const get = useQuery(tilsynGetOptions(ts_id));
 
   const post = useMutation({
     ...tilsynPostOptions,

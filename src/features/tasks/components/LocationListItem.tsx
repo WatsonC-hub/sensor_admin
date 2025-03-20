@@ -1,9 +1,10 @@
-import {Box, Typography} from '@mui/material';
+import {Box, Link, Typography} from '@mui/material';
 import React from 'react';
 import {MapOverview, useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useTaskStore} from '../api/useTaskStore';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {convertDate} from '~/helpers/dateConverter';
+import {CalendarIcon} from '@mui/x-date-pickers';
 
 type Props = {
   itemData: MapOverview;
@@ -59,6 +60,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
               display={'flex'}
               flexDirection={'row'}
               justifyContent={'space-between'}
+              alignItems={'center'}
               py={1}
               gap={1}
             >
@@ -76,9 +78,14 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                 />
                 <Typography>{task.name}</Typography>
               </Box>
-              <Box>
-                <Typography>{convertDateWithTimeStamp(task.due_date)}</Typography>
-              </Box>
+              {task?.due_date && (
+                <Box display={'flex'} gap={1} alignItems={'center'}>
+                  <CalendarIcon fontSize="small" sx={{color: 'grey.700'}} />
+                  <Typography variant="body2" color="grey.700">
+                    {convertDate(task.due_date)}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           );
         })}

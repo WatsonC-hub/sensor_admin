@@ -72,6 +72,7 @@ export default function UnitForm({mode}: UnitFormProps) {
           disabled={!unit || startdate === undefined || disabled}
           fullWidth
           type="datetime-local"
+          sx={{p: 0}}
           required
         />
       </Grid>
@@ -84,6 +85,7 @@ export default function UnitForm({mode}: UnitFormProps) {
             disabled={!unit || startdate === undefined || disabled}
             type="datetime-local"
             required
+            sx={{p: 0}}
             inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}
           />
         )}
