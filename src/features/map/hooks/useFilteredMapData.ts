@@ -1,4 +1,4 @@
-import {NotificationMap, useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useMapFilterStore} from '../store';
 import {Filter} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
@@ -25,20 +25,20 @@ const searchElement = (elem: object, search_string: string) => {
   return Object.values(elem).some((value) => searchValue(value, search_string));
 };
 
-const searchAcrossAll = (data: (NotificationMap | BoreholeMapData)[], search_string: string) => {
+const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string: string) => {
   if (search_string === '') return data;
   return data.filter((elem) => searchElement(elem, search_string));
 };
 
-const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
+const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   if (data.loctype_id === 12) return filter.isSingleMeasurement;
   const serviceFilter =
     filter.isCustomerService === 'indeterminate'
       ? true
       : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
-  const activeFilter = data.active == true || data.active == null ? true : filter.showInactive;
+  const activeFilter = data.inactive != true ? true : filter.showInactive;
   const keepLocationsWithoutNotifications =
-    data.type === 'none' ? !filter.hideLocationsWithoutNotifications : true;
+    !data.has_task && data.flag === null ? !filter.hideLocationsWithoutNotifications : true;
   return (
     keepLocationsWithoutNotifications &&
     activeFilter &&
@@ -58,11 +58,11 @@ const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
   }
 };
 
-const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter) => {
+const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => {
   let filteredData = data;
 
-  filteredData = filteredData.filter((elem): elem is NotificationMap =>
-    'notification_id' in elem ? filterSensor(elem, filter.sensor) : true
+  filteredData = filteredData.filter((elem): elem is MapOverview =>
+    'loc_id' in elem ? filterSensor(elem, filter.sensor) : true
   );
 
   filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
@@ -82,10 +82,10 @@ const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter)
 };
 
 export const useFilteredMapData = () => {
-  const {data: mapData} = useNotificationOverviewMap();
+  const {data: mapData} = useMapOverview();
 
   const {data: boreholeMapdata} = useBoreholeMap();
-  const [extraData, setExtraData] = useState<NotificationMap | BoreholeMapData | null>(null);
+  const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? []), ...(extraData ? [extraData] : [])];

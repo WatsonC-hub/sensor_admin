@@ -6,7 +6,7 @@ import WindowManager from '~/components/ui/WindowManager';
 import {calculateContentHeight} from '~/consts';
 import TaskMap from '~/pages/admin/opgaver/TaskMap';
 import TaskInfo from './TaskInfo';
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {AppContext} from '~/state/contexts';
 import Station from '~/pages/field/station/Station';
 
@@ -54,7 +54,7 @@ const TasksOverview = () => {
   const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
   const {isMobile} = useBreakpoints();
 
-  const clickCallback = (data: NotificationMap | BoreholeMapData | null) => {
+  const clickCallback = (data: MapOverview | BoreholeMapData | null) => {
     if (data === null) {
       setLocId(null);
       setBoreholeNo(null);
@@ -63,8 +63,10 @@ const TasksOverview = () => {
 
     if ('loc_id' in data) {
       // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
+      console.log('data', data);
       setLocId(data.loc_id);
     } else if ('boreholeno' in data) {
+      console.log('boreholeno', data);
       setBoreholeNo(data.boreholeno);
     }
   };

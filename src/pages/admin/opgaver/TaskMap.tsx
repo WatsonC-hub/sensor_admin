@@ -12,7 +12,7 @@ import '~/features/map/map.css';
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
@@ -27,6 +27,7 @@ import useMap from '../../../features/map/components/useMap';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {getBoreholeIcon, getNotificationIcon} from '~/features/map/utils';
 import {utm} from '../../../features/map/mapConsts';
+import {queryClient} from '~/queryClient';
 
 interface LocItems {
   name: string;
@@ -35,7 +36,7 @@ interface LocItems {
 }
 
 interface MapProps {
-  clickCallback?: (data: NotificationMap | BoreholeMapData | null) => void;
+  clickCallback?: (data: MapOverview | BoreholeMapData | null) => void;
 }
 
 // type TaskStyling = 'upcoming' | '';
@@ -164,10 +165,8 @@ const Map = ({clickCallback}: MapProps) => {
     return marker;
   };
 
-  const createLocationMarker = (element: NotificationMap) => {
-    const coords = utm.convertUtmToLatLng(element.x, element.y, 32, 'N');
-    if (typeof coords != 'object') return;
-    const point: L.LatLngExpression = [coords.lat, coords.lng];
+  const createLocationMarker = (element: MapOverview) => {
+    const point: L.LatLngExpression = [element.latitude, element.longitude];
 
     const marker = L.marker(point, {
       icon: getNotificationIcon(element),
@@ -177,7 +176,11 @@ const Map = ({clickCallback}: MapProps) => {
       data: element,
       contextmenu: true,
       contextmenuItems: [],
-      zIndexOffset: 1000 * element.flag,
+      zIndexOffset: 1000 * (element.flag ?? 0),
+    });
+
+    marker.addEventListener('mouseover', function () {
+      queryClient.prefetchQuery(timeseriesStatusOptions(element.loc_id));
     });
 
     // const marker = L.circleMarker(point, {
@@ -324,12 +327,12 @@ const Map = ({clickCallback}: MapProps) => {
     const sorted = filteredData?.sort((a, b) => {
       if ('loc_id' in a && 'loc_id' in b) {
         if (a.flag === b.flag) {
-          if (a.obsNotifications.length === 0 && b.obsNotifications.length === 0) return 0;
-          if (a.obsNotifications.length === 0) return -1;
-          if (b.obsNotifications.length === 0) return 1;
-          return a.obsNotifications[0].flag - b.obsNotifications[0].flag;
+          if (a.flag == null && b.flag == null) return 0;
+          if (a.flag == null) return -1;
+          if (b.flag == null) return 1;
+          return a.flag - b.flag;
         }
-        return a.flag - b.flag;
+        return Number(a.has_task) - Number(b.has_task);
       }
       if ('boreholeno' in a && 'boreholeno' in b) {
         return Math.max(...a.status) - Math.max(...b.status);

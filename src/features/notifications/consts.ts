@@ -13,19 +13,19 @@ export const boreholeColors: Record<
   }
 > = {
   [BoreHoleFlagEnum.OK]: {
-    color: '#4caf50',
+    color: '#088924',
     text: 'OK',
   },
   [BoreHoleFlagEnum.SOON]: {
-    color: '#f1c21b',
+    color: '#F9DC00',
     text: 'Skal snart pejles',
   },
   [BoreHoleFlagEnum.EXCEEDED]: {
-    color: '#ff832b',
+    color: '#FF9115',
     text: 'Pejleinterval overskredet',
   },
   [BoreHoleFlagEnum.UNKNOWN]: {
-    color: '#4caf50',
+    color: '#088924',
     text: 'OK',
   },
 };
@@ -51,15 +51,15 @@ export const sensorColors: Record<
     text: 'Kritisk',
   },
   [FlagEnum.WARNING]: {
-    color: '#ff832b',
+    color: '#FF9115',
     text: 'Advarsel',
   },
   [FlagEnum.INFO]: {
-    color: '#f1c21b',
+    color: '#F9DC00',
     text: 'Info',
   },
   [FlagEnum.OK]: {
-    color: '#4caf50',
+    color: '#088924',
     text: 'OK',
   },
   [FlagEnum.UNKNOWN]: {

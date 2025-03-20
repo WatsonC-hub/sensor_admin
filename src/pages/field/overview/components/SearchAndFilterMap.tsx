@@ -14,7 +14,7 @@ import React, {useState, useRef, SyntheticEvent, MouseEventHandler} from 'react'
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '~/features/map/store';
 
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
@@ -45,7 +45,7 @@ const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: 
 };
 
 type Props = {
-  data: (NotificationMap | BoreholeMapData)[];
+  data: (MapOverview | BoreholeMapData)[];
   handleSearchSelect: (e: SyntheticEvent, value: string | LocItems | null) => void;
 };
 
@@ -79,9 +79,8 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     if (search_string) {
       const filteredSensor = data
         .filter(
-          (elem): elem is NotificationMap =>
-            'notification_id' in elem &&
-            elem.loc_name.toLowerCase().includes(search_string?.toLowerCase())
+          (elem): elem is MapOverview =>
+            'loc_id' in elem && elem.loc_name.toLowerCase().includes(search_string?.toLowerCase())
         )
         .map((elem) => {
           return {name: elem.loc_name, sensor: true, group: 'IoT'};

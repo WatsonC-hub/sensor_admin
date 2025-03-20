@@ -72,7 +72,7 @@ const defaultStyling: BoxProps['sx'] = {
 };
 
 type IconDetailsWithTooltip = IconDetails & {
-  opgave: string;
+  tooltip: string;
 };
 
 type NotificationIconProps =
@@ -96,7 +96,7 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
   )
     return (
       <CircleBox sx={flagStyling(iconDetails)}>
-        <Tooltip arrow title={iconDetails.opgave} enterTouchDelay={0}>
+        <Tooltip arrow title={(iconDetails as IconDetailsWithTooltip).tooltip} enterTouchDelay={0}>
           {icon}
         </Tooltip>
       </CircleBox>
@@ -114,7 +114,7 @@ const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIcon
   else
     return (
       <CircleBox sx={flagStyling(iconDetails)}>
-        <Tooltip arrow title={iconDetails.opgave} enterTouchDelay={0}>
+        <Tooltip arrow title={(iconDetails as IconDetailsWithTooltip).tooltip} enterTouchDelay={0}>
           {icon}
         </Tooltip>
       </CircleBox>

@@ -40,7 +40,8 @@ import {
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
-import {FlagEnum, sensorColors} from '~/features/notifications/consts';
+import {boreholeColors, BoreHoleFlagEnum} from '~/features/notifications/consts';
+import {getColor} from '~/features/notifications/utils';
 
 // const highlightedParking: L.Marker | null = null;
 
@@ -508,19 +509,54 @@ const useMap = <TData extends object>(
         const childMarkers = cluster.getAllChildMarkers();
         const num = childMarkers.length;
 
-        const maxStatus = childMarkers.reduce((acc, marker) => {
-          return Math.max(acc, marker.options.data.flag);
-        }, 0);
+        childMarkers.sort((a, b) => {
+          if (a.options.data.boreholeno && b.options.data.boreholeno) {
+            return Math.max(b.options.data.status) - Math.max(a.options.data.status);
+          }
+          if (a.options.data.boreholeno) {
+            return 1;
+          }
+          if (b.options.data.boreholeno) {
+            return -1;
+          }
 
+          const aStatus = a.options.data.flag;
+          const bStatus = b.options.data.flag;
+          const aInactive = a.options.data.inactive;
+          const bInactive = b.options.data.inactive;
+          if (aStatus === bStatus) {
+            return aInactive - bInactive;
+          }
+
+          return bStatus - aStatus;
+        });
+        // find marker with highest status
+        let color: string;
+        if (childMarkers[0].options.data.boreholeno) {
+          color =
+            boreholeColors[Math.max(childMarkers[0].options.data.status) as BoreHoleFlagEnum].color;
+        } else {
+          color = getColor(childMarkers[0].options.data);
+        }
         return L.divIcon({
           className: 'svg-icon',
           iconAnchor: [12, 24],
           html: L.Util.template(droplelSVG, {
-            color: sensorColors[maxStatus as FlagEnum]?.color || sensorColors[0].color,
+            color: color,
             icon: '',
             num: num,
           }),
         });
+
+        // return L.divIcon({
+        //   className: 'svg-icon',
+        //   iconAnchor: [12, 24],
+        //   html: L.Util.template(droplelSVG, {
+        //     color: sensorColors[maxStatus as FlagEnum]?.color || sensorColors[0].color,
+        //     icon: '',
+        //     num: num,
+        //   }),
+        // });
       },
     }).addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();

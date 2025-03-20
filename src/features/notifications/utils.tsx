@@ -36,21 +36,17 @@ const defaultStyling = {
 } as const;
 
 export const getColor = (iconDetails: IconDetails) => {
-  if (
-    iconDetails?.active === null &&
-    iconDetails?.loctype_id !== 12 &&
-    iconDetails?.calculated !== true
-  )
+  if (iconDetails?.no_unit == true && iconDetails?.loctype_id !== 12)
     return sensorLocationTypeColors['-1'].color; // Nyopsætning
   if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color; // Enkeltmålinger
   // if (iconDetails?.notify_type === 'station') return '#4caf50';
   // if (iconDetails?.status == 'POSTPONED') return '#4caf50';
   // if (iconDetails?.notification_id == 12) return '#334FFF';
-  if (iconDetails?.active === false) return '#C0C0C0';
+  if (iconDetails?.inactive == true) return '#C0C0C0';
   // if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
-  if (iconDetails?.type === 'itinerary') return '#4caf50';
-  if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
-  if (iconDetails?.color) return iconDetails?.color;
+  // if (iconDetails?.type === 'itinerary') return '#4caf50';
+  if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
+  if (iconDetails?.color) return iconDetails.color;
   return '#4caf50';
 };
 
@@ -60,7 +56,11 @@ function getIcon<B extends boolean = false>(
 ): B extends true ? string : JSX.Element;
 function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
   if (raw == true) {
-    if (iconDetails.type === 'itinerary') {
+    if (
+      iconDetails.has_task &&
+      iconDetails.flag == null &&
+      typeof iconDetails.itinerary_id == 'string'
+    ) {
       return rawIcons['trip'];
     }
 
@@ -68,13 +68,17 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return rawIcons[iconDetails.notification_id];
     }
 
-    if (iconDetails.type === 'task') {
+    if (iconDetails.has_task && iconDetails.flag == null && iconDetails.itinerary_id == null) {
       return rawIcons['task'];
     }
 
     return '';
   } else {
-    if (iconDetails.type === 'itinerary') {
+    if (
+      iconDetails.has_task &&
+      iconDetails.flag == null &&
+      typeof iconDetails.itinerary_id == 'string'
+    ) {
       const Component = reactIcons['trip'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
@@ -84,7 +88,7 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 
-    if (iconDetails.type === 'task') {
+    if (iconDetails.has_task && iconDetails.flag == null && iconDetails.itinerary_id == null) {
       const Component = reactIcons['task'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }

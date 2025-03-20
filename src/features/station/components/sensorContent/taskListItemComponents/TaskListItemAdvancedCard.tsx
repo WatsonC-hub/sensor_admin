@@ -12,8 +12,6 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import TaskForm from '~/features/tasks/components/TaskForm';
-import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
-import {getColor} from '~/features/notifications/utils';
 
 type Props = {
   task: Task;
@@ -29,13 +27,6 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
 
   const {setSelectedTask} = useTaskStore();
 
-  const {data} = useNotificationOverviewMap();
-
-  const locationData = data?.find((item) => item.loc_id === task.loc_id);
-
-  const notification =
-    locationData &&
-    [locationData, ...locationData.otherNotifications].find((item) => item.ts_id === task.ts_id);
   const patchTaskStatus = (status_id: number) => {
     const data = {
       ts_id: task.ts_id,
@@ -90,13 +81,8 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
     };
   }, [task]);
 
-  const cardColor = task.itinerary_id
-    ? '#EADDCA'
-    : task.status_id === 1
-      ? getColor({...notification})
-      : 'white';
-  const cardHeaderColor = 'primary.main';
-  const cardContrastColor = task.itinerary_id ? '' : task.status_id === 1 ? 'white' : '';
+  // const cardHeaderColor = 'primary.main';
+  // const cardContrastColor = task.itinerary_id ? '' : task.status_id === 1 ? 'white' : '';
 
   const textfieldProps = {
     label: '',
@@ -137,17 +123,17 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
           flexDirection: 'column',
           alignContent: 'center',
           justifyContent: 'space-between',
-          backgroundColor: cardColor,
+          backgroundColor: task.itinerary_id ? '#fef9f4' : undefined,
         }}
       >
         {task.itinerary_id === null && (
           <CardHeader
             sx={{
               width: '100%',
-              backgroundColor: cardHeaderColor,
+              backgroundColor: 'primary.main',
               color: 'white',
-              paddingY: 1,
-              paddingX: 2,
+              py: 1,
+              px: 2,
             }}
             title={
               <Box
@@ -155,11 +141,10 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                 flexDirection={'row'}
                 gap={1}
                 alignItems="center"
-                sx={{color: 'white'}}
                 justifyContent={'space-between'}
               >
                 <Typography variant="caption">{task.name}</Typography>
-                <Box gap={1} sx={{color: 'white'}} display="flex" alignItems={'center'}>
+                <Box gap={1} display="flex" alignItems={'center'}>
                   <Person />
                   <TaskForm.AssignedTo
                     onBlur={({target}) => {
@@ -181,10 +166,10 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
         >
           <Box
             display="flex"
-            sx={{color: cardContrastColor}}
             gap={1}
             flexDirection={'column'}
             justifyContent={'space-around'}
+            color="grey.700"
           >
             <Box display="flex" gap={1} alignContent="center">
               <Box
@@ -232,25 +217,14 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                     size: 'small',
                     '& .MuiSelect-outlined, .MuiOutlinedInput-root, .MuiOutlinedInput-root, &:hover .MuiOutlinedInput-notchedOutline':
                       {
-                        borderColor: cardContrastColor,
                         fontSize: 'small',
-                        color: cardContrastColor,
                         borderRadius: 2.5,
                       },
-                    '& .Mui-focused': {
-                      borderColor: cardContrastColor,
-                      '& > fieldset': {borderColor: cardContrastColor},
-                    },
-                    '& .MuiSelect-icon': {
-                      color: cardContrastColor,
-                    },
+
                     '& .MuiOutlinedInput-root': {
                       backgroundColor: task.itinerary_id ? 'white' : '',
-                      '& > fieldset': {borderColor: cardContrastColor},
                     },
                     '& .MuiInputLabel-root': {
-                      borderColor: cardContrastColor,
-                      color: cardContrastColor,
                       fontSize: 'small',
                       backgroundColor: 'white',
                       transform: 'translate(10px, -9px) scale(0.9)',
@@ -262,7 +236,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
             {task.itinerary_id === null && (
               <Box display="flex" gap={1} alignItems="center">
                 <PendingActionsIcon fontSize="small" />
-                <Typography variant="caption" color={task.status_id === 1 ? 'white' : 'grey.700'}>
+                <Typography variant="caption">
                   {task.due_date && convertDate(task.due_date)}
                 </Typography>
               </Box>
@@ -273,7 +247,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                 <Box display="flex" flexDirection={'column'} width={'55%'} gap={0.5}>
                   {!showAllComments && (
                     <>
-                      <Typography variant="caption" color="grey.700">
+                      <Typography variant="caption">
                         {filteredComments?.[filteredComments.length - 1]?.comment}
                       </Typography>
                       {filteredComments.length > 1 && (
@@ -282,7 +256,6 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                           variant="caption"
                           component="span"
                           onClick={() => setShowAllComments(true)}
-                          color="grey.700"
                         >
                           Der er yderligere {filteredComments?.length - 1} kommentarer
                         </Typography>
@@ -291,7 +264,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   )}
                   {showAllComments &&
                     filteredComments?.map((comment) => (
-                      <Typography key={comment.id} variant="caption" color="grey.700">
+                      <Typography key={comment.id} variant="caption">
                         {comment.comment}
                       </Typography>
                     ))}
@@ -303,15 +276,15 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   gap={0.5}
                   alignItems="center"
                 >
-                  <CalendarIcon fontSize="small" sx={{color: 'grey.700'}} />
-                  <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
+                  <CalendarIcon fontSize="small" />
+                  <Typography variant="caption" fontSize={'0.6rem'}>
                     {convertDate(filteredComments[filteredComments.length - 1].created_at)}
                   </Typography>
 
-                  <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
+                  <Typography variant="caption" fontSize={'0.6rem'}>
                     {' - '}
                   </Typography>
-                  <Typography variant="caption" fontSize={'0.6rem'} color="grey.700">
+                  <Typography variant="caption" fontSize={'0.6rem'}>
                     {filteredComments[filteredComments.length - 1].display_name}
                   </Typography>
                 </Box>
@@ -319,16 +292,19 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
             )}
           </Box>
           <Box display="flex" flexDirection={'column'} alignItems="center" justifySelf={'flex-end'}>
-            <Box display="flex" flexDirection={'row'} alignItems="center" gap={0.5}>
-              <Edit
-                fontSize="small"
-                sx={{color: cardContrastColor !== '' ? cardContrastColor : 'primary.main'}}
-              />
+            <Box
+              display="flex"
+              flexDirection={'row'}
+              alignItems="center"
+              gap={0.5}
+              color="primary.main"
+            >
+              <Edit fontSize="small" />
               <Button
                 variant="text"
                 size="small"
                 onClick={() => setSelectedTask(task.id)}
-                sx={{textTransform: 'initial', borderRadius: 2.5, color: cardContrastColor}}
+                sx={{textTransform: 'initial', borderRadius: 2.5}}
               >
                 Rediger opgave
               </Button>

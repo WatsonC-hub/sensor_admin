@@ -84,7 +84,13 @@ export default function StationTable({data}: Props) {
               fontSize: isTouch ? '1.5rem' : '2rem',
             }}
           >
-            <NotificationIcon iconDetails={row.original} enableTooltip />
+            <NotificationIcon
+              iconDetails={{
+                ...row.original,
+                tooltip: row.original.opgave,
+              }}
+              enableTooltip
+            />
           </Box>
         ),
         sortingFn: (a, b) => {

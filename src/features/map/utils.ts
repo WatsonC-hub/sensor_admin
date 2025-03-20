@@ -1,5 +1,5 @@
 import {boreholeColors} from '~/consts';
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {BoreholeMapData} from '~/types';
 import {boreholeSVG} from './mapConsts';
 import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
@@ -43,7 +43,7 @@ export const getBoreholeIcon = (marker: BoreholeMapData) => {
   return leafletIcons[maxStatus];
 };
 
-export const getNotificationIcon = (marker: NotificationMap) => {
+export const getNotificationIcon = (marker: MapOverview) => {
   const icon = getIcon(marker, true);
   const iconURL = L.Util.template(dropletSVG, {color: getColor(marker), icon: icon, num: ''});
   return L.divIcon({

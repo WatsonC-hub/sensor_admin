@@ -1,6 +1,6 @@
-import {Notification} from '~/hooks/query/useNotificationOverview';
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
 
-export type IconDetails = Partial<Notification>;
+export type IconDetails = Partial<MapOverview & {color?: string | null}>;
 
 /*{
   color?: string | null;

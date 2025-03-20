@@ -1,5 +1,5 @@
-import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {reverse, sortBy} from 'lodash';
+import {UseQueryResult, queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
+import {sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
@@ -44,19 +44,6 @@ type NotificationOverviewOptions = Partial<
   Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
 >;
 
-const sortByNotifyType = (item: Notification) => {
-  switch (item.notify_type) {
-    case 'primary':
-      return 3;
-    case 'obs':
-      return 2;
-    case 'station':
-      return 1;
-    default:
-      return 0;
-  }
-};
-
 const sortByType = (item: Notification) => {
   switch (item.type) {
     case 'notification':
@@ -81,27 +68,27 @@ const nullState: Partial<Notification> = {
   notify_type: null,
 };
 
-const tmpGetFlag = (item: Notification) => {
-  if (item.notify_type === 'obs' && item.notification_id === 42) {
-    return 2;
-  } else if ([141, 171].includes(item.notification_id)) {
-    return 2;
-  } else if ([12].includes(item.notification_id)) {
-    return 3;
-  } else {
-    return item.flag;
-  }
-};
+// const tmpGetFlag = (item: Notification) => {
+//   if (item.notify_type === 'obs' && item.notification_id === 42) {
+//     return 2;
+//   } else if ([141, 171].includes(item.notification_id)) {
+//     return 2;
+//   } else if ([12].includes(item.notification_id)) {
+//     return 3;
+//   } else {
+//     return item.flag;
+//   }
+// };
 
-const tempNotificationTransform = (data: Notification[]): Notification[] => {
-  return data.map((item) => {
-    return {
-      ...item,
-      notify_type: 'primary',
-      flag: tmpGetFlag(item),
-    };
-  });
-};
+// const tempNotificationTransform = (data: Notification[]): Notification[] => {
+//   return data.map((item) => {
+//     return {
+//       ...item,
+//       notify_type: 'primary',
+//       flag: tmpGetFlag(item),
+//     };
+//   });
+// };
 
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
   const {iotAccess} = useUser();
@@ -110,7 +97,7 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/overblik`);
 
-      return tempNotificationTransform(data);
+      return data;
     },
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
@@ -181,4 +168,68 @@ export const useNotificationOverviewMap = (
     },
     ...options,
   });
+};
+
+export interface MapOverview {
+  loc_id: number;
+  loc_name: string;
+  longitude: number;
+  latitude: number;
+  loctype_id: number;
+  parking_id: number | null;
+  itinerary_id: string | null;
+  no_unit: boolean;
+  inactive: boolean | null;
+  is_customer_service: boolean | null;
+  projectno: string | null;
+  has_task: boolean;
+  groups: Group[];
+  flag: FlagEnum | null;
+  notification_id: NotificationIDEnum | null;
+}
+
+const mapOverviewOptions = queryOptions({
+  queryKey: ['map'],
+  queryFn: async () => {
+    const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
+    return data;
+  },
+  refetchInterval: 1000 * 60 * 60,
+});
+
+export const useMapOverview = () => {
+  return useQuery(mapOverviewOptions);
+};
+
+export interface TimeseriesStatus {
+  ts_id: number;
+  loc_id: number;
+  parameter: string;
+  prefix: string | null;
+  is_calculated: boolean;
+  notification_id: NotificationIDEnum | null;
+  flag: FlagEnum | null;
+  opgave: string | null;
+  has_task: boolean;
+  due_date: string | null;
+  no_unit: boolean;
+  inactive: boolean | null;
+  projectno: string | null;
+  is_customer_service: boolean | null;
+}
+
+export const timeseriesStatusOptions = (loc_id: number) =>
+  queryOptions({
+    queryKey: ['timeseries', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<TimeseriesStatus[]>(
+        `/sensor_field/timeseries_status/${loc_id}`
+      );
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
+  });
+
+export const useTimeseriesStatus = (loc_id: number) => {
+  return useQuery(timeseriesStatusOptions(loc_id));
 };

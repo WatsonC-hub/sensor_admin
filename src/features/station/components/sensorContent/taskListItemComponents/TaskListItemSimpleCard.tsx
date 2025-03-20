@@ -4,7 +4,7 @@ import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import {Task} from '~/features/tasks/types';
 import {Edit} from '@mui/icons-material';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
-import {useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
+import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {getColor} from '~/features/notifications/utils';
 
 type Props = {
@@ -13,21 +13,22 @@ type Props = {
 
 const TaskListItemSimpleCard = ({task}: Props) => {
   const {setSelectedTask} = useTaskStore();
-  const {data} = useNotificationOverviewMap();
+  const {data: notification} = useNotificationOverview({
+    select: (data) =>
+      data.filter(
+        (item) =>
+          item.ts_id === task.ts_id &&
+          !task.is_created &&
+          item.notification_id != 0 &&
+          item.notification_id == task.blocks_notifications[0]
+      ),
+  });
 
-  const locationData = data?.find((item) => item.loc_id === task.loc_id);
-
-  const notification =
-    locationData &&
-    [locationData, ...locationData.otherNotifications].find(
-      (item) => item.ts_id === task.ts_id && !task.is_created
-    );
-
-  const contrastColor = task.itinerary_id ? '' : task.status_id === 1 ? 'white' : 'primary';
+  // const notification = data && data.find((item) => item.ts_id === task.ts_id && !task.is_created);
   const color = task.itinerary_id
-    ? '	#EADDCA'
-    : task.status_id === 1
-      ? getColor({...notification})
+    ? '#fef9f4'
+    : task.status_id === 1 && notification?.[0]
+      ? getColor(notification[0])
       : 'white';
 
   return (
@@ -35,28 +36,39 @@ const TaskListItemSimpleCard = ({task}: Props) => {
       sx={{
         borderRadius: 2.5,
         display: 'flex',
-        padding: 1,
+        // padding: 1,
+        backgroundColor: task.itinerary_id ? color : undefined,
         flexDirection: 'row',
         alignContent: 'center',
         justifyContent: 'space-between',
-        backgroundColor: color,
-        opacity: task.itinerary_id ? 0.7 : 1,
+        // opacity: task.itinerary_id ? 0.7 : 1,
       }}
       variant="elevation"
     >
-      <Box display="flex" gap={1} alignItems="center" sx={{color: contrastColor}}>
-        <AssignmentOutlinedIcon fontSize="small" />
+      <Box display="flex" gap={1} alignItems="center" color="grey.700">
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{backgroundColor: color, height: '100%', m: 0, p: 1}}
+        >
+          <AssignmentOutlinedIcon
+            fontSize="small"
+            sx={{
+              color: task.status_id != 1 || task.is_created ? 'gray' : 'white',
+            }}
+          />
+        </Box>
         <Typography variant="caption" width={200}>
           {task.name}
         </Typography>
       </Box>
-      <Box display="flex" alignItems="center" sx={{color: contrastColor}}>
-        <Edit sx={{color: task.itinerary_id ? 'primary.main' : ''}} fontSize="small" />
+      <Box display="flex" alignItems="center">
+        <Edit sx={{color: 'primary.main'}} fontSize="small" />
         <Button
           variant="text"
           size="small"
           onClick={() => setSelectedTask(task.id)}
-          sx={{textTransform: 'initial', color: contrastColor}}
+          sx={{textTransform: 'initial'}}
         >
           Rediger opgave
         </Button>
