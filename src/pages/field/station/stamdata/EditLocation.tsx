@@ -84,7 +84,14 @@ const EditLocation = () => {
   };
 
   return (
-    <Box maxWidth={1080}>
+    <Box
+      maxWidth={1080}
+      sx={{
+        borderRadius: 4,
+        boxShadow: 3,
+        padding: 2,
+      }}
+    >
       <FormProvider {...formMethods}>
         <LocationForm mode="normal" disable={location_permissions !== 'edit'} />
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">

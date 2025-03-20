@@ -1,6 +1,6 @@
 import {SelectChangeEvent, Typography, Select, MenuItem} from '@mui/material';
 import moment from 'moment';
-import {useState, useEffect} from 'react';
+import {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {useUnitHistory, UnitHistory} from '~/features/stamdata/api/useUnitHistory';
@@ -8,31 +8,30 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 import UnitEndDateDialog from './UnitEndDialog';
-import FabWrapper from '~/components/FabWrapper';
-import {BuildRounded} from '@mui/icons-material';
-import {useAppContext} from '~/state/contexts';
-import usePermissions from '~/features/permissions/api/usePermissions';
 
 interface UdstyrReplaceProps {
   selected: number | '';
   setSelected: (selected: number | '') => void;
+  openDialog: boolean;
+  setOpenDialog: (openDialog: boolean) => void;
+  openAddUdstyr: boolean;
+  setOpenAddUdstyr: (openAddUdstyr: boolean) => void;
 }
 
-const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
-  const {loc_id} = useAppContext(['ts_id'], ['loc_id']);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
+const UdstyrReplace = ({
+  selected,
+  setSelected,
+  openDialog,
+  setOpenDialog,
+  openAddUdstyr,
+  setOpenAddUdstyr,
+}: UdstyrReplaceProps) => {
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
 
   const {setValue} = useFormContext();
 
-  const {location_permissions} = usePermissions(loc_id);
-  const disabled = location_permissions !== 'edit';
-
   const {data, isPending} = useUnitHistory();
-  const mode = data && data.length > 0 && moment(data?.[0].slutdato) > moment(new Date());
-  const fabText = mode ? 'Hjemtag udstyr' : 'Tilføj udstyr';
 
   // const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');
 
@@ -107,14 +106,6 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
         setUdstyrDialogOpen={setOpenAddUdstyr}
         tstype_id={tstype_id}
         mode="edit"
-      />
-      <FabWrapper
-        icon={<BuildRounded />}
-        text={fabText}
-        disabled={disabled}
-        onClick={() => (mode ? setOpenDialog(true) : setOpenAddUdstyr(true))}
-        sx={{visibility: openAddUdstyr || openDialog ? 'hidden' : 'visible'}}
-        showText={true}
       />
     </>
   );

@@ -336,7 +336,7 @@ type LayoutProps = {
 const Layout = ({children, variant}: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
 
-  const {isMonitor, isMobile} = useBreakpoints();
+  const {isMonitor} = useBreakpoints();
   const open = isMonitor || openAtom;
   const width = open ? drawerWidth : 48;
   const toggleDrawer = (newOpen: boolean) => {
@@ -344,18 +344,19 @@ const Layout = ({children, variant}: LayoutProps) => {
   };
 
   return (
-    <Box>
+    <Box sx={{display: 'flex', flexDirection: 'row', height: '100%'}}>
       <Drawer
         variant={variant}
         open={open}
         sx={{
           width: width,
-          flexShrink: 0,
+          height: '100%',
           [`& .MuiDrawer-paper`]: {
             width: width,
+            flexGrow: 1,
+            height: '100%',
+            position: 'relative',
             backgroundColor: 'primary.main',
-            pt: '64px',
-            pb: isMobile ? '64px' : '0px',
           },
         }}
       >

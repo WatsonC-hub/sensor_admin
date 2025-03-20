@@ -70,7 +70,7 @@ export const HomeButton = () => {
 
 export const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
       <Toolbar
         sx={{
           height: appBarHeight,

@@ -88,7 +88,14 @@ const EditTimeseries = () => {
   };
 
   return (
-    <Box maxWidth={1080}>
+    <Box
+      maxWidth={1080}
+      sx={{
+        borderRadius: 4,
+        boxShadow: 3,
+        padding: 2,
+      }}
+    >
       <FormProvider {...formMethods}>
         <TimeseriesForm mode="edit" disabled={location_permissions !== 'edit'} />
         <footer>

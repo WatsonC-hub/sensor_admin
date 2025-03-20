@@ -110,16 +110,16 @@ export default function Tilsyn() {
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
+        <FabWrapper
+          icon={<PlaylistAddRounded />}
+          text={'Tilføj ' + stationPages.TILSYN}
+          onClick={() => {
+            setShowForm(true);
+          }}
+          disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+        />
       </StationPageBoxLayout>
-      <FabWrapper
-        icon={<PlaylistAddRounded />}
-        text={'Tilføj ' + stationPages.TILSYN}
-        onClick={() => {
-          setShowForm(true);
-        }}
-        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
-        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-      />
     </>
   );
 }

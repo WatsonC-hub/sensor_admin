@@ -54,42 +54,18 @@ export default function Station() {
           </Box>
           <Divider />
           <StationPageBoxLayout>
-            <Box
-              sx={{
-                borderRadius: 4,
-                boxShadow: 3,
-                padding: '16px',
-              }}
-            >
-              <EditUnit />
-            </Box>
+            <EditUnit />
           </StationPageBoxLayout>
         </>
       )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
-          <Box
-            sx={{
-              borderRadius: 4,
-              boxShadow: 3,
-              padding: '16px',
-            }}
-          >
-            <EditLocation />
-          </Box>
+          <EditLocation />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.GENERELTIDSSERIE && (
         <StationPageBoxLayout>
-          <Box
-            sx={{
-              borderRadius: 4,
-              boxShadow: 3,
-              padding: '16px',
-            }}
-          >
-            <EditTimeseries />
-          </Box>
+          <EditTimeseries />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms />}
@@ -138,7 +114,7 @@ const Layout = ({children}: LayoutProps) => {
   const setTsId = useDisplayState((state) => state.setTsId);
   return (
     <>
-      <NavBar>
+      <NavBar zIndex={1000}>
         {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
           <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
@@ -171,23 +147,27 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-      <main style={{flexGrow: 1, overflow: 'auto'}}>
+      <Box
+        display="flex"
+        width={'100%'}
+        flexGrow={1}
+        flexDirection={'row'}
+        // height={'100%'}
+        //
+      >
         <StationDrawer />
         <Box
           display="flex"
           width={'100%'}
           flexGrow={1}
           gap={1}
+          pb={isMobile ? 8 : 1}
           flexDirection={'column'}
-          position={'relative'}
-          // height={'100%'}
-          //
         >
           {children}
-          {isMobile && <ActionArea />}
         </Box>
-      </main>
-      <ActionArea />
+        {isMobile && <ActionArea />}
+      </Box>
     </>
   );
 };

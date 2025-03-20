@@ -64,7 +64,7 @@ const ImagePage = () => {
   };
 
   return (
-    <Box>
+    <Box maxWidth={1080} display={'flex'} flexDirection={'column'}>
       <Images
         type={'station'}
         typeId={loc_id ? loc_id.toString() : ''}
