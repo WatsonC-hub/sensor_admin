@@ -198,3 +198,8 @@ export const dataToShowAtom = atom({
 export const fullScreenAtom = atom(false);
 
 export const locationListSortingAtom = atomWithStorage('LocationListSorting', 'Newest');
+
+export const drawerOpenAtom = atom<boolean>(false);
+export const initiateSelectAtom = atom<boolean>(false);
+export const initiateConfirmTimeseriesAtom = atom<boolean>(false);
+export const levelCorrectionAtom = atom<boolean>(false);

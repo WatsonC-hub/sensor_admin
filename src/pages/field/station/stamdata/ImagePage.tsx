@@ -93,13 +93,7 @@ const ImagePage = () => {
           setShowForm(null);
         }}
       />
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept="image/jpeg, image/png, image/webp, image/avif, image/svg, image/gif, image/tif"
-        style={{display: 'none'}}
-        onChange={handleFileRead}
-      />
+      <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileRead} />
     </Box>
   );
 };

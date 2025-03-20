@@ -393,7 +393,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
             tstype_id={watchtstype_id}
             mode="normal"
           />
-          <DevTool control={formMethods.control} />
+          {import.meta.env.DEV && <DevTool control={formMethods.control} />}
         </FormProvider>
       </div>
     </>
