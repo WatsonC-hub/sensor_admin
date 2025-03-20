@@ -1,11 +1,13 @@
 import {PlaylistAddRounded} from '@mui/icons-material';
-import {Box} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import moment from 'moment';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import PlotGraph from '~/features/station/components/StationGraph';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
@@ -89,13 +91,11 @@ export default function Tilsyn() {
 
   return (
     <>
-      <Box
-        mx={'auto'}
-        position={'relative'}
-        width="fit-content"
-        display={'flex'}
-        flexDirection={'column'}
-      >
+      <Box>
+        <PlotGraph key={'tilsyn' + ts_id} />
+      </Box>
+      <Divider />
+      <StationPageBoxLayout>
         <FormProvider {...formMethods}>
           <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
             {showForm === true && (
@@ -110,7 +110,7 @@ export default function Tilsyn() {
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
-      </Box>
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<PlaylistAddRounded />}
         text={'Tilføj ' + stationPages.TILSYN}
