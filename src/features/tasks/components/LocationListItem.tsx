@@ -1,9 +1,10 @@
-import {Box, Typography} from '@mui/material';
+import {Box, Link, Typography} from '@mui/material';
 import React from 'react';
 import {Notification, NotificationMap} from '~/hooks/query/useNotificationOverview';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useTaskStore} from '../api/useTaskStore';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {convertDate} from '~/helpers/dateConverter';
+import {CalendarIcon} from '@mui/x-date-pickers';
 
 type Props = {
   itemData: NotificationMap;
@@ -15,22 +16,12 @@ const LocationListItem = ({itemData, onClick}: Props) => {
   let notifications: Notification[] = [];
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id && task.is_created);
 
-  /**
-   * Filtrere efter notificationer og opgaver - samt nyopsætninger
-   * Fremadrettet kommer nyopsætninger til at være opgaver, så det kan være vi skal fjerne dette.
-   */
   notifications = itemData.otherNotifications.filter(
-    (notification) =>
-      notification.type !== 'none' ||
-      (notification.active === null &&
-        notification.loctype_id !== 12 &&
-        notification.calculated !== true)
+    (notification) => notification.active === true
   );
 
-  if (itemData.type !== 'none') {
-    if (!notifications.map((notification) => notification.ts_id).includes(itemData.ts_id))
-      notifications = [itemData, ...notifications];
-  }
+  if (!notifications.map((notification) => notification.ts_id).includes(itemData.ts_id))
+    notifications = [itemData, ...notifications];
 
   const filteredNotifications: Notification[] = [];
   notifications.map((notification) => {
@@ -51,33 +42,42 @@ const LocationListItem = ({itemData, onClick}: Props) => {
       <Box display={'flex'} flexDirection={'column'} gap={1} px={1}>
         {filteredNotifications.map((notification) => {
           const task = filteredTasks?.find((task) => task.ts_id === notification.ts_id);
+          const matching = filteredNotifications.find((matching) => matching.ts_id === task?.ts_id);
+          const iconDetails = matching ?? notification;
+          const splitted = notification.ts_name.split(notification.loc_name);
+
+          const taskName = notification.opgave
+            ? notification.opgave
+            : task?.name
+              ? task?.name
+              : undefined;
           return (
             <Box
               key={notification.ts_name}
               display={'flex'}
               flexDirection={'row'}
               justifyContent={'space-between'}
+              alignItems={'center'}
               py={1}
               gap={1}
             >
-              <Box display={'flex'} flexDirection={'row'} pb={1} gap={1}>
-                <NotificationIcon iconDetails={task !== undefined ? {} : notification} />
-                <Typography>
-                  {notification.type === 'notification'
-                    ? notification.opgave
-                    : filteredTasks?.find((task) => task.ts_id === notification.ts_id)?.name}
-                </Typography>
+              <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
+                <NotificationIcon iconDetails={iconDetails} />
+                <Link style={{cursor: 'pointer'}}>
+                  <Typography variant="body2">
+                    {splitted[splitted.length - 1].replace('-', '').trim()}
+                    {taskName ? ': ' + taskName : ''}
+                  </Typography>
+                </Link>
               </Box>
-              <Box>
-                <Typography>
-                  {filteredTasks?.find((task) => task.ts_id === notification.ts_id) !== undefined
-                    ? convertDateWithTimeStamp(
-                        filteredTasks?.find((task) => task.ts_id === notification.ts_id)
-                          ?.due_date ?? null
-                      )
-                    : convertDateWithTimeStamp(notification.dato)}
-                </Typography>
-              </Box>
+              {task?.due_date && (
+                <Box display={'flex'} gap={1} alignItems={'center'}>
+                  <CalendarIcon fontSize="small" sx={{color: 'grey.700'}} />
+                  <Typography variant="body2" color="grey.700">
+                    {convertDate(task.due_date)}
+                  </Typography>
+                </Box>
+              )}
             </Box>
           );
         })}

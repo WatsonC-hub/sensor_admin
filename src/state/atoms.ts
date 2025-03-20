@@ -196,3 +196,5 @@ export const dataToShowAtom = atom({
 });
 
 export const fullScreenAtom = atom(false);
+
+export const locationListSortingAtom = atomWithStorage('LocationListSorting', 'Newest');

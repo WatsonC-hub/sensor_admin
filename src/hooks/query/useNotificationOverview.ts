@@ -1,5 +1,5 @@
 import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {reverse, sortBy} from 'lodash';
+import {sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
