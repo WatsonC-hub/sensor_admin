@@ -1,11 +1,12 @@
-import {MapOverview, NotificationMap, useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useMapFilterStore} from '../store';
 import {Filter} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
-import {locationListSortingAtom} from '~/state/atoms';
+import {assignedToAtom, locationListSortingAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import moment from 'moment';
 
 const searchValue = (value: any, search_string: string): boolean => {
@@ -84,32 +85,13 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
   return filteredData;
 };
 
-// const sortByDueDate = (filteredList: (MapOverview | BoreholeMapData)[], sortingAtom: string) => {
-//   filteredList.sort((a, b) => {
-//     if ('loc_id' in a && 'loc_id' in b) {
-//       if (sortingAtom === 'Oldest') {
-//         if (a.dato === null) return -1;
-//         if (b.dato === null) return 1;
-//         return moment(b.dato).diff(moment(a.dato));
-//       }
-//       if (sortingAtom === 'Newest') {
-//         if (a.dato === null) return 1;
-//         if (b.dato === null) return -1;
-//         return moment(a.dato).diff(moment(b.dato));
-//       }
-//     } else {
-//       return -1;
-//     }
-
-//     return 0;
-//   });
-// };
-
 export const useFilteredMapData = () => {
   const {data: mapData} = useMapOverview();
   const sortingAtom = useAtomValue(locationListSortingAtom);
+  const assignedToListFilter = useAtomValue(assignedToAtom);
   const {data: boreholeMapdata} = useBoreholeMap();
   const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
+  const {tasks} = useTaskStore();
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? []), ...(extraData ? [extraData] : [])];
@@ -129,12 +111,59 @@ export const useFilteredMapData = () => {
       filteredList = mapFilteredData.filter(
         (elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id)
       );
+    }
 
-      // sortByDueDate(filteredList, sortingAtom);
+    if (assignedToListFilter) {
+      filteredList = filteredList.filter((elem) => {
+        if ('loc_id' in elem) {
+          return tasks?.some(
+            (task) => task.loc_id === elem.loc_id && task.assigned_to === assignedToListFilter.id
+          );
+        }
+        return false;
+      });
+    }
+
+    if (sortingAtom === 'Newest') {
+      filteredList.sort((a, b) => {
+        if ('loc_id' in a && 'loc_id' in b) {
+          const aList = tasks?.filter((task) => task.loc_id === a.loc_id);
+          const bList = tasks?.filter((task) => task.loc_id === b.loc_id);
+          if (aList && bList) {
+            const aDate = aList.sort((a, b) => {
+              if (!a.due_date) return 1;
+              if (!b.due_date) return 1;
+              if (a.due_date && b.due_date) {
+                return moment(a.due_date).diff(moment(b.due_date));
+              }
+              return 0;
+            });
+            const bDate = bList.sort((a, b) => {
+              if (!a.due_date) return 1;
+              if (!b.due_date) return 1;
+              if (a.due_date && b.due_date) {
+                return moment(a.due_date).diff(moment(b.due_date));
+              }
+              return 0;
+            });
+
+            if (aDate.length > 0 && aDate[0].due_date && bDate.length > 0 && !bDate[0].due_date)
+              return 1;
+
+            if (aDate.length > 0 && !aDate[0].due_date && bDate.length > 0 && bDate[0].due_date)
+              return 1;
+
+            if (aDate.length > 0 && bDate.length > 0)
+              return moment(aDate[0].due_date).diff(moment(bDate[0].due_date));
+          }
+          return -1;
+        }
+        return -1;
+      });
     }
 
     return filteredList;
-  }, [mapFilteredData, locIds, sortingAtom]);
+  }, [mapFilteredData, locIds, assignedToListFilter, sortingAtom]);
 
   return {
     data,

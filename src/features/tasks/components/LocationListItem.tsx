@@ -1,6 +1,6 @@
 import {Box, Typography} from '@mui/material';
-import React, {useMemo} from 'react';
-import {MapOverview, useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import React from 'react';
+import {MapOverview, useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useTaskStore} from '../api/useTaskStore';
 import {convertDate} from '~/helpers/dateConverter';
@@ -16,11 +16,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
 
-  const {data: notifications} = useNotificationOverview({
-    select: (data) => data.filter((item) => item.loc_id === itemData.loc_id),
-  });
-
-  const memoizedNotification = useMemo(() => notifications, [itemData.loc_id]);
+  const {data: notifications} = useTimeseriesStatus(itemData.loc_id);
 
   return (
     <Box onClick={onClick}>
@@ -42,7 +38,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                   iconDetails={{
                     notification_id: task.blocks_notifications[0],
                     flag:
-                      memoizedNotification?.find(
+                      notifications?.find(
                         (notification) =>
                           notification.ts_id === task.ts_id &&
                           notification.notification_id == task.blocks_notifications[0]

@@ -5,7 +5,9 @@ import {useAtom} from 'jotai';
 import moment, {Moment} from 'moment';
 import React from 'react';
 import ExtendedAutocomplete from '~/components/Autocomplete';
-import {locationListSortingAtom} from '~/state/atoms';
+import {assignedToAtom, dueDateAtom, locationListSortingAtom} from '~/state/atoms';
+import {useTasks} from '../api/useTasks';
+import {TaskUser} from '../types';
 
 const LocationSortingList = {
   Newest: 'Nyeste',
@@ -14,12 +16,16 @@ const LocationSortingList = {
 
 const LocationListFilter = () => {
   const [sortingAtom, setSortingAtom] = useAtom(locationListSortingAtom);
+  const [selectedUser, setSelectedUser] = useAtom<TaskUser | null>(assignedToAtom);
+  const [DueDate, setDueDate] = useAtom<Moment | null>(dueDateAtom);
   const [date, setDate] = React.useState<Moment | null>(null);
   const handleStartdateChange = (date: Moment | null) => {
-    if (moment(date).isValid()) {
-      setDate(date);
-    }
+    setDueDate(date);
   };
+
+  const {
+    getUsers: {data: taskUsers},
+  } = useTasks();
 
   return (
     <Box p={1} display={'flex'} flexDirection={'column'} gap={1}>
@@ -50,7 +56,6 @@ const LocationListFilter = () => {
           }}
         >
           {Object.entries(LocationSortingList).map(([key, value]) => {
-            console.log(key, value);
             return (
               <MenuItem key={key} value={key}>
                 {value}
@@ -60,7 +65,7 @@ const LocationListFilter = () => {
         </Select>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            value={date ?? null}
+            value={DueDate}
             onChange={(date) => handleStartdateChange(date)}
             slotProps={{
               inputAdornment: {
@@ -92,50 +97,43 @@ const LocationListFilter = () => {
           />
         </LocalizationProvider>
 
-        <ExtendedAutocomplete
-          labelKey={'name'}
-          options={[]}
+        <ExtendedAutocomplete<TaskUser>
+          labelKey="display_name"
+          options={taskUsers ?? []}
+          getOptionLabel={(option) => option.display_name}
+          getOptionKey={(option) => option.id}
           fullWidth={false}
-          selectValue={null}
-          onChange={() => {}}
-          slotProps={{
-            popupIndicator: {
-              sx: {
-                py: 0,
-              },
-            },
-            clearIndicator: {
-              sx: {
-                py: 0,
-              },
-            },
+          size="small"
+          selectValue={selectedUser}
+          clearOnBlur={false}
+          onChange={(e) => {
+            if (e && 'id' in e) setSelectedUser(e);
+            else setSelectedUser(null);
+          }}
+          renderOption={(props, option) => {
+            return (
+              <li {...props} key={option.id}>
+                <Box display={'flex'} flexDirection={'row'}>
+                  <Typography variant="body2">{option.display_name}</Typography>
+                </Box>
+              </li>
+            );
           }}
           textFieldsProps={{
             placeholder: 'Ansvarlig',
             label: '',
             sx: {
-              fontSize: 'small',
               margin: 0,
-              width: 'fit-content',
               minWidth: 150,
-              '& .MuiOutlinedInput-root, .MuiAutocomplete-popupIndicator, .MuiAutocomplete-clearIndicator':
-                {
-                  fontSize: 'small',
-                  border: 'none',
-                  borderColor: 'grey.400',
-                  '& > fieldset': {
-                    color: 'grey.400',
-                    borderColor: 'grey.400',
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    py: 0.5,
-                    px: 1,
-                  },
-                  padding: '0px !important',
-                },
+              '& .MuiOutlinedInput-root': {
+                fontSize: 'small',
+                border: 'none',
+                borderColor: 'grey.400',
+                padding: '1.5px !important',
+              },
             },
           }}
-        ></ExtendedAutocomplete>
+        />
       </Box>
     </Box>
   );

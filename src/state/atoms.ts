@@ -3,7 +3,9 @@ import {atomWithStorage, atomFamily} from 'jotai/utils';
 import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
 import {merge} from 'lodash';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
+import {Moment} from 'moment';
 import {PlotDatum} from 'plotly.js';
+import {TaskUser} from '~/features/tasks/types';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {
@@ -198,6 +200,8 @@ export const dataToShowAtom = atom({
 export const fullScreenAtom = atom(false);
 
 export const locationListSortingAtom = atomWithStorage('LocationListSorting', 'Newest');
+export const assignedToAtom = atomWithStorage<TaskUser | null>('assigned_to', null);
+export const dueDateAtom = atomWithStorage<Moment | null>('due_date', null);
 
 export const drawerOpenAtom = atom<boolean>(false);
 export const initiateSelectAtom = atom<boolean>(false);

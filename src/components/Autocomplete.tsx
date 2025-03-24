@@ -63,14 +63,17 @@ const ExtendedAutocomplete = <T extends object>({
         if (textFieldsProps.sx) {
           sx = merge(sx, textFieldsProps.sx);
         }
-
         return (
           <TextField
-            {...params}
             {...textFieldsProps}
+            {...params}
             fullWidth
             margin="dense"
-            InputLabelProps={{shrink: true}}
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
             variant="outlined"
             error={Boolean(error)}
             helperText={Boolean(error) && error}
