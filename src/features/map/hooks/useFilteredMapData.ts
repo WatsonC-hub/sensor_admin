@@ -1,4 +1,4 @@
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, NotificationMap, useMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useMapFilterStore} from '../store';
 import {Filter} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
@@ -84,29 +84,26 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
   return filteredData;
 };
 
-const sortByDueDate = (
-  filteredList: (NotificationMap | BoreholeMapData)[],
-  sortingAtom: string
-) => {
-  filteredList.sort((a, b) => {
-    if ('loc_id' in a && 'loc_id' in b) {
-      if (sortingAtom === 'Oldest') {
-        if (a.dato === null) return -1;
-        if (b.dato === null) return 1;
-        return moment(b.dato).diff(moment(a.dato));
-      }
-      if (sortingAtom === 'Newest') {
-        if (a.dato === null) return 1;
-        if (b.dato === null) return -1;
-        return moment(a.dato).diff(moment(b.dato));
-      }
-    } else {
-      return -1;
-    }
+// const sortByDueDate = (filteredList: (MapOverview | BoreholeMapData)[], sortingAtom: string) => {
+//   filteredList.sort((a, b) => {
+//     if ('loc_id' in a && 'loc_id' in b) {
+//       if (sortingAtom === 'Oldest') {
+//         if (a.dato === null) return -1;
+//         if (b.dato === null) return 1;
+//         return moment(b.dato).diff(moment(a.dato));
+//       }
+//       if (sortingAtom === 'Newest') {
+//         if (a.dato === null) return 1;
+//         if (b.dato === null) return -1;
+//         return moment(a.dato).diff(moment(b.dato));
+//       }
+//     } else {
+//       return -1;
+//     }
 
-    return 0;
-  });
-};
+//     return 0;
+//   });
+// };
 
 export const useFilteredMapData = () => {
   const {data: mapData} = useMapOverview();
@@ -133,7 +130,7 @@ export const useFilteredMapData = () => {
         (elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id)
       );
 
-      sortByDueDate(filteredList, sortingAtom);
+      // sortByDueDate(filteredList, sortingAtom);
     }
 
     return filteredList;
