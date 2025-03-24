@@ -123,11 +123,9 @@ const TasksOverview = () => {
               // setSelectedData(null);
               setLocList(false);
             }}
-            height="100%"
+            height={isMobile ? 'fit-content' : '100%'}
           >
-            <Box py={1}>
-              <LocationList />
-            </Box>
+            <LocationList />
           </WindowManager.Window>
 
           <WindowManager.Window

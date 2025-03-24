@@ -169,6 +169,7 @@ const Window = ({
       sx={{
         position: 'relative',
         pointerEvents: 'auto',
+        bottom: 0,
         display: 'flex',
         flexDirection: 'column',
         height: height,
