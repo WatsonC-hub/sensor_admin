@@ -14,9 +14,7 @@ type Props = {
 const LocationListItem = ({itemData, onClick}: Props) => {
   const {tasks} = useTaskStore();
 
-  const memoizedTasks = useMemo(() => {
-    return tasks?.filter((task) => task.loc_id === itemData.loc_id);
-  }, [tasks]);
+  const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
 
   const {data: notifications} = useNotificationOverview({
     select: (data) => data.filter((item) => item.loc_id === itemData.loc_id),
@@ -28,7 +26,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
     <Box onClick={onClick}>
       <Typography fontWeight={'bold'}>{itemData.loc_name}</Typography>
       <Box display={'flex'} flexDirection={'column'} gap={1} px={1}>
-        {memoizedTasks?.map((task) => {
+        {filteredTasks?.map((task) => {
           return (
             <Box
               key={task.id}

@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useReducer, useRef} from 'react';
+import React, {useCallback, useReducer, useRef} from 'react';
 import {elementScroll, useVirtualizer, VirtualizerOptions} from '@tanstack/react-virtual';
 
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
@@ -66,35 +66,6 @@ const LocationListVirtualizer = () => {
 
   const items = virtualizer.getVirtualItems();
 
-  const memoizedItems = useMemo(() => items, [items]);
-
-  const memoizedChildren = useMemo(() => {
-    return memoizedItems.map((virtualRow) => {
-      const item = list[virtualRow.index];
-
-      const filteredTasks = tasks?.filter((task) => task.loc_id === item.loc_id);
-
-      return (
-        <div
-          key={virtualRow.key}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: filteredTasks ? filteredTasks.length * 48 : 48,
-            transform: `translateY(${virtualRow.start}px)`,
-          }}
-        >
-          <div data-index={virtualRow.index} ref={(element) => virtualizer.measureElement(element)}>
-            <div style={{padding: '10px 0'}}>
-              <LocationListItem itemData={item} onClick={() => setLocId(item.loc_id)} />
-            </div>
-          </div>
-        </div>
-      );
-    });
-  }, [memoizedItems, list, setLocId, virtualizer]);
   return (
     <div
       ref={parentRef}
@@ -113,7 +84,38 @@ const LocationListVirtualizer = () => {
           position: 'relative',
         }}
       >
-        {memoizedChildren}
+        {items.map((virtualRow) => {
+          const item = list[virtualRow.index];
+
+          const filteredTasks = tasks?.filter((task) => task.loc_id === item.loc_id);
+
+          return (
+            <div
+              key={virtualRow.key}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: filteredTasks ? filteredTasks.length * 48 : 48,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <div
+                data-index={virtualRow.index}
+                ref={(element) => virtualizer.measureElement(element)}
+              >
+                <div style={{padding: '10px 0'}}>
+                  <LocationListItem
+                    key={item.loc_id}
+                    itemData={item}
+                    onClick={() => setLocId(item.loc_id)}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
