@@ -43,8 +43,6 @@ import {setIconSize} from '../utils';
 import {boreholeColors, BoreHoleFlagEnum} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 
-// const highlightedParking: L.Marker | null = null;
-
 const useMap = <TData extends object>(
   id: string,
   data: Array<TData>,
@@ -95,8 +93,6 @@ const useMap = <TData extends object>(
     put: putParkering,
     del: deleteParkering,
   } = useParkering();
-
-  // const {shownTasks, setShownMapTaskIds} = useTaskStore();
 
   const defaultContextmenuItems: Array<L.ContextMenuItem> = [
     {
@@ -173,6 +169,7 @@ const useMap = <TData extends object>(
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
+    onMapMoveEndEvent(map);
 
     return map;
   };
@@ -563,11 +560,10 @@ const useMap = <TData extends object>(
 
     return () => {
       if (mapRef.current) {
-        mapRef.current.removeEventListener('moveend');
         mapRef.current.remove();
       }
     };
-  }, []);
+  }, [parkings, leafletMapRoutes]);
 
   useEffect(() => {
     geoJsonRef.current?.setStyle(routeStyle);
@@ -628,13 +624,13 @@ const useMap = <TData extends object>(
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
 
-  useEffect(() => {
-    if (mapRef.current) onMapMoveEndEvent(mapRef.current);
+  // useEffect(() => {
+  //   if (mapRef.current) onMapMoveEndEvent(mapRef.current);
 
-    return () => {
-      if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
-    };
-  }, [data]);
+  //   return () => {
+  //     if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
+  //   };
+  // }, [data]);
 
   return {
     map: mapRef.current,
