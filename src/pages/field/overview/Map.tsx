@@ -115,11 +115,11 @@ const Map = ({clickCallback}: MapProps) => {
   // const {hiddenTasks, shownTasks} = useTaskStore();
   // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
 
-  const user = useUser();
+  const {superUser, iotAccess, boreholeAccess} = useUser();
 
   const {data: boreholeMapdata} = useBoreholeMap();
 
-  const {data: mapData} = useNotificationOverviewMap({enabled: user?.iotAccess});
+  const {data: mapData} = useNotificationOverviewMap({enabled: iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -127,7 +127,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user?.iotAccess)
+  if (iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -252,7 +252,7 @@ const Map = ({clickCallback}: MapProps) => {
       },
     ];
 
-    if (user?.superUser) {
+    if (superUser) {
       locationMenu = [
         ...locationMenu,
         {
@@ -463,7 +463,7 @@ const Map = ({clickCallback}: MapProps) => {
             </AppContext.Provider>
           )}
           {selectedMarker == null && <LegendContent />}
-          {selectedMarker && 'boreholeno' in selectedMarker && user?.boreholeAccess && (
+          {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
             <AppContext.Provider value={{boreholeno: selectedMarker.boreholeno}}>
               <BoreholeContent />
             </AppContext.Provider>

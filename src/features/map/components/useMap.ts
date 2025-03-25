@@ -173,7 +173,6 @@ const useMap = <TData extends object>(
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
-    onMapMoveEndEvent(map);
 
     return map;
   };
@@ -498,7 +497,7 @@ const useMap = <TData extends object>(
 
   useEffect(() => {
     mapRef.current = buildMap();
-    parkingLayerRef.current = L.featureGroup();
+    parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
       disableClusteringAtZoom: 15,
       spiderfyOnMaxZoom: false,
@@ -560,10 +559,11 @@ const useMap = <TData extends object>(
       },
     }).addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
-    geoJsonRef.current = L.featureGroup();
+    geoJsonRef.current = L.featureGroup().addTo(mapRef.current);
 
     return () => {
       if (mapRef.current) {
+        mapRef.current.removeEventListener('moveend');
         mapRef.current.remove();
       }
     };
@@ -627,6 +627,14 @@ const useMap = <TData extends object>(
   useEffect(() => {
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
+
+  useEffect(() => {
+    if (mapRef.current) onMapMoveEndEvent(mapRef.current);
+
+    return () => {
+      if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
+    };
+  }, [data]);
 
   return {
     map: mapRef.current,
