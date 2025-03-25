@@ -17,7 +17,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 
-import {useAuthStore, useMapUtilityStore} from '~/state/store';
+import {useMapUtilityStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 import 'leaflet/dist/leaflet.css';
@@ -28,6 +28,7 @@ import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {getBoreholeIcon, getNotificationIcon} from '~/features/map/utils';
 import {utm} from '../../../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
+import {useUser} from '~/features/auth/useUser';
 
 interface LocItems {
   name: string;
@@ -89,12 +90,13 @@ const Map = ({clickCallback}: MapProps) => {
     state.setEditRouteLayer,
     state.setEditParkingLayer,
   ]);
+
   // const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
   // const user_id = authStore().user_id;
   // const {hiddenTasks, shownTasks} = useTaskStore();
   // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
 
-  const [superUser, iotAccess] = useAuthStore((state) => [state.superUser, state.iotAccess]);
+  const {superUser, iotAccess} = useUser();
 
   const {data, mapFilteredData: filteredData, setExtraData} = useFilteredMapData();
 
