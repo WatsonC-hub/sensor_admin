@@ -92,6 +92,7 @@ export const useTaskItinerary = (id?: string) => {
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['overblik']});
+
       toast.success('Tur oprettet');
     },
   });
@@ -113,6 +114,7 @@ export const useTaskItinerary = (id?: string) => {
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['overblik']});
+
       toast.success('Tur færdiggjort');
     },
   });

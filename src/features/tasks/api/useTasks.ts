@@ -195,7 +195,7 @@ export const useTasks = () => {
       queryClient.invalidateQueries({
         queryKey: ['taskHistory', path],
       });
-      toast.success('Opgaver ændret');
+      toast.success('Opgave ændret');
     },
     onError: (e) => {
       console.log(e);
@@ -292,6 +292,7 @@ export const useTasks = () => {
       queryClient.invalidateQueries({queryKey: ['map']});
       queryClient.invalidateQueries({queryKey: ['itineraries', splitted[0]]});
       queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+
       toast.success('Opgaver fjernet fra tur');
     },
   });

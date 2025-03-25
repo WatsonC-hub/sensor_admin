@@ -13,11 +13,12 @@ import {TaskUser} from '~/features/tasks/types';
 
 import {useTaskStore} from '../api/useTaskStore';
 import {merge} from 'lodash';
+import {useLocationData} from '~/hooks/query/useMetadata';
 
 const zodSchema = z.object({
+  ts_id: z.number().optional(),
   name: z
     .string({required_error: 'Navn skal være angivet'})
-    .min(8, 'Navn skal være mindst 16 tegn')
     .max(255, 'Navn må maks være 255 tegn')
     .optional(),
   description: z.string().nullish(),
@@ -367,6 +368,31 @@ const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   );
 };
 
+const selectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {data: metadata} = useLocationData();
+
+  return (
+    <FormInput
+      name="ts_id"
+      select
+      size="small"
+      placeholder="Vælg..."
+      fullWidth
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      {metadata?.timeseries?.map((timeseries) => {
+        return (
+          <MenuItem key={timeseries.ts_id} value={timeseries.ts_id}>
+            {(timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name}
+          </MenuItem>
+        );
+      })}
+    </FormInput>
+  );
+};
+
 TaskForm.SubmitButton = TaskSubmitButton;
 TaskForm.Input = Input;
 TaskForm.StatusSelect = StatusSelect;
@@ -375,5 +401,6 @@ TaskForm.BlockNotifications = BlockNotifications;
 TaskForm.DueDate = DueDate;
 TaskForm.BlockOnLocation = BlockOnLocation;
 TaskForm.BlockAll = BlockAll;
+TaskForm.SelectTimeseries = selectTimeseries;
 
 export default TaskForm;
