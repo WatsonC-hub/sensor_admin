@@ -1,4 +1,4 @@
-import {Autocomplete, Box, MenuItem, Select, Typography, TextField, Card} from '@mui/material';
+import {Box, Typography, Card} from '@mui/material';
 import React from 'react';
 import {Person} from '@mui/icons-material';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
@@ -8,8 +8,6 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {useTaskItinerary} from '../api/useTaskItinerary';
 
 import Droppable from './Droppable';
-import OwnDatePicker from '~/components/OwnDatePicker';
-import moment from 'moment';
 import {useTasks} from '../api/useTasks';
 import {Task} from '../types';
 import {convertToShorthandDate} from '~/helpers/dateConverter';
@@ -19,24 +17,22 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import TaskForm from './TaskForm';
 
 const TaskItiniaries = () => {
-  const [ids, setIds] = React.useState<string[]>([]);
-  const {selectedLocIds, tasks} = useTaskStore();
-  const [locIds, setLocIds] = React.useState<number[]>([]);
   const {
     get: {data},
   } = useTaskItinerary();
 
-  const {setItineraryId} = useDisplayState((state) => state);
+  const {setItineraryId, loc_id} = useDisplayState((state) => state);
 
   const {
     getUsers: {data: users},
+    moveTask,
   } = useTasks();
-
+  const {tasks} = useTaskStore();
   const {patch: updateItinerary} = useTaskItinerary();
 
   return (
     <Box>
-      <Card elevation={2} sx={{p: 1, mb: 1}}>
+      {/* <Card elevation={2} sx={{p: 1, mb: 1}}>
         <Box display="flex" flexWrap={'wrap'} gap={1} flexDirection={'column'}>
           <Typography variant="body2" fontWeight={'bold'}>
             Filter efter:
@@ -58,7 +54,6 @@ const TaskItiniaries = () => {
               label={'Fra'}
               margin="none"
               value={moment()}
-              onChange={(date: string) => console.log(date)}
             />
             <Autocomplete
               size="small"
@@ -69,13 +64,13 @@ const TaskItiniaries = () => {
             />
           </Box>
         </Box>
-      </Card>
+      </Card> */}
 
-      <Box display="flex" gap={1} p={0.5} flexDirection={'column'}>
+      <Box display="flex" gap={1} mt={4} p={0.5} flexDirection={'column'}>
         {data?.map((itinerary) => {
           const itinerary_tasks = tasks?.filter((task) => task.itinerary_id === itinerary.id);
-          const loc_ids = new Set(itinerary_tasks?.map((task) => task.loc_id));
-          console.log(loc_ids);
+          const ids = itinerary_tasks?.map((task) => task.id);
+          const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];
           const grouped_location_tasks = itinerary_tasks?.reduce(
             (acc: Record<number, Task[]>, task) => {
               if (!acc[task.loc_id]) {
@@ -87,6 +82,9 @@ const TaskItiniaries = () => {
             {}
           );
 
+          const sameItinerary =
+            loc_id && itinerary_tasks?.map((tasks) => tasks.loc_id).includes(loc_id);
+
           const due_date = itinerary.due_date
             ? convertToShorthandDate(itinerary.due_date)
             : 'Ingen dato';
@@ -96,19 +94,21 @@ const TaskItiniaries = () => {
               key={itinerary.id}
               onDrop={(e, data) => {
                 e.preventDefault();
-
-                if (tasks)
-                  setIds(
-                    Array.from(
-                      new Set([
-                        ...ids,
-                        ...tasks
-                          .filter((task) => task.loc_id === data.loc_id)
-                          .map((task) => task.id),
-                      ])
-                    )
-                  );
-                setLocIds([...locIds, data.loc_id]);
+                if (!loc_ids.includes(data.loc_id) && ids) {
+                  const task_ids = tasks
+                    ?.filter((task) => task.loc_id === data.loc_id)
+                    .map((task) => task.id);
+                  if (task_ids) {
+                    const payload = {
+                      path: `${itinerary.id}`,
+                      data: {
+                        task_ids: task_ids,
+                        loc_id: [data.loc_id],
+                      },
+                    };
+                    moveTask.mutate(payload);
+                  }
+                }
               }}
             >
               {({isDraggingOver}) => (
@@ -123,14 +123,13 @@ const TaskItiniaries = () => {
                       alignContent: 'center',
                       borderRadius: 2,
                       boxShadow: 8,
-                      backgroundColor:
-                        selectedLocIds.length > 0 && ids.length == 0
-                          ? '#EEEEEE'
-                          : isDraggingOver
-                            ? 'secondary.light'
-                            : 'primary.light',
+                      backgroundColor: !isDraggingOver
+                        ? 'primary.light'
+                        : !sameItinerary && isDraggingOver
+                          ? 'grey.500'
+                          : 'secondary.light',
                       color: 'primary.contrastText',
-                      cursor: selectedLocIds.length > 0 && ids.length == 0 ? 'cursor' : 'pointer',
+                      cursor: 'pointer',
                     }}
                   >
                     <Box
@@ -218,7 +217,6 @@ const TaskItiniaries = () => {
                       display={'flex'}
                       flexDirection={'column'}
                       onClick={(e) => {
-                        console.log(e);
                         if (
                           'localName' in e.target &&
                           (e.target.localName as string) !== 'path' &&

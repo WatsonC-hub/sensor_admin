@@ -142,9 +142,11 @@ export const useTasks = () => {
   const post = useMutation<unknown, APIError, PostTask>({
     ...tasksPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['tasks', include_closed],
-      });
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
+
       toast.success('Opgaver gemt');
     },
   });
@@ -171,7 +173,6 @@ export const useTasks = () => {
       const {path} = variables;
       if (path != data.id) {
         const previous = queryClient.getQueryData<Task[]>(['tasks', include_closed]);
-        queryClient.invalidateQueries({queryKey: ['tasks', !include_closed]});
         queryClient.setQueryData<Task[]>(
           ['tasks', include_closed],
           previous?.map((task) => {
@@ -182,9 +183,11 @@ export const useTasks = () => {
             return task;
           })
         );
+        queryClient.invalidateQueries({queryKey: ['tasks', !include_closed]});
         queryClient.invalidateQueries({queryKey: ['overblik']});
         queryClient.invalidateQueries({queryKey: ['itineraries']});
-        queryClient.invalidateQueries({queryKey: ['tasks', false]});
+        queryClient.invalidateQueries({queryKey: ['map']});
+
         setShownMapTaskIds([...shownMapTaskIds, data.id]);
         setSelectedTask(data.id);
       }
@@ -192,21 +195,20 @@ export const useTasks = () => {
       queryClient.invalidateQueries({
         queryKey: ['taskHistory', path],
       });
-      // toast.success('Opgaver ændret');
+      toast.success('Opgaver ændret');
     },
     onError: (e) => {
       console.log(e);
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['tasks']});
     },
   });
   const del = useMutation({
     ...tasksDelOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
 
       toast.success('Opgave slettet');
     },
@@ -218,12 +220,11 @@ export const useTasks = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['overblik'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['map']});
+
       toast.success('Opgave oprettet');
     },
   });
@@ -232,12 +233,10 @@ export const useTasks = () => {
     ...notificationUpdateStatus,
     onSuccess: () => {
       toast.success('Opgave opdateret');
-      queryClient.invalidateQueries({
-        queryKey: ['overblik'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
     },
   });
 
@@ -289,12 +288,11 @@ export const useTasks = () => {
           return task;
         })
       );
-      queryClient.invalidateQueries({
-        queryKey: ['itineraries', splitted[0]],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['tasks', false],
-      });
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['map']});
+      queryClient.invalidateQueries({queryKey: ['itineraries', splitted[0]]});
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      toast.success('Opgaver fjernet fra tur');
     },
   });
 
@@ -321,14 +319,11 @@ export const useTasks = () => {
       }
 
       queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['map']});
 
-      queryClient.invalidateQueries({
-        queryKey: ['itineraries'],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      toast.success('Opgaver tilføjet til tur');
     },
   });
 

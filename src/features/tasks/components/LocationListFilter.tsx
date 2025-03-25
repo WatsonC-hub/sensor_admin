@@ -2,7 +2,7 @@ import {Box, MenuItem, Select, Typography} from '@mui/material';
 import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import {useAtom} from 'jotai';
-import moment, {Moment} from 'moment';
+import {Moment} from 'moment';
 import React from 'react';
 import ExtendedAutocomplete from '~/components/Autocomplete';
 import {assignedToAtom, dueDateAtom, locationListSortingAtom} from '~/state/atoms';
@@ -18,7 +18,7 @@ const LocationListFilter = () => {
   const [sortingAtom, setSortingAtom] = useAtom(locationListSortingAtom);
   const [selectedUser, setSelectedUser] = useAtom<TaskUser | null>(assignedToAtom);
   const [DueDate, setDueDate] = useAtom<Moment | null>(dueDateAtom);
-  const [date, setDate] = React.useState<Moment | null>(null);
+  // const [date, setDate] = React.useState<Moment | null>(null);
   const handleStartdateChange = (date: Moment | null) => {
     setDueDate(date);
   };

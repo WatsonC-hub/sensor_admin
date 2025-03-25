@@ -10,11 +10,12 @@ type Props = {
 };
 
 const TripTaskTable = ({tasks}: Props) => {
+  console.log(tasks);
   const value = tasks?.reduce((acc: Record<string, {count: number; name: string}>, task) => {
     if (task.blocks_notifications !== undefined && task.blocks_notifications.length > 0) {
       task.blocks_notifications?.forEach((block) => {
         if (acc[block] === undefined) {
-          acc[block] = {count: 1, name: task.notification_name};
+          acc[block] = {count: 1, name: task.name};
         } else acc[block].count += 1;
       });
       return acc;
@@ -26,6 +27,7 @@ const TripTaskTable = ({tasks}: Props) => {
     }
   }, {});
 
+  console.log(value);
   return (
     <>
       <Box

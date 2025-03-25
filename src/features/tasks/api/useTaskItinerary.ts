@@ -89,13 +89,9 @@ export const useTaskItinerary = (id?: string) => {
   const post = useMutation<unknown, APIError, PostTaskitinerary>({
     ...itineraryPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['itineraries'],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
       toast.success('Tur oprettet');
     },
   });
@@ -103,9 +99,10 @@ export const useTaskItinerary = (id?: string) => {
   const patch = useMutation<unknown, APIError, PatchTaskitinerary>({
     ...patchItineraryOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['itineraries'],
-      });
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+
       toast.success('Tur opdateret');
     },
   });
@@ -113,9 +110,9 @@ export const useTaskItinerary = (id?: string) => {
   const complete = useMutation<unknown, APIError, completeItinerary>({
     ...completeItineraryOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['itineraries'],
-      });
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
       toast.success('Tur færdiggjort');
     },
   });

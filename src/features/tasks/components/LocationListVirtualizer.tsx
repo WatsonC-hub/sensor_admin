@@ -72,7 +72,6 @@ const LocationListVirtualizer = () => {
       className="List"
       style={{
         height: window.innerHeight - 150,
-        width: 400,
         overflowY: 'auto',
         contain: 'strict',
       }}
