@@ -8,7 +8,7 @@ export interface Unit {
   terminal_id: string;
   sensor_id: string;
   sensorinfo: string;
-  calypso_id: string;
+  calypso_id: number;
   batteriskift: string;
   startdato: string;
   slutdato: string;

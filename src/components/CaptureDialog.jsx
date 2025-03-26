@@ -43,11 +43,12 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
 
   async function handleScanning(raw_data) {
     if (raw_data !== null && !running) {
+      const url = raw_data[0].rawValue;
       running = true;
 
-      const calypso_id = extractNumber(raw_data);
+      const calypso_id = extractNumber(url);
 
-      await handleScan(raw_data, calypso_id);
+      await handleScan(url, calypso_id);
 
       running = false;
 

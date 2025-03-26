@@ -63,7 +63,7 @@ export default function AddUnitForm({
     ...new Set(
       availableUnits
         ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id == '0' ? x.terminal_id : x.calypso_id))
+        ?.map((x) => (x.calypso_id == 0 ? x.terminal_id : x.calypso_id.toString()))
     ),
   ].sort((a, b) => {
     if (typeof a == 'number' && typeof b == 'number') {
@@ -83,10 +83,11 @@ export default function AddUnitForm({
     return 0;
   });
 
-  const sensorsForCalyspoId = (id: string) =>
+  const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(
       (unit) =>
-        (unit.calypso_id === id || unit.terminal_id === id) && unit.sensortypeid === tstype_id
+        (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
+        unit.sensortypeid === tstype_id
     );
 
   const handleCalypsoIdNew = (
@@ -202,15 +203,13 @@ export default function AddUnitForm({
         <CaptureDialog
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
-          handleScan={(data: any) => {
-            const split = data[0]['rawValue'].split('/');
-            const calypso_id = parseInt(split[split.length - 1]);
-
-            if (isNaN(calypso_id)) {
+          handleScan={(data: any, calypso_id: number) => {
+            if (calypso_id === null) {
               toast.error('Ugyldigt Calypso ID');
               setOpenCaptureDialog(false);
               return;
             }
+
             const exists = uniqueCalypsoIds.includes(calypso_id.toString());
 
             if (!exists) {

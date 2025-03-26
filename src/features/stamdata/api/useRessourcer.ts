@@ -1,8 +1,9 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 interface RessourcerBase {
@@ -49,6 +50,16 @@ export const ressourcerDelOptions = {
   },
 };
 
+export const getRessourcerOptions = (loc_id: number | undefined) =>
+  queryOptions<Array<Ressourcer>, APIError>({
+    queryKey: ['ressourcer', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/ressourcer/${loc_id}`);
+
+      return data;
+    },
+  });
+
 export const useRessourcer = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const queryClient = useQueryClient();
@@ -62,17 +73,7 @@ export const useRessourcer = () => {
     enabled: loc_id !== undefined,
   });
 
-  const relation = useQuery({
-    queryKey: ['ressourcer', loc_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<Ressourcer>>(
-        `/sensor_field/stamdata/ressourcer/${loc_id}`
-      );
-
-      return data;
-    },
-    enabled: loc_id !== undefined,
-  });
+  const relation = useQuery(getRessourcerOptions(loc_id));
 
   const post = useMutation({
     ...ressourcerPostOptions,

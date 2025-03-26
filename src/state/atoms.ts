@@ -194,3 +194,8 @@ export const dataToShowAtom = atom({
   'Valide værdier': false,
   'Fjernet data': false,
 });
+
+export const drawerOpenAtom = atom<boolean>(false);
+export const initiateSelectAtom = atom<boolean>(false);
+export const initiateConfirmTimeseriesAtom = atom<boolean>(false);
+export const levelCorrectionAtom = atom<boolean>(false);

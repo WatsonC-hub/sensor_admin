@@ -1,34 +1,32 @@
 import {Box, Card, CardContent} from '@mui/material';
-import {useAtom} from 'jotai';
+import {useAtom, useSetAtom} from 'jotai';
 import {parseAsStringLiteral, useQueryState} from 'nuqs';
 import React, {useEffect} from 'react';
 import {toast} from 'react-toastify';
 
 import {qaAdjustmentLiteral} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {qaSelection} from '~/state/atoms';
+import {
+  initiateConfirmTimeseriesAtom,
+  initiateSelectAtom,
+  levelCorrectionAtom,
+  qaSelection,
+} from '~/state/atoms';
 
 import WizardConfirmTimeseries from './WizardConfirmTimeseries';
 import WizardDataExclude from './WizardExcludeData';
 import WizardLevelCorrection from './WizardLevelCorrection';
 import WizardValueBounds from './WizardValueBounds';
 
-interface StepWizardProps {
-  setLevelCorrection: (levelCorrection: boolean) => void;
-  initiateConfirmTimeseries: boolean;
-  setInitiateSelect: (initiateSelect: boolean) => void;
-  setInitiateConfirmTimeseries: (confirm: boolean) => void;
-}
-
-const StepWizard = ({
-  setLevelCorrection,
-  initiateConfirmTimeseries,
-  setInitiateSelect,
-  setInitiateConfirmTimeseries,
-}: StepWizardProps) => {
+const StepWizard = () => {
   const [dataAdjustment] = useQueryState('adjust', parseAsStringLiteral(qaAdjustmentLiteral));
   const [selection, setSelection] = useAtom(qaSelection);
   const {isMobile} = useBreakpoints();
+  const setInitiateSelect = useSetAtom(initiateSelectAtom);
+  const setLevelCorrection = useSetAtom(levelCorrectionAtom);
+  const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useAtom(
+    initiateConfirmTimeseriesAtom
+  );
 
   useEffect(() => {
     setSelection({});

@@ -72,7 +72,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               label="Projektnummer"
               placeholder="Vælg projektnummer..."
               sx={{
-                pb: 0,
+                pb: 1,
                 '& .MuiInputBase-input.Mui-disabled': {WebkitTextFillColor: '#000000'},
                 '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
                 '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label

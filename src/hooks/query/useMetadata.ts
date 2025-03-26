@@ -1,6 +1,7 @@
 import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
+import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 export type Metadata = {
@@ -69,10 +70,10 @@ export type LocationMetadata = {
 };
 
 export const metadataQueryOptions = (ts_id?: number) => {
-  return queryOptions({
+  return queryOptions<Metadata, APIError>({
     queryKey: ['metadata', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Metadata>(`/sensor_field/station/metadata/${ts_id}`);
+      const {data} = await apiClient.get(`/sensor_field/station/metadata/${ts_id}`);
       return data;
     },
     enabled: ts_id !== undefined,
@@ -97,7 +98,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
         groups: data[0].groups,
         description: data[0].description,
         mainloc: data[0].mainloc,
-        projectno: data[0].projectno,
+        projectno: data.find((location) => location.projectno !== null)?.projectno ?? undefined,
         subloc: data[0].subloc,
         terrainlevel: data[0].terrainlevel,
         terrainqual: data[0].terrainqual,
