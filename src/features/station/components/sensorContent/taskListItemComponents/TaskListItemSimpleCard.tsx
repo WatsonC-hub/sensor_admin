@@ -40,7 +40,7 @@ const TaskListItemSimpleCard = ({task}: Props) => {
         backgroundColor: task.itinerary_id ? color : undefined,
         flexDirection: 'row',
         alignContent: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         // opacity: task.itinerary_id ? 0.7 : 1,
       }}
       variant="elevation"
@@ -49,7 +49,7 @@ const TaskListItemSimpleCard = ({task}: Props) => {
         <Box
           display="flex"
           alignItems="center"
-          sx={{backgroundColor: color, height: '100%', m: 0, py: 1}}
+          sx={{backgroundColor: color, height: '100%', m: 0, py: 1, px: 1}}
         >
           <AssignmentOutlinedIcon
             fontSize="small"
@@ -62,7 +62,7 @@ const TaskListItemSimpleCard = ({task}: Props) => {
           {task.name}
         </Typography>
       </Box>
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center" pr={1}>
         <Edit sx={{color: 'primary.main'}} fontSize="small" />
         <Button
           variant="text"

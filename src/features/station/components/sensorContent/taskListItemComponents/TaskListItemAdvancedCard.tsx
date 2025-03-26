@@ -81,13 +81,11 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
     };
   }, [task]);
 
-  // const cardHeaderColor = 'primary.main';
-  // const cardContrastColor = task.itinerary_id ? '' : task.status_id === 1 ? 'white' : '';
-
   const textfieldProps = {
+    placeholder: 'Vælg ansvarlig',
     label: '',
+    // slotProps: {InputLabel: {disabled: true}},
     sx: {
-      borderColor: 'white',
       color: 'white',
       fontSize: 'small',
       width: 150,
@@ -96,7 +94,6 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
           fontSize: 'small',
           color: 'white',
           borderRadius: 2.5,
-          borderColor: 'white',
           '& .Mui-focused': {
             color: 'white',
           },
@@ -105,9 +102,11 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
         borderRadius: 2.5,
         color: 'white',
         border: '1px solid',
+        padding: '4px !important',
       },
       '&:hover .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'white',
+        borderColor: 'white !important',
+        py: 0,
         m: -0.15,
       },
     },

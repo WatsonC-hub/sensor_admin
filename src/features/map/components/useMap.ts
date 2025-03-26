@@ -494,6 +494,7 @@ const useMap = <TData extends object>(
       removeOutsideVisibleBounds: true,
       maxClusterRadius: 50,
       zoomToBoundsOnClick: true,
+      showCoverageOnHover: false,
       iconCreateFunction: (cluster) => {
         const childMarkers = cluster.getAllChildMarkers();
         const num = childMarkers.length;

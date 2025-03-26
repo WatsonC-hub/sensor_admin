@@ -65,19 +65,21 @@ const ItineraryCardList = () => {
           <CloseIcon sx={{alignSelf: 'center', color: 'white'}} fontSize="small" />
         </IconButton>
       </Box>
-      {itinerary_tasks?.map((task) => {
-        const isSimpleTask =
-          task.id.includes(':') || task.description === null || task.description === '';
-        return (
-          <Box key={task.id}>
-            {isSimpleTask ? (
-              <TaskListItemSimpleCard task={task} />
-            ) : (
-              <TaskListItemAdvancedCard task={task} />
-            )}
-          </Box>
-        );
-      })}
+      <Box pl={1}>
+        {itinerary_tasks?.map((task) => {
+          const isSimpleTask =
+            task.id.includes(':') || task.description === null || task.description === '';
+          return (
+            <Box key={task.id}>
+              {isSimpleTask ? (
+                <TaskListItemSimpleCard task={task} />
+              ) : (
+                <TaskListItemAdvancedCard task={task} />
+              )}
+            </Box>
+          );
+        })}
+      </Box>
       {openDialog && (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
           <Box p={2}>
