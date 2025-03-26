@@ -106,30 +106,18 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   };
 
   return (
-    <Box display={'flex'} flexDirection={'column'} gap={2}>
-      <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'}>
-        <Button bttype="tertiary" onClick={() => station(selectedTask.ts_id)}>
-          <Typography>Gå til tidsserie</Typography>
-        </Button>
-        <Button bttype="tertiary" onClick={() => adminKvalitetssikring(selectedTask.ts_id)}>
-          <Typography>Gå til QA</Typography>
-        </Button>
-      </Stack>
-      <Grid container spacing={0}>
+    <Box display={'flex'} flexDirection={'column'}>
+      <Grid container spacing={1}>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input
+            sx={{pb: 0}}
             label={'Navn'}
             name="name"
             onBlurCallback={async () => await handlePatch('name')}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.StatusSelect
-            onBlurCallback={async () => await handlePatch('status_id')}
-            sx={{
-              mb: 2,
-            }}
-          />
+          <TaskForm.StatusSelect onBlurCallback={async () => await handlePatch('status_id')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.DueDate
@@ -145,7 +133,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             disabled={selectedTask.itinerary_id !== null}
           />
         </Grid>
-        <Grid item mobile={12} py={1}>
+        <Grid item mobile={12} pb={1}>
           <Accordion
             disableGutters={true}
             sx={{
@@ -160,14 +148,13 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             >
               Flere informationer
             </AccordionSummary>
-            <AccordionDetails>
+            <AccordionDetails sx={{padding: 1}}>
               <Grid
                 container
                 display={'flex'}
                 flexDirection={'row'}
-                alignItems={'center'}
+                alignItems={'start'}
                 spacing={1}
-                px={1}
               >
                 <Grid
                   item
@@ -176,10 +163,11 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
                   display={'flex'}
                   flexDirection={'row'}
                   alignItems={'center'}
-                  gap={2}
+                  gap={1}
                 >
                   <Typography>Bloker</Typography>
                   <TaskForm.BlockAll
+                    sx={{pb: 0}}
                     onBlurCallback={async () => await handlePatch('block_all')}
                     onChangeCallback={(e) => {
                       console.log(e);
@@ -193,11 +181,11 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
                   display={'flex'}
                   flexDirection={'row'}
                   alignItems={'center'}
-                  gap={2}
-                  mt={-3}
+                  gap={1}
                 >
-                  <Typography>notifikationer på</Typography>
+                  <Typography>på</Typography>
                   <TaskForm.BlockOnLocation
+                    sx={{pb: 0}}
                     onBlurCallback={async () => await handlePatch('block_on_location')}
                   />
                 </Grid>
@@ -235,32 +223,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         </Grid>
       </Grid>
 
-      <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={2}>
-        <div
-          id="drag-handle"
-          draggable
-          style={{
-            cursor: 'move',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '50px',
-            height: '50px',
-            backgroundColor: 'lightgrey',
-            borderRadius: '5px',
-            margin: '5px',
-          }}
-          onDragStart={(e) => {
-            setIsDraggingTask(true);
-            e.dataTransfer.setData('text/plain', JSON.stringify(selectedTask));
-          }}
-          onDragEnd={() => {
-            setIsDraggingTask(false);
-          }}
-        >
-          <DragHandle fontSize="large" />
-        </div>
-
+      <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
         <Box>
           <Tooltip arrow title={deleteTaskTitle}>
             <div>
