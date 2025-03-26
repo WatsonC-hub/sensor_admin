@@ -41,9 +41,9 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
-import {useAuthStore} from '~/state/store';
 
 import MassEditDialog from './MassEditDialog';
+import {useUser} from '~/features/auth/useUser';
 
 const NOT_ASSIGNED = 'Ikke tildelt' as const;
 const NO_PROJECT = 'Intet projektnummer' as const;
@@ -113,7 +113,7 @@ const TaskTable = () => {
     patch,
   } = useTasks();
 
-  const userAuthId = useAuthStore((state) => state.user_id);
+  const {user_id: userAuthId} = useUser();
 
   const handleBlurSubmit = (id: string, ts_id: number, values: any) => {
     const payload = {
