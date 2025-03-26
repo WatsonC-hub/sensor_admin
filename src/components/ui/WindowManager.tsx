@@ -137,6 +137,7 @@ type WindowProps = {
   maxSize?: number;
   maxColumns?: number; // Injected by WindowManager
   width?: number | string;
+  id?: string;
 };
 
 const Window = ({
@@ -146,6 +147,7 @@ const Window = ({
   fullScreen,
   width,
   height = 'fit-content',
+  id,
 }: WindowProps) => {
   const {isMonitor, isLaptop, isLargeLaptop} = useBreakpoints();
   //   const {columnWidth} = useWindowContext();
@@ -166,6 +168,7 @@ const Window = ({
 
   return (
     <Box
+      id={id}
       sx={{
         position: 'relative',
         pointerEvents: 'auto',

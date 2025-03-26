@@ -194,6 +194,7 @@ const TasksOverview = () => {
 
           <WindowManager.Window
             key="station"
+            id="station"
             show={ts_id !== null}
             minSize={2}
             maxSize={3}

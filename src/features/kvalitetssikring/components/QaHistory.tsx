@@ -137,12 +137,10 @@ export default function QAHistory() {
       <Divider />
       <StationPageBoxLayout>
         <StepWizard />
-        <Box width={'100%'} m="auto" pb={isMobile ? 8 : 0}>
-          <Typography variant="h5">Aktive justeringer</Typography>
-          <AdjustmentDataTable data={data} />
-        </Box>
-        <CustomSpeedDial actions={speedDialActions} />
+        <Typography variant="h5">Aktive justeringer</Typography>
+        <AdjustmentDataTable data={data} />
       </StationPageBoxLayout>
+      <CustomSpeedDial actions={speedDialActions} />
     </>
   );
 }
