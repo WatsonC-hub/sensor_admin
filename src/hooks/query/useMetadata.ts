@@ -98,7 +98,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
         groups: data[0].groups,
         description: data[0].description,
         mainloc: data[0].mainloc,
-        projectno: data[0].projectno,
+        projectno: data.find((location) => location.projectno !== null)?.projectno ?? undefined,
         subloc: data[0].subloc,
         terrainlevel: data[0].terrainlevel,
         terrainqual: data[0].terrainqual,
