@@ -65,7 +65,7 @@ const ItineraryCardList = () => {
           <CloseIcon sx={{alignSelf: 'center', color: 'white'}} fontSize="small" />
         </IconButton>
       </Box>
-      <Box pl={1}>
+      <Box pl={1} display={'flex'} flexDirection={'column'} gap={1}>
         {itinerary_tasks?.map((task) => {
           const isSimpleTask =
             task.id.includes(':') || task.description === null || task.description === '';

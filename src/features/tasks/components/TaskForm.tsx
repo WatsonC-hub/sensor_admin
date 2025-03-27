@@ -207,6 +207,34 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
   );
 };
 
+const AssignedToSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {
+    getUsers: {data: taskUsers},
+  } = useTasks();
+
+  return (
+    <FormInput
+      name="assigned_to"
+      label="Ansvarlig"
+      select
+      size="small"
+      placeholder="Vælg ansvarlig..."
+      fullWidth
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      {taskUsers?.map((user) => {
+        return (
+          <MenuItem key={user.id} value={user.id}>
+            {user.display_name}
+          </MenuItem>
+        );
+      })}
+    </FormInput>
+  );
+};
+
 type BlockNotificationsProps = Omit<FormInputProps<FormValues>, 'name'> & {
   notification_id: number | null;
 };
@@ -402,5 +430,6 @@ TaskForm.DueDate = DueDate;
 TaskForm.BlockOnLocation = BlockOnLocation;
 TaskForm.BlockAll = BlockAll;
 TaskForm.SelectTimeseries = selectTimeseries;
+TaskForm.AssignedToSelect = AssignedToSelect;
 
 export default TaskForm;

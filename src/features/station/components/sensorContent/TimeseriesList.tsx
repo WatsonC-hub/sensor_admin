@@ -1,6 +1,6 @@
 import {Box, Typography, Link} from '@mui/material';
 import React from 'react';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
@@ -34,11 +34,11 @@ const TimeseriesList = () => {
                 </Link>
               </Typography>
             </Box>
-            {timeseries.has_task && (
+            {timeseries.has_task && timeseries.due_date && (
               <Box display="flex" gap={1} color="grey.700">
                 <CalendarIcon fontSize="small" />
                 <Typography variant="caption" alignContent={'center'} color="grey.700">
-                  {convertDateWithTimeStamp(timeseries?.due_date)}
+                  {convertDate(timeseries.due_date)}
                 </Typography>
               </Box>
             )}
