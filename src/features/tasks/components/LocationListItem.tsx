@@ -1,4 +1,4 @@
-import {Box, Divider, Grid2, Link, Typography} from '@mui/material';
+import {Box, Grid2, Link, Typography} from '@mui/material';
 import React from 'react';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';

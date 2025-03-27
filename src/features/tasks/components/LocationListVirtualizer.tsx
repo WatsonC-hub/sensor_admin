@@ -5,7 +5,6 @@ import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import LocationListItem from './LocationListItem';
 
 import {useDisplayState} from '~/hooks/ui';
-import {useTaskStore} from '../api/useTaskStore';
 import {Box, Divider, Typography} from '@mui/material';
 import {useMapFilterStore} from '~/features/map/store';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
@@ -24,7 +23,7 @@ const LocationListVirtualizer = () => {
   const locIds = useMapFilterStore((state) => state.locIds);
   const list: (MapOverview | 'divider')[] = listFilteredData.filter((item) => 'loc_id' in item);
 
-  const boolArray = list.map((item) => locIds.includes(item.loc_id));
+  const boolArray = list.map((item) => typeof item == 'object' && locIds.includes(item?.loc_id));
   const firstNotInLocIds = boolArray.indexOf(false);
 
   if (firstNotInLocIds !== -1) {
