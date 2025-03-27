@@ -6,14 +6,12 @@ import LocationInfo from '~/features/station/components/sensorContent/LocationIn
 import TaskList from '~/features/station/components/sensorContent/TaskList';
 import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
 import {useAppContext} from '~/state/contexts';
-import {useRawTaskStore} from '~/features/tasks/store';
 import {useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext([], ['loc_id']);
-  const setIsDraggingTask = useRawTaskStore((state) => state.setIsDraggingTask);
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   return (
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3}>
@@ -26,11 +24,7 @@ const SensorContent = () => {
         <Button
           draggable={true}
           onDragStart={(e) => {
-            setIsDraggingTask(true);
             e.dataTransfer.setData('text/plain', JSON.stringify({loc_id: loc_id}));
-          }}
-          onDragEnd={() => {
-            setIsDraggingTask(false);
           }}
           bttype="itinerary"
           startIcon={<DragIndicatorIcon fontSize="small" />}

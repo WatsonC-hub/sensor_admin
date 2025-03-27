@@ -11,6 +11,8 @@
 //     longitude: '{{floating(8.24402, 14.70664)}}'
 //   }
 
+import {FlagEnum} from '../notifications/consts';
+
 export type ID = string;
 
 // const example = {
@@ -70,6 +72,7 @@ export type Task = {
   block_all: boolean;
   itinerary_id: string | null;
   can_edit: boolean;
+  flag: FlagEnum;
 };
 
 export type DBTask = {

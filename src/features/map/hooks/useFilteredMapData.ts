@@ -4,7 +4,7 @@ import {Filter} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
-import {assignedToAtom, locationListSortingAtom} from '~/state/atoms';
+import {assignedToAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import moment from 'moment';
@@ -87,7 +87,6 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
 
 export const useFilteredMapData = () => {
   const {data: mapData} = useMapOverview();
-  const sortingAtom = useAtomValue(locationListSortingAtom);
   const assignedToListFilter = useAtomValue(assignedToAtom);
   const {data: boreholeMapdata} = useBoreholeMap();
   const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
@@ -106,7 +105,7 @@ export const useFilteredMapData = () => {
 
   const listFilteredData = useMemo(() => {
     let filteredList = mapFilteredData;
-    if (locIds.length > 0) {
+    if (locIds.length > 0 && assignedToListFilter == null) {
       const filteredLocIds = new Set(locIds);
       filteredList = mapFilteredData.filter(
         (elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id)
@@ -124,46 +123,49 @@ export const useFilteredMapData = () => {
       });
     }
 
-    if (sortingAtom === 'Newest') {
-      filteredList.sort((a, b) => {
-        if ('loc_id' in a && 'loc_id' in b) {
-          const aList = tasks?.filter((task) => task.loc_id === a.loc_id);
-          const bList = tasks?.filter((task) => task.loc_id === b.loc_id);
-          if (aList && bList) {
-            const aDate = aList.sort((a, b) => {
-              if (!a.due_date) return 1;
-              if (!b.due_date) return 1;
-              if (a.due_date && b.due_date) {
-                return moment(a.due_date).diff(moment(b.due_date));
-              }
-              return 0;
-            });
-            const bDate = bList.sort((a, b) => {
-              if (!a.due_date) return 1;
-              if (!b.due_date) return 1;
-              if (a.due_date && b.due_date) {
-                return moment(a.due_date).diff(moment(b.due_date));
-              }
-              return 0;
-            });
+    filteredList.sort((a, b) => {
+      if ('loc_id' in a && 'loc_id' in b) {
+        // tasks that are in locIds should be at the top of the list
+        if (locIds.includes(a.loc_id) && !locIds.includes(b.loc_id)) return -1;
 
-            if (aDate.length > 0 && aDate[0].due_date && bDate.length > 0 && !bDate[0].due_date)
-              return 1;
+        if (!locIds.includes(a.loc_id) && locIds.includes(b.loc_id)) return 1;
 
-            if (aDate.length > 0 && !aDate[0].due_date && bDate.length > 0 && bDate[0].due_date)
-              return 1;
+        const aList = tasks?.filter((task) => task.loc_id === a.loc_id);
+        const bList = tasks?.filter((task) => task.loc_id === b.loc_id);
+        if (aList && bList) {
+          const aDate = aList.sort((a, b) => {
+            if (!a.due_date) return 1;
+            if (!b.due_date) return 1;
+            if (a.due_date && b.due_date) {
+              return moment(a.due_date).diff(moment(b.due_date));
+            }
+            return 0;
+          });
+          const bDate = bList.sort((a, b) => {
+            if (!a.due_date) return 1;
+            if (!b.due_date) return 1;
+            if (a.due_date && b.due_date) {
+              return moment(a.due_date).diff(moment(b.due_date));
+            }
+            return 0;
+          });
 
-            if (aDate.length > 0 && bDate.length > 0)
-              return moment(aDate[0].due_date).diff(moment(bDate[0].due_date));
-          }
-          return -1;
+          if (aDate.length > 0 && aDate[0].due_date && bDate.length > 0 && !bDate[0].due_date)
+            return 1;
+
+          if (aDate.length > 0 && !aDate[0].due_date && bDate.length > 0 && bDate[0].due_date)
+            return 1;
+
+          if (aDate.length > 0 && bDate.length > 0)
+            return moment(aDate[0].due_date).diff(moment(bDate[0].due_date));
         }
         return -1;
-      });
-    }
+      }
+      return -1;
+    });
 
     return filteredList;
-  }, [mapFilteredData, locIds, assignedToListFilter, sortingAtom]);
+  }, [mapFilteredData, locIds, assignedToListFilter]);
 
   return {
     data,
