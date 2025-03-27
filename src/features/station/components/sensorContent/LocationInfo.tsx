@@ -5,7 +5,6 @@ import {getLocationProjectInfoOptions} from '~/features/stamdata/api/useLocation
 import {useLocationData} from '~/hooks/query/useMetadata';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import {getLocationTypeInfoOptions} from '~/features/stamdata/api/useLocationType';
-import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Group} from '~/types';
 import {getGroupLink} from '~/helpers/links';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -69,7 +68,14 @@ const LocationInfo = () => {
         justifyContent={'space-between'}
       >
         <Typography variant={'body2'}>Grupper:</Typography>
-        <Grid2 container gap={0.25} alignItems={'center'}>
+        <Grid2
+          container
+          gap={0.25}
+          display={'flex'}
+          flexDirection={'row'}
+          justifyContent={'end'}
+          alignItems={'center'}
+        >
           {location_data && (
             <>
               {location_data.groups.map((group, index, groups) => {
@@ -81,11 +87,19 @@ const LocationInfo = () => {
                 }
 
                 return (
-                  <Grid2 size={'auto'} key={newGrp.id}>
+                  <Grid2
+                    size={isMobile ? 6 : undefined}
+                    display={'flex'}
+                    flexDirection={'row'}
+                    justifyContent={'flex-end'}
+                    key={newGrp.id}
+                  >
                     <Link href={getGroupLink(newGrp.id)} key={newGrp.id}>
                       <Typography variant="caption">{newGrp.group_name}</Typography>
                     </Link>
-                    {groups.length - 1 !== index && <Typography variant="caption"> | </Typography>}
+                    {groups.length - 1 !== index && !isMobile && (
+                      <Typography variant="caption"> | </Typography>
+                    )}
                   </Grid2>
                 );
               })}
