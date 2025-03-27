@@ -1,6 +1,5 @@
 import {
   AddCircle,
-  Menu,
   PhotoLibraryRounded,
   PlaylistAddCheck,
   StraightenRounded,
@@ -9,7 +8,6 @@ import {
 } from '@mui/icons-material';
 import {
   Drawer,
-  Toolbar,
   Box,
   List,
   ListItem,
@@ -19,7 +17,6 @@ import {
   ListItemButton,
   ClickAwayListener,
   Tooltip,
-  IconButton,
 } from '@mui/material';
 import {useAtom} from 'jotai';
 import React, {ReactNode} from 'react';
@@ -47,7 +44,7 @@ import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms
 import {getImageOptions} from '../api/useImages';
 import {stationPages, StationPages} from '~/helpers/EnumHelper';
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 type Item = {
   text: string;
@@ -79,7 +76,7 @@ const StationDrawer = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const {isMobile, isMonitor} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
 
@@ -93,7 +90,7 @@ const StationDrawer = () => {
     setOpen(newOpen);
   };
 
-  const open = isMonitor || openAtom;
+  const open = openAtom;
 
   const items: DrawerItems[] = [
     {
@@ -151,13 +148,6 @@ const StationDrawer = () => {
           disabled: !user?.QAPermission || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
         },
-        // {
-        //   text: 'Stamdata',
-        //   page: stationPages.GENERELTIDSSERIE,
-        //   icon: <Edit />,
-        //   requiredTsId: true,
-        //   onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-        // },
       ],
     },
 
@@ -215,7 +205,7 @@ const StationDrawer = () => {
   const drawerItems = filteredItems.map((category) => {
     return (
       <>
-        {open && (
+        {
           <ListItem
             key={category.text}
             sx={{
@@ -243,7 +233,7 @@ const StationDrawer = () => {
               </ListItemIcon>
             )}
           </ListItem>
-        )}
+        }
         {category.items
           .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
@@ -272,7 +262,7 @@ const StationDrawer = () => {
                   py: 1,
                 }}
               >
-                <Tooltip title={!open ? item.text : ''} placement="right">
+                <Tooltip title={item.text} placement="right">
                   <ListItemButton
                     sx={{
                       borderRadius: '9999px',
@@ -289,7 +279,7 @@ const StationDrawer = () => {
                     >
                       {item.icon}
                     </ListItemIcon>
-                    {open && <ListItemText>{item.text}</ListItemText>}
+                    <ListItemText>{item.text}</ListItemText>
                   </ListItemButton>
                 </Tooltip>
               </ListItem>
@@ -300,7 +290,7 @@ const StationDrawer = () => {
     );
   });
 
-  if (isMobile) {
+  if (isTouch) {
     return (
       <Layout variant="temporary">
         <List>{drawerItems}</List>
@@ -308,21 +298,8 @@ const StationDrawer = () => {
     );
   }
 
-  if (isMonitor) {
-    return (
-      <Layout variant="permanent">
-        <List>{drawerItems}</List>
-      </Layout>
-    );
-  }
-
   return (
     <Layout variant="permanent">
-      <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
-        <IconButton sx={{color: 'white'}}>
-          <Menu />
-        </IconButton>
-      </Toolbar>
       <List>{drawerItems}</List>
     </Layout>
   );
@@ -336,35 +313,28 @@ type LayoutProps = {
 const Layout = ({children, variant}: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
 
-  const {isMonitor} = useBreakpoints();
-  const open = isMonitor || openAtom;
-  const width = open ? drawerWidth : 48;
+  const open = openAtom;
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
   };
 
   return (
-    <Box sx={{display: 'flex', flexDirection: 'row', height: '100%'}}>
-      <Drawer
-        variant={variant}
-        open={open}
-        sx={{
-          width: width,
-          height: '100%',
-          [`& .MuiDrawer-paper`]: {
-            width: width,
-            flexGrow: 1,
-            height: '100%',
-            position: 'relative',
-            backgroundColor: 'primary.main',
-          },
-        }}
-      >
-        <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
-          <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
-        </ClickAwayListener>
-      </Drawer>
-    </Box>
+    <Drawer
+      variant={variant}
+      open={open}
+      sx={{
+        width: drawerWidth,
+        [`& .MuiDrawer-paper`]: {
+          width: drawerWidth,
+          position: 'relative',
+          backgroundColor: 'primary.main',
+        },
+      }}
+    >
+      <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
+        <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
+      </ClickAwayListener>
+    </Drawer>
   );
 };
 

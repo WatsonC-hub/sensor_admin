@@ -106,7 +106,7 @@ interface LayoutProps {
 }
 
 const Layout = ({children}: LayoutProps) => {
-  const {isMobile} = useBreakpoints();
+  const {isTouch, isMobile} = useBreakpoints();
   const {data: locationdata} = useLocationData();
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
@@ -114,8 +114,8 @@ const Layout = ({children}: LayoutProps) => {
   const setTsId = useDisplayState((state) => state.setTsId);
   return (
     <>
-      <NavBar zIndex={1000}>
-        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+      <NavBar>
+        {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
           <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
             {locationdata?.loc_name}
@@ -147,19 +147,14 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-      <Box
-        display="flex"
-        width={'100%'}
-        flexGrow={1}
-        flexDirection={'row'}
-        // height={'100%'}
-        //
-      >
+      <Box display="flex" width={'100%'} flexGrow={1} flexDirection={'row'}>
         <StationDrawer />
         <Box
           display="flex"
-          width={'100%'}
           flexGrow={1}
+          // maxWidth="100%"
+          height={'100%'}
+          minWidth={0}
           gap={1}
           pb={isMobile ? 8 : 1}
           flexDirection={'column'}
