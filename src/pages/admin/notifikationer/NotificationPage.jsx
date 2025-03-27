@@ -18,12 +18,12 @@ import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import NavBar from '~/components/NavBar';
+import {useUser} from '~/features/auth/useUser';
 import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationTree from '~/pages/admin/notifikationer/NotificationTree';
 import ServiceMap from '~/pages/admin/notifikationer/ServiceMap';
-import {useAuthStore} from '~/state/store';
 
 const getNavigation = (item) => {
   switch (item.color) {
@@ -52,7 +52,8 @@ const NotificationPage = () => {
   const [isCustomerService, setIsCustomerService] = useAtom(isCustomerServiceAtom);
   const [isWatsonCService, setIsWatsonCService] = useAtom(isWatsonCServiceAtom);
   const [isFirstLoad, setIsFirstLoad] = useAtom(isFirstLoadAtom);
-  const superUser = useAuthStore((state) => state.superUser);
+  const {superUser} = useUser();
+  console.log(superUser);
   const {field} = useNavigationFunctions();
 
   useEffect(() => {

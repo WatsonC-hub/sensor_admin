@@ -3,17 +3,17 @@ import {Box, Button, Typography} from '@mui/material';
 import moment from 'moment';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {useUser} from '~/features/auth/useUser';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
 import PostponeModal from '~/pages/admin/notifikationer/PostponeModal';
 import TrelloModal from '~/pages/admin/notifikationer/TrelloModal';
-import {useAuthStore} from '~/state/store';
 
 const NotificationRow = ({notification, onPostpone, onIgnore, onSchedule}) => {
   const [trelloOpen, setTrelloOpen] = useState(false);
   const [postponeOpen, setPostponeOpen] = useState(false);
 
-  const superUser = useAuthStore((state) => state.superUser);
+  const {superUser} = useUser();
 
   const {isTouch} = useBreakpoints();
 
