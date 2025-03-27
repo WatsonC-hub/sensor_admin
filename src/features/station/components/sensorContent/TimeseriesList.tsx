@@ -1,6 +1,6 @@
 import {Box, Typography, Link} from '@mui/material';
 import React from 'react';
-import {convertDate, convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import {convertDate} from '~/helpers/dateConverter';
 import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
