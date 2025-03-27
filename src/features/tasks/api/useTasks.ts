@@ -139,6 +139,7 @@ export const useTasks = () => {
     },
     staleTime: 1000 * 60 * 5,
   });
+
   const post = useMutation<unknown, APIError, PostTask>({
     ...tasksPostOptions,
     onSuccess: () => {

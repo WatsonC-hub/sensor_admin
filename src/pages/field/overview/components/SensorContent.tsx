@@ -9,6 +9,7 @@ import {useAppContext} from '~/state/contexts';
 import {useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
+import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext([], ['loc_id']);
@@ -41,6 +42,8 @@ const SensorContent = () => {
           Opret ny opgave
         </Button>
       </Box>
+
+      <TaskHistoryList />
 
       <CreateManuelTaskModal
         open={createTaskDialog}

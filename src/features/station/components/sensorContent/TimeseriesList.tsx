@@ -5,7 +5,7 @@ import {useTimeseriesStatus} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import {CalendarIcon} from '@mui/x-date-pickers';
 
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -36,7 +36,7 @@ const TimeseriesList = () => {
             </Box>
             {timeseries.has_task && (
               <Box display="flex" gap={1} color="grey.700">
-                <PendingActionsIcon fontSize="small" />
+                <CalendarIcon fontSize="small" />
                 <Typography variant="caption" alignContent={'center'} color="grey.700">
                   {convertDateWithTimeStamp(timeseries?.due_date)}
                 </Typography>
