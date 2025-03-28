@@ -98,9 +98,9 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                 <Box gap={1} display="flex" alignItems={'center'}>
                   <Person />
                   <TaskForm.AssignedToSelect
-                    onBlur={({target}) => {
-                      if ('value' in target) {
-                        const user = taskUsers?.find((user) => user.display_name === target.value);
+                    onBlurCallback={(e) => {
+                      if (typeof e === 'object' && 'value' in e.target) {
+                        const user = taskUsers?.find((user) => user.id === e.target.value);
                         if (user !== undefined && task.assigned_to !== user.id)
                           patchTaskAssignedTo(user.id);
                       }

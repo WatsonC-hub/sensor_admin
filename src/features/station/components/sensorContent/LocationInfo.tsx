@@ -78,7 +78,7 @@ const LocationInfo = () => {
         >
           {location_data && (
             <>
-              {location_data.groups.map((group, index, groups) => {
+              {location_data.groups?.map((group, index, groups) => {
                 const newGrp = {} as Group;
 
                 if (typeof group === 'object' && 'id' in group) {
