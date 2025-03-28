@@ -20,15 +20,19 @@ import {PejlingItem} from '~/types';
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number | undefined) => void;
+  disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete}: Props) {
+export default function PejlingMeasurementsTableMobile({
+  handleEdit,
+  handleDelete,
+  disabled,
+}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
   const stationUnit = timeseries?.unit;
-
   const unit = tstype_id === 1 ? ' m' : ' ' + stationUnit;
 
   const onDeleteBtnClick = (id: number) => {
@@ -81,14 +85,14 @@ export default function PejlingMeasurementsTableMobile({handleEdit, handleDelete
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);
                 }}
-                canEdit={true}
+                disabled={disabled}
               />
             </Box>
           </Box>
         ),
       },
     ],
-    [unit]
+    [unit, disabled, handleEdit]
   );
 
   const options: Partial<MRT_TableOptions<PejlingItem>> = {

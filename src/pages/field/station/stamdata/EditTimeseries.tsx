@@ -9,6 +9,7 @@ import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryClient} from '~/queryClient';
@@ -28,8 +29,9 @@ const timeseriesSchema = z.object({
 type Timeseries = z.infer<typeof timeseriesSchema>;
 
 const EditTimeseries = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
   const {data: metadata} = useTimeseriesData();
+  const {location_permissions} = usePermissions(loc_id);
 
   const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -86,18 +88,22 @@ const EditTimeseries = () => {
   };
 
   return (
-    <>
+    <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
-        <TimeseriesForm mode="edit" />
+        <TimeseriesForm mode="edit" disabled={location_permissions !== 'edit'} />
         <footer>
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button bttype="tertiary" onClick={() => reset(defaultValues)}>
+            <Button
+              bttype="tertiary"
+              onClick={() => reset(defaultValues)}
+              disabled={location_permissions !== 'edit'}
+            >
               Annuller
             </Button>
 
             <Button
               bttype="primary"
-              disabled={!isDirty || !isValid}
+              disabled={!isDirty || !isValid || location_permissions !== 'edit'}
               onClick={formMethods.handleSubmit(handleSubmit)}
               startIcon={<SaveIcon />}
               sx={{marginRight: 1}}
@@ -107,7 +113,7 @@ const EditTimeseries = () => {
           </Box>
         </footer>
       </FormProvider>
-    </>
+    </Box>
   );
 };
 

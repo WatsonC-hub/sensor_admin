@@ -12,13 +12,13 @@ import IconButton from '@mui/material/IconButton';
 import {atom, useAtom} from 'jotai';
 import {atomWithStorage} from 'jotai/utils';
 import React, {useState, useRef, SyntheticEvent, MouseEventHandler, useEffect} from 'react';
+import {useUser} from '~/features/auth/useUser';
 
 import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
-import {useAuthStore} from '~/state/store';
 import {BoreholeMapData} from '~/types';
 
 interface LocItems {
@@ -128,7 +128,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isTouch} = useBreakpoints();
-  const [boreholeAccess] = useAuthStore((state) => [state.boreholeAccess]);
+  const user = useUser();
 
   const elasticSearch = (
     e: SyntheticEvent,
@@ -156,7 +156,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         .sort((a, b) => a.name.localeCompare(b.name));
 
       let filteredBorehole: LocItems[] = [];
-      if (boreholeAccess) {
+      if (user?.boreholeAccess) {
         const search = {query: {bool: {must: {query_string: {query: search_string}}}}};
         postElasticSearch(search).then((res) => {
           filteredBorehole = res.data.hits.hits.map((elem: any) => {

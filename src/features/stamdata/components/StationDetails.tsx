@@ -1,15 +1,15 @@
 import {Grid, Typography} from '@mui/material';
 import React from 'react';
+import {useUser} from '~/features/auth/useUser';
 
 import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
 import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
-import {useAuthStore} from '~/state/store';
 
 type Props = {mode: string};
 
 const StationDetails = ({mode}: Props) => {
-  const superUser = useAuthStore((state) => state.superUser);
+  const user = useUser();
 
   return (
     <Grid container spacing={1}>
@@ -25,7 +25,7 @@ const StationDetails = ({mode}: Props) => {
         </Typography>
         <ContactInfo />
       </Grid>
-      {superUser && mode === 'normal' && (
+      {user?.ressourcePermission && mode === 'normal' && (
         <>
           <Typography ml={2} py={0} variant="h6">
             Huskeliste

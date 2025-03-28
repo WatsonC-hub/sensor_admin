@@ -1,11 +1,11 @@
 import {Delete, Verified} from '@mui/icons-material';
 import BuildCircleIcon from '@mui/icons-material/BuildCircle';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
-import FunctionsIcon from '@mui/icons-material/Functions';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
+import FunctionsIcon from '@mui/icons-material/Functions';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {Box, Divider, Grid, Typography} from '@mui/material';
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useEffect} from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
 import CustomSpeedDial from '~/components/CustomSpeedDial';
@@ -25,6 +25,12 @@ import {useAppContext} from '~/state/contexts';
 import {DialAction} from '~/types';
 
 import PlotGraph from './QAGraph';
+import {useSetAtom} from 'jotai';
+import {
+  initiateConfirmTimeseriesAtom,
+  initiateSelectAtom,
+  levelCorrectionAtom,
+} from '~/state/atoms';
 
 const navIconStyle = (isSelected: boolean) => {
   return isSelected ? 'secondary.main' : 'white';
@@ -35,9 +41,9 @@ const QualityAssurance = () => {
   const [dataAdjustment, setDataAdjustment] = useAdjustmentState();
 
   const {isMobile} = useBreakpoints();
-  const [initiateSelect, setInitiateSelect] = useState(false);
-  const [levelCorrection, setLevelCorrection] = useState(false);
-  const [initiateConfirmTimeseries, setInitiateConfirmTimeseries] = useState(false);
+  const setInitiateSelect = useSetAtom(initiateSelectAtom);
+  const setLevelCorrection = useSetAtom(levelCorrectionAtom);
+  const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
 
   const speedDialActions: Array<DialAction> = [];
   useEffect(() => {
@@ -93,12 +99,7 @@ const QualityAssurance = () => {
 
   if (!isMobile) {
     return (
-      <Layout
-        initiateSelect={initiateSelect}
-        setInitiateSelect={setInitiateSelect}
-        levelCorrection={levelCorrection}
-        initiateConfirmTimeseries={initiateConfirmTimeseries}
-      >
+      <Layout>
         <Grid item tablet={1}>
           <DataToShow />
         </Grid>
@@ -108,12 +109,7 @@ const QualityAssurance = () => {
               <>
                 <Grid container gap={3} justifyContent={'center'}>
                   <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
-                    <StepWizard
-                      setLevelCorrection={setLevelCorrection}
-                      initiateConfirmTimeseries={initiateConfirmTimeseries}
-                      setInitiateSelect={setInitiateSelect}
-                      setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
-                    />
+                    <StepWizard />
                   </Grid>
                   <Grid item tablet={12} laptop={7} desktop={7} xl={7}>
                     <Box display={'flex'} flexDirection={'column'} borderRadius={4}>
@@ -134,24 +130,12 @@ const QualityAssurance = () => {
   }
 
   return (
-    <Layout
-      initiateSelect={initiateSelect}
-      setInitiateSelect={setInitiateSelect}
-      levelCorrection={levelCorrection}
-      initiateConfirmTimeseries={initiateConfirmTimeseries}
-    >
+    <Layout>
       <Box borderRadius={4} width={'100%'} m={'auto'} maxWidth={1200}>
         <Grid item mobile={12}>
           {pageToShow === qaPages.JUSTERINGER && (
             <Box display="flex" flexDirection={'column'} gap={2}>
-              {dataAdjustment !== null && (
-                <StepWizard
-                  setLevelCorrection={setLevelCorrection}
-                  initiateConfirmTimeseries={initiateConfirmTimeseries}
-                  setInitiateSelect={setInitiateSelect}
-                  setInitiateConfirmTimeseries={setInitiateConfirmTimeseries}
-                />
-              )}
+              {dataAdjustment !== null && <StepWizard />}
               <QAHistory />
               <CustomSpeedDial actions={speedDialActions} />
             </Box>
@@ -166,20 +150,10 @@ const QualityAssurance = () => {
 export default QualityAssurance;
 
 interface LayoutProps {
-  initiateSelect: boolean;
-  setInitiateSelect: (value: boolean) => void;
-  levelCorrection: boolean;
   children: ReactNode;
-  initiateConfirmTimeseries: boolean;
 }
 
-const Layout = ({
-  initiateSelect,
-  setInitiateSelect,
-  levelCorrection,
-  initiateConfirmTimeseries,
-  children,
-}: LayoutProps) => {
+const Layout = ({children}: LayoutProps) => {
   const [pageToShow, setPageToShow] = useQAPageState();
   const {isMobile} = useBreakpoints();
   const {ts_id} = useAppContext(['ts_id']);
@@ -246,13 +220,7 @@ const Layout = ({
             gap={5}
             sx={{marginBottom: 0.5, marginTop: 0.2}}
           >
-            <PlotGraph
-              ts_id={ts_id}
-              initiateSelect={initiateSelect}
-              setInitiateSelect={setInitiateSelect}
-              levelCorrection={levelCorrection}
-              initiateConfirmTimeseries={initiateConfirmTimeseries}
-            />
+            <PlotGraph />
             <Divider />
           </Box>
         </Grid>

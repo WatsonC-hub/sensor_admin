@@ -15,7 +15,7 @@ interface ExcludeRowProps {
   data: ExcludeData;
   index: number | undefined;
   isWithYValues?: boolean;
-  setOpen?: (open: boolean) => void;
+  setOpen: (open: boolean) => void;
 }
 
 const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowProps) => {
@@ -73,7 +73,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
         },
       });
     }
-    if (setOpen) setOpen(false);
+    setOpen(false);
   };
 
   // const handleDelete = () => {
@@ -150,7 +150,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
                 size="small"
                 onClick={() => {
                   reset(data);
-                  if (setOpen) setOpen(false);
+                  setOpen(false);
                 }}
               >
                 Annuller

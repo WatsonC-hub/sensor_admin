@@ -10,29 +10,29 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SensorAdmin from '~/pages/admin/SensorAdmin';
 import SensorField from '~/pages/field/SensorField';
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
-import {useAuthStore} from '~/state/store';
 
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
+import {useUser} from './features/auth/useUser';
 
 const Redirecter = () => {
   const {field} = useNavigationFunctions();
   const location = useLocation();
-  const [iotAccess, adminAccess] = useAuthStore((state) => [state.iotAccess, state.adminAccess]);
+  const user = useUser();
 
   useNotificationOverview({notifyOnChangeProps: []});
   useEffect(() => {
-    if (!iotAccess && location.pathname == '/') {
+    if (user && !user.iotAccess && location.pathname == '/') {
       // navigate('/field');
       field();
     }
-  }, [iotAccess]);
+  }, [user?.iotAccess]);
 
   useEffect(() => {
-    if (!adminAccess && location.pathname == '/') {
+    if (user && !user.adminAccess && location.pathname == '/') {
       // navigate('/field');
       field();
     }
-  }, [adminAccess]);
+  }, [user?.adminAccess]);
 
   return (
     <>

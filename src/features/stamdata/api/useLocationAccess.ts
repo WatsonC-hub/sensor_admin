@@ -1,8 +1,8 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {GetQueryOptions} from '~/queryClient';
+import {APIError} from '~/queryClient';
 import {Access, AccessTable} from '~/types';
 
 interface LocationAccessBase {
@@ -50,44 +50,42 @@ export const locationAccessDelOptions = {
   },
 };
 
-export const LocationAccessGetOptions = <TData>(
-  loc_id: number | undefined
-): GetQueryOptions<TData> => ({
-  queryKey: ['location_access', loc_id],
-  queryFn: async () => {
-    const {data} = await apiClient.get<TData>(`/sensor_field/stamdata/location_access/${loc_id}`);
+export const LocationAccessGetOptions = (loc_id: number | undefined) =>
+  queryOptions<Array<AccessTable>, APIError>({
+    queryKey: ['location_access', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/stamdata/location_access/${loc_id}`);
 
-    return data;
-  },
-  enabled: loc_id !== undefined && loc_id !== null,
-});
+      return data;
+    },
+  });
+
+export const useSearchLocationAccess = (loc_id: number | undefined, searchString: string) => {
+  const searched_location_access = useQuery({
+    queryKey: ['search_location_access', searchString],
+    queryFn: async () => {
+      let data;
+      if (searchString.trim() === '') {
+        const response = await apiClient.get<Array<Access>>(
+          `/sensor_field/stamdata/location_access/relevant_location_access/${loc_id}`
+        );
+        data = response.data;
+      } else {
+        const response = await apiClient.get<Array<Access>>(
+          `/sensor_field/stamdata/location_access/search_location_access/${loc_id}/${searchString}`
+        );
+        data = response.data;
+      }
+      return data;
+    },
+    staleTime: 10 * 1000,
+  });
+  return searched_location_access;
+};
 
 export const useLocationAccess = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
-  const get = useQuery(LocationAccessGetOptions<Array<AccessTable>>(loc_id));
-
-  const useSearchLocationAccess = (searchString: string) => {
-    const searched_location_access = useQuery({
-      queryKey: ['search_location_access', searchString],
-      queryFn: async () => {
-        let data;
-        if (searchString.trim() === '') {
-          const response = await apiClient.get<Array<Access>>(
-            `/sensor_field/stamdata/location_access/relevant_location_access/${loc_id}`
-          );
-          data = response.data;
-        } else {
-          const response = await apiClient.get<Array<Access>>(
-            `/sensor_field/stamdata/location_access/search_location_access/${loc_id}/${searchString}`
-          );
-          data = response.data;
-        }
-        return data;
-      },
-      staleTime: 10 * 1000,
-    });
-    return searched_location_access;
-  };
+  const get = useQuery(LocationAccessGetOptions(loc_id));
 
   const post = useMutation({
     ...locationAccessPostOptions,
@@ -121,5 +119,5 @@ export const useLocationAccess = (loc_id: number | undefined) => {
     },
   });
 
-  return {get, useSearchLocationAccess, post, put, del};
+  return {get, post, put, del};
 };

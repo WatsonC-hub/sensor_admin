@@ -16,10 +16,10 @@ import Autocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
+import {useUser} from '~/features/auth/useUser';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import {convertDate, toISOString} from '~/helpers/dateConverter';
 import {useAppContext} from '~/state/contexts';
-import {useAuthStore} from '~/state/store';
 
 interface AddUnitFormProps {
   udstyrDialogOpen: boolean;
@@ -43,8 +43,7 @@ export default function AddUnitForm({
   } | null>(null);
   const queryClient = useQueryClient();
   const [openCaptureDialog, setOpenCaptureDialog] = useState(false);
-
-  const superUser = useAuthStore((state) => state.superUser);
+  const user = useUser();
 
   const {
     get: {data: availableUnits, isLoading},
@@ -64,7 +63,7 @@ export default function AddUnitForm({
     ...new Set(
       availableUnits
         ?.filter((unit) => unit.sensortypeid === tstype_id)
-        ?.map((x) => (x.calypso_id == '0' ? x.terminal_id : x.calypso_id))
+        ?.map((x) => (x.calypso_id == 0 ? x.terminal_id : x.calypso_id.toString()))
     ),
   ].sort((a, b) => {
     if (typeof a == 'number' && typeof b == 'number') {
@@ -84,10 +83,11 @@ export default function AddUnitForm({
     return 0;
   });
 
-  const sensorsForCalyspoId = (id: string) =>
+  const sensorsForCalyspoId = (id: string | number) =>
     availableUnits?.filter(
       (unit) =>
-        (unit.calypso_id === id || unit.terminal_id === id) && unit.sensortypeid === tstype_id
+        (unit.calypso_id.toString() === id.toString() || unit.terminal_id === id) &&
+        unit.sensortypeid === tstype_id
     );
 
   const handleCalypsoIdNew = (
@@ -145,7 +145,7 @@ export default function AddUnitForm({
           enddate: toISOString('2099-01-01T12:00:00'),
         },
       };
-      if (superUser) {
+      if (user?.superUser) {
         const {data} = await apiClient.get(
           `/sensor_field/stamdata/check-unit-invoice/${ts_id}/${unit.unit_uuid}`
         );
@@ -203,15 +203,13 @@ export default function AddUnitForm({
         <CaptureDialog
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
-          handleScan={(data: any) => {
-            const split = data[0]['rawValue'].split('/');
-            const calypso_id = parseInt(split[split.length - 1]);
-
-            if (isNaN(calypso_id)) {
+          handleScan={(data: any, calypso_id: number) => {
+            if (calypso_id === null) {
               toast.error('Ugyldigt Calypso ID');
               setOpenCaptureDialog(false);
               return;
             }
+
             const exists = uniqueCalypsoIds.includes(calypso_id.toString());
 
             if (!exists) {

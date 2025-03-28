@@ -40,6 +40,7 @@ const LocationGroups = ({
       const {data} = await apiClient.get<Array<Group>>('/sensor_field/stamdata/location_groups');
       return data;
     },
+    staleTime: 10 * 1000,
   });
 
   return (
@@ -47,6 +48,7 @@ const LocationGroups = ({
       sx={{
         marginTop: '8px',
         marginBottom: '4px',
+        pb: 1.5,
       }}
       freeSolo
       forcePopupIcon={false}

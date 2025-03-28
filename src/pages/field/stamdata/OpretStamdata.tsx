@@ -246,7 +246,10 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       {
         location: {...getValues().location},
         timeseries: {...getValues().timeseries},
-        unit: {startdate: getValues().unit.startdate, unit_uuid: getValues().unit.unit_uuid},
+        unit: {
+          startdate: moment(getValues().unit.startdate).toISOString(),
+          unit_uuid: getValues().unit.unit_uuid,
+        },
       };
 
     if (getValues()?.timeseries.tstype_id === 1 && form['unit']) {
@@ -390,7 +393,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
             tstype_id={watchtstype_id}
             mode="normal"
           />
-          <DevTool control={formMethods.control} />
+          {import.meta.env.DEV && <DevTool control={formMethods.control} />}
         </FormProvider>
       </div>
     </>

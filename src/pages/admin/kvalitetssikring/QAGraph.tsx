@@ -1,4 +1,4 @@
-import {useSetAtom} from 'jotai';
+import {useAtom, useAtomValue, useSetAtom} from 'jotai';
 import {Layout} from 'plotly.js';
 import React, {useState} from 'react';
 import {toast} from 'react-toastify';
@@ -7,29 +7,26 @@ import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import {convertDate, currentDate, toISOString} from '~/helpers/dateConverter';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {qaSelection} from '~/state/atoms';
+import {
+  initiateConfirmTimeseriesAtom,
+  initiateSelectAtom,
+  levelCorrectionAtom,
+  qaSelection,
+} from '~/state/atoms';
 
 import useQAGraph from './hooks/useQAGraph';
+import {useAppContext} from '~/state/contexts';
 
 const initRange = [convertDate('1900-01-01', 'YYYY-MM-DDTHH:mm'), currentDate('YYYY-MM-DDTHH:mm')];
 
-interface PlotGraphProps {
-  ts_id: number;
-  initiateSelect: boolean;
-  setInitiateSelect: (select: boolean) => void;
-  levelCorrection: boolean;
-  initiateConfirmTimeseries: boolean;
-}
+export default function PlotGraph() {
+  const {ts_id} = useAppContext(['ts_id']);
 
-export default function PlotGraph({
-  ts_id,
-  initiateSelect,
-  setInitiateSelect,
-  levelCorrection,
-  initiateConfirmTimeseries,
-}: PlotGraphProps) {
   const setSelection = useSetAtom(qaSelection);
   const [xRange, setXRange] = useState(initRange);
+  const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
+  const levelCorrection = useAtomValue(levelCorrectionAtom);
+  const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
 
   const {data, shapes, annotations, graphData} = useQAGraph(ts_id, xRange);
 

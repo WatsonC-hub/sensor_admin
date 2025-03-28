@@ -8,10 +8,10 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
 import FormToggleSwitch from '~/components/FormToggleSwitch';
+import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {useAuthStore} from '~/state/store';
 
 interface FilterOptionsProps {
   filters: Filter;
@@ -20,11 +20,7 @@ interface FilterOptionsProps {
 }
 
 const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
-  const [boreholeAccess, iotAccess, superUser] = useAuthStore((state) => [
-    state.boreholeAccess,
-    state.iotAccess,
-    state.superUser,
-  ]);
+  const user = useUser();
 
   const formMethods = useForm<Filter>({values: filters});
 
@@ -35,7 +31,7 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
   const reset = () => {
     const mapFilter: Filter = {
       ...defaultMapFilter,
-      sensor: {...defaultMapFilter.sensor, isCustomerService: superUser ? false : true},
+      sensor: {...defaultMapFilter.sensor, isCustomerService: user?.superUser ? false : true},
     };
 
     formMethods.reset(mapFilter);
@@ -53,8 +49,8 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
       />
       <Divider />
       <Grid container spacing={2}>
-        {boreholeAccess && (
-          <Grid item sm={iotAccess ? 6 : 12} flexGrow={1}>
+        {user?.boreholeAccess && (
+          <Grid item sm={user?.iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">
               <u>Boringer</u>
             </Typography>
@@ -72,10 +68,10 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
             />
           </Grid>
         )}
-        {iotAccess && (
+        {user?.iotAccess && (
           <Grid
             item
-            sm={boreholeAccess ? 6 : 12}
+            sm={user?.boreholeAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}
@@ -123,7 +119,7 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
                 </Typography>
               }
             />
-            {superUser && (
+            {user?.superUser && (
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
                 label="Vis kun enkeltmålinger"

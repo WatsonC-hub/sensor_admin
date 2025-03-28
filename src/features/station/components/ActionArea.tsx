@@ -1,9 +1,4 @@
-import {
-  AddCircle,
-  ConstructionRounded,
-  PhotoLibraryRounded,
-  PlaylistAddCheck,
-} from '@mui/icons-material';
+import {AddCircle, PhotoLibraryRounded, PlaylistAddCheck} from '@mui/icons-material';
 import RuleIcon from '@mui/icons-material/Rule';
 import {startCase} from 'lodash';
 
@@ -16,7 +11,7 @@ import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters
 import {useAppContext} from '~/state/contexts';
 
 export default function ActionArea() {
-  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {data: ts_list} = useStationList(loc_id);
   const {data: metadata} = useTimeseriesData(ts_id);
   const isCalculated = metadata?.calculated ?? false;
@@ -60,14 +55,14 @@ export default function ActionArea() {
       value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
       color: navIconStyle(pageToShow === stationPages.BILLEDER),
-    },
-    {
-      text: startCase(stationPages.STAMDATA),
-      value: stationPages.STAMDATA,
-      icon: <ConstructionRounded />,
-      color: navIconStyle(pageToShow === stationPages.STAMDATA),
-      isCalculated: isCalculated,
     }
+    // {
+    //   text: startCase(stationPages.STAMDATA),
+    //   value: stationPages.STAMDATA,
+    //   icon: <ConstructionRounded />,
+    //   color: navIconStyle(pageToShow === stationPages.STAMDATA),
+    //   isCalculated: isCalculated,
+    // }
   );
 
   return (

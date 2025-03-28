@@ -17,6 +17,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {Image} from '~/types';
 
 import GenericCard from './GenericCard';
+import {useAppContext} from '~/state/contexts';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 type ImageCardProps = {
   image: Image;
@@ -25,10 +27,20 @@ type ImageCardProps = {
 };
 
 function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
+  const {loc_id, boreholeno} = useAppContext([], ['loc_id', 'boreholeno']);
+  const {
+    location_permissions,
+    borehole_permission_query: {data: permissions},
+  } = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const imageUrl = `/static/images/${image.imageurl}?format=auto&width=${isMobile ? 300 : 480}&height=${isMobile ? 300 : 480}`;
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const isLocation = loc_id !== undefined;
+  const disabled =
+    (location_permissions === 'edit' && isLocation) ||
+    (boreholeno !== undefined && permissions?.borehole_plantids?.boreholenos?.includes(boreholeno));
 
   function handleDelete() {
     deleteMutation.mutateAsync(
@@ -54,7 +66,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         width: 'fit-content',
         height: 'fit-content',
       }}
-      id={image.gid.toString()}
+      key={image.gid.toString()}
     >
       <DeleteAlert
         title="Vil du slette billedet?"
@@ -103,7 +115,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
       {(image.loc_id || image.boreholeno) && (
         <CardActions sx={{display: 'flex', justifyContent: 'end'}}>
           <Button
-            disabled={deleteMutation.isPending}
+            disabled={deleteMutation.isPending || !disabled}
             onClick={() => setDialogOpen(true)}
             size="small"
             bttype="tertiary"
@@ -112,7 +124,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
               <CircularProgress />
             ) : (
               <Box display="flex" alignItems="center" gap={1}>
-                <Delete></Delete>
+                <Delete />
                 <Typography variant="body2" fontSize={14}>
                   Slet
                 </Typography>
@@ -120,7 +132,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
             )}
           </Button>
           <Button
-            disabled={deleteMutation.isPending}
+            disabled={deleteMutation.isPending || !disabled}
             onClick={() => handleEdit(image)}
             size="small"
             bttype="primary"

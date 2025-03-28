@@ -61,9 +61,6 @@ export default function StationContactInfo({
           required
           fullWidth
           disabled={(!isEditing && isUser) || (isUser && isEditing)}
-          sx={{
-            mb: 2,
-          }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -86,9 +83,6 @@ export default function StationContactInfo({
                 </IconButton>
               </InputAdornment>
             ),
-          }}
-          sx={{
-            mb: 2,
           }}
         />
       </Grid>
@@ -114,9 +108,6 @@ export default function StationContactInfo({
               </InputAdornment>
             ),
           }}
-          sx={{
-            mb: 2,
-          }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -127,7 +118,6 @@ export default function StationContactInfo({
           disabled={tableModal}
           select
           fullWidth
-          sx={{mb: 2}}
           onChangeCallback={(value) => {
             if (typeof value == 'number') return;
             const role = contactRoles?.find(
@@ -160,7 +150,6 @@ export default function StationContactInfo({
           select
           required
           fullWidth
-          sx={{mb: 2}}
         >
           <MenuItem value={'-1'} key={'-1'}>
             Vælg type
@@ -177,9 +166,6 @@ export default function StationContactInfo({
           multiline
           placeholder="Eks. kan kun kontaktes mellem 9-10 på telefonnummer..."
           fullWidth
-          sx={{
-            mb: 2,
-          }}
         />
       </Grid>
     </Grid>

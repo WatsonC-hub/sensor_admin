@@ -4,13 +4,12 @@ import {Grid, Link, Typography} from '@mui/material';
 import React from 'react';
 
 import ChoiseCard from '~/components/ChoiseCard';
-import GenericCard from '~/components/GenericCard';
 import NavBar from '~/components/NavBar';
+import {useUser} from '~/features/auth/useUser';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {useAuthStore} from '~/state/store';
 
 const AdminChooser = () => {
-  const adminAccess = useAuthStore((state) => state.adminAccess);
+  const {adminAccess} = useUser();
   const {field} = useNavigationFunctions();
 
   return (
@@ -101,7 +100,6 @@ const AdminChooser = () => {
           />
         </Grid> */}
       </Grid>
-      <GenericCard />
     </>
   );
 };

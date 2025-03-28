@@ -6,7 +6,7 @@ import ExtendedAutocomplete from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {initialLocationAccessData} from '~/consts';
-import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
+import {useSearchContact} from '~/features/stamdata/api/useContactInfo';
 import {AdgangsForhold} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {AccessType} from '~/helpers/EnumHelper';
 import {ContactInfo} from '~/types';
@@ -24,8 +24,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
   const {reset, setValue} = useFormContext<AdgangsForhold>();
   const [search, setSearch] = useState<string>('');
 
-  const {useSearchContact} = useContactInfo(loc_id);
-  const {data} = useSearchContact(search);
+  const {data} = useSearchContact(loc_id, search);
 
   const navnLabel = watch('type');
   const location_access_id = watch('id');
@@ -42,7 +41,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                   reset(initialLocationAccessData);
                   setValue('id', -1);
                 }
-                setCreateNew && setCreateNew(!createNew);
+                if (setCreateNew) setCreateNew(!createNew);
               }}
             >
               {createNew ? 'Annuller' : 'Påbegynd'} oprettelse af nøgle/kode

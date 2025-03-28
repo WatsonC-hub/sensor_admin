@@ -53,7 +53,7 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
         },
       });
     }
-    if (setOpen) setOpen();
+    setOpen();
   };
 
   return (
@@ -96,7 +96,7 @@ const LevelCorrectionRow = ({data, index, setOpen}: LevelCorrectionRowProps) => 
                 size="small"
                 onClick={() => {
                   reset(data);
-                  if (setOpen) setOpen();
+                  setOpen();
                 }}
               >
                 Annuller

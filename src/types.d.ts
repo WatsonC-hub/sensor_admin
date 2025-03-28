@@ -219,7 +219,7 @@ export type ContactTable = {
   id: string;
   navn: string;
   telefonnummer: string | null;
-  email: string;
+  email: string | null;
   contact_role: number;
   comment?: string;
   user_id?: string | null;

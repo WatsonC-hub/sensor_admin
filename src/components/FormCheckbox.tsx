@@ -64,7 +64,7 @@ const FormCheckbox = <TFieldValues extends FieldValues>({
                       onChange(false);
                       break;
                   }
-                  onChangeCallback && onChangeCallback(e);
+                  if (onChangeCallback) onChangeCallback(e);
                   // onChange(e);
                 }}
                 // error={!!get(errors, name)}

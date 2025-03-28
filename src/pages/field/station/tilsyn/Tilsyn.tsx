@@ -1,9 +1,12 @@
 import {PlaylistAddRounded} from '@mui/icons-material';
-import {Box} from '@mui/material';
+import {Box, Divider} from '@mui/material';
 import {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
+import usePermissions from '~/features/permissions/api/usePermissions';
+import PlotGraph from '~/features/station/components/StationGraph';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
 import TilsynForm from '~/features/tilsyn/components/TilsynForm';
 import TilsynTable from '~/features/tilsyn/components/TilsynTable';
@@ -15,7 +18,7 @@ import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
 
 export default function Tilsyn() {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const [showForm, setShowForm] = useShowFormState();
   const {isTouch, isLaptop} = useBreakpoints();
   const initialData: TilsynItem = {
@@ -26,6 +29,11 @@ export default function Tilsyn() {
     tilsyn: false,
     user_id: null,
   };
+
+  const {
+    feature_permission_query: {data: permissions},
+    location_permissions,
+  } = usePermissions(loc_id);
 
   const formMethods = useForm<TilsynItem>({defaultValues: initialData});
 
@@ -82,25 +90,36 @@ export default function Tilsyn() {
   }, [ts_id]);
 
   return (
-    <Box>
-      <FormProvider {...formMethods}>
-        <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
-          {showForm === true && (
-            <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
-          )}
-        </Box>
-      </FormProvider>
-      <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
-        <TilsynTable handleEdit={handleEdit} handleDelete={handleDelete} />
-        <FabWrapper
-          icon={<PlaylistAddRounded />}
-          text={'Tilføj ' + stationPages.TILSYN}
-          onClick={() => {
-            setShowForm(true);
-          }}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        />
+    <>
+      <Box>
+        <PlotGraph key={'tilsyn' + ts_id} />
       </Box>
-    </Box>
+      <Divider />
+      <StationPageBoxLayout>
+        <FormProvider {...formMethods}>
+          <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
+            {showForm === true && (
+              <TilsynForm handleServiceSubmit={handleServiceSubmit} cancel={resetFormData} />
+            )}
+          </Box>
+        </FormProvider>
+        <Box display={'flex'} flexDirection={'column'} gap={isTouch || isLaptop ? 8 : undefined}>
+          <TilsynTable
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+          />
+        </Box>
+      </StationPageBoxLayout>
+      <FabWrapper
+        icon={<PlaylistAddRounded />}
+        text={'Tilføj ' + stationPages.TILSYN}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
+    </>
   );
 }

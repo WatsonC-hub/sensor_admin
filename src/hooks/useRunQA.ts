@@ -16,7 +16,7 @@ export const useRunQA = (ts_id: number | undefined) => {
       const {status} = await apiClient.get(`/sensor_admin/rerun_qa/poll/${ts_id}`);
       return status;
     },
-    enabled: true && ts_id !== undefined,
+    enabled: ts_id !== undefined,
     refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
   });

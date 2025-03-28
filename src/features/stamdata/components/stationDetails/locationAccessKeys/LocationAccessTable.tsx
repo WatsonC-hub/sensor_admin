@@ -8,6 +8,8 @@ import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {initialLocationAccessData} from '~/consts';
+import {useUser} from '~/features/auth/useUser';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useLocationAccess} from '~/features/stamdata/api/useLocationAccess';
 import LocationAccessFormDialog from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccessFormDialog';
 import {AdgangsforholdTable} from '~/features/stamdata/components/stationDetails/zodSchemas';
@@ -44,7 +46,10 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
   } = useFormContext<AdgangsforholdTable>();
   const [openContactInfoDialog, setOpenContactInfoDialog] = useState<boolean>(false);
   const {loc_id} = useAppContext(['loc_id']);
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
   const {isMobile} = useBreakpoints();
+  const user = useUser();
 
   const {get} = useLocationAccess(loc_id);
 
@@ -158,7 +163,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
           }
         : {
             onClick: (e) => {
-              if ((e.target as HTMLElement).innerText) {
+              if ((e.target as HTMLElement).innerText && !disabled) {
                 reset(row.original);
                 table.setEditingRow(row);
               }
@@ -184,7 +189,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
         onDeleteBtnClick={() => {
           onDeleteBtnClick(row.original.id, setDialogOpen, setLocationAccessID);
         }}
-        canEdit={true}
+        disabled={!user?.contactAndKeysPermission || disabled}
       />
     ),
     renderToolbarInternalActions: ({table}) => {

@@ -14,7 +14,7 @@ import useStationGraphHook from '../hooks/useStationGraphHook';
 const initRange = [convertDate('1900-01-01', 'YYYY-MM-DDTHH:mm'), currentDate('YYYY-MM-DDTHH:mm')];
 
 interface PlotGraphProps {
-  dynamicMeasurement: Array<string | number> | undefined;
+  dynamicMeasurement?: Array<string | number>;
 }
 
 export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {

@@ -11,6 +11,7 @@ interface NavigationItem<T> {
   value: T;
   icon: React.ReactElement<SvgIconProps>;
   color: string;
+  display?: boolean;
   isCalculated?: boolean;
   handlePrefetch?: () => void;
 }
@@ -39,7 +40,7 @@ const CustomBottomNavigation = <T extends string>({
   const visibleItems = items.slice(0, threshold);
 
   return (
-    <Box sx={{mt: isMobile ? 15 : 8, zIndex: 3}}>
+    <Box sx={{mt: isMobile ? 15 : 8, zIndex: (theme) => theme.zIndex.drawer + 8}}>
       <Paper sx={{position: 'fixed', bottom: 0, width: '100%'}} elevation={3}>
         <BottomNavigation
           value={pageToShow}
@@ -51,26 +52,28 @@ const CustomBottomNavigation = <T extends string>({
             backgroundColor: 'primary.main',
           }}
         >
-          {visibleItems.map((item) => {
-            if (
-              item.isCalculated !== undefined &&
-              item.isCalculated &&
-              item.value === stationPages.TILSYN
-            ) {
-              return;
-            }
+          {visibleItems
+            .filter((item) => item.display || item.display === undefined)
+            .map((item) => {
+              if (
+                item.isCalculated !== undefined &&
+                item.isCalculated &&
+                item.value === stationPages.TILSYN
+              ) {
+                return;
+              }
 
-            return (
-              <BottomNavigationAction
-                key={item.value}
-                label={<CustomBottomNavigationActionLabel {...item} />}
-                value={item.value}
-                sx={bottomNavStyle}
-                onFocus={item.handlePrefetch}
-                onMouseEnter={item.handlePrefetch}
-              />
-            );
-          })}
+              return (
+                <BottomNavigationAction
+                  key={item.value}
+                  label={<CustomBottomNavigationActionLabel {...item} />}
+                  value={item.value}
+                  sx={bottomNavStyle}
+                  onFocus={item.handlePrefetch}
+                  onMouseEnter={item.handlePrefetch}
+                />
+              );
+            })}
         </BottomNavigation>
       </Paper>
     </Box>

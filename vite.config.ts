@@ -1,6 +1,5 @@
 import strip from '@rollup/plugin-strip';
 import react from '@vitejs/plugin-react';
-import {visualizer} from 'rollup-plugin-visualizer';
 import {defineConfig} from 'vite';
 import {VitePWA, VitePWAOptions} from 'vite-plugin-pwa';
 import svgrPlugin from 'vite-plugin-svgr';
@@ -104,7 +103,7 @@ export default defineConfig({
       // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
       apply: 'build',
     },
-    visualizer({filename: 'stats.html', open: true}),
+    // visualizer({filename: 'stats.html', open: true}),
     // removeConsole(),
     // sentryVitePlugin(sentryOptions),
   ],
@@ -124,11 +123,12 @@ export default defineConfig({
             } else if (id.includes('leaflet')) {
               return 'vendor_leaflet';
             } else if (id.includes('react')) {
-              return 'vendor_react';
+              return null;
             }
 
             return 'vendor'; // all other package goes here
           }
+          return null;
         },
       },
     },

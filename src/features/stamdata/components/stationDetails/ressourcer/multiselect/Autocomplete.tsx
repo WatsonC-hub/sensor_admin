@@ -7,6 +7,7 @@ import {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {useRessourcer} from '~/features/stamdata/api/useRessourcer';
 import type {
   MultiSelectProps,
@@ -30,6 +31,9 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
   const [selected, setSelected] = useState<Array<Ressourcer> | undefined>(value);
   const {trigger, watch} = useFormContext();
 
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
+
   const [collapsed, setCollapsed] = useState<Array<string>>([]);
 
   const ressourcer = watch('ressourcer');
@@ -42,13 +46,6 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
 
   useEffect(() => {
     if (value && options && options.length > 0 && !related) {
-      // if (value.length === 0) {
-      //   // const test = options.filter(
-      //   //   (ressource) =>
-      //   //     (ressource.loctype_id && ressource.loctype_id.includes(loctype_id)) ||
-      //   //     (ressource.tstype_id && ressource.tstype_id.includes(tstype_id))
-      //   // );
-      // }
       setSelected(value);
     }
   }, [options, value, related]);
@@ -87,6 +84,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
         <>
           <Autocomplete
             multiple
+            disabled={disabled}
             id="checkboxes-tags-demo"
             options={
               (options && options.sort((a, b) => b.kategori.localeCompare(a.kategori))) ?? []
@@ -94,7 +92,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             value={selected}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
-            PopperComponent={(props) => <Popper {...props} placement="top" />}
+            PopperComponent={(props) => <Popper {...props} placement="bottom" />}
             componentsProps={{
               popper: {
                 modifiers: [
@@ -147,7 +145,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
               setValue(newValue);
             }}
           />
-          <Button bttype="primary" onClick={handleSave} sx={{mt: 5}}>
+          <Button bttype="primary" disabled={disabled} onClick={handleSave} sx={{mt: 5}}>
             Gem huskeliste
           </Button>
         </>

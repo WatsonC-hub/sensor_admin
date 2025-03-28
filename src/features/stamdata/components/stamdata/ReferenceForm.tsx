@@ -1,8 +1,10 @@
-import {Box} from '@mui/material';
+import {AddCircle} from '@mui/icons-material';
+import FabWrapper from '~/components/FabWrapper';
 
 import MaalepunktForm from '~/components/MaalepunktForm';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
+import usePermissions from '~/features/permissions/api/usePermissions';
 import {convertDate, currentDate, toISOString} from '~/helpers/dateConverter';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -11,7 +13,7 @@ import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 
 export default function ReferenceForm() {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
@@ -21,6 +23,13 @@ export default function ReferenceForm() {
     elevation: null,
     mp_description: '',
   });
+
+  const {
+    feature_permission_query: {data: permissions},
+    location_permissions,
+  } = usePermissions(loc_id);
+
+  const disabled = permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit';
 
   const {
     get: {data: watlevmp},
@@ -42,7 +51,11 @@ export default function ReferenceForm() {
 
     if (mpData.gid === -1) {
       const payload = {
-        data: mpData,
+        data: {
+          ...mpData,
+          startdate: moment(mpData.startdate).toISOString(),
+          enddate: moment(mpData.enddate).toISOString(),
+        },
         path: `${ts_id}`,
       };
       postWatlevmp.mutate(payload, mutationOptions);
@@ -79,35 +92,37 @@ export default function ReferenceForm() {
   return (
     <>
       {showForm && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-          }}
-        >
-          <MaalepunktForm
-            formData={mpData}
-            changeFormData={changeMpData}
-            handleSubmit={handleMaalepunktSubmit}
-            handleCancel={handleMpCancel}
-          />
-        </Box>
+        <MaalepunktForm
+          formData={mpData}
+          changeFormData={changeMpData}
+          handleSubmit={handleMaalepunktSubmit}
+          handleCancel={handleMpCancel}
+        />
       )}
-      <Box display="flex" justifyContent={{sm: 'center'}}>
-        {isMobile ? (
-          <MaalepunktTableMobile
-            data={watlevmp}
-            handleEdit={handleEdit}
-            handleDelete={handleDeleteMaalepunkt}
-          />
-        ) : (
-          <MaalepunktTableDesktop
-            data={watlevmp}
-            handleEdit={handleEdit}
-            handleDelete={handleDeleteMaalepunkt}
-          />
-        )}
-      </Box>
+      {isMobile ? (
+        <MaalepunktTableMobile
+          data={watlevmp}
+          handleEdit={handleEdit}
+          handleDelete={handleDeleteMaalepunkt}
+          disabled={disabled}
+        />
+      ) : (
+        <MaalepunktTableDesktop
+          data={watlevmp}
+          handleEdit={handleEdit}
+          handleDelete={handleDeleteMaalepunkt}
+          disabled={disabled}
+        />
+      )}
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj målepunkt"
+        disabled={disabled}
+        onClick={() => {
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
     </>
   );
 }

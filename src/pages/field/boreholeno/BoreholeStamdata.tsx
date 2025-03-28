@@ -81,11 +81,9 @@ const BoreholeStamdata = () => {
     toast.error('Der skete en fejl', {autoClose: 2000});
   };
 
-  const handleScan = async (data: any) => {
-    const value = data[0]['rawValue'];
-    if (value.includes('www.sensor.watsonc.dk/') || value.includes('https://sensor.watsonc.dk/')) {
-      const split = value.split('/');
-      setCalypso_id(Number(split[split.length - 1]));
+  const handleScan = async (data: any, calypso_id: number | null) => {
+    if (calypso_id) {
+      setCalypso_id(calypso_id);
       setOpenCamera(false);
       setOpenDialog(true);
     } else {

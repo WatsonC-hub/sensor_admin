@@ -4,21 +4,21 @@ import {Box, IconButton} from '@mui/material';
 import React from 'react';
 
 interface Props {
-  canEdit?: boolean;
+  disabled?: boolean;
   handleEdit: () => void;
   onDeleteBtnClick: () => void;
 }
 
-const RenderActions = ({handleEdit, onDeleteBtnClick, canEdit}: Props) => {
+const RenderActions = ({handleEdit, onDeleteBtnClick, disabled}: Props) => {
   return (
     <Box margin="0 auto" display="flex" justifyContent="flex-end">
-      <IconButton edge="end" onClick={handleEdit} disabled={!canEdit} size="large">
+      <IconButton edge="end" onClick={handleEdit} disabled={disabled} size="large">
         <EditIcon />
       </IconButton>
       <IconButton
         edge="end"
         onClick={onDeleteBtnClick}
-        disabled={!canEdit}
+        disabled={disabled}
         size="large"
         style={{marginRight: '2px'}}
       >

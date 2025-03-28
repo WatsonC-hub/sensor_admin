@@ -74,7 +74,7 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
     },
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
-    staleTime: 10,
+    staleTime: 10 * 1000,
     ...options,
   });
   return query;

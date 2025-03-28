@@ -1,10 +1,9 @@
 import {CssBaseline, StyledEngineProvider, ThemeProvider} from '@mui/material';
 import * as Sentry from '@sentry/react';
-import {BrowserTracing} from '@sentry/tracing';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
 import {PersistQueryClientProvider} from '@tanstack/react-query-persist-client';
 import {NuqsAdapter} from 'nuqs/adapters/react';
-import React from 'react';
+import * as React from 'react';
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
@@ -23,7 +22,7 @@ import '~/index.css';
 if (import.meta.env.PROD) {
   Sentry.init({
     dsn: 'https://bed215865bd94af0a00cf106f9e990b0@o4504178973474816.ingest.sentry.io/4504178982715392',
-    integrations: [new BrowserTracing()],
+    integrations: [Sentry.browserTracingIntegration()],
     environment: import.meta.env.VITE_ENVIRONMENT,
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.

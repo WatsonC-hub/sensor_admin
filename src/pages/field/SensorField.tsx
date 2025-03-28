@@ -33,10 +33,7 @@ function SensorField() {
     setOpen(false);
   };
 
-  const handleScan = async (data: any) => {
-    const split = data[0]['rawValue'].split('/');
-    const calypso_id = split[split.length - 1];
-
+  const handleScan = async (data: any, calypso_id: number | null) => {
     const options = {replace: true};
 
     if (!calypso_id) {
