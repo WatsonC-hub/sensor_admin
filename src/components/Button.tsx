@@ -1,6 +1,6 @@
 import type {ButtonProps} from '@mui/material';
 import MuiButton from '@mui/material/Button';
-import {merge} from 'lodash';
+import {mergeAll} from 'ramda';
 
 interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
   bttype: 'primary' | 'secondary' | 'tertiary' | 'link';
@@ -9,7 +9,7 @@ interface MyButtonProps extends Omit<ButtonProps, 'variant'> {
 }
 
 const Button = ({bttype, children, ...props}: MyButtonProps) => {
-  let sx = {};
+  let sx: object | null | undefined = {};
   if (bttype === 'primary') {
     sx = {
       textTransform: 'initial',
@@ -38,7 +38,7 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
     };
   }
 
-  sx = merge(sx, props.sx);
+  sx = mergeAll([sx, props.sx]);
 
   return (
     <MuiButton {...props} variant={bttype == 'link' ? 'text' : 'outlined'} sx={sx}>

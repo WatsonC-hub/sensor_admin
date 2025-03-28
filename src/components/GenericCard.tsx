@@ -1,5 +1,6 @@
-import {Card, CardProps, SxProps} from '@mui/material';
-import {merge} from 'lodash';
+import {Theme, Card, CardProps, SxProps} from '@mui/material';
+
+import {mergeAll} from 'ramda';
 import React, {ReactElement, useState} from 'react';
 
 type Props = CardProps & {
@@ -29,11 +30,11 @@ const GenericCard = ({
     setShadow(shadowClick);
   };
 
-  let sx: SxProps = {
+  let sx: SxProps<Theme> | undefined = {
     boxShadow: shadow,
   };
 
-  sx = merge(sx, props.sx);
+  sx = mergeAll([sx, props.sx]);
 
   return (
     <Card

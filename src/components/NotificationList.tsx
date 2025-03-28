@@ -9,7 +9,7 @@ import React, {useState} from 'react';
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/components/UpdateNotificationModal';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import {Notification, useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
@@ -19,14 +19,14 @@ const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
 
   let loc_id = undefined;
   const {markAsDone} = useTaskMutation();
 
   const {data, isPending} = useNotificationOverview();
-  const handleClick = (event) => {
+  const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -52,7 +52,7 @@ const NotificationList = () => {
     setUpdateModalOpen(false);
   };
 
-  const handleMarkAsDone = (notification) => {
+  const handleMarkAsDone = (notification: Notification) => {
     markAsDone.mutate({
       path: ts_id,
       data: {
@@ -80,15 +80,15 @@ const NotificationList = () => {
     return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));
   });
   const concat = mapped?.concat(manual_tasks ?? []);
-  const notifications = sortBy(concat, (item) => item.dato).reverse();
+  const notifications = sortBy(concat, (item) => item?.dato).reverse();
 
   // Find index of max flag in notificaitons
   const maxFlagIndex = notifications?.reduce(
-    (iMax, x, i, arr) => (x.flag > arr[iMax].flag ? i : iMax),
+    (iMax, x, i, arr) => (x?.flag && arr?.[iMax]?.flag && x?.flag > arr?.[iMax]?.flag ? i : iMax),
     0
   );
 
-  const badgeColor = getColor(notifications[maxFlagIndex]);
+  const badgeColor = getColor(notifications[maxFlagIndex]!);
 
   return (
     <div>
@@ -134,7 +134,7 @@ const NotificationList = () => {
         </MenuItem>
         {isPending && <MenuItem>Indlæser...</MenuItem>}
         {notifications?.map((notification, index) => {
-          const splitted = notification.ts_name.split(notification.loc_name);
+          const splitted = notification?.ts_name.split(notification.loc_name);
           return (
             <MenuItem key={index} sx={{gap: 0.5}}>
               <ListItemIcon
@@ -142,18 +142,18 @@ const NotificationList = () => {
                   fontSize: '1.5rem',
                 }}
               >
-                <NotificationIcon iconDetails={notification} />
+                <NotificationIcon iconDetails={notification!} />
               </ListItemIcon>
               <ListItemText
-                primary={notification.opgave}
+                primary={notification?.opgave}
                 secondary={
-                  splitted[splitted.length - 1].replace('-', '').trim() +
+                  splitted?.[splitted.length - 1].replace('-', '').trim() +
                   ' - ' +
-                  notification.dato.slice(0, 10)
+                  notification?.dato?.slice(0, 10)
                 }
               />
               {/* <Typography variant="caption">{}</Typography> */}
-              {notification.notification_id == 0 && (
+              {notification?.notification_id == 0 && (
                 <IconButton
                   sx={{
                     pointerEvents: 'auto',
@@ -170,7 +170,7 @@ const NotificationList = () => {
                 }}
                 aria-label="Edit task"
                 onClick={() => {
-                  setSelectedNotification(notification);
+                  setSelectedNotification(notification!);
                   openUpdateModal();
                 }}
               >
@@ -185,7 +185,7 @@ const NotificationList = () => {
         <UpdateNotificationModal
           open={isUpdateModalOpen}
           closeModal={closeUpdateModal}
-          notification={selectedNotification}
+          notification={selectedNotification!}
         />
       )}
     </div>
