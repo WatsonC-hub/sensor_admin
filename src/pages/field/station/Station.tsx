@@ -1,6 +1,6 @@
 import AddIcon from '@mui/icons-material/Add';
 import {Box, Divider, Typography} from '@mui/material';
-import React, {ChangeEvent, createRef, ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
 import NotificationList from '~/components/NotificationList';
@@ -14,7 +14,6 @@ import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import PlotGraph from '~/features/station/components/StationGraph';
-import {currentDate} from '~/helpers/dateConverter';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';

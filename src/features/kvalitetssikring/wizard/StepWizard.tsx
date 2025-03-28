@@ -18,7 +18,7 @@ import WizardLevelCorrection from './WizardLevelCorrection';
 import WizardValueBounds from './WizardValueBounds';
 
 const StepWizard = () => {
-  const [dataAdjustment] = useQueryState('adjust', parseAsStringLiteral(qaAdjustmentLiteral));
+  const [dataAdjustment] = useAdjustmentState();
   const [selection, setSelection] = useAtom(qaSelection);
   const {isMobile} = useBreakpoints();
   const setInitiateSelect = useSetAtom(initiateSelectAtom);

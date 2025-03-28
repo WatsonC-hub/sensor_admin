@@ -18,7 +18,7 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import LocationForm from '~/features/stamdata/components/stamdata/LocationForm';
 import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
-import {convertDate, currentDate} from '~/helpers/dateConverter';
+import {convertDate, currentDate, toISOString} from '~/helpers/dateConverter';
 import {locationSchema, metadataSchema, timeseriesSchema} from '~/helpers/zodSchemas';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useCreateTabState} from '~/hooks/useQueryStateParameters';
@@ -247,7 +247,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
         location: {...getValues().location},
         timeseries: {...getValues().timeseries},
         unit: {
-          startdate: moment(getValues().unit.startdate).toISOString(),
+          startdate: toISOString(getValues().unit.startdate),
           unit_uuid: getValues().unit.unit_uuid,
         },
       };

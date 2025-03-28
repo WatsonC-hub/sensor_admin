@@ -39,9 +39,6 @@ export default function ReferenceForm() {
   } = useMaalepunkt();
 
   const handleMaalepunktSubmit = () => {
-    mpData.startdate = toISOString(mpData.startdate);
-    mpData.enddate = toISOString(mpData.enddate);
-
     const mutationOptions = {
       onSuccess: () => {
         resetMpData();
@@ -53,8 +50,8 @@ export default function ReferenceForm() {
       const payload = {
         data: {
           ...mpData,
-          startdate: moment(mpData.startdate).toISOString(),
-          enddate: moment(mpData.enddate).toISOString(),
+          startdate: toISOString(mpData.startdate),
+          enddate: toISOString(mpData.enddate),
         },
         path: `${ts_id}`,
       };

@@ -31,7 +31,7 @@ const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
   const disabled = location_permissions !== 'edit';
 
   const {data, isPending} = useUnitHistory();
-  const mode = data && data.length > 0 && moment(data?.[0].slutdato) > moment(new Date());
+  const mode = data && data.length > 0 && isAfter(data?.[0].slutdato, convertDate());
   const fabText = mode ? 'Hjemtag udstyr' : 'Tilføj udstyr';
 
   // const [selected, setSelected] = useState<number | ''>(data?.[0]?.gid ?? '');

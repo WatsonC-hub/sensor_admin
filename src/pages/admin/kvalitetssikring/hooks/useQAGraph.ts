@@ -63,7 +63,7 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
       );
       return data;
     },
-    enabled: dataToShow['Nedbør'] && edgeDates !== undefined,
+    enabled: dataToShow['Nedbør'] && edgeDates?.firstDate !== null,
     refetchOnWindowFocus: false,
   });
   const xControl = controlData?.map((d) => d.timeofmeas);

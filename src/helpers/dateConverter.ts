@@ -1,7 +1,3 @@
-/* 
-Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
-*/
-
 import dayjs, {ManipulateType, OpUnitType, QUnitType} from 'dayjs';
 import dayJsIsSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import minMax from 'dayjs/plugin/minMax';

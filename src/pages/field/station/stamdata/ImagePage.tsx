@@ -5,7 +5,7 @@ import React, {ChangeEvent, createRef, useState} from 'react';
 import FabWrapper from '~/components/FabWrapper';
 import Images from '~/components/Images';
 import SaveImageDialog from '~/components/SaveImageDialog';
-import {currentDate} from '~/helpers/dateConverter';
+import {convertDate, currentDate} from '~/helpers/dateConverter';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
@@ -36,7 +36,7 @@ const ImagePage = () => {
       type: loc_id?.toString(),
       comment: '',
       public: false,
-      date: moment(new Date()).format('YYYY-MM-DD HH:mm'),
+      date: convertDate(undefined, 'YYYY-MM-DD HH:mm'),
     });
     setOpenSave(true);
   };
