@@ -1,13 +1,14 @@
 import {Box, Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
-import {startCase} from 'lodash';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
+import {compose, concat, head, join, map, split, tail, toLower, toUpper} from 'ramda';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useFormContext} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
+import {toTitleCase} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useContactInfo} from '~/features/stamdata/api/useContactInfo';
@@ -74,9 +75,9 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
         accessorFn: (row) => {
           switch (row.contact_type) {
             case ContactInfoType.Lokation:
-              return startCase(ContactInfoType.Lokation);
+              return toTitleCase(ContactInfoType.Lokation);
             case ContactInfoType.Projekt:
-              return startCase(ContactInfoType.Projekt);
+              return toTitleCase(ContactInfoType.Projekt);
             default:
               return '';
           }

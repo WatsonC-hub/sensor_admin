@@ -1,3 +1,5 @@
+import {map, concat, toUpper, head, toLower, tail, join, split, compose} from 'ramda';
+
 let mapToken: string;
 
 if (import.meta.env.PROD) {
@@ -164,3 +166,6 @@ export const httpStatusDescriptions = {
   '503': 'Service utilgængelig - Serveren er midlertidigt nede',
   '504': 'Forbindelsen tog for lang tid',
 };
+
+const capitalizeWords = map((s: string) => concat(toUpper(head(s)!), toLower(tail(s))));
+export const toTitleCase = compose(join(' '), capitalizeWords, split(' '));

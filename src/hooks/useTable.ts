@@ -1,6 +1,5 @@
 // A hook that returns whether the current screen size is mobile, tablet or desktop.
 import {UseQueryResult} from '@tanstack/react-query';
-import {merge, assign} from 'lodash';
 import {
   type MRT_RowData,
   type MRT_TableOptions,
@@ -9,6 +8,7 @@ import {
   type MRT_TableInstance,
 } from 'material-react-table';
 import {MRT_Localization_DA} from 'material-react-table/locales/da';
+import {mergeAll} from 'ramda';
 import {useMemo} from 'react';
 
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
@@ -82,7 +82,7 @@ const getOptions = <TData extends MRT_RowData>(
     },
   };
 
-  const mobileListOptions: Partial<MRT_TableOptions<TData>> = assign({}, globalOptions, {
+  const mobileListOptions: Partial<MRT_TableOptions<TData>> = Object.assign({}, globalOptions, {
     enableTableFooter: false,
     enableTableHead: false,
     enableTopToolbar: false,
@@ -158,37 +158,41 @@ const getOptions = <TData extends MRT_RowData>(
     // }),
   } as Partial<MRT_TableOptions<TData>>);
 
-  const desktopOptions: Partial<MRT_TableOptions<TData>> = merge({}, globalOptions, {
-    ...globalOptions,
-    enableTableFooter: true,
-    enableStickyHeader: true,
-    enableGlobalFilterRankedResults: true,
-    positionGlobalFilter: 'left',
-    enableColumnActions: breakpoints.isTouch ? false : true,
-    enableTableHead: true,
-    enableFilter: false,
-    displayColumnDefOptions: {
-      'mrt-row-actions': {
-        size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
-        grow: false,
-        muiTableHeadCellProps: {
-          align: 'right',
-        },
-        muiTableBodyCellProps: {
-          align: 'right',
+  const desktopOptions: Partial<MRT_TableOptions<TData>> = mergeAll([
+    {},
+    globalOptions,
+    {
+      ...globalOptions,
+      enableTableFooter: true,
+      enableStickyHeader: true,
+      enableGlobalFilterRankedResults: true,
+      positionGlobalFilter: 'left',
+      enableColumnActions: breakpoints.isTouch ? false : true,
+      enableTableHead: true,
+      enableFilter: false,
+      displayColumnDefOptions: {
+        'mrt-row-actions': {
+          size: 100, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
+          grow: false,
+          muiTableHeadCellProps: {
+            align: 'right',
+          },
+          muiTableBodyCellProps: {
+            align: 'right',
+          },
         },
       },
-    },
-    initialState: {
-      showGlobalFilter: true,
-      density: 'comfortable',
-    },
-    positionActionsColumn: 'last',
-    muiSearchTextFieldProps: {
-      variant: 'outlined',
-      size: 'small',
-    },
-  } as Partial<MRT_TableOptions<TData>>);
+      initialState: {
+        showGlobalFilter: true,
+        density: 'comfortable',
+      },
+      positionActionsColumn: 'last',
+      muiSearchTextFieldProps: {
+        variant: 'outlined',
+        size: 'small',
+      },
+    } as Partial<MRT_TableOptions<TData>>,
+  ]);
 
   if (breakpoints.isMobile && type === TableTypes.LIST) {
     return mobileListOptions;
@@ -213,9 +217,9 @@ export const useTable = <TData extends MRT_RowData>(
 
   let tableOptions: Partial<MRT_TableOptions<TData>> = options;
   if (merge_method === MergeType.SHALLOWMERGE)
-    tableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+    tableOptions = Object.assign({}, getOptions<TData>(breakpoints, type), options);
   else if (merge_method === MergeType.RECURSIVEMERGE)
-    tableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+    tableOptions = mergeAll([{}, getOptions<TData>(breakpoints, type), options]);
 
   const table = useMaterialReactTable({
     columns,
@@ -247,9 +251,9 @@ export const useQueryTable = <TData extends MRT_RowData>(
   const tableOptions = useMemo(() => {
     let localtableOptions: Partial<MRT_TableOptions<TData>> = {...options};
     if (merge_method === MergeType.SHALLOWMERGE)
-      localtableOptions = assign({}, getOptions<TData>(breakpoints, type), options);
+      localtableOptions = Object.assign({}, getOptions<TData>(breakpoints, type), options);
     else if (merge_method === MergeType.RECURSIVEMERGE)
-      localtableOptions = merge({}, getOptions<TData>(breakpoints, type), options);
+      localtableOptions = mergeAll([{}, getOptions<TData>(breakpoints, type), options]);
 
     if (error != null) {
       if (localtableOptions.localization) {

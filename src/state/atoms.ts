@@ -1,9 +1,9 @@
 import {atom} from 'jotai';
 import {atomWithStorage, atomFamily} from 'jotai/utils';
 import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
-import {merge} from 'lodash';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
 import {PlotDatum} from 'plotly.js';
+import {mergeAll} from 'ramda';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {
@@ -66,7 +66,7 @@ function createPartialTimedStorage<T>(
       } catch {
         return initialValue;
       }
-      const value = merge({}, initialValue, parsedValue?.value ?? {});
+      const value = mergeAll<T>([{}, initialValue, parsedValue?.value ?? {}]);
       if (parsedValue?.timestamp && Date.now() - parsedValue.timestamp < timeout_ms) {
         const newValue = {...value};
         for (const partialKey of partialKeys) {

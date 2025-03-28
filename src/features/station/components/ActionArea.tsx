@@ -1,9 +1,8 @@
 import {AddCircle, PhotoLibraryRounded, PlaylistAddCheck} from '@mui/icons-material';
 import RuleIcon from '@mui/icons-material/Rule';
-import {startCase} from 'lodash';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
-import {navIconStyle} from '~/consts';
+import {navIconStyle, toTitleCase} from '~/consts';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useStationList from '~/hooks/query/useStationList';
@@ -33,7 +32,7 @@ export default function ActionArea() {
         color: navIconStyle(pageToShow === stationPages.PEJLING),
       },
       {
-        text: startCase(stationPages.TILSYN),
+        text: toTitleCase(stationPages.TILSYN),
         value: stationPages.TILSYN,
         icon: <PlaylistAddCheck />,
         color: navIconStyle(pageToShow === stationPages.TILSYN),
@@ -51,7 +50,7 @@ export default function ActionArea() {
 
   navigationItems.push(
     {
-      text: startCase(stationPages.BILLEDER),
+      text: toTitleCase(stationPages.BILLEDER),
       value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
       color: navIconStyle(pageToShow === stationPages.BILLEDER),

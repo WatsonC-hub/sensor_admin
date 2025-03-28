@@ -1,5 +1,5 @@
-import {assign, merge} from 'lodash';
 import {Layout} from 'plotly.js';
+import {mergeAll} from 'ramda';
 import {useState} from 'react';
 
 import {MergeType} from '~/helpers/EnumHelper';
@@ -83,9 +83,9 @@ const mobileLayout: Partial<Layout> = {
 
 const mergeLayout = (layout1: Partial<Layout>, layout2: Partial<Layout>, mergeType: MergeType) => {
   if (mergeType === MergeType.SHALLOWMERGE) {
-    return assign({}, layout1, layout2);
+    return Object.assign(layout1, layout2);
   } else if (mergeType === MergeType.RECURSIVEMERGE) {
-    return merge({}, layout1, layout2);
+    return mergeAll([{}, layout1, layout2]);
   } else {
     return layout1;
   }

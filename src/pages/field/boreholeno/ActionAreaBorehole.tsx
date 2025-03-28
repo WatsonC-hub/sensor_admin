@@ -4,10 +4,10 @@ import {
   PhotoLibraryRounded,
   ConstructionRounded,
 } from '@mui/icons-material';
-import {startCase} from 'lodash';
 import React from 'react';
 
 import CustomBottomNavigation from '~/components/BottomNavigation';
+import {toTitleCase} from '~/consts';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
@@ -45,13 +45,13 @@ export default function ActionArea() {
       color: navIconStyle(pageToShow === 'målepunkt'),
     },
     {
-      text: startCase(stationPages.BILLEDER),
+      text: toTitleCase(stationPages.BILLEDER),
       value: stationPages.BILLEDER,
       icon: <PhotoLibraryRounded />,
       color: navIconStyle(pageToShow === 'billeder'),
     },
     {
-      text: startCase(stationPages.STAMDATA),
+      text: toTitleCase(stationPages.STAMDATA),
       value: stationPages.STAMDATA,
       icon: <ConstructionRounded />,
       color: navIconStyle(pageToShow === 'stamdata'),
