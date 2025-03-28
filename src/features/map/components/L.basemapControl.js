@@ -75,41 +75,43 @@ L.BasemapControl = L.Control.extend({
   },
 
   _updatePreview: function () {
-    const center = this._map.getCenter();
-    const zoom = this._map.getZoom();
+    if (this._map) {
+      const center = this._map.getCenter();
+      const zoom = this._map.getZoom();
 
-    const previewZoom = Math.max(zoom - 3, 0);
+      const previewZoom = Math.max(zoom - 3, 0);
 
-    this._switchMap.setView(center, previewZoom);
+      this._switchMap.setView(center, previewZoom);
 
-    const nextIndex = (this._currentIndex + 1) % this.options.layers.length;
-    const nextLayer = this.options.layers[nextIndex].layer;
+      const nextIndex = (this._currentIndex + 1) % this.options.layers.length;
+      const nextLayer = this.options.layers[nextIndex].layer;
 
-    const options = this.options.layers[this._currentIndex].layer.options;
+      const options = this.options.layers[this._currentIndex].layer.options;
 
-    // strip out zoomlevels and zoomOffset
-    delete options.zoomOffset;
-    delete options.zoomLevels;
-    delete options.maxZoom;
-    delete options.minZoom;
-    delete options.tileSize;
+      // strip out zoomlevels and zoomOffset
+      delete options.zoomOffset;
+      delete options.zoomLevels;
+      delete options.maxZoom;
+      delete options.minZoom;
+      delete options.tileSize;
 
-    let specificUrl = nextLayer._url.replace('{s}', 'a');
+      let specificUrl = nextLayer._url.replace('{s}', 'a');
 
-    Object.entries(nextLayer.options).forEach(([key, value]) => {
-      specificUrl = specificUrl.replace(`{${key}}`, value);
-    });
+      Object.entries(nextLayer.options).forEach(([key, value]) => {
+        specificUrl = specificUrl.replace(`{${key}}`, value);
+      });
 
-    this._switchLayer.setUrl(specificUrl);
+      this._switchLayer.setUrl(specificUrl);
 
-    this._switchLayer.once('load', () => {
-      this._img.style.backgroundImage = `url(${specificUrl})`;
-      this._img.classList.remove('loading');
-    });
+      this._switchLayer.once('load', () => {
+        this._img.style.backgroundImage = `url(${specificUrl})`;
+        this._img.classList.remove('loading');
+      });
 
-    this._switchLayer.once('error', () => {
-      this._img.classList.add('loading');
-    });
+      this._switchLayer.once('error', () => {
+        this._img.classList.add('loading');
+      });
+    }
   },
 
   changeBasemap: function (index) {
