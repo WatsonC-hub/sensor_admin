@@ -68,7 +68,7 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return rawIcons[iconDetails.notification_id];
     }
 
-    if (iconDetails.has_task && iconDetails.flag == null && iconDetails.itinerary_id == null) {
+    if (iconDetails.has_task && iconDetails.itinerary_id == null) {
       return rawIcons['task'];
     }
 
@@ -88,7 +88,7 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 
-    if (iconDetails.has_task && iconDetails.flag == null && iconDetails.itinerary_id == null) {
+    if (iconDetails.has_task && iconDetails.itinerary_id == null) {
       const Component = reactIcons['task'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
