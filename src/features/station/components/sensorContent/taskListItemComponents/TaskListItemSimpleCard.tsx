@@ -7,6 +7,8 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {getColor} from '~/features/notifications/utils';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {useTasks} from '~/features/tasks/api/useTasks';
+import {convertDate} from '~/helpers/dateConverter';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
 type Props = {
   task: Task;
@@ -68,12 +70,10 @@ const TaskListItemSimpleCard = ({task}: Props) => {
         sx={{
           borderRadius: 2.5,
           display: 'flex',
-          // padding: 1,
           backgroundColor: task.itinerary_id ? color : undefined,
           flexDirection: 'row',
           alignContent: 'center',
           justifyContent: 'space-between',
-          // opacity: task.itinerary_id ? 0.7 : 1,
         }}
         variant="elevation"
       >
@@ -90,22 +90,19 @@ const TaskListItemSimpleCard = ({task}: Props) => {
               }}
             />
           </Box>
-          <Box display="flex" flexDirection={'column'} alignItems={'start'}>
-            <Typography variant="caption">{task.name}</Typography>
-            <Box display="flex" alignItems="center">
-              <Edit sx={{color: 'primary.main'}} fontSize="small" />
-              <Button
-                variant="text"
-                size="small"
-                onClick={() => setSelectedTask(task.id)}
-                sx={{textTransform: 'initial'}}
-              >
-                Rediger opgave
-              </Button>
-            </Box>
+          <Box display="flex" flexDirection={'column'} height={'100%'} alignItems={'start'} gap={1}>
+            <Typography pl={0.5} variant="caption">
+              {task.name}
+            </Typography>
+            {task.due_date && (
+              <Box display="flex" flexDirection={'row'} gap={1}>
+                <PendingActionsIcon fontSize="small" />
+                <Typography variant="caption">{convertDate(task.due_date)}</Typography>
+              </Box>
+            )}
           </Box>
         </Box>
-        <Box gap={1} display="flex" alignItems={'center'}>
+        <Box display="flex" flexDirection={'column'} pr={1} alignItems={'end'}>
           <TaskForm.StatusSelect
             onBlurCallback={(event) => {
               if (typeof event !== 'number' && 'target' in event) {
@@ -119,7 +116,6 @@ const TaskListItemSimpleCard = ({task}: Props) => {
             label={''}
             sx={{
               pb: 0,
-              pr: 2,
               marginTop: 0.5,
               width: 150,
               '& .MuiOutlinedInput-notchedOutline': {
@@ -141,6 +137,18 @@ const TaskListItemSimpleCard = ({task}: Props) => {
               },
             }}
           />
+
+          <Box display="flex" alignItems="center">
+            <Edit sx={{color: 'primary.main'}} fontSize="small" />
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => setSelectedTask(task.id)}
+              sx={{textTransform: 'initial'}}
+            >
+              Rediger opgave
+            </Button>
+          </Box>
           {/* <Person fontSize="small" /> */}
           {/* <TaskForm.AssignedToSelect
             onBlur={({target}) => {

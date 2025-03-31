@@ -36,6 +36,7 @@ const SensorContent = () => {
           startIcon={<DragIndicatorIcon fontSize="small" />}
           sx={{
             borderRadius: 2.5,
+            cursor: 'move',
           }}
         >
           Træk lokation til tur

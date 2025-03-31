@@ -1,21 +1,15 @@
 import {Box, Grid2, Link, Typography} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import React from 'react';
-import {getLocationProjectInfoOptions} from '~/features/stamdata/api/useLocationProject';
-import {useLocationData} from '~/hooks/query/useMetadata';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import {getLocationTypeInfoOptions} from '~/features/stamdata/api/useLocationType';
 import {Group} from '~/types';
 import {getGroupLink} from '~/helpers/links';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAppContext} from '~/state/contexts';
+import {useMapOverviewByLocId} from '~/hooks/query/useNotificationOverview';
 
 const LocationInfo = () => {
-  const {data: location_data} = useLocationData();
-  const {data: project_info} = useQuery(getLocationProjectInfoOptions(location_data?.projectno));
-  const {data: location_type_info} = useQuery(
-    getLocationTypeInfoOptions(location_data?.loctype_id)
-  );
-
+  const {loc_id} = useAppContext(['loc_id']);
+  const {data: location_data} = useMapOverviewByLocId(loc_id || undefined);
   const {isMobile} = useBreakpoints();
 
   return (
@@ -30,7 +24,7 @@ const LocationInfo = () => {
         justifyContent={'space-between'}
       >
         <Typography variant={'body2'}>Projekt info: </Typography>
-        <Typography variant={'body2'}>{project_info?.customer_name}</Typography>
+        <Typography variant={'body2'}>{location_data?.customer_name}</Typography>
       </Box>
 
       <Box
@@ -41,9 +35,9 @@ const LocationInfo = () => {
       >
         <Typography variant={'body2'}>Projekt nr.: </Typography>
         <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-          <Typography variant={'body2'}>{project_info?.project_no} </Typography>
+          <Typography variant={'body2'}>{location_data?.projectno} </Typography>
           <Link
-            href={`https://www.watsonc.dk/calypso/projekt/?project=${project_info?.project_no}`}
+            href={`https://www.watsonc.dk/calypso/projekt/?project=${location_data?.projectno}`}
             target="_blank"
             rel="noopener"
           >
@@ -59,7 +53,7 @@ const LocationInfo = () => {
         justifyContent={'space-between'}
       >
         <Typography variant={'body2'}>Lokationstype:</Typography>
-        <Typography variant={'body2'}>{location_type_info?.loctypename}</Typography>
+        <Typography variant={'body2'}>{location_data?.loctype_name}</Typography>
       </Box>
       <Box
         display={'flex'}

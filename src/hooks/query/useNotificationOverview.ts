@@ -201,11 +201,17 @@ export const useMapOverview = () => {
   return useQuery(mapOverviewOptions);
 };
 
+export interface MapOverviewByLocId extends MapOverview {
+  loctype_name: string;
+  customer_name: string | null;
+  project_info: string | null;
+}
+
 export const MapOverviewByLocIdOptions = (loc_id: number | undefined) =>
   queryOptions({
-    queryKey: ['map', loc_id],
+    queryKey: ['map_location', loc_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<MapOverview>(`/sensor_field/map_data/${loc_id}`);
+      const {data} = await apiClient.get<MapOverviewByLocId>(`/sensor_field/map_data/${loc_id}`);
       return data;
     },
     enabled: loc_id !== undefined,

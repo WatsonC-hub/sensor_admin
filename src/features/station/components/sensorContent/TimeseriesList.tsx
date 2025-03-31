@@ -34,7 +34,7 @@ const TimeseriesList = () => {
                 </Link>
               </Typography>
             </Box>
-            {timeseries.has_task && timeseries.due_date && (
+            {timeseries.due_date && (
               <Box display="flex" gap={1} color="grey.700">
                 <CalendarIcon fontSize="small" />
                 <Typography variant="caption" alignContent={'center'} color="grey.700">
