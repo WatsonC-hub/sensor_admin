@@ -18,6 +18,7 @@ const SensorContent = () => {
   const {tasks} = useTaskStore();
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === loc_id);
+  const isLocationOnItinerary = filteredTasks?.some((task) => task.itinerary_id !== null);
   const hasFieldTasks =
     (filteredTasks ?? []).filter((task) => task.itinerary_id !== null).length > 0;
   return (
@@ -46,6 +47,7 @@ const SensorContent = () => {
             disableFocusRipple={!hasFieldTasks}
             disableTouchRipple={!hasFieldTasks}
             disableElevation={!hasFieldTasks}
+            disabled={isLocationOnItinerary}
             bttype="itinerary"
             startIcon={<DragIndicatorIcon fontSize="small" />}
             sx={{
