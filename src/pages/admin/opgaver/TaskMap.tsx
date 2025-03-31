@@ -12,7 +12,11 @@ import '~/features/map/map.css';
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {MapOverview, timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
+import {
+  MapOverview,
+  MapOverviewByLocIdOptions,
+  timeseriesStatusOptions,
+} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
@@ -183,6 +187,7 @@ const Map = ({clickCallback}: MapProps) => {
 
     marker.addEventListener('mouseover', function () {
       queryClient.prefetchQuery(timeseriesStatusOptions(element.loc_id));
+      queryClient.prefetchQuery(MapOverviewByLocIdOptions(element.loc_id));
     });
 
     // const marker = L.circleMarker(point, {

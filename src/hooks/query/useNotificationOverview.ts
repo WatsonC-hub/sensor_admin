@@ -201,6 +201,21 @@ export const useMapOverview = () => {
   return useQuery(mapOverviewOptions);
 };
 
+export const MapOverviewByLocIdOptions = (loc_id: number | undefined) =>
+  queryOptions({
+    queryKey: ['map', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<MapOverview>(`/sensor_field/map_data/${loc_id}`);
+      return data;
+    },
+    enabled: loc_id !== undefined,
+    staleTime: 1000 * 60 * 60,
+  });
+
+export const useMapOverviewByLocId = (loc_id: number | undefined) => {
+  return useQuery(MapOverviewByLocIdOptions(loc_id));
+};
+
 export interface TimeseriesStatus {
   ts_id: number;
   loc_id: number;
