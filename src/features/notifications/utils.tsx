@@ -1,4 +1,5 @@
-import {NotificationIDEnum, sensorColors, sensorLocationTypeColors} from './consts';
+import moment from 'moment';
+import {FlagEnum, NotificationIDEnum, sensorColors, sensorLocationTypeColors} from './consts';
 import {IconDetails} from './types';
 
 import {JSX} from 'react';
@@ -45,7 +46,25 @@ export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.inactive == true) return '#C0C0C0';
   // if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
   // if (iconDetails?.type === 'itinerary') return '#4caf50';
+  // if (
+  //   // !iconDetails?.itinerary_id &&
+  //   // iconDetails?.has_task &&
+  //   iconDetails?.due_date &&
+  //   iconDetails?.has_task &&
+  //   moment(iconDetails.due_date).isBetween(
+  //     moment().startOf('isoWeek'),
+  //     moment(moment().startOf('isoWeek')).add(1, 'week')
+  //   )
+  // )
+  //   return sensorColors[FlagEnum.WARNING].color; // Due this week
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
+  if (
+    // !iconDetails?.itinerary_id &&
+    iconDetails?.has_task &&
+    iconDetails?.due_date &&
+    moment(iconDetails.due_date).isBefore(moment().toDate())
+  )
+    return sensorColors[FlagEnum.WARNING].color; // Overdue
   if (iconDetails?.color) return iconDetails.color;
   return '#4caf50';
 };

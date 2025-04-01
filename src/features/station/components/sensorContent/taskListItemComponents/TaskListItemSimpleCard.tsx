@@ -27,7 +27,11 @@ const TaskListItemSimpleCard = ({task}: Props) => {
   const color = task.itinerary_id
     ? '#fef9f4'
     : unhandledTasks && task.flag
-      ? getColor({flag: task.flag})
+      ? getColor({
+          flag: task.flag,
+          has_task: task.is_created,
+          due_date: task.due_date,
+        })
       : 'white';
 
   // const patchTaskAssignedTo = (assigned_to: string | null) => {

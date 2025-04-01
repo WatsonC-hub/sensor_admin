@@ -1,6 +1,6 @@
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 
-export type IconDetails = Partial<MapOverview & {color?: string | null}>;
+export type IconDetails = Partial<MapOverview & {color?: string | null; due_date?: string | null}>;
 
 /*{
   color?: string | null;

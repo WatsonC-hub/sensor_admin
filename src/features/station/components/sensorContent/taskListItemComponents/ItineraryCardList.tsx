@@ -67,8 +67,7 @@ const ItineraryCardList = () => {
       </Box>
       <Box pl={1} display={'flex'} flexDirection={'column'} gap={1}>
         {itinerary_tasks?.map((task) => {
-          const isSimpleTask =
-            task.id.includes(':') || task.description === null || task.description === '';
+          const isSimpleTask = !task.is_created;
           return (
             <Box key={task.id}>
               {isSimpleTask ? (
