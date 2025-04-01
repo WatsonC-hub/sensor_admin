@@ -147,7 +147,10 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-      <Box display="flex" width={'100%'} flexGrow={1} flexDirection={'row'}>
+      <Box
+        component="main"
+        sx={{flexGrow: 1, display: 'flex', flexDirection: 'row', maxHeight: 'calc(100vh - 64px)'}}
+      >
         <StationDrawer />
         <Box
           display="flex"
@@ -158,6 +161,7 @@ const Layout = ({children}: LayoutProps) => {
           gap={1}
           pb={isMobile ? 8 : 1}
           flexDirection={'column'}
+          overflow="auto"
         >
           {children}
         </Box>
