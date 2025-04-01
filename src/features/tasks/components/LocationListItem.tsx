@@ -28,14 +28,9 @@ const LocationListItem = ({itemData, onClick}: Props) => {
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
 
-  const itinerary_id = filteredTasks?.filter((task) => task.itinerary_id !== null)[0]?.itinerary_id;
   const {
-    get: {data},
-  } = useTaskItinerary();
-
-  const itinerary = data?.find((itinerary) => itinerary.id === itinerary_id);
-
-  // const {data: notifications} = useTimeseriesStatus(itemData.loc_id);
+    getItinerary: {data: itinerary},
+  } = useTaskItinerary(itemData.itinerary_id);
 
   return (
     <Box

@@ -64,7 +64,7 @@ export const patchItineraryOptions = {
 //   },
 // };
 
-export const useTaskItinerary = (id?: string) => {
+export const useTaskItinerary = (id?: string | null) => {
   const queryClient = useQueryClient();
 
   const get = useQuery<Taskitinerary[], APIError>({
@@ -74,6 +74,16 @@ export const useTaskItinerary = (id?: string) => {
       return data;
     },
     staleTime: 1000 * 60 * 5,
+  });
+
+  const getItinerary = useQuery<Taskitinerary, APIError>({
+    queryKey: ['itineraries', id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/tasks/itineraries/${id}`);
+      return data;
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: id !== undefined,
   });
 
   const getItineraryTasks = useQuery<Task[], APIError>({
@@ -141,6 +151,7 @@ export const useTaskItinerary = (id?: string) => {
 
   return {
     get,
+    getItinerary,
     post,
     patch,
     getItineraryTasks,
