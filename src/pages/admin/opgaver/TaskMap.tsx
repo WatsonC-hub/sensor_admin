@@ -33,6 +33,7 @@ import {getBoreholeIcon, getNotificationIcon} from '~/features/map/utils';
 import {utm} from '../../../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
+import {debounce} from 'lodash';
 
 interface LocItems {
   name: string;
@@ -155,6 +156,11 @@ const Map = ({clickCallback}: MapProps) => {
   //   }
   // }, [map]);
 
+  const prefetchQueries = (loc_id: number) => {
+    queryClient.prefetchQuery(timeseriesStatusOptions(loc_id));
+    queryClient.prefetchQuery(MapOverviewByLocIdOptions(loc_id));
+  };
+
   const createBoreholeMarker = (element: BoreholeMapData) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
 
@@ -173,7 +179,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const createLocationMarker = (element: MapOverview) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
-
+    const debounced = debounce(() => prefetchQueries(element.loc_id), 250);
     const marker = L.marker(point, {
       icon: getNotificationIcon(element),
       interactive: true,
@@ -185,9 +191,9 @@ const Map = ({clickCallback}: MapProps) => {
       zIndexOffset: 1000 * (element.flag ?? 0),
     });
 
-    marker.addEventListener('mouseover', function () {
-      queryClient.prefetchQuery(timeseriesStatusOptions(element.loc_id));
-      queryClient.prefetchQuery(MapOverviewByLocIdOptions(element.loc_id));
+    marker.addEventListener('mouseover', () => debounced());
+    marker.addEventListener('mouseout', () => {
+      debounced.cancel();
     });
 
     // const marker = L.circleMarker(point, {

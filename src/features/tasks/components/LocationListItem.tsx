@@ -135,19 +135,27 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                       </Box>
                     </Link>
                   </Grid2>
-                  <Grid2 size={4} display={'flex'} flexDirection={'column'} alignItems={'center'}>
+                  <Grid2 size={4} display={'flex'} flexDirection={'column'} alignItems={'start'}>
                     {task.assigned_to && (
                       <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-                        <Person fontSize="small" sx={{color: 'grey.700'}} />
+                        <Person fontSize="small" sx={{color: 'grey.700', fontSize: '1.1rem'}} />
                         <Typography variant="caption" color="grey.700">
                           {task.assigned_display_name}
                         </Typography>
                       </Box>
                     )}
                     {task.due_date && (
-                      <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-                        <CalendarIcon fontSize="small" sx={{color: 'grey.700'}} />
-                        <Typography variant="caption" color="grey.700">
+                      <Box display={'flex'} flexDirection={'row'} gap={1}>
+                        <CalendarIcon
+                          fontSize="small"
+                          sx={{color: 'grey.700', fontSize: '1.1rem'}}
+                        />
+                        <Typography
+                          variant="caption"
+                          alignItems={'center'}
+                          fontSize={'0.65rem'}
+                          color="grey.700"
+                        >
                           {convertDate(task.due_date)}
                         </Typography>
                       </Box>
