@@ -19,39 +19,37 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
     <SpeedDial
       ariaLabel="SpeedDial"
       icon={
-        <Box display={'flex'} flexDirection={'row'}>
-          {' '}
+        <Box display={'flex'} px={3} flexDirection={'row'}>
           <ManageSearch />
-          {!isMobile && <Typography textTransform={'none'}>Justér</Typography>}
+          {!isMobile && (
+            <Typography px={1} textTransform={'none'}>
+              Justér
+            </Typography>
+          )}
         </Box>
       }
       open={open}
+      sx={{
+        position: 'sticky',
+        bottom: 10,
+        ml: 'auto',
+        alignItems: 'end',
+        '.MuiSpeedDial-actions': {
+          height: 0,
+        },
+      }}
+      direction="up"
       FabProps={{
         onClick: () => {
           setOpen(!open);
         },
         sx: {
-          position: 'sticky',
-          bottom: isMobile ? 65 : 10,
-          right: 20,
-          mr: 2,
-          width: isTouch ? 75 : 150,
+          width: isTouch ? 75 : 'fit-content',
           borderRadius: 4.5,
           backgroundColor: 'secondary.main',
           ':hover': {
             backgroundColor: 'secondary.main',
           },
-        },
-      }}
-      sx={{
-        position: 'sticky',
-        zIndex: 0,
-        ml: 'auto',
-        borderRadius: 4.5,
-        color: 'white',
-        alignItems: 'end',
-        '.MuiSpeedDial-actions': {
-          height: 0,
         },
       }}
     >
@@ -84,18 +82,16 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
             }}
             tooltipTitle={action.tooltip}
             sx={{
-              right: 20,
               '.MuiSpeedDialAction-fab': {
                 borderRadius: 4,
                 backgroundColor: 'primary.main',
                 color: action.color,
                 ':hover': {
-                  backgroundColor: 'primary.main',
-                  opacity: 0.7,
+                  backgroundColor: 'secondary.main',
                 },
               },
               '.MuiSpeedDialAction-staticTooltipLabel': {
-                borderRadius: 4,
+                borderRadius: 2.5,
               },
             }}
           />

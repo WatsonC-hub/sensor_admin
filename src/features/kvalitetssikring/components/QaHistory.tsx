@@ -139,8 +139,8 @@ export default function QAHistory() {
         <StepWizard />
         <Typography variant="h5">Aktive justeringer</Typography>
         <AdjustmentDataTable data={data} />
+        <CustomSpeedDial actions={speedDialActions} />
       </StationPageBoxLayout>
-      <CustomSpeedDial actions={speedDialActions} />
     </>
   );
 }

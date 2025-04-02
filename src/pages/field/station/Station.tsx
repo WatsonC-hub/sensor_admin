@@ -96,7 +96,11 @@ export default function Station() {
           <Huskeliste />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && (
+        <StationPageBoxLayout>
+          <ImagePage />
+        </StationPageBoxLayout>
+      )}
     </Layout>
   );
 }
@@ -149,17 +153,20 @@ const Layout = ({children}: LayoutProps) => {
       </NavBar>
       <Box
         component="main"
-        sx={{flexGrow: 1, display: 'flex', flexDirection: 'row', maxHeight: 'calc(100vh - 64px)'}}
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          maxHeight: 'calc(100vh - 64px - 56px)',
+          overflow: 'hidden',
+        }}
       >
         <StationDrawer />
         <Box
           display="flex"
           flexGrow={1}
-          // maxWidth="100%"
-          height={'100%'}
           minWidth={0}
           gap={1}
-          pb={isMobile ? 8 : 1}
           flexDirection={'column'}
           overflow="auto"
         >

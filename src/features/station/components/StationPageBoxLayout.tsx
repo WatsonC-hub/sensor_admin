@@ -14,7 +14,7 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
         position: 'relative',
         mx: 'auto',
         minWidth: 0,
-        height: '100%',
+        // height: '100%',
         maxWidth: '100%',
         gap: 1,
       }}
@@ -25,6 +25,7 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
         mobile: 2,
         laptop: 4,
       }}
+      pb={1}
     >
       {children}
     </Box>
