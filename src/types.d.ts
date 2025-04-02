@@ -400,4 +400,5 @@ export type DialAction = {
   onClick: () => void;
   color: string;
   toastTip: string;
+  dialog?: boolean;
 };

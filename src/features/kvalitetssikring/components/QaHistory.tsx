@@ -1,5 +1,13 @@
-import {Box, Divider, Skeleton, Typography} from '@mui/material';
-import React from 'react';
+import {
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  Skeleton,
+  Typography,
+} from '@mui/material';
+import React, {useState} from 'react';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import {navIconStyle, qaHistorySkeletonHeight} from '~/consts';
@@ -10,8 +18,8 @@ import {useCertifyQa} from '../api/useCertifyQa';
 
 import AdjustmentDataTable from './AdjustmentDataTable';
 import QAGraph from '~/pages/admin/kvalitetssikring/QAGraph';
-import CustomSpeedDial from '~/components/CustomSpeedDial';
-import {Verified, Delete} from '@mui/icons-material';
+import CustomSpeedDial, {CustomTooltip} from '~/components/CustomSpeedDial';
+import {Verified, Delete, Save} from '@mui/icons-material';
 import {DialAction} from '~/types';
 import {useAdjustmentState} from '~/hooks/useQueryStateParameters';
 import {useSetAtom} from 'jotai';
@@ -25,6 +33,9 @@ import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useQAHistory from '../api/useQAHistory';
+import moment from 'moment';
+import Button from '~/components/Button';
+import {toast} from 'react-toastify';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -32,10 +43,12 @@ export default function QAHistory() {
   const setInitiateSelect = useSetAtom(initiateSelectAtom);
   const setLevelCorrection = useSetAtom(levelCorrectionAtom);
   const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const {isMobile} = useBreakpoints();
   const speedDialActions: Array<DialAction> = [];
   const {
     get: {data: certify},
+    post: postQaData,
   } = useCertifyQa(ts_id);
 
   const {data, isPending} = useQAHistory(ts_id);
@@ -46,11 +59,11 @@ export default function QAHistory() {
       icon: <Verified />,
       tooltip: <Typography noWrap>Godkend tidsserie</Typography>,
       onClick: () => {
-        setInitiateConfirmTimeseries(true);
-        setDataAdjustment(qaAdjustment.CONFIRM);
+        setConfirmDialogOpen(true);
       },
       color: navIconStyle(dataAdjustment === qaAdjustment.CONFIRM),
       toastTip: 'Klik på et datapunkt på grafen',
+      dialog: confirmDialogOpen,
     },
     {
       key: 'removeData',
@@ -95,6 +108,57 @@ export default function QAHistory() {
       });
     });
   }
+
+  const showConfirmWizard = () => {
+    setConfirmDialogOpen(false);
+    setInitiateConfirmTimeseries(true);
+    setDataAdjustment(qaAdjustment.CONFIRM);
+    if (toast.isActive('juster'))
+      toast.update('juster', {
+        render: <CustomTooltip toastContent="Klik på et datapunkt på grafen" />,
+        style: {display: 'flex'},
+      });
+    else if (!toast.isActive('juster'))
+      toast(<CustomTooltip toastContent="Klik på et datapunkt på grafen" />, {
+        autoClose: false,
+        toastId: 'juster',
+        style: {
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        },
+      });
+  };
+
+  const handleSubmit = () => {
+    const payload = {
+      path: `${ts_id}`,
+      data: {level: 1, date: moment().toISOString()},
+    };
+    postQaData.mutate(payload);
+    setDataAdjustment(null);
+    setConfirmDialogOpen(false);
+  };
+
+  const dialog = (
+    <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
+      <DialogContent>
+        <Box display={'flex'} flexDirection="column" gap={1}>
+          <Typography variant="body2" fontWeight={'bold'}>
+            Vil du gerne godkende tidsserien frem til dagens dato? <br />
+          </Typography>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button bttype="tertiary" onClick={() => showConfirmWizard()}>
+          Nej
+        </Button>
+        <Button bttype="primary" startIcon={<Save />} onClick={handleSubmit}>
+          Godkend
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 
   if (isPending)
     return (
@@ -143,6 +207,7 @@ export default function QAHistory() {
         </Box>
         <CustomSpeedDial actions={speedDialActions} />
       </StationPageBoxLayout>
+      {dialog}
     </>
   );
 }

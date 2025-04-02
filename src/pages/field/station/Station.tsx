@@ -119,7 +119,11 @@ export default function Station() {
           <Huskeliste />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && (
+        <StationPageBoxLayout>
+          <ImagePage />
+        </StationPageBoxLayout>
+      )}
     </Layout>
   );
 }
@@ -172,6 +176,7 @@ const Layout = ({children}: LayoutProps) => {
           width={'100%'}
           flexGrow={1}
           gap={1}
+          minWidth={0}
           flexDirection={'column'}
           overflow="auto"
         >
