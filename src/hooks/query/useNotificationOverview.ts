@@ -188,7 +188,7 @@ export interface MapOverview {
   notification_id: NotificationIDEnum | null;
 }
 
-const mapOverviewOptions = queryOptions({
+const mapOverviewOptions = queryOptions<MapOverview[]>({
   queryKey: ['map'],
   queryFn: async () => {
     const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
@@ -197,29 +197,16 @@ const mapOverviewOptions = queryOptions({
   refetchInterval: 1000 * 60 * 60,
 });
 
-export const useMapOverview = () => {
-  return useQuery(mapOverviewOptions);
-};
+type MapOverviewOptions<T> = Partial<
+  Omit<UseQueryOptions<MapOverview[], Error, T>, 'queryKey' | 'queryFn'>
+>;
 
-export interface MapOverviewByLocId extends MapOverview {
-  loctype_name: string;
-  customer_name: string | null;
-  project_info: string | null;
-}
-
-export const MapOverviewByLocIdOptions = (loc_id: number | undefined) =>
-  queryOptions({
-    queryKey: ['map_location', loc_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<MapOverviewByLocId>(`/sensor_field/map_data/${loc_id}`);
-      return data;
-    },
-    enabled: loc_id !== undefined,
-    staleTime: 1000 * 60 * 60,
+export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
+  return useQuery({
+    ...mapOverviewOptions,
+    ...options,
+    select: options?.select as (data: MapOverview[]) => T,
   });
-
-export const useMapOverviewByLocId = (loc_id: number | undefined) => {
-  return useQuery(MapOverviewByLocIdOptions(loc_id));
 };
 
 export interface TimeseriesStatus {

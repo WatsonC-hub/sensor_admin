@@ -10,13 +10,16 @@ import {useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
-import {useMapOverviewByLocId} from '~/hooks/query/useNotificationOverview';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 const SensorContent = () => {
   const {loc_id} = useAppContext([], ['loc_id']);
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
 
-  const {data: location} = useMapOverviewByLocId(loc_id || undefined);
-  const isLocationOnItinerary = location?.itinerary_id !== null;
+  const {data: location} = useMapOverview({
+    select: (data) => {
+      return data.find((location) => location.loc_id === loc_id);
+    },
+  });
 
   return (
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3}>
@@ -31,7 +34,6 @@ const SensorContent = () => {
           onDragStart={(e) => {
             e.dataTransfer.setData('text/plain', JSON.stringify({loc_id: loc_id}));
           }}
-          disabled={isLocationOnItinerary}
           bttype="itinerary"
           startIcon={<DragIndicatorIcon fontSize="small" />}
           sx={{

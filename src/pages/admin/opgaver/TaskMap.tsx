@@ -12,11 +12,7 @@ import '~/features/map/map.css';
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {
-  MapOverview,
-  MapOverviewByLocIdOptions,
-  timeseriesStatusOptions,
-} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
@@ -34,6 +30,7 @@ import {utm} from '../../../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
 import {debounce} from 'lodash';
+import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 
 interface LocItems {
   name: string;
@@ -158,7 +155,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const prefetchQueries = (loc_id: number) => {
     queryClient.prefetchQuery(timeseriesStatusOptions(loc_id));
-    queryClient.prefetchQuery(MapOverviewByLocIdOptions(loc_id));
+    queryClient.prefetchQuery(locationInfoOptions(loc_id));
   };
 
   const createBoreholeMarker = (element: BoreholeMapData) => {

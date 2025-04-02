@@ -10,14 +10,11 @@ import TaskListItemSimpleCard from './TaskListItemSimpleCard';
 import TaskListItemAdvancedCard from './TaskListItemAdvancedCard';
 import Button from '~/components/Button';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import {useMapOverviewByLocId} from '~/hooks/query/useNotificationOverview';
 
 const ItineraryCardList = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = React.useState(false);
   const {tasks} = useTaskStore();
-
-  const {data: location} = useMapOverviewByLocId(loc_id || undefined);
 
   const itinerary_tasks = tasks?.filter(
     (task) => task.loc_id === loc_id && task.itinerary_id !== null
@@ -32,7 +29,9 @@ const ItineraryCardList = () => {
     get: {data: itineraries},
   } = useTaskItinerary();
 
-  const itinerary = itineraries?.find((itinerary) => itinerary.id === location?.itinerary_id);
+  const itinerary = itineraries?.find(
+    (itinerary) => itinerary.id === itinerary_tasks?.[0].itinerary_id
+  );
 
   const handleDelete = () => {
     const payload = {

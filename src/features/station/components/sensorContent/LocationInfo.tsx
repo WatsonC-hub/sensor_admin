@@ -5,11 +5,13 @@ import {Group} from '~/types';
 import {getGroupLink} from '~/helpers/links';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-import {useMapOverviewByLocId} from '~/hooks/query/useNotificationOverview';
+import useLocationInfo from '../../api/useLocationInfo';
 
 const LocationInfo = () => {
   const {loc_id} = useAppContext(['loc_id']);
-  const {data: location_data} = useMapOverviewByLocId(loc_id || undefined);
+
+  const {data: location_data} = useLocationInfo(loc_id);
+
   const {isMobile} = useBreakpoints();
 
   return (
