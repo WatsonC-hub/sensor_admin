@@ -52,3 +52,60 @@ export const getNotificationIcon = (marker: MapOverview) => {
     iconAnchor: [12, 24],
   });
 };
+
+/**
+ * @description Sorts borehole markers by their status. If both markers have a boreholeno, it sorts them by the maximum status value. If only one marker has a boreholeno, it is sorted last.
+ */
+export const sortBoreholeLast = (a: L.Marker<BoreholeMapData>, b: L.Marker<BoreholeMapData>) => {
+  if (a.options.data.boreholeno && b.options.data.boreholeno) {
+    return Math.max(b.options.data.status) - Math.max(a.options.data.status);
+  }
+  if (a.options.data.boreholeno) {
+    return 1;
+  }
+  if (b.options.data.boreholeno) {
+    return -1;
+  }
+};
+
+/**
+ * @description Sorts locations by their inactive status. Inactive locations are sorted last.
+ */
+const sortLocationsByInactive = (a: L.Marker<MapOverview>, b: L.Marker<MapOverview>) => {
+  const aInactive = (a.options.data as MapOverview).inactive;
+  const bInactive = (b.options.data as MapOverview).inactive;
+
+  return Number(aInactive) - Number(bInactive);
+};
+
+/**
+ * @description Sorts locations by their task status. Locations with tasks are sorted first.
+ */
+const sortLocationsByHasTask = (a: L.Marker<MapOverview>, b: L.Marker<MapOverview>) => {
+  const aHasTask = (a.options.data as MapOverview).has_task;
+  const bHasTask = (b.options.data as MapOverview).has_task;
+  if (aHasTask === bHasTask) return undefined;
+  if (aHasTask) return -1;
+  if (bHasTask) return 1;
+};
+
+/**
+ * @description Sorts locations by their flag status. Locations with a flag are sorted first.
+ */
+const sortLocationsByFlag = (a: L.Marker<MapOverview>, b: L.Marker<MapOverview>) => {
+  const aFlag = (a.options.data as MapOverview).flag;
+  const bFlag = (b.options.data as MapOverview).flag;
+
+  if (aFlag !== bFlag) return (bFlag ?? 0) - (aFlag ?? 0);
+};
+
+/**
+ * @description Sorts locations by their flag, task and inactive status. Locations with a flag are sorted first, followed by locations with tasks, and finally inactive locations.
+ */
+export const sortLocations = (a: L.Marker<MapOverview>, b: L.Marker<MapOverview>) => {
+  let sortingValue = sortLocationsByFlag(a, b);
+  if (sortingValue === undefined) sortingValue = sortLocationsByHasTask(a, b);
+  if (sortingValue === undefined) sortingValue = sortLocationsByInactive(a, b);
+
+  return sortingValue;
+};

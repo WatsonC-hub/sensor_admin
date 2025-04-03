@@ -36,7 +36,7 @@ import {
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
-import {setIconSize} from '../utils';
+import {setIconSize, sortBoreholeLast, sortLocations} from '../utils';
 import {boreholeColors, BoreHoleFlagEnum} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
@@ -500,27 +500,13 @@ const useMap = <TData extends object>(
         const num = childMarkers.length;
 
         childMarkers.sort((a, b) => {
-          if (a.options.data.boreholeno && b.options.data.boreholeno) {
-            return Math.max(b.options.data.status) - Math.max(a.options.data.status);
-          }
-          if (a.options.data.boreholeno) {
-            return 1;
-          }
-          if (b.options.data.boreholeno) {
-            return -1;
-          }
+          const value = sortBoreholeLast(a, b);
 
-          const aStatus = a.options.data.flag;
-          const bStatus = b.options.data.flag;
-          const aInactive = a.options.data.inactive;
-          const bInactive = b.options.data.inactive;
-          if (aStatus === bStatus) {
-            return aInactive - bInactive;
-          }
+          if (value !== undefined) return value;
 
-          return bStatus - aStatus;
+          return sortLocations(a, b);
         });
-        // find marker with highest status
+
         let color: string;
         if (childMarkers[0].options.data.boreholeno) {
           color =
@@ -537,16 +523,6 @@ const useMap = <TData extends object>(
             num: num,
           }),
         });
-
-        // return L.divIcon({
-        //   className: 'svg-icon',
-        //   iconAnchor: [12, 24],
-        //   html: L.Util.template(droplelSVG, {
-        //     color: sensorColors[maxStatus as FlagEnum]?.color || sensorColors[0].color,
-        //     icon: '',
-        //     num: num,
-        //   }),
-        // });
       },
     }).addTo(mapRef.current);
     tooltipRef.current = L.featureGroup();
