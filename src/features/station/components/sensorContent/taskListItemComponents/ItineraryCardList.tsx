@@ -30,7 +30,7 @@ const ItineraryCardList = () => {
   } = useTaskItinerary();
 
   const itinerary = itineraries?.find(
-    (itinerary) => itinerary.id === itinerary_tasks?.[0].itinerary_id
+    (itinerary) => itinerary.id === itinerary_tasks?.[0]?.itinerary_id
   );
 
   const handleDelete = () => {
@@ -44,26 +44,28 @@ const ItineraryCardList = () => {
 
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
-      <Box
-        display="flex"
-        gap={1}
-        borderRadius={2.5}
-        flexDirection={'row'}
-        color={'white'}
-        justifyContent={'space-between'}
-        sx={{backgroundColor: '#B87333', p: 1}}
-      >
-        <Box display="flex" alignItems={'center'} flexDirection={'row'} gap={1}>
-          <DriveEtaIcon />
-          <Typography variant="caption">{itinerary?.due_date}</Typography>
+      {itinerary && (
+        <Box
+          display="flex"
+          gap={1}
+          borderRadius={2.5}
+          flexDirection={'row'}
+          color={'white'}
+          justifyContent={'space-between'}
+          sx={{backgroundColor: '#B87333', p: 1}}
+        >
+          <Box display="flex" alignItems={'center'} flexDirection={'row'} gap={1}>
+            <DriveEtaIcon />
+            <Typography variant="caption">{itinerary?.due_date}</Typography>
+          </Box>
+          <Typography alignContent={'center'} variant="caption">
+            {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
+          </Typography>
+          <IconButton onClick={() => setOpenDialog(true)}>
+            <CloseIcon sx={{alignSelf: 'center', color: 'white'}} fontSize="small" />
+          </IconButton>
         </Box>
-        <Typography alignContent={'center'} variant="caption">
-          {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
-        </Typography>
-        <IconButton onClick={() => setOpenDialog(true)}>
-          <CloseIcon sx={{alignSelf: 'center', color: 'white'}} fontSize="small" />
-        </IconButton>
-      </Box>
+      )}
       <Box pl={1} display={'flex'} flexDirection={'column'} gap={1}>
         {itinerary_tasks?.map((task) => {
           const isSimpleTask = !task.is_created;

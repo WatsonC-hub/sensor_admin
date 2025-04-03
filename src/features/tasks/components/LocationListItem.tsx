@@ -5,10 +5,11 @@ import NotificationIcon from '~/pages/field/overview/components/NotificationIcon
 import {useTaskStore} from '../api/useTaskStore';
 import {convertDate} from '~/helpers/dateConverter';
 import {CalendarIcon} from '@mui/x-date-pickers';
-import {DragIndicator, Person} from '@mui/icons-material';
+import {Person} from '@mui/icons-material';
 import {useTaskItinerary} from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
-
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import {useDraggable} from '@dnd-kit/react';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
@@ -25,6 +26,11 @@ const TripIcon = getIcon(
 
 const LocationListItem = ({itemData, onClick}: Props) => {
   const {tasks, setSelectedTask} = useTaskStore();
+  const {handleRef, ref} = useDraggable({
+    id: itemData.loc_id,
+    data: {loc_id: itemData.loc_id},
+    feedback: 'clone',
+  });
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
 
@@ -37,6 +43,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
       display={'flex'}
       flexDirection={'row'}
       alignItems={'center'}
+      ref={ref}
       width={'100%'}
       sx={{
         ':hover': {
@@ -44,18 +51,8 @@ const LocationListItem = ({itemData, onClick}: Props) => {
         },
       }}
     >
-      <Box
-        draggable={true}
-        onDragStart={(e) => {
-          e.dataTransfer.setData('text/plain', JSON.stringify({loc_id: itemData.loc_id}));
-        }}
-      >
-        <DragIndicator
-          sx={{
-            color: 'grey.700',
-            cursor: 'move',
-          }}
-        />
+      <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
+        <DragIndicatorIcon ref={handleRef} sx={{cursor: 'grab'}} fontSize="small" />
       </Box>
       <Box
         display={'flex'}
@@ -76,7 +73,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
         >
           <Typography>{itemData.loc_name}</Typography>
           {itinerary && (
-            <Box display={'flex'} flexDirection={'row'} alignItems={'center'} pr={4} gap={1}>
+            <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
               <Box
                 height={24}
                 width={24}

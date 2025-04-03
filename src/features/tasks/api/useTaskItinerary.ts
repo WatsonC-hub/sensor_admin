@@ -73,6 +73,7 @@ export const useTaskItinerary = (id?: string | null) => {
       const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
       return data;
     },
+    enabled: id !== null,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -83,11 +84,11 @@ export const useTaskItinerary = (id?: string | null) => {
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: id !== undefined,
+    enabled: id !== null && id !== undefined,
   });
 
   const getItineraryTasks = useQuery<Task[], APIError>({
-    queryKey: ['itineraries', id],
+    queryKey: ['itineraries_tasks', id],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks/itineraries/${id}/tasks`);
       return data;

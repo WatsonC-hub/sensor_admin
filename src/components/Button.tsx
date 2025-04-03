@@ -45,10 +45,6 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
       p: '0.25rem 1rem',
       borderRadius: 9999,
       backgroundColor: 'white',
-      color: 'primary.constrastText',
-      '&:hover': {
-        backgroundColor: 'secondary.light',
-      },
       '&:disabled': {
         backgroundColor: 'grey.200',
       },

@@ -1,7 +1,6 @@
-import {Box} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import Button from '~/components/Button';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
 import TaskList from '~/features/station/components/sensorContent/TaskList';
 import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
@@ -11,8 +10,16 @@ import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskM
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import {useDraggable} from '@dnd-kit/react';
+
 const SensorContent = () => {
-  const {loc_id} = useAppContext([], ['loc_id']);
+  const {loc_id} = useAppContext(['loc_id'], []);
+  const {ref} = useDraggable({
+    id: 'location' + loc_id,
+    data: {loc_id},
+    feedback: 'clone',
+  });
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
 
   const {data: location} = useMapOverview({
@@ -28,21 +35,23 @@ const SensorContent = () => {
       <TaskList />
       {location?.itinerary_id && <ItineraryCardList />}
 
-      <Box display="flex" gap={1} flexDirection={'row'} alignSelf={'center'}>
-        <Button
-          draggable={true}
-          onDragStart={(e) => {
-            e.dataTransfer.setData('text/plain', JSON.stringify({loc_id: loc_id}));
-          }}
-          bttype="itinerary"
-          startIcon={<DragIndicatorIcon fontSize="small" />}
-          sx={{
-            borderRadius: 2.5,
-            cursor: 'move',
-          }}
+      <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
+        <Box
+          display="flex"
+          ref={ref}
+          flexDirection={'row'}
+          alignItems={'center'}
+          alignSelf={'center'}
         >
-          Træk lokation til tur
-        </Button>
+          <Button
+            bttype="primary"
+            startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+            sx={{borderRadius: 2.5}}
+          >
+            Træk til tur
+          </Button>
+        </Box>
+
         <Button
           bttype="primary"
           sx={{borderRadius: 2.5}}

@@ -180,6 +180,7 @@ export type Taskitinerary = {
   assigned_to?: string | null;
   created_by: string;
   created_at: string;
+  completed: boolean;
 };
 
 export type TaskitineraryItem = {

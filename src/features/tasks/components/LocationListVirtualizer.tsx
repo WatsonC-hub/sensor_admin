@@ -135,17 +135,13 @@ const LocationListVirtualizer = () => {
                 data-index={virtualRow.index}
                 ref={(element) => virtualizer.measureElement(element)}
               >
-                <div>
-                  <LocationListItem
-                    key={item.loc_id}
-                    itemData={item}
-                    onClick={() => setLocId(item.loc_id)}
-                  />
-                  <Divider
-                    sx={{
-                      width: '100%',
-                    }}
-                  />
+                <div
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  <LocationListItem itemData={item} onClick={() => setLocId(item.loc_id)} />
+                  <Divider />
                 </div>
               </div>
             </div>
