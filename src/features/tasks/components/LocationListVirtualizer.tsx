@@ -109,9 +109,10 @@ const LocationListVirtualizer = () => {
               >
                 <div
                   data-index={virtualRow.index}
+                  style={{paddingTop: 12}}
                   ref={(element) => virtualizer.measureElement(element)}
                 >
-                  <Box px={1} pt={3}>
+                  <Box px={1} py={2} border={2} borderColor="grey.500">
                     <Typography variant="h6">Uden for zoom</Typography>
                   </Box>
                 </div>

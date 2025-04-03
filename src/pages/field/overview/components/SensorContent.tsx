@@ -1,4 +1,4 @@
-import {Box, Typography} from '@mui/material';
+import {Box} from '@mui/material';
 import Button from '~/components/Button';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';

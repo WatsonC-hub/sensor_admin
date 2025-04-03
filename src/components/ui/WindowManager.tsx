@@ -58,7 +58,6 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
           flexDirection: 'column',
         }}
       >
-        {' '}
         {cloneElement(fullScreenWindow, {width: '100%'})}
       </Box>
     );
@@ -149,7 +148,7 @@ const Window = ({
   height = 'fit-content',
   id,
 }: WindowProps) => {
-  const {isMonitor, isLaptop, isLargeLaptop} = useBreakpoints();
+  // const {isMonitor, isLaptop, isLargeLaptop} = useBreakpoints();
   //   const {columnWidth} = useWindowContext();
   //   if (!columnWidth) throw new Error('Window must be a child of WindowManager');
   if (!show) return null;
@@ -178,13 +177,12 @@ const Window = ({
         height: height,
         maxHeight: '100vh',
         overflow: 'auto',
-        border: '1px solid black',
+        // border: '1px solid black',
         // width: fullScreen ? '100%' : '100%',
         width: width,
         backgroundColor: 'white',
-        borderRadius: (isMonitor || isLaptop || isLargeLaptop) && height !== '100%' ? 4 : 0,
-        // p: 1,
-        // m: 1,
+        // borderRadius: (isMonitor || isLaptop || isLargeLaptop) && height !== '100%' ? 4 : 0,
+        my: 1,
         ...fullscreenprops,
       }}
     >
