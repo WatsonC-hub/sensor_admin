@@ -112,7 +112,7 @@ const LocationListVirtualizer = () => {
                   style={{paddingTop: 12}}
                   ref={(element) => virtualizer.measureElement(element)}
                 >
-                  <Box px={1} py={2} border={2} borderColor="grey.500">
+                  <Box px={1} py={2} borderTop={2} borderColor="grey.700">
                     <Typography variant="h6">Uden for zoom</Typography>
                   </Box>
                 </div>
@@ -142,7 +142,11 @@ const LocationListVirtualizer = () => {
                   }}
                 >
                   <LocationListItem itemData={item} onClick={() => setLocId(item.loc_id)} />
-                  <Divider />
+                  {virtualRow.index !==
+                    list.length -
+                      1 -
+                      boolArray.filter((boolean) => boolean === false).length -
+                      1 && <Divider />}
                 </div>
               </div>
             </div>
