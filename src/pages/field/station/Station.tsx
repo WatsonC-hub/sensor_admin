@@ -116,6 +116,7 @@ const Layout = ({children}: LayoutProps) => {
   const user = useUser();
   const {createStamdata} = useNavigationFunctions();
   const setTsId = useDisplayState((state) => state.setTsId);
+  const [pageToShow, setPageToShow] = useStationPages();
   return (
     <>
       <NavBar>
@@ -146,6 +147,7 @@ const Layout = ({children}: LayoutProps) => {
 
           <NavBar.Close
             onClick={() => {
+              if (pageToShow) setPageToShow(null);
               setTsId(null);
             }}
           />

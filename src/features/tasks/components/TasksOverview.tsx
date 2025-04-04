@@ -25,6 +25,7 @@ import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
 import {useTasks} from '../api/useTasks';
 import {useTaskStore} from '../api/useTaskStore';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 
 // import {NotificationMap} from '~/hooks/query/useNotificationOverview';
 // import {BoreholeMapData} from '~/types';
@@ -54,7 +55,6 @@ const TasksOverview = () => {
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
-
   const {tasks} = useTaskStore();
   const {moveTask} = useTasks();
   const {isMobile, isTouch} = useBreakpoints();
@@ -163,6 +163,7 @@ const TasksOverview = () => {
               height={isMobile ? '100%' : 'fit-content'}
               onClose={() => {
                 // setSelectedData(null);
+                console.log('this should work');
                 closeLocation();
               }}
               sx={{
