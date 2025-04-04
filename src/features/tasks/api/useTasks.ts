@@ -184,18 +184,17 @@ export const useTasks = () => {
             return task;
           })
         );
-        queryClient.invalidateQueries({queryKey: ['tasks', !include_closed]});
-        queryClient.invalidateQueries({queryKey: ['overblik']});
-        queryClient.invalidateQueries({queryKey: ['itineraries']});
-        queryClient.invalidateQueries({queryKey: ['map']});
 
         setShownMapTaskIds([...shownMapTaskIds, data.id]);
         setSelectedTask(data.id);
       }
 
-      queryClient.invalidateQueries({
-        queryKey: ['taskHistory', path],
-      });
+      queryClient.invalidateQueries({queryKey: ['taskHistory', path]});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
+
       toast.success('Opgave ændret');
     },
     onError: (e) => {
@@ -260,16 +259,6 @@ export const useTasks = () => {
     },
     staleTime: 1000 * 60 * 5,
   });
-
-  // const getProjects = useQuery<TaskProject[], APIError>({
-  //   queryKey: ['task_projects'],
-  //   queryFn: async () => {
-  //     const {data} = await apiClient.get('/sensor_admin/tasks/projects');
-
-  //     return data;
-  //   },
-  //   staleTime: 1000 * 60 * 5,
-  // });
 
   const deleteTaskFromItinerary = useMutation<unknown, APIError, DeleteTaskFromItinerary>({
     ...deleteTaskFromItineraryOptions,
