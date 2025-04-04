@@ -178,9 +178,9 @@ export type Taskitinerary = {
   id: ID;
   due_date?: string | null;
   assigned_to?: string | null;
+  completed?: boolean;
   created_by: string;
   created_at: string;
-  completed: boolean;
 };
 
 export type TaskitineraryItem = {

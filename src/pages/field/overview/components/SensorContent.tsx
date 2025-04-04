@@ -12,6 +12,7 @@ import TaskHistoryList from '~/features/station/components/sensorContent/TaskHis
 import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
@@ -20,6 +21,7 @@ const SensorContent = () => {
     data: {loc_id},
     feedback: 'clone',
   });
+  const {isMobile} = useBreakpoints();
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
 
   const {data: location} = useMapOverview({
@@ -36,21 +38,23 @@ const SensorContent = () => {
       {location?.itinerary_id && <ItineraryCardList />}
 
       <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
-        <Box
-          display="flex"
-          ref={ref}
-          flexDirection={'row'}
-          alignItems={'center'}
-          alignSelf={'center'}
-        >
-          <Button
-            bttype="primary"
-            startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
-            sx={{borderRadius: 2.5}}
+        {!isMobile && (
+          <Box
+            display="flex"
+            ref={ref}
+            flexDirection={'row'}
+            alignItems={'center'}
+            alignSelf={'center'}
           >
-            Træk til tur
-          </Button>
-        </Box>
+            <Button
+              bttype="primary"
+              startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+              sx={{borderRadius: 2.5}}
+            >
+              Træk til tur
+            </Button>
+          </Box>
+        )}
 
         <Button
           bttype="primary"

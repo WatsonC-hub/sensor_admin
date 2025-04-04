@@ -5,7 +5,7 @@ import LocationListVirtualizer from './LocationListVirtualizer';
 
 const LocationList = () => {
   return (
-    <Box>
+    <Box maxHeight={'100%'} display="flex" flexDirection="column">
       <LocationListFilter />
       <LocationListVirtualizer />
     </Box>

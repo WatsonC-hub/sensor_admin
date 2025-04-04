@@ -1,5 +1,5 @@
 import React, {Children, cloneElement} from 'react';
-import {Box, IconButton} from '@mui/material';
+import {Box, IconButton, SxProps} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useWindowDimensions from '~/hooks/useWindowDimensions';
 import CloseIcon from '@mui/icons-material/Close';
@@ -33,7 +33,7 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
         sx={{
           width: '100%',
           pointerEvents: 'none',
-          ml: 'auto',
+          // ml: 'auto',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -53,7 +53,6 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
         sx={{
           width: '100%',
           pointerEvents: 'none',
-          ml: 'auto',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -87,6 +86,7 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
         width - usedWidth,
         child.props.maxSize ? child.props.maxSize * columnWidth : child.props.minSize * columnWidth
       );
+
       if (innerWidth == 0) {
         continue;
       }
@@ -114,10 +114,9 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
       sx={{
         width: '100%',
         pointerEvents: 'none',
-        ml: 'auto',
         display: 'flex',
         flexDirection: 'row-reverse',
-        gap: 1,
+        gap: 0.75,
       }}
     >
       {shownChildren}
@@ -129,7 +128,7 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
 type WindowProps = {
   children?: React.ReactNode;
   show: boolean;
-  height?: 'fit-content' | '100%';
+  height?: 'fit-content' | '50%' | '100%';
   onClose?: () => void;
   fullScreen?: boolean;
   minSize: number;
@@ -137,6 +136,7 @@ type WindowProps = {
   maxColumns?: number; // Injected by WindowManager
   width?: number | string;
   id?: string;
+  sx?: SxProps;
 };
 
 const Window = ({
@@ -147,7 +147,9 @@ const Window = ({
   width,
   height = 'fit-content',
   id,
+  sx,
 }: WindowProps) => {
+  const {isMobile} = useBreakpoints();
   // const {isMonitor, isLaptop, isLargeLaptop} = useBreakpoints();
   //   const {columnWidth} = useWindowContext();
   //   if (!columnWidth) throw new Error('Window must be a child of WindowManager');
@@ -161,7 +163,6 @@ const Window = ({
       position: 'fixed',
       zIndex: 1200,
       top: 0,
-      left: 0,
     };
   }
 
@@ -171,26 +172,24 @@ const Window = ({
       sx={{
         position: 'relative',
         pointerEvents: 'auto',
+        mt: isMobile ? 'auto' : 1,
         bottom: 0,
         display: 'flex',
         flexDirection: 'column',
         height: height,
+        width: isMobile ? undefined : width,
         maxHeight: '100vh',
         overflow: 'auto',
-        // border: '1px solid black',
-        // width: fullScreen ? '100%' : '100%',
-        width: width,
         backgroundColor: 'white',
-        // borderRadius: (isMonitor || isLaptop || isLargeLaptop) && height !== '100%' ? 4 : 0,
-        my: 1,
         ...fullscreenprops,
+        ...sx,
+        paddingBottom: 'env(safe-area-inset-bottom, 0)',
       }}
     >
       <Box
         sx={{
           position: 'absolute',
           right: 0,
-          top: 0,
           cursor: 'pointer',
           color: 'white',
           //   padding: 1,

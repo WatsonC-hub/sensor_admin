@@ -57,7 +57,7 @@ const TasksOverview = () => {
 
   const {tasks} = useTaskStore();
   const {moveTask} = useTasks();
-  const {isMobile} = useBreakpoints();
+  const {isMobile, isTouch} = useBreakpoints();
 
   const handleDrop = (event: any) => {
     if (event.operation.source === null || event.operation.target === null) return;
@@ -97,11 +97,10 @@ const TasksOverview = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" minHeight={`calc(100vh-68px)`}>
+    <Box display="flex" flexDirection="column" maxHeight={`calc(100vh-68px)`}>
       <Box
         justifyContent={'center'}
         alignSelf={'center'}
-        // p={1}
         sx={{
           display: 'flex',
           flexDirection: 'row',
@@ -127,8 +126,7 @@ const TasksOverview = () => {
         <DragDropProvider
           key={loc_id}
           onDragStart={() => {
-            console.log('dragstart');
-            if (!trip_list) setTripList(true);
+            if (!trip_list && !isTouch) setTripList(true);
           }}
           onDragEnd={handleDrop}
         >
@@ -141,11 +139,9 @@ const TasksOverview = () => {
                 // setSelectedData(null);
                 setTripList(false);
               }}
-              height="100%"
+              height={isMobile ? '50%' : '100%'}
             >
-              <Box>
-                <TaskItiniaries />
-              </Box>
+              <TaskItiniaries />
             </WindowManager.Window>
             <WindowManager.Window
               key="locationlist"
@@ -155,7 +151,7 @@ const TasksOverview = () => {
                 // setSelectedData(null);
                 setLocList(false);
               }}
-              height={isMobile ? 'fit-content' : '100%'}
+              height={isMobile ? '50%' : '100%'}
             >
               <LocationList />
             </WindowManager.Window>
@@ -164,15 +160,18 @@ const TasksOverview = () => {
               key="location"
               show={loc_id !== null}
               minSize={1}
+              height={isMobile ? '100%' : 'fit-content'}
               onClose={() => {
                 // setSelectedData(null);
                 closeLocation();
               }}
+              sx={{
+                borderRadius: isMobile ? 2.5 : undefined,
+                m: isMobile ? 0.5 : undefined,
+              }}
             >
               <AppContext.Provider value={{loc_id: loc_id!}}>
-                <Box p={1}>
-                  <SensorContent />
-                </Box>
+                <SensorContent />
               </AppContext.Provider>
             </WindowManager.Window>
 

@@ -58,7 +58,7 @@ const TaskItiniaries = () => {
 
   return (
     <Box>
-      <Box display="flex" gap={1} mt={4} p={0.5} flexDirection={'column'}>
+      <Box display="flex" maxHeight={'100%'} gap={1} mt={4} p={0.5} flexDirection={'column'}>
         {data?.map((itinerary) => {
           const itinerary_tasks = tasks?.filter((task) => task.itinerary_id === itinerary.id);
           const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];

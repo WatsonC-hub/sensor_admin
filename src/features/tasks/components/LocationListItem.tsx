@@ -10,6 +10,7 @@ import {useTaskItinerary} from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
+import useBreakpoints from '~/hooks/useBreakpoints';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
@@ -26,6 +27,7 @@ const TripIcon = getIcon(
 
 const LocationListItem = ({itemData, onClick}: Props) => {
   const {tasks, setSelectedTask} = useTaskStore();
+  const {isMobile} = useBreakpoints();
   const {handleRef, ref} = useDraggable({
     id: itemData.loc_id,
     data: {loc_id: itemData.loc_id},
@@ -51,15 +53,17 @@ const LocationListItem = ({itemData, onClick}: Props) => {
         },
       }}
     >
-      <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
-        <DragIndicatorIcon ref={handleRef} sx={{cursor: 'grab'}} fontSize="small" />
-      </Box>
+      {!isMobile && (
+        <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
+          <DragIndicatorIcon ref={handleRef} sx={{cursor: 'grab'}} fontSize="small" />
+        </Box>
+      )}
       <Box
         display={'flex'}
         flexDirection={'column'}
         flexGrow={1}
         sx={{
-          py: 1,
+          py: 0.5,
           px: 1,
           cursor: 'pointer',
         }}
@@ -97,7 +101,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
             ?.sort((a, b) => Number(a.is_created) - Number(b.is_created))
             .map((task) => {
               return (
-                <Grid2 key={task.id} container p={1}>
+                <Grid2 key={task.id} container p={1} alignItems={'center'} flexGrow={1}>
                   <Grid2 size={8} alignContent={'center'} flexGrow={1}>
                     <Link
                       display={'flex'}
