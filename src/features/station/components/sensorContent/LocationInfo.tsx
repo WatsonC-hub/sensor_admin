@@ -19,59 +19,31 @@ const LocationInfo = () => {
       <Typography variant={'h6'} fontWeight={'bold'}>
         {location_data?.loc_name}
       </Typography>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
-        justifyContent={'space-between'}
-      >
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
         <Typography variant={'body2'}>Projekt info: </Typography>
         <Typography variant={'body2'}>{location_data?.customer_name}</Typography>
       </Box>
 
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
-        justifyContent={'space-between'}
-      >
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
         <Typography variant={'body2'}>Projekt nr.: </Typography>
-        <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
-          <Typography variant={'body2'}>{location_data?.projectno} </Typography>
+        <Box display={'flex'} flexDirection={'row'} gap={1}>
+          <Typography variant={'body2'}>{location_data?.projectno}</Typography>
           <Link
             href={`https://www.watsonc.dk/calypso/projekt/?project=${location_data?.projectno}`}
             target="_blank"
             rel="noopener"
           >
-            <OpenInNewIcon />
+            <OpenInNewIcon fontSize="small" />
           </Link>
         </Box>
       </Box>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
-        gap={1}
-        justifyContent={'space-between'}
-      >
+      <Box display={'flex'} flexDirection={'row'} gap={1} justifyContent={'space-between'}>
         <Typography variant={'body2'}>Lokationstype:</Typography>
         <Typography variant={'body2'}>{location_data?.loctype_name}</Typography>
       </Box>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        alignItems={'center'}
-        justifyContent={'space-between'}
-      >
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
         <Typography variant={'body2'}>Grupper:</Typography>
-        <Grid2
-          container
-          gap={0.25}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'end'}
-          alignItems={'center'}
-        >
+        <Grid2 container gap={0.25} display={'flex'} flexDirection={'row'} justifyContent={'end'}>
           {location_data && (
             <>
               {location_data.groups?.map((group, index, groups) => {
