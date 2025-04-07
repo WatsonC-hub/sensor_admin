@@ -8,7 +8,7 @@ interface ErrorPageProps {
 }
 
 const ErrorPage = ({error}: ErrorPageProps) => {
-  const {field} = useNavigationFunctions();
+  const {home} = useNavigationFunctions();
   return (
     <Box
       sx={{
@@ -23,7 +23,7 @@ const ErrorPage = ({error}: ErrorPageProps) => {
       </Typography>
       <Typography variant="body1" gutterBottom>
         Der er sket en fejl på siden.
-        <Link component="button" variant="body2" onClick={() => field()}>
+        <Link component="button" variant="body2" onClick={() => home()}>
           Gå til forside
         </Link>
       </Typography>

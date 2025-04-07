@@ -53,13 +53,13 @@ const LogOut = ({children}: {children?: ReactNode}) => {
 };
 
 export const HomeButton = () => {
-  const {field} = useNavigationFunctions();
+  const {home} = useNavigationFunctions();
 
   return (
     <IconButton
       color="inherit"
       onClick={() => {
-        field();
+        home();
       }}
       size="large"
     >

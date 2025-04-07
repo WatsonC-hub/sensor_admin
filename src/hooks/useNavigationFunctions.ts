@@ -18,7 +18,7 @@ export const useNavigationFunctions = () => {
   });
 
   const homeFunctions = {
-    home: () => navigate('/'),
+    home: () => navigate('/', {replace: true}),
     register: () => navigate('/register'),
   };
 

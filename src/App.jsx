@@ -14,14 +14,13 @@ import {useUser} from './features/auth/useUser';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
 
 function App() {
-  const {field} = useNavigationFunctions();
-  console.log('App.jsx: field', field);
+  const {home} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const user = useUser();
 
   useEffect(() => {
     if (isMobile && location.pathname == '/') {
-      field();
+      home();
     }
   }, [isMobile]);
 

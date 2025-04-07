@@ -175,11 +175,12 @@ const Window = ({
         mt: isMobile ? 'auto' : 1,
         bottom: 0,
         display: 'flex',
+        borderRadius: 3,
         flexDirection: 'column',
         height: height,
         width: isMobile ? undefined : width,
         maxHeight: '100vh',
-        overflow: 'auto',
+        overflow: 'hidden',
         backgroundColor: 'white',
         ...fullscreenprops,
         ...sx,
@@ -203,7 +204,7 @@ const Window = ({
           </IconButton>
         )}
       </Box>
-      {children}
+      <Box sx={{overflow: 'auto'}}>{children}</Box>
     </Box>
   );
 };

@@ -163,7 +163,6 @@ const TasksOverview = () => {
                 closeLocation();
               }}
               sx={{
-                borderRadius: isMobile ? 2.5 : undefined,
                 m: isMobile ? 0.5 : undefined,
               }}
             >
@@ -227,6 +226,9 @@ const TasksOverview = () => {
               minSize={2}
               maxSize={3}
               fullScreen={isMobile}
+              sx={{
+                borderRadius: isMobile ? 0 : 3,
+              }}
               height="100%"
             >
               <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>

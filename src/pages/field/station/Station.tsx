@@ -159,7 +159,7 @@ const Layout = ({children}: LayoutProps) => {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'row',
-          maxHeight: 'calc(100vh - 64px - 56px)',
+          height: `calc(100vh - 64px - 56px - ${isMobile ? 0 : 8}px)`,
           overflow: 'hidden',
         }}
       >

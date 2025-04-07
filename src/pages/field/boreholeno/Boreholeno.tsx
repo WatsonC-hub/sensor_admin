@@ -13,7 +13,6 @@ import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
@@ -34,7 +33,6 @@ import {
 const Boreholeno = () => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
   const queryClient = useQueryClient();
-  const {isMobile, isTouch} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
 

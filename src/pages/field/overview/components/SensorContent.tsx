@@ -52,7 +52,6 @@ const SensorContent = () => {
             <Button
               bttype="primary"
               startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
-              sx={{borderRadius: 2.5}}
             >
               Træk til tur
             </Button>
@@ -63,7 +62,6 @@ const SensorContent = () => {
               bttype="primary"
               onClick={() => setOpenTripDialog(true)}
               startIcon={<DriveEtaIcon sx={{cursor: 'auto'}} fontSize="small" />}
-              sx={{borderRadius: 2.5}}
             >
               Tilføj til tur
             </Button>
@@ -72,7 +70,6 @@ const SensorContent = () => {
 
         <Button
           bttype="primary"
-          sx={{borderRadius: 2.5}}
           onClick={() => setCreateTaskDialog(true)}
           startIcon={<AssignmentIcon fontSize="small" />}
         >
