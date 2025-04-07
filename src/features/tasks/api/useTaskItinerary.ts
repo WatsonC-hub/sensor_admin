@@ -1,4 +1,10 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -64,18 +70,38 @@ export const patchItineraryOptions = {
 //   },
 // };
 
-export const useTaskItinerary = (id?: string | null) => {
-  const queryClient = useQueryClient();
-
-  const get = useQuery<Taskitinerary[], APIError>({
+export const itineraryGetOptions = (itinerary_id?: string | null) =>
+  queryOptions<Taskitinerary[], APIError>({
     queryKey: ['itineraries'],
     queryFn: async () => {
       const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
       return data;
     },
-    enabled: id !== null,
+    enabled: itinerary_id !== null,
     staleTime: 1000 * 60 * 5,
   });
+
+type ItineraryOptions<T> = Partial<
+  Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
+>;
+
+export const useTaskItinerary = <T = Taskitinerary[]>(
+  id?: string | null,
+  options?: ItineraryOptions<T>
+) => {
+  const queryClient = useQueryClient();
+
+  const get = useQuery({
+    ...itineraryGetOptions(id),
+    ...options,
+    select: options?.select as (data: Taskitinerary[]) => T,
+  });
+
+  // const getByMonths = useQuery({
+  //   ...itineraryGetOptions(id),
+  //   ...options,
+  //   select: options?.select as (data: Taskitinerary[]) => T,
+  // });
 
   const getItinerary = useQuery<Taskitinerary, APIError>({
     queryKey: ['itineraries', id],

@@ -25,10 +25,6 @@ import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
 import {useTasks} from '../api/useTasks';
 import {useTaskStore} from '../api/useTaskStore';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
-
-// import {NotificationMap} from '~/hooks/query/useNotificationOverview';
-// import {BoreholeMapData} from '~/types';
 
 const TasksOverview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
@@ -151,6 +147,7 @@ const TasksOverview = () => {
                 // setSelectedData(null);
                 setLocList(false);
               }}
+              // fullScreen={isMobile}
               height={isMobile ? '50%' : '100%'}
             >
               <LocationList />
@@ -163,7 +160,6 @@ const TasksOverview = () => {
               height={isMobile ? '100%' : 'fit-content'}
               onClose={() => {
                 // setSelectedData(null);
-                console.log('this should work');
                 closeLocation();
               }}
               sx={{
