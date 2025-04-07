@@ -32,6 +32,11 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
     moveTask,
   } = useTasks();
 
+  const handleClose = () => {
+    onClose();
+    setItineraryId(null);
+  };
+
   const onSubmit = () => {
     // Get the tasks that belong to the selected itinerary
     const itinerary_tasks = tasks?.filter((task) => task.itinerary_id === itineraryId);
@@ -62,13 +67,13 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={handleClose}>
       <DialogTitle>Tilføj lokation til en tur</DialogTitle>
       <DialogContent>
         <Box p={2} m={2}>
           <Select
             fullWidth
-            sx={{width: 250}}
+            sx={{minWidth: 150}}
             value={itineraryId}
             onChange={(e) => setItineraryId(e.target.value)}
             defaultValue=""
@@ -84,7 +89,7 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button bttype="tertiary" onClick={onClose}>
+        <Button bttype="tertiary" onClick={handleClose}>
           Annuller
         </Button>
         <Button bttype="primary" onClick={onSubmit}>
