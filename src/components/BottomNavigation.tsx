@@ -50,9 +50,9 @@ const CustomBottomNavigation = <T extends string>({
       }}
       sx={{
         zIndex: 3,
-        position: 'fixed',
+        position: 'absolute',
         width: '100%',
-        bottom: 0,
+        bottom: isMobile ? 0 : 5,
         backgroundColor: 'primary.main',
       }}
     >

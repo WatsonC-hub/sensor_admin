@@ -27,19 +27,28 @@ export default function BoreholeRouter() {
         />
       </NavBar>
 
-      <main style={{flexGrow: 1, overflow: 'auto'}}>
+      <Box
+        component="main"
+        style={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          maxHeight: 'calc(100vh - 64px - 56px - 65px)',
+          overflow: 'hidden',
+        }}
+      >
         <Box
           display="flex"
-          flexDirection={'column'}
+          flexGrow={1}
+          minWidth={0}
           gap={1}
-          position={'relative'}
-          // height={'100%'}
-          //
+          flexDirection={'column'}
+          overflow="auto"
         >
           <Boreholeno />
         </Box>
-      </main>
-      <ActionAreaBorehole />
+        <ActionAreaBorehole />
+      </Box>
     </>
   );
 }

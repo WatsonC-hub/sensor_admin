@@ -15,7 +15,7 @@ import {
   convertDateWithTimeStamp,
   limitDecimalNumbers,
 } from '~/helpers/dateConverter';
-import {TableTypes} from '~/helpers/EnumHelper';
+import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {Kontrol} from '~/types';
@@ -147,7 +147,14 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useTable<Kontrol>(columns, data, options, undefined, TableTypes.LIST);
+  const table = useTable<Kontrol>(
+    columns,
+    data,
+    options,
+    undefined,
+    TableTypes.LIST,
+    MergeType.RECURSIVEMERGE
+  );
 
   return (
     <Box>
