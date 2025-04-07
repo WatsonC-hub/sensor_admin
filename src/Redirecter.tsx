@@ -1,4 +1,4 @@
-import React, {use, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Route, Routes, useLocation} from 'react-router-dom';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
@@ -7,9 +7,12 @@ import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useUser} from './features/auth/useUser';
 import TasksPage from './pages/admin/opgaver/TasksPage';
+import OpretStamdata from './pages/field/stamdata/OpretStamdata';
+import {AppContext} from './state/contexts';
 
 const Redirecter = () => {
   const {home} = useNavigationFunctions();
+  const [, setAddStationDisabled] = useState(false);
   const location = useLocation();
   const user = useUser();
 
@@ -26,6 +29,15 @@ const Redirecter = () => {
       <RemoveTrailingSlash />
       <Routes>
         <Route path="/" element={<TasksPage />} />
+        <Route
+          path="stamdata"
+          element={
+            <AppContext.Provider value={{}}>
+              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
+            </AppContext.Provider>
+          }
+        />
+
         {/* <Route
           path="/field/*"
           element={

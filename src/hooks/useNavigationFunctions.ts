@@ -58,14 +58,14 @@ export const useNavigationFunctions = () => {
         options
       ),
     borehole: (boreholeno: string, options?: NavigateOptions) =>
-      navigate('/field/borehole/' + boreholeno, options),
+      navigate('/borehole/' + boreholeno, options),
     boreholeIntake: (boreholeno: string, intake: number) => {
       setBoreholeNo(boreholeno);
       setIntakeNo(intake);
     },
     createStamdata: (tabValue?: string, options?: NavigateOptions) => {
-      if (tabValue) navigate('/field/stamdata?tab=' + tabValue, options);
-      else navigate('/field/stamdata', options);
+      if (tabValue) navigate('/stamdata?tab=' + tabValue, options);
+      else navigate('/stamdata', options);
     },
   };
 

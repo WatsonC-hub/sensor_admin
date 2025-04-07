@@ -1,3 +1,5 @@
+import AddIcon from '@mui/icons-material/Add';
+
 import {
   AddCircle,
   PhotoLibraryRounded,
@@ -43,6 +45,7 @@ import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory'
 import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {getImageOptions} from '../api/useImages';
 import {stationPages, StationPages} from '~/helpers/EnumHelper';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const drawerWidth = 200;
 
@@ -60,13 +63,13 @@ type DrawerItems = {
   text?: string;
   items: Item[];
   disabled?: boolean;
-  settings?: {
+  settings?: Array<{
     icon: ReactNode;
     page: StationPages;
     disabled?: boolean;
     requiredTsId: boolean;
     onHover?: () => void;
-  };
+  }>;
 };
 
 const navIconStyle = (isSelected: boolean) => {
@@ -79,6 +82,7 @@ const StationDrawer = () => {
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
+  const {createStamdata} = useNavigationFunctions();
 
   const handlePrefetch = <TData extends object>(
     options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
@@ -95,12 +99,19 @@ const StationDrawer = () => {
   const items: DrawerItems[] = [
     {
       text: 'Tidsserie',
-      settings: {
-        icon: <Edit />,
-        page: stationPages.GENERELTIDSSERIE,
-        requiredTsId: true,
-        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-      },
+      settings: [
+        {
+          icon: <AddIcon />,
+          page: stationPages.STAMDATA,
+          requiredTsId: false,
+        },
+        {
+          icon: <Edit />,
+          page: stationPages.GENERELTIDSSERIE,
+          requiredTsId: true,
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        },
+      ],
       items: [
         {
           text: 'Kontrol',
@@ -153,12 +164,14 @@ const StationDrawer = () => {
 
     {
       text: 'Lokation',
-      settings: {
-        page: stationPages.GENERELTLOKATION,
-        icon: <Edit />,
-        requiredTsId: false,
-        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-      },
+      settings: [
+        {
+          page: stationPages.GENERELTLOKATION,
+          icon: <Edit />,
+          requiredTsId: false,
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        },
+      ],
       items: [
         {
           text: 'Billeder',
@@ -217,21 +230,27 @@ const StationDrawer = () => {
             }}
           >
             <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-            {category.settings && (
-              <ListItemIcon
-                sx={{
-                  color: navIconStyle(pageToShow === category.settings.page),
-                  minWidth: 0,
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  if (category.settings) setPageToShow(category.settings.page);
-                  if (open) toggleDrawer(false);
-                }}
-              >
-                {category.settings.icon}
-              </ListItemIcon>
-            )}
+            <Box alignItems={'center'} display="flex" gap={1}>
+              {category.settings &&
+                category.settings.map((setting, index) => (
+                  <ListItemIcon
+                    key={index}
+                    sx={{
+                      color: navIconStyle(pageToShow === setting.page),
+                      minWidth: 0,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      if (setting.page === stationPages.STAMDATA) {
+                        createStamdata(undefined, {state: {...metadata}});
+                      } else setPageToShow(setting.page);
+                      if (open) toggleDrawer(false);
+                    }}
+                  >
+                    {setting.icon}
+                  </ListItemIcon>
+                ))}
+            </Box>
           </ListItem>
         }
         {category.items

@@ -1,4 +1,3 @@
-import AddIcon from '@mui/icons-material/Add';
 import {Box, Divider, Typography} from '@mui/material';
 import React, {ReactNode, useEffect} from 'react';
 
@@ -15,7 +14,6 @@ import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useDisplayState} from '~/hooks/ui';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import Pejling from '~/pages/field/station/pejling/Pejling';
@@ -112,9 +110,7 @@ interface LayoutProps {
 const Layout = ({children}: LayoutProps) => {
   const {isTouch, isMobile} = useBreakpoints();
   const {data: locationdata} = useLocationData();
-  const {data: metadata} = useTimeseriesData();
   const user = useUser();
-  const {createStamdata} = useNavigationFunctions();
   const setTsId = useDisplayState((state) => state.setTsId);
   const [pageToShow, setPageToShow] = useStationPages();
   return (
@@ -130,21 +126,6 @@ const Layout = ({children}: LayoutProps) => {
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
           {user?.adminAccess && <NotificationList />}
-          <NavBar.Menu
-            disableLogout
-            disableProfile
-            highligtFirst={false}
-            items={[
-              {
-                title: 'Opret tidsserie',
-                icon: <AddIcon />,
-                onClick: () => {
-                  createStamdata(undefined, {state: {...metadata}});
-                },
-              },
-            ]}
-          />
-
           <NavBar.Close
             onClick={() => {
               if (pageToShow) setPageToShow(null);
