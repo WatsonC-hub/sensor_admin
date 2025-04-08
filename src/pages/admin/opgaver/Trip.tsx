@@ -21,8 +21,7 @@ const Trip = () => {
 
   return (
     <Box mt={4} mb={isMobile ? 0 : 2}>
-      <Box display={'flex'} flexDirection={'column'} gap={2} m={'auto'} width={'100%'}>
-        <Divider />
+      <Box display={'flex'} flexDirection={'column'}>
         <TripPreparation data={data} />
       </Box>
     </Box>

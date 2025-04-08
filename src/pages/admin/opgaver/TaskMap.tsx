@@ -396,9 +396,7 @@ const Map = ({clickCallback}: MapProps) => {
       <Box position={'absolute'} zIndex={401} p={0} width={'100%'} mr={2}>
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
-      {/* <Box display="flex" position="relative" flexGrow={1}> */}
       <Box id="test" sx={{width: '100%', height: '100%'}} />
-      {/* </Box> */}
     </>
   );
 };
