@@ -140,7 +140,7 @@ const Layout = ({children}: LayoutProps) => {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'row',
-          height: `calc(100dvh - 64px - 56px - ${isMobile ? 0 : 8}px)`,
+          // height: `calc(100dvh - 64px - 56px - ${isMobile ? 0 : 8}px)`,
           overflow: 'hidden',
         }}
       >
@@ -155,8 +155,8 @@ const Layout = ({children}: LayoutProps) => {
         >
           {children}
         </Box>
-        {isMobile && <ActionArea />}
       </Box>
+      {isMobile && <ActionArea />}
     </>
   );
 };

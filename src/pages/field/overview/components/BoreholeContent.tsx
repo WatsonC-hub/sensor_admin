@@ -15,13 +15,13 @@ const BoreholeContent = () => {
   const {boreholeIntake} = useNavigationFunctions();
 
   if (data === undefined) {
-      return <Typography>Loading...</Typography>;
+    return <Typography>Loading...</Typography>;
   }
 
   const maxStatus = Math.max(...data.status);
 
   return (
-    <>
+    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
       <Box display="flex" alignItems="center" gap={1}>
         <Typography variant="body1">Status:</Typography>
         <TaskIcon color={boreholeColors[maxStatus].color} />
@@ -54,33 +54,7 @@ const BoreholeContent = () => {
           );
         })}
       </Box>
-
-      {/* <Box display="flex" gap={1} ml="auto" mr={0}>
-        <Button
-          bttype="tertiary"
-          color="primary"
-          onClick={() => {
-            window.open(
-              `https://www.google.com/maps/search/?api=1&query=${data.latitude},${data.longitude}`,
-              '_blank'
-            );
-          }}
-          startIcon={<DirectionsIcon />}
-        >
-          Google Maps
-        </Button>
-        <Button
-          bttype="primary"
-          color="primary"
-          onClick={() => {
-            borehole(data.boreholeno);
-          }}
-          startIcon={<PlaceIcon />}
-        >
-          Lokalitet
-        </Button>
-      </Box> */}
-    </>
+    </Box>
   );
 };
 

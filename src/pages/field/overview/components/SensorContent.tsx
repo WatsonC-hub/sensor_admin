@@ -34,7 +34,7 @@ const SensorContent = () => {
   });
 
   return (
-    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3}>
+    <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
       <LocationInfo />
       <TimeseriesList />
       <TaskList />

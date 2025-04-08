@@ -3,7 +3,6 @@ import {Box} from '@mui/material';
 import React from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import {calculateContentHeight} from '~/consts';
 import TaskMap from '~/pages/admin/opgaver/TaskMap';
 import TaskInfo from './TaskInfo';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
@@ -93,8 +92,15 @@ const TasksOverview = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column">
-      <Box
+    <Box
+      display="flex"
+      flexDirection="column"
+      flexGrow={1}
+      overflow="hidden"
+      alignItems="stretch"
+      position="relative"
+    >
+      {/* <Box
         justifyContent={'center'}
         alignSelf={'center'}
         sx={{
@@ -106,157 +112,155 @@ const TasksOverview = () => {
           overflow: 'hidden',
           backgroundColor: 'white',
         }}
+      > */}
+      <Box
+        sx={{
+          height: '100%',
+        }}
       >
-        <Box
-          sx={{
-            position: 'absolute',
-            display: 'flex',
-            flexDirection: 'column',
-            height: calculateContentHeight(64),
-            width: '100%',
-            overflow: 'hidden',
-          }}
-        >
-          <TaskMap key="taskmap" clickCallback={clickCallback} />
-        </Box>
-        <DragDropProvider
-          key={loc_id}
-          onDragStart={() => {
-            if (!trip_list && !isTouch) setTripList(true);
-          }}
-          onDragEnd={handleDrop}
-        >
-          <WindowManager minColumnWidth={400}>
-            <WindowManager.Window
-              key="triplist"
-              show={trip_list}
-              minSize={1}
-              onClose={() => {
-                // setSelectedData(null);
-                setTripList(false);
-              }}
-              sx={{
-                borderBottomLeftRadius: isMobile ? 0 : 3,
-              }}
-              height={isMobile ? '50%' : '100%'}
-            >
-              <TaskItiniaries />
-            </WindowManager.Window>
-            <WindowManager.Window
-              key="locationlist"
-              show={loc_list}
-              minSize={1}
-              onClose={() => {
-                // setSelectedData(null);
-                setLocList(false);
-              }}
-              // fullScreen={isMobile}
-              sx={{
-                borderBottomLeftRadius: isMobile ? 0 : 3,
-              }}
-              height={isMobile ? '50%' : '100%'}
-            >
-              <LocationList />
-            </WindowManager.Window>
-
-            <WindowManager.Window
-              key="location"
-              show={loc_id !== null}
-              minSize={1}
-              height={isMobile ? '100%' : 'fit-content'}
-              onClose={() => {
-                // setSelectedData(null);
-                closeLocation();
-              }}
-              sx={{
-                m: isMobile ? 0.5 : undefined,
-              }}
-            >
-              <AppContext.Provider value={{loc_id: loc_id!}}>
-                <SensorContent />
-              </AppContext.Provider>
-            </WindowManager.Window>
-
-            <WindowManager.Window
-              key="itinerary"
-              show={itinerary_id !== null}
-              minSize={1}
-              onClose={() => setItineraryId(null)}
-              height="100%"
-            >
-              <Trip />
-            </WindowManager.Window>
-
-            <WindowManager.Window
-              key="boreholeinfo"
-              show={boreholeno !== null}
-              minSize={1}
-              onClose={() => {
-                // setSelectedData(null);
-                setBoreholeNo(null);
-              }}
-            >
-              <AppContext.Provider value={{boreholeno: boreholeno!}}>
-                <BoreholeContent />
-              </AppContext.Provider>
-            </WindowManager.Window>
-
-            <WindowManager.Window
-              key="taskinfo"
-              show={selectedTask !== null}
-              minSize={2}
-              onClose={() => setSelectedTask(null)}
-            >
-              <Box p={1}>
-                <TaskInfo />
-              </Box>
-            </WindowManager.Window>
-
-            <WindowManager.Window
-              key="boreholepage"
-              show={boreholeno !== null && intakeno !== null}
-              minSize={2}
-              maxSize={4}
-              fullScreen={isMobile}
-              height="100%"
-            >
-              <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
-                <BoreholeRouter />
-              </AppContext.Provider>
-            </WindowManager.Window>
-
-            <WindowManager.Window
-              key="station"
-              id="station"
-              show={ts_id !== null}
-              minSize={2}
-              maxSize={3}
-              fullScreen={isMobile}
-              sx={{
-                borderRadius: isMobile ? 0 : 3,
-              }}
-              height="100%"
-            >
-              <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
-                <Station />
-              </AppContext.Provider>
-            </WindowManager.Window>
-
-            <WindowManager.Window
-              key="locationstation"
-              show={loc_id !== null && locationData?.timeseries.length === 0}
-              minSize={2}
-              maxSize={3}
-              onClose={() => setSelectedTask(null)}
-              height="100%"
-            >
-              <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
-                <LocationRouter />
-              </AppContext.Provider>
-            </WindowManager.Window>
-          </WindowManager>
-        </DragDropProvider>
+        <TaskMap key="taskmap" clickCallback={clickCallback} />
       </Box>
+      <DragDropProvider
+        key={loc_id}
+        onDragStart={() => {
+          if (!trip_list && !isTouch) setTripList(true);
+        }}
+        onDragEnd={handleDrop}
+      >
+        <WindowManager minColumnWidth={400}>
+          <WindowManager.Window
+            key="triplist"
+            show={trip_list}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setTripList(false);
+            }}
+            sx={{
+              borderBottomLeftRadius: isMobile ? 0 : 3,
+            }}
+            height={isMobile ? '50%' : '100%'}
+          >
+            <TaskItiniaries />
+          </WindowManager.Window>
+          <WindowManager.Window
+            key="locationlist"
+            show={loc_list}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setLocList(false);
+            }}
+            // fullScreen={isMobile}
+            sx={{
+              borderBottomLeftRadius: isMobile ? 0 : 3,
+            }}
+            height={isMobile ? '50%' : '100%'}
+          >
+            <LocationList />
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="location"
+            show={loc_id !== null}
+            minSize={1}
+            height={isMobile ? '100%' : 'fit-content'}
+            onClose={() => {
+              // setSelectedData(null);
+              closeLocation();
+            }}
+            sx={{
+              m: isMobile ? 0.5 : undefined,
+            }}
+          >
+            <AppContext.Provider value={{loc_id: loc_id!}}>
+              <SensorContent />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="itinerary"
+            show={itinerary_id !== null}
+            minSize={1}
+            onClose={() => setItineraryId(null)}
+            height="100%"
+          >
+            <Trip />
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="boreholeinfo"
+            show={boreholeno !== null}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setBoreholeNo(null);
+            }}
+          >
+            <AppContext.Provider value={{boreholeno: boreholeno!}}>
+              <BoreholeContent />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="taskinfo"
+            show={selectedTask !== null}
+            minSize={2}
+            onClose={() => setSelectedTask(null)}
+          >
+            <Box p={1}>
+              <TaskInfo />
+            </Box>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="boreholepage"
+            show={boreholeno !== null && intakeno !== null}
+            minSize={2}
+            maxSize={4}
+            fullScreen={isMobile}
+            height="100%"
+            sx={{
+              borderRadius: isMobile ? 0 : 3,
+            }}
+          >
+            <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
+              <BoreholeRouter />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="station"
+            id="station"
+            show={ts_id !== null}
+            minSize={2}
+            maxSize={3}
+            fullScreen={isMobile}
+            sx={{
+              borderRadius: isMobile ? 0 : 3,
+            }}
+            height="100%"
+          >
+            <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
+              <Station />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="locationstation"
+            show={loc_id !== null && locationData?.timeseries.length === 0}
+            minSize={2}
+            maxSize={3}
+            onClose={() => setSelectedTask(null)}
+            height="100%"
+          >
+            <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
+              <LocationRouter />
+            </AppContext.Provider>
+          </WindowManager.Window>
+        </WindowManager>
+      </DragDropProvider>
+      {/* </Box> */}
     </Box>
   );
 };

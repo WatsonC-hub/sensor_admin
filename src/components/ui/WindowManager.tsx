@@ -36,6 +36,8 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
           // ml: 'auto',
           display: 'flex',
           flexDirection: 'column',
+          position: 'absolute',
+          pt: 1,
         }}
       >
         {cloneElement(arrayedChildren[arrayedChildren.length - 1], {width: '100%'})}
@@ -117,6 +119,8 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
         display: 'flex',
         flexDirection: 'row-reverse',
         gap: 0.75,
+        position: 'absolute',
+        py: 1,
       }}
     >
       {shownChildren}
@@ -172,19 +176,19 @@ const Window = ({
       sx={{
         position: 'relative',
         pointerEvents: 'auto',
-        mt: isMobile ? 'auto' : 1,
         bottom: 0,
         display: 'flex',
         borderRadius: 3,
         flexDirection: 'column',
         height: height,
+        mt: isMobile ? 'auto' : undefined,
         width: isMobile ? undefined : width,
         maxHeight: '100vh',
         overflow: 'hidden',
         backgroundColor: 'white',
         ...fullscreenprops,
         ...sx,
-        paddingBottom: 'env(safe-area-inset-bottom, 0)',
+        // paddingBottom: 'env(safe-area-inset-bottom, 0)',
       }}
     >
       <Box
@@ -204,7 +208,9 @@ const Window = ({
           </IconButton>
         )}
       </Box>
-      <Box sx={{overflow: 'auto'}}>{children}</Box>
+      <Box display="flex" height="100%" flexDirection={'column'} overflow="hidden">
+        {children}
+      </Box>
     </Box>
   );
 };

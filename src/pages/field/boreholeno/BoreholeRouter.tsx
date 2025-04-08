@@ -32,8 +32,8 @@ export default function BoreholeRouter() {
         style={{
           flexGrow: 1,
           display: 'flex',
-          flexDirection: 'row',
-          maxHeight: 'calc(100vh - 64px - 56px - 65px)',
+          flexDirection: 'column',
+          // height: `calc(100dvh - 64px - 56px - ${isMobile ? 0 : 8}px)`,
           overflow: 'hidden',
         }}
       >
