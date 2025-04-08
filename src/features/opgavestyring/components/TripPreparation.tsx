@@ -16,7 +16,12 @@ interface TripPreparationProps {
 
 const TripPreparation = ({data}: TripPreparationProps) => {
   return (
-    <Box display={'flex'} flexDirection={'column'} gap={1}>
+    <Box
+      display={'flex'}
+      flexDirection={'column'}
+      gap={1}
+      // sx={{paddingBottom: 'env(--safe-area-inset-bottom, 16px)'}}
+    >
       {/* <Typography ml={2} variant="h5">
         Kontakter
       </Typography>

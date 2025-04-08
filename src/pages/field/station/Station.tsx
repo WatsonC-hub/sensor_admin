@@ -115,7 +115,7 @@ const Layout = ({children}: LayoutProps) => {
   const [pageToShow, setPageToShow] = useStationPages();
   return (
     <>
-      <NavBar>
+      <NavBar key={'station'} zIndex={9999}>
         {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
           <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
@@ -140,7 +140,7 @@ const Layout = ({children}: LayoutProps) => {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'row',
-          height: `calc(100vh - 64px - 56px - ${isMobile ? 0 : 8}px)`,
+          height: `calc(100dvh - 64px - 56px - ${isMobile ? 0 : 8}px)`,
           overflow: 'hidden',
         }}
       >

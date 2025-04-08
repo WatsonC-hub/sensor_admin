@@ -102,7 +102,7 @@ export const qaHistorySkeletonHeight = '40px';
 export const tabsHeight = '48px';
 
 export const calculateContentHeight = (pixelToSubtract: number) => {
-  return `calc(100vh - ${pixelToSubtract}px)`;
+  return `calc(100dvh - ${pixelToSubtract}px)`;
 };
 
 export const setTableBoxStyle = (pixelToSubtract: number) => {

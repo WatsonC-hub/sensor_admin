@@ -52,7 +52,8 @@ const CustomBottomNavigation = <T extends string>({
         zIndex: 3,
         position: 'absolute',
         width: '100%',
-        bottom: isMobile ? 0 : 5,
+        bottom: 0,
+        // height: 'fit-content',
         backgroundColor: 'primary.main',
       }}
     >

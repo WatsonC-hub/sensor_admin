@@ -93,7 +93,7 @@ const TasksOverview = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" maxHeight={`calc(100vh-68px)`}>
+    <Box display="flex" flexDirection="column">
       <Box
         justifyContent={'center'}
         alignSelf={'center'}
@@ -135,6 +135,9 @@ const TasksOverview = () => {
                 // setSelectedData(null);
                 setTripList(false);
               }}
+              sx={{
+                borderBottomLeftRadius: isMobile ? 0 : 3,
+              }}
               height={isMobile ? '50%' : '100%'}
             >
               <TaskItiniaries />
@@ -148,6 +151,9 @@ const TasksOverview = () => {
                 setLocList(false);
               }}
               // fullScreen={isMobile}
+              sx={{
+                borderBottomLeftRadius: isMobile ? 0 : 3,
+              }}
               height={isMobile ? '50%' : '100%'}
             >
               <LocationList />
