@@ -53,8 +53,9 @@ const CustomBottomNavigation = <T extends string>({
         position: 'absolute',
         width: '100%',
         bottom: 0,
-        // height: 'fit-content',
+        height: 56 + 'env(safe-area-inset-bottom, 0)',
         backgroundColor: 'primary.main',
+        paddingBottom: 'env(safe-area-inset-bottom, 0)',
       }}
     >
       {visibleItems
