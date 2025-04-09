@@ -46,6 +46,11 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     <>
       {disable == false && (
         <Autocomplete
+          sx={{
+            marginTop: '8px',
+            marginBottom: '4px',
+            pb: 1.5,
+          }}
           forcePopupIcon={false}
           value={selectedValue}
           onChange={(event, newValue) => {
@@ -110,7 +115,9 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
           value={getLabel(selectedValue)}
           disabled
           sx={{
-            pb: 0,
+            marginTop: '8px',
+            marginBottom: '4px',
+            pb: 1.5,
             '& .MuiInputBase-input.Mui-disabled': {WebkitTextFillColor: '#000000'},
             '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
             '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
