@@ -10,7 +10,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  {ignores: ['dist']},
+  {ignores: ['dist', 'dev-dist']},
   {
     // specify the formats on which to apply the rules below
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -70,6 +70,7 @@ export default tseslint.config(
       'import/default': 'off',
       'import/no-named-as-default-member': 'off',
       'import/no-named-as-default': 'off',
+      'import/no-unused-modules': 'error',
       'check-file/filename-naming-convention': [
         'error',
         {'**/*.{tsx}': 'PASCAL_CASE', '**/*.{ts}': 'CAMEL_CASE'},

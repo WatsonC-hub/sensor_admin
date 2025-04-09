@@ -5,7 +5,7 @@ import {ErrorBoundary} from 'react-error-boundary';
 
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
-import Redirecter from '~/Redirecter';
+import Home from '~/Home';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 import useBreakpoints from './hooks/useBreakpoints';
@@ -70,7 +70,7 @@ function App() {
     >
       <Suspense fallback={<LoadingSkeleton />}>
         <DisplayStateProvider>
-          <Redirecter />
+          <Home />
         </DisplayStateProvider>
       </Suspense>
     </ErrorBoundary>

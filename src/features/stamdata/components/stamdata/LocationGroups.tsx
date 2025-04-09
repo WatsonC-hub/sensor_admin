@@ -7,7 +7,7 @@ import {Noop} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {getGroupLink} from '~/helpers/links';
-import {apiClient} from '~/pages/field/fieldAPI';
+import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 
 const filter = createFilterOptions<Group>({

@@ -33,4 +33,4 @@ const loginAPI = async (inputdata) => {
   return data;
 };
 
-export {apiClient, createUser, getCvr, getDTMQuota, loginAPI, resetPassword};
+export {createUser, getCvr, getDTMQuota, loginAPI, resetPassword};

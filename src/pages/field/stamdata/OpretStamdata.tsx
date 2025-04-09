@@ -44,16 +44,12 @@ function TabPanel({value, index, children, ...other}: TabPanelProps) {
   );
 }
 
-interface OpretStamdataProps {
-  setAddStationDisabled: (value: boolean) => void;
-}
-
 type CreateValues = z.infer<typeof metadataSchema>;
 type Timeseries = CreateValues['timeseries'];
 type Unit = CreateValues['unit'];
 type Watlevmp = CreateValues['watlevmp'];
 
-export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
+export default function OpretStamdata() {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -124,7 +120,6 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
   const cancel = () => {
     navigate(-1);
-    setAddStationDisabled(false);
   };
 
   const nextTab = async () => {
