@@ -1,23 +1,17 @@
-import {zodResolver} from '@hookform/resolvers/zod';
-import {Save} from '@mui/icons-material';
 import {MenuItem} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {ChangeEvent, useEffect} from 'react';
-import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
+import {useFormContext, Controller} from 'react-hook-form';
 import {apiClient} from '~/apiClient';
-import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
-import {defaultSchema, DGUSchema, dynamicSchemaType} from '~/features/station/schema';
+import {dynamicSchemaType} from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
 
-type StamdataFormProps = {
-  onSubmit: (data: dynamicSchemaType, formMethods: UseFormReturn<dynamicSchemaType>) => void;
-  defaultValues?: Partial<dynamicSchemaType>;
-  children?: React.ReactNode;
-  onError?: (error: any) => void;
+type Props = {
+  children: React.ReactNode;
 };
 
 type locationType = {
@@ -25,39 +19,16 @@ type locationType = {
   loctypename: string;
 };
 
-const StamdataFormContext = React.createContext(
+const StamdataLocationContext = React.createContext(
   {} as {
-    onSubmit: (data: dynamicSchemaType) => void;
-    onError?: (error: any) => void;
     refetchDTM: () => void;
   }
 );
 
-const StamdataForm = ({
-  onSubmit,
-  children,
-  defaultValues,
-  onError = (error) => console.log(error),
-}: StamdataFormProps) => {
-  const formMethods = useForm<dynamicSchemaType>({
-    resolver: (...opts) => {
-      const loctype_id = opts[0].location.loctype_id;
-      if (loctype_id == 9) {
-        return zodResolver(DGUSchema)(...opts);
-      }
-      return zodResolver(defaultSchema)(...opts);
-    },
-    defaultValues: defaultValues,
-    mode: 'onChange',
-  });
-  const {
-    reset,
-    getValues,
-    setValue,
-    formState: {errors},
-  } = formMethods;
+const StamdataLocation = ({children}: Props) => {
+  const {setValue, getValues, watch} = useFormContext<dynamicSchemaType>();
 
-  console.log('StamdataForm errors', errors);
+  const loctype_id = watch('location.loctype_id');
 
   const {
     data: DTMData,
@@ -68,7 +39,7 @@ const StamdataForm = ({
     queryFn: () => getDTMQuota(getValues('location.x'), getValues('location.y')),
     refetchOnWindowFocus: false,
     enabled:
-      (!defaultValues?.location?.loctype_id || defaultValues.location.loctype_id !== -1) &&
+      (!loctype_id || loctype_id !== -1) &&
       getValues('location.x') !== undefined &&
       getValues('location.y') !== undefined,
   });
@@ -79,52 +50,14 @@ const StamdataForm = ({
     }
   }, [DTMData, getValues('location.terrainQuality')]);
 
-  const handleSubmit = (data: dynamicSchemaType) => {
-    onSubmit(data, formMethods);
-  };
-
-  useEffect(() => {
-    if (defaultValues) {
-      reset(defaultValues);
-    }
-  }, [defaultValues, reset]);
-
   return (
-    <StamdataFormContext.Provider value={{onSubmit: handleSubmit, onError, refetchDTM}}>
-      <FormProvider {...formMethods}>{children}</FormProvider>
-    </StamdataFormContext.Provider>
-  );
-};
-
-const StamdataCancelButton = () => {
-  const {reset, watch} = useFormContext<dynamicSchemaType>();
-  const loctype_id = watch('location.loctype_id');
-  const handleCancel = () => {
-    reset();
-  };
-
-  return (
-    <Button bttype="tertiary" fullWidth={false} disabled={loctype_id === -1} onClick={handleCancel}>
-      Annuller
-    </Button>
-  );
-};
-
-const StamdataSubmitButton = () => {
-  const {handleSubmit, watch} = useFormContext<dynamicSchemaType>();
-  const {onSubmit, onError} = React.useContext(StamdataFormContext);
-  const loctype_id = watch('location.loctype_id');
-
-  return (
-    <Button
-      bttype="primary"
-      fullWidth={false}
-      startIcon={<Save />}
-      disabled={loctype_id === -1}
-      onClick={handleSubmit(onSubmit, onError)}
+    <StamdataLocationContext.Provider
+      value={{
+        refetchDTM: refetchDTM,
+      }}
     >
-      Gem
-    </Button>
+      {children}
+    </StamdataLocationContext.Provider>
   );
 };
 
@@ -161,7 +94,7 @@ const LoctypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) =
 
 const XInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   const {watch} = useFormContext<dynamicSchemaType>();
-  const {refetchDTM} = React.useContext(StamdataFormContext);
+  const {refetchDTM} = React.useContext(StamdataLocationContext);
   const loctype_id = watch('location.loctype_id');
   const watchTerrainqual = watch('location.terrainQuality', '');
 
@@ -190,7 +123,7 @@ const XInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
 
 const YInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   const {watch} = useFormContext<dynamicSchemaType>();
-  const {refetchDTM} = React.useContext(StamdataFormContext);
+  const {refetchDTM} = React.useContext(StamdataLocationContext);
   const loctype_id = watch('location.loctype_id');
   const watchTerrainqual = watch('location.terrainQuality', '');
 
@@ -236,7 +169,7 @@ const TerrainQuoteInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'
 
 const TerrainQualityInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   const {watch} = useFormContext<dynamicSchemaType>();
-  const {refetchDTM} = React.useContext(StamdataFormContext);
+  const {refetchDTM} = React.useContext(StamdataLocationContext);
   const loctype_id = watch('location.loctype_id');
   const disable = loctype_id === -1;
 
@@ -328,15 +261,13 @@ const InitialProjectNoInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'n
   );
 };
 
-StamdataForm.SubmitButton = StamdataSubmitButton;
-StamdataForm.CancelButton = StamdataCancelButton;
-StamdataForm.LoctypeSelect = LoctypeSelect;
-StamdataForm.XInput = XInput;
-StamdataForm.YInput = YInput;
-StamdataForm.TerrainQuoteInput = TerrainQuoteInput;
-StamdataForm.TerrainQualityInput = TerrainQualityInput;
-StamdataForm.LocnameInput = LocnameInput;
-StamdataForm.GroupsInput = GroupsInput;
-StamdataForm.InitialProjectNoInput = InitialProjectNoInput;
+StamdataLocation.LoctypeSelect = LoctypeSelect;
+StamdataLocation.XInput = XInput;
+StamdataLocation.YInput = YInput;
+StamdataLocation.TerrainQuoteInput = TerrainQuoteInput;
+StamdataLocation.TerrainQualityInput = TerrainQualityInput;
+StamdataLocation.LocnameInput = LocnameInput;
+StamdataLocation.GroupsInput = GroupsInput;
+StamdataLocation.InitialProjectNoInput = InitialProjectNoInput;
 
-export default StamdataForm;
+export default StamdataLocation;

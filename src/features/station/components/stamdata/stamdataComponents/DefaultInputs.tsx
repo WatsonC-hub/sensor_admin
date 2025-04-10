@@ -1,7 +1,7 @@
 import {Grid2} from '@mui/material';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
-import StamdataForm from './StamdataForm';
+import StamdataLocation from '../StamdataLocation';
 
 type Props = {
   size: number;
@@ -10,7 +10,7 @@ type Props = {
 const DefaultInputs = ({size}: Props) => {
   const {watch} = useFormContext();
 
-  const loctype_id = watch('loctype_id');
+  const loctype_id = watch('location.loctype_id');
 
   if (loctype_id === -1 || loctype_id === 9) {
     return null;
@@ -19,26 +19,26 @@ const DefaultInputs = ({size}: Props) => {
   return (
     <>
       <Grid2 size={size}>
-        <StamdataForm.LocnameInput />
+        <StamdataLocation.LocnameInput />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataForm.InitialProjectNoInput />
+        <StamdataLocation.InitialProjectNoInput />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataForm.GroupsInput />
+        <StamdataLocation.GroupsInput />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataForm.XInput />
+        <StamdataLocation.XInput />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataForm.YInput />
+        <StamdataLocation.YInput />
       </Grid2>
       <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
         <Grid2 size={9}>
-          <StamdataForm.TerrainQuoteInput />
+          <StamdataLocation.TerrainQuoteInput />
         </Grid2>
         <Grid2 size={3}>
-          <StamdataForm.TerrainQualityInput />
+          <StamdataLocation.TerrainQualityInput />
         </Grid2>
       </Grid2>
     </>

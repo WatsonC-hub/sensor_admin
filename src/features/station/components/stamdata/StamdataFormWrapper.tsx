@@ -2,11 +2,11 @@ import {LocationOnRounded, ShowChartRounded, BuildRounded, Error} from '@mui/ico
 import {Tabs, Tab, Typography, Grid2, Box} from '@mui/material';
 import React, {ReactNode} from 'react';
 import {tabsHeight} from '~/consts';
-import DefaultInputs from './DefaultInputs';
-import DGUInputs from './DGUInputs';
-import StamdataForm from './StamdataForm';
+import DefaultInputs from './stamdataComponents/DefaultInputs';
+import DGUInputs from '../DGUInputs';
 import {useCreateTabState} from '~/hooks/useQueryStateParameters';
 import {useFormContext} from 'react-hook-form';
+import StamdataLocation from './StamdataLocation';
 
 type Props = {
   size: number;
@@ -32,7 +32,7 @@ function TabPanel({value, index, children}: TabPanelProps) {
   );
 }
 
-const TabComponent = ({size}: Props) => {
+const StamdataFormWrapper = ({size}: Props) => {
   const [tabValue, setTabValue] = useCreateTabState();
   const {
     formState: {errors},
@@ -92,7 +92,7 @@ const TabComponent = ({size}: Props) => {
       </Tabs>
       <TabPanel value={tabValue} index={'lokation'}>
         <Grid2 size={size}>
-          <StamdataForm.LoctypeSelect />
+          <StamdataLocation.LoctypeSelect />
         </Grid2>
         <Grid2 container size={12} spacing={1}>
           <DefaultInputs size={size} />
@@ -109,4 +109,4 @@ const TabComponent = ({size}: Props) => {
   );
 };
 
-export default TabComponent;
+export default StamdataFormWrapper;
