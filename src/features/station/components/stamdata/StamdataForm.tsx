@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import {FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import Button from '~/components/Button';
 import {
+  BaseLocation,
   defaultSchema,
   DGUSchema,
   dynamicSchemaType,
@@ -70,8 +71,8 @@ const StamdataForm = ({
 };
 
 const StamdataCancelButton = () => {
-  const {reset, watch} = useFormContext<dynamicSchemaType>();
-  const loctype_id = watch('location.loctype_id');
+  const {reset, watch} = useFormContext<BaseLocation>();
+  const loctype_id = watch('loctype_id');
   const handleCancel = () => {
     reset();
   };
@@ -84,9 +85,9 @@ const StamdataCancelButton = () => {
 };
 
 const StamdataSubmitButton = () => {
-  const {handleSubmit, watch} = useFormContext<dynamicSchemaType>();
+  const {handleSubmit, watch} = useFormContext<BaseLocation>();
   const {onSubmit, onError} = React.useContext(StamdataFormContext);
-  const loctype_id = watch('location.loctype_id');
+  const loctype_id = watch('loctype_id');
 
   return (
     <Button

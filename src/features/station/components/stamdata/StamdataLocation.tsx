@@ -19,45 +19,43 @@ type locationType = {
   loctypename: string;
 };
 
-const StamdataLocationContext = React.createContext(
+const LocationContext = React.createContext(
   {} as {
     refetchDTM: () => void;
   }
 );
 
 const StamdataLocation = ({children}: Props) => {
-  const {setValue, getValues, watch} = useFormContext<dynamicSchemaType>();
+  const {setValue, watch} = useFormContext();
 
-  const loctype_id = watch('location.loctype_id');
-
+  const x = watch('x');
+  const y = watch('y');
+  const terrainqual = watch('terrainQuality', '');
   const {
     data: DTMData,
     isSuccess,
     refetch: refetchDTM,
   } = useQuery({
     queryKey: ['dtm'],
-    queryFn: () => getDTMQuota(getValues('location.x'), getValues('location.y')),
+    queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
-    enabled:
-      (!loctype_id || loctype_id !== -1) &&
-      getValues('location.x') !== undefined &&
-      getValues('location.y') !== undefined,
+    enabled: x !== undefined && y !== undefined,
   });
 
   useEffect(() => {
     if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
-      setValue('location.terrainQuote', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
+      setValue('terrainQuote', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
     }
-  }, [DTMData, getValues('location.terrainQuality')]);
+  }, [DTMData, terrainqual]);
 
   return (
-    <StamdataLocationContext.Provider
+    <LocationContext.Provider
       value={{
-        refetchDTM: refetchDTM,
+        refetchDTM,
       }}
     >
       {children}
-    </StamdataLocationContext.Provider>
+    </LocationContext.Provider>
   );
 };
 
@@ -73,7 +71,7 @@ const LoctypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) =
 
   return (
     <FormInput
-      name="location.loctype_id"
+      name="loctype_id"
       label="Lokationstype"
       placeholder="Vælg type"
       select
@@ -92,20 +90,18 @@ const LoctypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) =
   );
 };
 
-const XInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {watch} = useFormContext<dynamicSchemaType>();
-  const {refetchDTM} = React.useContext(StamdataLocationContext);
-  const loctype_id = watch('location.loctype_id');
-  const watchTerrainqual = watch('location.terrainQuality', '');
+const X = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+  const {watch} = useFormContext();
+  const {refetchDTM} = React.useContext(LocationContext);
+  const watchTerrainqual = watch('terrainQuality', '');
 
   return (
     <FormInput
-      name="location.x"
+      name="x"
       label="X koordinat"
       type="number"
       required
       placeholder="Indtast X-koordinat"
-      disabled={loctype_id === -1}
       warning={(value) => {
         if (value < 400000 || value > 900000) {
           return 'X-koordinat er uden for Danmark';
@@ -121,20 +117,18 @@ const XInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
-const YInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {watch} = useFormContext<dynamicSchemaType>();
-  const {refetchDTM} = React.useContext(StamdataLocationContext);
-  const loctype_id = watch('location.loctype_id');
-  const watchTerrainqual = watch('location.terrainQuality', '');
+const Y = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+  const {watch} = useFormContext();
+  const {refetchDTM} = React.useContext(LocationContext);
+  const watchTerrainqual = watch('terrainQuality', '');
 
   return (
     <FormInput
-      name="location.y"
+      name="y"
       label="Y koordinat"
       type="number"
       required
       placeholder="Indtast Y-koordinat"
-      disabled={loctype_id === -1}
       warning={(value) => {
         if (value < 600000 || value > 9000000) {
           return 'Y-koordinat er uden for Danmark';
@@ -150,36 +144,28 @@ const YInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
-const TerrainQuoteInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {watch} = useFormContext<dynamicSchemaType>();
-  const loctype_id = watch('location.loctype_id');
-
+const TerrainQuote = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   return (
     <FormInput
-      name="location.terrainQuote"
+      name="terrainlevel"
       label="Terræn kote"
       type="number"
       required
       placeholder="Indtast terræn kote"
-      disabled={loctype_id === -1}
       {...props}
     />
   );
 };
 
-const TerrainQualityInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {watch} = useFormContext<dynamicSchemaType>();
-  const {refetchDTM} = React.useContext(StamdataLocationContext);
-  const loctype_id = watch('location.loctype_id');
-  const disable = loctype_id === -1;
+const TerrainQuality = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+  const {refetchDTM} = React.useContext(LocationContext);
 
   return (
     <FormInput
-      name="location.terrainQuality"
+      name="terrainqual"
       label="Type af terrænkote"
       select
       fullWidth
-      disabled={disable}
       onChangeCallback={(e) => {
         if ((e as ChangeEvent<HTMLTextAreaElement>).target.value === 'DTM') {
           refetchDTM();
@@ -194,51 +180,45 @@ const TerrainQualityInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'nam
   );
 };
 
-const LocnameInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {watch} = useFormContext<dynamicSchemaType>();
-  const loctype_id = watch('location.loctype_id');
+const Locname = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   return (
     <FormInput
-      name="location.loc_name"
+      name="loc_name"
       label="Lokationsnavn"
       required
       placeholder="f.eks. Engsø"
       fullWidth
-      disabled={loctype_id === -1}
       {...props}
     />
   );
 };
 
-const GroupsInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {control, watch} = useFormContext();
-  const loctype_id = watch('location.loctype_id');
+const Groups = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+  const {control} = useFormContext();
   return (
     <Controller
-      name="location.groups"
+      name="groups"
       control={control}
       render={({field: {onChange, value, onBlur}}) => (
         <LocationGroups
           value={value}
           setValue={onChange}
           onBlur={onBlur}
-          disable={loctype_id === -1}
+          disable={props.disabled}
         />
       )}
-      disabled={loctype_id === -1}
       {...props}
     />
   );
 };
 
-const InitialProjectNoInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const InitialProjectNo = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   const user = useUser();
-  const {control, watch} = useFormContext();
-  const loctype_id = watch('location.loctype_id');
+  const {control} = useFormContext();
 
   return (
     <Controller
-      name="location.initial_project_no"
+      name="initial_project_no"
       control={control}
       render={({field: {onChange, value, onBlur}, fieldState: {error}}) => (
         <LocationProjects
@@ -246,7 +226,7 @@ const InitialProjectNoInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'n
           setValue={onChange}
           onBlur={onBlur}
           error={error}
-          disable={user?.superUser === false || loctype_id === -1}
+          disable={user?.superUser === false || props.disabled}
           //   disable={
           //     disable ||
           //     (getValues().unit !== undefined &&
@@ -262,12 +242,12 @@ const InitialProjectNoInput = (props: Omit<FormInputProps<dynamicSchemaType>, 'n
 };
 
 StamdataLocation.LoctypeSelect = LoctypeSelect;
-StamdataLocation.XInput = XInput;
-StamdataLocation.YInput = YInput;
-StamdataLocation.TerrainQuoteInput = TerrainQuoteInput;
-StamdataLocation.TerrainQualityInput = TerrainQualityInput;
-StamdataLocation.LocnameInput = LocnameInput;
-StamdataLocation.GroupsInput = GroupsInput;
-StamdataLocation.InitialProjectNoInput = InitialProjectNoInput;
+StamdataLocation.X = X;
+StamdataLocation.Y = Y;
+StamdataLocation.TerrainQuote = TerrainQuote;
+StamdataLocation.TerrainQuality = TerrainQuality;
+StamdataLocation.Locname = Locname;
+StamdataLocation.Groups = Groups;
+StamdataLocation.InitialProjectNo = InitialProjectNo;
 
 export default StamdataLocation;

@@ -4,45 +4,47 @@ import {useFormContext} from 'react-hook-form';
 import StamdataLocation from '../StamdataLocation';
 
 type Props = {
+  loc_id: number | undefined;
   size: number;
 };
 
-const DefaultInputs = ({size}: Props) => {
+const DefaultLocationForm = ({size, loc_id}: Props) => {
   const {watch} = useFormContext();
+  const disabled = loc_id !== undefined;
 
-  const loctype_id = watch('location.loctype_id');
+  const loctype_id = watch('loctype_id');
 
   if (loctype_id === -1 || loctype_id === 9) {
     return null;
   }
 
   return (
-    <>
+    <StamdataLocation>
       <Grid2 size={size}>
-        <StamdataLocation.LocnameInput />
+        <StamdataLocation.Locname disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.InitialProjectNoInput />
+        <StamdataLocation.InitialProjectNo disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.GroupsInput />
+        <StamdataLocation.Groups disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.XInput />
+        <StamdataLocation.X disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.YInput />
+        <StamdataLocation.Y disabled={disabled} />
       </Grid2>
       <Grid2 display={'flex'} flexDirection={'row'} size={size} gap={2}>
         <Grid2 size={9}>
-          <StamdataLocation.TerrainQuoteInput />
+          <StamdataLocation.TerrainQuote disabled={disabled} />
         </Grid2>
         <Grid2 size={3}>
-          <StamdataLocation.TerrainQualityInput />
+          <StamdataLocation.TerrainQuality disabled={disabled} />
         </Grid2>
       </Grid2>
-    </>
+    </StamdataLocation>
   );
 };
 
-export default DefaultInputs;
+export default DefaultLocationForm;

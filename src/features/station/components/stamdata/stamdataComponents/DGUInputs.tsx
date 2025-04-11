@@ -7,7 +7,7 @@ type Props = {
 
 const DGUInputs = ({size}: Props) => {
   const {watch} = useFormContext();
-  const loctype_id = watch('location.loctype_id');
+  const loctype_id = watch('loctype_id');
 
   if (loctype_id !== 9 && size) {
     return null;
