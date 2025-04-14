@@ -27,8 +27,6 @@ const useTimeseriesForm = <T extends Record<string, any>>({
       let selectedSchema = baseTimeseriesSchema;
       if (schema) return zodResolver(schema)(...opts);
 
-      console.log('opts', opts[0]);
-
       if (loctype_id !== -1 && loctype_id !== 9) {
         if (mode === 'Add') {
           selectedSchema = defaultAddTimeseriesSchema;
@@ -45,14 +43,13 @@ const useTimeseriesForm = <T extends Record<string, any>>({
         }
       }
 
-      const parsed = selectedSchema.safeParse(opts[0]);
-
-      console.log(parsed);
-
       return zodResolver(selectedSchema)(...opts);
     },
     defaultValues,
     mode: 'onTouched',
+    context: {
+      loctype_id: loctype_id,
+    },
   });
 
   return formMethods;

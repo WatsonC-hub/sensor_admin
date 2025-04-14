@@ -28,10 +28,8 @@ type Location = z.infer<typeof editLocationSchema>;
 const EditLocation = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id'], ['ts_id']);
   const {data: metadata} = useLocationData();
-  console.log(metadata);
   const {data: unit_history} = useUnitHistory();
   const {location_permissions} = usePermissions(loc_id);
-  console.log(location_permissions);
 
   const metadataEditLocationMutation = useMutation({
     mutationFn: async (data: any) => {

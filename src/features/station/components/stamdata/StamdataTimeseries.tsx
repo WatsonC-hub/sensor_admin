@@ -3,23 +3,30 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {dynamicSchemaType} from '../../schema';
+import {BoreholeAddTimeseries, BoreholeEditTimeseries, dynamicSchemaType} from '../../schema';
 
 type Props = {
   children: React.ReactNode;
   loc_name: string | undefined;
+  boreholeno: string | undefined;
 };
 
 type timeseriesContextType = {
   loc_name: string | undefined;
+  boreholeno: string | undefined;
 };
 
 const TimeseriesContext = React.createContext<timeseriesContextType>({
   loc_name: undefined,
+  boreholeno: undefined,
 });
 
-const StamdataTimeseries = ({children, loc_name}: Props) => {
-  return <TimeseriesContext.Provider value={{loc_name}}>{children}</TimeseriesContext.Provider>;
+const StamdataTimeseries = ({children, loc_name, boreholeno}: Props) => {
+  return (
+    <TimeseriesContext.Provider value={{loc_name, boreholeno}}>
+      {children}
+    </TimeseriesContext.Provider>
+  );
 };
 
 interface TimeseriesTypeSelectProps {
@@ -68,19 +75,39 @@ const TypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   return <TimeseriesTypeSelect stationTypes={timeseries_types} {...props} />;
 };
 
-const Intakeno = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {loc_name} = React.useContext(TimeseriesContext);
+const Intakeno = (
+  props: Omit<FormInputProps<BoreholeAddTimeseries | BoreholeEditTimeseries>, 'name'>
+) => {
+  const {boreholeno} = React.useContext(TimeseriesContext);
+
+  const {data: intake_list} = useQuery({
+    queryKey: ['intake_list', boreholeno],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<{intakeno: number}>>(
+        `/sensor_field/intake_list/${boreholeno}`
+      );
+      return data;
+    },
+    enabled: boreholeno !== undefined,
+  });
+
   return (
-    <FormInput
+    <FormInput<BoreholeAddTimeseries | BoreholeEditTimeseries>
       name="intakeno"
-      label="Intagenummer"
-      placeholder="f.eks. 1"
+      label="Intagnummer"
+      select
+      required
+      disabled={props.disabled}
       fullWidth
-      InputProps={{
-        startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
-      }}
       {...props}
-    />
+    >
+      <MenuItem value={-1}>Vælg intag</MenuItem>
+      {intake_list?.map((item) => (
+        <MenuItem value={item.intakeno} key={item.intakeno}>
+          {item.intakeno}
+        </MenuItem>
+      ))}
+    </FormInput>
   );
 };
 

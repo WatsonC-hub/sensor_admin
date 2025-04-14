@@ -16,7 +16,6 @@ const useWatlevmpForm = <T extends Record<string, any>>({
     resolver: (...opts) => {
       if (schema) return zodResolver(schema)(...opts);
 
-      console.log(opts[0]);
       return zodResolver(watlevmpAddSchema)(...opts);
     },
     defaultValues,

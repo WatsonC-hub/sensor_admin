@@ -40,7 +40,6 @@ const Pejling = () => {
     location_permissions,
   } = usePermissions(loc_id);
 
-  console.log(location_permissions);
   const initialData = {
     gid: -1,
     timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),

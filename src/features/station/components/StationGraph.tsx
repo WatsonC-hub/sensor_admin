@@ -35,7 +35,6 @@ export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
   );
 
   useEffect(() => {
-    console.log(measurements);
     setControlData(
       measurements?.map((item) => ({
         waterlevel: item.referenced_measurement,

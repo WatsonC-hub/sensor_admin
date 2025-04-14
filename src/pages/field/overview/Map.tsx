@@ -166,7 +166,6 @@ const Map = () => {
           callback: () => {
             if (map) {
               setSelectLocId(element.loc_id);
-              console.log('test');
               setEditRouteLayer('create');
 
               map.pm.enableDraw('Line');

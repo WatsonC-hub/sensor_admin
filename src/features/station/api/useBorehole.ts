@@ -1,7 +1,7 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {postElasticSearch} from '~/pages/field/boreholeAPI';
+import {BoreholeData} from '~/types';
 
 export type Borehole = {
   boreholeno: string;
@@ -14,7 +14,7 @@ const boreholeListOptions = () => {
   return queryOptions({
     queryKey: ['borehole_list'],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole_list`);
+      const {data} = await apiClient.get<Array<BoreholeData>>(`/sensor_field/borehole_list`);
       return data;
     },
     enabled: user?.boreholeAccess,

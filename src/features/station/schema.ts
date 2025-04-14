@@ -10,13 +10,17 @@ const baseLocationSchema = z.object({
       })
     )
     .nullish(),
-  x: z.number({required_error: 'X-koordinat skal udfyldes'}),
-  y: z.number({required_error: 'Y-koordinat skal udfyldes'}),
+  x: z
+    .number({required_error: 'X-koordinat skal udfyldes'})
+    .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
+  y: z
+    .number({required_error: 'Y-koordinat skal udfyldes'})
+    .transform((val) => (typeof val === 'number' ? val : parseFloat(val))),
   terrainqual: z.enum(['dGPS', 'DTM', '']).nullish(),
   terrainlevel: z.number().nullish(),
   description: z.string().nullish(),
   loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
-  initial_project_no: z.string().nullish(),
+  initial_project_no: z.string().optional(),
 });
 
 const defaultEditLocationSchema = baseLocationSchema.extend({
@@ -51,11 +55,15 @@ const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.strin
 const defaultAddTimeseriesSchema = baseAddTimeseriesSchema.extend({prefix: z.string().nullish()});
 
 const boreholeEditTimeseriesSchema = baseTimeseriesSchema.extend({
-  intakeno: z.number(),
+  intakeno: z.number({required_error: 'Vælg intag'}).gte(1, {
+    message: 'Vælg intag',
+  }),
 });
 
 const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
-  intakeno: z.number(),
+  intakeno: z.number({required_error: 'Vælg intag'}).gte(0, {
+    message: 'Vælg intag',
+  }),
 });
 
 const watlevmpAddSchema = z.object({

@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useEffect} from 'react';
 import NavBar from '~/components/NavBar';
 import StationPageBoxLayout from './StationPageBoxLayout';
 import {Box, Grid2, Tab, Tabs, Typography} from '@mui/material';
@@ -35,6 +35,8 @@ import DefaultTimeseriesForm from './stamdata/stamdataComponents/DefaultTimeseri
 import StamdataWatlevmp from './stamdata/StamdataWatlevmp';
 import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpForm';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import BoreholeTimeseriesForm from './stamdata/stamdataComponents/BoreholeTimeseriesForm';
+import {toast} from 'react-toastify';
 
 interface TabPanelProps {
   value: string | null;
@@ -71,7 +73,7 @@ const CreateStation = () => {
     ...state,
   };
 
-  const locationFormMethods = useLocationForm({
+  const locationFormMethods = useLocationForm<DefaultAddLocation | BoreholeAddLocation>({
     mode: 'Add',
     defaultValues: defaultValues,
   });
@@ -85,12 +87,15 @@ const CreateStation = () => {
 
   const loc_name = watchLocation('loc_name');
   const loctype_id = watchLocation('loctype_id');
+  const boreholeno = watchLocation('boreholeno');
 
-  const timeseriesFormMethods = useTimeseriesForm<DefaultAddTimeseries>({
+  const timeseriesFormMethods = useTimeseriesForm<DefaultAddTimeseries | BoreholeAddTimeseries>({
     mode: 'Add',
     defaultValues: {
       tstype_id: -1,
+      intakeno: -1,
     },
+    loctype_id: loctype_id,
   });
 
   const {
@@ -105,7 +110,10 @@ const CreateStation = () => {
 
   const unitFormMethods = useUnitForm<AddUnit>({
     mode: 'Add',
-    defaultValues: {},
+    defaultValues: {
+      startdate: '',
+      unit_uuid: '',
+    },
   });
 
   const {
@@ -202,7 +210,7 @@ const CreateStation = () => {
 
       stamdataNewLocationMutation.mutate(form, {
         onSuccess: (data) => {
-          console.log('Lokation oprettet');
+          toast.success('Lokation oprettet');
           locationNavigate(data.loc_id);
         },
       });
@@ -231,7 +239,7 @@ const CreateStation = () => {
 
       stamdataNewTimeseriesMutation.mutate(form, {
         onSuccess: (data) => {
-          console.log(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
+          toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
           stationNavigate(data.loc_id, data.ts_id);
         },
       });
@@ -252,7 +260,7 @@ const CreateStation = () => {
 
       stamdataNewMutation.mutate(form, {
         onSuccess: (data) => {
-          console.log(
+          toast.success(
             loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
           );
           stationNavigate(data.loc_id, data.ts_id);
@@ -260,6 +268,12 @@ const CreateStation = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (loctype_id !== 9 && boreholeno !== undefined) {
+      resetLocation({loctype_id});
+    }
+  }, [loctype_id]);
 
   return (
     <>
@@ -336,16 +350,17 @@ const CreateStation = () => {
                 </Grid2>
                 <Grid2 container size={12} spacing={1}>
                   <DefaultLocationForm size={size} loc_id={loc_id} />
-                  <BoreholeLocationForm size={size} loctype_id={loctype_id} />
+                  <BoreholeLocationForm size={size} loctype_id={loctype_id} loc_id={loc_id} />
                 </Grid2>
               </StamdataLocation>
             </FormProvider>
           </TabPanel>
           <TabPanel value={tabValue} index={'tidsserie'}>
             <FormProvider {...timeseriesFormMethods}>
-              <StamdataTimeseries loc_name={loc_name}>
+              <StamdataTimeseries loc_name={loc_name} boreholeno={boreholeno}>
                 <Grid2 container size={12} spacing={1}>
                   <DefaultTimeseriesForm size={size} loctype_id={loctype_id} />
+                  <BoreholeTimeseriesForm size={size} loctype_id={loctype_id} />
                   <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
                     <FormProvider {...watlevmpFormMethods}>
                       <StamdataWatlevmp tstype_id={tstype_id}>
@@ -367,7 +382,6 @@ const CreateStation = () => {
           <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={2}>
             {/* <StamdataForm
               onSubmit={() => {
-                console.log('test');
               }}
               defaultValues={{
                 location: {
@@ -399,11 +413,7 @@ const CreateStation = () => {
             >
               <Box display="flex" alignItems="center">
                 Videre til
-                {tabValue === 'lokation'
-                  ? ' tidsserie'
-                  : tabValue === 'tidsserie'
-                    ? ' tidsserie'
-                    : ' udstyr'}
+                {tabValue === 'lokation' ? ' tidsserie' : tabValue === 'tidsserie' ? ' udstyr' : ''}
               </Box>
             </Button>
 
@@ -411,7 +421,6 @@ const CreateStation = () => {
               bttype="primary"
               onClick={() => {
                 handleSubmit();
-                console.log(isLocationDirty, isTimeseriesDirty, isWatlevmpDirty, isUnitDirty);
               }}
               disabled={loctype_id === -1}
             >

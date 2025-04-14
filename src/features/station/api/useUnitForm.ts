@@ -25,6 +25,7 @@ const useUnitForm = <T extends Record<string, any>>({
       return zodResolver(editUnitSchema)(...opts);
     },
     defaultValues,
+    mode: 'onTouched',
   });
 
   return formMethods;

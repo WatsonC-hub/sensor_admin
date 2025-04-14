@@ -64,7 +64,6 @@ export default function PlotGraph() {
 
   const handleRelayout = (e: any) => {
     if (e['selections'] && e['selections'].length === 0) {
-      console.log(e);
       setSelection({});
     }
 

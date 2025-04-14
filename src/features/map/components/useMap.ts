@@ -504,7 +504,6 @@ const useMap = <TData extends object>(
       onCreateRouteEvent(mapRef.current);
     }
     markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
-      console.log(e);
       L.DomEvent.stopPropagation(e);
       setSelectedMarker(e.sourceTarget.options.data);
       if (hightlightedMarker) {

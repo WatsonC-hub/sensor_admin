@@ -158,7 +158,6 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
       let filteredBorehole: LocItems[] = [];
       if (user?.boreholeAccess) {
         const search = {query: {bool: {must: {query_string: {query: search_string}}}}};
-        console.log(search);
         postElasticSearch(search).then((res) => {
           filteredBorehole = res.data.hits.hits.map((elem: any) => {
             return {name: elem._source.properties.boreholeno, group: 'Jupiter'};

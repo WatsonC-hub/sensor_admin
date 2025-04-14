@@ -4,6 +4,7 @@ import {useFormContext} from 'react-hook-form';
 import Button from '~/components/Button';
 import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
+import {AddUnit} from '../../schema';
 
 type StamdataUnitProps = {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ const Unit = () => {
   const {
     getValues,
     formState: {errors},
-  } = useFormContext();
+  } = useFormContext<AddUnit>();
   const {tstype_id} = React.useContext(UnitContext);
   return (
     <>
@@ -39,7 +40,7 @@ const Unit = () => {
           sx={{ml: 1}}
           onClick={() => setUdstyrDialogOpen(true)}
         >
-          {getValues().unit_uuid === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
+          {getValues('unit_uuid') === '' ? 'Tilføj Udstyr' : 'Ændre udstyr'}
         </Button>
         {Object.keys(errors).length > 0 && (
           <Typography variant="caption" color="error">
@@ -52,6 +53,7 @@ const Unit = () => {
         mode="normal"
         udstyrDialogOpen={udstyrDialogOpen}
         setUdstyrDialogOpen={setUdstyrDialogOpen}
+        tstype_id={tstype_id}
       />
     </>
   );

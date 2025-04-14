@@ -15,14 +15,14 @@ interface Project {
 }
 
 interface LocationProjectsProps {
-  value: string | null;
-  setValue: (value: string | null) => void;
+  value: string | undefined;
+  setValue: (value: string | undefined) => void;
   onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;
 }
 
-const getLabel = (project: Project | null) => {
+const getLabel = (project: Project | undefined) => {
   if (!project) return '';
   return `${project.project_no} ${project.customer_name ? ' - ' + project.customer_name : ''} ${project.project_info ? ' - ' + project.project_info : ''}`;
 };
@@ -40,7 +40,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
 
   const user = useUser();
 
-  const selectedValue = options?.find((option) => option.project_no == value) ?? null;
+  const selectedValue = options?.find((option) => option.project_no == value) ?? undefined;
 
   return (
     <>
@@ -54,7 +54,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
           forcePopupIcon={false}
           value={selectedValue}
           onChange={(event, newValue) => {
-            setValue(newValue ? newValue.project_no : null);
+            setValue(newValue ? newValue.project_no : undefined);
           }}
           id="tags-standard"
           options={options ?? []}

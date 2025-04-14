@@ -43,6 +43,9 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
           <StamdataLocation.TerrainQuality disabled={disabled} />
         </Grid2>
       </Grid2>
+      <Grid2 size={size}>
+        <StamdataLocation.Description disabled={disabled} />
+      </Grid2>
     </>
   );
 };

@@ -7,12 +7,20 @@ import FormInput, {FormInputProps} from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
-import {dynamicSchemaType} from '../../schema';
+import {
+  BoreholeAddLocation,
+  BoreholeEditLocation,
+  DefaultAddLocation,
+  DefaultEditLocation,
+  dynamicSchemaType,
+} from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
-import ExtendedAutocomplete from '~/components/Autocomplete';
+import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import {Borehole, useSearchBorehole} from '../../api/useBorehole';
 import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {utm} from '~/features/map/mapConsts';
+import {useAtom} from 'jotai';
+import {boreholeSearchAtom} from '~/state/atoms';
 
 type Props = {
   children: React.ReactNode;
@@ -30,11 +38,13 @@ const LocationContext = React.createContext(
 );
 
 const StamdataLocation = ({children}: Props) => {
-  const {setValue, watch} = useFormContext();
+  const {setValue, watch} = useFormContext<
+    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+  >();
 
   const x = watch('x');
   const y = watch('y');
-  const terrainqual = watch('terrainQuality', '');
+  const terrainqual = watch('terrainqual', '');
   const {
     data: DTMData,
     isSuccess,
@@ -48,7 +58,7 @@ const StamdataLocation = ({children}: Props) => {
 
   useEffect(() => {
     if (isSuccess && DTMData.HentKoterRespons.data[0].kote !== null) {
-      setValue('terrainQuote', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
+      setValue('terrainlevel', Number(DTMData.HentKoterRespons.data[0].kote.toFixed(3)));
     }
   }, [DTMData, terrainqual]);
 
@@ -63,7 +73,14 @@ const StamdataLocation = ({children}: Props) => {
   );
 };
 
-const LoctypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const LoctypeSelect = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
   const {data} = useQuery({
     queryKey: ['location_types'],
     queryFn: async () => {
@@ -94,10 +111,19 @@ const LoctypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) =
   );
 };
 
-const X = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {watch} = useFormContext();
+const X = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
+  const {watch} = useFormContext<
+    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+  >();
   const {refetchDTM} = React.useContext(LocationContext);
-  const watchTerrainqual = watch('terrainQuality', '');
+  const watchTerrainqual = watch('terrainqual', '');
 
   return (
     <FormInput
@@ -121,10 +147,19 @@ const X = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
-const Y = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {watch} = useFormContext();
+const Y = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
+  const {watch} = useFormContext<
+    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+  >();
   const {refetchDTM} = React.useContext(LocationContext);
-  const watchTerrainqual = watch('terrainQuality', '');
+  const watchTerrainqual = watch('terrainqual', '');
 
   return (
     <FormInput
@@ -148,7 +183,14 @@ const Y = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
-const TerrainQuote = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const TerrainQuote = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
   return (
     <FormInput
       name="terrainlevel"
@@ -161,7 +203,14 @@ const TerrainQuote = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) =>
   );
 };
 
-const TerrainQuality = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const TerrainQuality = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
   const {refetchDTM} = React.useContext(LocationContext);
 
   return (
@@ -184,7 +233,14 @@ const TerrainQuality = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) 
   );
 };
 
-const Locname = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const Locname = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
   return (
     <FormInput
       name="loc_name"
@@ -197,59 +253,73 @@ const Locname = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
-const boreholeno = () => {
-  const {setValue, reset} = useFormContext();
-  const [search, setSearch] = React.useState('');
+const boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
+  const {setValue, reset, control} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
+  const [search, setSearch] = useAtom(boreholeSearchAtom);
   const deboundedSearch = useDebouncedValue(search, 500);
-  const [selectedBorehole, setSelectedBorehole] = React.useState<Borehole | null>(null);
 
   const {data, isFetched} = useSearchBorehole(deboundedSearch);
 
   return (
-    <ExtendedAutocomplete<Borehole>
-      options={data ?? []}
-      labelKey="boreholeno"
-      loading={isFetched}
-      onChange={(option) => {
-        if (option == null) {
-          setSelectedBorehole(null);
-          reset({loctype_id: 9});
+    <Controller
+      name="boreholeno"
+      control={control}
+      render={({field: {onChange, value}, fieldState: {error}}) => (
+        <ExtendedAutocomplete<Borehole>
+          {...props}
+          options={data ?? []}
+          labelKey="boreholeno"
+          loading={isFetched}
+          onChange={(option) => {
+            if (option == null) {
+              onChange(null);
+              reset({loctype_id: 9});
+              return;
+            }
+            if ('boreholeno' in option) {
+              // @ts-expect-error error in type definition
+              const latlng = utm.convertLatLngToUtm(option.latitude, option.longitude, 32);
+              onChange(option.boreholeno);
+              setValue('x', parseFloat(latlng.Easting.toFixed(1)));
+              setValue('y', parseFloat(latlng.Northing.toFixed(1)));
+            }
+          }}
+          error={error?.message}
+          selectValue={data?.find((borehole) => borehole.boreholeno === value) ?? null}
+          // filterOptions={(options) => {
+          //   return options;
+          // }}
+          filterOptions={(options, params) => {
+            const {inputValue} = params;
 
-          return;
-        }
-        if ('boreholeno' in option) {
-          // @ts-expect-error error in type definition
-          const latlng = utm.convertLatLngToUtm(option.latitude, option.longitude, 32);
-          setValue('boreholeno', option.boreholeno);
-          setValue('x', latlng.Easting.toFixed(2));
-          setValue('y', latlng.Northing.toFixed(2));
-          setSelectedBorehole(option);
-        }
-      }}
-      selectValue={selectedBorehole!}
-      filterOptions={(options) => {
-        return options;
-      }}
-      inputValue={search}
-      renderOption={(props, option) => {
-        return (
-          <li {...props} key={option.boreholeno}>
-            <Typography>{option.boreholeno}</Typography>
-          </li>
-        );
-      }}
-      textFieldsProps={{
-        label: 'DGU nummer',
-        placeholder: 'Søg efter DGU boringer...',
-      }}
-      onInputChange={(event, value) => {
-        setSearch(value);
-      }}
+            const filter = options.filter((option) => option.boreholeno?.includes(inputValue));
+
+            return filter;
+          }}
+          inputValue={search}
+          renderOption={(props, option) => {
+            return (
+              <li {...props} key={option.boreholeno}>
+                <Typography>{option.boreholeno}</Typography>
+              </li>
+            );
+          }}
+          textFieldsProps={{
+            label: 'DGU nummer',
+            placeholder: 'Søg efter DGU boringer...',
+          }}
+          onInputChange={(event, value) => {
+            setSearch(value);
+          }}
+        />
+      )}
     />
   );
 };
 
-const boreholeSuffix = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const boreholeSuffix = (
+  props: Omit<FormInputProps<BoreholeAddLocation | BoreholeEditLocation>, 'name'>
+) => {
   return <FormInput name="suffix" label="Suffiks" placeholder="f.eks. A" fullWidth {...props} />;
 };
 
@@ -272,9 +342,18 @@ const Groups = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
-const InitialProjectNo = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const InitialProjectNo = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
   const user = useUser();
-  const {control} = useFormContext();
+  const {control} = useFormContext<
+    DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+  >();
 
   return (
     <Controller
@@ -282,6 +361,7 @@ const InitialProjectNo = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>
       control={control}
       render={({field: {onChange, value, onBlur}, fieldState: {error}}) => (
         <LocationProjects
+          {...props}
           value={value}
           setValue={onChange}
           onBlur={onBlur}
@@ -296,12 +376,18 @@ const InitialProjectNo = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>
           //   }
         />
       )}
-      {...props}
     />
   );
 };
 
-const Description = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const Description = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
+) => {
   return (
     <FormInput
       name="description"

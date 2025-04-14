@@ -8,7 +8,7 @@ type Props = {
 };
 
 const DefaultTimeseriesForm = ({size, loctype_id}: Props) => {
-  if (loctype_id === 9) {
+  if (loctype_id === 9 || loctype_id === -1) {
     return null;
   }
 

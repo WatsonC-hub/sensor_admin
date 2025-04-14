@@ -46,12 +46,7 @@ const StamdataForm = ({
     defaultValues: defaultValues,
     mode: 'onChange',
   });
-  const {
-    reset,
-    formState: {errors},
-  } = formMethods;
-
-  console.log('StamdataForm errors', errors);
+  const {reset} = formMethods;
 
   const handleSubmit = (data: dynamicSchemaType) => {
     onSubmit(data, formMethods);
