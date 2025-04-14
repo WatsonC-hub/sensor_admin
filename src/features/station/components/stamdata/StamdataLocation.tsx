@@ -1,4 +1,4 @@
-import {MenuItem} from '@mui/material';
+import {MenuItem, Typography} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
@@ -9,6 +9,10 @@ import LocationGroups from '~/features/stamdata/components/stamdata/LocationGrou
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
 import {dynamicSchemaType} from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
+import ExtendedAutocomplete from '~/components/Autocomplete';
+import {Borehole, useSearchBorehole} from '../../api/useBorehole';
+import useDebouncedValue from '~/hooks/useDebouncedValue';
+import {utm} from '~/features/map/mapConsts';
 
 type Props = {
   children: React.ReactNode;
@@ -193,6 +197,62 @@ const Locname = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
+const boreholeno = () => {
+  const {setValue, reset} = useFormContext();
+  const [search, setSearch] = React.useState('');
+  const deboundedSearch = useDebouncedValue(search, 500);
+  const [selectedBorehole, setSelectedBorehole] = React.useState<Borehole | null>(null);
+
+  const {data, isFetched} = useSearchBorehole(deboundedSearch);
+
+  return (
+    <ExtendedAutocomplete<Borehole>
+      options={data ?? []}
+      labelKey="boreholeno"
+      loading={isFetched}
+      onChange={(option) => {
+        if (option == null) {
+          setSelectedBorehole(null);
+          reset({loctype_id: 9});
+
+          return;
+        }
+        if ('boreholeno' in option) {
+          // @ts-expect-error error in type definition
+          const latlng = utm.convertLatLngToUtm(option.latitude, option.longitude, 32);
+          setValue('boreholeno', option.boreholeno);
+          setValue('x', latlng.Easting.toFixed(2));
+          setValue('y', latlng.Northing.toFixed(2));
+          setSelectedBorehole(option);
+        }
+      }}
+      selectValue={selectedBorehole!}
+      filterOptions={(options) => {
+        return options;
+      }}
+      inputValue={search}
+      renderOption={(props, option) => {
+        return (
+          <li {...props} key={option.boreholeno}>
+            <Typography>{option.boreholeno}</Typography>
+          </li>
+        );
+      }}
+      textFieldsProps={{
+        label: 'DGU nummer',
+        placeholder: 'Søg efter DGU boringer...',
+      }}
+      onInputChange={(event, value) => {
+        setSearch(value);
+      }}
+    />
+  );
+};
+
+const boreholeSuffix = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+  return <FormInput name="suffix" label="Suffiks" placeholder="f.eks. A" fullWidth {...props} />;
+};
+
 const Groups = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   const {control} = useFormContext();
   return (
@@ -241,6 +301,18 @@ const InitialProjectNo = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>
   );
 };
 
+const Description = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+  return (
+    <FormInput
+      name="description"
+      label="Beskrivelse"
+      placeholder="f.eks. Engsø ved Aarhus"
+      fullWidth
+      {...props}
+    />
+  );
+};
+
 StamdataLocation.LoctypeSelect = LoctypeSelect;
 StamdataLocation.X = X;
 StamdataLocation.Y = Y;
@@ -249,5 +321,8 @@ StamdataLocation.TerrainQuality = TerrainQuality;
 StamdataLocation.Locname = Locname;
 StamdataLocation.Groups = Groups;
 StamdataLocation.InitialProjectNo = InitialProjectNo;
+StamdataLocation.Description = Description;
+StamdataLocation.Boreholeno = boreholeno;
+StamdataLocation.BoreholeSuffix = boreholeSuffix;
 
 export default StamdataLocation;

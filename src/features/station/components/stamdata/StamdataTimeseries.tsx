@@ -68,6 +68,22 @@ const TypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   return <TimeseriesTypeSelect stationTypes={timeseries_types} {...props} />;
 };
 
+const Intakeno = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+  const {loc_name} = React.useContext(TimeseriesContext);
+  return (
+    <FormInput
+      name="intakeno"
+      label="Intagenummer"
+      placeholder="f.eks. 1"
+      fullWidth
+      InputProps={{
+        startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
+      }}
+      {...props}
+    />
+  );
+};
+
 const Prefix = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   const {loc_name} = React.useContext(TimeseriesContext);
   return (
@@ -103,5 +119,6 @@ const SensorDepth = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => 
 StamdataTimeseries.TypeSelect = TypeSelect;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
+StamdataTimeseries.Intakeno = Intakeno;
 
 export default StamdataTimeseries;

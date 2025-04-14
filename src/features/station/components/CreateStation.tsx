@@ -17,7 +17,7 @@ import {
 } from '../schema';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {useCreateTabState} from '~/hooks/useQueryStateParameters';
-import DGUInputs from './stamdata/stamdataComponents/DGUInputs';
+import BoreholeLocationForm from './stamdata/stamdataComponents/BoreholeLocationForm';
 import StamdataLocation from './stamdata/StamdataLocation';
 import StamdataTimeseries from './stamdata/StamdataTimeseries';
 import {FormProvider} from 'react-hook-form';
@@ -336,7 +336,7 @@ const CreateStation = () => {
                 </Grid2>
                 <Grid2 container size={12} spacing={1}>
                   <DefaultLocationForm size={size} loc_id={loc_id} />
-                  <DGUInputs size={size} />
+                  <BoreholeLocationForm size={size} loctype_id={loctype_id} />
                 </Grid2>
               </StamdataLocation>
             </FormProvider>

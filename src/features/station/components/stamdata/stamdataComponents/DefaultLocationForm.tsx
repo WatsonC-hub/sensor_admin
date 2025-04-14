@@ -19,7 +19,7 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
   }
 
   return (
-    <StamdataLocation>
+    <>
       <Grid2 size={size}>
         <StamdataLocation.Locname disabled={disabled} />
       </Grid2>
@@ -43,7 +43,7 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
           <StamdataLocation.TerrainQuality disabled={disabled} />
         </Grid2>
       </Grid2>
-    </StamdataLocation>
+    </>
   );
 };
 
