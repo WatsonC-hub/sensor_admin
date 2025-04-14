@@ -250,7 +250,7 @@ const CreateStation = () => {
         unit: unitData,
         location: locationData,
         timeseries: timeseriesData,
-        watlevmp: watlevmpData,
+        watlevmp: isWaterLevel ? watlevmpData : undefined,
       } as {
         location: DefaultAddLocation | BoreholeAddLocation;
         timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
