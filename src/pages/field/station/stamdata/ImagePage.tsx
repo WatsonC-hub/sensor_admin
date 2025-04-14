@@ -76,7 +76,10 @@ const ImagePage = () => {
         text={'Tilføj billeder'}
         disabled={location_permissions !== 'edit'}
         onClick={() => {
-          if (fileInputRef.current) fileInputRef.current.click();
+          if (fileInputRef.current) {
+            fileInputRef.current.click();
+            fileInputRef.current.value = '';
+          }
         }}
       />
       <SaveImageDialog
