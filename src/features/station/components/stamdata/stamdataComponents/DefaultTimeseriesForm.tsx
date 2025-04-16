@@ -4,18 +4,14 @@ import {Grid2} from '@mui/material';
 
 type Props = {
   size: number;
-  loctype_id: number;
+  loc_name: string | undefined;
 };
 
-const DefaultTimeseriesForm = ({size, loctype_id}: Props) => {
-  if (loctype_id === 9 || loctype_id === -1) {
-    return null;
-  }
-
+const DefaultTimeseriesForm = ({size, loc_name}: Props) => {
   return (
     <>
       <Grid2 size={size}>
-        <StamdataTimeseries.Prefix />
+        <StamdataTimeseries.Prefix loc_name={loc_name} />
       </Grid2>
       <Grid2 size={size}>
         <StamdataTimeseries.TypeSelect />

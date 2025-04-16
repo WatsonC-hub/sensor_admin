@@ -11,7 +11,6 @@ import moment from 'moment';
 import React, {ChangeEvent, SyntheticEvent, useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Autocomplete from '~/components/Autocomplete';
@@ -21,7 +20,6 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {useUser} from '~/features/auth/useUser';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import {AddUnit} from '~/features/station/schema';
-import {metadataSchema} from '~/helpers/zodSchemas';
 import {useAppContext} from '~/state/contexts';
 
 interface AddUnitFormProps {
@@ -53,7 +51,7 @@ export default function AddUnitForm({
     post: addUnit,
   } = useUnit();
 
-  const {trigger, setValue, getValues} = useFormContext<AddUnit | z.infer<typeof metadataSchema>>();
+  const {trigger, setValue} = useFormContext<AddUnit>();
 
   const [unitData, setUnitData] = useState({
     calypso_id: '',
@@ -98,10 +96,8 @@ export default function AddUnitForm({
   ) => {
     if (option == null) {
       setUnitData((currentUnit) => ({...currentUnit, calypso_id: '', uuid: ''}));
-      if (getValues('location') === undefined) {
-        setValue('unit_uuid', '', {shouldDirty: true});
-        setValue('startdate', '', {shouldDirty: true});
-      }
+      setValue('unit_uuid', '', {shouldDirty: true});
+      setValue('startdate', '', {shouldDirty: true});
       return;
     }
     setUnitData((currentUnit) => ({
@@ -113,12 +109,10 @@ export default function AddUnitForm({
     const sensors = sensorsForCalyspoId((option as {value: string; label: string}).value);
     if (sensors && sensors.length === 1) {
       setUnitData((currentUnit) => ({...currentUnit, uuid: sensors[0].unit_uuid}));
-      if (getValues('location') === undefined) {
-        setValue('unit_uuid', sensors[0].unit_uuid, {shouldDirty: true});
-        setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
-          shouldDirty: true,
-        });
-      }
+      setValue('unit_uuid', sensors[0].unit_uuid, {shouldDirty: true});
+      setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
+        shouldDirty: true,
+      });
     }
   };
 
@@ -128,7 +122,7 @@ export default function AddUnitForm({
   };
 
   const handleDateChange = (date: Date) => {
-    trigger('unit');
+    trigger();
     setUnitData({...unitData, fra: date});
   };
 
@@ -180,17 +174,10 @@ export default function AddUnitForm({
 
       if (!unit) return;
 
-      setValue('unit', {
-        unit_uuid: unit.unit_uuid,
-        startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
+      setValue('unit_uuid', unit.unit_uuid, {shouldDirty: true});
+      setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
+        shouldDirty: true,
       });
-
-      if (getValues('location') === undefined) {
-        setValue('unit_uuid', unit.unit_uuid, {shouldDirty: true});
-        setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
-          shouldDirty: true,
-        });
-      }
 
       // setUnit({
       //   terminal_type: unit.terminal_type,

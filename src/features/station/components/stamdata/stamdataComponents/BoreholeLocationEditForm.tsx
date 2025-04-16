@@ -1,14 +1,19 @@
+import {Grid2} from '@mui/material';
 import React from 'react';
 import StamdataLocation from '../StamdataLocation';
-import {Grid2} from '@mui/material';
+import {useAppContext} from '~/state/contexts';
+import usePermissions from '~/features/permissions/api/usePermissions';
 
 type Props = {
   size: number;
-  loc_id: number | undefined;
 };
 
-const BoreholeLocationForm = ({size, loc_id}: Props) => {
-  const disabled = loc_id !== undefined;
+const BoreholeLocationEditForm = ({size}: Props) => {
+  const {loc_id} = useAppContext([], ['loc_id']);
+  const {location_permissions} = usePermissions(loc_id);
+  const disabled = location_permissions !== 'edit';
+
+  console.log(disabled);
 
   return (
     <Grid2 container spacing={2}>
@@ -48,4 +53,4 @@ const BoreholeLocationForm = ({size, loc_id}: Props) => {
   );
 };
 
-export default BoreholeLocationForm;
+export default BoreholeLocationEditForm;

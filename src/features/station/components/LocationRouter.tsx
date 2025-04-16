@@ -22,6 +22,7 @@ import StationPageBoxLayout from './StationPageBoxLayout';
 import ActionArea from './ActionArea';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {stationPages} from '~/helpers/EnumHelper';
+import EditLocationCopy from '~/pages/field/station/stamdata/EditLocationCopy';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
@@ -69,7 +70,7 @@ export default function LocationRouter() {
       {pageToShow === stationPages.BILLEDER && <ImagePage />}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
-          <EditLocation />
+          <EditLocationCopy />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (

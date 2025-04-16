@@ -4,14 +4,9 @@ import StamdataTimeseries from '../StamdataTimeseries';
 
 type Props = {
   size: number;
-  loctype_id: number | undefined;
 };
 
-const BoreholeTimeseriesForm = ({size, loctype_id}: Props) => {
-  if (loctype_id !== 9) {
-    return null;
-  }
-
+const BoreholeTimeseriesForm = ({size}: Props) => {
   return (
     <>
       <Grid2 size={size}>

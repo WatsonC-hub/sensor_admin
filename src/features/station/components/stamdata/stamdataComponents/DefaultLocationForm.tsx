@@ -1,25 +1,20 @@
 import {Grid2} from '@mui/material';
 import React from 'react';
-import {useFormContext} from 'react-hook-form';
 import StamdataLocation from '../StamdataLocation';
 
 type Props = {
-  loc_id: number | undefined;
   size: number;
+  loc_id: number | undefined;
 };
 
 const DefaultLocationForm = ({size, loc_id}: Props) => {
-  const {watch} = useFormContext();
   const disabled = loc_id !== undefined;
 
-  const loctype_id = watch('loctype_id');
-
-  if (loctype_id === -1 || loctype_id === 9) {
-    return null;
-  }
-
   return (
-    <>
+    <Grid2 container spacing={2}>
+      <Grid2 size={size}>
+        <StamdataLocation.LoctypeSelect disabled={disabled} />
+      </Grid2>
       <Grid2 size={size}>
         <StamdataLocation.Locname disabled={disabled} />
       </Grid2>
@@ -46,7 +41,7 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.Description disabled={disabled} />
       </Grid2>
-    </>
+    </Grid2>
   );
 };
 

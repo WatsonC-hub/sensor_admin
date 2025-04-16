@@ -1,10 +1,9 @@
-import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
 
@@ -18,35 +17,8 @@ import {useAppContext} from '~/state/contexts';
 
 import UdstyrReplace from './UdstyrReplace';
 import usePermissions from '~/features/permissions/api/usePermissions';
-
-const unitSchema = z.object({
-  timeseries: z.object({
-    tstype_id: z.number(),
-  }),
-  unit: z
-    .object({
-      unit_uuid: z.string(),
-      gid: z.number().optional(),
-      startdate: z.string(),
-      enddate: z.string(),
-    })
-    .superRefine((unit, ctx) => {
-      if (moment(unit.startdate) > moment(unit.enddate)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.invalid_date,
-          message: 'start dato må ikke være senere end slut dato',
-          path: ['startdate'],
-        });
-        ctx.addIssue({
-          code: z.ZodIssueCode.invalid_date,
-          message: 'slut dato må ikke være tidligere end start datoo',
-          path: ['enddate'],
-        });
-      }
-    }),
-});
-
-type Unit = z.infer<typeof unitSchema>;
+import useUnitForm from '~/features/station/api/useUnitForm';
+import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
 
 const EditUnit = () => {
   const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
@@ -70,28 +42,21 @@ const EditUnit = () => {
 
   const unit = unit_history?.find((item) => item.gid == selectedUnit);
 
-  const {data: defaultValues} = unitSchema.safeParse({
-    timeseries: {
-      tstype_id: metadata?.tstype_id,
-    },
-    unit: {
-      startdate: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
-      enddate: moment(unit?.slutdato).format('YYYY-MM-DDTHH:mm'),
-      gid: unit?.gid,
-      unit_uuid: unit?.uuid,
-    },
+  const {data: defaultValues} = editUnitSchema.safeParse({
+    unit_uuid: unit?.uuid,
+    startdate: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
+    enddate: moment(unit?.slutdato).format('YYYY-MM-DDTHH:mm'),
   });
 
-  const formMethods = useForm<Unit>({
-    resolver: zodResolver(unitSchema),
+  const formMethods = useUnitForm<EditUnitType>({
+    mode: 'Edit',
     defaultValues: defaultValues,
-    mode: 'onTouched',
   });
 
   const {
     formState: {isDirty},
-    getValues,
     reset,
+    handleSubmit,
   } = formMethods;
 
   useEffect(() => {
@@ -106,11 +71,11 @@ const EditUnit = () => {
     }
   }, [selectedUnit]);
 
-  const handleSubmit = async (data: Unit) => {
+  const Submit = async (data: z.infer<typeof editUnitSchema>) => {
     const payload = {
-      ...data.unit,
-      startdate: moment(data.unit.startdate).toISOString(),
-      enddate: moment(data.unit.enddate).toISOString(),
+      ...data,
+      startdate: moment(data.startdate).toISOString(),
+      enddate: moment(data.enddate).toISOString(),
     };
     metadataEditUnitMutation.mutate(payload, {
       onSuccess: () => {
@@ -141,8 +106,8 @@ const EditUnit = () => {
 
             <Button
               bttype="primary"
-              disabled={!isDirty || !getValues('unit.unit_uuid') || disabled}
-              onClick={formMethods.handleSubmit(handleSubmit)}
+              disabled={!isDirty || !metadata?.unit_uuid || disabled}
+              onClick={handleSubmit(Submit)}
               startIcon={<SaveIcon />}
               sx={{marginRight: 1}}
             >

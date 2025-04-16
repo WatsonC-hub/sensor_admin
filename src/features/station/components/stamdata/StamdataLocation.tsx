@@ -1,4 +1,4 @@
-import {MenuItem, Typography} from '@mui/material';
+import {MenuItem, Typography, InputAdornment} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
@@ -12,15 +12,14 @@ import {
   BoreholeEditLocation,
   DefaultAddLocation,
   DefaultEditLocation,
-  dynamicSchemaType,
 } from '../../schema';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import {Borehole, useSearchBorehole} from '../../api/useBorehole';
-import useDebouncedValue from '~/hooks/useDebouncedValue';
 import {utm} from '~/features/map/mapConsts';
 import {useAtom} from 'jotai';
 import {boreholeSearchAtom} from '~/state/atoms';
+import {postElasticSearch} from '~/pages/field/boreholeAPI';
 
 type Props = {
   children: React.ReactNode;
@@ -91,23 +90,27 @@ const LoctypeSelect = (
   });
 
   return (
-    <FormInput
-      name="loctype_id"
-      label="Lokationstype"
-      placeholder="Vælg type"
-      select
-      required
-      {...props}
-    >
-      <MenuItem value={-1} key={-1}>
-        Vælg type
-      </MenuItem>
-      {data?.map((item: locationType) => (
-        <MenuItem value={item.loctype_id} key={item.loctype_id}>
-          {item.loctypename}
-        </MenuItem>
-      ))}
-    </FormInput>
+    <>
+      {data && (
+        <FormInput
+          name="loctype_id"
+          label="Lokationstype"
+          placeholder="Vælg type"
+          select
+          required
+          {...props}
+        >
+          <MenuItem value={-1} key={-1}>
+            Vælg type
+          </MenuItem>
+          {data?.map((item: locationType) => (
+            <MenuItem value={item.loctype_id} key={item.loctype_id}>
+              {item.loctypename}
+            </MenuItem>
+          ))}
+        </FormInput>
+      )}
+    </>
   );
 };
 
@@ -253,42 +256,54 @@ const Locname = (
   );
 };
 
-const boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
-  const {setValue, reset, control} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
+const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
+  const {
+    setValue,
+    formState: {errors},
+    watch,
+    trigger,
+  } = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
   const [search, setSearch] = useAtom(boreholeSearchAtom);
-  const deboundedSearch = useDebouncedValue(search, 500);
+  const [filteredOptions, setFilteredOptions] = React.useState<Borehole[]>([]);
+  const loctype_id = watch('loctype_id', 9);
+  const boreholeno = watch('boreholeno');
 
-  const {data, isFetched} = useSearchBorehole(deboundedSearch);
+  const {data: searchOptions, isFetching} = useSearchBorehole(boreholeno);
+
+  useEffect(() => {
+    if (boreholeno !== undefined && searchOptions && searchOptions.length > 0) {
+      const borehole = searchOptions?.find((opt) => opt.boreholeno === boreholeno);
+      // @ts-expect-error error in type definition
+      const latlng = utm.convertLatLngToUtm(borehole?.latitude, borehole?.longitude, 32);
+
+      setValue('x', parseFloat(latlng.Easting.toFixed(1)));
+      setValue('y', parseFloat(latlng.Northing.toFixed(1)));
+    }
+  }, [searchOptions]);
 
   return (
-    <Controller
-      name="boreholeno"
-      control={control}
-      render={({field: {onChange, value}, fieldState: {error}}) => (
+    <>
+      {loctype_id && (
         <ExtendedAutocomplete<Borehole>
           {...props}
-          options={data ?? []}
+          options={filteredOptions ?? []}
+          loading={isFetching}
           labelKey="boreholeno"
-          loading={isFetched}
           onChange={(option) => {
+            console.log(option);
             if (option == null) {
-              onChange(null);
-              reset({loctype_id: 9});
+              setValue('boreholeno', undefined);
+              trigger('boreholeno');
               return;
             }
             if ('boreholeno' in option) {
-              // @ts-expect-error error in type definition
-              const latlng = utm.convertLatLngToUtm(option.latitude, option.longitude, 32);
-              onChange(option.boreholeno);
-              setValue('x', parseFloat(latlng.Easting.toFixed(1)));
-              setValue('y', parseFloat(latlng.Northing.toFixed(1)));
+              setValue('boreholeno', option.boreholeno, {shouldDirty: true});
+              trigger('boreholeno');
             }
           }}
-          error={error?.message}
-          selectValue={data?.find((borehole) => borehole.boreholeno === value) ?? null}
-          // filterOptions={(options) => {
-          //   return options;
-          // }}
+          error={errors.boreholeno?.message}
+          selectValue={boreholeno !== undefined ? ({boreholeno: boreholeno} as Borehole) : null}
+          // selectValue={boreholeno !== undefined ? ({boreholeno: boreholeno} as Borehole) : null}
           filterOptions={(options, params) => {
             const {inputValue} = params;
 
@@ -308,22 +323,73 @@ const boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
             label: 'DGU nummer',
             placeholder: 'Søg efter DGU boringer...',
           }}
-          onInputChange={(event, value) => {
-            setSearch(value);
+          onInputChange={(event, searchValue) => {
+            const searchString = {
+              query: {
+                bool: {
+                  must: {
+                    query_string: {
+                      query: searchValue,
+                    },
+                  },
+                },
+              },
+            };
+
+            if (searchValue !== '' && loctype_id)
+              postElasticSearch(searchString).then((res) => {
+                setFilteredOptions(
+                  res.data.hits.hits.map((hit: any) => {
+                    return {
+                      boreholeno: hit._source.properties.boreholeno,
+                    };
+                  })
+                );
+              });
+            if (searchValue === '' && loctype_id) {
+              setValue('boreholeno', undefined);
+            }
+            setSearch(searchValue);
           }}
         />
       )}
+    </>
+  );
+};
+
+const BoreholeSuffix = (
+  props: Omit<FormInputProps<BoreholeAddLocation | BoreholeEditLocation>, 'name' | 'label'>
+) => {
+  const {getValues} = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
+  const boreholeno = getValues('boreholeno');
+  return (
+    <FormInput
+      name="suffix"
+      label="Lokationsnavn"
+      slotProps={{
+        input: {
+          startAdornment: (
+            <InputAdornment position="start">
+              {boreholeno !== undefined && boreholeno + ' - '}
+            </InputAdornment>
+          ),
+        },
+      }}
+      placeholder="f.eks. A"
+      fullWidth
+      {...props}
     />
   );
 };
 
-const boreholeSuffix = (
-  props: Omit<FormInputProps<BoreholeAddLocation | BoreholeEditLocation>, 'name'>
+const Groups = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
+    >,
+    'name'
+  >
 ) => {
-  return <FormInput name="suffix" label="Suffiks" placeholder="f.eks. A" fullWidth {...props} />;
-};
-
-const Groups = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   const {control} = useFormContext();
   return (
     <Controller
@@ -337,7 +403,6 @@ const Groups = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
           disable={props.disabled}
         />
       )}
-      {...props}
     />
   );
 };
@@ -408,7 +473,7 @@ StamdataLocation.Locname = Locname;
 StamdataLocation.Groups = Groups;
 StamdataLocation.InitialProjectNo = InitialProjectNo;
 StamdataLocation.Description = Description;
-StamdataLocation.Boreholeno = boreholeno;
-StamdataLocation.BoreholeSuffix = boreholeSuffix;
+StamdataLocation.Boreholeno = Boreholeno;
+StamdataLocation.BoreholeSuffix = BoreholeSuffix;
 
 export default StamdataLocation;

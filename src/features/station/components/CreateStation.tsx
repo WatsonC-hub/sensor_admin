@@ -17,11 +17,9 @@ import {
 } from '../schema';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {useCreateTabState} from '~/hooks/useQueryStateParameters';
-import BoreholeLocationForm from './stamdata/stamdataComponents/BoreholeLocationForm';
 import StamdataLocation from './stamdata/StamdataLocation';
 import StamdataTimeseries from './stamdata/StamdataTimeseries';
 import {FormProvider} from 'react-hook-form';
-import DefaultLocationForm from './stamdata/stamdataComponents/DefaultLocationForm';
 import StamdataUnit from './stamdata/StamdataUnit';
 import DefaultUnitForm from './stamdata/stamdataComponents/DefaultUnitForm';
 import useUnitForm from '../api/useUnitForm';
@@ -31,11 +29,9 @@ import {useMutation} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useLocation} from 'react-router-dom';
 import useTimeseriesForm from '../api/useTimeseriesForm';
-import DefaultTimeseriesForm from './stamdata/stamdataComponents/DefaultTimeseriesForm';
 import StamdataWatlevmp from './stamdata/StamdataWatlevmp';
 import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpForm';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import BoreholeTimeseriesForm from './stamdata/stamdataComponents/BoreholeTimeseriesForm';
 import {toast} from 'react-toastify';
 
 interface TabPanelProps {
@@ -68,15 +64,22 @@ const CreateStation = () => {
 
   const loc_id = state?.loc_id ?? undefined;
 
+  console.log(loc_id);
+
   const defaultValues = {
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
     ...state,
   };
 
-  const locationFormMethods = useLocationForm<DefaultAddLocation | BoreholeAddLocation>({
+  console.log(defaultValues);
+  const [locationFormMethods, LocationForm] = useLocationForm({
     mode: 'Add',
     defaultValues: defaultValues,
+    context: {
+      loc_id: loc_id,
+    },
   });
+
   const {
     getValues: getLocationValues,
     trigger: triggerLocation,
@@ -89,13 +92,17 @@ const CreateStation = () => {
   const loctype_id = watchLocation('loctype_id');
   const boreholeno = watchLocation('boreholeno');
 
-  const timeseriesFormMethods = useTimeseriesForm<DefaultAddTimeseries | BoreholeAddTimeseries>({
+  const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm<
+    DefaultAddTimeseries | BoreholeAddTimeseries
+  >({
     mode: 'Add',
     defaultValues: {
       tstype_id: -1,
       intakeno: -1,
     },
-    loctype_id: loctype_id,
+    context: {
+      loctype_id: loctype_id,
+    },
   });
 
   const {
@@ -123,7 +130,7 @@ const CreateStation = () => {
     formState: {isDirty: isUnitDirty},
   } = unitFormMethods;
 
-  const watlevmpFormMethods = useWatlevmpForm({
+  const watlevmpFormMethods = useWatlevmpForm<Watlevmp>({
     schema: watlevmpAddSchema,
     defaultValues: {},
   });
@@ -145,6 +152,10 @@ const CreateStation = () => {
       const {data: out} = await apiClient.post(`/sensor_field/stamdata/`, data);
       return out;
     },
+    onSuccess: (data) => {
+      toast.success('Lokation oprettet');
+      locationNavigate(data.loc_id);
+    },
   });
 
   const stamdataNewLocationMutation = useMutation({
@@ -154,6 +165,10 @@ const CreateStation = () => {
         data.location
       );
       return out;
+    },
+    onSuccess: (data) => {
+      toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
+      stationNavigate(data.loc_id, data.ts_id);
     },
   });
 
@@ -165,6 +180,12 @@ const CreateStation = () => {
     }) => {
       const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_timeseries`, data);
       return out;
+    },
+    onSuccess: (data) => {
+      toast.success(
+        loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
+      );
+      stationNavigate(data.loc_id, data.ts_id);
     },
   });
 
@@ -188,7 +209,14 @@ const CreateStation = () => {
     const isTimeseriesValid = isTimeseriesDirty ? await triggerTimeseries() : true;
     const isUnitValid = isUnitDirty ? await triggerUnit() : true;
 
-    const locationData = getLocationValues();
+    const locationData =
+      getLocationValues('loctype_id') === 9
+        ? {
+            ...getLocationValues(),
+            loc_name: boreholeno + ' - ' + getLocationValues('suffix'),
+          }
+        : getLocationValues();
+
     const timeseriesData = getTimeseriesValues();
     const unitData = getUnitValues();
     const watlevmpData = getWatlevmpValues();
@@ -208,12 +236,7 @@ const CreateStation = () => {
         location: locationData,
       } as {location: DefaultAddLocation | BoreholeAddLocation};
 
-      stamdataNewLocationMutation.mutate(form, {
-        onSuccess: (data) => {
-          toast.success('Lokation oprettet');
-          locationNavigate(data.loc_id);
-        },
-      });
+      stamdataNewLocationMutation.mutate(form);
     }
 
     if (isLocationValid && isTimeseriesValid && isTimeseriesDirty && !isUnitDirty) {
@@ -237,12 +260,7 @@ const CreateStation = () => {
         };
       }
 
-      stamdataNewTimeseriesMutation.mutate(form, {
-        onSuccess: (data) => {
-          toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-          stationNavigate(data.loc_id, data.ts_id);
-        },
-      });
+      stamdataNewTimeseriesMutation.mutate(form);
     }
 
     if (isLocationValid && isTimeseriesValid && isWatlevmpValid && isUnitValid && isUnitDirty) {
@@ -258,14 +276,7 @@ const CreateStation = () => {
         unit: AddUnit;
       };
 
-      stamdataNewMutation.mutate(form, {
-        onSuccess: (data) => {
-          toast.success(
-            loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
-          );
-          stationNavigate(data.loc_id, data.ts_id);
-        },
-      });
+      stamdataNewMutation.mutate(form);
     }
   };
 
@@ -345,22 +356,15 @@ const CreateStation = () => {
           <TabPanel value={tabValue} index={'lokation'}>
             <FormProvider {...locationFormMethods}>
               <StamdataLocation>
-                <Grid2 size={size}>
-                  <StamdataLocation.LoctypeSelect disabled={loc_id !== undefined} />
-                </Grid2>
-                <Grid2 container size={12} spacing={1}>
-                  <DefaultLocationForm size={size} loc_id={loc_id} />
-                  <BoreholeLocationForm size={size} loctype_id={loctype_id} loc_id={loc_id} />
-                </Grid2>
+                <LocationForm size={size} loc_id={loc_id} />
               </StamdataLocation>
             </FormProvider>
           </TabPanel>
           <TabPanel value={tabValue} index={'tidsserie'}>
             <FormProvider {...timeseriesFormMethods}>
-              <StamdataTimeseries loc_name={loc_name} boreholeno={boreholeno}>
+              <StamdataTimeseries boreholeno={boreholeno}>
                 <Grid2 container size={12} spacing={1}>
-                  <DefaultTimeseriesForm size={size} loctype_id={loctype_id} />
-                  <BoreholeTimeseriesForm size={size} loctype_id={loctype_id} />
+                  <TimeseriesForm size={size} loc_name={loc_name} />
                   <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
                     <FormProvider {...watlevmpFormMethods}>
                       <StamdataWatlevmp tstype_id={tstype_id}>
@@ -380,18 +384,6 @@ const CreateStation = () => {
             </FormProvider>
           </TabPanel>
           <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={2}>
-            {/* <StamdataForm
-              onSubmit={() => {
-              }}
-              defaultValues={{
-                location: {
-                  loctype_id: -1,
-                },
-              }}
-            >
-              <StamdataForm.CancelButton />
-              <StamdataForm.SubmitButton />
-            </StamdataForm> */}
             <Button
               bttype="tertiary"
               onClick={() => {

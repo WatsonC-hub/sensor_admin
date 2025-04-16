@@ -21,31 +21,32 @@ const boreholeListOptions = () => {
   });
 };
 
-export const useSearchBorehole = (searchString: string) => {
+export const boreholesOptions = () => {
+  const user = useUser();
+  return queryOptions({
+    queryKey: ['boreholes'],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<Borehole>>(`/sensor_field/boreholes`);
+      return data;
+    },
+    staleTime: 10 * 1000,
+    enabled: user?.boreholeAccess,
+  });
+};
+
+export const useSearchBorehole = (boreholeno: string | undefined) => {
   const user = useUser();
   const searched_boreholes = useQuery({
-    queryKey: ['search_borehole', searchString],
+    queryKey: ['search_borehole', boreholeno],
     queryFn: async () => {
       const response = await apiClient.get<Array<Borehole>>(
-        `/sensor_field/borehole_list/${searchString}`
+        `/sensor_field/boreholes/${boreholeno}`
       );
       const data = response.data;
       return data;
-      //   const response = await postElasticSearch({
-      //     query: {bool: {must: {query_string: {query: searchString}}}},
-      //   });
-      //   const data = response.data.hits.hits.map((item: any) => {
-      //     return {
-      //       boreholeno: item._source.properties.boreholeno,
-      //       latitude: item._source.properties.latitude,
-      //       longitude: item._source.properties.longitude,
-      //     };
-      //   });
-      //   console.log(response.data.hits.hits);
-      //   return data as Array<Borehole>;
     },
     staleTime: 10 * 1000,
-    enabled: searchString !== '' && user?.boreholeAccess,
+    enabled: boreholeno !== undefined && boreholeno !== '' && user?.boreholeAccess,
   });
   return searched_boreholes;
 };

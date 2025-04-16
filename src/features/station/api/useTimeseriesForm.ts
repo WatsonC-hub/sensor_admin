@@ -1,4 +1,3 @@
-import {ZodType} from 'zod';
 import {
   baseTimeseriesSchema,
   boreholeAddTimeseriesSchema,
@@ -8,51 +7,64 @@ import {
 } from '../schema';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {DefaultValues, useForm} from 'react-hook-form';
+import DefaultTimeseriesForm from '../components/stamdata/stamdataComponents/DefaultTimeseriesForm';
+import BoreholeTimeseriesForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesForm';
+import DefaultTimeseriesEditForm from '../components/stamdata/stamdataComponents/DefaultTimeseriesEditForm';
+import BoreholeTimeseriesEditForm from '../components/stamdata/stamdataComponents/BoreholeTimeseriesEditForm';
 
 type useTimeseriesFormProps<T> = {
-  schema?: ZodType<T>;
   defaultValues?: DefaultValues<T>;
-  mode?: 'Add' | 'Edit';
-  loctype_id?: number;
+  mode: 'Add' | 'Edit';
+  context: {loctype_id: number | undefined};
+};
+
+const getSchemaAndForm = (loctype_id: number | undefined, mode: 'Add' | 'Edit') => {
+  let selectedSchema = baseTimeseriesSchema;
+  let selectedForm = DefaultTimeseriesForm;
+
+  switch (true) {
+    case loctype_id === 9 && mode === 'Add':
+      selectedSchema = boreholeAddTimeseriesSchema;
+      selectedForm = BoreholeTimeseriesForm;
+      break;
+    case loctype_id === 9 && mode === 'Edit':
+      selectedSchema = boreholeEditTimeseriesSchema;
+      selectedForm = BoreholeTimeseriesEditForm;
+      break;
+    case mode === 'Add':
+      selectedSchema = defaultAddTimeseriesSchema;
+      selectedForm = DefaultTimeseriesForm;
+      break;
+    case mode === 'Edit':
+      selectedSchema = defaultEditTimeseriesSchema;
+      selectedForm = DefaultTimeseriesEditForm;
+      break;
+  }
+
+  return [selectedSchema, selectedForm] as const;
 };
 
 const useTimeseriesForm = <T extends Record<string, any>>({
   defaultValues,
-  loctype_id,
+  context,
   mode,
-  schema,
 }: useTimeseriesFormProps<T>) => {
-  const formMethods = useForm({
-    resolver: (...opts) => {
-      let selectedSchema = baseTimeseriesSchema;
-      if (schema) return zodResolver(schema)(...opts);
+  const loctype_id = context.loctype_id;
 
-      if (loctype_id !== -1 && loctype_id !== 9) {
-        if (mode === 'Add') {
-          selectedSchema = defaultAddTimeseriesSchema;
-        } else if (mode === 'Edit') {
-          selectedSchema = defaultEditTimeseriesSchema;
-        }
-      }
+  if (mode === undefined) {
+    throw new Error('mode is required');
+  }
 
-      if (loctype_id == 9) {
-        if (mode === 'Add') {
-          selectedSchema = boreholeAddTimeseriesSchema;
-        } else if (mode === 'Edit') {
-          selectedSchema = boreholeEditTimeseriesSchema;
-        }
-      }
+  const [schema, form] = getSchemaAndForm(loctype_id, mode);
 
-      return zodResolver(selectedSchema)(...opts);
-    },
+  const formMethods = useForm<T, {loctype_id: number | undefined}>({
+    resolver: zodResolver(schema),
     defaultValues,
     mode: 'onTouched',
-    context: {
-      loctype_id: loctype_id,
-    },
+    context: context,
   });
 
-  return formMethods;
+  return [formMethods, form] as const;
 };
 
 export default useTimeseriesForm;

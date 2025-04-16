@@ -3,30 +3,24 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {BoreholeAddTimeseries, BoreholeEditTimeseries, dynamicSchemaType} from '../../schema';
+import {BoreholeAddTimeseries, BoreholeEditTimeseries, DynamicSchemaType} from '../../schema';
+import FormTextField from '~/components/FormTextField';
 
 type Props = {
   children: React.ReactNode;
-  loc_name: string | undefined;
-  boreholeno: string | undefined;
+  boreholeno?: string | undefined;
 };
 
-type timeseriesContextType = {
-  loc_name: string | undefined;
-  boreholeno: string | undefined;
+type TimeseriesContextType = {
+  boreholeno?: string | undefined;
 };
 
-const TimeseriesContext = React.createContext<timeseriesContextType>({
-  loc_name: undefined,
+const TimeseriesContext = React.createContext<TimeseriesContextType>({
   boreholeno: undefined,
 });
 
-const StamdataTimeseries = ({children, loc_name, boreholeno}: Props) => {
-  return (
-    <TimeseriesContext.Provider value={{loc_name, boreholeno}}>
-      {children}
-    </TimeseriesContext.Provider>
-  );
+const StamdataTimeseries = ({children, boreholeno}: Props) => {
+  return <TimeseriesContext.Provider value={{boreholeno}}>{children}</TimeseriesContext.Provider>;
 };
 
 interface TimeseriesTypeSelectProps {
@@ -57,13 +51,15 @@ const TimeseriesTypeSelect = ({
       fullWidth
       {...props}
     >
-      <MenuItem value={-1}>Vælg type</MenuItem>
+      <MenuItem disabled value={-1}>
+        Vælg type
+      </MenuItem>
       {menuItems}
     </FormInput>
   );
 };
 
-const TypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const TypeSelect = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
   const {data: timeseries_types} = useQuery({
     queryKey: ['timeseries_types'],
     queryFn: async () => {
@@ -73,6 +69,28 @@ const TypeSelect = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   });
 
   return <TimeseriesTypeSelect stationTypes={timeseries_types} {...props} />;
+};
+
+const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
+  const {data: timeseries_types} = useQuery({
+    queryKey: ['timeseries_types'],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
+      return data;
+    },
+  });
+
+  return (
+    <FormTextField
+      disabled
+      label="Tidsserie type"
+      value={
+        timeseries_types?.filter(
+          (elem: {tstype_id: number; tstype_name: string}) => elem.tstype_id == tstype_id
+        )[0]?.tstype_name
+      }
+    />
+  );
 };
 
 const Intakeno = (
@@ -111,14 +129,21 @@ const Intakeno = (
   );
 };
 
-const Prefix = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
-  const {loc_name} = React.useContext(TimeseriesContext);
+const Prefix = (
+  props: Omit<FormInputProps<DynamicSchemaType>, 'name'> & {loc_name: string | undefined}
+) => {
+  // const {loc_name} = React.useContext(TimeseriesContext);
+  const loc_name = props.loc_name;
   return (
     <FormInput
       name="prefix"
       label="Navn"
       InputProps={{
-        startAdornment: <InputAdornment position="start">{loc_name + ' - '}</InputAdornment>,
+        startAdornment: (
+          <InputAdornment position="start">
+            {loc_name !== undefined && loc_name + ' - '}
+          </InputAdornment>
+        ),
       }}
       placeholder="f.eks. indtag 1"
       fullWidth
@@ -127,7 +152,7 @@ const Prefix = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
   );
 };
 
-const SensorDepth = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => {
+const SensorDepth = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
   return (
     <FormInput
       type="number"
@@ -144,6 +169,7 @@ const SensorDepth = (props: Omit<FormInputProps<dynamicSchemaType>, 'name'>) => 
 };
 
 StamdataTimeseries.TypeSelect = TypeSelect;
+StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;

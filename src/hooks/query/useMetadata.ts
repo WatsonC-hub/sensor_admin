@@ -25,6 +25,7 @@ export type Metadata = {
   batteriskift: string;
   calculated: boolean;
   boreholeno: string;
+  suffix: string | undefined;
   intakeno: number;
   groups: string[];
   unit: string;
@@ -49,6 +50,8 @@ export type TimeseriesMetadata = {
 export type LocationMetadata = {
   loc_id: number;
   loc_name: string;
+  boreholeno: string | undefined;
+  suffix: string | undefined;
   mainloc: string;
   subloc: string;
   description: string | undefined;
@@ -94,6 +97,8 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
       const location_data: LocationMetadata = {
         loc_id: data[0].loc_id,
         loc_name: data[0].loc_name,
+        boreholeno: data[0].boreholeno ?? undefined,
+        suffix: data[0].suffix ?? undefined,
         loctype_id: data[0].loctype_id,
         groups: data[0].groups,
         description: data[0].description,

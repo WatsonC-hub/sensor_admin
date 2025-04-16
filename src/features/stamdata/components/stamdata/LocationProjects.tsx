@@ -22,7 +22,7 @@ interface LocationProjectsProps {
   disable?: boolean;
 }
 
-const getLabel = (project: Project | undefined) => {
+const getLabel = (project: Project | null) => {
   if (!project) return '';
   return `${project.project_no} ${project.customer_name ? ' - ' + project.customer_name : ''} ${project.project_info ? ' - ' + project.project_info : ''}`;
 };
@@ -40,7 +40,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
 
   const user = useUser();
 
-  const selectedValue = options?.find((option) => option.project_no == value) ?? undefined;
+  const selectedValue = options?.find((option) => option.project_no == value) ?? null;
 
   return (
     <>

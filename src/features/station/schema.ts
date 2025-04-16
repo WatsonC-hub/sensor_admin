@@ -32,13 +32,11 @@ const defaultEditLocationSchema = baseLocationSchema.extend({
 const defaultAddLocationSchema = defaultEditLocationSchema;
 
 const boreholeEditLocationSchema = baseLocationSchema.extend({
-  loctype_id: z.literal(9),
+  boreholeno: z.string().optional(),
   suffix: z.string().optional(),
 });
 
-const boreholeAddLocationSchema = boreholeEditLocationSchema.extend({
-  boreholeno: z.string(),
-});
+const boreholeAddLocationSchema = boreholeEditLocationSchema;
 
 const baseTimeseriesSchema = z.object({
   sensor_depth_m: z.number().nullish(),
@@ -78,11 +76,26 @@ const addUnitSchema = z.object({
   startdate: z.string(),
 });
 
-const editUnitSchema = z.object({
-  unit_uuid: z.string(),
-  startdate: z.string(),
-  enddate: z.string(),
-});
+const editUnitSchema = z
+  .object({
+    unit_uuid: z.string(),
+    startdate: z.string(),
+    enddate: z.string(),
+  })
+  .superRefine((unit, ctx) => {
+    if (moment(unit.startdate) > moment(unit.enddate)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.invalid_date,
+        message: 'start dato må ikke være senere end slut dato',
+        path: ['startdate'],
+      });
+      ctx.addIssue({
+        code: z.ZodIssueCode.invalid_date,
+        message: 'slut dato må ikke være tidligere end start datoo',
+        path: ['enddate'],
+      });
+    }
+  });
 
 export const mutualPropertiesSchema = z.object({
   location: z.object({
@@ -164,7 +177,7 @@ export const defaultSchema = mutualPropertiesSchema
     }
   });
 
-type dynamicSchemaType = z.infer<
+type DynamicSchemaType = z.infer<
   typeof defaultSchema | typeof DGUSchema | typeof mutualPropertiesSchema
 >;
 
@@ -217,4 +230,4 @@ export type {
   Watlevmp,
 };
 
-export type {dynamicSchemaType};
+export type {DynamicSchemaType};

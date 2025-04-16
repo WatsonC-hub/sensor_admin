@@ -1,54 +1,110 @@
 import {
   baseLocationSchema,
+  BoreholeAddLocation,
   boreholeAddLocationSchema,
+  BoreholeEditLocation,
   boreholeEditLocationSchema,
+  DefaultAddLocation,
   defaultAddLocationSchema,
+  DefaultEditLocation,
   defaultEditLocationSchema,
 } from '../schema';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {DefaultValues, useForm, UseFormReturn} from 'react-hook-form';
+import {DefaultValues, useForm} from 'react-hook-form';
 import {ZodType} from 'zod';
+import React from 'react';
+import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
+import BoreholeLocationForm from '../components/stamdata/stamdataComponents/BoreholeLocationForm';
+import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLocationForm';
+import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
+import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
 
-type useLocationFormProps<T> = {
-  schema?: ZodType<T>;
-  defaultValues?: DefaultValues<T>;
-  mode?: 'Add' | 'Edit';
+type useLocationFormProps = {
+  defaultValues?: DefaultValues<
+    DefaultAddLocation | BoreholeAddLocation | DefaultEditLocation | BoreholeEditLocation
+  >;
+  mode: 'Add' | 'Edit';
+  initialLocTypeId?: number;
+  context: {loc_id: number};
 };
 
-const useLocationForm = <T extends Record<string, any>>({
+const getSchemaAndForm = (
+  loctype_id: number,
+  mode: 'Add' | 'Edit',
+  defaultValues?: DefaultValues<
+    DefaultAddLocation | BoreholeAddLocation | DefaultEditLocation | BoreholeEditLocation
+  >
+) => {
+  let selectedSchema: ZodType<Record<string, any>> = baseLocationSchema;
+  let selectedForm = DefaultLocationForm;
+  let values = undefined;
+
+  switch (true) {
+    case loctype_id === -1:
+      selectedSchema = baseLocationSchema;
+      selectedForm = BaseLocationForm;
+      break;
+    case loctype_id === 9 && mode === 'Add':
+      selectedSchema = boreholeAddLocationSchema;
+      selectedForm = BoreholeLocationForm;
+      break;
+    case loctype_id === 9 && mode === 'Edit': {
+      selectedSchema = boreholeEditLocationSchema;
+
+      const {data} = selectedSchema.safeParse({
+        ...defaultValues,
+      });
+      values = data;
+      selectedForm = BoreholeLocationEditForm;
+      break;
+    }
+    case mode === 'Add':
+      selectedSchema = defaultAddLocationSchema;
+      selectedForm = DefaultLocationForm;
+      break;
+    case mode === 'Edit': {
+      selectedSchema = defaultEditLocationSchema;
+
+      const {data} = selectedSchema.safeParse({
+        ...defaultValues,
+      });
+      values = data;
+      selectedForm = DefaultLocationEditForm;
+      break;
+    }
+  }
+
+  return [selectedSchema, selectedForm, values] as const;
+};
+
+const useLocationForm = ({
   defaultValues,
   mode,
-  schema,
-}: useLocationFormProps<T>): UseFormReturn<T> => {
-  const formMethods = useForm<T>({
-    resolver: (...opts) => {
-      let test: ZodType<any> = baseLocationSchema;
-      if (schema) return zodResolver(schema)(...opts);
+  context,
+  initialLocTypeId = -1,
+}: useLocationFormProps) => {
+  const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-      const loctype_id = 'loctype_id' in opts[0] ? opts[0].loctype_id : -1;
-      if (loctype_id !== -1 && loctype_id !== 9) {
-        if (mode === 'Add') {
-          test = defaultAddLocationSchema;
-        } else if (mode === 'Edit') {
-          test = defaultEditLocationSchema;
-        }
-      }
+  const [schema, form, values] = getSchemaAndForm(loctype_id, mode);
 
-      if (loctype_id == 9) {
-        if (mode === 'Add') {
-          test = boreholeAddLocationSchema;
-        } else if (mode === 'Edit') {
-          test = boreholeEditLocationSchema;
-        }
-      }
-
-      return zodResolver(test)(...opts);
-    },
-    defaultValues,
+  const formMethods = useForm<
+    DefaultAddLocation | BoreholeAddLocation | DefaultEditLocation | BoreholeEditLocation
+  >({
+    resolver: zodResolver(schema),
+    defaultValues: values ? values : defaultValues,
     mode: 'onTouched',
+    context: context,
   });
 
-  return formMethods;
+  const {watch} = formMethods;
+
+  const loctype_id_watch = watch('loctype_id');
+
+  React.useEffect(() => {
+    setLoctypeId(loctype_id_watch);
+  }, [loctype_id_watch]);
+
+  return [formMethods, form] as const;
 };
 
 export default useLocationForm;

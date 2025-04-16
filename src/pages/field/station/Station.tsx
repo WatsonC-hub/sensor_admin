@@ -29,6 +29,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
 import PlotGraph from '~/features/station/components/StationGraph';
+import EditLocationCopy from './stamdata/EditLocationCopy';
+import EditTimeseriesCopy from './stamdata/EditTimeseriesCopy';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -74,7 +76,8 @@ export default function Station() {
               padding: '16px',
             }}
           >
-            <EditLocation />
+            {/* <EditLocation /> */}
+            <EditLocationCopy />
           </Box>
         </StationPageBoxLayout>
       )}
@@ -87,7 +90,8 @@ export default function Station() {
               padding: '16px',
             }}
           >
-            <EditTimeseries />
+            {/* <EditTimeseries /> */}
+            <EditTimeseriesCopy />
           </Box>
         </StationPageBoxLayout>
       )}
@@ -159,7 +163,9 @@ const Layout = ({children}: LayoutProps) => {
                 title: 'Opret tidsserie',
                 icon: <AddIcon />,
                 onClick: () => {
-                  createStamdata(undefined, {state: {...metadata}});
+                  createStamdata(undefined, {
+                    state: {...metadata, initial_project_no: metadata?.projectno},
+                  });
                 },
               },
             ]}
