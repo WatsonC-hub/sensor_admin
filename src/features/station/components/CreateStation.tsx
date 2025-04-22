@@ -33,7 +33,7 @@ import {toast} from 'react-toastify';
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-  const {location: locationNavigate, station: stationNavigate, home} = useNavigationFunctions();
+  const {location: locationNavigate, station: stationNavigate, field} = useNavigationFunctions();
   let {state} = useLocation();
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -404,7 +404,9 @@ const CreateStation = () => {
             <Button
               bttype="tertiary"
               onClick={() => {
-                home();
+                if (loc_id !== undefined) {
+                  stationNavigate(state.loc_id, state.ts_id);
+                } else field();
               }}
             >
               Annuller
