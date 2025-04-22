@@ -48,13 +48,11 @@ const EditTimeseries = () => {
     schema = defaultEditTimeseriesSchema;
   }
 
-  const {data: defaultValues} = schema.safeParse({
+  const {data: defaultValues, error} = schema.safeParse({
     prefix: metadata?.prefix,
     sensor_depth_m: metadata?.sensor_depth_m,
     intakeno: metadata?.intakeno,
   });
-
-  console.log(metadata);
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
     defaultValues: defaultValues,
@@ -68,6 +66,7 @@ const EditTimeseries = () => {
     formState: {isDirty, isValid},
     reset,
     handleSubmit,
+    trigger,
   } = formMethods;
 
   useEffect(() => {
@@ -75,6 +74,12 @@ const EditTimeseries = () => {
       reset(defaultValues);
     }
   }, [metadata]);
+
+  useEffect(() => {
+    if (error) {
+      trigger();
+    }
+  }, []);
 
   const Submit = async (data: z.infer<typeof schema>) => {
     const payload = {

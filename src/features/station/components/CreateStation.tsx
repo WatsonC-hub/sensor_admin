@@ -122,7 +122,7 @@ const CreateStation = () => {
       unit: AddUnit;
       watlevmp?: Watlevmp;
     }) => {
-      const {data: out} = await apiClient.post(`/sensor_field/stamdata/`, data);
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/${loc_id}`, data);
       return out;
     },
     onSuccess: (data) => {
@@ -151,7 +151,10 @@ const CreateStation = () => {
       timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
       watlevmp?: Watlevmp;
     }) => {
-      const {data: out} = await apiClient.post(`/sensor_field/stamdata/create_timeseries`, data);
+      const {data: out} = await apiClient.post(
+        `/sensor_field/stamdata/create_timeseries/${loc_id}`,
+        data
+      );
       return out;
     },
     onSuccess: (data) => {
@@ -250,6 +253,8 @@ const CreateStation = () => {
     if (loctype_id !== 9 && boreholeno !== undefined) {
       resetLocation({loctype_id});
     }
+
+    if (Object.keys(locationErrors).length > 0 && loctype_id !== -1) triggerLocation();
   }, [loctype_id]);
 
   useEffect(() => {
@@ -380,7 +385,7 @@ const CreateStation = () => {
               onClick={() => setActiveStep(activeStep - 1)}
               sx={{mr: 1}}
             >
-              Back
+              Tilbage
             </Button>
             <Button
               bttype="primary"
@@ -399,7 +404,7 @@ const CreateStation = () => {
               }}
               sx={{mr: 1}}
             >
-              Next
+              Næste
             </Button>
             <Button
               bttype="tertiary"
