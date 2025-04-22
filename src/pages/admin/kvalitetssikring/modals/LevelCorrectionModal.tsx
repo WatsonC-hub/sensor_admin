@@ -51,6 +51,8 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
       {
         onSuccess: () => {
           reset();
+          setDataAdjustment(null);
+          onClose();
         },
       }
     );

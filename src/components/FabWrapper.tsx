@@ -21,10 +21,11 @@ const FabWrapper = ({text, icon, onClick, showText = false, ...otherProps}: Prop
   const {ts_id} = useAppContext([], ['ts_id']);
   const {isMobile, isTouch} = useBreakpoints();
   let sx = {
-    position: 'fixed',
+    position: 'sticky',
     bottom: isMobile || !ts_id ? 65 : 10,
     right: 20,
     padding: 2,
+    ml: 'auto',
     width: isTouch && !showText ? 75 : 'fit-content',
     height: 60,
     borderRadius: 4.5,

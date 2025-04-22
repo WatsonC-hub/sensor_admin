@@ -54,6 +54,8 @@ const YRangeModal = ({onClose}: YRangeModalProps) => {
       {
         onSuccess: () => {
           reset();
+          setDataAdjustment(null);
+          onClose();
         },
       }
     );

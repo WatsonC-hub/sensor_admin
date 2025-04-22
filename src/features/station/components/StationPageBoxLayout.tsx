@@ -1,13 +1,11 @@
 import {Box} from '@mui/material';
 import React from 'react';
-import useBreakpoints from '~/hooks/useBreakpoints';
 
 type StationPageBoxLayoutProps = {
   children: React.ReactNode;
 };
 
 const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
-  const {isMobile} = useBreakpoints();
   return (
     <Box
       sx={{
@@ -15,9 +13,8 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
         flexDirection: 'column',
         position: 'relative',
         mx: 'auto',
-        height: '100%',
-        width: isMobile ? '100%' : undefined,
-        maxWidth: isMobile ? '100%' : 1200,
+        minWidth: 0,
+        maxWidth: '100%',
         gap: 1,
       }}
       px={{
@@ -27,6 +24,7 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
         mobile: 2,
         laptop: 4,
       }}
+      pb={1}
     >
       {children}
     </Box>

@@ -50,7 +50,8 @@ const usePermissions = (loc_id?: number) => {
     if (ts_permissions.length == 0) {
       location_permissions = 'edit';
     }
-    location_permissions = ts_permissions.some((v) => v === 'edit') ? 'edit' : 'read';
+    location_permissions =
+      ts_permissions.some((v) => v === 'edit') || ts_permissions.length === 0 ? 'edit' : 'read';
   } else {
     location_permissions = 'edit';
   }

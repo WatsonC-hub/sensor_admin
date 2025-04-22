@@ -1,5 +1,4 @@
 import {AddAPhotoRounded} from '@mui/icons-material';
-import {Box} from '@mui/material';
 import moment from 'moment';
 import React, {ChangeEvent, createRef, useState} from 'react';
 
@@ -64,7 +63,7 @@ const ImagePage = () => {
   };
 
   return (
-    <Box>
+    <>
       <Images
         type={'station'}
         typeId={loc_id ? loc_id.toString() : ''}
@@ -77,7 +76,10 @@ const ImagePage = () => {
         text={'Tilføj billeder'}
         disabled={location_permissions !== 'edit'}
         onClick={() => {
-          if (fileInputRef.current) fileInputRef.current.click();
+          if (fileInputRef.current) {
+            fileInputRef.current.click();
+            fileInputRef.current.value = '';
+          }
         }}
       />
       <SaveImageDialog
@@ -94,7 +96,7 @@ const ImagePage = () => {
         }}
       />
       <input type="file" ref={fileInputRef} style={{display: 'none'}} onChange={handleFileRead} />
-    </Box>
+    </>
   );
 };
 

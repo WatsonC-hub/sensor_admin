@@ -139,7 +139,7 @@ const LocationAccessTable = ({delLocationAccess, editLocationAccess}: Props) => 
     []
   );
 
-  const [tableState, resetState] = useStatefullTableAtom<AccessTable>('ContactTableState');
+  const [tableState, resetState] = useStatefullTableAtom<AccessTable>('accessTableState');
 
   const options: Partial<MRT_TableOptions<AccessTable>> = {
     localization: {

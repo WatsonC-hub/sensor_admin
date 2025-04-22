@@ -247,7 +247,7 @@ export default function PlotlyGraph({
   });
 
   useEffect(() => {
-    if (tstype_name) setLayout({yaxis: {title: `${tstype_name} [${unit}]`}});
+    if (tstype_name) setLayout({yaxis: {title: {text: `${tstype_name} [${unit}]`}}});
   }, [tstype_name, unit]);
 
   return (

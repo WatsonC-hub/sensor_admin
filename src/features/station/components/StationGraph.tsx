@@ -5,9 +5,8 @@ import {useEffect, useState} from 'react';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
-import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {PejlingItem} from '~/types';
+import {controlData} from '~/types';
 
 import useStationGraphHook from '../hooks/useStationGraphHook';
 
@@ -21,13 +20,9 @@ interface PlotGraphProps {
 }
 
 export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
-  const [controlData, setControlData] =
-    useState<Array<PejlingItem & {waterlevel: number | null}>>();
+  const [controlData, setControlData] = useState<Array<controlData>>();
   const [xRange, setXRange] = useState(initRange);
 
-  const {
-    get: {data: watlevmp},
-  } = useMaalepunkt();
   const {
     get: {data: measurements},
   } = usePejling();
@@ -40,24 +35,15 @@ export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
   );
 
   useEffect(() => {
-    let ctrls: Array<PejlingItem & {waterlevel: number | null}> = [];
-    if (measurements && watlevmp && watlevmp.length > 0) {
-      ctrls = measurements.map((e) => {
-        const elev = watlevmp.filter((e2) => {
-          return e.timeofmeas >= e2.startdate && e.timeofmeas < e2.enddate;
-        })[0]?.elevation;
-        return {
-          ...e,
-          waterlevel: e.measurement != null ? elev - e.measurement : null,
-        };
-      });
-    } else if (measurements) {
-      ctrls = measurements.map((elem) => {
-        return {...elem, waterlevel: elem.measurement};
-      });
-    }
-    setControlData(ctrls);
-  }, [watlevmp, measurements]);
+    console.log(measurements);
+    setControlData(
+      measurements?.map((item) => ({
+        waterlevel: item.referenced_measurement,
+        timeofmeas: item.timeofmeas,
+        useforcorrection: item.useforcorrection,
+      }))
+    );
+  }, [measurements]);
 
   useEffect(() => {
     if (dynamicMeasurement?.[0] != undefined) {

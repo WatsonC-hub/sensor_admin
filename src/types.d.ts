@@ -167,6 +167,7 @@ export type PejlingItem = {
   comment: string;
   gid: number;
   measurement: number | null;
+  referenced_measurement: number | null;
   timeofmeas: string;
   useforcorrection: number;
   disttowatertable_m?: number | null;
@@ -174,6 +175,12 @@ export type PejlingItem = {
   extrema?: string | null;
   service?: boolean;
   display_name?: string;
+};
+
+export type controlData = {
+  timeofmeas: string;
+  waterlevel: number | null;
+  useforcorrection: number;
 };
 
 export type Parking = {
@@ -393,6 +400,7 @@ export type DialAction = {
   onClick: () => void;
   color: string;
   toastTip: string;
+  dialog?: boolean;
 };
 
 export type TaskCollection = {
