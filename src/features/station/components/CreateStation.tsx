@@ -1,11 +1,9 @@
-import React, {ReactNode, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import NavBar from '~/components/NavBar';
 import StationPageBoxLayout from './StationPageBoxLayout';
-import {Box, Grid2, Tab, Tabs, Typography} from '@mui/material';
+import {Box, Grid2, Step, StepButton, StepLabel, Stepper, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useLocationForm from '../api/useLocationForm';
-import {LocationOnRounded, ShowChartRounded, BuildRounded, Error} from '@mui/icons-material';
-import {tabsHeight} from '~/consts';
 import {
   AddUnit,
   BoreholeAddLocation,
@@ -15,8 +13,6 @@ import {
   Watlevmp,
   watlevmpAddSchema,
 } from '../schema';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import {useCreateTabState} from '~/hooks/useQueryStateParameters';
 import StamdataLocation from './stamdata/StamdataLocation';
 import StamdataTimeseries from './stamdata/StamdataTimeseries';
 import {FormProvider} from 'react-hook-form';
@@ -34,31 +30,12 @@ import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpFo
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {toast} from 'react-toastify';
 
-interface TabPanelProps {
-  value: string | null;
-  index: string;
-  children: ReactNode;
-}
-
-function TabPanel({value, index, children}: TabPanelProps) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-    >
-      {value === index && <Box p={1}>{children}</Box>}
-    </div>
-  );
-}
-
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-  const [tabValue, setTabValue] = useCreateTabState();
-  const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
+  const {location: locationNavigate, station: stationNavigate, home} = useNavigationFunctions();
   let {state} = useLocation();
+  const [activeStep, setActiveStep] = React.useState(0);
 
   state = state ?? {};
 
@@ -81,9 +58,9 @@ const CreateStation = () => {
   const {
     getValues: getLocationValues,
     trigger: triggerLocation,
-    reset: resetLocation,
     formState: {errors: locationErrors, isDirty: isLocationDirty},
     watch: watchLocation,
+    reset: resetLocation,
   } = locationFormMethods;
 
   const loc_name = watchLocation('loc_name');
@@ -106,7 +83,6 @@ const CreateStation = () => {
   const {
     getValues: getTimeseriesValues,
     trigger: triggerTimeseries,
-    reset: resetTimeseries,
     formState: {errors: timeseriesErrors, isDirty: isTimeseriesDirty},
     watch: watchTimeseries,
   } = timeseriesFormMethods;
@@ -124,7 +100,6 @@ const CreateStation = () => {
   const {
     getValues: getUnitValues,
     trigger: triggerUnit,
-    reset: resetUnit,
     formState: {isDirty: isUnitDirty},
   } = unitFormMethods;
 
@@ -136,8 +111,8 @@ const CreateStation = () => {
   const {
     getValues: getWatlevmpValues,
     trigger: triggerWatlevmp,
-    reset: resetWatlevmp,
     formState: {errors: watlevmpErrors, isDirty: isWatlevmpDirty},
+    clearErrors: clearWatlevmpErrors,
   } = watlevmpFormMethods;
 
   const stamdataNewMutation = useMutation({
@@ -186,21 +161,6 @@ const CreateStation = () => {
       stationNavigate(data.loc_id, data.ts_id);
     },
   });
-
-  const nextTab = async () => {
-    let valid = false;
-
-    if (tabValue === 'lokation') {
-      valid = await triggerLocation();
-    } else if (tabValue === 'tidsserie') {
-      valid = await triggerTimeseries();
-      const isWaterlevel = getTimeseriesValues()?.tstype_id === 1;
-      if (isWaterlevel) valid = await triggerWatlevmp();
-    }
-
-    if (tabValue === 'lokation' && valid) setTabValue('tidsserie');
-    else if (tabValue === 'tidsserie' && valid) setTabValue('udstyr');
-  };
 
   const handleSubmit = async () => {
     const isLocationValid = isLocationDirty ? await triggerLocation() : true;
@@ -271,11 +231,30 @@ const CreateStation = () => {
     }
   };
 
+  const denyStepping = () => {
+    if (activeStep === 0) {
+      return Object.keys(locationErrors).length > 0;
+    } else if (activeStep === 1) {
+      return (
+        Object.keys(timeseriesErrors).length > 0 ||
+        Object.keys(watlevmpErrors).length > 0 ||
+        loctype_id === -1
+      );
+    } else if (activeStep === 2) {
+      return tstype_id === -1;
+    }
+    return false;
+  };
+
   useEffect(() => {
     if (loctype_id !== 9 && boreholeno !== undefined) {
       resetLocation({loctype_id});
     }
   }, [loctype_id]);
+
+  useEffect(() => {
+    clearWatlevmpErrors();
+  }, [tstype_id]);
 
   return (
     <>
@@ -294,64 +273,82 @@ const CreateStation = () => {
           sx={{maxWidth: 1200, width: '100%'}}
           size={size}
         >
-          <Tabs
-            value={tabValue !== null ? tabValue : 'lokation'}
-            onChange={(_, newValue) => {
-              setTabValue(newValue);
-            }}
-            variant="fullWidth"
-            aria-label="simple tabs example"
-            sx={{'& .MuiTab-root': {height: tabsHeight, minHeight: tabsHeight, marginTop: 1}}}
-          >
-            <Tab
-              value={'lokation'}
-              icon={
-                Object.keys(locationErrors).length > 0 ? (
-                  <Error sx={{marginTop: 1, color: '#d32f2f'}} />
-                ) : (
-                  <LocationOnRounded sx={{marginTop: 1}} fontSize="small" />
-                )
-              }
-              label={
-                <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                  Lokation
-                </Typography>
-              }
-            />
-            <Tab
-              value={'tidsserie'}
-              icon={
-                Object.keys(timeseriesErrors).length > 0 ||
-                Object.keys(watlevmpErrors).length > 0 ? (
-                  <Error sx={{marginTop: 1, color: '#d32f2f'}} />
-                ) : (
-                  <ShowChartRounded sx={{marginTop: 1}} fontSize="small" />
-                )
-              }
-              label={
-                <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                  Tidsserie
-                </Typography>
-              }
-            />
-            <Tab
-              value={'udstyr'}
-              icon={<BuildRounded sx={{marginTop: 1}} fontSize="small" />}
-              label={
-                <Typography marginBottom={1} variant="body2" textTransform={'capitalize'}>
-                  Udstyr
-                </Typography>
-              }
-            />
-          </Tabs>
-          <TabPanel value={tabValue} index={'lokation'}>
+          <Stepper nonLinear activeStep={activeStep} alternativeLabel>
+            <Step key={'lokation'}>
+              <StepButton
+                disabled={denyStepping()}
+                onClick={async () => {
+                  if (activeStep !== 0) {
+                    const isTimeseriesValid = await triggerTimeseries();
+                    const isWaterlevel = tstype_id === 1;
+                    const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
+                    if (isTimeseriesValid && isWatlevmpValid) {
+                      setActiveStep(0);
+                    }
+                  }
+                }}
+              >
+                <StepLabel error={Object.keys(locationErrors).length > 0}>
+                  <Typography variant="body2" textTransform={'capitalize'}>
+                    Lokation
+                  </Typography>
+                </StepLabel>
+              </StepButton>
+            </Step>
+            <Step key={'tidsserie'} completed={false}>
+              <StepButton
+                onClick={async () => {
+                  if (activeStep !== 1) {
+                    const isLocationValid = await triggerLocation();
+                    if (isLocationValid) {
+                      setActiveStep(1);
+                    }
+                  }
+                }}
+                disabled={denyStepping()}
+              >
+                <StepLabel
+                  error={
+                    Object.keys(timeseriesErrors).length > 0 ||
+                    Object.keys(watlevmpErrors).length > 0
+                  }
+                >
+                  <Typography variant="body2" textTransform={'capitalize'}>
+                    Tidsserie
+                  </Typography>
+                </StepLabel>
+              </StepButton>
+            </Step>
+            <Step key={'udstyr'} completed={false}>
+              <StepButton
+                onClick={async () => {
+                  if (activeStep !== 2) {
+                    const isTimeseriesValid = await triggerTimeseries();
+                    const isLocationValid = await triggerLocation();
+                    const isWaterlevel = tstype_id === 1;
+                    const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
+                    if (isTimeseriesValid && isWatlevmpValid && isLocationValid) {
+                      setActiveStep(2);
+                    }
+                  }
+                }}
+              >
+                <StepLabel>
+                  <Typography variant="body2" textTransform={'capitalize'}>
+                    Udstyr
+                  </Typography>
+                </StepLabel>
+              </StepButton>
+            </Step>
+          </Stepper>
+          {activeStep === 0 && (
             <FormProvider {...locationFormMethods}>
               <StamdataLocation>
                 <LocationForm size={size} loc_id={loc_id} />
               </StamdataLocation>
             </FormProvider>
-          </TabPanel>
-          <TabPanel value={tabValue} index={'tidsserie'}>
+          )}
+          {activeStep === 1 && (
             <FormProvider {...timeseriesFormMethods}>
               <StamdataTimeseries boreholeno={boreholeno}>
                 <Grid2 container size={12} spacing={1}>
@@ -366,40 +363,52 @@ const CreateStation = () => {
                 </Grid2>
               </StamdataTimeseries>
             </FormProvider>
-          </TabPanel>
-          <TabPanel value={tabValue} index={'udstyr'}>
+          )}
+          {activeStep === 2 && (
             <FormProvider {...unitFormMethods}>
               <StamdataUnit tstype_id={tstype_id}>
                 <DefaultUnitForm />
               </StamdataUnit>
             </FormProvider>
-          </TabPanel>
+          )}
           <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={2}>
+            <Box sx={{flex: '1 1 auto'}} />
+            <Button
+              bttype="primary"
+              color="inherit"
+              disabled={activeStep === 0 || denyStepping()}
+              onClick={() => setActiveStep(activeStep - 1)}
+              sx={{mr: 1}}
+            >
+              Back
+            </Button>
+            <Button
+              bttype="primary"
+              disabled={activeStep === 2 || denyStepping()}
+              onClick={async () => {
+                let valid = true;
+                if (activeStep === 0) valid = await triggerLocation();
+                if (activeStep === 1) {
+                  valid = await triggerTimeseries();
+                  const isWaterlevel = tstype_id === 1;
+                  if (isWaterlevel && valid) {
+                    valid = await triggerWatlevmp();
+                  }
+                }
+                if (!denyStepping() && valid) setActiveStep(activeStep + 1);
+              }}
+              sx={{mr: 1}}
+            >
+              Next
+            </Button>
             <Button
               bttype="tertiary"
               onClick={() => {
-                resetLocation();
-                resetTimeseries();
-                resetUnit();
-                resetWatlevmp();
+                home();
               }}
             >
               Annuller
             </Button>
-
-            <Button
-              bttype="primary"
-              sx={{marginRight: 1, display: tabValue === 'udstyr' ? 'none' : 'flex'}}
-              onClick={nextTab}
-              hidden={tabValue === 'udstyr'}
-              endIcon={<ArrowForwardIcon fontSize="small" />}
-            >
-              <Box display="flex" alignItems="center">
-                Videre til
-                {tabValue === 'lokation' ? ' tidsserie' : tabValue === 'tidsserie' ? ' udstyr' : ''}
-              </Box>
-            </Button>
-
             <Button
               bttype="primary"
               onClick={() => {
