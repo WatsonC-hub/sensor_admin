@@ -55,6 +55,11 @@ export default function PejlingMeasurementsTableDesktop({
         size: 140,
       },
       {
+        accessorFn: (row) => limitDecimalNumbers(row.referenced_measurement),
+        header: `Reference værdi [m]`,
+        size: 140,
+      },
+      {
         accessorFn: (row) =>
           correction_map[row.useforcorrection] ? correction_map[row.useforcorrection] : 'Kontrol',
         header: 'Anvendelse',

@@ -97,6 +97,7 @@ const WizardConfirmTimeseries = ({
       data: {...certifyQa, date: moment(certifyQa.date).toISOString()},
     };
     postQaData.mutateAsync(payload);
+    setDataAdjustment(null);
     onClose();
   };
   return (

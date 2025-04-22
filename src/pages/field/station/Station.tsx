@@ -149,6 +149,7 @@ const Layout = ({children}: LayoutProps) => {
           flexGrow={1}
           minWidth={0}
           gap={1}
+          minWidth={0}
           flexDirection={'column'}
           overflow="auto"
         >

@@ -172,7 +172,7 @@ const AdjustmentDataTable = ({data}: Props) => {
               <Box>
                 <Box>
                   <Typography variant="caption" display={'inline-block'}>
-                    <b>Godkendt til: </b>
+                    <b>Til: </b>
                     {convertDateWithTimeStamp(data.date)}
                   </Typography>
                 </Box>

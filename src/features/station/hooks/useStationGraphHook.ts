@@ -8,11 +8,11 @@ import {useGraphData} from '~/hooks/query/useGraphData';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-import {PejlingItem} from '~/types';
+import {controlData} from '~/types';
 
 const useStationGraphHook = (
   dynamicMeasurement: Array<string | number> | undefined,
-  controlData: Array<PejlingItem & {waterlevel: number | null}> | undefined,
+  controlData: Array<controlData> | undefined,
   xRange: Array<string>
 ) => {
   const {ts_id} = useAppContext(['ts_id']);

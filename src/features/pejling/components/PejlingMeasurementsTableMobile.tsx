@@ -105,6 +105,9 @@ export default function PejlingMeasurementsTableMobile({
           </Typography>
         )}
         <Typography>
+          <b>Reference værdi: </b> {limitDecimalNumbers(row.original.referenced_measurement)} {unit}
+        </Typography>
+        <Typography>
           <b>Anvendelse: </b>{' '}
           {correction_map[row.original.useforcorrection]
             ? correction_map[row.original.useforcorrection]

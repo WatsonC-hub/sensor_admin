@@ -14,7 +14,6 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
         position: 'relative',
         mx: 'auto',
         minWidth: 0,
-        // height: '100%',
         maxWidth: '100%',
         gap: 1,
       }}
