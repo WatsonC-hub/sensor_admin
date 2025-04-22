@@ -64,8 +64,7 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
         flexDirection: 'column ',
         borderRadius: 5,
         minWidth: 0,
-        width: isMobile ? '100%' : 'fit-content',
-        height: isMobile ? '100%' : 'fit-content',
+        width: isMobile ? '300px' : '480px',
       }}
       key={image.gid.toString()}
     >

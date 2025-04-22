@@ -33,9 +33,9 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
   };
 
   return (
-    <Box sx={{marginBottom: 1, marginTop: 1}}>
-      <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />
-    </Box>
+    // <Box sx={{marginBottom: 1, marginTop: 1}}>
+    <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />
+    // </Box>
   );
 }
 
