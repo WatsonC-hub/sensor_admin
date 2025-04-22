@@ -227,7 +227,7 @@ const StationDrawer = () => {
             }}
           >
             <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-            {category.settings && (
+            {category.settings && (ts_id || !category.settings.requiredTsId) && (
               <ListItemIcon
                 sx={{
                   color: navIconStyle(pageToShow === category.settings.page),

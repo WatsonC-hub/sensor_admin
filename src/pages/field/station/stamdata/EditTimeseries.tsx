@@ -1,37 +1,28 @@
-import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
 import React, {useEffect} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
 import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import TimeseriesForm from '~/features/stamdata/components/stamdata/TimeseriesForm';
+import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
+import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
+import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import useBreakpoints from '~/hooks/useBreakpoints';
 import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
-const timeseriesSchema = z.object({
-  location: z.object({
-    loc_name: z.string().nullable(),
-  }),
-  timeseries: z.object({
-    prefix: z.string().nullable(),
-    sensor_depth_m: z.number().nullable(),
-    tstype_id: z.number({required_error: 'Vælg tidsserietype'}),
-  }),
-});
-
-type Timeseries = z.infer<typeof timeseriesSchema>;
-
 const EditTimeseries = () => {
   const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
-  const {data: metadata} = useTimeseriesData();
+  const {data: metadata} = useTimeseriesData(ts_id);
   const {location_permissions} = usePermissions(loc_id);
+  const {isMobile} = useBreakpoints();
+  const size = isMobile ? 12 : 6;
 
   const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -41,28 +32,42 @@ const EditTimeseries = () => {
       );
       return out;
     },
-  });
-
-  const {data: defaultValues} = timeseriesSchema.safeParse({
-    timeseries: {
-      prefix: metadata?.prefix,
-      sensor_depth_m: metadata?.sensor_depth_m,
-      tstype_id: metadata?.tstype_id,
-    },
-    location: {
-      loc_name: metadata?.loc_name,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['metadata', ts_id],
+      });
+      toast.success('Tidsserie er opdateret');
     },
   });
 
-  const formMethods = useForm<Timeseries>({
-    resolver: zodResolver(timeseriesSchema),
+  let schema;
+
+  if (metadata?.loctype_id === 9) {
+    schema = boreholeEditTimeseriesSchema;
+  } else {
+    schema = defaultEditTimeseriesSchema;
+  }
+
+  const {data: defaultValues} = schema.safeParse({
+    prefix: metadata?.prefix,
+    sensor_depth_m: metadata?.sensor_depth_m,
+    intakeno: metadata?.intakeno,
+  });
+
+  console.log(metadata);
+
+  const [formMethods, TimeseriesForm] = useTimeseriesForm({
     defaultValues: defaultValues,
-    mode: 'onTouched',
+    mode: 'Edit',
+    context: {
+      loctype_id: metadata?.loctype_id,
+    },
   });
 
   const {
     formState: {isDirty, isValid},
     reset,
+    handleSubmit,
   } = formMethods;
 
   useEffect(() => {
@@ -71,26 +76,19 @@ const EditTimeseries = () => {
     }
   }, [metadata]);
 
-  const handleSubmit = async (data: Timeseries) => {
+  const Submit = async (data: z.infer<typeof schema>) => {
     const payload = {
-      tstype_id: data.timeseries.tstype_id,
-      sensor_depth_m: data.timeseries.sensor_depth_m,
-      prefix: data.timeseries.prefix,
+      ...data,
     };
-    metadataEditTimeseriesMutation.mutate(payload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['metadata', ts_id],
-        });
-        toast.success('Tidsserie er opdateret');
-      },
-    });
+    metadataEditTimeseriesMutation.mutate(payload);
   };
 
   return (
     <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
-        <TimeseriesForm mode="edit" disabled={location_permissions !== 'edit'} />
+        <StamdataTimeseries boreholeno={metadata?.boreholeno ?? undefined}>
+          <TimeseriesForm size={size} loc_name={metadata?.loc_name} />
+        </StamdataTimeseries>
         <footer>
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
             <Button
@@ -104,7 +102,7 @@ const EditTimeseries = () => {
             <Button
               bttype="primary"
               disabled={!isDirty || !isValid || location_permissions !== 'edit'}
-              onClick={formMethods.handleSubmit(handleSubmit)}
+              onClick={handleSubmit(Submit)}
               startIcon={<SaveIcon />}
               sx={{marginRight: 1}}
             >

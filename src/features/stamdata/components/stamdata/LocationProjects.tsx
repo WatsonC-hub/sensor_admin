@@ -112,6 +112,7 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
           }}
           variant="outlined"
           label="Projektnummer"
+          placeholder="Vælg projektnummer..."
           value={getLabel(selectedValue)}
           disabled
           sx={{

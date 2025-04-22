@@ -13,8 +13,6 @@ const DefaultLocationEditForm = ({size}: Props) => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  console.log(disabled);
-
   return (
     <Grid2 container spacing={2}>
       <Grid2 size={size}>

@@ -13,7 +13,6 @@ import {useAppContext} from '~/state/contexts';
 
 import MinimalSelect from './MinimalSelect';
 import StationDrawer from './StationDrawer';
-import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 import {useUser} from '~/features/auth/useUser';
 import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
@@ -22,7 +21,7 @@ import StationPageBoxLayout from './StationPageBoxLayout';
 import ActionArea from './ActionArea';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {stationPages} from '~/helpers/EnumHelper';
-import EditLocationCopy from '~/pages/field/station/stamdata/EditLocationCopy';
+import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
@@ -55,9 +54,10 @@ export default function LocationRouter() {
               <Button
                 bttype="primary"
                 onClick={() => {
-                  createStamdata(ts_id ? '2' : '1', {
+                  createStamdata(ts_id ? '2' : 'tidsserie', {
                     state: {
                       ...metadata,
+                      initial_project_no: metadata?.projectno,
                     },
                   });
                 }}
@@ -70,7 +70,7 @@ export default function LocationRouter() {
       {pageToShow === stationPages.BILLEDER && <ImagePage />}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
-          <EditLocationCopy />
+          <EditLocation />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (

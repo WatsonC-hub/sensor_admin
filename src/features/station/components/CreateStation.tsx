@@ -64,20 +64,18 @@ const CreateStation = () => {
 
   const loc_id = state?.loc_id ?? undefined;
 
-  console.log(loc_id);
-
   const defaultValues = {
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
     ...state,
   };
 
-  console.log(defaultValues);
   const [locationFormMethods, LocationForm] = useLocationForm({
     mode: 'Add',
     defaultValues: defaultValues,
     context: {
       loc_id: loc_id,
     },
+    initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : -1,
   });
 
   const {
@@ -209,14 +207,7 @@ const CreateStation = () => {
     const isTimeseriesValid = isTimeseriesDirty ? await triggerTimeseries() : true;
     const isUnitValid = isUnitDirty ? await triggerUnit() : true;
 
-    const locationData =
-      getLocationValues('loctype_id') === 9
-        ? {
-            ...getLocationValues(),
-            loc_name: boreholeno + ' - ' + getLocationValues('suffix'),
-          }
-        : getLocationValues();
-
+    const locationData = getLocationValues();
     const timeseriesData = getTimeseriesValues();
     const unitData = getUnitValues();
     const watlevmpData = getWatlevmpValues();

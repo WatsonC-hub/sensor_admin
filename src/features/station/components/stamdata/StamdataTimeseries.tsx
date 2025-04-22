@@ -23,17 +23,18 @@ const StamdataTimeseries = ({children, boreholeno}: Props) => {
   return <TimeseriesContext.Provider value={{boreholeno}}>{children}</TimeseriesContext.Provider>;
 };
 
-interface TimeseriesTypeSelectProps {
-  stationTypes: Array<{tstype_id: number; tstype_name: string}>;
-  disabled?: boolean;
-}
+const TypeSelect = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
+  const {data: timeseries_types} = useQuery({
+    queryKey: ['timeseries_types'],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<{tstype_id: number; tstype_name: string}>>(
+        `/sensor_field/timeseries_types`
+      );
+      return data;
+    },
+  });
 
-const TimeseriesTypeSelect = ({
-  stationTypes,
-  disabled = false,
-  ...props
-}: TimeseriesTypeSelectProps) => {
-  const menuItems = stationTypes
+  const menuItems = timeseries_types
     ?.filter((i) => i.tstype_id !== 0)
     ?.map((item) => (
       <MenuItem value={item.tstype_id} key={item.tstype_id}>
@@ -42,33 +43,13 @@ const TimeseriesTypeSelect = ({
     ));
 
   return (
-    <FormInput
-      name="tstype_id"
-      label="Tidsserietype"
-      disabled={disabled}
-      select
-      required
-      fullWidth
-      {...props}
-    >
+    <FormInput name="tstype_id" label="Tidsserietype" select required fullWidth {...props}>
       <MenuItem disabled value={-1}>
         Vælg type
       </MenuItem>
       {menuItems}
     </FormInput>
   );
-};
-
-const TypeSelect = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
-  const {data: timeseries_types} = useQuery({
-    queryKey: ['timeseries_types'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
-      return data;
-    },
-  });
-
-  return <TimeseriesTypeSelect stationTypes={timeseries_types} {...props} />;
 };
 
 const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {

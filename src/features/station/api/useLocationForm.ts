@@ -28,16 +28,9 @@ type useLocationFormProps = {
   context: {loc_id: number};
 };
 
-const getSchemaAndForm = (
-  loctype_id: number,
-  mode: 'Add' | 'Edit',
-  defaultValues?: DefaultValues<
-    DefaultAddLocation | BoreholeAddLocation | DefaultEditLocation | BoreholeEditLocation
-  >
-) => {
+const getSchemaAndForm = (loctype_id: number, mode: 'Add' | 'Edit') => {
   let selectedSchema: ZodType<Record<string, any>> = baseLocationSchema;
   let selectedForm = DefaultLocationForm;
-  let values = undefined;
 
   switch (true) {
     case loctype_id === -1:
@@ -48,33 +41,21 @@ const getSchemaAndForm = (
       selectedSchema = boreholeAddLocationSchema;
       selectedForm = BoreholeLocationForm;
       break;
-    case loctype_id === 9 && mode === 'Edit': {
+    case loctype_id === 9 && mode === 'Edit':
       selectedSchema = boreholeEditLocationSchema;
-
-      const {data} = selectedSchema.safeParse({
-        ...defaultValues,
-      });
-      values = data;
       selectedForm = BoreholeLocationEditForm;
       break;
-    }
     case mode === 'Add':
       selectedSchema = defaultAddLocationSchema;
       selectedForm = DefaultLocationForm;
       break;
-    case mode === 'Edit': {
+    case mode === 'Edit':
       selectedSchema = defaultEditLocationSchema;
-
-      const {data} = selectedSchema.safeParse({
-        ...defaultValues,
-      });
-      values = data;
       selectedForm = DefaultLocationEditForm;
       break;
-    }
   }
 
-  return [selectedSchema, selectedForm, values] as const;
+  return [selectedSchema, selectedForm] as const;
 };
 
 const useLocationForm = ({
@@ -85,13 +66,17 @@ const useLocationForm = ({
 }: useLocationFormProps) => {
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form, values] = getSchemaAndForm(loctype_id, mode);
+  const [schema, form] = getSchemaAndForm(loctype_id, mode);
+
+  const {data: defaultValuesData} = schema.safeParse({
+    ...defaultValues,
+  });
 
   const formMethods = useForm<
     DefaultAddLocation | BoreholeAddLocation | DefaultEditLocation | BoreholeEditLocation
   >({
     resolver: zodResolver(schema),
-    defaultValues: values ? values : defaultValues,
+    defaultValues: defaultValues?.loctype_id !== -1 ? defaultValuesData : defaultValues,
     mode: 'onTouched',
     context: context,
   });

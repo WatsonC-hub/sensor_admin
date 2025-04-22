@@ -21,16 +21,14 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
 import EditUnit from './stamdata/EditUnit';
-import EditTimeseries from './stamdata/EditTimeseries';
-import EditLocation from './stamdata/EditLocation';
 import ImagePage from './stamdata/ImagePage';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
 import PlotGraph from '~/features/station/components/StationGraph';
-import EditLocationCopy from './stamdata/EditLocationCopy';
-import EditTimeseriesCopy from './stamdata/EditTimeseriesCopy';
+import EditLocation from './stamdata/EditLocation';
+import EditTimeseries from './stamdata/EditTimeseries';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -76,8 +74,7 @@ export default function Station() {
               padding: '16px',
             }}
           >
-            {/* <EditLocation /> */}
-            <EditLocationCopy />
+            <EditLocation />
           </Box>
         </StationPageBoxLayout>
       )}
@@ -90,8 +87,7 @@ export default function Station() {
               padding: '16px',
             }}
           >
-            {/* <EditTimeseries /> */}
-            <EditTimeseriesCopy />
+            <EditTimeseries />
           </Box>
         </StationPageBoxLayout>
       )}
@@ -142,6 +138,7 @@ const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
   const {createStamdata} = useNavigationFunctions();
+
   return (
     <>
       <NavBar>
@@ -163,7 +160,7 @@ const Layout = ({children}: LayoutProps) => {
                 title: 'Opret tidsserie',
                 icon: <AddIcon />,
                 onClick: () => {
-                  createStamdata(undefined, {
+                  createStamdata('tidsserie', {
                     state: {...metadata, initial_project_no: metadata?.projectno},
                   });
                 },
