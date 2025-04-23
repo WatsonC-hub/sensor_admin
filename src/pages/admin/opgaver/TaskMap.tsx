@@ -160,7 +160,6 @@ const Map = ({clickCallback}: MapProps) => {
 
   const createBoreholeMarker = (element: BoreholeMapData) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
-
     const marker = L.marker(point, {
       icon: getBoreholeIcon(element),
       interactive: true,

@@ -40,6 +40,7 @@ import {setIconSize, sortBoreholeLast, sortLocations} from '../utils';
 import {boreholeColors, BoreHoleFlagEnum} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 
 const useMap = <TData extends object>(
   id: string,
@@ -62,6 +63,7 @@ const useMap = <TData extends object>(
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
+  const [pageToShow, setPageToShow] = useStationPages();
   const {loc_id: selectedLocId} = useDisplayState((state) => state);
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
@@ -209,6 +211,7 @@ const useMap = <TData extends object>(
           if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
         }
       }
+      if (pageToShow !== 'pejling' && selectedLocId) setPageToShow('pejling');
     });
   };
 

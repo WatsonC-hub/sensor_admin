@@ -116,6 +116,7 @@ export const useLocationNotificationOverview = (loc_id: number) => {
       return data;
     },
     staleTime: 10,
+    enabled: loc_id !== undefined && loc_id !== -1,
   });
 };
 

@@ -31,7 +31,7 @@ export const usePermissionsQueryOptions = (loc_id?: number) => {
       );
       return data;
     },
-    enabled: loc_id !== undefined,
+    enabled: loc_id !== undefined && loc_id !== -1,
   });
 };
 
