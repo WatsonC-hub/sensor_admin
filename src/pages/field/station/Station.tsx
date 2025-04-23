@@ -143,10 +143,12 @@ const Layout = ({children}: LayoutProps) => {
       <NavBar>
         {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-            {locationdata?.loc_name}
-          </Typography>
-          <MinimalSelect />
+          {!isMobile && (
+            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+              {locationdata?.loc_name}
+            </Typography>
+          )}
+          {isMobile && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />

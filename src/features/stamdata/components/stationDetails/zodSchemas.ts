@@ -101,5 +101,5 @@ type AdgangsforholdTable = z.infer<typeof adgangsforhold_table>;
 type InferContactInfo = z.infer<typeof contact_info>;
 type InferContactInfoTable = z.infer<typeof contact_info_table>;
 
-export {contact_info, adgangsforhold, ressourcer, contact_info_table};
+export {contact_info, adgangsforhold, ressourcer, contact_info_table, adgangsforhold_table};
 export type {AdgangsForhold, AdgangsforholdTable, InferContactInfo, InferContactInfoTable};

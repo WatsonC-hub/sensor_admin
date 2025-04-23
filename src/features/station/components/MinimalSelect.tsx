@@ -1,3 +1,4 @@
+import {Typography} from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {useEffect, useState} from 'react';
@@ -45,7 +46,7 @@ const MinimalSelect = () => {
 
   if (error || isPending) return;
 
-  if (!hasTimeseries) return 'Ingen tidsserie på locationen';
+  if (!hasTimeseries) return <Typography color={'white'}>Ingen tidsserie på locationen</Typography>;
 
   if (metadata.timeseries.length == 1 && ts_id === undefined) {
     return (
@@ -56,42 +57,51 @@ const MinimalSelect = () => {
   }
 
   return (
-    <Select
-      MenuProps={menuProps}
-      value={hasTimeseries && ts_id ? ts_id.toString() : ''}
-      onChange={handleChange}
-      open={isOpen}
-      onOpen={handleOpen}
-      onClose={handleClose}
-      sx={{
-        outline: 'white',
-        color: 'white',
-        '& .MuiSelect-icon': {
-          color: 'white',
-        },
-        '& .MuiSelect-select': {
-          p: '0px 10px',
-          mt: '1px',
-        },
-        boxShadow: '0px 5px 8px -3px rgba(0,0,0,0.24)',
-        borderRadius: '15px',
-        height: '35px',
-        mb: 1,
-        pb: 0,
-      }}
-    >
-      {metadata.timeseries.map((station) => (
-        <MenuItem
-          key={station.ts_id}
-          value={station.ts_id}
+    <>
+      {metadata.timeseries.length > 1 ? (
+        <Select
+          MenuProps={menuProps}
+          value={hasTimeseries && ts_id ? ts_id.toString() : ''}
+          onChange={handleChange}
+          open={isOpen}
+          onOpen={handleOpen}
+          onClose={handleClose}
           sx={{
+            maxWidth: '200px',
+            outline: 'white',
             color: 'white',
+            '& .MuiSelect-icon': {
+              color: 'white',
+            },
+            '& .MuiSelect-select': {
+              p: '0px 10px',
+              mt: '1px',
+            },
+            borderRadius: '15px',
+            height: '35px',
+            pb: 0,
           }}
         >
-          {(station.prefix ? station.prefix + ' - ' : '') + ' ' + station.tstype_name}
-        </MenuItem>
-      ))}
-    </Select>
+          {metadata.timeseries.map((station) => (
+            <MenuItem
+              key={station.ts_id}
+              value={station.ts_id}
+              sx={{
+                color: 'white',
+              }}
+            >
+              {(station.prefix ? station.prefix + ' - ' : '') + ' ' + station.tstype_name}
+            </MenuItem>
+          ))}
+        </Select>
+      ) : (
+        <Typography color="white" fontSize={14}>
+          {(metadata.timeseries[0].prefix ? metadata.timeseries[0].prefix + ' - ' : '') +
+            ' ' +
+            metadata.timeseries[0].tstype_name}
+        </Typography>
+      )}
+    </>
   );
 };
 
