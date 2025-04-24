@@ -69,6 +69,7 @@ export type LocationMetadata = {
     calculated: boolean;
     prefix: string | null;
     tstype_name: string;
+    intakeno: number;
   }>;
 };
 
@@ -119,6 +120,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
               calculated: data.calculated,
               prefix: data.prefix,
               tstype_name: data.tstype_name,
+              intakeno: data.intakeno,
             };
           }),
       };

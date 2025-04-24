@@ -6,6 +6,7 @@ import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {setTableBoxStyle} from '~/consts';
 import {useUser} from '~/features/auth/useUser';
+import {useBoreholePejling} from '~/features/pejling/api/useBoreholePejling';
 import {
   calculatePumpstop,
   convertDateWithTimeStamp,
@@ -13,8 +14,10 @@ import {
 } from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
+import {useLocationData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
-import {useTable} from '~/hooks/useTable';
+import {useQueryTable} from '~/hooks/useTable';
+import {useAppContext} from '~/state/contexts';
 
 export type Kontrol = {
   comment: string;
@@ -30,22 +33,26 @@ export type Kontrol = {
 };
 
 interface Props {
-  data: Kontrol[];
   handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 
 export default function PejlingMeasurementsTableDesktop({
-  data,
   handleEdit,
   handleDelete,
   disabled,
 }: Props) {
+  const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const unit = 'Pejling (nedstik) [m]';
   const user = useUser();
+  const {data: location} = useLocationData();
+
+  const boreholeno = location?.boreholeno;
+  const intakeno = location?.timeseries.find((ts) => ts.ts_id === ts_id)?.intakeno;
+  const {get} = useBoreholePejling(boreholeno, intakeno);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -114,9 +121,9 @@ export default function PejlingMeasurementsTableDesktop({
     },
   };
 
-  const table = useTable<Kontrol>(
+  const table = useQueryTable<Kontrol>(
     columns,
-    data,
+    get,
     options,
     tableState,
     TableTypes.TABLE,

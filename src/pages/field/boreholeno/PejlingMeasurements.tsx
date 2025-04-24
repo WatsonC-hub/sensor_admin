@@ -12,7 +12,7 @@ interface PejlingProps {
 }
 
 export default function PejlingMeasurements({
-  measurements,
+  // measurements,
   handleEdit,
   handleDelete,
 }: PejlingProps) {
@@ -24,14 +24,14 @@ export default function PejlingMeasurements({
 
   return isMobile ? (
     <PejlingMeasurementsTableMobile
-      data={measurements}
+      // data={measurements}
       handleEdit={handleEdit}
       handleDelete={handleDelete}
       disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
     />
   ) : (
     <PejlingMeasurementsTableDesktop
-      data={measurements}
+      // data={measurements}
       handleEdit={handleEdit}
       handleDelete={handleDelete}
       disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}

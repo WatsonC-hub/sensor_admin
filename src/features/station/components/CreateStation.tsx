@@ -122,7 +122,7 @@ const CreateStation = () => {
       unit: AddUnit;
       watlevmp?: Watlevmp;
     }) => {
-      const {data: out} = await apiClient.post(`/sensor_field/stamdata/${loc_id}`, data);
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/${loc_id ?? -1}`, data);
       return out;
     },
     onSuccess: (data) => {
@@ -152,7 +152,7 @@ const CreateStation = () => {
       watlevmp?: Watlevmp;
     }) => {
       const {data: out} = await apiClient.post(
-        `/sensor_field/stamdata/create_timeseries/${loc_id}`,
+        `/sensor_field/stamdata/create_timeseries/${loc_id ?? -1}`,
         data
       );
       return out;

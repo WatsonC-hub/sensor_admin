@@ -31,6 +31,8 @@ const WaterlevelAlert = ({
         flexDirection: 'column',
         gap: 2,
       }}
+      mx={'auto'}
+      maxWidth={400}
     >
       <Alert
         severity={latestMeasurementSeverity}

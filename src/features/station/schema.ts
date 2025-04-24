@@ -79,7 +79,7 @@ const addUnitSchema = z.object({
 const editUnitSchema = z
   .object({
     unit_uuid: z.string(),
-    startdate: z.string(),
+    startdate: z.string().default(() => moment().format('YYYY-MM-DD')),
     enddate: z.string(),
   })
   .superRefine((unit, ctx) => {
