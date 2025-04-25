@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default function LocationForm({mode, disable = false}: Props) {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id} = useAppContext([], ['ts_id']);
   const {watch, control, setValue, getValues} = useFormContext();
   const {data: locationData} = useLocationData();
   const calculated = locationData?.timeseries.find((ts) => ts.ts_id === ts_id)?.calculated;
@@ -90,7 +90,7 @@ export default function LocationForm({mode, disable = false}: Props) {
                   setValue={onChange}
                   onBlur={onBlur}
                   error={error}
-                  disable={disable || calculated || unit_uuid !== null || unit_uuid !== undefined}
+                  disable={disable || calculated || (unit_uuid !== null && unit_uuid !== undefined)}
                 />
               )}
             />
