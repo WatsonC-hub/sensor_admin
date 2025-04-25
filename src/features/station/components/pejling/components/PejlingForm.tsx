@@ -19,6 +19,7 @@ const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProp
     watch,
     clearErrors,
     setError,
+    setValue,
     formState: {errors},
   } = useFormContext<PejlingItem>();
 
@@ -103,9 +104,12 @@ const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProp
 
   return (
     <div>
-      <CompoundPejling.NotPossible />
+      <CompoundPejling.NotPossible onChangeCallback={() => setValue('measurement', null)} />
       <br />
-      <CompoundPejling.Measurement sx={{maxWidth: 400}} currentMP={currentMP} />
+      <CompoundPejling.Measurement
+        sx={{maxWidth: 400}}
+        disabled={notPossible || (isWaterLevel && currentMP == null)}
+      />
 
       {isWaterLevel && !notPossible && (
         <WaterlevelAlert

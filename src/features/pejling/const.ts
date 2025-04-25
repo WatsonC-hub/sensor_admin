@@ -12,8 +12,8 @@ export const boreholeInitialData: PejlingBoreholeItem = {
   timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
   disttowatertable_m: 0,
   useforcorrection: 0,
-  comment: '',
-  service: false,
+  comment: undefined,
+  service: undefined,
   pumpstop: undefined,
   extrema: undefined,
 };

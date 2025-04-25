@@ -1,14 +1,16 @@
 import {Box} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import moment from 'moment';
 import {Layout, PlotData} from 'plotly.js';
 import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
+import {useLocationData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-import {BoreholeMeasurement} from '~/types';
+import {BoreholeMeasurement, Maalepunkt} from '~/types';
 
 type JupiterData = {
   data: {
@@ -19,19 +21,36 @@ type JupiterData = {
 };
 
 interface PlotGraphProps {
-  ourData: Array<BoreholeMeasurement>;
   dynamicMeasurement: Array<string | number> | undefined;
 }
 
-export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps) {
-  const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
+export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
+  const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const [control, setcontrol] = useState<Array<BoreholeMeasurement>>();
 
+  // const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
+
+  const {data: location} = useLocationData(loc_id);
+  const boreholeno = location?.boreholeno;
+  const intakeno = location?.timeseries.find((ts) => ts.ts_id === ts_id)?.intakeno;
   const {isMobile} = useBreakpoints();
-  const xOurData = ourData?.map((d) => d.timeofmeas);
-  const yOurData = ourData?.map((d) => (d.waterlevel ? d.waterlevel : null));
+  const xOurData = control?.map((d) => d.timeofmeas);
+  const yOurData = control?.map((d) => (d.waterlevel ? d.waterlevel : null));
 
   const [xDynamicMeasurement, setXDynamicMeasurement] = useState<Array<string | number>>([]);
   const [yDynamicMeasurement, setYDynamicMeasurement] = useState<Array<string | number>>([]);
+
+  const {data: watlevmp} = useQuery({
+    queryKey: ['watlevmp', boreholeno, intakeno],
+    queryFn: async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
+    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
+    placeholderData: [],
+  });
 
   const {data: jupiterData} = useQuery({
     queryKey: ['jupiter_waterlevel', boreholeno, intakeno],
@@ -43,6 +62,46 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
     },
     enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
   });
+
+  const {data: measurements} = useQuery({
+    queryKey: ['measurements', boreholeno, intakeno],
+    queryFn: async () => {
+      const {data} = await apiClient.get(
+        `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
+      );
+      return data;
+    },
+    enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
+    placeholderData: [],
+  });
+
+  useEffect(() => {
+    let ctrls = [];
+    console.log(watlevmp, 'watlevmp');
+    console.log(measurements, 'measurements');
+    console.log('boreholeno', boreholeno);
+    console.log('intakeno', intakeno);
+    if (watlevmp.length > 0) {
+      ctrls = measurements?.map((e: BoreholeMeasurement) => {
+        const elev = watlevmp.filter((e2: Maalepunkt) => {
+          return (
+            moment(e.timeofmeas) >= moment(e2.startdate) &&
+            moment(e.timeofmeas) < moment(e2.enddate)
+          );
+        })[0].elevation;
+
+        return {
+          ...e,
+          waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+        };
+      });
+    } else {
+      ctrls = measurements?.map((elem: BoreholeMeasurement) => {
+        return {...elem, waterlevel: elem.disttowatertable_m};
+      });
+    }
+    setcontrol(ctrls);
+  }, [watlevmp, measurements]);
 
   useEffect(() => {
     if (dynamicMeasurement !== undefined) {

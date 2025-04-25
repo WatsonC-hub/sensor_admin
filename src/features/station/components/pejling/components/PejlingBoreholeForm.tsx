@@ -99,7 +99,9 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
           alignContent={'center'}
           justifyContent={'center'}
         >
-          <CompoundPejling.NotPossible />
+          <CompoundPejling.NotPossible
+            onChangeCallback={() => setValue('disttowatertable_m', null)}
+          />
           <CompoundPejling.IsPump />
         </Grid2>
         {notPossible && <CompoundPejling.Extrema />}

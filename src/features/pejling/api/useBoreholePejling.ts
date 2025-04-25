@@ -15,10 +15,10 @@ interface PejlingPost extends PejlingBase {
     comment: string | undefined;
     disttowatertable_m: number | null;
     timeofmeas: string;
-    service: boolean;
-    pumpstop: string | undefined;
+    service?: boolean;
+    pumpstop?: string;
     useforcorrection: number;
-    extrema: string | undefined;
+    extrema?: string;
   };
 }
 
@@ -27,10 +27,10 @@ interface PejlingPut extends PejlingPost {
     comment: string | undefined;
     disttowatertable_m: number | null;
     timeofmeas: string;
-    service: boolean;
-    pumpstop: string | undefined;
+    service?: boolean;
+    pumpstop?: string;
     useforcorrection: number;
-    extrema: string | undefined;
+    extrema?: string;
   };
 }
 
@@ -38,6 +38,7 @@ export const pejlingPostOptions = {
   mutationKey: ['pejling_borehole_post'],
   mutationFn: async (mutation_data: PejlingPost) => {
     const {path, data} = mutation_data;
+    console.log('pejlingPostOptions', path, data);
     const {data: result} = await apiClient.post(
       `/sensor_field/borehole/measurements/${path}`,
       data

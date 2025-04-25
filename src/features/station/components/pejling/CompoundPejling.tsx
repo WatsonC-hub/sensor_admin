@@ -15,7 +15,6 @@ import {Controller, useFormContext} from 'react-hook-form';
 import {correction_map} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {Maalepunkt} from '~/types';
 import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
 import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
@@ -69,16 +68,10 @@ const SubmitButton = ({submit}: {submit: (values: PejlingItem | PejlingBoreholeI
   );
 };
 
-const Measurement = (
-  props: Omit<FormInputProps<PejlingItem>, 'name'> & {currentMP: Maalepunkt | null}
-) => {
+const Measurement = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
   const {data: metadata} = useTimeseriesData();
-  const {watch} = useFormContext<PejlingItem>();
-  const notPossible = watch('notPossible');
   const isWaterLevel = metadata?.tstype_id === 1;
   const stationUnit = metadata?.unit;
-  const {currentMP} = props;
-
   return (
     <FormInput
       type="number"
@@ -94,7 +87,6 @@ const Measurement = (
         ),
       }}
       fullWidth
-      disabled={notPossible || (isWaterLevel && currentMP == null)}
       {...props}
     />
   );
@@ -194,8 +186,8 @@ const Correction = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
   );
 };
 
-const NotPossible = () => {
-  const {control, setValue} = useFormContext<PejlingItem>();
+const NotPossible = ({onChangeCallback}: {onChangeCallback: () => void}) => {
+  const {control} = useFormContext<PejlingItem>();
   return (
     <Controller
       name="notPossible"
@@ -208,7 +200,7 @@ const NotPossible = () => {
               checked={value}
               onChange={(e) => {
                 onChange(e);
-                setValue('measurement', null);
+                onChangeCallback();
               }}
             />
           }
@@ -296,7 +288,6 @@ const Service = () => {
     <Controller
       name="service"
       control={control}
-      defaultValue={false}
       render={({field: {value, onChange}}) => (
         <FormControlLabel
           control={

@@ -1,4 +1,9 @@
-import {pejlingBoreholeSchema, PejlingItem, pejlingSchema} from '../PejlingSchema';
+import {
+  PejlingBoreholeItem,
+  pejlingBoreholeSchema,
+  PejlingItem,
+  pejlingSchema,
+} from '../PejlingSchema';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import PejlingForm from '../components/PejlingForm';
@@ -37,11 +42,19 @@ const getSchemaAndForm = (loctype_id: number) => {
 const usePejlingForm = ({loctype_id = -1}: PejlingFormProps) => {
   const [schema, form, table] = getSchemaAndForm(loctype_id);
 
-  const formMethods = useForm<PejlingItem>({
+  const data = loctype_id === 9 ? boreholeInitialData : initialData;
+
+  const {data: defaultValues} = schema.safeParse(data);
+
+  const formMethods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: loctype_id === 9 ? boreholeInitialData : initialData,
+    defaultValues: defaultValues,
     mode: 'onTouched',
   });
+
+  console.log('schema', schema);
+  console.log('defaultValues', defaultValues);
+  console.log('formMethods', formMethods.getValues());
 
   return [formMethods, form, table] as const;
 };

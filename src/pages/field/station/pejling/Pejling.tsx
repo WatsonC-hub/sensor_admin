@@ -19,6 +19,7 @@ import {
 } from '~/features/station/components/pejling/PejlingSchema';
 import {PejlingItem as PejlingWithId, LatestMeasurement} from '~/types';
 import PlotGraph from '~/features/station/components/StationGraph';
+import BoreholeGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -181,12 +182,18 @@ const Pejling = () => {
   return (
     <>
       <Box>
-        <PlotGraph
-          key={'pejling' + ts_id}
-          dynamicMeasurement={
-            pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
-          }
-        />
+        {timeseries_data?.loctype_id !== 9 ? (
+          <PlotGraph
+            key={'pejling' + ts_id}
+            dynamicMeasurement={
+              pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
+            }
+          />
+        ) : (
+          <BoreholeGraph
+            dynamicMeasurement={pageToShow === 'pejling' && showForm ? dynamic : undefined}
+          />
+        )}
       </Box>
       <Divider />
       <StationPageBoxLayout>
@@ -216,11 +223,13 @@ const Pejling = () => {
                 {mode === 'Add' ? 'Indberet kontrol' : 'Rediger kontrol'}
               </Typography>
               <CompoundPejling>
-                <PejlingForm
-                  openAddMP={openAddMP}
-                  setDynamic={setDynamic}
-                  latestMeasurement={latestMeasurement}
-                />
+                {PejlingForm && (
+                  <PejlingForm
+                    openAddMP={openAddMP}
+                    setDynamic={setDynamic}
+                    latestMeasurement={latestMeasurement}
+                  />
+                )}
                 <Box gap={1} display={'flex'} justifyContent={'center'} mt={2}>
                   <CompoundPejling.CancelButton />
                   <CompoundPejling.SubmitButton submit={handlePejlingSubmit} />
@@ -230,11 +239,13 @@ const Pejling = () => {
           )}
         </FormProvider>
         <Box display={'flex'} flexDirection={'column'}>
-          <Table
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
-          />
+          {Table && (
+            <Table
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+              disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+            />
+          )}
         </Box>
         <FabWrapper
           icon={<AddCircle />}
