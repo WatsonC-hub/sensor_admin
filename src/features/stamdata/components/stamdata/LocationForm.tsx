@@ -8,7 +8,9 @@ import {useUser} from '~/features/auth/useUser';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import LocationProjects from '~/features/stamdata/components/stamdata/LocationProjects';
 import LocationTypeSelect from '~/features/stamdata/components/stamdata/LocationTypeSelect';
+import {useLocationData} from '~/hooks/query/useMetadata';
 import {getDTMQuota} from '~/pages/field/fieldAPI';
+import {useAppContext} from '~/state/contexts';
 
 interface Props {
   mode: 'modal' | 'normal';
@@ -16,8 +18,11 @@ interface Props {
 }
 
 export default function LocationForm({mode, disable = false}: Props) {
+  const {ts_id} = useAppContext(['ts_id']);
   const {watch, control, setValue, getValues} = useFormContext();
-
+  const {data: locationData} = useLocationData();
+  const calculated = locationData?.timeseries.find((ts) => ts.ts_id === ts_id)?.calculated;
+  const unit_uuid = locationData?.unit_uuid;
   const {
     data: DTMData,
     isSuccess,
@@ -85,13 +90,7 @@ export default function LocationForm({mode, disable = false}: Props) {
                   setValue={onChange}
                   onBlur={onBlur}
                   error={error}
-                  disable={
-                    disable ||
-                    (getValues().unit !== undefined &&
-                      getValues('unit').unit_uuid !== '' &&
-                      getValues().unit.unit_uuid !== null &&
-                      getValues().unit.unit_uuid !== undefined)
-                  }
+                  disable={disable || calculated || unit_uuid !== null || unit_uuid !== undefined}
                 />
               )}
             />
