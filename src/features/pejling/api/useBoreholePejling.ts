@@ -38,7 +38,6 @@ export const pejlingPostOptions = {
   mutationKey: ['pejling_borehole_post'],
   mutationFn: async (mutation_data: PejlingPost) => {
     const {path, data} = mutation_data;
-    console.log('pejlingPostOptions', path, data);
     const {data: result} = await apiClient.post(
       `/sensor_field/borehole/measurements/${path}`,
       data
@@ -60,7 +59,7 @@ export const pejlingDelOptions = {
   mutationKey: ['pejling_borehole_del'],
   mutationFn: async (mutation_data: PejlingBase) => {
     const {path} = mutation_data;
-    const {data: result} = await apiClient.delete(`/sensor_field/borehole/watlevmp/${path}`);
+    const {data: result} = await apiClient.delete(`/sensor_field/borehole/measurements/${path}`);
     return result;
   },
 };

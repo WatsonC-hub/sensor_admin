@@ -77,10 +77,6 @@ export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
 
   useEffect(() => {
     let ctrls = [];
-    console.log(watlevmp, 'watlevmp');
-    console.log(measurements, 'measurements');
-    console.log('boreholeno', boreholeno);
-    console.log('intakeno', intakeno);
     if (watlevmp.length > 0) {
       ctrls = measurements?.map((e: BoreholeMeasurement) => {
         const elev = watlevmp.filter((e2: Maalepunkt) => {

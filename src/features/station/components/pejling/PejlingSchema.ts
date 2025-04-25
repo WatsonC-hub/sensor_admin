@@ -1,5 +1,12 @@
 import {z} from 'zod';
 
+const basePejlingSchema = z.object({
+  timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
+  comment: z.string().optional(),
+  notPossible: z.boolean().optional(),
+  useforcorrection: z.number().default(0),
+});
+
 const pejlingSchema = z.object({
   measurement: z.number().nullable(),
   timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
@@ -11,29 +18,30 @@ const pejlingSchema = z.object({
 const pejlingBoreholeSchema = z
   .object({
     timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
-    disttowatertable_m: z.number().nullable(),
+    disttowatertable_m: z.number().nullable().default(0),
     extrema: z.string().optional(),
     pumpstop: z.string().optional(),
-    service: z.boolean().optional(),
+    service: z.boolean().default(false),
     useforcorrection: z.number().default(0),
     comment: z.string().optional(),
     notPossible: z.boolean().default(false).optional(),
   })
   .refine(
     (data) => {
-      if (data.notPossible === false) {
-        return data.disttowatertable_m === null;
+      if (data.pumpstop !== undefined && data.pumpstop > data.timeofmeas) {
+        return false;
       }
       return true;
     },
     {
-      path: ['disttowatertable_m'],
-      message: 'Dist. til vandspejl skal udfyldes',
+      path: ['pumpstop'],
+      message: 'Pumpestop skal være før pejletidspunkt',
     }
   );
 
+type PejlingBase = z.infer<typeof basePejlingSchema>;
 type PejlingItem = z.infer<typeof pejlingSchema>;
 type PejlingBoreholeItem = z.infer<typeof pejlingBoreholeSchema>;
 
-export type {PejlingItem, PejlingBoreholeItem};
-export {pejlingSchema, pejlingBoreholeSchema};
+export type {PejlingItem, PejlingBoreholeItem, PejlingBase};
+export {pejlingSchema, pejlingBoreholeSchema, basePejlingSchema};

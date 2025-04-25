@@ -16,16 +16,16 @@ type PejlingFormProps = {
 
 const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProps) => {
   const {
-    watch,
     clearErrors,
     setError,
     setValue,
+    getValues,
     formState: {errors},
   } = useFormContext<PejlingItem>();
 
-  const measurement = watch('measurement');
-  const timeofmeas = watch('timeofmeas');
-  const notPossible = watch('notPossible');
+  const timeofmeas = getValues('timeofmeas');
+  const measurement = getValues('measurement');
+  const notPossible = getValues('notPossible');
   const {data: timeseries} = useTimeseriesData();
   const isWaterLevel = timeseries?.tstype_id === 1;
   const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
@@ -108,6 +108,7 @@ const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProp
       <br />
       <CompoundPejling.Measurement
         sx={{maxWidth: 400}}
+        rules={{required: !notPossible}}
         disabled={notPossible || (isWaterLevel && currentMP == null)}
       />
 

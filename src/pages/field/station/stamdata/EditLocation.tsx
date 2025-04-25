@@ -75,7 +75,6 @@ const EditLocation = () => {
   }, [metadata, unit_history]);
 
   const Submit = async (data: z.infer<typeof schema>) => {
-    console.log('submit', data);
     const payload = {
       ...data,
     };

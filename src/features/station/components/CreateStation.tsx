@@ -31,6 +31,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {toast} from 'react-toastify';
 
 const CreateStation = () => {
+  console.log('rerenders');
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
   const {location: locationNavigate, station: stationNavigate, field} = useNavigationFunctions();

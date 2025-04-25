@@ -58,7 +58,6 @@ const FormInput = <TFieldValues extends FieldValues>({
         const errorMessage = !!get(errors, name) && get(errors, name).message;
         const warningMessage = warning && warning(value);
 
-        if (name === 'disttowatertable_m') console.log('disttowatertable_m', value);
         return (
           <TextField
             {...otherProps}

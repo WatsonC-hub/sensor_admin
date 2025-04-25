@@ -15,12 +15,11 @@ type PejlingBoreholeFormProps = {
 
 const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
   const isPump = useAtomValue(boreholeIsPumpAtom);
-  const {watch, setValue} = useFormContext<PejlingBoreholeItem>();
+  const {getValues, setValue, setError, clearErrors} = useFormContext<PejlingBoreholeItem>();
 
-  const timeofmeas = watch('timeofmeas');
-  const notPossible = watch('notPossible');
-  const service = watch('service');
-  const pumpStop = watch('pumpstop');
+  const timeofmeas = getValues('timeofmeas');
+  const notPossible = getValues('notPossible');
+  const service = getValues('service');
 
   const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
   const [currentMP, setCurrentMP] = useState<{elevation: number | null; mp_description: string}>({
@@ -52,10 +51,6 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
   }, [mpData]);
 
   const handleDateChange = (date: string) => {
-    if (moment(date).isValid()) {
-      setValue('timeofmeas', date);
-    }
-
     const mp = mpData?.filter((elem) => {
       if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
         return true;
@@ -63,14 +58,15 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
     });
 
     if (mp && mp.length > 0) {
+      clearErrors('timeofmeas');
       setPejlingOutOfRange(false);
       setCurrentMP(mp[0]);
     } else {
+      setError('timeofmeas', {type: 'outOfRange', message: 'Tidspunkt er uden for et målepunkt'});
       setPejlingOutOfRange(true);
     }
   };
 
-  //should be === 0
   if (mpData && mpData.length === 0) {
     return (
       <Layout>
@@ -108,6 +104,7 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
 
         <Grid2 size={12} maxWidth={400}>
           <CompoundPejling.DistToWaterTable
+            required={!notPossible}
             disabled={
               notPossible || currentMP.elevation === undefined || currentMP.elevation === null
             }
@@ -138,17 +135,11 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
                 (e as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>).target.value
               )
             }
-            error={pejlingOutOfRange}
-            helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
           />
           {isPump && (
             <>
               <CompoundPejling.Service />
               <CompoundPejling.PumpStop
-                error={pumpStop && pumpStop > timeofmeas ? true : false}
-                helperText={
-                  pumpStop && pumpStop > timeofmeas ? 'Pumpestop skal være før pejletidspunkt' : ''
-                }
                 disabled={service}
                 slotProps={{
                   htmlInput: {

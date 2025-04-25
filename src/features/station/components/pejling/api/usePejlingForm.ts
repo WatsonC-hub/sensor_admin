@@ -1,13 +1,8 @@
-import {
-  PejlingBoreholeItem,
-  pejlingBoreholeSchema,
-  PejlingItem,
-  pejlingSchema,
-} from '../PejlingSchema';
+import {pejlingBoreholeSchema, pejlingSchema} from '../PejlingSchema';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import PejlingForm from '../components/PejlingForm';
-import {ZodType} from 'zod';
+import {z, ZodType} from 'zod';
 import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -22,7 +17,7 @@ type PejlingFormProps = {
 
 const getSchemaAndForm = (loctype_id: number) => {
   const {isMobile} = useBreakpoints();
-  let selectedSchema: ZodType<Record<string, any>> = pejlingSchema;
+  let selectedSchema: ZodType<Record<string, any>> = z.object({});
   let selectedForm = PejlingForm;
   let selectedTable = null;
 
@@ -33,6 +28,7 @@ const getSchemaAndForm = (loctype_id: number) => {
       selectedTable = isMobile ? BoreholeTableMobile : BoreholeTableDesktop;
       break;
     default:
+      selectedSchema = pejlingSchema;
       selectedTable = isMobile ? PejlingMeasurementsTableMobile : PejlingMeasurementsTableDesktop;
   }
 
@@ -44,17 +40,14 @@ const usePejlingForm = ({loctype_id = -1}: PejlingFormProps) => {
 
   const data = loctype_id === 9 ? boreholeInitialData : initialData;
 
-  const {data: defaultValues} = schema.safeParse(data);
+  // const {data: defaultValues} = schema.safeParse(data);
 
   const formMethods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues,
+    defaultValues: data,
     mode: 'onTouched',
+    shouldUnregister: true,
   });
-
-  console.log('schema', schema);
-  console.log('defaultValues', defaultValues);
-  console.log('formMethods', formMethods.getValues());
 
   return [formMethods, form, table] as const;
 };

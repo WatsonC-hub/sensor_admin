@@ -175,7 +175,7 @@ const Pejling = () => {
 
   useEffect(() => {
     setShowForm(null);
-    reset(initialData);
+    reset();
     setDynamic([]);
   }, [ts_id]);
 
@@ -223,13 +223,11 @@ const Pejling = () => {
                 {mode === 'Add' ? 'Indberet kontrol' : 'Rediger kontrol'}
               </Typography>
               <CompoundPejling>
-                {PejlingForm && (
-                  <PejlingForm
-                    openAddMP={openAddMP}
-                    setDynamic={setDynamic}
-                    latestMeasurement={latestMeasurement}
-                  />
-                )}
+                <PejlingForm
+                  openAddMP={openAddMP}
+                  setDynamic={setDynamic}
+                  latestMeasurement={latestMeasurement}
+                />
                 <Box gap={1} display={'flex'} justifyContent={'center'} mt={2}>
                   <CompoundPejling.CancelButton />
                   <CompoundPejling.SubmitButton submit={handlePejlingSubmit} />
@@ -239,13 +237,11 @@ const Pejling = () => {
           )}
         </FormProvider>
         <Box display={'flex'} flexDirection={'column'}>
-          {Table && (
-            <Table
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-              disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
-            />
-          )}
+          <Table
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+            disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+          />
         </Box>
         <FabWrapper
           icon={<AddCircle />}

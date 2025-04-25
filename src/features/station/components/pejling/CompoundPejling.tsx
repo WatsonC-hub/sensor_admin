@@ -221,8 +221,7 @@ const Extrema = () => {
     <Controller
       control={control}
       name="extrema"
-      render={({field, fieldState}) => {
-        console.log(fieldState?.error?.message);
+      render={({field}) => {
         return (
           <>
             <FormControl>
@@ -246,7 +245,6 @@ const Extrema = () => {
 
 const IsPump = () => {
   const [isPump, setIsPump] = useAtom(boreholeIsPumpAtom);
-  const {setValue} = useFormContext<PejlingBoreholeItem>();
 
   return (
     <FormControlLabel
@@ -254,10 +252,7 @@ const IsPump = () => {
         <Checkbox
           sx={{color: 'primary.main'}}
           checked={isPump}
-          onChange={(e) => {
-            setIsPump(e.target.checked);
-            setValue('disttowatertable_m', null);
-          }}
+          onChange={(e) => setIsPump(e.target.checked)}
         />
       }
       label="Pumpeboring"
@@ -267,7 +262,7 @@ const IsPump = () => {
 
 const DistToWaterTable = (props: Omit<FormInputProps<PejlingBoreholeItem>, 'name'>) => {
   return (
-    <FormInput
+    <FormInput<PejlingBoreholeItem>
       type="number"
       name="disttowatertable_m"
       label="Pejling (nedstik)"
@@ -283,11 +278,12 @@ const DistToWaterTable = (props: Omit<FormInputProps<PejlingBoreholeItem>, 'name
 };
 
 const Service = () => {
-  const {control, setValue} = useFormContext<PejlingBoreholeItem>();
+  const {control} = useFormContext<PejlingBoreholeItem>();
   return (
     <Controller
       name="service"
       control={control}
+      defaultValue={false}
       render={({field: {value, onChange}}) => (
         <FormControlLabel
           control={
@@ -296,7 +292,6 @@ const Service = () => {
               checked={value}
               onChange={(e) => {
                 onChange(e);
-                setValue('disttowatertable_m', null);
               }}
             />
           }
