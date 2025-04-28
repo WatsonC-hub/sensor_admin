@@ -22,7 +22,7 @@ import PlotGraph from '~/features/station/components/StationGraph';
 import BoreholeGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
-import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {
   useCreateTabState,
   useShowFormState,
@@ -42,14 +42,13 @@ const Pejling = () => {
   const setIsPump = useSetAtom(boreholeIsPumpAtom);
   const [gid, setGid] = useState<number>(-1);
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
-  const {data: location_data} = useLocationData(loc_id);
   const {data: timeseries_data} = useTimeseriesData();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
-  const boreholeno = location_data?.boreholeno;
-  const intakeno = location_data?.timeseries.find((ts) => ts.ts_id === ts_id)?.intakeno;
+  const boreholeno = timeseries_data?.boreholeno;
+  const intakeno = timeseries_data?.intakeno;
   const {
     post: postBorehole,
     put: putBorehole,
@@ -175,7 +174,6 @@ const Pejling = () => {
 
   useEffect(() => {
     setShowForm(null);
-    reset();
     setDynamic([]);
   }, [ts_id]);
 

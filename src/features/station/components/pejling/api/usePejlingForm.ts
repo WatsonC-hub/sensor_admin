@@ -40,13 +40,10 @@ const usePejlingForm = ({loctype_id = -1}: PejlingFormProps) => {
 
   const data = loctype_id === 9 ? boreholeInitialData : initialData;
 
-  // const {data: defaultValues} = schema.safeParse(data);
-
   const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: data,
-    mode: 'onTouched',
-    shouldUnregister: true,
+    mode: 'onChange',
   });
 
   return [formMethods, form, table] as const;

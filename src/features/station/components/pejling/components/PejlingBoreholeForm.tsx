@@ -41,6 +41,7 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
           return true;
         }
       });
+      console.log('mp', mp);
       if (mp.length > 0) {
         setPejlingOutOfRange(false);
         setCurrentMP({elevation: mp?.[0].elevation, mp_description: mp?.[0].mp_description});
@@ -57,11 +58,13 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
       }
     });
 
+    console.log('mp', mp);
     if (mp && mp.length > 0) {
       clearErrors('timeofmeas');
       setPejlingOutOfRange(false);
       setCurrentMP(mp[0]);
     } else {
+      console.log('currentMP', currentMP);
       setError('timeofmeas', {type: 'outOfRange', message: 'Tidspunkt er uden for et målepunkt'});
       setPejlingOutOfRange(true);
     }

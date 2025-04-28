@@ -64,7 +64,7 @@ const WaterlevelAlert = ({
         {pejlingOutOfRange ? (
           <Typography>
             Der er intet målepunkt registreret på det valgte tidspunkt eller det valgte tidspunkt
-            ligger efter slutdatoen på målepunktet.
+            ligger efter udenfor datoen for målepunktet.
           </Typography>
         ) : (
           <>

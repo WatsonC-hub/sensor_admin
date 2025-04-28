@@ -74,7 +74,7 @@ export const pejlingGetOptions = (boreholeno: string | undefined, intakeno: numb
 
       return data;
     },
-    enabled: boreholeno !== undefined && intakeno !== undefined,
+    enabled: boreholeno !== null && intakeno !== null,
   });
 
 export const useBoreholePejling = (
