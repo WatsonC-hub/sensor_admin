@@ -59,6 +59,7 @@ export type LocationMetadata = {
   terrainqual: string;
   groups: string[];
   projectno: string | undefined;
+  unit_uuid: string | undefined | null;
   timeseries: Array<{
     ts_id: number;
     tstype_id: number;
@@ -82,6 +83,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
 };
 
 export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
+  const {ts_id} = useAppContext([], ['ts_id']);
   return queryOptions({
     queryKey: ['location_data', loc_id],
     queryFn: async () => {
@@ -91,6 +93,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
       return data;
     },
     select: (data) => {
+      console.log(data);
       const location_data: LocationMetadata = {
         loc_id: data[0].loc_id,
         loc_name: data[0].loc_name,
@@ -98,12 +101,13 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
         groups: data[0].groups,
         description: data[0].description,
         mainloc: data[0].mainloc,
-        projectno: data.find((location) => location.projectno !== null)?.projectno ?? undefined,
+        projectno: data.find((location) => location.ts_id === ts_id)?.projectno ?? undefined,
         subloc: data[0].subloc,
         terrainlevel: data[0].terrainlevel,
         terrainqual: data[0].terrainqual,
         x: data[0].x,
         y: data[0].y,
+        unit_uuid: data.find((location) => location.unit_uuid !== undefined)?.unit_uuid,
         timeseries: data
           .filter((item) => item.ts_id)
           .map((data) => {

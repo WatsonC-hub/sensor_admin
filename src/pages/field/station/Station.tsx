@@ -119,7 +119,11 @@ export default function Station() {
           <Huskeliste />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && (
+        <StationPageBoxLayout>
+          <ImagePage />
+        </StationPageBoxLayout>
+      )}
     </Layout>
   );
 }
@@ -139,10 +143,12 @@ const Layout = ({children}: LayoutProps) => {
       <NavBar>
         {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-            {locationdata?.loc_name}
-          </Typography>
-          <MinimalSelect />
+          {!isMobile && (
+            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+              {locationdata?.loc_name}
+            </Typography>
+          )}
+          {isMobile && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
@@ -162,9 +168,20 @@ const Layout = ({children}: LayoutProps) => {
           />
         </Box>
       </NavBar>
-      <Box component="main" sx={{flexGrow: 1, display: 'flex', flexDirection: 'row'}}>
+      <Box
+        component="main"
+        sx={{flexGrow: 1, display: 'flex', flexDirection: 'row', maxHeight: 'calc(100vh - 64px)'}}
+      >
         <StationDrawer />
-        <Box display="flex" width={'100%'} flexGrow={1} gap={1} flexDirection={'column'}>
+        <Box
+          display="flex"
+          width={'100%'}
+          flexGrow={1}
+          gap={1}
+          minWidth={0}
+          flexDirection={'column'}
+          overflow="auto"
+        >
           {children}
           {isMobile && <ActionArea />}
         </Box>
