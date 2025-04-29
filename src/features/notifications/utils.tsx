@@ -74,7 +74,6 @@ function getIcon<B extends boolean = false>(
   raw: B
 ): B extends true ? string : JSX.Element;
 function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
-  if (iconDetails.loc_id === 17824) console.log('getIcon', iconDetails);
   if (raw == true) {
     if (
       iconDetails.has_task &&

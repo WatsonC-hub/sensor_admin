@@ -1,5 +1,3 @@
-import {Box} from '@mui/material';
-
 import ImageViewer from '~/components/ImageViewer';
 import useImages from '~/features/station/api/useImages';
 import {useImageUpload} from '~/hooks/query/useImageUpload';

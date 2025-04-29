@@ -79,15 +79,23 @@ type NotificationIconProps =
   | {
       iconDetails: IconDetailsWithTooltip;
       enableTooltip?: true;
+      noCircle?: boolean;
     }
   | {
       iconDetails: IconDetails;
       enableTooltip?: false;
+      noCircle?: boolean;
     };
 
-const NotificationIcon = ({iconDetails, enableTooltip = false}: NotificationIconProps) => {
+const NotificationIcon = ({
+  iconDetails,
+  enableTooltip = false,
+  noCircle = false,
+}: NotificationIconProps) => {
   const icon = getIcon(iconDetails, false);
-
+  if (noCircle) {
+    return <CircleBox sx={{textAlign: 'center'}}>{icon}</CircleBox>;
+  }
   if (
     (iconDetails.notification_id === 0 ||
       iconDetails.flag === -1 ||

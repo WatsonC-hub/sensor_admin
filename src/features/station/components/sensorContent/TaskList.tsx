@@ -23,17 +23,22 @@ const TaskList = () => {
     ?.filter((task) => task.loc_id === loc_id && task.itinerary_id === null)
     .sort(sortTasks);
 
+  const isSimpleTask = (task: Task) => {
+    return (
+      (task.blocks_notifications.length === 1 && task.blocks_notifications[0] === 1) ||
+      task.blocks_notifications[0] === 207
+    );
+  };
+
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
       <Typography variant="h6" fontWeight={'bold'}>
         Opgaver
       </Typography>
       {location_tasks?.map((task) => {
-        const isSimpleTask = !task.is_created;
-
         return (
           <Box key={task.id}>
-            {isSimpleTask ? (
+            {isSimpleTask(task) ? (
               <TaskListItemSimpleCard task={task} />
             ) : (
               <TaskListItemAdvancedCard task={task} />
