@@ -182,6 +182,7 @@ export const dataToShowAtom = atom({
   'Korrigerede spring': false,
   'Valide værdier': false,
   'Fjernet data': false,
+  Rådata: false,
 });
 
 export const drawerOpenAtom = atom<boolean>(false);

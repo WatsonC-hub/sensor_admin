@@ -1,4 +1,4 @@
-import {Box} from '@mui/material';
+import {Box, FormControlLabel, SvgIcon, Switch, Typography} from '@mui/material';
 import moment from 'moment';
 import type {
   Layout,
@@ -9,34 +9,26 @@ import type {
 } from 'plotly.js';
 // @ts-expect-error not part of type
 import Plotly from 'plotly.js/dist/plotly-gl2d';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import createPlotlyComponent from 'react-plotly.js/factory';
-
+import ReplayIcon from '@mui/icons-material/Replay';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
+import LinkIcon from '@mui/icons-material/Link';
 import {MergeType} from '~/helpers/EnumHelper';
-import {
-  rerunQAIcon,
-  downloadIcon,
-  rawDataIcon,
-  makeLinkIcon,
-  rerunIcon,
-} from '~/helpers/plotlyIcons';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import {rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
 import {useRunQA} from '~/hooks/useRunQA';
+import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 
 import Button from './Button';
-
-type DefinedModebarButtons =
-  | 'raw'
-  | 'rerun'
-  | 'rerunQa'
-  | 'download'
-  | 'link'
-  | 'select2d'
-  | 'toImage';
+import {Download} from '@mui/icons-material';
+import {useAppContext} from '~/state/contexts';
+import {dataToShowAtom} from '~/state/atoms';
+import {useAtom} from 'jotai';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -44,7 +36,6 @@ interface PlotlyGraphProps {
     onRelayout?: (event: Readonly<PlotRelayoutEvent>) => void;
     onClick?: (event: Readonly<PlotMouseEvent>) => void;
   };
-  plotModebarButtons: Array<Plotly.ModeBarButton | DefinedModebarButtons>;
   initiateSelect?: boolean;
   layout: Partial<Layout>;
   shapes?: Layout['shapes'];
@@ -59,7 +50,6 @@ const Plot = createPlotlyComponent(Plotly);
 
 export default function PlotlyGraph({
   plotEventProps,
-  plotModebarButtons,
   initiateSelect,
   layout,
   shapes = [],
@@ -69,10 +59,12 @@ export default function PlotlyGraph({
   setXRange,
   showRaw,
 }: PlotlyGraphProps) {
+  const {ts_id} = useAppContext([], ['ts_id']);
   const {data: metadata} = useTimeseriesData();
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [dataToShow, setDataToShow] = useAtom(dataToShowAtom);
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
@@ -167,84 +159,88 @@ export default function PlotlyGraph({
     }
   };
 
-  const rerunButton = {
-    name: 'Genberegn data',
-    title: 'Genberegn data',
-    icon: rerunIcon,
-    click: function () {
-      correctMutation.mutate();
-    },
+  // const rerunButton = {
+  //   name: 'Genberegn data',
+  //   title: 'Genberegn data',
+  //   icon: rerunIcon,
+  //   click: function () {
+  //     correctMutation.mutate();
+  //   },
+  // };
+
+  // const rerunQAButton = {
+  //   name: 'Genberegn QA',
+  //   title: 'Genberegn QA',
+  //   icon: rerunQAIcon,
+  //   click: function () {
+  //     rerunQAMutation.mutate();
+  //   },
+  // };
+
+  // const makeLinkButton = {
+  //   title: 'Ekstern data',
+  //   name: 'Ekstern link',
+  //   icon: makeLinkIcon,
+  //   click: function () {
+  //     const ts_id = window.location.href.split('/').at(-1)?.split('#').at(0);
+
+  //     const link = document.createElement('a');
+  //     if (link.download !== undefined) {
+  //       // feature detection
+  //       // Browsers that support HTML5 download attribute
+  //       const url =
+  //         'https://watsonc.dk/calypso/timeseries_plot.html?&ts_id=' + ts_id + '&pejling=true';
+  //       link.setAttribute('href', url);
+  //       link.setAttribute('target', '_blank');
+  //       link.style.visibility = 'hidden';
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     }
+
+  //     // exportToCsv("data.csv", rows);
+  //   },
+  // };
+
+  // const downloadButton = {
+  //   title: 'Download data',
+  //   name: 'Download data',
+  //   icon: downloadIcon,
+  //   click: function (gd: any) {
+  //     console.log(gd);
+  //     // var rows = gd.data[0].x.map((elem, idx) => [
+  //     //   moment(elem).format('YYYY-MM-DD HH:mm'),
+  //     //   gd.data[0].y[idx].toString().replace('.', ','),
+  //     // ]);
+
+  //     // exportToCsv('data.csv', rows);
+  //   },
+  // };
+
+  // const getRawData = {
+  //   title: 'Hent rå data',
+  //   name: 'Hent rådata',
+  //   icon: rawDataIcon,
+  //   click: function () {
+  //     if (showRaw) showRaw();
+  //     setLayout({yaxis2: {visible: true}});
+  //   },
+  // };
+
+  // const buttonsToShow = plotModebarButtons.map((button) => {
+  //   if (typeof button === 'string') {
+  //     if (button === 'rerunQa') return rerunQAButton;
+  //     else if (button === 'link') return makeLinkButton;
+  //   }
+  //   return button;
+  // });
+
+  const actionButtonStyle = {m: 0, textTransform: 'initial', fontSize: isTouch ? 11 : '0.8125rem'};
+  const zoomButtonStyle = {m: 0, textTransform: 'initial', minWidth: 25};
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDataToShow({...dataToShow, [event.target.name]: event.target.checked});
   };
-
-  const rerunQAButton = {
-    name: 'Genberegn QA',
-    title: 'Genberegn QA',
-    icon: rerunQAIcon,
-    click: function () {
-      rerunQAMutation.mutate();
-    },
-  };
-
-  const makeLinkButton = {
-    title: 'Ekstern data',
-    name: 'Ekstern link',
-    icon: makeLinkIcon,
-    click: function () {
-      const ts_id = window.location.href.split('/').at(-1)?.split('#').at(0);
-
-      const link = document.createElement('a');
-      if (link.download !== undefined) {
-        // feature detection
-        // Browsers that support HTML5 download attribute
-        const url =
-          'https://watsonc.dk/calypso/timeseries_plot.html?&ts_id=' + ts_id + '&pejling=true';
-        link.setAttribute('href', url);
-        link.setAttribute('target', '_blank');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      // exportToCsv("data.csv", rows);
-    },
-  };
-
-  const downloadButton = {
-    title: 'Download data',
-    name: 'Download data',
-    icon: downloadIcon,
-    click: function (gd: any) {
-      console.log(gd);
-      // var rows = gd.data[0].x.map((elem, idx) => [
-      //   moment(elem).format('YYYY-MM-DD HH:mm'),
-      //   gd.data[0].y[idx].toString().replace('.', ','),
-      // ]);
-
-      // exportToCsv('data.csv', rows);
-    },
-  };
-
-  const getRawData = {
-    title: 'Hent rå data',
-    name: 'Hent rådata',
-    icon: rawDataIcon,
-    click: function () {
-      if (showRaw) showRaw();
-      setLayout({yaxis2: {visible: true}});
-    },
-  };
-
-  const buttonsToShow = plotModebarButtons.map((button) => {
-    if (typeof button === 'string') {
-      if (button === 'raw') return getRawData;
-      else if (button === 'rerun') return rerunButton;
-      else if (button === 'download') return downloadButton;
-      else if (button === 'rerunQa') return rerunQAButton;
-      else if (button === 'link') return makeLinkButton;
-    }
-    return button;
-  });
 
   useEffect(() => {
     if (tstype_name) setLayout({yaxis: {title: {text: `${tstype_name} [${unit}]`}}});
@@ -252,43 +248,169 @@ export default function PlotlyGraph({
 
   return (
     <>
-      <Box display={'flex'} flexDirection={'row'} ml={isTouch ? '15%' : 10}>
-        <Button
-          bttype="link"
-          onClick={() => graphLayout('week')}
-          size="small"
-          sx={{m: 0, textTransform: 'initial', width: 25, minWidth: 35}}
-        >
-          Uge
-        </Button>
-        <Button
-          bttype="link"
-          onClick={() => graphLayout('month')}
-          size="small"
-          sx={{m: 0, textTransform: 'initial', width: 25, minWidth: 45}}
-        >
-          Måned
-        </Button>
-        <Button
-          bttype="link"
-          onClick={() => graphLayout('year')}
-          size="small"
-          sx={{m: 0, textTransform: 'initial', width: 25, minWidth: 25}}
-        >
-          År
-        </Button>
-        <Button
-          bttype="link"
-          onClick={() => graphLayout('all')}
-          size="small"
-          sx={{m: 0, textTransform: 'initial', width: 25, minWidth: 35}}
-        >
-          Alt
-        </Button>
+      <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+        <Box ml={isTouch ? 0 : 10} display={'flex'} flexDirection={'row'}>
+          <Button
+            bttype="link"
+            onClick={() => graphLayout('week')}
+            size="small"
+            sx={zoomButtonStyle}
+          >
+            Uge
+          </Button>
+          <Button
+            bttype="link"
+            onClick={() => graphLayout('month')}
+            size="small"
+            sx={zoomButtonStyle}
+          >
+            Måned
+          </Button>
+          <Button
+            bttype="link"
+            onClick={() => graphLayout('year')}
+            size="small"
+            sx={zoomButtonStyle}
+          >
+            År
+          </Button>
+          <Button
+            bttype="link"
+            onClick={() => graphLayout('all')}
+            size="small"
+            sx={zoomButtonStyle}
+          >
+            Alt
+          </Button>
+        </Box>
+        <Box display={'flex'} flexWrap={'wrap'} justifyContent={'center'}>
+          <Button
+            bttype="link"
+            size="small"
+            onClick={() => {
+              correctMutation.mutate();
+            }}
+            startIcon={
+              <SvgIcon sx={{width: 18, height: 18}} viewBox="0 0 500 500">
+                <path d={rerunQAIcon.path} />
+              </SvgIcon>
+            }
+            sx={actionButtonStyle}
+          >
+            QA
+          </Button>
+          <Button
+            bttype="link"
+            size="small"
+            startIcon={<ReplayIcon />}
+            onClick={() => {
+              rerunQAMutation.mutate();
+            }}
+            sx={actionButtonStyle}
+          >
+            Genberegn
+          </Button>
+          <Button
+            bttype="link"
+            size="small"
+            onClick={() => {
+              const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
+              window.open(url);
+            }}
+            startIcon={<Download />}
+            sx={actionButtonStyle}
+          >
+            Download
+          </Button>
+          <Button
+            bttype="link"
+            size="small"
+            onClick={() => {
+              const ts_id = window.location.href.split('/').at(-1)?.split('#').at(0);
+              // feature detection
+              // Browsers that support HTML5 download attribute
+              const url =
+                'https://watsonc.dk/calypso/timeseries_plot.html?&ts_id=' + ts_id + '&pejling=true';
+              window.open(url);
+              // exportToCsv("data.csv", rows);
+            }}
+            startIcon={<LinkIcon />}
+            sx={actionButtonStyle}
+          >
+            Ekstern
+          </Button>
+          {/* <Button
+            bttype="link"
+            size="small"
+            onClick={() => {
+              if (showRaw) showRaw();
+              setLayout({yaxis2: {visible: true}});
+            }}
+            startIcon={<TimelineIcon />}
+            sx={actionButtonStyle}
+          >
+            Rådata
+          </Button> */}
+        </Box>
+        <Box alignContent={'center'} mr={isTouch ? 1 : 5}>
+          <Button
+            bttype="secondary"
+            endIcon={<TuneRoundedIcon />}
+            sx={{textTransform: 'initial'}}
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            Filter
+          </Button>
+          {isOpen && (
+            <Box
+              sx={{
+                position: 'absolute',
+                right: '8px',
+                width: '175px',
+                backgroundColor: '#fff',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: 1000,
+                pl: '10px',
+                py: '10px',
+                mt: 0.5,
+              }}
+            >
+              {Object.keys(dataToShow).map((key) => (
+                <Box key={key}>
+                  <FormControlLabel
+                    key={key}
+                    control={
+                      <Switch
+                        checked={
+                          Object.entries(dataToShow).find((item) => item[0] === key)?.[1] === true
+                        }
+                        onChange={handleChange}
+                        name={key}
+                        size={'small'}
+                        color="primary"
+                      />
+                    }
+                    label={<Typography variant="caption">{key}</Typography>}
+                  />
+                </Box>
+              ))}
+              <Button
+                sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
+                onClick={() => {
+                  setIsOpen(false);
+                }}
+                bttype="secondary"
+              >
+                Luk
+              </Button>
+            </Box>
+          )}
+        </Box>
       </Box>
       <Plot
         onSelected={(e) => {
-          console.log('onselected', e);
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);
         }}
         divId="qagraphDiv"
@@ -298,10 +420,7 @@ export default function PlotlyGraph({
         config={{
           doubleClick: false,
           responsive: true,
-          modeBarButtons: [
-            buttonsToShow,
-            ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
-          ],
+          modeBarButtons: [['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d']],
           displaylogo: false,
           displayModeBar: true,
         }}
