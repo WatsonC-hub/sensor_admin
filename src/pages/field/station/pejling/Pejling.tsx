@@ -12,6 +12,7 @@ import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurem
 import PejlingForm from '~/features/pejling/components/PejlingForm';
 import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import GraphManager from '~/features/station/components/GraphManager';
 import PlotGraph from '~/features/station/components/StationGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
@@ -119,7 +120,7 @@ const Pejling = () => {
   return (
     <>
       <Box>
-        <PlotGraph
+        <GraphManager
           key={'pejling' + ts_id}
           dynamicMeasurement={
             pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined

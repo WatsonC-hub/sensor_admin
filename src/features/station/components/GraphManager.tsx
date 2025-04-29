@@ -110,7 +110,7 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
       }
       return data;
     },
-    enabled: false,
+    enabled: dataToShow.Rådata,
     placeholderData: [],
   });
 
