@@ -6,12 +6,13 @@ import {useAppContext} from '~/state/contexts';
 import TaskListItemSimpleCard from './taskListItemComponents/TaskListItemSimpleCard';
 import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
 import {Task} from '~/features/tasks/types';
+import {isSimpleTask} from '~/features/tasks/helpers';
 
 const sortTasks = (a: Task, b: Task) => {
   if ((a.blocks_notifications.includes(1) || a.blocks_notifications.includes(207)) && !a.is_created)
-    return 1;
-  if ((b.blocks_notifications.includes(1) || b.blocks_notifications.includes(207)) && !b.is_created)
     return -1;
+  if ((b.blocks_notifications.includes(1) || b.blocks_notifications.includes(207)) && !b.is_created)
+    return 1;
 
   return Number(a.is_created) - Number(b.is_created);
 };
@@ -22,13 +23,6 @@ const TaskList = () => {
   const location_tasks = tasks
     ?.filter((task) => task.loc_id === loc_id && task.itinerary_id === null)
     .sort(sortTasks);
-
-  const isSimpleTask = (task: Task) => {
-    return (
-      (task.blocks_notifications.length === 1 && task.blocks_notifications[0] === 1) ||
-      task.blocks_notifications[0] === 207
-    );
-  };
 
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>

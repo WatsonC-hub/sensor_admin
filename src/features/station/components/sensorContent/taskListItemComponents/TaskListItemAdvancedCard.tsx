@@ -103,18 +103,22 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                 alignItems="center"
                 justifyContent={'space-between'}
               >
-                <Box display={'flex'} flexDirection={'row'} gap={0.5} alignItems="center">
-                  <Typography variant="body2">
-                    <NotificationIcon
-                      iconDetails={{
-                        notification_id: task.blocks_notifications[0],
-                        flag: task.is_created ? null : task.flag,
-                        has_task: task.is_created,
-                        due_date: task.due_date,
-                      }}
-                      noCircle={true}
-                    />
-                  </Typography>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={0.5}
+                  alignItems="center"
+                  fontSize={14}
+                >
+                  <NotificationIcon
+                    iconDetails={{
+                      notification_id: task.blocks_notifications[0],
+                      flag: task.is_created ? null : task.flag,
+                      has_task: task.is_created,
+                      due_date: task.due_date,
+                    }}
+                    noCircle={true}
+                  />
                   <Typography variant="caption">{task.name}</Typography>
                 </Box>
                 {task.due_date && (
@@ -128,7 +132,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
           />
         )}
         <CardContent
-          sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 1}}}
+          sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 0}}}
         >
           <Grid2 container color="grey.700" spacing={1}>
             <Grid2 size={6} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
@@ -206,7 +210,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
               />
             </Grid2>
             <Grid2
-              size={7.5}
+              size={12}
               display={'flex'}
               flexDirection={'column'}
               justifyContent={'space-between'}

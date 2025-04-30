@@ -164,7 +164,7 @@ const TasksOverview = () => {
             key="location"
             show={loc_id !== null}
             minSize={1}
-            height={isMobile ? '100%' : 'fit-content'}
+            height={isMobile ? '100%' : '100%'}
             onClose={() => {
               // setSelectedData(null);
               closeLocation();

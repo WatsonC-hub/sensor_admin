@@ -1,4 +1,13 @@
-import {Box, Dialog, IconButton, Typography} from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Dialog,
+  Divider,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import React from 'react';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
@@ -6,10 +15,12 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {useAppContext} from '~/state/contexts';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import CloseIcon from '@mui/icons-material/Close';
-import TaskListItemSimpleCard from './TaskListItemSimpleCard';
-import TaskListItemAdvancedCard from './TaskListItemAdvancedCard';
+
+import ItineraryListItemSimpleCard from './ItineraryListItemSimpleCard';
+import ItineraryListItemAdvancedCard from './ItineraryListItemAdvancedCard';
 import Button from '~/components/Button';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import {isSimpleTask} from '~/features/tasks/helpers';
 
 const ItineraryCardList = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -44,42 +55,70 @@ const ItineraryCardList = () => {
 
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
-      {itinerary && (
-        <Box
-          display="flex"
-          gap={1}
-          borderRadius={2.5}
-          flexDirection={'row'}
-          color={'white'}
-          justifyContent={'space-between'}
-          sx={{backgroundColor: '#B87333', p: 1}}
-        >
-          <Box display="flex" alignItems={'center'} flexDirection={'row'} gap={1}>
-            <DriveEtaIcon />
-            <Typography variant="caption">{itinerary?.due_date}</Typography>
-          </Box>
-          <Typography alignContent={'center'} variant="caption">
-            {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
-          </Typography>
-          <IconButton onClick={() => setOpenDialog(true)}>
-            <CloseIcon sx={{alignSelf: 'center', color: 'white'}} fontSize="small" />
-          </IconButton>
-        </Box>
-      )}
-      <Box pl={1} display={'flex'} flexDirection={'column'} gap={1}>
-        {itinerary_tasks?.map((task) => {
-          const isSimpleTask = !task.is_created;
-          return (
-            <Box key={task.id}>
-              {isSimpleTask ? (
-                <TaskListItemSimpleCard task={task} />
-              ) : (
-                <TaskListItemAdvancedCard task={task} />
-              )}
+      <Card
+        sx={{
+          borderRadius: 2.5,
+          display: 'flex',
+          flexDirection: 'column',
+          alignContent: 'center',
+        }}
+      >
+        <CardHeader
+          sx={{
+            width: '100%',
+            backgroundColor: 'primary.main',
+            color: 'white',
+            py: 0.25,
+            px: 2,
+            minHeight: 32,
+          }}
+          title={
+            <Box
+              display="flex"
+              flexDirection={'row'}
+              alignItems="center"
+              justifyContent={'space-between'}
+            >
+              <Box display="flex" alignItems={'center'} flexDirection={'row'} gap={1}>
+                <DriveEtaIcon />
+                <Typography variant="caption">{itinerary?.due_date}</Typography>
+              </Box>
+              <Typography alignContent={'center'} variant="caption">
+                {taskUsers?.find((user) => user.id === itinerary?.assigned_to)?.display_name}
+              </Typography>
+              <IconButton onClick={() => setOpenDialog(true)}>
+                <CloseIcon sx={{alignSelf: 'center', color: 'white'}} fontSize="small" />
+              </IconButton>
             </Box>
-          );
-        })}
-      </Box>
+          }
+        />
+        <CardContent
+          sx={{
+            py: 0.5,
+            px: 0,
+            backgroundColor: '#EBF0F0',
+            '&.MuiCardContent-root:last-child': {py: 0},
+          }}
+        >
+          <Box display={'flex'} flexDirection={'column'} gap={0.5}>
+            {itinerary_tasks?.map((task) => {
+              // const isSimpleTask = !task.is_created;
+              return (
+                <>
+                  <Box key={task.id + '2'} display="flex" sx={{px: 1, pt: 0.5}}>
+                    {isSimpleTask(task) ? (
+                      <ItineraryListItemSimpleCard task={task} />
+                    ) : (
+                      <ItineraryListItemAdvancedCard task={task} />
+                    )}
+                  </Box>
+                  <Divider />
+                </>
+              );
+            })}
+          </Box>
+        </CardContent>
+      </Card>
       {openDialog && (
         <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
           <Box p={2}>

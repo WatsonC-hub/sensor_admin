@@ -1,4 +1,4 @@
-import {Box, Button, Card, CardContent, CardHeader, Grid2, Typography} from '@mui/material';
+import {Box, Button, Card, CardContent, CardHeader, Typography} from '@mui/material';
 import React, {useMemo} from 'react';
 import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
@@ -61,18 +61,22 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                 alignItems="center"
                 justifyContent={'space-between'}
               >
-                <Box display={'flex'} flexDirection={'row'} gap={0.5} alignItems="center">
-                  <Typography variant="body2">
-                    <NotificationIcon
-                      iconDetails={{
-                        notification_id: task.blocks_notifications[0],
-                        flag: task.is_created ? null : task.flag,
-                        has_task: task.is_created,
-                        due_date: task.due_date,
-                      }}
-                      noCircle={true}
-                    />
-                  </Typography>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={0.5}
+                  alignItems="center"
+                  fontSize={14}
+                >
+                  <NotificationIcon
+                    iconDetails={{
+                      notification_id: task.blocks_notifications[0],
+                      flag: task.is_created ? null : task.flag,
+                      has_task: task.is_created,
+                      due_date: task.due_date,
+                    }}
+                    noCircle={true}
+                  />
                   <Typography variant="caption">{task.name}</Typography>
                 </Box>
                 {task.due_date && (
@@ -88,7 +92,6 @@ const TaskListItemSimpleCard = ({task}: Props) => {
         <CardContent
           sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 1}}}
         >
-          <Grid2 container color="grey.700" spacing={1}></Grid2>
           <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
             <EditOutlined
               fontSize="small"
