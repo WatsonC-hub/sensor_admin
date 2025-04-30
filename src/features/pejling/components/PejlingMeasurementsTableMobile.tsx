@@ -34,6 +34,7 @@ export default function PejlingMeasurementsTableMobile({
   const tstype_id = timeseries?.tstype_id;
   const stationUnit = timeseries?.unit;
   const unit = tstype_id === 1 ? ' m' : ' ' + stationUnit;
+  const isWaterlevel = tstype_id === 1;
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -104,9 +105,12 @@ export default function PejlingMeasurementsTableMobile({
             <b>Kommentar: </b> {row.original.comment}
           </Typography>
         )}
-        <Typography>
-          <b>Reference værdi: </b> {limitDecimalNumbers(row.original.referenced_measurement)} {unit}
-        </Typography>
+        {isWaterlevel && (
+          <Typography>
+            <b>Kote [m DVR90]: </b> {limitDecimalNumbers(row.original.referenced_measurement)}{' '}
+            {unit}
+          </Typography>
+        )}
         <Typography>
           <b>Anvendelse: </b>{' '}
           {correction_map[row.original.useforcorrection]
