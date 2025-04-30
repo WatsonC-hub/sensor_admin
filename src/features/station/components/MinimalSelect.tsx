@@ -77,7 +77,17 @@ const MinimalSelect = () => {
               p: '0px 10px',
               mt: '1px',
             },
+            '.MuiOutlinedInput-notchedOutline': {
+              borderColor: 'white',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'white',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              borderColor: 'white',
+            },
             borderRadius: '15px',
+            border: '1px solid white',
             height: '35px',
             pb: 0,
           }}

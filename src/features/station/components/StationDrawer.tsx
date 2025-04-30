@@ -363,7 +363,7 @@ const Layout = ({children, variant}: LayoutProps) => {
           },
         }}
       >
-        <Box pt={2} mx={'auto'}>
+        <Box pt={2} pl={2}>
           {!isMobile && <MinimalSelect />}
           {isMobile && (
             <Typography

@@ -13,8 +13,8 @@ type CustomSpeedDialProps = {
 
 const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
   const {isTouch} = useBreakpoints();
-  const [open, setOpen] = useState<boolean>(false);
   const {isMobile, isMonitor, isLargeLaptop} = useBreakpoints();
+  const [open, setOpen] = useState<boolean>(isMonitor || isLargeLaptop);
   return (
     <div>
       <SpeedDial
@@ -26,7 +26,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
             {!isMobile && <Typography textTransform={'none'}>Justér</Typography>}
           </Box>
         }
-        open={open || isMonitor || isLargeLaptop}
+        open={open}
         FabProps={{
           onClick: () => {
             setOpen(!open);
