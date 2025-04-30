@@ -19,6 +19,8 @@ import {
   ListItemButton,
   ClickAwayListener,
   Tooltip,
+  IconButton,
+  Typography,
 } from '@mui/material';
 import {useAtom} from 'jotai';
 import React, {ReactNode} from 'react';
@@ -31,7 +33,7 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
 import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {metadataQueryOptions, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
 import {OmitKeyof, UseQueryOptions} from '@tanstack/react-query';
 import {APIError, queryClient} from '~/queryClient';
@@ -45,6 +47,7 @@ import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory'
 import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {getImageOptions} from '../api/useImages';
 import {stationPages, StationPages} from '~/helpers/EnumHelper';
+import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 const drawerWidth = 200;
@@ -109,6 +112,7 @@ const StationDrawer = () => {
           icon: <Edit />,
           page: stationPages.GENERELTIDSSERIE,
           requiredTsId: true,
+          disabled: metadata?.calculated || !metadata?.ts_id,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
       ],
@@ -141,6 +145,7 @@ const StationDrawer = () => {
           page: stationPages.GENERELTUDSTYR,
           icon: <Router />,
           requiredTsId: true,
+          disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
         {
@@ -232,6 +237,7 @@ const StationDrawer = () => {
             <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
             <Box alignItems={'center'} display="flex" gap={1}>
               {category.settings &&
+                !category.settings.disabled &&
                 category.settings.map((setting, index) => (
                   <ListItemIcon
                     key={index}
@@ -331,29 +337,49 @@ type LayoutProps = {
 
 const Layout = ({children, variant}: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-
-  const open = openAtom;
+  const {data: locationdata} = useLocationData();
+  const {isMonitor, isMobile} = useBreakpoints();
+  const open = isMonitor || openAtom;
+  const width = open ? drawerWidth : 48;
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
   };
 
   return (
-    <Drawer
-      variant={variant}
-      open={open}
-      sx={{
-        width: drawerWidth,
-        [`& .MuiDrawer-paper`]: {
-          width: drawerWidth,
-          position: 'relative',
-          backgroundColor: 'primary.main',
-        },
-      }}
-    >
-      <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
-        <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
-      </ClickAwayListener>
-    </Drawer>
+    <Box>
+      <Drawer
+        variant={variant}
+        open={open}
+        sx={{
+          width: width,
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: width,
+            backgroundColor: 'primary.main',
+            pt: '64px',
+            pb: isMobile ? '64px' : '0px',
+          },
+        }}
+      >
+        <Box pt={2} pl={2}>
+          {!isMobile && <MinimalSelect />}
+          {isMobile && (
+            <Typography
+              textOverflow="ellipsis"
+              overflow="hidden"
+              px={2}
+              whiteSpace="wrap"
+              color="white"
+            >
+              {locationdata?.loc_name}
+            </Typography>
+          )}
+        </Box>
+        <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
+          <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
+        </ClickAwayListener>
+      </Drawer>
+    </Box>
   );
 };
 

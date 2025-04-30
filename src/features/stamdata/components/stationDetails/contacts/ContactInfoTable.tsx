@@ -53,6 +53,8 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
+  console.log(dirtyFields);
+
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
       {
@@ -256,9 +258,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
             Annuller
           </Button>
           <Button
-            disabled={
-              !(dirtyFields.contact_role || dirtyFields.comment || dirtyFields.contact_type)
-            }
+            disabled={Object.keys(dirtyFields).length === 0}
             onClick={handleSubmit(handleSave, (error) => console.log(error))}
             bttype="primary"
           >

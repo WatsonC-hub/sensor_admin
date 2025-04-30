@@ -38,7 +38,16 @@ export default function Station() {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (metadata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
+    if (
+      metadata?.calculated &&
+      (pageToShow == 'tilsyn' ||
+        pageToShow === 'gu' ||
+        pageToShow === 'målepunkt' ||
+        pageToShow === 'gt' ||
+        pageToShow === 'justeringer' ||
+        pageToShow === 'algoritmer')
+    )
+      setPageToShow('pejling');
   }, [ts_id, showForm]);
 
   return (
@@ -118,10 +127,12 @@ const Layout = ({children}: LayoutProps) => {
       <NavBar key={'station'} zIndex={9999}>
         {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-            {locationdata?.loc_name}
-          </Typography>
-          <MinimalSelect />
+          {!isMobile && (
+            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+              {locationdata?.loc_name}
+            </Typography>
+          )}
+          {isMobile && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
