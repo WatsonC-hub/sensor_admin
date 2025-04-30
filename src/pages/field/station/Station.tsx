@@ -39,7 +39,16 @@ export default function Station() {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (metadata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
+    if (
+      metadata?.calculated &&
+      (pageToShow == 'tilsyn' ||
+        pageToShow === 'gu' ||
+        pageToShow === 'målepunkt' ||
+        pageToShow === 'gt' ||
+        pageToShow === 'justeringer' ||
+        pageToShow === 'algoritmer')
+    )
+      setPageToShow('pejling');
   }, [ts_id, showForm]);
 
   return (
