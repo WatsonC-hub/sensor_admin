@@ -12,7 +12,14 @@ const Home = () => {
     <>
       <RemoveTrailingSlash />
       <Routes>
-        <Route path="/" element={<TasksPage />} />
+        <Route
+          path="/"
+          element={
+            <AppContext.Provider value={{}}>
+              <TasksPage />
+            </AppContext.Provider>
+          }
+        />
         <Route
           path="stamdata"
           element={
