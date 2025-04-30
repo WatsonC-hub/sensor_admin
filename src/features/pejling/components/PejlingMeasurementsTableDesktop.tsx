@@ -30,6 +30,7 @@ export default function PejlingMeasurementsTableDesktop({
   const {data: timeseries} = useTimeseriesData();
   const tstype_id = timeseries?.tstype_id;
   const stationUnit = timeseries?.unit;
+  const isWaterlevel = timeseries == undefined ? true : timeseries.tstype_id === 1;
 
   const unit = tstype_id === 1 ? 'Nedstik [m]' : `Kontrol [${stationUnit}]`;
 
@@ -54,11 +55,15 @@ export default function PejlingMeasurementsTableDesktop({
         id: 'measurement',
         size: 140,
       },
-      {
-        accessorFn: (row) => limitDecimalNumbers(row.referenced_measurement),
-        header: `Reference værdi [m]`,
-        size: 140,
-      },
+      ...(isWaterlevel
+        ? ([
+            {
+              accessorFn: (row) => limitDecimalNumbers(row.referenced_measurement),
+              header: `Kote [m DVR90]`,
+              size: 140,
+            },
+          ] as MRT_ColumnDef<PejlingItem>[])
+        : []),
       {
         accessorFn: (row) =>
           correction_map[row.useforcorrection] ? correction_map[row.useforcorrection] : 'Kontrol',
@@ -69,7 +74,7 @@ export default function PejlingMeasurementsTableDesktop({
       {accessorKey: 'comment', header: 'Kommentar', enableColumnFilter: false},
       {accessorKey: 'display_name', header: 'Oprettet af', enableColumnFilter: false},
     ],
-    [unit]
+    [unit, isWaterlevel]
   );
 
   const [tableState, reset] = useStatefullTableAtom<PejlingItem>('PejlingTableState');
