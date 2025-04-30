@@ -47,8 +47,8 @@ export default function LocationRouter() {
                 sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
               >
                 <Typography>
-                  Der er ingen tidsserie og/eller udstyr tilknyttet denne lokation. Tryk på knappen
-                  nedenfor for at påbegynde oprettelse af tidsserie og/eller tilknytning af udstyr
+                  Der er ingen tidsserie oprettet på denne lokation. Tryk på knappen nedenfor for at
+                  påbegynde oprettelse af tidsserie
                 </Typography>
               </Alert>
               <Button
@@ -106,10 +106,12 @@ const Layout = ({children}: LayoutProps) => {
       <NavBar>
         {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-            {metadata?.loc_name}
-          </Typography>
-          <MinimalSelect />
+          {!isMobile && (
+            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+              {metadata?.loc_name}
+            </Typography>
+          )}
+          {isMobile && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <NavBar.Home />

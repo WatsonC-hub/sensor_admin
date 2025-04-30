@@ -39,7 +39,16 @@ export default function Station() {
 
   useEffect(() => {
     setPageToShow(pageToShow);
-    if (metadata?.calculated && pageToShow == 'tilsyn') setPageToShow('pejling');
+    if (
+      metadata?.calculated &&
+      (pageToShow == 'tilsyn' ||
+        pageToShow === 'gu' ||
+        pageToShow === 'målepunkt' ||
+        pageToShow === 'gt' ||
+        pageToShow === 'justeringer' ||
+        pageToShow === 'algoritmer')
+    )
+      setPageToShow('pejling');
   }, [ts_id, showForm]);
 
   return (
@@ -53,15 +62,7 @@ export default function Station() {
           </Box>
           <Divider />
           <StationPageBoxLayout>
-            <Box
-              sx={{
-                borderRadius: 4,
-                boxShadow: 3,
-                padding: '16px',
-              }}
-            >
-              <EditUnit />
-            </Box>
+            <EditUnit />
           </StationPageBoxLayout>
         </>
       )}
@@ -144,10 +145,12 @@ const Layout = ({children}: LayoutProps) => {
       <NavBar>
         {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
-            {locationdata?.loc_name}
-          </Typography>
-          <MinimalSelect />
+          {!isMobile && (
+            <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+              {locationdata?.loc_name}
+            </Typography>
+          )}
+          {isMobile && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
