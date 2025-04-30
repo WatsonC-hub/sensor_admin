@@ -4,31 +4,13 @@ import {useEffect} from 'react';
 import {useFormContext} from 'react-hook-form';
 
 import {useUnitHistory, UnitHistory} from '~/features/stamdata/api/useUnitHistory';
-import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
-
-import UnitEndDateDialog from './UnitEndDialog';
 
 interface UdstyrReplaceProps {
   selected: number | '';
   setSelected: (selected: number | '') => void;
-  openDialog: boolean;
-  setOpenDialog: (openDialog: boolean) => void;
-  openAddUdstyr: boolean;
-  setOpenAddUdstyr: (openAddUdstyr: boolean) => void;
 }
 
-const UdstyrReplace = ({
-  selected,
-  setSelected,
-  openDialog,
-  setOpenDialog,
-  openAddUdstyr,
-  setOpenAddUdstyr,
-}: UdstyrReplaceProps) => {
-  const {data: timeseries} = useTimeseriesData();
-  const tstype_id = timeseries?.tstype_id;
-
+const UdstyrReplace = ({selected, setSelected}: UdstyrReplaceProps) => {
   const {setValue} = useFormContext();
 
   const {data, isPending} = useUnitHistory();
@@ -100,13 +82,6 @@ const UdstyrReplace = ({
           )}
         </>
       )}
-      <UnitEndDateDialog openDialog={openDialog} setOpenDialog={setOpenDialog} unit={data?.[0]} />
-      <AddUnitForm
-        udstyrDialogOpen={openAddUdstyr}
-        setUdstyrDialogOpen={setOpenAddUdstyr}
-        tstype_id={tstype_id}
-        mode="edit"
-      />
     </>
   );
 };

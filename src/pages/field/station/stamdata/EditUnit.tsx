@@ -20,6 +20,8 @@ import UdstyrReplace from './UdstyrReplace';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import FabWrapper from '~/components/FabWrapper';
 import {BuildRounded} from '@mui/icons-material';
+import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
+import UnitEndDateDialog from './UnitEndDialog';
 
 const unitSchema = z.object({
   timeseries: z.object({
@@ -59,12 +61,11 @@ const EditUnit = () => {
   const [openAddUdstyr, setOpenAddUdstyr] = useState(false);
 
   const {location_permissions} = usePermissions(loc_id);
+  const tstype_id = metadata?.tstype_id;
   const disabled = location_permissions !== 'edit';
 
   const mode =
-    unit_history &&
-    unit_history.length > 0 &&
-    moment(unit_history?.[0].slutdato) > moment(new Date());
+    unit_history && unit_history.length > 0 && moment(unit_history?.[0].slutdato) > moment();
   const fabText = mode ? 'Hjemtag udstyr' : 'Tilføj udstyr';
 
   const metadataEditUnitMutation = useMutation({
@@ -134,17 +135,18 @@ const EditUnit = () => {
 
   return (
     <>
-      <Box maxWidth={1080} px={2} pt={2} borderRadius={4} boxShadow={3}>
+      <Box
+        maxWidth={1080}
+        sx={{
+          borderRadius: 4,
+          boxShadow: 3,
+          padding: '16px',
+        }}
+      >
         <FormProvider {...formMethods}>
-          <UdstyrReplace
-            selected={selectedUnit}
-            setSelected={setSelectedUnit}
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            openAddUdstyr={openAddUdstyr}
-            setOpenAddUdstyr={setOpenAddUdstyr}
-          />
+          <UdstyrReplace selected={selectedUnit} setSelected={setSelectedUnit} />
           <UnitForm mode="edit" />
+
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
             <Button
               bttype="tertiary"
@@ -166,8 +168,20 @@ const EditUnit = () => {
               Gem
             </Button>
           </Box>
+          <UnitEndDateDialog
+            openDialog={openDialog}
+            setOpenDialog={setOpenDialog}
+            unit={unit_history?.[0]}
+          />
+          <AddUnitForm
+            udstyrDialogOpen={openAddUdstyr}
+            setUdstyrDialogOpen={setOpenAddUdstyr}
+            tstype_id={tstype_id}
+            mode="edit"
+          />
         </FormProvider>
       </Box>
+
       <FabWrapper
         icon={<BuildRounded />}
         text={fabText}
