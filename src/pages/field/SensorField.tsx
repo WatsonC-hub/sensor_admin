@@ -1,5 +1,5 @@
 import {useAtom} from 'jotai';
-import React, {useState} from 'react';
+import React from 'react';
 import {Route, Routes} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
@@ -19,7 +19,6 @@ import StationRouterProvider from '~/state/StationRouterProvider';
 import Station from './station/Station';
 
 function SensorField() {
-  const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
 
   async function getData(labelid: string | number) {
@@ -98,7 +97,7 @@ function SensorField() {
           path="stamdata"
           element={
             <CreateStamdataProvider>
-              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
+              <OpretStamdata />
             </CreateStamdataProvider>
           }
         />
