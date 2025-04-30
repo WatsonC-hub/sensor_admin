@@ -13,8 +13,8 @@ type CustomSpeedDialProps = {
 
 const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
   const {isTouch} = useBreakpoints();
-  const [open, setOpen] = useState<boolean>(false);
   const {isMobile, isMonitor, isLargeLaptop} = useBreakpoints();
+  const [open, setOpen] = useState<boolean>(isMonitor || isLargeLaptop);
   return (
     <SpeedDial
       ariaLabel="SpeedDial"
@@ -28,7 +28,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
           )}
         </Box>
       }
-      open={open || isMonitor || isLargeLaptop}
+      open={open}
       sx={{
         position: 'sticky',
         bottom: 10,
