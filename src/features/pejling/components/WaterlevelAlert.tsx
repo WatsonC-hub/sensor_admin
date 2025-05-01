@@ -42,7 +42,7 @@ const WaterlevelAlert = ({
           alignItems: 'center',
         }}
       >
-        {elevationDiff ? (
+        {elevationDiff !== undefined ? (
           <Typography>
             Forskel til seneste måling: {limitDecimalNumbers(elevationDiff)} m
           </Typography>
