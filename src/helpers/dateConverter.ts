@@ -2,6 +2,7 @@
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 
+import dayjs from 'dayjs';
 import moment from 'moment';
 
 const convertDate = (date: string) => {
@@ -45,7 +46,7 @@ const splitTimeFromDate = (dateString: string) => {
 };
 
 const convertToShorthandDate = (date: string | null | undefined) => {
-  return moment(date).format('DD MMM YYYY');
+  return dayjs(date).format('DD MMM YYYY');
 };
 
 export {

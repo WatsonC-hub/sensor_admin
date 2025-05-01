@@ -26,7 +26,7 @@ const ItineraryListItemSimpleCard = ({task}: Props) => {
     <TaskForm key={task.id} onSubmit={() => {}} defaultValues={defaultValues}>
       <Grid2 container color="grey.700" spacing={0.5} width={'100%'}>
         <Grid2 size={6} display={'flex'} flexDirection={'row'} alignItems="center">
-          {task.description && (
+          {task.name && (
             <Box alignItems={'center'} display="flex" gap={1}>
               <DescriptionIcon fontSize="small" />
               <Typography variant="caption">{task.name}</Typography>

@@ -18,6 +18,11 @@ import theme from '~/theme';
 import App from './App';
 
 import '~/index.css';
+import moment from 'moment';
+import 'moment/locale/da';
+import dayjs from 'dayjs';
+dayjs.locale('da');
+moment.locale('da');
 
 if (import.meta.env.PROD) {
   Sentry.init({

@@ -38,7 +38,7 @@ const SensorContent = () => {
       <LocationInfo />
       <TimeseriesList />
       <TaskList />
-      {location?.itinerary_id && <ItineraryCardList />}
+      {location?.itinerary_id && <ItineraryCardList itinerary_id={location.itinerary_id} />}
 
       <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
         {!isMobile ? (

@@ -21,10 +21,9 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
 
   const {
     getUsers: {data: users},
-    moveTask,
   } = useTasks();
 
-  const {complete} = useTaskItinerary(itinerary.id);
+  const {complete, addLocationToTrip} = useTaskItinerary(itinerary.id);
 
   const {selectedTask, isDraggingTask, selectedLocIds, tasks} = useTaskStore();
 
@@ -32,22 +31,12 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
     <Droppable<{loc_id: number}>
       onDrop={(e, data) => {
         e.preventDefault();
-        const addTasks = tasks
-          ?.filter(
-            (task) =>
-              task.loc_id === data.loc_id &&
-              task.itinerary_id !== undefined &&
-              task.itinerary_id !== itinerary.id
-          )
-          .map((task) => task.id);
-        if (addTasks && addTasks.length > 0)
-          moveTask.mutate({
-            path: `${itinerary.id}`,
-            data: {
-              task_ids: addTasks,
-              loc_id: [data.loc_id],
-            },
-          });
+        addLocationToTrip.mutate({
+          path: `${itinerary.id}`,
+          data: {
+            loc_id: [data.loc_id],
+          },
+        });
       }}
     >
       {({isDraggingOver}) => {

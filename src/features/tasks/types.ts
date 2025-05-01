@@ -193,7 +193,6 @@ export type TaskitineraryItem = {
 
 export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'> & {
   loc_ids: number[];
-  task_ids: ID[];
 };
 
 export type PatchTaskitinerary = {
@@ -213,7 +212,7 @@ export type completeItinerary = {
   path: string;
 };
 
-export type MoveTaskToDifferentItinerary = {
+export type AddLocationToItinerary = {
   path: string;
-  data: AddTasksToitinerary & {loc_id: Array<number>};
+  data: {loc_id: Array<number>};
 };

@@ -9,12 +9,20 @@ import {TaskCollection} from '~/types';
 import TripTaskTable from './TripTaskTable';
 import TripTaskCardList from './TripTaskCardList';
 import Button from '~/components/Button';
+import {Check, Delete} from '@mui/icons-material';
+import AlertDialog from '~/components/AlertDialog';
+import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import {useDisplayState} from '~/hooks/ui';
 
 interface TripPreparationProps {
   data: TaskCollection | undefined;
 }
 
 const TripPreparation = ({data}: TripPreparationProps) => {
+  const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const [completeOpen, setCompleteOpen] = React.useState(false);
+  const {itinerary_id} = useDisplayState((state) => state);
+  const {complete} = useTaskItinerary();
   return (
     <Box
       display={'flex'}
@@ -46,13 +54,43 @@ const TripPreparation = ({data}: TripPreparationProps) => {
       <TripUnitTable units={data?.units} />
 
       <Box display="flex" gap={1} flexDirection={'row'} alignSelf={'center'}>
-        <Button bttype="tertiary" sx={{borderRadius: 2.5}}>
-          Start rute
+        <Button
+          bttype="tertiary"
+          sx={{borderRadius: 2.5}}
+          startIcon={<Check />}
+          onClick={() => {
+            setCompleteOpen(true);
+          }}
+        >
+          Færdiggør
         </Button>
-        <Button bttype="primary" sx={{borderRadius: 2.5}}>
-          Åben Google Maps
-        </Button>
+        {/* <Button
+          bttype="primary"
+          sx={{borderRadius: 2.5}}
+          startIcon={<Delete />}
+          onClick={() => {
+            setDeleteOpen(true);
+          }}
+        >
+          Slet
+        </Button> */}
       </Box>
+      <AlertDialog
+        open={deleteOpen}
+        setOpen={setDeleteOpen}
+        title="Slet opgave"
+        message="Er du sikker på at du vil slette opgaven?"
+        handleOpret={() => {}}
+      />
+      <AlertDialog
+        open={completeOpen}
+        setOpen={setCompleteOpen}
+        title="Færdiggør opgave"
+        message="Færdiggørelse fjerner alle lokationer fra turen og ændrer ansvarlig på ikke færdiggjorte opgaver. Er du sikker på at du vil færdiggøre opgaven?"
+        handleOpret={() => {
+          complete.mutate({path: `${itinerary_id}`});
+        }}
+      />
     </Box>
   );
 };

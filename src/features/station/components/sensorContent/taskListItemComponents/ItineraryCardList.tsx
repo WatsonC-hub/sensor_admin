@@ -22,13 +22,17 @@ import Button from '~/components/Button';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import {isSimpleTask} from '~/features/tasks/helpers';
 
-const ItineraryCardList = () => {
+interface ItineraryCardListProps {
+  itinerary_id: string;
+}
+
+const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = React.useState(false);
   const {tasks} = useTaskStore();
 
   const itinerary_tasks = tasks?.filter(
-    (task) => task.loc_id === loc_id && task.itinerary_id !== null
+    (task) => task.loc_id === loc_id && task.itinerary_id == itinerary_id
   );
 
   const {
@@ -40,13 +44,11 @@ const ItineraryCardList = () => {
     get: {data: itineraries},
   } = useTaskItinerary();
 
-  const itinerary = itineraries?.find(
-    (itinerary) => itinerary.id === itinerary_tasks?.[0]?.itinerary_id
-  );
+  const itinerary = itineraries?.find((itinerary) => itinerary.id === itinerary_id);
 
   const handleDelete = () => {
     const payload = {
-      path: `${itinerary?.id}/tasks/${loc_id}`,
+      path: `${itinerary_id}/tasks/${loc_id}`,
     };
 
     deleteTaskFromItinerary.mutate(payload);

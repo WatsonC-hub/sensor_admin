@@ -22,8 +22,9 @@ import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
 import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
-import {useTasks} from '../api/useTasks';
-import {useTaskStore} from '../api/useTaskStore';
+import {useTaskItinerary} from '../api/useTaskItinerary';
+import {useAtomValue} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
 
 const TasksOverview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
@@ -50,28 +51,22 @@ const TasksOverview = () => {
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
-  const {tasks} = useTaskStore();
-  const {moveTask} = useTasks();
+  const {addLocationToTrip} = useTaskItinerary();
   const {isMobile, isTouch} = useBreakpoints();
+  const fullScreen = useAtomValue(fullScreenAtom);
 
   const handleDrop = (event: any) => {
     if (event.operation.source === null || event.operation.target === null) return;
 
     const itinerary_id = event.operation.target.data.itinerary_id;
     const loc_id = event.operation.source.data.loc_id;
-    const itinerary_tasks = tasks?.filter((task) => task.itinerary_id === itinerary_id);
-    const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];
 
-    const task_ids = tasks?.filter((task) => task.loc_id === loc_id).map((task) => task.id);
-    if (task_ids && !loc_ids.includes(loc_id)) {
-      moveTask.mutate({
-        path: `${itinerary_id}`,
-        data: {
-          task_ids: task_ids,
-          loc_id: [loc_id],
-        },
-      });
-    }
+    addLocationToTrip.mutate({
+      path: `${itinerary_id}`,
+      data: {
+        loc_id: [loc_id],
+      },
+    });
   };
 
   const clickCallback = (data: MapOverview | BoreholeMapData | null) => {
@@ -235,7 +230,7 @@ const TasksOverview = () => {
             show={ts_id !== null}
             minSize={2}
             maxSize={3}
-            fullScreen={isMobile}
+            fullScreen={isMobile || fullScreen}
             sx={{
               borderRadius: isMobile ? 0 : 3,
             }}

@@ -11,7 +11,6 @@ import React from 'react';
 import Button from '~/components/Button';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
 import {useTasks} from '~/features/tasks/api/useTasks';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
 type AddToTripDialogProps = {
   open: boolean;
@@ -23,13 +22,11 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
   const [itineraryId, setItineraryId] = React.useState<string | null>(null);
   const {
     get: {data: itineraries},
+    addLocationToTrip,
   } = useTaskItinerary();
-
-  const {tasks} = useTaskStore();
 
   const {
     getUsers: {data: taskUsers},
-    moveTask,
   } = useTasks();
 
   const handleClose = () => {
@@ -39,31 +36,20 @@ const AddToTripDialog = ({open, onClose, loc_id}: AddToTripDialogProps) => {
 
   const onSubmit = () => {
     // Get the tasks that belong to the selected itinerary
-    const itinerary_tasks = tasks?.filter((task) => task.itinerary_id === itineraryId);
 
-    // Get the unique loc_ids from the tasks in the selected itinerary
-    const loc_ids = [...new Set(itinerary_tasks?.map((task) => task.loc_id))];
-
-    // Get the task_ids of the tasks that belong to the current selected location
-    const task_ids = tasks?.filter((task) => task.loc_id === loc_id).map((task) => task.id);
-
-    // If there are task_ids and the lokation has not already been added to itinerary, move the tasks
-    if (task_ids && !loc_ids.includes(loc_id)) {
-      moveTask.mutate(
-        {
-          path: `${itineraryId}`,
-          data: {
-            task_ids: task_ids,
-            loc_id: [loc_id],
-          },
+    addLocationToTrip.mutate(
+      {
+        path: `${itineraryId}`,
+        data: {
+          loc_id: [loc_id],
         },
-        {
-          onSuccess: () => {
-            onClose();
-          },
-        }
-      );
-    }
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
+      }
+    );
   };
 
   return (

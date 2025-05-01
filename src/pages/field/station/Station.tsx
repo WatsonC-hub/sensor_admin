@@ -1,4 +1,4 @@
-import {Box, Divider, Typography} from '@mui/material';
+import {Box, Divider, IconButton, Typography} from '@mui/material';
 import React, {ReactNode, useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
@@ -28,6 +28,9 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
 import PlotGraph from '~/features/station/components/StationGraph';
+import {useAtom} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -122,6 +125,7 @@ const Layout = ({children}: LayoutProps) => {
   const user = useUser();
   const setTsId = useDisplayState((state) => state.setTsId);
   const [pageToShow, setPageToShow] = useStationPages();
+  const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
   return (
     <>
       <NavBar key={'station'} zIndex={9999}>
@@ -137,6 +141,17 @@ const Layout = ({children}: LayoutProps) => {
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
           {user?.adminAccess && <NotificationList />}
+          {!isMobile && (
+            <IconButton
+              onClick={() => {
+                setFullscreen((prev) => !prev);
+              }}
+              color="inherit"
+              size="large"
+            >
+              {fullscreen ? <FullscreenExit /> : <Fullscreen />}
+            </IconButton>
+          )}
           <NavBar.Close
             onClick={() => {
               if (pageToShow) setPageToShow(null);

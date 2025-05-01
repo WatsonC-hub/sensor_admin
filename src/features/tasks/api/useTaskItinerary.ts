@@ -13,6 +13,7 @@ import {APIError} from '~/queryClient';
 
 import type {
   completeItinerary,
+  AddLocationToItinerary,
   PatchTaskitinerary,
   PostTaskitinerary,
   Task,
@@ -48,6 +49,15 @@ export const patchItineraryOptions = {
   mutationFn: async (mutation_data: PatchTaskitinerary) => {
     const {path, data} = mutation_data;
     const {data: result} = await apiClient.patch(`/sensor_admin/tasks/itineraries/${path}`, data);
+    return result;
+  },
+};
+
+export const addLocationToItineraryOptions = {
+  mutationKey: ['taskItinerary_move'],
+  mutationFn: async (mutation_data: AddLocationToItinerary) => {
+    const {path, data} = mutation_data;
+    const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
     return result;
   },
 };
@@ -123,7 +133,7 @@ export const useTaskItinerary = <T = Taskitinerary[]>(
     enabled: id !== undefined,
   });
 
-  const post = useMutation<unknown, APIError, PostTaskitinerary>({
+  const createItinerary = useMutation<unknown, APIError, PostTaskitinerary>({
     ...itineraryPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['itineraries']});
@@ -156,33 +166,26 @@ export const useTaskItinerary = <T = Taskitinerary[]>(
     },
   });
 
-  // const deleteTaskFromItinerary = useMutation<unknown, APIError, DeleteTaskFromItinerary>({
-  //   ...deleteTaskFromItineraryOptions,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['itineraries', id],
-  //     });
-  //     toast.success('opgave slettet fra tur');
-  //   },
-  // });
+  const addLocationToTrip = useMutation<unknown, APIError, AddLocationToItinerary>({
+    ...addLocationToItineraryOptions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: ['map']});
 
-  // const moveTasks = useMutation<unknown, APIError, MoveTaskToDifferentItinerary>({
-  //   ...moveTasksToItineraryOptions,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['itineraries', id],
-  //     });
-  //     toast.success('Opgaver tilføjet til tur');
-  //   },
-  // });
+      toast.success('Opgaver tilføjet til tur');
+    },
+  });
 
   return {
     get,
     getItinerary,
-    post,
+    createItinerary,
     patch,
     getItineraryTasks,
     complete,
+    addLocationToTrip,
     // deleteTaskFromItinerary,
     // moveTasks,
     // getProjects,

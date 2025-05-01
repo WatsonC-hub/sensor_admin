@@ -13,8 +13,6 @@ import {
   type TaskStatus,
   DBTask,
   DeleteTaskFromItinerary,
-  MoveTaskToDifferentItinerary,
-  ID,
 } from '../types';
 
 type Mutation<TData> = {
@@ -107,27 +105,18 @@ export const deleteTaskFromItineraryOptions = {
   },
 };
 
-export const moveTaskToItineraryOptions = {
-  mutationKey: ['taskItinerary_move'],
-  mutationFn: async (mutation_data: MoveTaskToDifferentItinerary) => {
-    const {path, data} = mutation_data;
-    const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
-    return result;
-  },
-};
-
 // /location_related_tasks/{loc_id}
 export const useTasks = () => {
   const queryClient = useQueryClient();
 
-  const [selectedTaskId, setSelectedTask, include_closed, shownMapTaskIds, setShownMapTaskIds] =
-    useRawTaskStore((state) => [
-      state.selectedTaskId,
+  const [setSelectedTask, include_closed, shownMapTaskIds, setShownMapTaskIds] = useRawTaskStore(
+    (state) => [
       state.setSelectedTask,
       state.includeClosedTasks,
       state.shownMapTaskIds,
       state.setShownMapTaskIds,
-    ]);
+    ]
+  );
 
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks', include_closed],
@@ -287,37 +276,6 @@ export const useTasks = () => {
     },
   });
 
-  const moveTask = useMutation<ID[], APIError, MoveTaskToDifferentItinerary>({
-    ...moveTaskToItineraryOptions,
-    onSuccess: (output, variables) => {
-      const {path, data} = variables;
-      const task_itinerary_id = path;
-      const previous = queryClient.getQueryData<Task[]>(['tasks']);
-      queryClient.setQueryData<Task[]>(
-        ['tasks'],
-        previous?.map((task) => {
-          if (data.task_ids.includes(task.id)) {
-            const updated = {...task, itinerary_id: task_itinerary_id};
-
-            return updated;
-          }
-          return task;
-        })
-      );
-
-      if (data.task_ids.length == 1 && selectedTaskId == data.task_ids[0]) {
-        setSelectedTask(output[0]);
-      }
-
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
-      queryClient.invalidateQueries({queryKey: ['map']});
-
-      toast.success('Opgaver tilføjet til tur');
-    },
-  });
-
   return {
     get,
     post,
@@ -328,7 +286,6 @@ export const useTasks = () => {
     getUsers,
     getStatus,
     deleteTaskFromItinerary,
-    moveTask,
     // getProjects,
   };
 };
