@@ -1,15 +1,21 @@
-import {pejlingBoreholeSchema, pejlingSchema} from '../PejlingSchema';
+import {
+  PejlingBoreholeItem,
+  pejlingBoreholeSchema,
+  PejlingItem,
+  pejlingSchema,
+} from '../PejlingSchema';
 import {useForm} from 'react-hook-form';
-import {zodResolver} from '@hookform/resolvers/zod';
 import PejlingForm from '../components/PejlingForm';
 import {z, ZodType} from 'zod';
 import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
 import PejlingMeasurementsTableDesktop from '~/features/pejling/components/PejlingMeasurementsTableDesktop';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import PejlingMeasurementsTableMobile from '~/features/pejling/components/PejlingMeasurementsTableMobile';
-import BoreholeTableDesktop from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
-import BoreholeTableMobile from '~/pages/field/boreholeno/components/tableComponents/PejlingMeasurementsTableMobile';
 import {boreholeInitialData, initialData} from '~/features/pejling/const';
+import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTableMobile';
+import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
+import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
+import moment from 'moment';
 
 type PejlingFormProps = {
   loctype_id?: number;
@@ -25,7 +31,7 @@ const getSchemaAndForm = (loctype_id: number) => {
     case loctype_id === 9:
       selectedSchema = pejlingBoreholeSchema;
       selectedForm = PejlingBoreholeForm;
-      selectedTable = isMobile ? BoreholeTableMobile : BoreholeTableDesktop;
+      selectedTable = isMobile ? PejlingBoreholeTableMobile : PejlingBoreholeTableDesktop;
       break;
     default:
       selectedSchema = pejlingSchema;
@@ -38,12 +44,62 @@ const getSchemaAndForm = (loctype_id: number) => {
 const usePejlingForm = ({loctype_id = -1}: PejlingFormProps) => {
   const [schema, form, table] = getSchemaAndForm(loctype_id);
 
+  const {
+    get: {data: mpData},
+  } = useMaalepunkt();
+
   const data = loctype_id === 9 ? boreholeInitialData : initialData;
 
+  const {data: parsedData} = schema.safeParse({...data});
+
   const formMethods = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: data,
-    mode: 'onChange',
+    resolver: (...opts) => {
+      const values = opts[0] as PejlingBoreholeItem | PejlingItem;
+      const mpData = opts[1]?.mpData;
+      const errors = {} as Record<string, {type: string; message: string}>;
+
+      const parsed = schema.safeParse(values);
+
+      console.log(parsed);
+      if (values.notPossible) {
+        values.measurement = null;
+      }
+
+      if (!parsed.success) {
+        for (const [key, messages] of Object.entries(parsed.error.flatten().fieldErrors)) {
+          if (messages && messages.length > 0) {
+            const [message] = messages;
+            errors[key] = {type: 'custom', message};
+          }
+        }
+      }
+
+      const mp = mpData?.filter((elem) => {
+        if (
+          moment(values.timeofmeas).isSameOrAfter(elem.startdate) &&
+          moment(values.timeofmeas).isBefore(elem.enddate)
+        ) {
+          return true;
+        }
+      });
+
+      if (mpData && mp && mp.length === 0) {
+        errors.timeofmeas = {
+          type: 'outOfRange',
+          message: 'Tidspunkt er uden for et målepunkt',
+        };
+      }
+
+      return {
+        values: parsed.success ? parsed.data : {},
+        errors,
+      };
+    },
+    defaultValues: parsedData,
+    mode: 'onTouched',
+    context: {
+      mpData: mpData,
+    },
   });
 
   return [formMethods, form, table] as const;

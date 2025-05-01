@@ -13,19 +13,25 @@ interface PejlingBase {
 
 interface PejlingPost extends PejlingBase {
   data: {
-    comment: string | undefined;
+    comment?: string;
     measurement: number | null;
     timeofmeas: string;
     useforcorrection: number;
+    extrema?: string | null;
+    pumpstop?: string | null;
+    service?: boolean;
   };
 }
 
 interface PejlingPut extends PejlingPost {
   data: {
-    comment: string | undefined;
+    comment?: string;
     measurement: number | null;
     timeofmeas: string;
     useforcorrection: number;
+    extrema?: string | null;
+    pumpstop?: string | null;
+    service?: boolean;
   };
 }
 

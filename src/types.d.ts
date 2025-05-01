@@ -174,6 +174,10 @@ export type PejlingItem = {
   display_name?: string;
 };
 
+export type boreholePejlingItem = PejlingItem & {
+  pumpstop?: string | null;
+};
+
 export type controlData = {
   timeofmeas: string;
   waterlevel: number | null;

@@ -35,7 +35,9 @@ const CreateStation = () => {
   const size = isMobile ? 12 : 6;
   const {location: locationNavigate, station: stationNavigate, field} = useNavigationFunctions();
   let {state} = useLocation();
-  const [activeStep, setActiveStep] = React.useState(0);
+  const [activeStep, setActiveStep] = React.useState(
+    state === undefined ? 0 : state.loc_id ? 1 : 0
+  );
 
   state = state ?? {};
 

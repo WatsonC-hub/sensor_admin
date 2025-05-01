@@ -23,7 +23,13 @@ import PejlingFormBorehole from '~/pages/field/boreholeno/components/PejlingForm
 import MaalepunktTable from '~/pages/field/boreholeno/MaalepunktTable';
 import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
 import {useAppContext} from '~/state/contexts';
-import {Kontrol, Maalepunkt, MaalepunktPost, MaalepunktTableData} from '~/types';
+import {
+  Kontrol,
+  Maalepunkt,
+  MaalepunktPost,
+  MaalepunktTableData,
+  BoreholeMeasurement,
+} from '~/types';
 
 const Boreholeno = () => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
@@ -56,7 +62,6 @@ const Boreholeno = () => {
     public: false,
     date: moment().toISOString(),
   });
-  const [dynamic, setDynamic] = useState<Array<string | number>>([]);
 
   const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
     gid: -1,
@@ -65,6 +70,9 @@ const Boreholeno = () => {
     elevation: null,
     mp_description: '',
   });
+
+  const [control, setcontrol] = useState();
+  const [dynamic, setDynamic] = useState<Array<string | number>>([]);
 
   const {data: measurements} = useQuery({
     queryKey: ['measurements', boreholeno, intakeno],
@@ -104,6 +112,30 @@ const Boreholeno = () => {
       setDynamic([dynamicDate, dynamicMeas]);
     }
   }, [pejlingData, watlevmp]);
+
+  useEffect(() => {
+    let ctrls = [];
+    if (watlevmp.length > 0) {
+      ctrls = measurements.map((e: BoreholeMeasurement) => {
+        const elev = watlevmp.filter((e2: Maalepunkt) => {
+          return (
+            moment(e.timeofmeas) >= moment(e2.startdate) &&
+            moment(e.timeofmeas) < moment(e2.enddate)
+          );
+        })[0].elevation;
+
+        return {
+          ...e,
+          waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+        };
+      });
+    } else {
+      ctrls = measurements?.map((elem: BoreholeMeasurement) => {
+        return {...elem, waterlevel: elem.disttowatertable_m};
+      });
+    }
+    setcontrol(ctrls);
+  }, [watlevmp, measurements]);
 
   const handleMpCancel = () => {
     resetMpData();
@@ -266,6 +298,7 @@ const Boreholeno = () => {
           sx={{marginBottom: 0.5, marginTop: 0.2}}
         >
           <PlotGraph
+            ourData={control ?? []}
             dynamicMeasurement={pageToShow === 'pejling' && showForm ? dynamic : undefined}
           />
           <Divider />

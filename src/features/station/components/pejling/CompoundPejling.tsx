@@ -76,11 +76,7 @@ const Measurement = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
     <FormInput
       type="number"
       name="measurement"
-      label={
-        <Typography variant="h5" component="h3">
-          {isWaterLevel ? 'Pejling (nedstik)' : 'Måling'}
-        </Typography>
-      }
+      label={isWaterLevel ? 'Pejling (nedstik)' : 'Måling'}
       InputProps={{
         endAdornment: (
           <InputAdornment position="start">{isWaterLevel ? 'm' : stationUnit}</InputAdornment>
@@ -186,7 +182,7 @@ const Correction = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
   );
 };
 
-const NotPossible = ({onChangeCallback}: {onChangeCallback: () => void}) => {
+const NotPossible = () => {
   const {control} = useFormContext<PejlingItem>();
   return (
     <Controller
@@ -200,7 +196,6 @@ const NotPossible = ({onChangeCallback}: {onChangeCallback: () => void}) => {
               checked={value}
               onChange={(e) => {
                 onChange(e);
-                onChangeCallback();
               }}
             />
           }
@@ -260,23 +255,6 @@ const IsPump = () => {
   );
 };
 
-const DistToWaterTable = (props: Omit<FormInputProps<PejlingBoreholeItem>, 'name'>) => {
-  return (
-    <FormInput<PejlingBoreholeItem>
-      type="number"
-      name="disttowatertable_m"
-      label="Pejling (nedstik)"
-      slotProps={{
-        input: {
-          endAdornment: <InputAdornment position="start">m</InputAdornment>,
-        },
-      }}
-      fullWidth
-      {...props}
-    />
-  );
-};
-
 const Service = () => {
   const {control} = useFormContext<PejlingBoreholeItem>();
   return (
@@ -324,7 +302,6 @@ CompoundPejling.CancelButton = CancelButton;
 CompoundPejling.SubmitButton = SubmitButton;
 CompoundPejling.Extrema = Extrema;
 CompoundPejling.IsPump = IsPump;
-CompoundPejling.DistToWaterTable = DistToWaterTable;
 CompoundPejling.Service = Service;
 CompoundPejling.PumpStop = PumpStop;
 

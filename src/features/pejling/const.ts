@@ -10,10 +10,10 @@ export const initialData: PejlingItem = {
 
 export const boreholeInitialData: PejlingBoreholeItem = {
   timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
-  disttowatertable_m: 0,
+  measurement: 0,
   useforcorrection: 0,
   comment: undefined,
-  service: undefined,
-  pumpstop: undefined,
+  service: false,
+  pumpstop: null,
   extrema: undefined,
 };

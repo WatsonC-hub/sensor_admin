@@ -97,7 +97,6 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
       return data;
     },
     select: (data) => {
-      console.log(data);
       const location_data: LocationMetadata = {
         loc_id: data[0].loc_id,
         loc_name: data[0].loc_name,

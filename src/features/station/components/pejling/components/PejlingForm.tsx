@@ -16,19 +16,16 @@ type PejlingFormProps = {
 
 const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProps) => {
   const {
-    clearErrors,
-    setError,
-    setValue,
-    getValues,
+    watch,
     formState: {errors},
   } = useFormContext<PejlingItem>();
 
-  const timeofmeas = getValues('timeofmeas');
-  const measurement = getValues('measurement');
-  const notPossible = getValues('notPossible');
+  const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
+  const timeofmeas = watch('timeofmeas');
+  const measurement = watch('measurement');
+  const notPossible = watch('notPossible');
   const {data: timeseries} = useTimeseriesData();
   const isWaterLevel = timeseries?.tstype_id === 1;
-  const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
 
   const {
     get: {data: mpData},
@@ -54,13 +51,12 @@ const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProp
 
       if (tstype_id) {
         if (internalCurrentMP) {
-          const dynamicDate = timeofmeas;
           const dynamicMeas = internalCurrentMP.elevation - Number(measurement);
-          setDynamic([dynamicDate, dynamicMeas]);
+          setDynamic([timeofmeas, dynamicMeas]);
           const latestmeas =
             latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
           setElevationDiff(Math.abs(dynamicMeas - latestmeas));
-          const diff = moment(dynamicDate).diff(moment(latestMeasurement?.timeofmeas), 'days');
+          const diff = moment(timeofmeas).diff(moment(latestMeasurement?.timeofmeas), 'days');
           setHide(Math.abs(diff) > 1);
         } else {
           setDynamic([]);
@@ -68,48 +64,25 @@ const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProp
         }
       }
     } else if (tstype_id !== 1) {
-      const dynamicDate = timeofmeas;
       const dynamicMeas = Number(measurement);
-      setDynamic([dynamicDate, dynamicMeas]);
+      setDynamic([timeofmeas, dynamicMeas]);
       const latestmeas =
         latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
       setElevationDiff(Math.abs(dynamicMeas - latestmeas));
     }
   }, [mpData, measurement, timeofmeas, tstype_id]);
 
-  const handleDateChange = () => {
-    if (isWaterLevel && mpData !== undefined) {
-      const mp = mpData.filter((elem) => {
-        if (
-          moment(timeofmeas).isSameOrAfter(elem.startdate) &&
-          moment(timeofmeas).isBefore(elem.enddate)
-        ) {
-          return true;
-        }
-      });
-      if (mp.length > 0) {
-        setCurrentMP(mp[0]);
-        clearErrors('timeofmeas');
-      } else {
-        setError('timeofmeas', {
-          type: 'outOfRange',
-          message: 'Tidspunkt er uden for et målepunkt',
-        });
-      }
-    }
-  };
-
   if (isWaterLevel && mpData !== undefined && mpData.length < 1)
     return <CompoundPejling.MPAlert openAddMP={openAddMP} />;
 
   return (
     <div>
-      <CompoundPejling.NotPossible onChangeCallback={() => setValue('measurement', null)} />
+      <CompoundPejling.NotPossible />
       <br />
       <CompoundPejling.Measurement
         sx={{maxWidth: 400}}
         rules={{required: !notPossible}}
-        disabled={notPossible || (isWaterLevel && currentMP == null)}
+        disabled={notPossible || (isWaterLevel && pejlingOutOfRange)}
       />
 
       {isWaterLevel && !notPossible && (
@@ -125,7 +98,8 @@ const PejlingForm = ({setDynamic, latestMeasurement, openAddMP}: PejlingFormProp
         />
       )}
 
-      <CompoundPejling.TimeOfMeas sx={{maxWidth: 400}} onChangeCallback={handleDateChange} />
+      <CompoundPejling.TimeOfMeas sx={{maxWidth: 400}} />
+      <br />
       {isWaterLevel && <CompoundPejling.Correction sx={{maxWidth: 400}} />}
       <CompoundPejling.Comment sx={{maxWidth: 800}} />
     </div>

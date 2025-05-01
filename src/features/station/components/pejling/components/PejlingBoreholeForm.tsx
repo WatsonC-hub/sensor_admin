@@ -1,39 +1,55 @@
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {useFormContext} from 'react-hook-form';
-import {Maalepunkt} from '~/types';
+import {LatestMeasurement, Maalepunkt} from '~/types';
 import {PejlingBoreholeItem} from '../PejlingSchema';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
-import {Alert, Typography, Grid2} from '@mui/material';
+import {Grid2} from '@mui/material';
 import CompoundPejling from '../CompoundPejling';
 import {useAtomValue} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
+import {get} from 'lodash';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import WaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 
 type PejlingBoreholeFormProps = {
+  setDynamic: (dynamic: Array<string | number> | undefined) => void;
+  latestMeasurement: LatestMeasurement | undefined;
   openAddMP: () => void;
 };
 
-const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
+const PejlingBoreholeForm = ({
+  setDynamic,
+  latestMeasurement,
+  openAddMP,
+}: PejlingBoreholeFormProps) => {
   const isPump = useAtomValue(boreholeIsPumpAtom);
-  const {getValues, setValue, setError, clearErrors} = useFormContext<PejlingBoreholeItem>();
+  const {
+    watch,
+    formState: {errors},
+  } = useFormContext<PejlingBoreholeItem>();
 
-  const timeofmeas = getValues('timeofmeas');
-  const notPossible = getValues('notPossible');
-  const service = getValues('service');
+  const timeofmeas = watch('timeofmeas');
+  const measurement = watch('measurement');
+  const notPossible = watch('notPossible');
+  const service = watch('service');
 
-  const [pejlingOutOfRange, setPejlingOutOfRange] = useState(false);
-  const [currentMP, setCurrentMP] = useState<{elevation: number | null; mp_description: string}>({
-    elevation: null,
-    mp_description: '',
-  });
+  const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
+
+  const {data: timeseries} = useTimeseriesData();
+  const isWaterLevel = timeseries?.tstype_id === 1;
+  const tstype_id = timeseries?.tstype_id;
+  const [elevationDiff, setElevationDiff] = React.useState<number>(0);
+  const [hide, setHide] = React.useState<boolean>(false);
+  const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
 
   const {
     get: {data: mpData},
   } = useMaalepunkt();
 
   useEffect(() => {
-    if (mpData && mpData.length > 0) {
-      const mp: Array<Maalepunkt> = mpData.filter((elem) => {
+    if (mpData !== undefined && mpData.length > 0) {
+      const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
         if (
           moment(timeofmeas).isSameOrAfter(elem.startdate) &&
           moment(timeofmeas).isBefore(elem.enddate)
@@ -41,34 +57,32 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
           return true;
         }
       });
-      console.log('mp', mp);
-      if (mp.length > 0) {
-        setPejlingOutOfRange(false);
-        setCurrentMP({elevation: mp?.[0].elevation, mp_description: mp?.[0].mp_description});
-      } else {
-        setPejlingOutOfRange(true);
-      }
-    }
-  }, [mpData]);
+      const internalCurrentMP = mp.length > 0 ? mp[0] : null;
+      setCurrentMP(internalCurrentMP);
 
-  const handleDateChange = (date: string) => {
-    const mp = mpData?.filter((elem) => {
-      if (moment(date).isSameOrAfter(elem.startdate) && moment(date).isBefore(elem.enddate)) {
-        return true;
+      if (tstype_id) {
+        if (internalCurrentMP) {
+          const dynamicMeas = internalCurrentMP.elevation - Number(measurement);
+          setDynamic([timeofmeas, dynamicMeas]);
+          const latestmeas =
+            latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
+          setElevationDiff(Math.abs(dynamicMeas - latestmeas));
+          const diff = moment(timeofmeas).diff(moment(latestMeasurement?.timeofmeas), 'days');
+          setHide(Math.abs(diff) > 1);
+        } else {
+          setDynamic([]);
+          setHide(true);
+        }
       }
-    });
-
-    console.log('mp', mp);
-    if (mp && mp.length > 0) {
-      clearErrors('timeofmeas');
-      setPejlingOutOfRange(false);
-      setCurrentMP(mp[0]);
-    } else {
-      console.log('currentMP', currentMP);
-      setError('timeofmeas', {type: 'outOfRange', message: 'Tidspunkt er uden for et målepunkt'});
-      setPejlingOutOfRange(true);
+    } else if (tstype_id !== 1) {
+      const dynamicDate = timeofmeas;
+      const dynamicMeas = Number(measurement);
+      setDynamic([dynamicDate, dynamicMeas]);
+      const latestmeas =
+        latestMeasurement && latestMeasurement?.measurement ? latestMeasurement.measurement : 0;
+      setElevationDiff(Math.abs(dynamicMeas - latestmeas));
     }
-  };
+  }, [mpData, measurement, timeofmeas, tstype_id]);
 
   if (mpData && mpData.length === 0) {
     return (
@@ -98,46 +112,36 @@ const PejlingBoreholeForm = ({openAddMP}: PejlingBoreholeFormProps) => {
           alignContent={'center'}
           justifyContent={'center'}
         >
-          <CompoundPejling.NotPossible
-            onChangeCallback={() => setValue('disttowatertable_m', null)}
-          />
+          <CompoundPejling.NotPossible />
           <CompoundPejling.IsPump />
         </Grid2>
         {notPossible && <CompoundPejling.Extrema />}
 
         <Grid2 size={12} maxWidth={400}>
-          <CompoundPejling.DistToWaterTable
+          <CompoundPejling.Measurement
             required={!notPossible}
             disabled={
-              notPossible || currentMP.elevation === undefined || currentMP.elevation === null
+              notPossible || currentMP?.elevation === undefined || currentMP?.elevation === null
             }
           />
-          <Alert
-            severity="info"
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Typography variant="body2">
-              Målepunkt:{' '}
-              {currentMP.mp_description ? currentMP.mp_description : ' Ingen beskrivelse'}
-            </Typography>
-            <Typography variant="body2">
-              Kote: {pejlingOutOfRange ? '' : `${currentMP.elevation} m`}
-            </Typography>
-          </Alert>
+
+          {isWaterLevel && !notPossible && (
+            <WaterlevelAlert
+              koteTitle={
+                pejlingOutOfRange || currentMP == null ? '' : currentMP?.elevation.toString()
+              }
+              MPTitle={currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
+              elevationDiff={elevationDiff}
+              latestMeasurementSeverity={elevationDiff && elevationDiff > 0.03 ? 'warning' : 'info'}
+              hide={hide}
+              pejlingOutOfRange={pejlingOutOfRange || !currentMP}
+            />
+          )}
         </Grid2>
         <Grid2 container spacing={1} size={12} mb={2} display={'flex'} flexDirection={'row'}>
           <CompoundPejling.TimeOfMeas
             sx={{mb: 0, maxWidth: isPump ? 200 : undefined}}
             label="Tidspunkt for pejling"
-            onChangeCallback={(e) =>
-              handleDateChange(
-                (e as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>).target.value
-              )
-            }
           />
           {isPump && (
             <>

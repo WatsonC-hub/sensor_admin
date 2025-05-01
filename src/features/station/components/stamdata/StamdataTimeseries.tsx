@@ -93,7 +93,7 @@ const Intakeno = (
   return (
     <FormInput<BoreholeAddTimeseries | BoreholeEditTimeseries>
       name="intakeno"
-      label="Intagnummer"
+      label="Indtag"
       select
       required
       disabled={props.disabled}

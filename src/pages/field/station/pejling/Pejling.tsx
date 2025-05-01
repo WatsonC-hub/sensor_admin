@@ -19,7 +19,6 @@ import {
 } from '~/features/station/components/pejling/PejlingSchema';
 import {PejlingItem as PejlingWithId, LatestMeasurement} from '~/types';
 import PlotGraph from '~/features/station/components/StationGraph';
-import BoreholeGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -30,11 +29,10 @@ import {
 } from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {useBoreholePejling} from '~/features/pejling/api/useBoreholePejling';
 import {Kontrol} from '../../boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import {boreholeInitialData, initialData} from '~/features/pejling/const';
+import {initialData} from '~/features/pejling/const';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -47,13 +45,6 @@ const Pejling = () => {
   const [pageToShow, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
   const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
-  const boreholeno = timeseries_data?.boreholeno;
-  const intakeno = timeseries_data?.intakeno;
-  const {
-    post: postBorehole,
-    put: putBorehole,
-    del: delBorehole,
-  } = useBoreholePejling(boreholeno, intakeno);
 
   const {
     feature_permission_query: {data: permissions},
@@ -80,71 +71,38 @@ const Pejling = () => {
     },
     staleTime: 10,
     enabled:
-      ts_id !== undefined && ts_id !== null && ts_id !== -1 && timeseries_data?.loctype_id !== 9,
+      ts_id !== undefined &&
+      ts_id !== null &&
+      ts_id !== -1 &&
+      timeseries_data &&
+      timeseries_data.loctype_id !== 9,
   });
 
   const handlePejlingSubmit = (values: PejlingItem | PejlingBoreholeItem) => {
-    if (timeseries_data?.loctype_id !== 9) {
-      const pejling = values as PejlingItem;
-      const payload = {
-        path: `${ts_id}`,
-        data: {
-          measurement: pejling.measurement,
-          timeofmeas: moment(pejling.timeofmeas).toISOString(),
-          comment: pejling.comment,
-          useforcorrection: pejling.useforcorrection,
-        },
-      };
+    const payload = {
+      path: `${ts_id}`,
+      data: {
+        ...values,
+        timeofmeas: moment(values.timeofmeas).toISOString(),
+      },
+    };
 
-      if (mode === 'Add') {
-        postPejling.mutate(payload, {
-          onSuccess: () => {
-            reset();
-            setDynamic([]);
-            setShowForm(null);
-          },
-        });
-      } else {
-        payload.path = gid === -1 ? `${ts_id}` : `${ts_id}/${gid}`;
-        putPejling.mutate(payload, {
-          onSuccess: () => {
-            reset(initialData);
-          },
-        });
-      }
+    if (mode === 'Add') {
+      postPejling.mutate(payload, {
+        onSuccess: () => {
+          reset();
+          setDynamic([]);
+          setShowForm(null);
+        },
+      });
     } else {
-      const borehole = values as PejlingBoreholeItem;
-      const payload = {
-        path: `${boreholeno}/${intakeno}`,
-        data: {
-          disttowatertable_m: borehole.disttowatertable_m,
-          timeofmeas: moment(borehole.timeofmeas).toISOString(),
-          comment: borehole.comment,
-          useforcorrection: borehole.useforcorrection,
-          service: borehole.service,
-          pumpstop: borehole.pumpstop,
-          extrema: borehole.extrema,
+      payload.path = gid === -1 ? `${ts_id}` : `${ts_id}/${gid}`;
+      putPejling.mutate(payload, {
+        onSuccess: () => {
+          reset(initialData);
+          setIsPump(false);
         },
-      };
-
-      if (mode === 'Add') {
-        postBorehole.mutate(payload, {
-          onSuccess: () => {
-            reset();
-            setDynamic([]);
-            setShowForm(null);
-            setIsPump(false);
-          },
-        });
-      } else {
-        payload.path = `${gid}`;
-        putBorehole.mutate(payload, {
-          onSuccess: () => {
-            reset(boreholeInitialData);
-            setIsPump(false);
-          },
-        });
-      }
+      });
     }
   };
 
@@ -157,13 +115,8 @@ const Pejling = () => {
   };
 
   const handleDelete = (gid: number | undefined) => {
-    if (timeseries_data?.loctype_id !== 9) {
-      const payload = {path: `${ts_id}/${gid}`};
-      delPejling.mutate(payload);
-    } else {
-      const payload = {path: `${gid}`};
-      delBorehole.mutate(payload);
-    }
+    const payload = {path: `${ts_id}/${gid}`};
+    delPejling.mutate(payload);
   };
 
   const openAddMP = () => {
@@ -180,18 +133,12 @@ const Pejling = () => {
   return (
     <>
       <Box>
-        {timeseries_data?.loctype_id !== 9 ? (
-          <PlotGraph
-            key={'pejling' + ts_id}
-            dynamicMeasurement={
-              pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
-            }
-          />
-        ) : (
-          <BoreholeGraph
-            dynamicMeasurement={pageToShow === 'pejling' && showForm ? dynamic : undefined}
-          />
-        )}
+        <PlotGraph
+          key={'pejling' + ts_id}
+          dynamicMeasurement={
+            pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
+          }
+        />
       </Box>
       <Divider />
       <StationPageBoxLayout>

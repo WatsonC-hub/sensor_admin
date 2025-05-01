@@ -9,7 +9,6 @@ import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
 import {useUser} from '~/features/auth/useUser';
-import {useBoreholePejling} from '~/features/pejling/api/useBoreholePejling';
 import {
   calculatePumpstop,
   convertDate,
@@ -18,31 +17,26 @@ import {
 } from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
-import {useLocationData} from '~/hooks/query/useMetadata';
-import {useQueryTable} from '~/hooks/useTable';
-import {useAppContext} from '~/state/contexts';
+import {useTable} from '~/hooks/useTable';
 import {Kontrol} from '~/types';
 
 interface Props {
+  data: Kontrol[];
   handleEdit: (kontrol: Kontrol) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 
 export default function PejlingMeasurementsTableMobile({
+  data,
   handleEdit,
   handleDelete,
   disabled,
 }: Props) {
-  const {ts_id} = useAppContext(['ts_id']);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const unit = ' m';
   const user = useUser();
-  const {data: location} = useLocationData();
-  const boreholeno = location?.boreholeno;
-  const intakeno = location?.timeseries.find((ts) => ts.ts_id === ts_id)?.intakeno;
-  const {get} = useBoreholePejling(boreholeno, intakeno);
 
   const onDeleteBtnClick = (id: number) => {
     setMpId(id);
@@ -153,7 +147,7 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useQueryTable<Kontrol>(columns, get, options, undefined, TableTypes.LIST);
+  const table = useTable<Kontrol>(columns, data, options, undefined, TableTypes.LIST);
 
   return (
     <Box>
