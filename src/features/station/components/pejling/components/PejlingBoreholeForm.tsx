@@ -132,7 +132,9 @@ const PejlingBoreholeForm = ({
               }
               MPTitle={currentMP ? currentMP.mp_description : ' Ingen beskrivelse'}
               elevationDiff={elevationDiff}
-              latestMeasurementSeverity={elevationDiff && elevationDiff > 0.03 ? 'warning' : 'info'}
+              latestMeasurementSeverity={
+                (elevationDiff && elevationDiff > 0.03) || !latestMeasurement ? 'warning' : 'info'
+              }
               hide={hide}
               pejlingOutOfRange={pejlingOutOfRange || !currentMP}
             />

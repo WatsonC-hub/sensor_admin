@@ -18,10 +18,11 @@ import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import moment from 'moment';
 
 type PejlingFormProps = {
-  loctype_id?: number;
+  loctype_id: number | undefined;
+  tstype_id: number | undefined;
 };
 
-const getSchemaAndForm = (loctype_id: number) => {
+const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
   const {isMobile} = useBreakpoints();
   let selectedSchema: ZodType<Record<string, any>> = z.object({});
   let selectedForm = PejlingForm;
@@ -29,9 +30,16 @@ const getSchemaAndForm = (loctype_id: number) => {
 
   switch (true) {
     case loctype_id === 9:
-      selectedSchema = pejlingBoreholeSchema;
-      selectedForm = PejlingBoreholeForm;
-      selectedTable = isMobile ? PejlingBoreholeTableMobile : PejlingBoreholeTableDesktop;
+      selectedSchema = tstype_id !== -1 && tstype_id === 1 ? pejlingBoreholeSchema : pejlingSchema;
+      selectedForm = tstype_id !== -1 && tstype_id === 1 ? PejlingBoreholeForm : PejlingForm;
+      selectedTable =
+        tstype_id !== -1 && tstype_id === 1
+          ? isMobile
+            ? PejlingBoreholeTableMobile
+            : PejlingBoreholeTableDesktop
+          : isMobile
+            ? PejlingMeasurementsTableMobile
+            : PejlingMeasurementsTableDesktop;
       break;
     default:
       selectedSchema = pejlingSchema;
@@ -41,14 +49,14 @@ const getSchemaAndForm = (loctype_id: number) => {
   return [selectedSchema, selectedForm, selectedTable] as const;
 };
 
-const usePejlingForm = ({loctype_id = -1}: PejlingFormProps) => {
-  const [schema, form, table] = getSchemaAndForm(loctype_id);
+const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
+  const [schema, form, table] = getSchemaAndForm(loctype_id, tstype_id);
 
   const {
     get: {data: mpData},
   } = useMaalepunkt();
 
-  const data = loctype_id === 9 ? boreholeInitialData : initialData;
+  const data = loctype_id === 9 ? boreholeInitialData() : initialData();
 
   const {data: parsedData} = schema.safeParse({...data});
 
@@ -60,7 +68,6 @@ const usePejlingForm = ({loctype_id = -1}: PejlingFormProps) => {
 
       const parsed = schema.safeParse(values);
 
-      console.log(parsed);
       if (values.notPossible) {
         values.measurement = null;
       }
@@ -83,7 +90,7 @@ const usePejlingForm = ({loctype_id = -1}: PejlingFormProps) => {
         }
       });
 
-      if (mpData && mp && mp.length === 0) {
+      if (mpData && mp && mp.length === 0 && tstype_id === 1) {
         errors.timeofmeas = {
           type: 'outOfRange',
           message: 'Tidspunkt er uden for et målepunkt',

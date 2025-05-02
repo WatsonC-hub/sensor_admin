@@ -15,6 +15,7 @@ const BoreholeLocationForm = ({size, loc_id}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} />
       </Grid2>
+      <Grid2 size={size}></Grid2>
       <Grid2 size={size}>
         <StamdataLocation.Boreholeno disabled={disabled} />
       </Grid2>
@@ -22,10 +23,10 @@ const BoreholeLocationForm = ({size, loc_id}: Props) => {
         <StamdataLocation.BoreholeSuffix disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.InitialProjectNo disabled={disabled} />
+        <StamdataLocation.Groups disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.Groups disabled={disabled} />
+        <StamdataLocation.InitialProjectNo disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
         <StamdataLocation.X disabled={disabled} />

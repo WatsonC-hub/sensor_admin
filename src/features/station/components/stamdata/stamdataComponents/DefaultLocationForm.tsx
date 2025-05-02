@@ -15,14 +15,16 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} />
       </Grid2>
+      <Grid2 size={size}></Grid2>
       <Grid2 size={size}>
         <StamdataLocation.Locname disabled={disabled} />
       </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.InitialProjectNo disabled={disabled} />
-      </Grid2>
+      <Grid2 size={size}></Grid2>
       <Grid2 size={size}>
         <StamdataLocation.Groups disabled={disabled} />
+      </Grid2>
+      <Grid2 size={size}>
+        <StamdataLocation.InitialProjectNo disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
         <StamdataLocation.X disabled={disabled} />

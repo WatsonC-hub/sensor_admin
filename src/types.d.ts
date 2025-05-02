@@ -175,7 +175,8 @@ export type PejlingItem = {
 };
 
 export type boreholePejlingItem = PejlingItem & {
-  pumpstop?: string | null;
+  pumpstop?: string;
+  service?: boolean;
 };
 
 export type controlData = {

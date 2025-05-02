@@ -53,6 +53,7 @@ const Pejling = () => {
 
   const [formMethods, PejlingForm, Table] = usePejlingForm({
     loctype_id: timeseries_data?.loctype_id,
+    tstype_id: timeseries_data?.tstype_id,
   });
   const {reset} = formMethods;
 
@@ -101,6 +102,7 @@ const Pejling = () => {
         onSuccess: () => {
           reset(initialData);
           setIsPump(false);
+          setShowForm(null);
         },
       });
     }
@@ -126,6 +128,7 @@ const Pejling = () => {
   };
 
   useEffect(() => {
+    console.log('showForm', showForm);
     setShowForm(null);
     setDynamic([]);
   }, [ts_id]);

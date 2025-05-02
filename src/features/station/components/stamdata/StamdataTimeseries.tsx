@@ -3,7 +3,12 @@ import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {BoreholeAddTimeseries, BoreholeEditTimeseries, DynamicSchemaType} from '../../schema';
+import {
+  BoreholeAddTimeseries,
+  BoreholeEditTimeseries,
+  DefaultAddTimeseries,
+  DefaultEditTimeseries,
+} from '../../schema';
 import FormTextField from '~/components/FormTextField';
 
 type Props = {
@@ -23,7 +28,9 @@ const StamdataTimeseries = ({children, boreholeno}: Props) => {
   return <TimeseriesContext.Provider value={{boreholeno}}>{children}</TimeseriesContext.Provider>;
 };
 
-const TypeSelect = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
+const TypeSelect = (
+  props: Omit<FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>, 'name'>
+) => {
   const {data: timeseries_types} = useQuery({
     queryKey: ['timeseries_types'],
     queryFn: async () => {
@@ -100,7 +107,7 @@ const Intakeno = (
       fullWidth
       {...props}
     >
-      <MenuItem value={-1}>Vælg intag</MenuItem>
+      <MenuItem value={-1}>Vælg indtag</MenuItem>
       {intake_list?.map((item) => (
         <MenuItem value={item.intakeno} key={item.intakeno}>
           {item.intakeno}
@@ -111,7 +118,9 @@ const Intakeno = (
 };
 
 const Prefix = (
-  props: Omit<FormInputProps<DynamicSchemaType>, 'name'> & {loc_name: string | undefined}
+  props: Omit<FormInputProps<DefaultAddTimeseries | DefaultEditTimeseries>, 'name'> & {
+    loc_name: string | undefined;
+  }
 ) => {
   // const {loc_name} = React.useContext(TimeseriesContext);
   const loc_name = props.loc_name;
@@ -133,7 +142,14 @@ const Prefix = (
   );
 };
 
-const SensorDepth = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
+const SensorDepth = (
+  props: Omit<
+    FormInputProps<
+      DefaultAddTimeseries | DefaultEditTimeseries | BoreholeAddTimeseries | BoreholeEditTimeseries
+    >,
+    'name'
+  >
+) => {
   return (
     <FormInput
       type="number"

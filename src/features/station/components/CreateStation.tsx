@@ -29,11 +29,12 @@ import StamdataWatlevmp from './stamdata/StamdataWatlevmp';
 import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpForm';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {toast} from 'react-toastify';
+import {ArrowBack, ArrowRight, Save} from '@mui/icons-material';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
-  const {location: locationNavigate, station: stationNavigate, field} = useNavigationFunctions();
+  const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   let {state} = useLocation();
   const [activeStep, setActiveStep] = React.useState(
     state === undefined ? 0 : state.loc_id ? 1 : 0
@@ -44,9 +45,9 @@ const CreateStation = () => {
   const loc_id = state?.loc_id ?? undefined;
 
   const defaultValues = {
-    loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
     ...state,
-  };
+    loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
+  } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
   const [locationFormMethods, LocationForm] = useLocationForm({
     mode: 'Add',
@@ -117,33 +118,15 @@ const CreateStation = () => {
     clearErrors: clearWatlevmpErrors,
   } = watlevmpFormMethods;
 
-  const stamdataNewMutation = useMutation({
-    mutationFn: async (data: {
-      location: DefaultAddLocation | BoreholeAddLocation;
-      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
-      unit: AddUnit;
-      watlevmp?: Watlevmp;
-    }) => {
-      const {data: out} = await apiClient.post(`/sensor_field/stamdata/${loc_id ?? -1}`, data);
-      return out;
+  const stamdataNewLocationMutation = useMutation({
+    mutationFn: async (location: DefaultAddLocation | BoreholeAddLocation) => {
+      const response = await apiClient.post(`/sensor_field/stamdata/create_location`, location);
+      console.log('response', response);
+      return response.data;
     },
     onSuccess: (data) => {
       toast.success('Lokation oprettet');
       locationNavigate(data.loc_id);
-    },
-  });
-
-  const stamdataNewLocationMutation = useMutation({
-    mutationFn: async (data: {location: DefaultAddLocation | BoreholeAddLocation}) => {
-      const {data: out} = await apiClient.post(
-        `/sensor_field/stamdata/create_location`,
-        data.location
-      );
-      return out;
-    },
-    onSuccess: (data) => {
-      toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-      stationNavigate(data.loc_id, data.ts_id);
     },
   });
 
@@ -160,9 +143,26 @@ const CreateStation = () => {
       return out;
     },
     onSuccess: (data) => {
+      toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
+      stationNavigate(data.loc_id, data.ts_id);
+    },
+  });
+
+  const stamdataNewMutation = useMutation({
+    mutationFn: async (data: {
+      location: DefaultAddLocation | BoreholeAddLocation;
+      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
+      unit: AddUnit;
+      watlevmp?: Watlevmp;
+    }) => {
+      const {data: out} = await apiClient.post(`/sensor_field/stamdata/${loc_id ?? -1}`, data);
+      return out;
+    },
+    onSuccess: (data) => {
       toast.success(
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
+
       stationNavigate(data.loc_id, data.ts_id);
     },
   });
@@ -176,7 +176,6 @@ const CreateStation = () => {
     const timeseriesData = getTimeseriesValues();
     const unitData = getUnitValues();
     const watlevmpData = getWatlevmpValues();
-
     const isWaterLevel = timeseriesData.tstype_id === 1;
 
     const isWatlevmpValid = isWaterLevel
@@ -188,11 +187,7 @@ const CreateStation = () => {
     let form;
 
     if (isLocationValid && isLocationDirty && !isTimeseriesDirty && !isUnitDirty) {
-      form = {
-        location: locationData,
-      } as {location: DefaultAddLocation | BoreholeAddLocation};
-
-      stamdataNewLocationMutation.mutate(form);
+      stamdataNewLocationMutation.mutate(locationData);
     }
 
     if (isLocationValid && isTimeseriesValid && isTimeseriesDirty && !isUnitDirty) {
@@ -215,7 +210,7 @@ const CreateStation = () => {
           timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
         };
       }
-
+      console.log('form', form);
       stamdataNewTimeseriesMutation.mutate(form);
     }
 
@@ -232,28 +227,29 @@ const CreateStation = () => {
         unit: AddUnit;
       };
 
+      console.log('form', form);
+
       stamdataNewMutation.mutate(form);
     }
   };
 
   const denyStepping = () => {
     if (activeStep === 0) {
-      return Object.keys(locationErrors).length > 0;
+      return Object.keys(locationErrors).length > 0 || loctype_id === -1;
     } else if (activeStep === 1) {
       return (
         Object.keys(timeseriesErrors).length > 0 ||
         Object.keys(watlevmpErrors).length > 0 ||
-        loctype_id === -1
+        tstype_id === -1
       );
-    } else if (activeStep === 2) {
-      return tstype_id === -1;
     }
+
     return false;
   };
 
   useEffect(() => {
     if (loctype_id !== 9 && boreholeno !== undefined) {
-      resetLocation({loctype_id});
+      resetLocation({loctype_id: loctype_id});
     }
 
     if (Object.keys(locationErrors).length > 0 && loctype_id !== -1) triggerLocation();
@@ -383,6 +379,7 @@ const CreateStation = () => {
             <Button
               bttype="primary"
               color="inherit"
+              startIcon={<ArrowBack />}
               disabled={activeStep === 0 || denyStepping()}
               onClick={() => setActiveStep(activeStep - 1)}
               sx={{mr: 1}}
@@ -392,6 +389,7 @@ const CreateStation = () => {
             <Button
               bttype="primary"
               disabled={activeStep === 2 || denyStepping()}
+              startIcon={<ArrowRight />}
               onClick={async () => {
                 let valid = true;
                 if (activeStep === 0) valid = await triggerLocation();
@@ -409,20 +407,9 @@ const CreateStation = () => {
               Næste
             </Button>
             <Button
-              bttype="tertiary"
-              onClick={() => {
-                if (loc_id !== undefined) {
-                  stationNavigate(state.loc_id, state.ts_id);
-                } else field();
-              }}
-            >
-              Annuller
-            </Button>
-            <Button
               bttype="primary"
-              onClick={() => {
-                handleSubmit();
-              }}
+              startIcon={<Save />}
+              onClick={handleSubmit}
               disabled={loctype_id === -1}
             >
               Gem & afslut

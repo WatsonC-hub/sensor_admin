@@ -1,4 +1,5 @@
-import {Box} from '@mui/material';
+import {Typography, Box} from '@mui/material';
+
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
@@ -6,7 +7,11 @@ import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {correction_map, setTableBoxStyle} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
-import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {
+  calculatePumpstop,
+  convertDateWithTimeStamp,
+  limitDecimalNumbers,
+} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -46,9 +51,17 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
         size: 150,
       },
       {
-        accessorFn: (row) => convertDateWithTimeStamp(row.pumpstop ?? null),
+        accessorKey: 'pumpstop',
         header: 'Pumpestop',
-        size: 150,
+        Cell: ({row}) => (
+          <Typography variant="body2">
+            {calculatePumpstop(
+              row.original.timeofmeas,
+              row.original.pumpstop,
+              row.original.service
+            )}
+          </Typography>
+        ),
       },
       {
         accessorFn: (row) => limitDecimalNumbers(row.measurement),

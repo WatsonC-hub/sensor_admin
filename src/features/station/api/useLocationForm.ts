@@ -68,7 +68,7 @@ const useLocationForm = ({
 
   const [schema, form] = getSchemaAndForm(loctype_id, mode);
 
-  const {data: defaultValuesData} = schema.safeParse({
+  const {data: defaultValuesData, success} = schema.safeParse({
     ...defaultValues,
   });
 
@@ -76,7 +76,7 @@ const useLocationForm = ({
     DefaultAddLocation | BoreholeAddLocation | DefaultEditLocation | BoreholeEditLocation
   >({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues?.loctype_id !== -1 ? defaultValuesData : defaultValues,
+    defaultValues: success ? defaultValuesData : defaultValues,
     mode: 'onTouched',
     context: context,
   });

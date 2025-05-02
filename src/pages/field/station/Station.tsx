@@ -33,7 +33,7 @@ import EditTimeseries from './stamdata/EditTimeseries';
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
-  const [showForm] = useShowFormState();
+  const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const user = useUser();
 
@@ -49,7 +49,8 @@ export default function Station() {
         pageToShow === 'algoritmer')
     )
       setPageToShow('pejling');
-  }, [ts_id, showForm]);
+    setShowForm(null);
+  }, [ts_id, pageToShow]);
 
   return (
     <Layout>
