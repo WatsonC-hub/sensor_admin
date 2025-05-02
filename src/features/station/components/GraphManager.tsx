@@ -115,7 +115,7 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
   });
 
   const xControl = controlData?.map((d) => d.timeofmeas);
-  const yControl = controlData?.map((d) => d.measurement);
+  const yControl = controlData?.map((d) => d.referenced_measurement);
   const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
 
   const [shapes, annotations] = useMemo(() => {
@@ -142,7 +142,6 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
                 line: {
                   width: 0,
                 },
-                layer: 'below',
               };
             }) ?? []),
           ];
@@ -352,6 +351,16 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
           },
         ]
       : []),
+    {
+      x: dynamicMeasurement ? [dynamicMeasurement?.[0]] : [],
+      y: dynamicMeasurement ? [dynamicMeasurement?.[1]] : [],
+      name: '',
+      uid: 'dynamic',
+      type: 'scatter',
+      mode: 'markers',
+      showlegend: false,
+      marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    },
   ];
 
   const handlePlotlySelected = (eventData: any) => {
@@ -386,7 +395,6 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
   const handleRelayout = (e: any) => {
     if (pagetoShow === 'algoritmer' || pagetoShow === 'justeringer') {
       if (e['selections'] && e['selections'].length === 0) {
-        console.log(e);
         setSelection({});
       }
 
@@ -444,6 +452,7 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
       style={{
         height: setGraphHeight(isMobile),
       }}
+      my={1}
     >
       <PlotlyGraph
         layout={layout}
