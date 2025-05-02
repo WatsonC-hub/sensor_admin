@@ -207,7 +207,7 @@ export default function PlotlyGraph({
           </Button>
         </Box>
         <Box alignContent={'center'} mr={isTouch ? 1 : 5}>
-          <Box display={'flex'} flexWrap={'wrap'} justifyContent={'center'}>
+          <Box display={'flex'} flexWrap={'wrap'} justifyContent={'end'}>
             <Button
               bttype="link"
               size="small"
