@@ -8,8 +8,8 @@ import {useUser} from '~/features/auth/useUser';
 import useLocationProject, {Project} from '../../api/useLocationProject';
 
 interface LocationProjectsProps {
-  value: string | null;
-  setValue: (value: string | null) => void;
+  value: string | undefined;
+  setValue: (value: string | undefined) => void;
   onBlur: Noop;
   error: FieldError | undefined;
   disable?: boolean;
@@ -33,10 +33,15 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
     <>
       {disable == false && (
         <Autocomplete
+          sx={{
+            marginTop: '8px',
+            marginBottom: '4px',
+            pb: 1.5,
+          }}
           forcePopupIcon={false}
           value={selectedValue}
           onChange={(event, newValue) => {
-            setValue(newValue ? newValue.project_no : null);
+            setValue(newValue ? newValue.project_no : undefined);
           }}
           id="tags-standard"
           options={options ?? []}
@@ -94,10 +99,13 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
           }}
           variant="outlined"
           label="Projektnummer"
+          placeholder="Vælg projektnummer..."
           value={getLabel(selectedValue)}
           disabled
           sx={{
-            pb: 0,
+            marginTop: '8px',
+            marginBottom: '4px',
+            pb: 1.5,
             '& .MuiInputBase-input.Mui-disabled': {WebkitTextFillColor: '#000000'},
             '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
             '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label

@@ -116,7 +116,7 @@ const LocationGroups = ({
         });
       }}
       renderOption={(props, option) => (
-        <li {...props}>
+        <li {...props} key={option.id}>
           <Typography display="inline" variant="body2" color="grey.400">
             {option.id === '' && 'Opret - '}
           </Typography>

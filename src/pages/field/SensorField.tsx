@@ -17,6 +17,7 @@ import CreateStamdataProvider from '~/state/CreateStamdataProvider';
 import StationRouterProvider from '~/state/StationRouterProvider';
 
 import Station from './station/Station';
+import CreateStation from '~/features/station/components/CreateStation';
 
 function SensorField() {
   const [open, setOpen] = useAtom(captureDialogAtom);
@@ -97,7 +98,8 @@ function SensorField() {
           path="stamdata"
           element={
             <CreateStamdataProvider>
-              <OpretStamdata />
+              <CreateStation />
+              {/* <OpretStamdata /> */}
             </CreateStamdataProvider>
           }
         />

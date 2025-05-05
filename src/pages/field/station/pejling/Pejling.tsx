@@ -1,18 +1,24 @@
 import {AddCircle} from '@mui/icons-material';
-import {Box, Divider} from '@mui/material';
+import {Card, Box, Divider, Typography} from '@mui/material';
+
 import {useQuery} from '@tanstack/react-query';
 import moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {FormProvider, useForm} from 'react-hook-form';
+import {FormProvider} from 'react-hook-form';
 
 import {apiClient} from '~/apiClient';
 import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
-import PejlingForm from '~/features/pejling/components/PejlingForm';
-import PejlingMeasurements from '~/features/pejling/components/PejlingMeasurements';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import GraphManager from '~/features/station/components/GraphManager';
+import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
+import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
+import {
+  PejlingBoreholeItem,
+  PejlingItem,
+} from '~/features/station/components/pejling/PejlingSchema';
+import {PejlingItem as PejlingWithId, LatestMeasurement} from '~/types';
 import PlotGraph from '~/features/station/components/StationGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
@@ -24,13 +30,18 @@ import {
 } from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {LatestMeasurement, PejlingItem} from '~/types';
+import {Kontrol} from '../../boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
+import {useSetAtom} from 'jotai';
+import {boreholeIsPumpAtom} from '~/state/atoms';
+import {initialData} from '~/features/pejling/const';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
+  const [mode, setMode] = useState<'Add' | 'Edit'>('Add');
+  const setIsPump = useSetAtom(boreholeIsPumpAtom);
+  const [gid, setGid] = useState<number>(-1);
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
   const {data: timeseries_data} = useTimeseriesData();
-  const isWaterlevel = timeseries_data?.tstype_id === 1;
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
@@ -41,17 +52,11 @@ const Pejling = () => {
     location_permissions,
   } = usePermissions(loc_id);
 
-  const initialData = {
-    gid: -1,
-    timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
-    measurement: 0,
-    useforcorrection: 0,
-    comment: '',
-  };
-
-  const formMethods = useForm<PejlingItem>({defaultValues: initialData});
-
-  const {reset, getValues} = formMethods;
+  const [formMethods, PejlingForm, Table] = usePejlingForm({
+    loctype_id: timeseries_data?.loctype_id,
+    tstype_id: timeseries_data?.tstype_id,
+  });
+  const {reset} = formMethods;
 
   const {
     data: latestMeasurement,
@@ -67,37 +72,49 @@ const Pejling = () => {
       return data;
     },
     staleTime: 10,
-    enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
+    enabled:
+      ts_id !== undefined &&
+      ts_id !== null &&
+      ts_id !== -1 &&
+      timeseries_data &&
+      timeseries_data.loctype_id !== 9,
   });
 
-  useEffect(() => {
-    if (showForm && getValues('gid') === -1) reset(initialData);
-  }, [showForm]);
-
-  useEffect(() => {
-    setShowForm(null);
-    reset(initialData);
-    setDynamic([]);
-  }, [ts_id]);
-
-  const handlePejlingSubmit = (values: PejlingItem) => {
+  const handlePejlingSubmit = (values: PejlingItem | PejlingBoreholeItem) => {
     const payload = {
-      data: {...values, isWaterlevel: isWaterlevel, stationid: ts_id},
-      path: values.gid === -1 ? `${ts_id}` : `${ts_id}/${values.gid}`,
+      path: `${ts_id}`,
+      data: {
+        ...values,
+        timeofmeas: moment(values.timeofmeas).toISOString(),
+      },
     };
-    payload.data.timeofmeas = moment(payload.data.timeofmeas).toISOString();
 
-    if (values.gid === -1) postPejling.mutate(payload);
-    else putPejling.mutate(payload);
-    setDynamic([]);
-    setShowForm(null);
-    if (values.gid !== -1) reset(initialData);
+    if (mode === 'Add') {
+      postPejling.mutate(payload, {
+        onSuccess: () => {
+          reset();
+          setDynamic([]);
+          setShowForm(null);
+        },
+      });
+    } else {
+      payload.path = gid === -1 ? `${ts_id}` : `${ts_id}/${gid}`;
+      putPejling.mutate(payload, {
+        onSuccess: () => {
+          reset(initialData);
+          setIsPump(false);
+          setShowForm(null);
+        },
+      });
+    }
   };
 
-  const handleEdit = (data: PejlingItem) => {
+  const handleEdit = (data: PejlingWithId | Kontrol) => {
     data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
     reset(data);
     setShowForm(true);
+    setMode('Edit');
+    setGid(data.gid);
   };
 
   const handleDelete = (gid: number | undefined) => {
@@ -111,10 +128,11 @@ const Pejling = () => {
     setShowForm(true);
   };
 
-  const resetFormData = () => {
-    reset(initialData);
+  useEffect(() => {
+    console.log('showForm', showForm);
     setShowForm(null);
-  };
+    setDynamic([]);
+  }, [ts_id]);
 
   return (
     <>
@@ -137,20 +155,38 @@ const Pejling = () => {
           }
         />
         <FormProvider {...formMethods}>
-          <Box display={'flex'} flexDirection={'column'} width={'100%'} alignItems={'center'}>
-            {showForm === true && (
-              <PejlingForm
-                openAddMP={openAddMP}
-                submit={handlePejlingSubmit}
-                resetFormData={resetFormData}
-                setDynamic={setDynamic}
-                latestMeasurement={latestMeasurement}
-              />
-            )}
-          </Box>
+          {showForm === true && (
+            <Card
+              sx={{
+                marginLeft: {xs: '0%'},
+                mb: 3,
+                padding: 2,
+                borderRadius: 2.5,
+                display: 'flex',
+                flexDirection: 'column',
+                textAlign: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Typography variant="h5" component="h3" sx={{mb: 2}}>
+                {mode === 'Add' ? 'Indberet kontrol' : 'Rediger kontrol'}
+              </Typography>
+              <CompoundPejling>
+                <PejlingForm
+                  openAddMP={openAddMP}
+                  setDynamic={setDynamic}
+                  latestMeasurement={latestMeasurement}
+                />
+                <Box gap={1} display={'flex'} justifyContent={'center'} mt={2}>
+                  <CompoundPejling.CancelButton />
+                  <CompoundPejling.SubmitButton submit={handlePejlingSubmit} />
+                </Box>
+              </CompoundPejling>
+            </Card>
+          )}
         </FormProvider>
         <Box display={'flex'} flexDirection={'column'}>
-          <PejlingMeasurements
+          <Table
             handleEdit={handleEdit}
             handleDelete={handleDelete}
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
@@ -161,6 +197,7 @@ const Pejling = () => {
           text="Tilføj kontrol"
           disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           onClick={() => {
+            reset(initialData);
             setShowForm(true);
           }}
           sx={{visibility: showForm === null ? 'visible' : 'hidden'}}

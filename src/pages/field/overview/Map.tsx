@@ -260,7 +260,6 @@ const Map = ({clickCallback}: MapProps) => {
           callback: () => {
             if (map) {
               setSelectLocId(element.loc_id);
-              console.log('test');
               setEditRouteLayer('create');
 
               map.pm.enableDraw('Line');

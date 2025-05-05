@@ -89,6 +89,7 @@ export type Kontrol = {
   organisationname: string;
   uploaded_status: boolean;
   display_name?: string;
+  extrema?: string | null;
 };
 
 export type BoreholeMeasurement = {
@@ -170,11 +171,12 @@ export type PejlingItem = {
   referenced_measurement: number | null;
   timeofmeas: string;
   useforcorrection: number;
-  disttowatertable_m?: number | null;
-  pumpstop?: string | null;
-  extrema?: string | null;
-  service?: boolean;
   display_name?: string;
+};
+
+export type boreholePejlingItem = PejlingItem & {
+  pumpstop?: string;
+  service?: boolean;
 };
 
 export type controlData = {

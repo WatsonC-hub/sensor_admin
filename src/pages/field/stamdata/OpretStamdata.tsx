@@ -58,6 +58,7 @@ export default function OpretStamdata() {
   state = state ?? {};
 
   const [tabValue, setTabValue] = useCreateTabState();
+
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -193,6 +194,7 @@ export default function OpretStamdata() {
     const timeseriesValid = await trigger('timeseries');
     const isWaterlevel = getValues()?.timeseries.tstype_id === 1;
     let watlevmpValid = true;
+
     if (isWaterlevel) {
       watlevmpValid = await trigger('watlevmp');
     }

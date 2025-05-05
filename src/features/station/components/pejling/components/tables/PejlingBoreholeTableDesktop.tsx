@@ -1,4 +1,5 @@
-import {Box} from '@mui/material';
+import {Typography, Box} from '@mui/material';
+
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo, useState} from 'react';
 
@@ -6,25 +7,25 @@ import DeleteAlert from '~/components/DeleteAlert';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
 import {correction_map, setTableBoxStyle} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
-import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
+import {
+  calculatePumpstop,
+  convertDateWithTimeStamp,
+  limitDecimalNumbers,
+} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {PejlingItem} from '~/types';
+import {boreholePejlingItem} from '~/types';
 
 interface Props {
-  handleEdit: (kontrol: PejlingItem) => void;
+  handleEdit: (kontrol: boreholePejlingItem) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableDesktop({
-  handleEdit,
-  handleDelete,
-  disabled,
-}: Props) {
+export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
@@ -40,7 +41,7 @@ export default function PejlingMeasurementsTableDesktop({
     setMpId(id);
     setDialogOpen(true);
   };
-  const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
+  const columns = useMemo<MRT_ColumnDef<boreholePejlingItem>[]>(
     () => [
       {
         accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
@@ -48,6 +49,19 @@ export default function PejlingMeasurementsTableDesktop({
         id: 'timeofmeas',
         header: 'Dato',
         size: 150,
+      },
+      {
+        accessorKey: 'pumpstop',
+        header: 'Pumpestop',
+        Cell: ({row}) => (
+          <Typography variant="body2">
+            {calculatePumpstop(
+              row.original.timeofmeas,
+              row.original.pumpstop,
+              row.original.service
+            )}
+          </Typography>
+        ),
       },
       {
         accessorFn: (row) => limitDecimalNumbers(row.measurement),
@@ -62,7 +76,7 @@ export default function PejlingMeasurementsTableDesktop({
               header: `Kote [m DVR90]`,
               size: 140,
             },
-          ] as MRT_ColumnDef<PejlingItem>[])
+          ] as MRT_ColumnDef<boreholePejlingItem>[])
         : []),
       {
         accessorFn: (row) =>
@@ -77,11 +91,12 @@ export default function PejlingMeasurementsTableDesktop({
     [unit, isWaterlevel]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<PejlingItem>('PejlingTableState');
+  const [tableState, reset] = useStatefullTableAtom<boreholePejlingItem>(
+    'PejlingBoreholeTableState'
+  );
 
-  const options: Partial<MRT_TableOptions<PejlingItem>> = {
+  const options: Partial<MRT_TableOptions<boreholePejlingItem>> = {
     enableRowActions: true,
-    enableFullScreenToggle: false,
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
@@ -98,7 +113,7 @@ export default function PejlingMeasurementsTableDesktop({
     },
   };
 
-  const table = useQueryTable<PejlingItem>(
+  const table = useQueryTable<boreholePejlingItem>(
     columns,
     get,
     options,

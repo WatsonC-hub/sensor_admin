@@ -20,8 +20,6 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
 import EditUnit from './stamdata/EditUnit';
-import EditTimeseries from './stamdata/EditTimeseries';
-import EditLocation from './stamdata/EditLocation';
 import ImagePage from './stamdata/ImagePage';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -31,11 +29,13 @@ import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {Fullscreen, FullscreenExit} from '@mui/icons-material';
 import GraphManager from '~/features/station/components/GraphManager';
+import EditLocation from './stamdata/EditLocation';
+import EditTimeseries from './stamdata/EditTimeseries';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
-  const [showForm] = useShowFormState();
+  const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const user = useUser();
 
@@ -51,7 +51,8 @@ export default function Station() {
         pageToShow === 'algoritmer')
     )
       setPageToShow('pejling');
-  }, [ts_id, showForm]);
+    setShowForm(null);
+  }, [ts_id, pageToShow]);
 
   return (
     <Layout>
@@ -126,6 +127,7 @@ const Layout = ({children}: LayoutProps) => {
   const setTsId = useDisplayState((state) => state.setTsId);
   const [pageToShow, setPageToShow] = useStationPages();
   const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
+
   return (
     <>
       <NavBar key={'station'} zIndex={9999}>

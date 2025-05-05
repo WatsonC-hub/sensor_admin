@@ -15,19 +15,15 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
-import {PejlingItem} from '~/types';
+import {boreholePejlingItem} from '~/types';
 
 interface Props {
-  handleEdit: (kontrol: PejlingItem) => void;
+  handleEdit: (kontrol: boreholePejlingItem) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 
-export default function PejlingMeasurementsTableMobile({
-  handleEdit,
-  handleDelete,
-  disabled,
-}: Props) {
+export default function PejlingBoreholeTableMobile({handleEdit, handleDelete, disabled}: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [mpId, setMpId] = useState(-1);
   const {data: timeseries} = useTimeseriesData();
@@ -43,11 +39,7 @@ export default function PejlingMeasurementsTableMobile({
 
   const {get} = usePejling();
 
-  // useEffect(() => {
-  //   if (data) setHeight(data.length > 10 ? 10 * 60 : data.length * 60);
-  // }, [data]);
-
-  const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
+  const columns = useMemo<MRT_ColumnDef<boreholePejlingItem>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -96,7 +88,7 @@ export default function PejlingMeasurementsTableMobile({
     [unit, disabled, handleEdit]
   );
 
-  const options: Partial<MRT_TableOptions<PejlingItem>> = {
+  const options: Partial<MRT_TableOptions<boreholePejlingItem>> = {
     localization: {noRecordsToDisplay: 'Ingen kontrolmålinger at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
@@ -109,6 +101,11 @@ export default function PejlingMeasurementsTableMobile({
           <Typography>
             <b>Kote [m DVR90]: </b> {limitDecimalNumbers(row.original.referenced_measurement)}{' '}
             {unit}
+          </Typography>
+        )}
+        {row.original.pumpstop && (
+          <Typography>
+            <b>Pumpestop: </b> {convertDateWithTimeStamp(row.original.pumpstop)} {unit}
           </Typography>
         )}
         <Typography>
@@ -129,7 +126,7 @@ export default function PejlingMeasurementsTableMobile({
     ),
   };
 
-  const table = useQueryTable<PejlingItem>(
+  const table = useQueryTable<boreholePejlingItem>(
     columns,
     get,
     options,

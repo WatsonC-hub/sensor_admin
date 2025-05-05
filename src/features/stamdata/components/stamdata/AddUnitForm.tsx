@@ -19,6 +19,7 @@ import CaptureDialog from '~/components/CaptureDialog';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {useUser} from '~/features/auth/useUser';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
+import {AddUnit} from '~/features/station/schema';
 import {useAppContext} from '~/state/contexts';
 
 interface AddUnitFormProps {
@@ -50,7 +51,7 @@ export default function AddUnitForm({
     post: addUnit,
   } = useUnit();
 
-  const {trigger, setValue} = useFormContext();
+  const {trigger, setValue} = useFormContext<AddUnit>();
 
   const [unitData, setUnitData] = useState({
     calypso_id: '',
@@ -95,6 +96,8 @@ export default function AddUnitForm({
   ) => {
     if (option == null) {
       setUnitData((currentUnit) => ({...currentUnit, calypso_id: '', uuid: ''}));
+      setValue('unit_uuid', '', {shouldDirty: true});
+      setValue('startdate', '', {shouldDirty: true});
       return;
     }
     setUnitData((currentUnit) => ({
@@ -106,6 +109,10 @@ export default function AddUnitForm({
     const sensors = sensorsForCalyspoId((option as {value: string; label: string}).value);
     if (sensors && sensors.length === 1) {
       setUnitData((currentUnit) => ({...currentUnit, uuid: sensors[0].unit_uuid}));
+      setValue('unit_uuid', sensors[0].unit_uuid, {shouldDirty: true});
+      setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
+        shouldDirty: true,
+      });
     }
   };
 
@@ -115,7 +122,7 @@ export default function AddUnitForm({
   };
 
   const handleDateChange = (date: Date) => {
-    trigger('unit');
+    trigger();
     setUnitData({...unitData, fra: date});
   };
 
@@ -167,9 +174,9 @@ export default function AddUnitForm({
 
       if (!unit) return;
 
-      setValue('unit', {
-        unit_uuid: unit.unit_uuid,
-        startdate: moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'),
+      setValue('unit_uuid', unit.unit_uuid, {shouldDirty: true});
+      setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
+        shouldDirty: true,
       });
 
       // setUnit({

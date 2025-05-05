@@ -22,10 +22,10 @@ import React, {useEffect, useState} from 'react';
 import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {alertHeight} from '~/consts';
-import {Maalepunkt, PejlingItem} from '~/types';
+import {Maalepunkt, Kontrol} from '~/types';
 
 interface BoreholePejlingFormProps {
-  formData: PejlingItem;
+  formData: Kontrol;
   changeFormData: (
     key: string,
     value: string | boolean | null

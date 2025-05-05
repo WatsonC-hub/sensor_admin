@@ -53,7 +53,6 @@ const NotificationPage = () => {
   const [isWatsonCService, setIsWatsonCService] = useAtom(isWatsonCServiceAtom);
   const [isFirstLoad, setIsFirstLoad] = useAtom(isFirstLoadAtom);
   const {superUser} = useUser();
-  console.log(superUser);
   const {field} = useNavigationFunctions();
 
   useEffect(() => {

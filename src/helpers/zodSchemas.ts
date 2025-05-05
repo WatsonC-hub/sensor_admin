@@ -1,6 +1,72 @@
 import moment from 'moment';
 import {z} from 'zod';
 
+// const baseLocationSchema = z.object({
+//   groups: z
+//     .array(
+//       z.object({
+//         id: z.string(),
+//         group_name: z.string(),
+//       })
+//     )
+//     .nullish(),
+//   x: z.number({required_error: 'X-koordinat skal udfyldes'}),
+//   y: z.number({required_error: 'Y-koordinat skal udfyldes'}),
+//   terrainqual: z.enum(['dGPS', 'DTM', '']).nullish(),
+//   terrainlevel: z.number().nullish(),
+//   description: z.string().nullish(),
+//   loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
+//   initial_project_no: z.string().nullish(),
+// });
+
+// const defaultEditLocationSchema = baseLocationSchema.extend({
+//   loc_name: z.string().min(1, 'Lokationsnavn skal udfyldes'),
+// });
+
+// const defaultAddLocationSchema = defaultEditLocationSchema.extend({});
+
+// const boreholeEditLocationSchema = baseLocationSchema.extend({
+//   suffix: z.string().optional(),
+// });
+
+// const boreholeAddLocationSchema = boreholeEditLocationSchema.extend({
+//   boreholeno: z.string(),
+// });
+
+// const baseTimeseriesSchema = z.object({
+//   sensor_depth_m: z.number().nullish(),
+// });
+
+// const baseAddTimeseriesSchema = baseTimeseriesSchema.extend({
+//   tstype_id: z.number({required_error: 'Vælg tidsserietype'}).gte(1, {
+//     message: 'Vælg tidsserietype',
+//   }),
+// });
+
+// const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.string().nullish()});
+
+// const defaultAddTimeseriesSchema = baseAddTimeseriesSchema.extend({prefix: z.string().nullish()});
+
+// const boreholeEditTimeseriesSchema = baseTimeseriesSchema.extend({
+//   intakeno: z.number(),
+// });
+
+// const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
+//   intakeno: z.number(),
+// });
+
+// const watlevmpAddSchema = z.object({
+//   elevation: z.number({required_error: 'Målepunkt skal udfyldes'}).nullable(),
+//   description: z
+//     .string({required_error: 'Beskrivelse skal udfyldes'})
+//     .min(3, {message: 'Beskrivelse skal være mindst 3 tegn'}),
+// });
+
+// const addUnitSchema = z.object({
+//   unit_uuid: z.string(),
+//   startdate: z.string(),
+// });
+
 const locationSchema = z.object({
   location: z.object({
     loc_id: z.number().optional(),
