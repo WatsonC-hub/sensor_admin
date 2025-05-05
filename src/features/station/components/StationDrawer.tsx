@@ -71,6 +71,7 @@ type DrawerItems = {
     disabled?: boolean;
     requiredTsId: boolean;
     onHover?: () => void;
+    onClick?: () => void;
   }>;
 };
 
@@ -106,6 +107,11 @@ const StationDrawer = () => {
           icon: <AddIcon />,
           page: stationPages.STAMDATA,
           requiredTsId: false,
+          onClick: () => {
+            createStamdata('tidsserie', {
+              state: {...metadata, initial_project_no: metadata?.projectno},
+            });
+          },
         },
         {
           icon: <Edit />,
@@ -247,8 +253,8 @@ const StationDrawer = () => {
                         cursor: 'pointer',
                       }}
                       onClick={() => {
-                        if (setting.page === stationPages.STAMDATA) {
-                          createStamdata(undefined, {state: {...metadata}});
+                        if (setting.onClick) {
+                          setting.onClick();
                         } else setPageToShow(setting.page);
                         if (open) toggleDrawer(false);
                       }}
