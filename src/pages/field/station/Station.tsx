@@ -28,7 +28,6 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
-import PlotGraph from '~/features/station/components/StationGraph';
 import GraphManager from '~/features/station/components/GraphManager';
 
 export default function Station() {
