@@ -38,7 +38,9 @@ const pejlingBoreholeSchema = baseSchema
   .transform((data) =>
     data.service
       ? {...data, pumpstop: null}
-      : {...data, pumpstop: moment(data.pumpstop).toISOString()}
+      : data.pumpstop !== undefined && data.pumpstop !== null
+        ? {...data, pumpstop: moment(data.pumpstop).toISOString()}
+        : {...data}
   );
 
 type PejlingItem = z.infer<typeof pejlingSchema>;
