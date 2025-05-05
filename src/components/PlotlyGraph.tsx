@@ -1,4 +1,12 @@
-import {Box, ClickAwayListener, FormControlLabel, SvgIcon, Switch, Typography} from '@mui/material';
+import {
+  Box,
+  ClickAwayListener,
+  FormControlLabel,
+  SvgIcon,
+  Switch,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import moment from 'moment';
 import type {
   Layout,
@@ -68,7 +76,7 @@ export default function PlotlyGraph({
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
   const {mutation: rerunQAMutation} = useRunQA(metadata?.ts_id);
-  const {isTouch} = useBreakpoints();
+  const {isTouch, isMobile} = useBreakpoints();
 
   const {data: edgeDates} = useEdgeDates(metadata?.ts_id);
 
@@ -158,7 +166,12 @@ export default function PlotlyGraph({
     }
   };
 
-  const actionButtonStyle = {m: 0, textTransform: 'initial', fontSize: isTouch ? 11 : '0.8125rem'};
+  const actionButtonStyle = {
+    m: 0,
+    textTransform: 'initial',
+    fontSize: isTouch ? 11 : '0.8125rem',
+    minWidth: 0,
+  };
   const zoomButtonStyle = {m: 0, textTransform: 'initial', minWidth: 25};
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,8 +219,8 @@ export default function PlotlyGraph({
             Alt
           </Button>
         </Box>
-        <Box alignContent={'center'} mr={isTouch ? 1 : 5}>
-          <Box display={'flex'} flexWrap={'wrap'} justifyContent={'end'}>
+        <Box display={'flex'} flexDirection={'row'} mr={isTouch ? 1 : 5}>
+          <Tooltip title={isMobile ? 'Genberegn advarsler' : ''} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -215,25 +228,37 @@ export default function PlotlyGraph({
                 correctMutation.mutate();
               }}
               startIcon={
-                <SvgIcon sx={{width: 18, height: 18}} viewBox="0 0 500 500">
-                  <path d={rerunQAIcon.path} />
-                </SvgIcon>
+                !isMobile && (
+                  <SvgIcon sx={{width: 18, height: 18}} viewBox="0 0 500 500">
+                    <path d={rerunQAIcon.path} />
+                  </SvgIcon>
+                )
               }
               sx={actionButtonStyle}
             >
-              QA
+              {isMobile && (
+                <SvgIcon sx={{width: 18, height: 18}} viewBox="0 0 500 500">
+                  <path d={rerunQAIcon.path} />
+                </SvgIcon>
+              )}
+              {!isMobile && ' Advarsler'}
             </Button>
+          </Tooltip>
+          <Tooltip title={isMobile ? 'Genberegn data' : ''} arrow placement="top">
             <Button
               bttype="link"
               size="small"
-              startIcon={<ReplayIcon />}
+              startIcon={!isMobile && <ReplayIcon />}
               onClick={() => {
                 rerunQAMutation.mutate();
               }}
               sx={actionButtonStyle}
             >
-              Genberegn
+              {isMobile && <ReplayIcon fontSize="small" />}
+              {!isMobile && 'Genberegn'}
             </Button>
+          </Tooltip>
+          <Tooltip title={isMobile ? 'Download data' : ''} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -241,11 +266,14 @@ export default function PlotlyGraph({
                 const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
                 window.open(url);
               }}
-              startIcon={<Download />}
+              startIcon={!isMobile && <Download />}
               sx={actionButtonStyle}
             >
-              Download
+              {isMobile && <Download fontSize="small" />}
+              {!isMobile && 'Download'}
             </Button>
+          </Tooltip>
+          <Tooltip title={isMobile ? 'Download ekstern data' : ''} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -260,86 +288,77 @@ export default function PlotlyGraph({
                 window.open(url);
                 // exportToCsv("data.csv", rows);
               }}
-              startIcon={<LinkIcon />}
+              startIcon={!isMobile && <LinkIcon />}
               sx={actionButtonStyle}
             >
-              Ekstern
+              {isMobile && <LinkIcon fontSize="small" />}
+              {!isMobile && 'Ekstern'}
             </Button>
-            {/* <Button
-            bttype="link"
-            size="small"
-            onClick={() => {
-              if (showRaw) showRaw();
-              setLayout({yaxis2: {visible: true}});
-            }}
-            startIcon={<TimelineIcon />}
-            sx={actionButtonStyle}
+          </Tooltip>
+          <Button
+            bttype="secondary"
+            endIcon={!isMobile && <TuneRoundedIcon />}
+            sx={{textTransform: 'initial', my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
+            onClick={() => setIsOpen(!isOpen)}
           >
-            Rådata
-          </Button> */}
-            <Button
-              bttype="secondary"
-              endIcon={<TuneRoundedIcon />}
-              sx={{textTransform: 'initial'}}
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              Filter
-            </Button>
-          </Box>
-
-          {isOpen && (
-            <ClickAwayListener onClickAway={() => setIsOpen(false)}>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  right: '16px',
-                  width: '175px',
-                  backgroundColor: '#fff',
-                  border: '1px solid #ccc',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                  zIndex: 1000,
-                  pl: '10px',
-                  py: '10px',
-                  mt: 0.5,
-                }}
-              >
-                {Object.keys(dataToShow).map((key) => (
-                  <Box key={key}>
-                    <FormControlLabel
-                      key={key}
-                      control={
-                        <Switch
-                          checked={
-                            Object.entries(dataToShow).find((item) => item[0] === key)?.[1] ===
-                              true ||
-                            (key === 'Kontrolmålinger' && pagetoShow === 'pejling')
-                          }
-                          onChange={handleChange}
-                          name={key}
-                          disabled={key === 'Kontrolmålinger' && pagetoShow === 'pejling'}
-                          size={'small'}
-                          color="primary"
-                        />
-                      }
-                      label={<Typography variant="caption">{key}</Typography>}
-                    />
-                  </Box>
-                ))}
-                <Button
-                  sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
-                  onClick={() => {
-                    setIsOpen(false);
-                  }}
-                  bttype="secondary"
-                >
-                  Luk
-                </Button>
-              </Box>
-            </ClickAwayListener>
-          )}
+            {isMobile && <TuneRoundedIcon fontSize="small" />}
+            {!isMobile && 'Grafer'}
+          </Button>
         </Box>
       </Box>
+      {isOpen && (
+        <ClickAwayListener onClickAway={() => setIsOpen(false)}>
+          <Box
+            sx={{
+              position: 'absolute',
+              right: isMobile ? '8px' : '18px',
+              width: '175px',
+              backgroundColor: '#fff',
+              border: '1px solid #ccc',
+              borderRadius: '8px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+              zIndex: 1000,
+              pl: '10px',
+              py: '10px',
+              mt: 0.5,
+            }}
+          >
+            {Object.keys(dataToShow).map((key) => (
+              <Box key={key}>
+                <FormControlLabel
+                  key={key}
+                  control={
+                    <Switch
+                      checked={
+                        Object.entries(dataToShow).find((item) => item[0] === key)?.[1] === true ||
+                        (key === 'Kontrolmålinger' && pagetoShow === 'pejling')
+                      }
+                      onChange={handleChange}
+                      name={key}
+                      disabled={
+                        (key === 'Kontrolmålinger' && pagetoShow === 'pejling') ||
+                        (key === 'Rådata' && metadata?.calculated)
+                      }
+                      size={'small'}
+                      color="primary"
+                    />
+                  }
+                  label={<Typography variant="caption">{key}</Typography>}
+                />
+              </Box>
+            ))}
+            <Button
+              sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
+              onClick={() => {
+                setIsOpen(false);
+              }}
+              bttype="secondary"
+            >
+              Luk
+            </Button>
+          </Box>
+        </ClickAwayListener>
+      )}
       <Plot
         onSelected={(e) => {
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);

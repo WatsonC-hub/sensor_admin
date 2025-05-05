@@ -110,7 +110,7 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
       }
       return data;
     },
-    enabled: dataToShow.Rådata,
+    enabled: dataToShow.Rådata && !timeseries_data?.calculated,
     placeholderData: [],
   });
 
@@ -296,7 +296,7 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
       mode: 'lines+markers',
       marker: {symbol: '100', size: '3', color: '#177FC1'},
     },
-    ...(dataToShow?.Rådata
+    ...(dataToShow?.Rådata && !timeseries_data?.calculated
       ? [
           {
             x: rawData?.x,
