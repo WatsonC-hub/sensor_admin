@@ -37,7 +37,7 @@ const CreateStation = () => {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   let {state} = useLocation();
   const [activeStep, setActiveStep] = React.useState(
-    state === undefined ? 0 : state.loc_id ? 1 : 0
+    state === undefined || state === null ? 0 : state.loc_id ? 1 : 0
   );
 
   state = state ?? {};
@@ -121,7 +121,6 @@ const CreateStation = () => {
   const stamdataNewLocationMutation = useMutation({
     mutationFn: async (location: DefaultAddLocation | BoreholeAddLocation) => {
       const response = await apiClient.post(`/sensor_field/stamdata/create_location`, location);
-      console.log('response', response);
       return response.data;
     },
     onSuccess: (data) => {
@@ -210,7 +209,6 @@ const CreateStation = () => {
           timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
         };
       }
-      console.log('form', form);
       stamdataNewTimeseriesMutation.mutate(form);
     }
 
@@ -226,8 +224,6 @@ const CreateStation = () => {
         watlevmp?: Watlevmp;
         unit: AddUnit;
       };
-
-      console.log('form', form);
 
       stamdataNewMutation.mutate(form);
     }
@@ -245,6 +241,19 @@ const CreateStation = () => {
     }
 
     return false;
+  };
+
+  const validateStepping = async () => {
+    let valid = true;
+    if (activeStep === 0) valid = await triggerLocation();
+    if (activeStep === 1) {
+      valid = await triggerTimeseries();
+      const isWaterlevel = tstype_id === 1;
+      if (isWaterlevel && valid) {
+        valid = await triggerWatlevmp();
+      }
+    }
+    return !denyStepping() && valid;
   };
 
   useEffect(() => {
@@ -381,7 +390,12 @@ const CreateStation = () => {
               color="inherit"
               startIcon={<ArrowBack />}
               disabled={activeStep === 0 || denyStepping()}
-              onClick={() => setActiveStep(activeStep - 1)}
+              onClick={async () => {
+                const valid = await validateStepping();
+                if (valid) {
+                  setActiveStep(activeStep - 1);
+                }
+              }}
               sx={{mr: 1}}
             >
               Tilbage
@@ -391,16 +405,8 @@ const CreateStation = () => {
               disabled={activeStep === 2 || denyStepping()}
               startIcon={<ArrowRight />}
               onClick={async () => {
-                let valid = true;
-                if (activeStep === 0) valid = await triggerLocation();
-                if (activeStep === 1) {
-                  valid = await triggerTimeseries();
-                  const isWaterlevel = tstype_id === 1;
-                  if (isWaterlevel && valid) {
-                    valid = await triggerWatlevmp();
-                  }
-                }
-                if (!denyStepping() && valid) setActiveStep(activeStep + 1);
+                const valid = await validateStepping();
+                if (valid) setActiveStep(activeStep + 1);
               }}
               sx={{mr: 1}}
             >
