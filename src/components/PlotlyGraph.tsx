@@ -220,7 +220,7 @@ export default function PlotlyGraph({
           </Button>
         </Box>
         <Box display={'flex'} flexDirection={'row'} mr={isTouch ? 1 : 5}>
-          <Tooltip title={isMobile ? 'Genberegn advarsler' : ''} arrow placement="top">
+          <Tooltip title={'Genberegn alle advarsler'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -244,7 +244,7 @@ export default function PlotlyGraph({
               {!isMobile && ' Advarsler'}
             </Button>
           </Tooltip>
-          <Tooltip title={isMobile ? 'Genberegn data' : ''} arrow placement="top">
+          <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -258,7 +258,7 @@ export default function PlotlyGraph({
               {!isMobile && 'Genberegn'}
             </Button>
           </Tooltip>
-          <Tooltip title={isMobile ? 'Download data' : ''} arrow placement="top">
+          <Tooltip title={'Download tidsserie data'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -273,7 +273,7 @@ export default function PlotlyGraph({
               {!isMobile && 'Download'}
             </Button>
           </Tooltip>
-          <Tooltip title={isMobile ? 'Download ekstern data' : ''} arrow placement="top">
+          <Tooltip title={'Download ekstern data'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
