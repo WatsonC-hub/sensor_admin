@@ -233,11 +233,7 @@ const CreateStation = () => {
     if (activeStep === 0) {
       return Object.keys(locationErrors).length > 0 || loctype_id === -1;
     } else if (activeStep === 1) {
-      return (
-        Object.keys(timeseriesErrors).length > 0 ||
-        Object.keys(watlevmpErrors).length > 0 ||
-        tstype_id === -1
-      );
+      return Object.keys(timeseriesErrors).length > 0 || Object.keys(watlevmpErrors).length > 0;
     }
 
     return false;
