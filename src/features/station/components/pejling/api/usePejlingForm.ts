@@ -62,7 +62,11 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
 
   const formMethods = useForm({
     resolver: (...opts) => {
-      const values = opts[0] as PejlingBoreholeItem | PejlingItem;
+      const values = {
+        ...(opts[0] as PejlingBoreholeItem | PejlingItem),
+        useforcorrection: Number(opts[0].useforcorrection),
+      };
+
       const mpData = opts[1]?.mpData;
       const errors = {} as Record<string, {type: string; message: string}>;
 

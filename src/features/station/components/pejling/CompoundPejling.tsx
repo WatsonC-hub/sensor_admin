@@ -131,12 +131,12 @@ const Correction = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
             <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
             <RadioGroup value={field.value + ''} onChange={field.onChange}>
               <FormControlLabel
-                value="0"
+                value={0}
                 control={<Radio />}
                 label={<Typography variant={isMobile ? 'body2' : 'body1'}>Kontrol</Typography>}
               />
               <FormControlLabel
-                value="1"
+                value={1}
                 control={<Radio />}
                 label={
                   <Typography variant={isMobile ? 'body2' : 'body1'}>
@@ -145,7 +145,7 @@ const Correction = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
                 }
               />
               <FormControlLabel
-                value="-1"
+                value={-1}
                 control={<Radio />}
                 label={
                   <Typography variant={isMobile ? 'body2' : 'body1'}>
@@ -164,7 +164,7 @@ const Correction = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
                       return (
                         <FormControlLabel
                           key={element}
-                          value={element}
+                          value={Number(element)}
                           control={<Radio />}
                           label={value}
                           sx={{ml: 2}}
