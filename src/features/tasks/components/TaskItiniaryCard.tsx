@@ -85,23 +85,7 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
               </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: 'center'}}>
-              <Button
-                disabled={selectedLocIds.length === 0}
-                onClick={() => {
-                  moveTask.mutate({
-                    path: `${itinerary.id}`,
-                    data: {
-                      task_ids: tasks
-                        ? tasks
-                            .filter((task) => selectedLocIds.includes(task.loc_id))
-                            .map((task) => task.id)
-                        : [],
-                      loc_id: selectedLocIds,
-                    },
-                  });
-                }}
-                bttype="itinerary"
-              >
+              <Button disabled={selectedLocIds.length === 0} onClick={() => {}} bttype="itinerary">
                 Tilføj
               </Button>
               <Button
