@@ -27,7 +27,6 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
-import PlotGraph from '~/features/station/components/StationGraph';
 import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {Fullscreen, FullscreenExit} from '@mui/icons-material';
