@@ -20,6 +20,8 @@ import {utm} from '~/features/map/mapConsts';
 import {useAtom} from 'jotai';
 import {boreholeSearchAtom} from '~/state/atoms';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import {stationPages} from '~/helpers/EnumHelper';
 
 type Props = {
   children: React.ReactNode;
@@ -257,6 +259,7 @@ const Locname = (
 };
 
 const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
+  const [pageToShow] = useStationPages();
   const {
     setValue,
     formState: {errors},
@@ -271,7 +274,12 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
   const {data: searchOptions, isFetching} = useSearchBorehole(boreholeno);
 
   useEffect(() => {
-    if (boreholeno !== undefined && searchOptions && searchOptions.length > 0) {
+    if (
+      boreholeno !== undefined &&
+      searchOptions &&
+      searchOptions.length > 0 &&
+      pageToShow !== stationPages.GENERELTLOKATION
+    ) {
       const borehole = searchOptions?.find((opt) => opt.boreholeno === boreholeno);
       // @ts-expect-error error in type definition
       const latlng = utm.convertLatLngToUtm(borehole?.latitude, borehole?.longitude, 32);
