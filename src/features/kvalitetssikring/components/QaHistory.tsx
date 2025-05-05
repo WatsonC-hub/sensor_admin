@@ -36,6 +36,7 @@ import useQAHistory from '../api/useQAHistory';
 import moment from 'moment';
 import Button from '~/components/Button';
 import {toast} from 'react-toastify';
+import GraphManager from '~/features/station/components/GraphManager';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -194,9 +195,9 @@ export default function QAHistory() {
     <>
       <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
         <Box width={'100%'}>
-          <QAGraph />
+          <GraphManager />
         </Box>
-        <DataToShow />
+        {/* <DataToShow /> */}
       </Box>
       <Divider />
       <StationPageBoxLayout>

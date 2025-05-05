@@ -109,7 +109,6 @@ export default function PlotGraph() {
         shapes={shapes}
         annotations={annotations}
         layout={layout}
-        plotModebarButtons={['rerun', 'rerunQa', 'select2d']}
         data={data}
         setXRange={setXRange}
       />

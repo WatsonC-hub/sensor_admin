@@ -6,6 +6,7 @@ import {FormProvider, useForm} from 'react-hook-form';
 
 import FabWrapper from '~/components/FabWrapper';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import GraphManager from '~/features/station/components/GraphManager';
 import PlotGraph from '~/features/station/components/StationGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useTilsyn} from '~/features/tilsyn/api/useTilsyn';
@@ -92,7 +93,7 @@ export default function Tilsyn() {
   return (
     <>
       <Box>
-        <PlotGraph key={'tilsyn' + ts_id} />
+        <GraphManager key={'tilsyn' + ts_id} />
       </Box>
       <Divider />
       <StationPageBoxLayout>

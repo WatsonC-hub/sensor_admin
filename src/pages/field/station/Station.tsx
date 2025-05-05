@@ -31,6 +31,7 @@ import PlotGraph from '~/features/station/components/StationGraph';
 import {useAtom} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import GraphManager from '~/features/station/components/GraphManager';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -60,7 +61,7 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager />
           </Box>
           <Divider />
           <StationPageBoxLayout>
@@ -83,7 +84,7 @@ export default function Station() {
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager />
           </Box>
           <Divider />
           <StationPageBoxLayout>

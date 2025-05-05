@@ -120,7 +120,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
         height: setGraphHeight(isMobile),
       }}
     >
-      <PlotlyGraph plotModebarButtons={['toImage']} layout={layout} data={data} />
+      <PlotlyGraph layout={layout} data={data} />
     </Box>
   );
 }
