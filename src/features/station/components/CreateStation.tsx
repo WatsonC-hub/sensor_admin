@@ -29,7 +29,8 @@ import StamdataWatlevmp from './stamdata/StamdataWatlevmp';
 import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpForm';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {toast} from 'react-toastify';
-import {ArrowBack, ArrowRight, Save} from '@mui/icons-material';
+import {ArrowBack, Save} from '@mui/icons-material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -287,12 +288,7 @@ const CreateStation = () => {
                 disabled={denyStepping()}
                 onClick={async () => {
                   if (activeStep !== 0) {
-                    const isTimeseriesValid = await triggerTimeseries();
-                    const isWaterlevel = tstype_id === 1;
-                    const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
-                    if (isTimeseriesValid && isWatlevmpValid) {
-                      setActiveStep(0);
-                    }
+                    setActiveStep(0);
                   }
                 }}
               >
@@ -387,10 +383,7 @@ const CreateStation = () => {
               startIcon={<ArrowBack />}
               disabled={activeStep === 0 || denyStepping()}
               onClick={async () => {
-                const valid = await validateStepping();
-                if (valid) {
-                  setActiveStep(activeStep - 1);
-                }
+                setActiveStep(activeStep - 1);
               }}
               sx={{mr: 1}}
             >
@@ -399,7 +392,7 @@ const CreateStation = () => {
             <Button
               bttype="primary"
               disabled={activeStep === 2 || denyStepping()}
-              startIcon={<ArrowRight />}
+              endIcon={<ArrowForwardIcon fontSize="small" />}
               onClick={async () => {
                 const valid = await validateStepping();
                 if (valid) setActiveStep(activeStep + 1);
