@@ -13,13 +13,12 @@ const BoreholeLocationEditForm = ({size}: Props) => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  console.log(disabled);
-
   return (
     <Grid2 container spacing={2}>
       <Grid2 size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} />
       </Grid2>
+      <Grid2 size={size}></Grid2>
       <Grid2 size={size}>
         <StamdataLocation.Boreholeno disabled={disabled} />
       </Grid2>
@@ -27,10 +26,10 @@ const BoreholeLocationEditForm = ({size}: Props) => {
         <StamdataLocation.BoreholeSuffix disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.InitialProjectNo disabled={disabled} />
+        <StamdataLocation.Groups disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.Groups disabled={disabled} />
+        <StamdataLocation.InitialProjectNo disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
         <StamdataLocation.X disabled={disabled} />
