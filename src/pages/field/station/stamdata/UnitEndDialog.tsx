@@ -54,6 +54,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       return data;
     },
     enabled: user?.superUser,
+    staleTime: 1000 * 60 * 10,
   });
 
   const {data: actions} = useQuery<Action[]>({
@@ -63,6 +64,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       return data;
     },
     enabled: user?.superUser && !!unit?.uuid,
+    staleTime: 1000 * 60 * 10,
   });
 
   const takeHomeMutation = useMutation({
