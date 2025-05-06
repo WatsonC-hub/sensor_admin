@@ -4,6 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import {FieldError, Noop} from 'react-hook-form';
 
+import Button from '~/components/Button';
 import {useUser} from '~/features/auth/useUser';
 import useLocationProject, {Project} from '../../api/useLocationProject';
 
@@ -48,9 +49,27 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
               {...params}
               fullWidth
               onBlur={onBlur}
+              required={true}
               slotProps={{
                 inputLabel: {
                   shrink: true,
+                },
+                input: {
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      <Button
+                        bttype="link"
+                        href={'https://admin.watsonc.dk/projects'}
+                        target="_blank"
+                        rel="noopener"
+                        sx={{textTransform: 'none'}}
+                      >
+                        <OpenInNewIcon />
+                      </Button>
+                      {params.InputProps.endAdornment}
+                    </>
+                  ),
                 },
               }}
               variant="outlined"

@@ -69,6 +69,7 @@ export const getMaalepunktOptions = (ts_id: number | undefined) =>
         };
       });
     },
+    staleTime: 1000 * 60 * 1,
     enabled: ts_id !== null || ts_id !== undefined,
   });
 

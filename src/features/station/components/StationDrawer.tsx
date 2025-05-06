@@ -227,7 +227,7 @@ const StationDrawer = () => {
 
   const drawerItems = filteredItems.map((category) => {
     return (
-      <>
+      <Box key={category.text}>
         {
           <ListItem
             key={category.text}
@@ -317,7 +317,7 @@ const StationDrawer = () => {
             );
           })}
         {filteredItems.indexOf(category) !== filteredItems.length - 1 && <Divider />}
-      </>
+      </Box>
     );
   });
 
