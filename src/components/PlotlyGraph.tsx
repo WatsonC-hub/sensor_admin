@@ -174,7 +174,7 @@ export default function PlotlyGraph({
   return (
     <>
       <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
-        <Box ml={isTouch ? 0 : 10} display={'flex'} flexDirection={'row'}>
+        <Box pl={isTouch ? 0 : 7} display={'flex'} flexDirection={'row'}>
           <Button
             bttype="link"
             onClick={() => graphLayout('week')}
@@ -208,7 +208,7 @@ export default function PlotlyGraph({
             Alt
           </Button>
         </Box>
-        <Box display={'flex'} flexDirection={'row'} mr={isTouch ? 1 : 5} gap={isTouch ? 0 : 1}>
+        <Box display={'flex'} flexDirection={'row'} pr={1} gap={isTouch ? 0 : 1}>
           <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
             <Button
               bttype="link"
@@ -249,11 +249,15 @@ export default function PlotlyGraph({
           </Button>
         </Box>
       </Box>
+
       {isOpen && (
         <ClickAwayListener onClickAway={() => setIsOpen(false)}>
-          <GraphSwitch dataToShow={dataToShow} setIsOpen={setIsOpen} />
+          <Box>
+            <GraphSwitch dataToShow={dataToShow} setIsOpen={setIsOpen} />
+          </Box>
         </ClickAwayListener>
       )}
+
       <Plot
         onSelected={(e) => {
           if (plotEventProps?.onSelected) plotEventProps.onSelected(e);
