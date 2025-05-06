@@ -22,10 +22,10 @@ const DefaultLocationEditForm = ({size}: Props) => {
         <StamdataLocation.Locname disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.InitialProjectNo disabled={disabled} />
+        <StamdataLocation.Groups disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
-        <StamdataLocation.Groups disabled={disabled} />
+        <StamdataLocation.InitialProjectNo disabled={disabled} />
       </Grid2>
       <Grid2 size={size}>
         <StamdataLocation.X disabled={disabled} />
