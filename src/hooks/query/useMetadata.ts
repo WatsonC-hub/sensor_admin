@@ -131,6 +131,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
     },
     enabled: loc_id !== undefined,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 1,
   });
 };
 

@@ -87,6 +87,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       });
       return data;
     },
+    enabled: dataToShow['Algoritmer'] && !timeseries_data?.calculated,
   });
 
   const {data: removed_data} = useQuery({
@@ -95,7 +96,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       const {data} = await apiClient.get(`/sensor_admin/removed_data/${ts_id}`);
       return data;
     },
-    enabled: dataToShow['Fjernet data'],
+    enabled: dataToShow['Fjernet data'] && !timeseries_data?.calculated,
     refetchOnWindowFocus: false,
   });
 

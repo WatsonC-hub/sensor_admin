@@ -172,7 +172,6 @@ export const defaultDataToShow: DataToShow = {
   Kontrolmålinger: true,
   Godkendt: false,
   Nedbør: false,
-  // 'Kvalitets stempel': false,
   'Korrigerede spring': false,
   'Valide værdier': false,
   'Fjernet data': false,

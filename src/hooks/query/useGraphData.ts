@@ -24,6 +24,7 @@ export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) =
       });
       return data ?? [];
     },
+    staleTime: 0,
     placeholderData: (prev, query) => {
       if (query?.queryKey[1] != ts_id) return undefined;
       return prev;
