@@ -13,8 +13,8 @@ type CustomSpeedDialProps = {
 
 const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
   const {isTouch} = useBreakpoints();
-  const [open, setOpen] = useState<boolean>(false);
-  const {isMobile} = useBreakpoints();
+  const {isMobile, isMonitor, isLargeLaptop} = useBreakpoints();
+  const [open, setOpen] = useState<boolean>(isMonitor || isLargeLaptop);
   return (
     <div>
       <SpeedDial
@@ -60,12 +60,15 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
                 onClick: () => {
                   action.onClick();
                   setOpen(!open);
-                  if (toast.isActive('juster'))
+                  if (toast.isActive('juster') && action.dialog === false)
+                    toast.update('juster', {style: {display: 'none'}});
+
+                  if (toast.isActive('juster') && action.dialog !== false)
                     toast.update('juster', {
                       render: <CustomTooltip toastContent={action.toastTip} />,
                       type: 'default',
                     });
-                  else
+                  else if (!toast.isActive('juster') && action.dialog !== false)
                     toast(<CustomTooltip toastContent={action.toastTip} />, {
                       autoClose: false,
                       toastId: 'juster',
@@ -100,7 +103,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
   );
 };
 
-const CustomTooltip = ({toastContent}: {toastContent: string}) => {
+export const CustomTooltip = ({toastContent}: {toastContent: string}) => {
   return (
     <Tooltip
       title=""

@@ -4,7 +4,9 @@ import {z} from 'zod';
 const locationSchema = z.object({
   location: z.object({
     loc_id: z.number().optional(),
-    loc_name: z.string().min(1, 'Lokationsnavn skal udfyldes'),
+    loc_name: z.string({message: 'Lokationsnavn skal udfyldes'}).min(1, {
+      message: 'Lokationsnavn skal være mindst 1 tegn',
+    }),
     mainloc: z.string().nullish(),
     subloc: z.string().nullish(),
     subsubloc: z.string().nullish(),
@@ -21,8 +23,10 @@ const locationSchema = z.object({
     terrainqual: z.enum(['dGPS', 'DTM', '']).nullish(),
     terrainlevel: z.number().nullish(),
     description: z.string().nullish(),
-    loctype_id: z.number().min(1, {message: 'Vælg lokationstype'}),
-    initial_project_no: z.string().nullish(),
+    loctype_id: z
+      .number({message: 'Vælg lokationstype'})
+      .min(1, {message: 'Lokationstype skal vælges'}),
+    initial_project_no: z.string({message: 'Projektnummer skal udfyldes'}),
   }),
 });
 

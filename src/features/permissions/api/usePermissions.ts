@@ -19,6 +19,7 @@ export const useGlobalPermissionsQueryOptions = () => {
       const {data} = await apiClient.get<GlobalPermissions>(`/auth/me/permissions`);
       return data;
     },
+    staleTime: 1000 * 60 * 1,
   });
 };
 
@@ -32,6 +33,7 @@ export const usePermissionsQueryOptions = (loc_id?: number) => {
       return data;
     },
     enabled: loc_id !== undefined,
+    staleTime: 1000 * 60 * 1,
   });
 };
 
@@ -50,7 +52,8 @@ const usePermissions = (loc_id?: number) => {
     if (ts_permissions.length == 0) {
       location_permissions = 'edit';
     }
-    location_permissions = ts_permissions.some((v) => v === 'edit') ? 'edit' : 'read';
+    location_permissions =
+      ts_permissions.some((v) => v === 'edit') || ts_permissions.length === 0 ? 'edit' : 'read';
   } else {
     location_permissions = 'edit';
   }

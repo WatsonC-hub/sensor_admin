@@ -31,6 +31,7 @@ export type MutationQueryOptions = UseMutationOptions;
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      staleTime: 1000 * 5,
       networkMode: 'offlineFirst',
       retry: (failureCount, error) => {
         if (axios.isAxiosError(error)) {

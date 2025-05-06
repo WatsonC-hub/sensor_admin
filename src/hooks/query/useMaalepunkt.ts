@@ -3,7 +3,7 @@ import moment from 'moment';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {APIError} from '~/queryClient';
+import {APIError, queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {Maalepunkt} from '~/types';
 
@@ -69,6 +69,7 @@ export const getMaalepunktOptions = (ts_id: number | undefined) =>
         };
       });
     },
+    staleTime: 1000 * 60 * 1,
     enabled: ts_id !== null || ts_id !== undefined,
   });
 
@@ -81,6 +82,7 @@ export const useMaalepunkt = () => {
     ...maalepunktPostOptions,
     onSuccess: () => {
       get.refetch();
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
       toast.success('Målepunkt gemt');
     },
   });
@@ -89,6 +91,7 @@ export const useMaalepunkt = () => {
     ...maalepunktPutOptions,
     onSuccess: () => {
       get.refetch();
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
       toast.success('Målepunkt ændret');
     },
   });
@@ -96,8 +99,9 @@ export const useMaalepunkt = () => {
   const del = useMutation({
     ...maalepunktDelOptions,
     onSuccess: () => {
-      toast.success('Målepunkt slettet');
       get.refetch();
+      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
+      toast.success('Målepunkt slettet');
     },
   });
 

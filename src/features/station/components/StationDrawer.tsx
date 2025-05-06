@@ -20,6 +20,7 @@ import {
   ClickAwayListener,
   Tooltip,
   IconButton,
+  Typography,
 } from '@mui/material';
 import {useAtom} from 'jotai';
 import React, {ReactNode} from 'react';
@@ -32,7 +33,7 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 import KeyIcon from '@mui/icons-material/Key';
 import {drawerOpenAtom} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {metadataQueryOptions, useTimeseriesData} from '~/hooks/query/useMetadata';
+import {metadataQueryOptions, useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
 import {OmitKeyof, UseQueryOptions} from '@tanstack/react-query';
 import {APIError, queryClient} from '~/queryClient';
@@ -46,6 +47,7 @@ import {getQAHistoryOptions} from '~/features/kvalitetssikring/api/useQAHistory'
 import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms';
 import {getImageOptions} from '../api/useImages';
 import {stationPages, StationPages} from '~/helpers/EnumHelper';
+import MinimalSelect from './MinimalSelect';
 
 const drawerWidth = 240;
 
@@ -102,6 +104,7 @@ const StationDrawer = () => {
         icon: <Edit />,
         page: stationPages.GENERELTIDSSERIE,
         requiredTsId: true,
+        disabled: metadata?.calculated || !metadata?.ts_id,
         onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
       },
       items: [
@@ -133,6 +136,7 @@ const StationDrawer = () => {
           page: stationPages.GENERELTUDSTYR,
           icon: <Router />,
           requiredTsId: true,
+          disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
         },
         {
@@ -227,7 +231,7 @@ const StationDrawer = () => {
             }}
           >
             <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-            {category.settings && (
+            {category.settings && !category.settings.disabled && (
               <ListItemIcon
                 sx={{
                   color: navIconStyle(pageToShow === category.settings.page),
@@ -335,7 +339,7 @@ type LayoutProps = {
 
 const Layout = ({children, variant}: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-
+  const {data: locationdata} = useLocationData();
   const {isMonitor, isMobile} = useBreakpoints();
   const open = isMonitor || openAtom;
   const width = open ? drawerWidth : 48;
@@ -359,6 +363,20 @@ const Layout = ({children, variant}: LayoutProps) => {
           },
         }}
       >
+        <Box pt={2} pl={2}>
+          {!isMobile && <MinimalSelect />}
+          {isMobile && (
+            <Typography
+              textOverflow="ellipsis"
+              overflow="hidden"
+              px={2}
+              whiteSpace="wrap"
+              color="white"
+            >
+              {locationdata?.loc_name}
+            </Typography>
+          )}
+        </Box>
         <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
           <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
         </ClickAwayListener>
