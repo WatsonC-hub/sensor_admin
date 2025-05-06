@@ -1,7 +1,7 @@
 import {InputAdornment} from '@mui/material';
 import React from 'react';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {DynamicSchemaType} from '../../schema';
+import {Watlevmp} from '../../schema';
 
 type StamdataWatlevmpProps = {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ const StamdataWatlevmp = ({children, tstype_id}: StamdataWatlevmpProps) => {
   return <WatlevmpContext.Provider value={{tstype_id}}>{children}</WatlevmpContext.Provider>;
 };
 
-const Elevation = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
+const Elevation = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
   const {tstype_id} = React.useContext(WatlevmpContext);
 
   if (tstype_id !== 1) {
@@ -43,7 +43,7 @@ const Elevation = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
   );
 };
 
-const Description = (props: Omit<FormInputProps<DynamicSchemaType>, 'name'>) => {
+const Description = (props: Omit<FormInputProps<Watlevmp>, 'name'>) => {
   const {tstype_id} = React.useContext(WatlevmpContext);
 
   if (tstype_id !== 1) {

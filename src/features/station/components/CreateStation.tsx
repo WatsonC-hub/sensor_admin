@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
 import NavBar from '~/components/NavBar';
-import StationPageBoxLayout from './StationPageBoxLayout';
 import {Box, Grid2, Step, StepButton, StepLabel, Stepper, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useLocationForm from '../api/useLocationForm';
@@ -272,146 +271,159 @@ const CreateStation = () => {
         <NavBar.Title title="Opret Stamdata" />
         <NavBar.Menu />
       </NavBar>
-      <StationPageBoxLayout>
-        <Grid2
-          container
-          alignSelf={'center'}
-          display={'flex'}
-          flexDirection={'column'}
-          spacing={1.5}
-          sx={{maxWidth: 1200, width: '100%'}}
-          size={size}
-        >
-          <Stepper nonLinear activeStep={activeStep} alternativeLabel>
-            <Step key={'lokation'}>
-              <StepButton
-                disabled={denyStepping()}
-                onClick={async () => {
-                  if (activeStep !== 0) {
-                    setActiveStep(0);
+      <Grid2
+        container
+        alignSelf={'center'}
+        display={'flex'}
+        flexDirection={'column'}
+        spacing={1.5}
+        sx={{maxWidth: 1200, width: '100%'}}
+        mx={'auto'}
+        px={1}
+        size={size}
+        pt={2}
+      >
+        <Stepper nonLinear activeStep={activeStep} alternativeLabel>
+          <Step
+            key={'lokation'}
+            completed={Object.keys(locationErrors).length === 0 && activeStep !== 0}
+          >
+            <StepButton
+              disabled={denyStepping()}
+              onClick={async () => {
+                if (activeStep !== 0) {
+                  setActiveStep(0);
+                }
+              }}
+            >
+              <StepLabel error={Object.keys(locationErrors).length > 0}>
+                <Typography variant="body2" textTransform={'capitalize'}>
+                  Lokation
+                </Typography>
+              </StepLabel>
+            </StepButton>
+          </Step>
+          <Step
+            key={'tidsserie'}
+            completed={
+              Object.keys(timeseriesErrors).length === 0 &&
+              Object.keys(watlevmpErrors).length === 0 &&
+              activeStep !== 1 &&
+              isTimeseriesDirty
+            }
+          >
+            <StepButton
+              onClick={async () => {
+                if (activeStep !== 1) {
+                  const isLocationValid = await triggerLocation();
+                  if (isLocationValid) {
+                    setActiveStep(1);
                   }
-                }}
+                }
+              }}
+              disabled={denyStepping()}
+            >
+              <StepLabel
+                error={
+                  Object.keys(timeseriesErrors).length > 0 || Object.keys(watlevmpErrors).length > 0
+                }
               >
-                <StepLabel error={Object.keys(locationErrors).length > 0}>
-                  <Typography variant="body2" textTransform={'capitalize'}>
-                    Lokation
-                  </Typography>
-                </StepLabel>
-              </StepButton>
-            </Step>
-            <Step key={'tidsserie'} completed={false}>
-              <StepButton
-                onClick={async () => {
-                  if (activeStep !== 1) {
-                    const isLocationValid = await triggerLocation();
-                    if (isLocationValid) {
-                      setActiveStep(1);
-                    }
+                <Typography variant="body2" textTransform={'capitalize'}>
+                  Tidsserie
+                </Typography>
+              </StepLabel>
+            </StepButton>
+          </Step>
+          <Step key={'udstyr'} completed={activeStep !== 2 && isUnitDirty}>
+            <StepButton
+              onClick={async () => {
+                if (activeStep !== 2) {
+                  const isTimeseriesValid = await triggerTimeseries();
+                  const isLocationValid = await triggerLocation();
+                  const isWaterlevel = tstype_id === 1;
+                  const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
+                  if (isTimeseriesValid && isWatlevmpValid && isLocationValid) {
+                    setActiveStep(2);
                   }
-                }}
-                disabled={denyStepping()}
-              >
-                <StepLabel
-                  error={
-                    Object.keys(timeseriesErrors).length > 0 ||
-                    Object.keys(watlevmpErrors).length > 0
-                  }
-                >
-                  <Typography variant="body2" textTransform={'capitalize'}>
-                    Tidsserie
-                  </Typography>
-                </StepLabel>
-              </StepButton>
-            </Step>
-            <Step key={'udstyr'} completed={false}>
-              <StepButton
-                onClick={async () => {
-                  if (activeStep !== 2) {
-                    const isTimeseriesValid = await triggerTimeseries();
-                    const isLocationValid = await triggerLocation();
-                    const isWaterlevel = tstype_id === 1;
-                    const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
-                    if (isTimeseriesValid && isWatlevmpValid && isLocationValid) {
-                      setActiveStep(2);
-                    }
-                  }
-                }}
-              >
-                <StepLabel>
-                  <Typography variant="body2" textTransform={'capitalize'}>
-                    Udstyr
-                  </Typography>
-                </StepLabel>
-              </StepButton>
-            </Step>
-          </Stepper>
-          {activeStep === 0 && (
-            <FormProvider {...locationFormMethods}>
-              <StamdataLocation>
-                <LocationForm size={size} loc_id={loc_id} />
-              </StamdataLocation>
-            </FormProvider>
-          )}
-          {activeStep === 1 && (
-            <FormProvider {...timeseriesFormMethods}>
-              <StamdataTimeseries boreholeno={boreholeno}>
-                <Grid2 container size={12} spacing={1}>
-                  <TimeseriesForm size={size} loc_name={loc_name} />
-                  <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
-                    <FormProvider {...watlevmpFormMethods}>
-                      <StamdataWatlevmp tstype_id={tstype_id}>
-                        <DefaultWatlevmpForm />
-                      </StamdataWatlevmp>
-                    </FormProvider>
-                  </Grid2>
+                }
+              }}
+            >
+              <StepLabel>
+                <Typography variant="body2" textTransform={'capitalize'}>
+                  Udstyr
+                </Typography>
+              </StepLabel>
+            </StepButton>
+          </Step>
+        </Stepper>
+        {activeStep === 0 && (
+          <FormProvider {...locationFormMethods}>
+            <StamdataLocation>
+              <LocationForm size={size} loc_id={loc_id} />
+            </StamdataLocation>
+          </FormProvider>
+        )}
+        {activeStep === 1 && (
+          <FormProvider {...timeseriesFormMethods}>
+            <StamdataTimeseries boreholeno={boreholeno}>
+              <Grid2 container size={12} spacing={1}>
+                <TimeseriesForm size={size} loc_name={loc_name} />
+                <Grid2 size={size} display={'flex'} flexDirection={'row'} gap={2}>
+                  <FormProvider {...watlevmpFormMethods}>
+                    <StamdataWatlevmp tstype_id={tstype_id}>
+                      <DefaultWatlevmpForm />
+                    </StamdataWatlevmp>
+                  </FormProvider>
                 </Grid2>
-              </StamdataTimeseries>
-            </FormProvider>
-          )}
-          {activeStep === 2 && (
-            <FormProvider {...unitFormMethods}>
-              <StamdataUnit tstype_id={tstype_id}>
-                <DefaultUnitForm />
-              </StamdataUnit>
-            </FormProvider>
-          )}
-          <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={2}>
-            <Box sx={{flex: '1 1 auto'}} />
-            <Button
-              bttype="primary"
-              color="inherit"
-              startIcon={<ArrowBack />}
-              disabled={activeStep === 0 || denyStepping()}
-              onClick={async () => {
-                setActiveStep(activeStep - 1);
-              }}
-              sx={{mr: 1}}
-            >
-              Tilbage
-            </Button>
-            <Button
-              bttype="primary"
-              disabled={activeStep === 2 || denyStepping()}
-              endIcon={<ArrowForwardIcon fontSize="small" />}
-              onClick={async () => {
-                const valid = await validateStepping();
-                if (valid) setActiveStep(activeStep + 1);
-              }}
-              sx={{mr: 1}}
-            >
-              Næste
-            </Button>
-            <Button
-              bttype="primary"
-              startIcon={<Save />}
-              onClick={handleSubmit}
-              disabled={loctype_id === -1}
-            >
-              Gem & afslut
-            </Button>
-          </Grid2>
+              </Grid2>
+            </StamdataTimeseries>
+          </FormProvider>
+        )}
+        {activeStep === 2 && (
+          <FormProvider {...unitFormMethods}>
+            <StamdataUnit tstype_id={tstype_id}>
+              <DefaultUnitForm />
+            </StamdataUnit>
+          </FormProvider>
+        )}
+        <Grid2 size={12} sx={{display: 'flex', justifyContent: 'end'}} gap={0.5} pr={0.5}>
+          <Box sx={{flex: '1 1 auto'}} />
+          <Button
+            bttype="primary"
+            color="inherit"
+            startIcon={!isMobile && <ArrowBack />}
+            disabled={activeStep === 0 || denyStepping()}
+            onClick={async () => {
+              setActiveStep(activeStep - 1);
+            }}
+            sx={{mr: 1}}
+          >
+            {isMobile && <ArrowBack />}
+            {!isMobile && 'Tilbage'}
+          </Button>
+          <Button
+            bttype="primary"
+            disabled={activeStep === 2 || denyStepping()}
+            endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
+            onClick={async () => {
+              const valid = await validateStepping();
+              if (valid) setActiveStep(activeStep + 1);
+            }}
+            sx={{mr: 1}}
+          >
+            {isMobile && <ArrowForwardIcon fontSize="small" />}
+            {!isMobile && 'Næste'}
+          </Button>
+          <Button
+            bttype="primary"
+            startIcon={<Save />}
+            onClick={handleSubmit}
+            disabled={loctype_id === -1}
+          >
+            Gem & afslut
+          </Button>
         </Grid2>
-      </StationPageBoxLayout>
+      </Grid2>
     </>
   );
 };
