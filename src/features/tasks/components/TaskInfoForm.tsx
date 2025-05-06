@@ -102,6 +102,13 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
   return (
     <Box display={'flex'} flexDirection={'column'}>
+      <Typography variant="h6" fontWeight={600} mb={1}>
+        Opgaveoplysninger
+      </Typography>
+      <Typography>
+        Tidsserie: {selectedTask.tstype_name}{' '}
+        {selectedTask.prefix ? ' - ' + selectedTask.prefix : ''}
+      </Typography>
       <Grid container spacing={1}>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input
@@ -129,79 +136,41 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
         <Grid item mobile={12} pb={1}>
-          <Accordion
-            disableGutters={true}
-            sx={{
-              border: '1px solid',
-              borderColor: 'primary.main',
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
+          <Grid container display={'flex'} flexDirection={'row'} alignItems={'start'} spacing={0}>
+            <Grid
+              item
+              mobile={12}
+              laptop={12}
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              gap={1}
             >
-              Flere informationer
-            </AccordionSummary>
-            <AccordionDetails sx={{padding: 1}}>
-              <Grid
-                container
-                display={'flex'}
-                flexDirection={'row'}
-                alignItems={'start'}
-                spacing={1}
-              >
-                <Grid
-                  item
-                  mobile={12}
-                  laptop={6}
-                  display={'flex'}
-                  flexDirection={'row'}
-                  alignItems={'center'}
-                  gap={1}
-                >
-                  <Typography>Bloker</Typography>
-                  <TaskForm.BlockAll
-                    sx={{pb: 0}}
-                    onBlurCallback={async () => await handlePatch('block_all')}
-                    onChangeCallback={(e) => {
-                      console.log(e);
-                    }}
-                  />
-                </Grid>
-                <Grid
-                  item
-                  mobile={12}
-                  laptop={6}
-                  display={'flex'}
-                  flexDirection={'row'}
-                  alignItems={'center'}
-                  gap={1}
-                >
-                  <Typography>på</Typography>
-                  <TaskForm.BlockOnLocation
-                    sx={{pb: 0}}
-                    onBlurCallback={async () => await handlePatch('block_on_location')}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Lokationstype" name="loctypename" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Tidsserie type" name="tstype_name" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Projektnummer" name="projectno" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={12}>
-                <TaskForm.Input label="Projektinfo" name="project_text" disabled />
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
+              <Typography>Bloker</Typography>
+              <TaskForm.BlockAll
+                sx={{pb: 0}}
+                onBlurCallback={async () => await handlePatch('block_all')}
+                onChangeCallback={(e) => {
+                  console.log(e);
+                }}
+              />
+            </Grid>
+            <Grid
+              item
+              mobile={12}
+              laptop={12}
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              gap={1}
+            >
+              <Typography>på</Typography>
+              <TaskForm.BlockOnLocation
+                sx={{pb: 0}}
+                onBlurCallback={async () => await handlePatch('block_on_location')}
+              />
+            </Grid>
+          </Grid>
         </Grid>
         {/* <Grid item mobile={12} tablet={12} laptop={6}>
         </Grid> */}
@@ -217,7 +186,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
       </Grid>
-
       <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
         <Box>
           <Tooltip arrow title={deleteTaskTitle}>

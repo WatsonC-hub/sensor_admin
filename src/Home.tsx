@@ -1,11 +1,12 @@
 import React from 'react';
-import {Route, Routes} from 'react-router-dom';
+import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
 import TasksPage from './pages/admin/opgaver/TasksPage';
 import {AppContext} from './state/contexts';
 import CreateStation from './features/station/components/CreateStation';
+import ScanComponent from './components/ScanComponent';
 
 const Home = () => {
   return (
@@ -28,6 +29,8 @@ const Home = () => {
             </AppContext.Provider>
           }
         />
+        <Route path="/:labelid" element={<ScanComponent />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

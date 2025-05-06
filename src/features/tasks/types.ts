@@ -73,6 +73,7 @@ export type Task = {
   itinerary_id: string | null;
   can_edit: boolean;
   flag: FlagEnum;
+  prefix: string | null;
 };
 
 export type DBTask = {

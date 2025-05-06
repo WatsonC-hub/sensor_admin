@@ -307,10 +307,10 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       disabled={disabled || props.disabled}
     >
       <MenuItem key={'bloker'} value={'false'}>
-        Tidsserie
+        tidsserie
       </MenuItem>
       <MenuItem key={'bloker_alle'} value={'true'}>
-        Lokation
+        lokation
       </MenuItem>
     </FormInput>
     // <Controller<FormValues, 'block_on_location'>

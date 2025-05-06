@@ -187,6 +187,7 @@ export interface MapOverview {
   groups: Group[];
   flag: FlagEnum | null;
   notification_id: NotificationIDEnum | null;
+  due_date: string | null;
 }
 
 const mapOverviewOptions = queryOptions<MapOverview[]>({
