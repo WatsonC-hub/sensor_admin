@@ -4,8 +4,8 @@ import {Route, Routes} from 'react-router-dom';
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
 import TasksPage from './pages/admin/opgaver/TasksPage';
-import OpretStamdata from './pages/field/stamdata/OpretStamdata';
 import {AppContext} from './state/contexts';
+import CreateStation from './features/station/components/CreateStation';
 
 const Home = () => {
   return (
@@ -24,7 +24,7 @@ const Home = () => {
           path="stamdata"
           element={
             <AppContext.Provider value={{}}>
-              <OpretStamdata />
+              <CreateStation />
             </AppContext.Provider>
           }
         />
