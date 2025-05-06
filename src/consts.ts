@@ -1,3 +1,5 @@
+import {DataToShow} from './types';
+
 let mapToken: string;
 
 if (import.meta.env.PROD) {
@@ -163,4 +165,16 @@ export const httpStatusDescriptions = {
   '502': 'Forkert svar fra serveren',
   '503': 'Service utilgængelig - Serveren er midlertidigt nede',
   '504': 'Forbindelsen tog for lang tid',
+};
+
+export const defaultDataToShow: DataToShow = {
+  Algoritmer: false,
+  Kontrolmålinger: true,
+  Godkendt: false,
+  Nedbør: false,
+  // 'Kvalitets stempel': false,
+  'Korrigerede spring': false,
+  'Valide værdier': false,
+  'Fjernet data': false,
+  Rådata: false,
 };

@@ -35,8 +35,9 @@ import Button from './Button';
 import {Download} from '@mui/icons-material';
 import {useAppContext} from '~/state/contexts';
 import {dataToShowAtom} from '~/state/atoms';
-import {useAtom} from 'jotai';
+import {useSetAtom} from 'jotai';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
+import {DataToShow} from '~/types';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -51,6 +52,7 @@ interface PlotlyGraphProps {
   data: Array<Partial<PlotData>>;
   xRange?: Array<string>;
   setXRange?: (range: Array<string>) => void;
+  dataToShow: DataToShow;
 }
 
 const Plot = createPlotlyComponent(Plotly);
@@ -64,6 +66,7 @@ export default function PlotlyGraph({
   data,
   xRange,
   setXRange,
+  dataToShow,
 }: PlotlyGraphProps) {
   const [pagetoShow] = useStationPages();
   const {ts_id} = useAppContext([], ['ts_id']);
@@ -75,7 +78,7 @@ export default function PlotlyGraph({
   if (plot) Plotly.Plots.resize(plot);
   // console.log('plot', Plotly.rezi);
   const [isOpen, setIsOpen] = useState(false);
-  const [dataToShow, setDataToShow] = useAtom(dataToShowAtom);
+  const setDataToShow = useSetAtom(dataToShowAtom);
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
@@ -178,7 +181,7 @@ export default function PlotlyGraph({
   const zoomButtonStyle = {m: 0, textTransform: 'initial', minWidth: 25};
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDataToShow({...dataToShow, [event.target.name]: event.target.checked});
+    setDataToShow((prev) => ({...prev, [event.target.name]: event.target.checked}));
   };
 
   useEffect(() => {
@@ -222,8 +225,8 @@ export default function PlotlyGraph({
             Alt
           </Button>
         </Box>
-        <Box display={'flex'} flexDirection={'row'} mr={isTouch ? 1 : 5}>
-          <Tooltip title={isMobile ? 'Genberegn advarsler' : ''} arrow placement="top">
+        <Box display={'flex'} flexDirection={'row'} mr={isTouch ? 1 : 5} gap={isTouch ? 0 : 1}>
+          <Tooltip title={'Genberegn alle advarsler'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -247,7 +250,7 @@ export default function PlotlyGraph({
               {!isMobile && ' Advarsler'}
             </Button>
           </Tooltip>
-          <Tooltip title={isMobile ? 'Genberegn data' : ''} arrow placement="top">
+          <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -261,7 +264,7 @@ export default function PlotlyGraph({
               {!isMobile && 'Genberegn'}
             </Button>
           </Tooltip>
-          <Tooltip title={isMobile ? 'Download data' : ''} arrow placement="top">
+          <Tooltip title={'Download tidsserie data'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -276,7 +279,7 @@ export default function PlotlyGraph({
               {!isMobile && 'Download'}
             </Button>
           </Tooltip>
-          <Tooltip title={isMobile ? 'Download ekstern data' : ''} arrow placement="top">
+          <Tooltip title={'Download ekstern data'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
@@ -300,7 +303,7 @@ export default function PlotlyGraph({
           </Tooltip>
           <Button
             bttype="secondary"
-            endIcon={!isMobile && <TuneRoundedIcon />}
+            startIcon={!isMobile && <TuneRoundedIcon />}
             sx={{textTransform: 'initial', my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
             onClick={() => setIsOpen(!isOpen)}
           >
@@ -350,15 +353,26 @@ export default function PlotlyGraph({
                 />
               </Box>
             ))}
-            <Button
-              sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
-              onClick={() => {
-                setIsOpen(false);
-              }}
-              bttype="secondary"
-            >
-              Luk
-            </Button>
+            <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} mt={1}>
+              <Button
+                sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
+                onClick={() => {
+                  setDataToShow({});
+                }}
+                bttype="secondary"
+              >
+                Nulstil
+              </Button>
+              <Button
+                sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
+                onClick={() => {
+                  setIsOpen(false);
+                }}
+                bttype="secondary"
+              >
+                Luk
+              </Button>
+            </Box>
           </Box>
         </ClickAwayListener>
       )}

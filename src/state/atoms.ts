@@ -6,6 +6,7 @@ import type {MRT_TableState, MRT_RowData} from 'material-react-table';
 import {Moment} from 'moment';
 import {PlotDatum} from 'plotly.js';
 import {TaskUser} from '~/features/tasks/types';
+import {DataToShow} from '~/types';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {
@@ -186,17 +187,7 @@ export const boreholeTableAtom = atomWithStorage('BoreholeTableState', {
   density: 'compact',
 });
 
-export const dataToShowAtom = atom({
-  Algoritmer: true,
-  Kontrolmålinger: true,
-  Godkendt: true,
-  Nedbør: false,
-  // 'Kvalitets stempel': false,
-  'Korrigerede spring': false,
-  'Valide værdier': false,
-  'Fjernet data': false,
-  Rådata: false,
-});
+export const dataToShowAtom = atom<Partial<DataToShow>>({});
 
 export const fullScreenAtom = atom(false);
 

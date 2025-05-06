@@ -480,3 +480,14 @@ export type LocationTasks = {
   blocks_notifications: number[];
   notification_name: string;
 };
+
+export type DataToShow = {
+  Algoritmer: boolean;
+  Kontrolmålinger: boolean;
+  Godkendt: boolean;
+  Nedbør: boolean;
+  'Korrigerede spring': boolean;
+  'Valide værdier': boolean;
+  'Fjernet data': boolean;
+  Rådata: boolean;
+};

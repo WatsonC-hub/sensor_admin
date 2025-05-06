@@ -61,7 +61,11 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
           <Box>
-            <GraphManager />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>
@@ -84,7 +88,11 @@ export default function Station() {
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
-            <GraphManager />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>

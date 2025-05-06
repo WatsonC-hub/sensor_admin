@@ -19,7 +19,6 @@ import {
   PejlingItem,
 } from '~/features/station/components/pejling/PejlingSchema';
 import {PejlingItem as PejlingWithId, LatestMeasurement} from '~/types';
-import PlotGraph from '~/features/station/components/StationGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
@@ -142,6 +141,9 @@ const Pejling = () => {
           dynamicMeasurement={
             pageToShow === stationPages.PEJLING && showForm === true ? dynamic : undefined
           }
+          defaultDataToShow={{
+            Kontrolmålinger: true,
+          }}
         />
       </Box>
       <Divider />
