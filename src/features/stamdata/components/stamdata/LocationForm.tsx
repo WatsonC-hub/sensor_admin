@@ -1,4 +1,5 @@
-import {Grid, InputAdornment, MenuItem} from '@mui/material';
+import {TextField, InputAdornment, MenuItem, Grid2} from '@mui/material';
+
 import {useQuery} from '@tanstack/react-query';
 import {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
@@ -46,11 +47,9 @@ export default function LocationForm({mode, disable = false}: Props) {
   const gridsize = mode === 'modal' ? 12 : 6;
   const user = useUser();
 
-  console.log(getValues().unit);
-
   return (
-    <Grid container spacing={2} alignItems="center">
-      <Grid item xs={12} sm={gridsize}>
+    <Grid2 container spacing={2} alignItems="center">
+      <Grid2 size={{xs: 12, sm: gridsize}}>
         <FormInput
           name="location.loc_name"
           label="Navn"
@@ -59,8 +58,8 @@ export default function LocationForm({mode, disable = false}: Props) {
           placeholder="f.eks. Engsø"
           disabled={disable}
         />
-      </Grid>
-      <Grid item xs={12} sm={gridsize}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: gridsize}}>
         <FormInput
           name="location.mainloc"
           label="Hoved lokation"
@@ -68,8 +67,8 @@ export default function LocationForm({mode, disable = false}: Props) {
           placeholder="f.eks. Aarhus Kommune"
           disabled={disable}
         />
-      </Grid>
-      <Grid item xs={12} sm={gridsize}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: gridsize}}>
         <Controller
           name="location.groups"
           control={control}
@@ -77,10 +76,10 @@ export default function LocationForm({mode, disable = false}: Props) {
             <LocationGroups value={value} setValue={onChange} onBlur={onBlur} disable={disable} />
           )}
         />
-      </Grid>
+      </Grid2>
       {user?.superUser && (
         <>
-          <Grid item xs={12} sm={gridsize}>
+          <Grid2 size={{xs: 12, sm: gridsize}}>
             <Controller
               name="location.initial_project_no"
               control={control}
@@ -94,11 +93,11 @@ export default function LocationForm({mode, disable = false}: Props) {
                 />
               )}
             />
-          </Grid>
+          </Grid2>
         </>
       )}
 
-      <Grid item xs={12} sm={gridsize}>
+      <Grid2 size={{xs: 12, sm: gridsize}}>
         <FormInput
           name="location.x"
           label="X-koordinat (UTM)"
@@ -117,8 +116,8 @@ export default function LocationForm({mode, disable = false}: Props) {
           }}
           disabled={disable}
         />
-      </Grid>
-      <Grid item xs={12} sm={gridsize}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: gridsize}}>
         <FormInput
           name="location.y"
           label="Y-koordinat (UTM)"
@@ -137,8 +136,8 @@ export default function LocationForm({mode, disable = false}: Props) {
           }}
           disabled={disable}
         />
-      </Grid>
-      <Grid item xs={6} sm={gridsize / 2} md={gridsize / 2}>
+      </Grid2>
+      <Grid2 size={{xs: 6, sm: gridsize / 2, md: gridsize / 2}}>
         <FormInput
           name="location.terrainlevel"
           label="Terrænkote"
@@ -147,8 +146,8 @@ export default function LocationForm({mode, disable = false}: Props) {
           fullWidth
           disabled={disable}
         />
-      </Grid>
-      <Grid item xs={6} sm={gridsize / 2} md={gridsize / 2}>
+      </Grid2>
+      <Grid2 size={{xs: 6, sm: gridsize / 2, md: gridsize / 2}}>
         <FormInput
           name="location.terrainqual"
           label="Type af terrænkote"
@@ -165,11 +164,11 @@ export default function LocationForm({mode, disable = false}: Props) {
           <MenuItem value="dGPS">dGPS</MenuItem>
           <MenuItem value="DTM">DTM</MenuItem>
         </FormInput>
-      </Grid>
-      <Grid item xs={12} sm={gridsize}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: gridsize}}>
         <LocationTypeSelect disable={disable} />
-      </Grid>
-      <Grid item xs={12} sm={gridsize}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: gridsize}}>
         <FormInput
           name="location.description"
           label="Beskrivelse"
@@ -177,7 +176,34 @@ export default function LocationForm({mode, disable = false}: Props) {
           disabled={disable}
           placeholder="f.eks. ligger tæt ved broen"
         />
-      </Grid>
-    </Grid>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 6}} alignContent={'center'} alignItems="center">
+        <TextField
+          value={locationData?.loc_id}
+          disabled
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
+          }}
+          label="Lokations ID"
+          sx={{
+            pb: 0.6,
+            '& .MuiInputBase-input.Mui-disabled': {
+              WebkitTextFillColor: '#000000',
+            },
+            '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+            '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+            '& .MuiOutlinedInput-root': {
+              '& > fieldset': {borderColor: 'primary.main'},
+            },
+            '.MuiFormHelperText-root': {
+              position: 'absolute',
+              top: 'calc(100% - 8px)',
+            },
+          }}
+        />
+      </Grid2>
+    </Grid2>
   );
 }

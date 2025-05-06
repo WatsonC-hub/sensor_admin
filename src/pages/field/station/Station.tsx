@@ -66,15 +66,7 @@ export default function Station() {
           </Box>
           <Divider />
           <StationPageBoxLayout>
-            <Box
-              sx={{
-                borderRadius: 4,
-                boxShadow: 3,
-                padding: '16px',
-              }}
-            >
-              <EditUnit />
-            </Box>
+            <EditUnit />
           </StationPageBoxLayout>
         </>
       )}
