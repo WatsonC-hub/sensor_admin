@@ -364,16 +364,10 @@ const Layout = ({children, variant}: LayoutProps) => {
         },
       }}
     >
-      <Box pt={2} pl={2}>
+      <Box pt={2} px={1}>
         {!isMobile && <MinimalSelect />}
         {isMobile && (
-          <Typography
-            textOverflow="ellipsis"
-            overflow="hidden"
-            px={2}
-            whiteSpace="wrap"
-            color="white"
-          >
+          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
             {locationdata?.loc_name}
           </Typography>
         )}
