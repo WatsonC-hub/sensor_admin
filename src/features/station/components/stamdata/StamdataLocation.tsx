@@ -1,4 +1,4 @@
-import {MenuItem, Typography, InputAdornment} from '@mui/material';
+import {MenuItem, Typography, InputAdornment, TextField} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React, {ChangeEvent, useEffect} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
@@ -22,6 +22,8 @@ import {boreholeSearchAtom} from '~/state/atoms';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {stationPages} from '~/helpers/EnumHelper';
+
+import {useAppContext} from '~/state/contexts';
 
 type Props = {
   children: React.ReactNode;
@@ -472,6 +474,37 @@ const Description = (
   );
 };
 
+const LocationID = () => {
+  const {loc_id} = useAppContext(['loc_id']);
+  return (
+    <TextField
+      value={loc_id}
+      disabled
+      slotProps={{
+        inputLabel: {
+          shrink: true,
+        },
+      }}
+      label="Lokations ID"
+      sx={{
+        pb: 0.6,
+        '& .MuiInputBase-input.Mui-disabled': {
+          WebkitTextFillColor: '#000000',
+        },
+        '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+        '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+        '& .MuiOutlinedInput-root': {
+          '& > fieldset': {borderColor: 'primary.main'},
+        },
+        '.MuiFormHelperText-root': {
+          position: 'absolute',
+          top: 'calc(100% - 8px)',
+        },
+      }}
+    />
+  );
+};
+
 StamdataLocation.LoctypeSelect = LoctypeSelect;
 StamdataLocation.X = X;
 StamdataLocation.Y = Y;
@@ -483,5 +516,6 @@ StamdataLocation.InitialProjectNo = InitialProjectNo;
 StamdataLocation.Description = Description;
 StamdataLocation.Boreholeno = Boreholeno;
 StamdataLocation.BoreholeSuffix = BoreholeSuffix;
+StamdataLocation.LocationID = LocationID;
 
 export default StamdataLocation;
