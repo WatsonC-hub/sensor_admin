@@ -1,12 +1,4 @@
-import {
-  Box,
-  ClickAwayListener,
-  FormControlLabel,
-  SvgIcon,
-  Switch,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import {Box, ClickAwayListener, Tooltip} from '@mui/material';
 import moment from 'moment';
 import type {
   Layout,
@@ -21,23 +13,20 @@ import React, {useEffect, useState} from 'react';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import ReplayIcon from '@mui/icons-material/Replay';
 import usePlotlyLayout from '~/features/kvalitetssikring/components/usePlotlyLayout';
-import LinkIcon from '@mui/icons-material/Link';
 import {MergeType} from '~/helpers/EnumHelper';
-import {rerunQAIcon} from '~/helpers/plotlyIcons';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useCorrectData} from '~/hooks/useCorrectData';
-import {useRunQA} from '~/hooks/useRunQA';
+
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 
 import Button from './Button';
 import {Download} from '@mui/icons-material';
 import {useAppContext} from '~/state/contexts';
-import {dataToShowAtom} from '~/state/atoms';
-import {useSetAtom} from 'jotai';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
+
 import {DataToShow} from '~/types';
+import GraphSwitch from '~/features/station/components/GraphSwitch';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -68,17 +57,15 @@ export default function PlotlyGraph({
   setXRange,
   dataToShow,
 }: PlotlyGraphProps) {
-  const [pagetoShow] = useStationPages();
   const {ts_id} = useAppContext([], ['ts_id']);
   const {data: metadata} = useTimeseriesData();
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
   const [isOpen, setIsOpen] = useState(false);
-  const setDataToShow = useSetAtom(dataToShowAtom);
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
-  const {mutation: rerunQAMutation} = useRunQA(metadata?.ts_id);
+
   const {isTouch, isMobile} = useBreakpoints();
 
   const {data: edgeDates} = useEdgeDates(metadata?.ts_id);
@@ -177,10 +164,6 @@ export default function PlotlyGraph({
   };
   const zoomButtonStyle = {m: 0, textTransform: 'initial', minWidth: 25};
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDataToShow((prev) => ({...prev, [event.target.name]: event.target.checked}));
-  };
-
   useEffect(() => {
     if (tstype_name) setLayout({yaxis: {title: {text: `${tstype_name} [${unit}]`}}});
   }, [tstype_name, unit]);
@@ -223,37 +206,13 @@ export default function PlotlyGraph({
           </Button>
         </Box>
         <Box display={'flex'} flexDirection={'row'} mr={isTouch ? 1 : 5} gap={isTouch ? 0 : 1}>
-          <Tooltip title={'Genberegn alle advarsler'} arrow placement="top">
-            <Button
-              bttype="link"
-              size="small"
-              onClick={() => {
-                correctMutation.mutate();
-              }}
-              startIcon={
-                !isMobile && (
-                  <SvgIcon sx={{width: 18, height: 18}} viewBox="0 0 500 500">
-                    <path d={rerunQAIcon.path} />
-                  </SvgIcon>
-                )
-              }
-              sx={actionButtonStyle}
-            >
-              {isMobile && (
-                <SvgIcon sx={{width: 18, height: 18}} viewBox="0 0 500 500">
-                  <path d={rerunQAIcon.path} />
-                </SvgIcon>
-              )}
-              {!isMobile && ' Advarsler'}
-            </Button>
-          </Tooltip>
           <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
             <Button
               bttype="link"
               size="small"
               startIcon={!isMobile && <ReplayIcon />}
               onClick={() => {
-                rerunQAMutation.mutate();
+                correctMutation.mutate();
               }}
               sx={actionButtonStyle}
             >
@@ -276,28 +235,6 @@ export default function PlotlyGraph({
               {!isMobile && 'Download'}
             </Button>
           </Tooltip>
-          <Tooltip title={'Download ekstern data'} arrow placement="top">
-            <Button
-              bttype="link"
-              size="small"
-              onClick={() => {
-                const ts_id = window.location.href.split('/').at(-1)?.split('#').at(0);
-                // feature detection
-                // Browsers that support HTML5 download attribute
-                const url =
-                  'https://watsonc.dk/calypso/timeseries_plot.html?&ts_id=' +
-                  ts_id +
-                  '&pejling=true';
-                window.open(url);
-                // exportToCsv("data.csv", rows);
-              }}
-              startIcon={!isMobile && <LinkIcon />}
-              sx={actionButtonStyle}
-            >
-              {isMobile && <LinkIcon fontSize="small" />}
-              {!isMobile && 'Ekstern'}
-            </Button>
-          </Tooltip>
           <Button
             bttype="secondary"
             startIcon={!isMobile && <TuneRoundedIcon />}
@@ -311,66 +248,7 @@ export default function PlotlyGraph({
       </Box>
       {isOpen && (
         <ClickAwayListener onClickAway={() => setIsOpen(false)}>
-          <Box
-            sx={{
-              position: 'absolute',
-              right: isMobile ? '8px' : '18px',
-              width: '175px',
-              backgroundColor: '#fff',
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-              zIndex: 1000,
-              pl: '10px',
-              py: '10px',
-              mt: 0.5,
-            }}
-          >
-            {Object.keys(dataToShow).map((key) => (
-              <Box key={key}>
-                <FormControlLabel
-                  key={key}
-                  control={
-                    <Switch
-                      checked={
-                        Object.entries(dataToShow).find((item) => item[0] === key)?.[1] === true ||
-                        (key === 'Kontrolmålinger' && pagetoShow === 'pejling')
-                      }
-                      onChange={handleChange}
-                      name={key}
-                      disabled={
-                        (key === 'Kontrolmålinger' && pagetoShow === 'pejling') ||
-                        (key === 'Rådata' && metadata?.calculated)
-                      }
-                      size={'small'}
-                      color="primary"
-                    />
-                  }
-                  label={<Typography variant="caption">{key}</Typography>}
-                />
-              </Box>
-            ))}
-            <Box display={'flex'} flexDirection={'row'} justifyContent={'end'} mt={1}>
-              <Button
-                sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
-                onClick={() => {
-                  setDataToShow({});
-                }}
-                bttype="secondary"
-              >
-                Nulstil
-              </Button>
-              <Button
-                sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
-                onClick={() => {
-                  setIsOpen(false);
-                }}
-                bttype="secondary"
-              >
-                Luk
-              </Button>
-            </Box>
-          </Box>
+          <GraphSwitch dataToShow={dataToShow} setIsOpen={setIsOpen} />
         </ClickAwayListener>
       )}
       <Plot
