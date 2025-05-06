@@ -8,6 +8,7 @@ import {useDisplayState} from '~/hooks/ui';
 import {Box, Divider, Typography} from '@mui/material';
 import {useMapFilterStore} from '~/features/map/store';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import moment from 'moment';
 
 function easeInOutQuint(t: number) {
   return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
@@ -21,7 +22,13 @@ const LocationListVirtualizer = () => {
   const getScrollElement = useCallback(() => parentRef.current, []);
   const insertionDirection = useRef<'forward' | 'backward'>('forward');
   const locIds = useMapFilterStore((state) => state.locIds);
-  const list: (MapOverview | 'divider')[] = listFilteredData.filter((item) => 'loc_id' in item);
+  const list: (MapOverview | 'divider')[] = listFilteredData
+    .filter((item) => 'loc_id' in item)
+    .sort((a, b) => {
+      if (moment(a.due_date).isBefore(b.due_date)) return -1;
+      if (moment(a.due_date).isAfter(b.due_date)) return 1;
+      return 0;
+    });
 
   const boolArray = list.map((item) => typeof item == 'object' && locIds.includes(item?.loc_id));
   const firstNotInLocIds = boolArray.indexOf(false);

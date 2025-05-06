@@ -1,5 +1,5 @@
-import {EditOutlined, Person} from '@mui/icons-material';
-import {Box, Typography, Card, CardHeader, CardContent, Button, Grid2} from '@mui/material';
+import {EditOutlined, Person, Warning} from '@mui/icons-material';
+import {Box, Typography, Card, CardHeader, CardContent, Button, Grid2, Grid} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -135,6 +135,22 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
           sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 0}}}
         >
           <Grid2 container color="grey.700" spacing={1}>
+            {(task.block_all || task.block_on_location) && (
+              <Grid2 size={12} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
+                <Warning fontSize="small" />
+                <Typography
+                  variant="caption"
+                  fontSize={12}
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={0.5}
+                  alignItems="center"
+                >
+                  Blokerer {task.block_all ? 'alle' : 'samme'} opgaver på{' '}
+                  {task.block_on_location ? 'lokationen' : 'tidsserien'}
+                </Typography>
+              </Grid2>
+            )}
             <Grid2 size={6} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
               <Person
                 sx={{
