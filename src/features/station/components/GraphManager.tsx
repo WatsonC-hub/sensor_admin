@@ -7,7 +7,11 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import PlotlyGraph from '~/components/PlotlyGraph';
-import {correction_map, setGraphHeight} from '~/consts';
+import {
+  correction_map,
+  setGraphHeight,
+  defaultDataToShow as globalDefaultDataToShow,
+} from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
@@ -24,10 +28,11 @@ import {
   qaSelection,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {QaGraphLabel} from '~/types';
+import {DataToShow, QaGraphLabel} from '~/types';
 
 interface GraphManagerProps {
   dynamicMeasurement?: Array<string | number>;
+  defaultDataToShow?: Partial<DataToShow>;
 }
 
 const initRange = [
@@ -35,18 +40,19 @@ const initRange = [
   moment().format('YYYY-MM-DDTHH:mm'),
 ];
 
-const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
+const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps) => {
+  const {ts_id} = useAppContext(['ts_id']);
+
   const setSelection = useSetAtom(qaSelection);
   const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
   const levelCorrection = useAtomValue(levelCorrectionAtom);
   const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
   const [pagetoShow] = useStationPages();
-  const {ts_id} = useAppContext(['ts_id']);
   const {data: timeseries_data} = useTimeseriesData();
   const loc_name = timeseries_data?.loc_name;
   const ts_name = timeseries_data?.ts_name;
   const {isMobile} = useBreakpoints();
-  const dataToShow = useAtomValue(dataToShowAtom);
+  const dataToShowSelected = useAtomValue(dataToShowAtom);
   const [xRange, setXRange] = useState(initRange);
   const {data: graphData} = useGraphData(ts_id, xRange);
   const {data: edgeDates} = useEdgeDates(ts_id);
@@ -56,6 +62,12 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
     yaxis3: {
       visible: false,
     },
+  };
+
+  const dataToShow: DataToShow = {
+    ...globalDefaultDataToShow,
+    ...defaultDataToShow,
+    ...dataToShowSelected,
   };
 
   const {
@@ -363,8 +375,17 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
     },
   ];
 
-  const handlePlotlySelected = (eventData: any) => {
-    if (pagetoShow === 'algoritmer' || pagetoShow === 'justeringer') {
+  useEffect(() => {
+    if (dynamicMeasurement?.[0] != undefined) {
+      setXRange([
+        moment(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DD'),
+        moment(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DD'),
+      ]);
+    }
+  }, [dynamicMeasurement?.[0]]);
+
+  if (pagetoShow === 'justeringer') {
+    const handlePlotlySelected = (eventData: any) => {
       if (eventData === undefined) {
         return;
       } else {
@@ -389,11 +410,9 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
         setSelection(eventData);
         if (eventData.points && eventData.points.length > 0) toast.dismiss('juster');
       }
-    }
-  };
+    };
 
-  const handleRelayout = (e: any) => {
-    if (pagetoShow === 'algoritmer' || pagetoShow === 'justeringer') {
+    const handleRelayout = (e: any) => {
       if (e['selections'] && e['selections'].length === 0) {
         setSelection({});
       }
@@ -403,24 +422,14 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
       } else if (e['dragmode'] === 'select') {
         setInitiateSelect(true);
       }
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (dynamicMeasurement?.[0] != undefined) {
-      setXRange([
-        moment(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DD'),
-        moment(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DD'),
-      ]);
-    }
-  }, [dynamicMeasurement?.[0]]);
-
-  if (pagetoShow === 'algoritmer' || pagetoShow === 'justeringer') {
     return (
       <Box
         style={{
           height: setGraphHeight(isMobile),
         }}
+        my={1}
       >
         <PlotlyGraph
           plotEventProps={{
@@ -441,7 +450,9 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
           shapes={shapes}
           annotations={annotations}
           layout={layout}
+          xRange={xRange}
           setXRange={setXRange}
+          dataToShow={dataToShow}
         />
       </Box>
     );
@@ -461,6 +472,7 @@ const GraphManager = ({dynamicMeasurement}: GraphManagerProps) => {
         annotations={annotations}
         xRange={xRange}
         setXRange={setXRange}
+        dataToShow={dataToShow}
       />
     </Box>
   );
