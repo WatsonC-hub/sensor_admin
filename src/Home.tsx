@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Routes} from 'react-router-dom';
+import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
@@ -29,15 +29,8 @@ const Home = () => {
             </AppContext.Provider>
           }
         />
-        <Route
-          path="*"
-          element={
-            <AppContext.Provider value={{}}>
-              <TasksPage />
-            </AppContext.Provider>
-          }
-        />
         <Route path="/:labelid" element={<ScanComponent />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );
