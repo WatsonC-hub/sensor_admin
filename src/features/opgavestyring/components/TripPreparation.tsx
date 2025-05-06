@@ -21,7 +21,10 @@ interface TripPreparationProps {
 const TripPreparation = ({data}: TripPreparationProps) => {
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [completeOpen, setCompleteOpen] = React.useState(false);
-  const {itinerary_id} = useDisplayState((state) => state);
+  const [itinerary_id, setItineraryId] = useDisplayState((state) => [
+    state.itinerary_id,
+    state.setItineraryId,
+  ]);
   const {complete} = useTaskItinerary();
   return (
     <Box
@@ -89,6 +92,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
         message="Færdiggørelse fjerner alle lokationer fra turen og ændrer ansvarlig på ikke færdiggjorte opgaver. Er du sikker på at du vil færdiggøre opgaven?"
         handleOpret={() => {
           complete.mutate({path: `${itinerary_id}`});
+          setItineraryId(null);
         }}
       />
     </Box>
