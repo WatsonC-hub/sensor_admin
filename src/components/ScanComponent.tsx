@@ -22,7 +22,7 @@ export default function ScanComponent() {
   }
 
   if (isError) {
-    return <Navigate to="/field" replace={true} />;
+    return <Navigate to="/" replace={true} />;
   }
 
   let redirect = '/field';
