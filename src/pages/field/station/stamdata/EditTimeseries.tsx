@@ -36,6 +36,7 @@ const EditTimeseries = () => {
       queryClient.invalidateQueries({
         queryKey: ['metadata', ts_id],
       });
+      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
       toast.success('Tidsserie er opdateret');
     },
   });
