@@ -1,4 +1,4 @@
-import {MenuItem, InputAdornment} from '@mui/material';
+import {MenuItem, InputAdornment, TextField} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import {apiClient} from '~/apiClient';
@@ -10,6 +10,7 @@ import {
   DefaultEditTimeseries,
 } from '../../schema';
 import FormTextField from '~/components/FormTextField';
+import {useAppContext} from '~/state/contexts';
 
 type Props = {
   children: React.ReactNode;
@@ -165,10 +166,42 @@ const SensorDepth = (
   );
 };
 
+const TimeseriesID = () => {
+  const {ts_id} = useAppContext(['ts_id']);
+  return (
+    <TextField
+      value={ts_id}
+      disabled
+      slotProps={{
+        inputLabel: {
+          shrink: true,
+        },
+      }}
+      label="Tidsserie ID"
+      sx={{
+        pb: 0.6,
+        '& .MuiInputBase-input.Mui-disabled': {
+          WebkitTextFillColor: '#000000',
+        },
+        '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+        '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+        '& .MuiOutlinedInput-root': {
+          '& > fieldset': {borderColor: 'primary.main'},
+        },
+        '.MuiFormHelperText-root': {
+          position: 'absolute',
+          top: 'calc(100% - 8px)',
+        },
+      }}
+    />
+  );
+};
+
 StamdataTimeseries.TypeSelect = TypeSelect;
 StamdataTimeseries.TimeriesTypeField = TimeseriesTypeField;
 StamdataTimeseries.Prefix = Prefix;
 StamdataTimeseries.SensorDepth = SensorDepth;
 StamdataTimeseries.Intakeno = Intakeno;
+StamdataTimeseries.TimeseriesID = TimeseriesID;
 
 export default StamdataTimeseries;

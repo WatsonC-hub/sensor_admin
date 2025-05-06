@@ -44,6 +44,9 @@ const DefaultLocationEditForm = ({size}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.Description disabled={disabled} />
       </Grid2>
+      <Grid2 size={size} alignContent={'center'}>
+        <StamdataLocation.LocationID />
+      </Grid2>
     </Grid2>
   );
 };
