@@ -203,7 +203,7 @@ const TasksOverview = () => {
             minSize={2}
             onClose={() => setSelectedTask(null)}
           >
-            <Box p={1}>
+            <Box p={1} overflow="auto">
               <TaskInfo />
             </Box>
           </WindowManager.Window>
