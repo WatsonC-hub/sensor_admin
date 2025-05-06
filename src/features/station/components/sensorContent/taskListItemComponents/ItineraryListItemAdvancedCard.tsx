@@ -1,4 +1,4 @@
-import {EditOutlined} from '@mui/icons-material';
+import {EditOutlined, Warning} from '@mui/icons-material';
 import {Box, Typography, Button, Grid2} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
@@ -52,6 +52,22 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
   return (
     <TaskForm key={task.id} onSubmit={() => {}} defaultValues={defaultValues}>
       <Grid2 container color="grey.700" spacing={0.5} justifyContent="flex-end">
+        {(task.block_all || task.block_on_location) && (
+          <Grid2 size={12} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
+            <Warning fontSize="small" />
+            <Typography
+              variant="caption"
+              fontSize={12}
+              display={'flex'}
+              flexDirection={'row'}
+              gap={0.5}
+              alignItems="center"
+            >
+              Dæmper {task.block_all ? 'alle' : 'samme'} notifikationer på{' '}
+              {task.block_on_location ? 'lokationen' : 'tidsserien'}
+            </Typography>
+          </Grid2>
+        )}
         <Grid2 size={8} display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
           <Grid2 size={12} gap={1} display={'flex'} flexDirection={'row'} alignItems="center">
             {task.name && (
