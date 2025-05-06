@@ -146,7 +146,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   gap={0.5}
                   alignItems="center"
                 >
-                  Blokerer {task.block_all ? 'alle' : 'samme'} opgaver på{' '}
+                  Dæmper {task.block_all ? 'alle' : 'samme'} notifikationer på{' '}
                   {task.block_on_location ? 'lokationen' : 'tidsserien'}
                 </Typography>
               </Grid2>
