@@ -70,14 +70,22 @@ const CreateStation = () => {
   const loctype_id = watchLocation('loctype_id');
   const boreholeno = watchLocation('boreholeno');
 
+  let timeseriesValues: {tstype_id: number; intakeno?: number} = {
+    tstype_id: -1,
+  };
+
+  if (loctype_id === 9) {
+    timeseriesValues = {
+      ...timeseriesValues,
+      intakeno: -1,
+    };
+  }
+
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm<
     DefaultAddTimeseries | BoreholeAddTimeseries
   >({
     mode: 'Add',
-    defaultValues: {
-      tstype_id: -1,
-      intakeno: -1,
-    },
+    defaultValues: timeseriesValues,
     context: {
       loctype_id: loctype_id,
     },
