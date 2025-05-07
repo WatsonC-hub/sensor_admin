@@ -288,6 +288,8 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
 
       setValue('x', parseFloat(latlng.Easting.toFixed(1)));
       setValue('y', parseFloat(latlng.Northing.toFixed(1)));
+      trigger('x');
+      trigger('y');
     }
   }, [searchOptions]);
 
