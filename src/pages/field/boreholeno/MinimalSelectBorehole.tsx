@@ -50,8 +50,11 @@ const MinimalSelect = () => {
   }, [data]);
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    if (intakeno?.toString() !== event.target.value)
+    if (intakeno !== undefined && intakeno !== parseInt(event.target.value)) {
       boreholeIntake(boreholeno, parseInt(event.target.value));
+    } else {
+      boreholeIntake(boreholeno, parseInt(event.target.value));
+    }
     handleClose();
   };
 
