@@ -16,7 +16,6 @@ import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 
 import {
-  outdormapbox,
   toposkaermkortwmts,
   satelitemapbox,
   defaultCircleMarkerStyle,
