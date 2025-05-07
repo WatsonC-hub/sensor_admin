@@ -265,34 +265,32 @@ export default function TranserList({value, setValue}: TransferListProps) {
   return (
     <>
       {options && options.length > 0 && categories && categories.length > 0 && (
-        <Grid container my={1} spacing={1} gap={2} justifyContent="center" alignItems="center">
-          <Grid item>{customList(left ?? [], leftCategory ?? [], 'Liste')}</Grid>
-          <Grid item>
-            <Grid container direction="column" alignItems="center">
-              <Button
-                sx={{my: 0.5}}
-                bttype="secondary"
-                size="small"
-                onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0 || disabled}
-                aria-label="move selected right"
-              >
-                &gt;
-              </Button>
-              <Button
-                sx={{my: 0.5}}
-                bttype="secondary"
-                size="small"
-                onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0 || disabled}
-                aria-label="move selected left"
-              >
-                &lt;
-              </Button>
-            </Grid>
-          </Grid>
-          <Grid item>{customList(selected ?? [], selectedCategory ?? [], 'Udvalgt')}</Grid>
-        </Grid>
+        <Box my={1} gap={1} display={'flex'} flexDirection={'row'}>
+          {customList(left ?? [], leftCategory ?? [], 'Liste')}
+          <Box display={'flex'} flexDirection="column" justifyContent="center">
+            <Button
+              sx={{my: 0.5}}
+              bttype="secondary"
+              size="small"
+              onClick={handleCheckedRight}
+              disabled={leftChecked.length === 0 || disabled}
+              aria-label="move selected right"
+            >
+              &gt;
+            </Button>
+            <Button
+              sx={{my: 0.5}}
+              bttype="secondary"
+              size="small"
+              onClick={handleCheckedLeft}
+              disabled={rightChecked.length === 0 || disabled}
+              aria-label="move selected left"
+            >
+              &lt;
+            </Button>
+          </Box>
+          {customList(selected ?? [], selectedCategory ?? [], 'Udvalgt')}
+        </Box>
       )}
     </>
   );
