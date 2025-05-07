@@ -151,7 +151,7 @@ const CreateStation = () => {
     },
     onSuccess: (data) => {
       toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-      stationNavigate(data.loc_id, data.ts_id);
+      stationNavigate(data.ts_id);
     },
   });
 
@@ -170,7 +170,7 @@ const CreateStation = () => {
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
 
-      stationNavigate(data.loc_id, data.ts_id);
+      stationNavigate(data.ts_id);
     },
   });
 
