@@ -84,6 +84,7 @@ const StationDrawer = () => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
+  const {data: locationdata} = useLocationData();
   const user = useUser();
   const {createStamdata} = useNavigationFunctions();
 
@@ -109,7 +110,10 @@ const StationDrawer = () => {
           requiredTsId: false,
           onClick: () => {
             createStamdata('tidsserie', {
-              state: {...metadata, initial_project_no: metadata?.projectno},
+              state: {
+                ...(ts_id ? metadata : locationdata),
+                initial_project_no: ts_id ? metadata?.projectno : locationdata?.projectno,
+              },
             });
           },
         },
