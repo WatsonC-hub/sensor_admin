@@ -40,7 +40,7 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
     filter.isCustomerService === 'indeterminate'
       ? true
       : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
-  const activeFilter = data.inactive != true ? true : filter.showInactive;
+  const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
   const keepLocationsWithoutNotifications =
     !data.has_task && data.flag === null && !data.no_unit
       ? !filter.hideLocationsWithoutNotifications
