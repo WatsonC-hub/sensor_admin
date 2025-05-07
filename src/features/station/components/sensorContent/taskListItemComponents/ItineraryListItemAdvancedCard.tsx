@@ -9,11 +9,13 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TaskForm from '~/features/tasks/components/TaskForm';
+import useBreakpoints from '~/hooks/useBreakpoints';
 type Props = {
   task: Task;
 };
 
 const ItineraryListItemAdvancedCard = ({task}: Props) => {
+  const {isMobile} = useBreakpoints();
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
   const {
     patch: updateTask,
@@ -68,7 +70,12 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
             </Typography>
           </Grid2>
         )}
-        <Grid2 size={8} display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
+        <Grid2
+          size={isMobile ? 6 : 8}
+          display={'flex'}
+          flexDirection={'column'}
+          justifyContent={'space-between'}
+        >
           <Grid2 size={12} gap={1} display={'flex'} flexDirection={'row'} alignItems="center">
             {task.name && (
               <>
@@ -77,7 +84,9 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
                   <Typography variant="caption" fontWeight="bold">
                     {task.name}
                   </Typography>
-                  <Typography variant="caption">{task.description}</Typography>
+                  <Typography variant="caption" sx={{wordBreak: 'break-word'}}>
+                    {task.description}
+                  </Typography>
                 </Box>
               </>
             )}
@@ -115,7 +124,7 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
             )}
           </Grid2>
         </Grid2>
-        <Grid2 size={4} display={'flex'} flexDirection={'row'} gap={1}>
+        <Grid2 size={isMobile ? 6 : 4} display={'flex'} flexDirection={'row'} gap={1}>
           <TaskForm.StatusSelect
             onBlurCallback={(event) => {
               if (typeof event !== 'number' && 'target' in event) {
