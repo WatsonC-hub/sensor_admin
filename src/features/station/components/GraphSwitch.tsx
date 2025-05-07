@@ -9,7 +9,7 @@ import {useAppContext} from '~/state/contexts';
 import {DataToShow} from '~/types';
 
 interface GraphSwitchProps {
-  dataToShow: DataToShow;
+  dataToShow: Partial<DataToShow>;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
