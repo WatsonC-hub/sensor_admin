@@ -213,7 +213,7 @@ const TasksOverview = () => {
             show={boreholeno !== null && intakeno !== null}
             minSize={2}
             maxSize={4}
-            fullScreen={isMobile}
+            fullScreen={isMobile || fullScreen}
             height="100%"
             sx={{
               borderRadius: isMobile ? 0 : 3,
