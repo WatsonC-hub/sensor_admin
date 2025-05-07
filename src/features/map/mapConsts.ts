@@ -11,7 +11,7 @@ export type TestMapData = {
 import L from 'leaflet';
 import utmObj from 'utm-latlng';
 
-import {mapboxToken} from '~/consts';
+import {isProduction, mapboxToken} from '~/consts';
 import {atomWithTimedStorage} from '~/state/atoms';
 
 export const utm = new utmObj();
@@ -80,6 +80,24 @@ export const outdormapbox = L.tileLayer(
     zoomOffset: -1,
   }
 );
+
+export const localhostMapBox = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  id: 'mapbox/outdoors-v11',
+  tileSize: 512,
+  zoomOffset: -1,
+});
+
+let defaultMap: L.TileLayer;
+
+if (isProduction) {
+  defaultMap = outdormapbox;
+} else {
+  defaultMap = localhostMapBox;
+}
+
+export const defaultMapBox = defaultMap;
 
 export const parkingIcon = new L.DivIcon({
   className: 'parking-icon',

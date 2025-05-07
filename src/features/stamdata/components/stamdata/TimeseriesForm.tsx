@@ -38,7 +38,7 @@ const TimeseriesTypeSelect = ({stationTypes, disabled = false}: TimeseriesTypeSe
 };
 
 interface TimeseriesFormProps {
-  mode: string;
+  mode: 'add' | 'edit';
   disabled?: boolean;
 }
 
@@ -133,31 +133,33 @@ export default function TimeseriesForm({mode, disabled = false}: TimeseriesFormP
         />
       </Grid2>
       <Grid2 size={{xs: 12, sm: 6}} alignContent={'center'} alignItems="center">
-        <TextField
-          value={ts_id}
-          disabled
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-          label="Tidsserie ID"
-          sx={{
-            pb: 0.6,
-            '& .MuiInputBase-input.Mui-disabled': {
-              WebkitTextFillColor: '#000000',
-            },
-            '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-            '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-            '& .MuiOutlinedInput-root': {
-              '& > fieldset': {borderColor: 'primary.main'},
-            },
-            '.MuiFormHelperText-root': {
-              position: 'absolute',
-              top: 'calc(100% - 8px)',
-            },
-          }}
-        />
+        {mode === 'edit' && (
+          <TextField
+            value={ts_id}
+            disabled
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+            label="Tidsserie ID"
+            sx={{
+              pb: 0.6,
+              '& .MuiInputBase-input.Mui-disabled': {
+                WebkitTextFillColor: '#000000',
+              },
+              '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+              '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+              '& .MuiOutlinedInput-root': {
+                '& > fieldset': {borderColor: 'primary.main'},
+              },
+              '.MuiFormHelperText-root': {
+                position: 'absolute',
+                top: 'calc(100% - 8px)',
+              },
+            }}
+          />
+        )}
       </Grid2>
     </Grid2>
   );

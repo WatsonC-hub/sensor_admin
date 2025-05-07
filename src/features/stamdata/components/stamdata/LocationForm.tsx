@@ -14,7 +14,7 @@ import {getDTMQuota} from '~/pages/field/fieldAPI';
 import {useAppContext} from '~/state/contexts';
 
 interface Props {
-  mode: 'modal' | 'normal';
+  mode: 'add' | 'edit';
   disable?: boolean;
 }
 
@@ -44,7 +44,7 @@ export default function LocationForm({mode, disable = false}: Props) {
 
   const watchTerrainqual = watch('location.terrainqual', '');
 
-  const gridsize = mode === 'modal' ? 12 : 6;
+  const gridsize = 6;
   const user = useUser();
 
   return (
@@ -178,31 +178,33 @@ export default function LocationForm({mode, disable = false}: Props) {
         />
       </Grid2>
       <Grid2 size={{xs: 12, sm: 6}} alignContent={'center'} alignItems="center">
-        <TextField
-          value={locationData?.loc_id}
-          disabled
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-          label="Lokations ID"
-          sx={{
-            pb: 0.6,
-            '& .MuiInputBase-input.Mui-disabled': {
-              WebkitTextFillColor: '#000000',
-            },
-            '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-            '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-            '& .MuiOutlinedInput-root': {
-              '& > fieldset': {borderColor: 'primary.main'},
-            },
-            '.MuiFormHelperText-root': {
-              position: 'absolute',
-              top: 'calc(100% - 8px)',
-            },
-          }}
-        />
+        {mode === 'edit' && (
+          <TextField
+            value={locationData?.loc_id}
+            disabled
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+            label="Lokations ID"
+            sx={{
+              pb: 0.6,
+              '& .MuiInputBase-input.Mui-disabled': {
+                WebkitTextFillColor: '#000000',
+              },
+              '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+              '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+              '& .MuiOutlinedInput-root': {
+                '& > fieldset': {borderColor: 'primary.main'},
+              },
+              '.MuiFormHelperText-root': {
+                position: 'absolute',
+                top: 'calc(100% - 8px)',
+              },
+            }}
+          />
+        )}
       </Grid2>
     </Grid2>
   );
