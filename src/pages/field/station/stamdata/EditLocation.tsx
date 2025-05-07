@@ -2,6 +2,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box} from '@mui/material';
 import {useMutation} from '@tanstack/react-query';
+import {initial} from 'lodash';
 import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import {toast} from 'react-toastify';
@@ -18,6 +19,9 @@ import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 const editLocationSchema = locationSchema.extend({
+  location: locationSchema.shape.location.extend({
+    initial_project_no: z.string().nullish(),
+  }),
   unit: z.object({
     unit_uuid: z.string().nullish(),
   }),
