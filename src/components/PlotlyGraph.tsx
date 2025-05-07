@@ -41,7 +41,7 @@ interface PlotlyGraphProps {
   data: Array<Partial<PlotData>>;
   xRange?: Array<string>;
   setXRange?: (range: Array<string>) => void;
-  dataToShow: DataToShow;
+  dataToShow?: Partial<DataToShow>;
 }
 
 const Plot = createPlotlyComponent(Plotly);
@@ -55,9 +55,9 @@ export default function PlotlyGraph({
   data,
   xRange,
   setXRange,
-  dataToShow,
+  dataToShow = {},
 }: PlotlyGraphProps) {
-  const {ts_id} = useAppContext([], ['ts_id']);
+  const {ts_id, boreholeno} = useAppContext([], ['ts_id', 'boreholeno']);
   const {data: metadata} = useTimeseriesData();
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
@@ -205,46 +205,48 @@ export default function PlotlyGraph({
             Alt
           </Button>
         </Box>
-        <Box display={'flex'} flexDirection={'row'} pr={1} gap={isTouch ? 0 : 1}>
-          <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
+        {boreholeno === undefined && (
+          <Box display={'flex'} flexDirection={'row'} pr={1} gap={isTouch ? 0 : 1}>
+            <Tooltip title={'Genberegn tidsserie data'} arrow placement="top">
+              <Button
+                bttype="link"
+                size="small"
+                startIcon={!isMobile && <ReplayIcon />}
+                onClick={() => {
+                  correctMutation.mutate();
+                }}
+                sx={actionButtonStyle}
+              >
+                {isMobile && <ReplayIcon fontSize="small" />}
+                {!isMobile && 'Genberegn'}
+              </Button>
+            </Tooltip>
+            <Tooltip title={'Download tidsserie data'} arrow placement="top">
+              <Button
+                bttype="link"
+                size="small"
+                onClick={() => {
+                  const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
+                  window.open(url);
+                }}
+                startIcon={!isMobile && <Download />}
+                sx={actionButtonStyle}
+              >
+                {isMobile && <Download fontSize="small" />}
+                {!isMobile && 'Download'}
+              </Button>
+            </Tooltip>
             <Button
-              bttype="link"
-              size="small"
-              startIcon={!isMobile && <ReplayIcon />}
-              onClick={() => {
-                correctMutation.mutate();
-              }}
-              sx={actionButtonStyle}
+              bttype="secondary"
+              startIcon={!isMobile && <TuneRoundedIcon />}
+              sx={{textTransform: 'initial', my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
+              onClick={() => setIsOpen(!isOpen)}
             >
-              {isMobile && <ReplayIcon fontSize="small" />}
-              {!isMobile && 'Genberegn'}
+              {isMobile && <TuneRoundedIcon fontSize="small" />}
+              {!isMobile && 'Grafer'}
             </Button>
-          </Tooltip>
-          <Tooltip title={'Download tidsserie data'} arrow placement="top">
-            <Button
-              bttype="link"
-              size="small"
-              onClick={() => {
-                const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
-                window.open(url);
-              }}
-              startIcon={!isMobile && <Download />}
-              sx={actionButtonStyle}
-            >
-              {isMobile && <Download fontSize="small" />}
-              {!isMobile && 'Download'}
-            </Button>
-          </Tooltip>
-          <Button
-            bttype="secondary"
-            startIcon={!isMobile && <TuneRoundedIcon />}
-            sx={{textTransform: 'initial', my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isMobile && <TuneRoundedIcon fontSize="small" />}
-            {!isMobile && 'Grafer'}
-          </Button>
-        </Box>
+          </Box>
+        )}
       </Box>
 
       {isOpen && (
@@ -266,7 +268,10 @@ export default function PlotlyGraph({
         config={{
           doubleClick: false,
           responsive: true,
-          modeBarButtons: [['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d']],
+          modeBarButtons: [
+            boreholeno ? ['toImage'] : [],
+            ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+          ],
           displaylogo: false,
           displayModeBar: true,
         }}
