@@ -43,7 +43,7 @@ interface TimeseriesFormProps {
 }
 
 export default function TimeseriesForm({mode, disabled = false}: TimeseriesFormProps) {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id} = useAppContext([], ['ts_id']);
   const {data: timeseries_types} = useQuery({
     queryKey: ['timeseries_types'],
     queryFn: async () => {
