@@ -162,7 +162,10 @@ const CreateStation = () => {
       unit: AddUnit;
       watlevmp?: Watlevmp;
     }) => {
-      const {data: out} = await apiClient.post(`/sensor_field/stamdata/${loc_id ?? -1}`, data);
+      const {data: out} = await apiClient.post(
+        `/sensor_field/stamdata/new_stamdata/${loc_id ?? -1}`,
+        data
+      );
       return out;
     },
     onSuccess: (data) => {
