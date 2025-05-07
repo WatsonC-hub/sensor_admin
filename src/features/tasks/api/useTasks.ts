@@ -183,11 +183,11 @@ export const useTasks = () => {
       queryClient.invalidateQueries({queryKey: ['overblik']});
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['map']});
+      queryClient.invalidateQueries({queryKey: ['timeseries']});
 
       toast.success('Opgave ændret');
     },
-    onError: (e) => {
-      console.log(e);
+    onError: () => {
       queryClient.invalidateQueries({queryKey: ['tasks']});
     },
   });

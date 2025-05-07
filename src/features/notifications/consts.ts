@@ -35,60 +35,90 @@ export enum FlagEnum {
   WARNING = 2,
   INFO = 1,
   OK = 0,
-  UNKNOWN = -1,
+}
+
+export enum NotificationEnum {
+  INACTIVE = 'inactive',
+  NO_UNIT = 'no_unit',
+  SINGLE_MEASUREMENT = 'single_measurement',
 }
 
 // Colors ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF']
 export const sensorColors: Record<
-  FlagEnum,
+  FlagEnum | NotificationEnum,
   {
     color: string;
     text: string;
+    sortOrder: number;
   }
 > = {
   [FlagEnum.CRITICAL]: {
     color: '#d32f2f',
     text: 'Kritisk',
+    sortOrder: 0,
   },
   [FlagEnum.WARNING]: {
     color: '#FF9115',
     text: 'Advarsel',
+    sortOrder: 1,
   },
   [FlagEnum.INFO]: {
-    color: '#F9DC00',
+    color: '#f7da00',
     text: 'Info',
+    sortOrder: 2,
   },
   [FlagEnum.OK]: {
     color: '#088924',
     text: 'OK',
+    sortOrder: 4,
   },
-  [FlagEnum.UNKNOWN]: {
-    color: '#9F2B68',
-    text: 'Ukendt',
+  [NotificationEnum.INACTIVE]: {
+    color: '#C0C0C0',
+    text: 'Inaktiv',
+    sortOrder: 5,
   },
-};
-
-export enum LocationTypeEnum {
-  SINGLE_MEASUREMENT = 12,
-  NEW_SETUP = -1,
-}
-
-export const sensorLocationTypeColors: Record<
-  LocationTypeEnum,
-  {
-    color: string;
-    text: string;
-  }
-> = {
-  [LocationTypeEnum.SINGLE_MEASUREMENT]: {
-    color: '#AFFFAD',
-    text: 'Enkeltmåling',
-  },
-  [LocationTypeEnum.NEW_SETUP]: {
+  [NotificationEnum.NO_UNIT]: {
     color: '#70C8FF',
     text: 'Ny opsætning',
+    sortOrder: 3,
+  },
+  [NotificationEnum.SINGLE_MEASUREMENT]: {
+    color: '#AFFFAD',
+    text: 'Enkeltmåling',
+    sortOrder: 99,
   },
 };
+
+export const getMaxColor = (colors: string[]) => {
+  const colorOrder: Record<string, number> = {};
+
+  Object.values(sensorColors).forEach((color) => {
+    colorOrder[color.color] = color.sortOrder;
+  });
+
+  const sortedColors = colors.sort((a, b) => {
+    return (colorOrder[a] || 0) - (colorOrder[b] || 0);
+  });
+
+  return sortedColors[0] || sensorColors[FlagEnum.OK].color;
+};
+
+// export enum LocationTypeEnum {
+//   SINGLE_MEASUREMENT = 12,
+// }
+
+// export const sensorLocationTypeColors: Record<
+//   LocationTypeEnum,
+//   {
+//     color: string;
+//     text: string;
+//   }
+// > = {
+//   [LocationTypeEnum.SINGLE_MEASUREMENT]: {
+//     color: '#AFFFAD',
+//     text: 'Enkeltmåling',
+//   },
+// };
 
 /*1	Batteriskift
 2	Data mangler på graf

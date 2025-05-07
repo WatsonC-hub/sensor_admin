@@ -38,7 +38,7 @@ import {
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
 import {setIconSize, sortBoreholeLast, sortLocations} from '../utils';
-import {boreholeColors, BoreHoleFlagEnum} from '~/features/notifications/consts';
+import {boreholeColors, BoreHoleFlagEnum, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
@@ -503,21 +503,25 @@ const useMap = <TData extends object>(
         const childMarkers = cluster.getAllChildMarkers();
         const num = childMarkers.length;
 
-        childMarkers.sort((a, b) => {
-          const value = sortBoreholeLast(a, b);
+        const colors = childMarkers.map((marker) => getColor(marker.options.data));
 
-          if (value !== undefined) return value;
+        const color = getMaxColor(colors);
 
-          return sortLocations(a, b);
-        });
+        // childMarkers.sort((a, b) => {
+        //   const value = sortBoreholeLast(a, b);
 
-        let color: string;
-        if (childMarkers[0].options.data.boreholeno) {
-          color =
-            boreholeColors[Math.max(childMarkers[0].options.data.status) as BoreHoleFlagEnum].color;
-        } else {
-          color = getColor(childMarkers[0].options.data);
-        }
+        //   if (value !== undefined) return value;
+
+        //   return sortLocations(a, b);
+        // });
+
+        // let color: string;
+        // if (childMarkers[0].options.data.boreholeno) {
+        //   color =
+        //     boreholeColors[Math.max(childMarkers[0].options.data.status) as BoreHoleFlagEnum].color;
+        // } else {
+        //   color = getColor(childMarkers[0].options.data);
+        // }
         return L.divIcon({
           className: 'svg-icon',
           iconAnchor: [12, 24],
