@@ -247,6 +247,7 @@ const TasksOverview = () => {
             minSize={2}
             maxSize={3}
             onClose={() => setSelectedTask(null)}
+            fullScreen={isMobile || fullScreen}
             height="100%"
           >
             <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
