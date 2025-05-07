@@ -37,6 +37,15 @@ const defaultStyling = {
 } as const;
 
 export const getColor = (iconDetails: IconDetails) => {
+  if (
+    // !iconDetails?.itinerary_id &&
+    iconDetails?.has_task &&
+    iconDetails?.due_date
+  ) {
+    if (moment(iconDetails.due_date).isBefore(moment().toDate()))
+      return sensorColors[FlagEnum.WARNING].color;
+    return '#4caf50';
+  } // Overdue}
   if (iconDetails?.no_unit == true && iconDetails?.loctype_id !== 12)
     return sensorLocationTypeColors['-1'].color; // Nyopsætning
   if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color; // Enkeltmålinger
@@ -58,13 +67,7 @@ export const getColor = (iconDetails: IconDetails) => {
   // )
   //   return sensorColors[FlagEnum.WARNING].color; // Due this week
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
-  if (
-    // !iconDetails?.itinerary_id &&
-    iconDetails?.has_task &&
-    iconDetails?.due_date &&
-    moment(iconDetails.due_date).isBefore(moment().toDate())
-  )
-    return sensorColors[FlagEnum.WARNING].color; // Overdue
+
   if (iconDetails?.color) return iconDetails.color;
   return '#4caf50';
 };
