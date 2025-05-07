@@ -279,7 +279,7 @@ const CreateStation = () => {
         <NavBar.Title title="Opret Stamdata" />
         <NavBar.Menu />
       </NavBar>
-      <Box display="flex" overflow="auto">
+      <Box display="flex" flexDirection={'column'} overflow="auto">
         <Grid2
           container
           alignSelf={'center'}
