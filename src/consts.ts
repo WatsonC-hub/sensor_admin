@@ -1,6 +1,8 @@
 let mapToken: string;
 
-if (import.meta.env.PROD) {
+export const isProduction = import.meta.env.PROD;
+
+if (isProduction) {
   mapToken =
     'pk.eyJ1Ijoib2xlbXVuY2giLCJhIjoiY2xma3cxbnFmMGYyNzN5bWpvb2Rjd2VuMyJ9.HSp-vSdF0i1uCSeUoCkwcA';
 } else {

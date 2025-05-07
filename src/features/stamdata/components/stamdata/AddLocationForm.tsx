@@ -47,7 +47,7 @@ export default function AddLocationForm({
     <Dialog open={locationDialogOpen} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Tilføj ny lokation</DialogTitle>
       <DialogContent>
-        <LocationForm mode="modal" />
+        <LocationForm mode="add" />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} bttype="tertiary">

@@ -33,6 +33,7 @@ import {
   parkingIcon,
   hightlightParkingIcon,
   markerNumThreshold,
+  defaultMapBox,
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
@@ -141,7 +142,7 @@ const useMap = <TData extends object>(
     const map = L.map(id, {
       center: pan || [56.215868, 8.228759],
       zoom: zoom || 7,
-      // layers: [outdormapbox],
+      layers: [defaultMapBox],
       tapHold: true,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
@@ -164,7 +165,7 @@ const useMap = <TData extends object>(
 
     L.basemapControl({
       position: 'bottomleft',
-      layers: [{layer: outdormapbox}, {layer: satelitemapbox}],
+      layers: [{layer: defaultMapBox}, {layer: satelitemapbox}],
     }).addTo(map);
 
     onMapClickEvent(map);

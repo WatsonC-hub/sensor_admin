@@ -93,7 +93,7 @@ const EditLocation = () => {
       }}
     >
       <FormProvider {...formMethods}>
-        <LocationForm mode="normal" disable={location_permissions !== 'edit'} />
+        <LocationForm mode="edit" disable={location_permissions !== 'edit'} />
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button
             bttype="tertiary"
