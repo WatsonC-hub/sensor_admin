@@ -33,6 +33,7 @@ import {
   hightlightParkingIcon,
   highlightRadius,
   markerNumThreshold,
+  defaultMapBox,
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 
@@ -137,7 +138,7 @@ const useMap = <TData extends object>(
     const map = L.map(id, {
       center: pan || [56.215868, 8.228759],
       zoom: zoom || 7,
-      layers: [outdormapbox],
+      layers: [defaultMapBox],
       tapHold: true,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
@@ -149,7 +150,7 @@ const useMap = <TData extends object>(
     map.attributionControl.setPrefix(false);
 
     const baseMaps = {
-      OpenStreetMap: outdormapbox,
+      OpenStreetMap: defaultMapBox,
       'DTK Skærmkort dæmpet': toposkaermkortwmts,
       Satelit: satelitemapbox,
     };
