@@ -66,6 +66,7 @@ const MinimalSelect = () => {
           open={isOpen}
           onOpen={handleOpen}
           onClose={handleClose}
+          fullWidth
           sx={{
             maxWidth: '200px',
             outline: 'white',

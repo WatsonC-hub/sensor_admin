@@ -19,6 +19,7 @@ export const useGlobalPermissionsQueryOptions = () => {
       const {data} = await apiClient.get<GlobalPermissions>(`/auth/me/permissions`);
       return data;
     },
+    staleTime: 1000 * 60 * 1,
   });
 };
 
@@ -32,6 +33,7 @@ export const usePermissionsQueryOptions = (loc_id?: number) => {
       return data;
     },
     enabled: loc_id !== undefined,
+    staleTime: 1000 * 60 * 1,
   });
 };
 

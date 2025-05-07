@@ -106,7 +106,8 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
         groups: data[0].groups,
         description: data[0].description,
         mainloc: data[0].mainloc,
-        projectno: data.find((location) => location.ts_id === ts_id)?.projectno ?? undefined,
+        projectno:
+          data.find((location) => location.ts_id === ts_id)?.projectno ?? data[0].projectno,
         subloc: data[0].subloc,
         terrainlevel: data[0].terrainlevel,
         terrainqual: data[0].terrainqual,
@@ -131,6 +132,7 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
     },
     enabled: loc_id !== undefined,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 1,
   });
 };
 
