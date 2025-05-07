@@ -3,12 +3,14 @@ import {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {useRunQA} from '~/hooks/useRunQA';
 
 const TOAST_ID = 'correct-toast';
 
 export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
   const queryClient = useQueryClient();
   const [refetchInterval, setRefetchInterval] = useState<number | false>(false);
+  const {mutation: rerunQAMutation} = useRunQA(ts_id);
   // TODO: Check me
   const {data: pollData, dataUpdatedAt} = useQuery({
     queryKey: ['pollData', ts_id],
@@ -19,10 +21,11 @@ export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
     refetchInterval: refetchInterval,
     refetchOnWindowFocus: false,
     enabled: ts_id !== undefined,
+    gcTime: 0,
   });
 
   useEffect(() => {
-    if (pollData === 200) {
+    if (pollData === 200 && refetchInterval) {
       setRefetchInterval(false);
       toast.update(TOAST_ID, {
         render: 'Genberegnet',
@@ -34,6 +37,7 @@ export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
         progress: undefined,
         hideProgressBar: false,
       });
+      rerunQAMutation.mutate();
     }
     queryClient.invalidateQueries({queryKey: [queryKey, ts_id]});
   }, [pollData, queryKey, queryClient, ts_id, dataUpdatedAt]);
