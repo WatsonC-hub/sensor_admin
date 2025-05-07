@@ -341,7 +341,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
           <Box display="flex" flexDirection="column" sx={{maxWidth: '1200px', margin: 'auto'}}>
             <TabPanel value={tabValue} index={'lokation'}>
               <Grid container>
-                <LocationForm disable={loc_id == null ? false : true} mode={'normal'} />
+                <LocationForm disable={loc_id == null ? false : true} mode={'add'} />
               </Grid>
               <StamdataFooter
                 cancel={cancel}
