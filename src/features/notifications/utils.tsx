@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {FlagEnum, NotificationIDEnum, sensorColors, sensorLocationTypeColors} from './consts';
+import {FlagEnum, NotificationEnum, NotificationIDEnum, sensorColors} from './consts';
 import {IconDetails} from './types';
 
 import {JSX} from 'react';
@@ -37,39 +37,24 @@ const defaultStyling = {
 } as const;
 
 export const getColor = (iconDetails: IconDetails) => {
+  if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
   if (
     // !iconDetails?.itinerary_id &&
-    iconDetails?.has_task &&
-    iconDetails?.due_date
+    iconDetails?.has_task
   ) {
     if (moment(iconDetails.due_date).isBefore(moment().toDate()))
       return sensorColors[FlagEnum.WARNING].color;
-    return '#4caf50';
+    return sensorColors[FlagEnum.OK].color;
   } // Overdue}
   if (iconDetails?.no_unit == true && iconDetails?.loctype_id !== 12)
-    return sensorLocationTypeColors['-1'].color; // Nyopsætning
-  if (iconDetails?.loctype_id === 12) return sensorLocationTypeColors[iconDetails.loctype_id].color; // Enkeltmålinger
-  // if (iconDetails?.notify_type === 'station') return '#4caf50';
-  // if (iconDetails?.status == 'POSTPONED') return '#4caf50';
-  // if (iconDetails?.notification_id == 12) return '#334FFF';
-  if (iconDetails?.inactive == true) return '#C0C0C0';
-  // if (iconDetails?.flag !== undefined) return sensorColors[iconDetails?.flag].color;
-  // if (iconDetails?.type === 'itinerary') return '#4caf50';
-  // if (
-  //   // !iconDetails?.itinerary_id &&
-  //   // iconDetails?.has_task &&
-  //   iconDetails?.due_date &&
-  //   iconDetails?.has_task &&
-  //   moment(iconDetails.due_date).isBetween(
-  //     moment().startOf('isoWeek'),
-  //     moment(moment().startOf('isoWeek')).add(1, 'week')
-  //   )
-  // )
-  //   return sensorColors[FlagEnum.WARNING].color; // Due this week
-  if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
+    return sensorColors[NotificationEnum.NO_UNIT].color; // Nyopsætning
+  if (iconDetails?.loctype_id === 12)
+    return sensorColors[NotificationEnum.SINGLE_MEASUREMENT].color; // Enkeltmålinger
+
+  if (iconDetails?.inactive == true) return sensorColors[NotificationEnum.INACTIVE].color; // Inaktiv
 
   if (iconDetails?.color) return iconDetails.color;
-  return '#4caf50';
+  return sensorColors[FlagEnum.OK].color;
 };
 
 function getIcon<B extends boolean = false>(

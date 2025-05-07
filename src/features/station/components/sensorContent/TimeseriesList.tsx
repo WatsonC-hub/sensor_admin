@@ -26,7 +26,14 @@ const TimeseriesList = () => {
         return (
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">
             <Box display="flex" gap={1} sx={{cursor: 'pointer'}}>
-              <NotificationIcon iconDetails={timeseries} />
+              <NotificationIcon
+                iconDetails={{
+                  notification_id: timeseries.notification_id,
+                  flag: timeseries.flag,
+                  no_unit: timeseries.no_unit,
+                  inactive: timeseries.inactive,
+                }}
+              />
               <Typography fontSize={'small'} width={'fit-content'}>
                 <Link onClick={() => station(timeseries.ts_id)}>
                   {timeseries.prefix ? timeseries.prefix + ' - ' : ''} {timeseries.parameter}
