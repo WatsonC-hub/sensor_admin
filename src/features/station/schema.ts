@@ -25,13 +25,15 @@ const baseLocationSchema = z.object({
   initial_project_no: z.string({message: 'Projektnummer skal udfyldes'}),
 });
 
-const defaultEditLocationSchema = baseLocationSchema.extend({
+const defaultAddLocationSchema = baseLocationSchema.extend({
   loc_name: z.string({message: 'Lokationsnavn skal udfyldes'}).min(1, {
     message: 'Lokationsnavn skal være mindst 1 tegn',
   }),
 });
 
-const defaultAddLocationSchema = defaultEditLocationSchema;
+const defaultEditLocationSchema = defaultAddLocationSchema.extend({
+  initial_project_no: z.string().nullish(),
+});
 
 const boreholeEditLocationSchema = baseLocationSchema.extend({
   boreholeno: z.string().optional(),
