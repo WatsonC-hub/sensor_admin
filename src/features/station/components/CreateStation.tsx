@@ -22,7 +22,7 @@ import Button from '~/components/Button';
 import useWatlevmpForm from '../api/useWatlevmpForm';
 import {useMutation} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import useTimeseriesForm from '../api/useTimeseriesForm';
 import StamdataWatlevmp from './stamdata/StamdataWatlevmp';
 import DefaultWatlevmpForm from './stamdata/stamdataComponents/DefaultWatlevmpForm';
@@ -30,10 +30,12 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {toast} from 'react-toastify';
 import {ArrowBack, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import {queryClient} from '~/queryClient';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
+  const navigate = useNavigate();
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   let {state} = useLocation();
   const [activeStep, setActiveStep] = React.useState(
@@ -132,7 +134,9 @@ const CreateStation = () => {
       return response.data;
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({queryKey: ['timeseries', loc_id]});
       toast.success('Lokation oprettet');
+      navigate('/');
       locationNavigate(data.loc_id);
     },
   });
@@ -151,6 +155,10 @@ const CreateStation = () => {
     },
     onSuccess: (data) => {
       toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
+      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
+      queryClient.invalidateQueries({queryKey: ['metadata', data.ts_id]});
+      queryClient.invalidateQueries({queryKey: ['timeseries', loc_id]});
+      navigate('/');
       stationNavigate(data.ts_id);
     },
   });
@@ -169,7 +177,10 @@ const CreateStation = () => {
       toast.success(
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
-
+      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
+      queryClient.invalidateQueries({queryKey: ['metadata', data.ts_id]});
+      queryClient.invalidateQueries({queryKey: ['timeseries', loc_id]});
+      navigate('/');
       stationNavigate(data.ts_id);
     },
   });
