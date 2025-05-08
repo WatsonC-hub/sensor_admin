@@ -15,7 +15,7 @@ import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import {useRawTaskStore} from '../store';
 import {locationMetadataQueryOptions, metadataQueryOptions} from '~/hooks/query/useMetadata';
 import {useQuery} from '@tanstack/react-query';
-import {useDisplayState} from '~/hooks/ui';
+import {displayStore, useDisplayState} from '~/hooks/ui';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import LocationList from './LocationList';
@@ -73,13 +73,16 @@ const TasksOverview = () => {
   };
 
   const clickCallback = (data: MapOverview | BoreholeMapData | null) => {
-    if (data === null) {
+    const {loc_id, selectedTask, boreholeno} = displayStore.getState();
+
+    if (data === null && (loc_id !== null || selectedTask !== null || boreholeno !== null)) {
       setLocId(null);
       setSelectedTask(null);
       setBoreholeNo(null);
       setPageToShow(null);
       return;
     }
+    if (data === null) return;
 
     if ('loc_id' in data) {
       // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
