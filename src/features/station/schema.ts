@@ -32,15 +32,17 @@ const defaultAddLocationSchema = baseLocationSchema.extend({
 });
 
 const defaultEditLocationSchema = defaultAddLocationSchema.extend({
-  initial_project_no: z.string().nullish(),
+  initial_project_no: z.string().optional(),
 });
 
-const boreholeEditLocationSchema = baseLocationSchema.extend({
+const boreholeAddLocationSchema = baseLocationSchema.extend({
   boreholeno: z.string().optional(),
-  suffix: z.string().optional(),
+  suffix: z.string().nullish(),
 });
 
-const boreholeAddLocationSchema = boreholeEditLocationSchema;
+const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
+  initial_project_no: z.string().optional(),
+});
 
 const baseTimeseriesSchema = z.object({
   sensor_depth_m: z.number().nullish(),
@@ -57,7 +59,7 @@ const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.strin
 const defaultAddTimeseriesSchema = baseAddTimeseriesSchema.extend({prefix: z.string().nullish()});
 
 const boreholeEditTimeseriesSchema = baseTimeseriesSchema.extend({
-  intakeno: z.number({required_error: 'Vælg indtag'}).gte(1, {
+  intakeno: z.number({required_error: 'Vælg indtag'}).gte(0, {
     message: 'Vælg indtag',
   }),
 });

@@ -197,7 +197,7 @@ const CreateStation = () => {
     let form;
 
     if (isLocationValid && isLocationDirty && !isTimeseriesDirty && !isUnitDirty) {
-      stamdataNewLocationMutation.mutate(locationData);
+      stamdataNewLocationMutation.mutate(locationData as BoreholeAddLocation | DefaultAddLocation);
     }
 
     if (isLocationValid && isTimeseriesValid && isTimeseriesDirty && !isUnitDirty) {
