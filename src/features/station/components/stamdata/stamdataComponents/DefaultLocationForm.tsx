@@ -1,6 +1,7 @@
 import {Grid2} from '@mui/material';
 import React from 'react';
 import StamdataLocation from '../StamdataLocation';
+import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   size: number;
@@ -8,6 +9,7 @@ type Props = {
 };
 
 const DefaultLocationForm = ({size, loc_id}: Props) => {
+  const user = useUser();
   const disabled = loc_id !== undefined;
 
   return (
@@ -19,13 +21,15 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.Locname disabled={disabled} />
       </Grid2>
-      <Grid2 size={size}></Grid2>
+      {user?.superUser && <Grid2 size={size}></Grid2>}
       <Grid2 size={size}>
         <StamdataLocation.Groups disabled={disabled} />
       </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.InitialProjectNo disabled={disabled} />
-      </Grid2>
+      {user?.superUser && (
+        <Grid2 size={size}>
+          <StamdataLocation.InitialProjectNo disabled={disabled} />
+        </Grid2>
+      )}
       <Grid2 size={size}>
         <StamdataLocation.X disabled={disabled} />
       </Grid2>

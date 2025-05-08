@@ -9,15 +9,17 @@ import {
   DefaultEditLocation,
   defaultEditLocationSchema,
 } from '../schema';
-import {zodResolver} from '@hookform/resolvers/zod';
 import {DefaultValues, useForm} from 'react-hook-form';
-import {ZodType} from 'zod';
+import {z, ZodObject} from 'zod';
 import React from 'react';
 import DefaultLocationForm from '../components/stamdata/stamdataComponents/DefaultLocationForm';
 import BoreholeLocationForm from '../components/stamdata/stamdataComponents/BoreholeLocationForm';
 import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLocationForm';
 import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
 import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
+import {useUser} from '~/features/auth/useUser';
+import {User} from '@sentry/react';
+import {zodResolver} from '@hookform/resolvers/zod';
 
 type useLocationFormProps = {
   defaultValues?: DefaultValues<
@@ -28,8 +30,8 @@ type useLocationFormProps = {
   context: {loc_id: number};
 };
 
-const getSchemaAndForm = (loctype_id: number, mode: 'Add' | 'Edit') => {
-  let selectedSchema: ZodType<Record<string, any>> = baseLocationSchema;
+const getSchemaAndForm = (loctype_id: number, mode: 'Add' | 'Edit', user: User) => {
+  let selectedSchema: ZodObject<Record<string, any>> = baseLocationSchema;
   let selectedForm = DefaultLocationForm;
 
   switch (true) {
@@ -55,6 +57,12 @@ const getSchemaAndForm = (loctype_id: number, mode: 'Add' | 'Edit') => {
       break;
   }
 
+  if (user?.superUser === false && mode === 'Add') {
+    selectedSchema = selectedSchema.extend({
+      initial_project_no: z.string().optional(),
+    });
+  }
+
   return [selectedSchema, selectedForm] as const;
 };
 
@@ -64,9 +72,10 @@ const useLocationForm = ({
   context,
   initialLocTypeId = -1,
 }: useLocationFormProps) => {
+  const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm(loctype_id, mode);
+  const [schema, form] = getSchemaAndForm(loctype_id, mode, user);
 
   const {data: defaultValuesData, success} = schema.safeParse({
     ...defaultValues,

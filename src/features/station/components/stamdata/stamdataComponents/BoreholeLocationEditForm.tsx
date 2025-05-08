@@ -3,12 +3,14 @@ import React from 'react';
 import StamdataLocation from '../StamdataLocation';
 import {useAppContext} from '~/state/contexts';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   size: number;
 };
 
 const BoreholeLocationEditForm = ({size}: Props) => {
+  const user = useUser();
   const {loc_id} = useAppContext([], ['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
@@ -18,7 +20,7 @@ const BoreholeLocationEditForm = ({size}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.LoctypeSelect disabled={disabled} />
       </Grid2>
-      <Grid2 size={size}></Grid2>
+      {user?.superUser && <Grid2 size={size}></Grid2>}
       <Grid2 size={size}>
         <StamdataLocation.Boreholeno disabled={disabled} />
       </Grid2>
@@ -28,9 +30,11 @@ const BoreholeLocationEditForm = ({size}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.Groups disabled={disabled} />
       </Grid2>
-      <Grid2 size={size}>
-        <StamdataLocation.InitialProjectNo disabled={disabled} />
-      </Grid2>
+      {user?.superUser && (
+        <Grid2 size={size}>
+          <StamdataLocation.InitialProjectNo disabled={disabled} />
+        </Grid2>
+      )}
       <Grid2 size={size}>
         <StamdataLocation.X disabled={disabled} />
       </Grid2>
