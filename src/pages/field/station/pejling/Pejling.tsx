@@ -32,19 +32,26 @@ import {useAppContext} from '~/state/contexts';
 import {Kontrol} from '../../boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import {initialData} from '~/features/pejling/const';
+import {boreholeInitialData, initialData} from '~/features/pejling/const';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
-  const [mode, setMode] = useState<'Add' | 'Edit'>('Add');
+  // const [mode, setMode] = useState<'Add' | 'Edit'>('Add');
   const setIsPump = useSetAtom(boreholeIsPumpAtom);
-  const [gid, setGid] = useState<number>(-1);
+  const [gid, setGid] = useState<number | undefined>(undefined);
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
   const {data: timeseries_data} = useTimeseriesData();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const [, setTabValue] = useCreateTabState();
-  const {post: postPejling, put: putPejling, del: delPejling} = usePejling();
+  const {
+    get: {data: measurements},
+    post: postPejling,
+    put: putPejling,
+    del: delPejling,
+  } = usePejling();
+
+  // const mode = gid === undefined ? 'Add' : 'Edit';
 
   const {
     feature_permission_query: {data: permissions},
@@ -71,16 +78,14 @@ const Pejling = () => {
       return data;
     },
     staleTime: 10,
-    enabled:
-      ts_id !== undefined &&
-      ts_id !== null &&
-      ts_id !== -1 &&
-      timeseries_data &&
-      timeseries_data.loctype_id !== 9,
+    enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
   });
 
+  useEffect(() => {
+    setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
+  }, [measurements]);
+
   const handlePejlingSubmit = (values: PejlingItem | PejlingBoreholeItem) => {
-    console.log(values);
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -89,31 +94,43 @@ const Pejling = () => {
       },
     };
 
-    if (mode === 'Add') {
+    let resetData: Record<string, any>;
+    if ('pumpstop' in values) {
+      resetData = boreholeInitialData();
+    } else {
+      resetData = initialData();
+    }
+
+    if (gid === undefined) {
       postPejling.mutate(payload, {
         onSuccess: () => {
-          reset();
+          reset(resetData);
           setDynamic([]);
           setShowForm(null);
         },
       });
     } else {
-      payload.path = gid === -1 ? `${ts_id}` : `${ts_id}/${gid}`;
+      payload.path = `${ts_id}/${gid}`;
       putPejling.mutate(payload, {
         onSuccess: () => {
-          reset(initialData);
-          setIsPump(false);
+          reset(resetData);
           setShowForm(null);
+          setGid(undefined);
         },
       });
     }
+  };
+
+  const handleCancel = () => {
+    setShowForm(null);
+    reset(initialData());
+    setGid(undefined);
   };
 
   const handleEdit = (data: PejlingWithId | Kontrol) => {
     data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
     reset(data);
     setShowForm(true);
-    setMode('Edit');
     setGid(data.gid);
   };
 
@@ -129,7 +146,6 @@ const Pejling = () => {
   };
 
   useEffect(() => {
-    console.log('showForm', showForm);
     setShowForm(null);
     setDynamic([]);
   }, [ts_id]);
@@ -169,10 +185,11 @@ const Pejling = () => {
               }}
             >
               <Typography variant="h5" component="h3" sx={{mb: 2}}>
-                {mode === 'Add' ? 'Indberet kontrol' : 'Rediger kontrol'}
+                {gid === undefined ? 'Indberet kontrol' : 'Rediger kontrol'}
               </Typography>
               <CompoundPejling
                 submit={handlePejlingSubmit}
+                cancel={handleCancel}
                 latestMeasurement={latestMeasurement}
                 openAddMP={openAddMP}
                 setDynamic={setDynamic}

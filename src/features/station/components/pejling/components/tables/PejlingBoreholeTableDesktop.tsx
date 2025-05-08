@@ -17,10 +17,10 @@ import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {boreholePejlingItem} from '~/types';
+import {BoreholePejlingItem} from '~/types';
 
 interface Props {
-  handleEdit: (kontrol: boreholePejlingItem) => void;
+  handleEdit: (kontrol: BoreholePejlingItem) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -41,7 +41,7 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
     setMpId(id);
     setDialogOpen(true);
   };
-  const columns = useMemo<MRT_ColumnDef<boreholePejlingItem>[]>(
+  const columns = useMemo<MRT_ColumnDef<BoreholePejlingItem>[]>(
     () => [
       {
         accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
@@ -76,7 +76,7 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
               header: `Kote [m DVR90]`,
               size: 140,
             },
-          ] as MRT_ColumnDef<boreholePejlingItem>[])
+          ] as MRT_ColumnDef<BoreholePejlingItem>[])
         : []),
       {
         accessorFn: (row) =>
@@ -91,11 +91,11 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
     [unit, isWaterlevel]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<boreholePejlingItem>(
+  const [tableState, reset] = useStatefullTableAtom<BoreholePejlingItem>(
     'PejlingBoreholeTableState'
   );
 
-  const options: Partial<MRT_TableOptions<boreholePejlingItem>> = {
+  const options: Partial<MRT_TableOptions<BoreholePejlingItem>> = {
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -113,7 +113,7 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
     },
   };
 
-  const table = useQueryTable<boreholePejlingItem>(
+  const table = useQueryTable<BoreholePejlingItem>(
     columns,
     get,
     options,
