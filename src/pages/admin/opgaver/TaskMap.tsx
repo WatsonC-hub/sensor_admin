@@ -25,7 +25,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
 import useMap from '../../../features/map/components/useMap';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
-import {getBoreholeIcon, getNotificationIcon} from '~/features/map/utils';
+import {getBoreholesIcon, getNotificationIcon} from '~/features/map/utils';
 import {utm} from '../../../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
@@ -105,12 +105,6 @@ const Map = ({clickCallback}: MapProps) => {
     doneRendering,
   } = useMap('test', data, contextmenuItems, clickCallback);
 
-  // useEffect(() => {
-  //   if (map) {
-  //     new LassoControl({position: 'bottomleft'}).addTo(map);
-  //   }
-  // }, [map]);
-
   const prefetchQueries = (loc_id: number) => {
     queryClient.prefetchQuery(timeseriesStatusOptions(loc_id));
     queryClient.prefetchQuery(locationInfoOptions(loc_id));
@@ -119,7 +113,7 @@ const Map = ({clickCallback}: MapProps) => {
   const createBoreholeMarker = (element: BoreholeMapData) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
     const marker = L.marker(point, {
-      icon: getBoreholeIcon(element),
+      icon: getBoreholesIcon(element),
       interactive: true,
       riseOnHover: true,
       title: element.boreholeno,
@@ -149,15 +143,6 @@ const Map = ({clickCallback}: MapProps) => {
     marker.addEventListener('mouseout', () => {
       debounced.cancel();
     });
-
-    // const marker = L.circleMarker(point, {
-    //   ...defaultCircleMarkerStyle,
-    //   interactive: true,
-    //   fillColor: getColor(element),
-    //   title: element.loc_name,
-    //   data: element,
-    //   contextmenu: true,
-    // });
 
     let locationMenu: Array<L.ContextMenuItem> = [
       {
