@@ -303,24 +303,24 @@ const Boreholeno = () => {
         </Box>
       )}
 
-      {pageToShow === stationPages.PEJLING && showForm === true && (
-        <PejlingFormBorehole
-          formData={pejlingData}
-          changeFormData={changePejlingData}
-          handleSubmit={handlePejlingSubmit}
-          resetFormData={() => {
-            resetPejlingData();
-            setShowForm(null);
-          }}
-          mpData={watlevmp}
-          openAddMP={openAddMP}
-          lastMeasurementPump={
-            measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
-          }
-        />
-      )}
       {pageToShow === stationPages.PEJLING && (
         <StationPageBoxLayout>
+          {showForm === true && (
+            <PejlingFormBorehole
+              formData={pejlingData}
+              changeFormData={changePejlingData}
+              handleSubmit={handlePejlingSubmit}
+              resetFormData={() => {
+                resetPejlingData();
+                setShowForm(null);
+              }}
+              mpData={watlevmp}
+              openAddMP={openAddMP}
+              lastMeasurementPump={
+                measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
+              }
+            />
+          )}
           <PejlingMeasurements
             measurements={measurements}
             handleEdit={handleEditPejling}
