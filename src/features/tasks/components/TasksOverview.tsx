@@ -75,6 +75,7 @@ const TasksOverview = () => {
   const clickCallback = (data: MapOverview | BoreholeMapData | null) => {
     if (data === null) {
       setLocId(null);
+      setSelectedTask(null);
       setBoreholeNo(null);
       setPageToShow(null);
       return;
@@ -84,6 +85,7 @@ const TasksOverview = () => {
       // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
       // console.log('data', data);
       setLocId(data.loc_id);
+      setSelectedTask(null);
     } else if ('boreholeno' in data) {
       // console.log('boreholeno', data);
       setBoreholeNo(data.boreholeno);
@@ -154,6 +156,7 @@ const TasksOverview = () => {
             onClose={() => {
               // setSelectedData(null);
               closeLocation();
+              setSelectedTask(null);
             }}
             sx={{
               m: isMobile ? 0.5 : undefined,
