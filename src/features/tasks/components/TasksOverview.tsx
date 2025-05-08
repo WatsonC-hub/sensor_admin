@@ -226,7 +226,7 @@ const TasksOverview = () => {
             id="station"
             show={ts_id !== null}
             minSize={2}
-            maxSize={3}
+            maxSize={4}
             fullScreen={isMobile || fullScreen}
             sx={{
               borderRadius: isMobile ? 0 : 3,
@@ -242,7 +242,7 @@ const TasksOverview = () => {
             key="locationstation"
             show={loc_id !== null && locationData?.timeseries.length === 0}
             minSize={2}
-            maxSize={3}
+            maxSize={4}
             onClose={() => setSelectedTask(null)}
             fullScreen={isMobile || fullScreen}
             height="100%"
