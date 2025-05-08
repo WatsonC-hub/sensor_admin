@@ -17,7 +17,7 @@ export const boreholeColors: Record<
     text: 'OK',
   },
   [BoreHoleFlagEnum.SOON]: {
-    color: '#F9DC00',
+    color: '#f7da00',
     text: 'Skal snart pejles',
   },
   [BoreHoleFlagEnum.EXCEEDED]: {

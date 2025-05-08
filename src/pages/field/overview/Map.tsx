@@ -12,7 +12,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {boreholeColors} from '~/consts';
+
 import {NotificationMap, useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeActions from '~/pages/field/overview/components/BoreholeActions';
@@ -39,17 +39,17 @@ import {useUser} from '~/features/auth/useUser';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {AppContext} from '~/state/contexts';
 import {getColor} from '~/features/notifications/utils';
+import {boreholeColors} from '~/features/notifications/consts';
 
-const leafletIcons = Object.keys(boreholeColors).map((key) => {
-  const index = parseInt(key);
+const leafletIcons = Object.entries(boreholeColors).map(([, values]) => {
+  // const index = parseInt(key);
   return new L.DivIcon({
     className: 'custom-div-icon',
-    html: L.Util.template(boreholeSVG, {color: boreholeColors[index].color}),
+    html: L.Util.template(boreholeSVG, {color: values.color}),
     iconSize: [24, 24],
     iconAnchor: [12, 12],
   });
 });
-
 interface LocItems {
   name: string;
   sensor: boolean;

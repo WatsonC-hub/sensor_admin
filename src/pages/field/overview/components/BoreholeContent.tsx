@@ -2,8 +2,8 @@ import {Box, Divider, Typography} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import Button from '~/components/Button';
+import {boreholeColors} from '~/features/notifications/consts';
 
-import {boreholeColors} from '~/consts';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
@@ -24,8 +24,10 @@ const BoreholeContent = () => {
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
       <Box display="flex" alignItems="center" gap={1}>
         <Typography variant="body1">Status:</Typography>
-        <TaskIcon color={boreholeColors[maxStatus].color} />
-        <Typography variant="body1">{boreholeColors[maxStatus].text}</Typography>
+        <TaskIcon color={boreholeColors[maxStatus as keyof typeof boreholeColors].color} />
+        <Typography variant="body1">
+          {boreholeColors[maxStatus as keyof typeof boreholeColors].text}
+        </Typography>
       </Box>
 
       <Box>
