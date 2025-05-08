@@ -42,49 +42,6 @@ interface MapProps {
   clickCallback?: (data: MapOverview | BoreholeMapData | null) => void;
 }
 
-// type TaskStyling = 'upcoming' | '';
-// const taskStyleAtom = atom<TaskStyling>('');
-
-// const Control = () => {
-//   const [selectedStyle, setSelectedStyle] = useAtom(taskStyleAtom);
-
-//   return (
-//     <TextField
-//       select
-//       size="small"
-//       value={selectedStyle}
-//       label={'Vælg filtrering...'}
-//       sx={{width: 200, backgroundColor: 'white'}}
-//       onChange={(e) => {
-//         const value = e.target.value as TaskStyling;
-//         setSelectedStyle(value);
-//         console.log(value);
-//       }}
-//     >
-//       <MenuItem value={''}>Ingen filtrering</MenuItem>
-//       {/* <MenuItem value={'dato'}>Farvelæg på dato</MenuItem> */}
-//       <MenuItem value={'ansvarlig'}>Farvelæg mine opgaver</MenuItem>
-//     </TextField>
-//   );
-// };
-
-// const select: Partial<L.Control.StyleSelect> = {
-//   onAdd: function () {
-//     const div = L.DomUtil.create('div');
-
-//     const root = createRoot(div);
-//     root.render(<Control />);
-
-//     return div;
-//   },
-// };
-
-// L.Control.StyleSelect = L.Control.extend(select);
-
-// L.control.StyleSelect = function (opts: L.ControlOptions) {
-//   return new L.Control.StyleSelect(opts);
-// };
-
 const Map = ({clickCallback}: MapProps) => {
   const {createStamdata} = useNavigationFunctions();
   const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
@@ -145,6 +102,7 @@ const Map = ({clickCallback}: MapProps) => {
     },
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
+    doneRendering,
   } = useMap('test', data, contextmenuItems, clickCallback);
 
   // useEffect(() => {
@@ -370,7 +328,7 @@ const Map = ({clickCallback}: MapProps) => {
         }
       }
     });
-  }, [filteredData]);
+  }, [filteredData, doneRendering]);
 
   return (
     <>

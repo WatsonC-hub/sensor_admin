@@ -11,7 +11,7 @@
 //     longitude: '{{floating(8.24402, 14.70664)}}'
 //   }
 
-import {NotificationEnum} from '../notifications/consts';
+import {FlagEnum} from '../notifications/consts';
 
 export type ID = string;
 
@@ -72,7 +72,7 @@ export type Task = {
   block_all: boolean;
   itinerary_id: string | null;
   can_edit: boolean;
-  flag: NotificationEnum;
+  flag: FlagEnum;
   prefix: string | null;
 };
 

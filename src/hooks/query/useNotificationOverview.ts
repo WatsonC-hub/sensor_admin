@@ -3,7 +3,7 @@ import {sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {NotificationEnum, NotificationIDEnum} from '~/features/notifications/consts';
+import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import {Group} from '~/types';
 
 export interface Notification {
@@ -19,7 +19,7 @@ export interface Notification {
   opgave: string | null;
   dato: string | null;
   color: string | null;
-  flag: NotificationEnum;
+  flag: FlagEnum;
   notification_id: NotificationIDEnum;
   status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
@@ -185,7 +185,7 @@ export interface MapOverview {
   projectno: string | null;
   has_task: boolean;
   groups: Group[];
-  flag: NotificationEnum | null;
+  flag: FlagEnum | null;
   notification_id: NotificationIDEnum | null;
   due_date: string | null;
 }
@@ -218,7 +218,7 @@ export interface TimeseriesStatus {
   prefix: string | null;
   is_calculated: boolean;
   notification_id: NotificationIDEnum | null;
-  flag: NotificationEnum | null;
+  flag: FlagEnum | null;
   opgave: string | null;
   has_task: boolean;
   due_date: string | null;
