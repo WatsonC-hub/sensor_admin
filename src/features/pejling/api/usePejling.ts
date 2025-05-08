@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {PejlingItem} from '~/types';
+import {BoreholePejlingItem} from '~/types';
 
 interface PejlingBase {
   path: string;
@@ -63,10 +63,10 @@ export const pejlingDelOptions = {
 };
 
 export const pejlingGetOptions = (ts_id: number | undefined) =>
-  queryOptions<Array<PejlingItem>, APIError>({
+  queryOptions<Array<BoreholePejlingItem>, APIError>({
     queryKey: ['measurements', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<PejlingItem>>(
+      const {data} = await apiClient.get<Array<BoreholePejlingItem>>(
         `/sensor_field/station/measurements/${ts_id}`
       );
 
