@@ -37,7 +37,7 @@ import {
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
-import {getMaxColor} from '~/features/notifications/consts';
+import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
 
@@ -503,7 +503,12 @@ const useMap = <TData extends object>(
         const childMarkers = cluster.getAllChildMarkers();
         const num = childMarkers.length;
 
-        const colors = childMarkers.map((marker) => getColor(marker.options.data));
+        const colors = childMarkers.map((marker) => {
+          if ('loc_id' in marker.options.data) {
+            return getColor(marker.options.data);
+          }
+          return boreholeColors[marker.options.data.status as keyof typeof boreholeColors].color;
+        });
 
         const color = getMaxColor(colors);
         return L.divIcon({

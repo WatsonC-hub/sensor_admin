@@ -15,7 +15,8 @@ import React, {useMemo} from 'react';
 
 import Button from '~/components/Button';
 import RenderInternalActions from '~/components/tableComponents/RenderInternalActions';
-import {calculateContentHeight, boreholeColors} from '~/consts';
+import {calculateContentHeight} from '~/consts';
+import {boreholeColors} from '~/features/notifications/consts';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {TableTypes} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -33,13 +34,21 @@ function statusIcon(row: BoreholeData) {
   } else {
     icon = (
       <StraightenIcon
-        style={{color: boreholeColors[status].color, strokeWidth: 0.5, stroke: '#aaaaaa'}}
+        style={{
+          color: boreholeColors[status as keyof typeof boreholeColors].color,
+          strokeWidth: 0.5,
+          stroke: '#aaaaaa',
+        }}
       />
     );
   }
 
   return (
-    <Tooltip arrow title={boreholeColors[status].text} enterTouchDelay={0}>
+    <Tooltip
+      arrow
+      title={boreholeColors[status as keyof typeof boreholeColors].text}
+      enterTouchDelay={0}
+    >
       {icon}
     </Tooltip>
   );
@@ -161,7 +170,9 @@ const BoreholeTable = ({data}: Props) => {
             Status:
           </Typography>
           {statusIcon(row.original)}
-          <Typography variant="body2">{boreholeColors[row.original.status].text}</Typography>
+          <Typography variant="body2">
+            {boreholeColors[row.original.status as keyof typeof boreholeColors].text}
+          </Typography>
         </Box>
       </Box>
       <Box display={'flex'} flexDirection={'row'} pb={1} justifyContent={'center'} gap={1}>
