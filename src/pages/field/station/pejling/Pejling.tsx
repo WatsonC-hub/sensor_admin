@@ -80,6 +80,7 @@ const Pejling = () => {
   });
 
   const handlePejlingSubmit = (values: PejlingItem | PejlingBoreholeItem) => {
+    console.log(values);
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -170,15 +171,16 @@ const Pejling = () => {
               <Typography variant="h5" component="h3" sx={{mb: 2}}>
                 {mode === 'Add' ? 'Indberet kontrol' : 'Rediger kontrol'}
               </Typography>
-              <CompoundPejling>
-                <PejlingForm
-                  openAddMP={openAddMP}
-                  setDynamic={setDynamic}
-                  latestMeasurement={latestMeasurement}
-                />
+              <CompoundPejling
+                submit={handlePejlingSubmit}
+                latestMeasurement={latestMeasurement}
+                openAddMP={openAddMP}
+                setDynamic={setDynamic}
+              >
+                <PejlingForm />
                 <Box gap={1} display={'flex'} justifyContent={'center'} mt={2}>
                   <CompoundPejling.CancelButton />
-                  <CompoundPejling.SubmitButton submit={handlePejlingSubmit} />
+                  <CompoundPejling.SubmitButton />
                 </Box>
               </CompoundPejling>
             </Card>

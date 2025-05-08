@@ -30,10 +30,10 @@ const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
 
   switch (true) {
     case loctype_id === 9:
-      selectedSchema = tstype_id !== -1 && tstype_id === 1 ? pejlingBoreholeSchema : pejlingSchema;
-      selectedForm = tstype_id !== -1 && tstype_id === 1 ? PejlingBoreholeForm : PejlingForm;
+      selectedSchema = tstype_id === 1 ? pejlingBoreholeSchema : pejlingSchema;
+      selectedForm = tstype_id === 1 ? PejlingBoreholeForm : PejlingForm;
       selectedTable =
-        tstype_id !== -1 && tstype_id === 1
+        tstype_id === 1
           ? isMobile
             ? PejlingBoreholeTableMobile
             : PejlingBoreholeTableDesktop
