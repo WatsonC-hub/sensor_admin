@@ -1,6 +1,13 @@
 import moment from 'moment';
-import {FlagEnum, NotificationEnum, NotificationIDEnum, sensorColors} from './consts';
-import {IconDetails} from './types';
+import {
+  boreholeColors,
+  BoreHoleFlagEnum,
+  FlagEnum,
+  NotificationEnum,
+  NotificationIDEnum,
+  sensorColors,
+} from './consts';
+import {BoreholeDetails, IconDetails} from './types';
 
 import {JSX} from 'react';
 
@@ -12,7 +19,7 @@ const rawIcons = Object.fromEntries(
       import: 'default',
     })
   ).map(([key, value]) => [key.split('/').pop()?.split('_')[0], value])
-) as Record<NotificationIDEnum | 'task' | 'trip', string>;
+) as Record<NotificationIDEnum | 'task' | 'trip' | 'borehole', string>;
 
 export const reactIcons = Object.fromEntries(
   Object.entries(
@@ -23,7 +30,7 @@ export const reactIcons = Object.fromEntries(
     })
   ).map(([key, value]) => [key.split('/').pop()?.split('_')[0], value])
 ) as Record<
-  NotificationIDEnum | 'task' | 'trip',
+  NotificationIDEnum | 'task' | 'trip' | 'borehole',
   React.FunctionComponent<React.SVGProps<SVGSVGElement>>
 >;
 
@@ -56,6 +63,32 @@ export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.color) return iconDetails.color;
   return sensorColors[FlagEnum.OK].color;
 };
+
+export const getBoreholeColor = (BoreholeDetails: BoreholeDetails) => {
+  if (BoreholeDetails?.status)
+    return boreholeColors[Math.max(...BoreholeDetails.status) as BoreHoleFlagEnum].color;
+
+  return boreholeColors[BoreHoleFlagEnum.OK].color;
+};
+
+function getBoreholeIcon<B extends boolean = false>(
+  BoreholeDetails: BoreholeDetails,
+  raw: B
+): B extends true ? string : JSX.Element;
+function getBoreholeIcon(boreholeDetails: BoreholeDetails, raw: boolean): string | JSX.Element {
+  if (raw == true) {
+    if (boreholeDetails.status && boreholeDetails.status.length > 0) {
+      return rawIcons['borehole'];
+    }
+    return '';
+  } else {
+    if (boreholeDetails.status && boreholeDetails.status.length > 0) {
+      const Component = reactIcons['borehole'];
+      return <Component style={defaultStyling} viewBox="0 0 24 24" />;
+    }
+    return <></>;
+  }
+}
 
 function getIcon<B extends boolean = false>(
   iconDetails: IconDetails,
@@ -99,4 +132,4 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
     return <></>;
   }
 }
-export {getIcon};
+export {getIcon, getBoreholeIcon};
