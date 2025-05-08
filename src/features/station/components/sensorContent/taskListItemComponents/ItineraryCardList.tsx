@@ -104,10 +104,9 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
         >
           <Box display={'flex'} flexDirection={'column'} gap={0.5}>
             {itinerary_tasks?.map((task) => {
-              // const isSimpleTask = !task.is_created;
               return (
-                <>
-                  <Box key={task.id + '2'} sx={{px: 1, pt: 0.5}}>
+                <div key={task.id}>
+                  <Box sx={{px: 1, pt: 0.5}}>
                     {isSimpleTask(task) ? (
                       <ItineraryListItemSimpleCard task={task} />
                     ) : (
@@ -115,7 +114,7 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
                     )}
                   </Box>
                   <Divider />
-                </>
+                </div>
               );
             })}
           </Box>
