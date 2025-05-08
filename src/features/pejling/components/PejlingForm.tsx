@@ -22,7 +22,7 @@ import {LatestMeasurement, Maalepunkt, PejlingItem} from '~/types';
 
 import Correction from './Correction';
 import IngenMPAlert from './IngenMPAlert';
-import WaterlevelAlert from './WaterlevelAlert';
+import DisplayWaterlevelAlert from './WaterlevelAlert';
 // TODO
 // - Find ud af om textfield skal have grøn outline
 
@@ -167,7 +167,7 @@ export default function PejlingForm({
           />
         </Grid>
         {isWaterlevel && !notPossible && (
-          <WaterlevelAlert
+          <DisplayWaterlevelAlert
             latestMeasurementSeverity={
               (elevationDiff && elevationDiff > 0.03) || !latestMeasurement ? 'warning' : 'info'
             }
