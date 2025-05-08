@@ -25,12 +25,15 @@ import Trip from '~/pages/admin/opgaver/Trip';
 import {useTaskItinerary} from '../api/useTaskItinerary';
 import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 
 const TasksOverview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
     state.selectedTaskId,
     state.setSelectedTask,
   ]);
+
+  const [, setPageToShow] = useStationPages();
 
   const {
     loc_id,
@@ -73,6 +76,7 @@ const TasksOverview = () => {
     if (data === null) {
       setLocId(null);
       setBoreholeNo(null);
+      setPageToShow(null);
       return;
     }
 
@@ -95,19 +99,6 @@ const TasksOverview = () => {
       alignItems="stretch"
       position="relative"
     >
-      {/* <Box
-        justifyContent={'center'}
-        alignSelf={'center'}
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          height: calculateContentHeight(64),
-          width: '100%',
-          justifySelf: 'center',
-          overflow: 'hidden',
-          backgroundColor: 'white',
-        }}
-      > */}
       <Box
         sx={{
           height: '100%',

@@ -21,7 +21,6 @@ import {LeafletMapRoute, Parking, PartialBy} from '~/types';
 import droplelSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import {
-  outdormapbox,
   satelitemapbox,
   zoomThresholdForParking,
   zoomThresholdForSmallMarkers,
@@ -37,11 +36,10 @@ import {
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
-import {setIconSize, sortBoreholeLast, sortLocations} from '../utils';
-import {boreholeColors, BoreHoleFlagEnum, getMaxColor} from '~/features/notifications/consts';
+import {setIconSize} from '../utils';
+import {getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
-import {useStationPages} from '~/hooks/useQueryStateParameters';
 
 const useMap = <TData extends object>(
   id: string,
@@ -54,17 +52,17 @@ const useMap = <TData extends object>(
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
   const tooltipRef = useRef<L.FeatureGroup | null>(null);
   const geoJsonRef = useRef<L.FeatureGroup | null>(null);
-  const [setSelectParking, setEditParkingLayer, setEditRouteLayer] = useMapUtilityStore((state) => [
+  const [setSelectedLocId, setEditParkingLayer, setEditRouteLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
     state.setEditParkingLayer,
     state.setEditRouteLayer,
   ]);
+  const [doneRendering, setDoneRendering] = useState(false);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
   const [deleteId, setDeleteId] = useState<number>();
   const [displayAlert, setDisplayAlert] = useState<boolean>(false);
   const [displayDelete, setDisplayDelete] = useState<boolean>(false);
-  const [pageToShow, setPageToShow] = useStationPages();
   const {loc_id: selectedLocId} = useDisplayState((state) => state);
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
@@ -77,6 +75,9 @@ const useMap = <TData extends object>(
 
   const setSelectedMarkerWithCallback = (data: TData | null | undefined) => {
     setSelectedMarker(data);
+    if (data && 'loc_id' in data) {
+      setSelectedLocId(data.loc_id as number);
+    }
     if (selectCallback && data) {
       selectCallback(data);
     }
@@ -144,7 +145,6 @@ const useMap = <TData extends object>(
       zoom: zoom || 7,
       layers: [defaultMapBox],
       tapHold: true,
-      renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
     });
@@ -177,14 +177,16 @@ const useMap = <TData extends object>(
 
   const onMapClickEvent = (map: L.Map) => {
     map.on('click', function (e) {
-      setSelectedMarkerWithCallback(null);
-      if (selectCallback) selectCallback(null);
-      if (selectedMarker && selectedLocId) {
-        highlightParking(selectedLocId, false);
-      }
-
       const loc_id = mapUtilityStore.getState().selectedLocId;
       const editParkingLayer = mapUtilityStore.getState().editParkingLayer;
+      const editRouteLayer = mapUtilityStore.getState().editRouteLayer;
+
+      setSelectedMarkerWithCallback(null);
+      if (selectCallback) selectCallback(null);
+      if (loc_id && editRouteLayer === null) {
+        highlightParking(loc_id, false);
+        setSelectedLocId(null);
+      }
 
       if (loc_id && loc_id !== null && editParkingLayer === 'create') {
         // @ts-expect-error error in type definition
@@ -200,8 +202,6 @@ const useMap = <TData extends object>(
           const payload = {path: '', data: parkering};
 
           setEditParkingLayer(null);
-          highlightParking(loc_id as number, true);
-          setSelectParking(null);
 
           postParkering.mutate(payload, {
             onSettled: () => {
@@ -212,7 +212,7 @@ const useMap = <TData extends object>(
           if (mapRef.current) mapRef.current.getContainer().style.cursor = '';
         }
       }
-      if (pageToShow !== 'pejling' && selectedLocId) setPageToShow('pejling');
+      // if (pageToShow !== 'pejling' && selectedLocId) setPageToShow('pejling');
     });
   };
 
@@ -448,7 +448,7 @@ const useMap = <TData extends object>(
               putParkering.mutate(payload, {
                 onSettled: () => {
                   highlightParking(parking.loc_id, true);
-                  setSelectParking(null);
+                  setSelectedLocId(null);
                   toast.dismiss('tilknytParking');
                 },
               });
@@ -471,7 +471,7 @@ const useMap = <TData extends object>(
       const payload = {path: parking_id.toString()};
       deleteParkering.mutate(payload, {
         onSettled: () => {
-          setSelectParking(null);
+          setSelectedLocId(null);
           toast.dismiss('tilknytParking');
           if (selectedMarker) {
             if (selectedLocId) highlightParking(selectedLocId, true);
@@ -506,22 +506,6 @@ const useMap = <TData extends object>(
         const colors = childMarkers.map((marker) => getColor(marker.options.data));
 
         const color = getMaxColor(colors);
-
-        // childMarkers.sort((a, b) => {
-        //   const value = sortBoreholeLast(a, b);
-
-        //   if (value !== undefined) return value;
-
-        //   return sortLocations(a, b);
-        // });
-
-        // let color: string;
-        // if (childMarkers[0].options.data.boreholeno) {
-        //   color =
-        //     boreholeColors[Math.max(childMarkers[0].options.data.status) as BoreHoleFlagEnum].color;
-        // } else {
-        //   color = getColor(childMarkers[0].options.data);
-        // }
         return L.divIcon({
           className: 'svg-icon',
           iconAnchor: [12, 24],
@@ -533,10 +517,27 @@ const useMap = <TData extends object>(
         });
       },
     }).addTo(mapRef.current);
+
+    markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
+      L.DomEvent.stopPropagation(e);
+      setSelectedMarkerWithCallback(e.sourceTarget.options.data);
+      highlightParking(e.sourceTarget.options.data.loc_id, true);
+    });
+
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup().addTo(mapRef.current);
 
+    geoJsonRef.current?.setStyle(routeStyle);
+    mapRef.current?.pm.setGlobalOptions({
+      snappable: true,
+      snapDistance: 5,
+      pathOptions: routeStyle,
+    });
+
+    setDoneRendering(true);
+
     return () => {
+      setDoneRendering(false);
       if (mapRef.current) {
         mapRef.current.remove();
       }
@@ -544,34 +545,12 @@ const useMap = <TData extends object>(
   }, []);
 
   useEffect(() => {
-    geoJsonRef.current?.setStyle(routeStyle);
-    mapRef.current?.pm.setGlobalOptions({
-      snappable: true,
-      snapDistance: 5,
-      pathOptions: routeStyle,
-    });
-  }, []);
-
-  useEffect(() => {
-    if (mapRef.current) {
-      onMapClickEvent(mapRef.current);
-      onCreateRouteEvent(mapRef.current);
-    }
-    markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
-      L.DomEvent.stopPropagation(e);
-      setSelectedMarkerWithCallback(e.sourceTarget.options.data);
-      highlightParking(e.sourceTarget.options.data.loc_id, true);
-    });
-
-    return () => {
-      markerLayerRef.current?.removeEventListener('click');
-      mapRef.current?.removeEventListener('pm:create');
-    };
-  }, [selectedMarker]);
-
-  useEffect(() => {
     plotRoutesInLayer();
   }, [data, leafletMapRoutes, geoJsonRef.current]);
+
+  useEffect(() => {
+    plotParkingsInLayer();
+  }, [parkingLayerRef.current, parkings, data]);
 
   useEffect(() => {
     if (zoom !== null && pan !== null) {
@@ -584,10 +563,6 @@ const useMap = <TData extends object>(
       }
     }
   }, [data]);
-
-  useEffect(() => {
-    plotParkingsInLayer();
-  }, [parkingLayerRef.current, parkings, data]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);
@@ -615,6 +590,7 @@ const useMap = <TData extends object>(
     },
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
+    doneRendering,
   };
 };
 

@@ -103,23 +103,6 @@ export const getMaxColor = (colors: string[]) => {
   return sortedColors[0] || sensorColors[FlagEnum.OK].color;
 };
 
-// export enum LocationTypeEnum {
-//   SINGLE_MEASUREMENT = 12,
-// }
-
-// export const sensorLocationTypeColors: Record<
-//   LocationTypeEnum,
-//   {
-//     color: string;
-//     text: string;
-//   }
-// > = {
-//   [LocationTypeEnum.SINGLE_MEASUREMENT]: {
-//     color: '#AFFFAD',
-//     text: 'Enkeltmåling',
-//   },
-// };
-
 /*1	Batteriskift
 2	Data mangler på graf
 3	Lavt iltindhold
