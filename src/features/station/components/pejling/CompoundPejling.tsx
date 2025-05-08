@@ -18,8 +18,7 @@ import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import IngenMPAlert from '~/features/pejling/components/IngenMPAlert';
 import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
-import {useShowFormState} from '~/hooks/useQueryStateParameters';
-import {useAtom, useSetAtom} from 'jotai';
+import {useAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
 import moment from 'moment';
 import {LatestMeasurement, Maalepunkt} from '~/types';
@@ -29,6 +28,7 @@ import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAler
 
 interface PejlingProps {
   submit: (values: PejlingItem | PejlingBoreholeItem) => void;
+  cancel: () => void;
   latestMeasurement: LatestMeasurement | undefined;
   openAddMP: () => void;
   setDynamic: (dynamic: Array<string | number>) => void;
@@ -45,6 +45,7 @@ interface CompoundPejlingProps extends PejlingProps {
 
 const CompoundPejlingContext = React.createContext<CompoundPejlingProps>({
   submit: () => {},
+  cancel: () => {},
   openAddMP: () => {},
   setDynamic: () => {},
   latestMeasurement: undefined,
@@ -57,6 +58,7 @@ const CompoundPejlingContext = React.createContext<CompoundPejlingProps>({
 
 const CompoundPejling = ({
   children,
+  cancel,
   submit,
   openAddMP,
   setDynamic,
@@ -119,6 +121,7 @@ const CompoundPejling = ({
         submit,
         openAddMP,
         setDynamic,
+        cancel,
         latestMeasurement,
         hide,
         currentMP,
@@ -133,17 +136,10 @@ const CompoundPejling = ({
 };
 
 const CancelButton = () => {
-  const setIsPump = useSetAtom(boreholeIsPumpAtom);
-  const {reset} = useFormContext<PejlingItem>();
-  const [, setShowForm] = useShowFormState();
-  const handleCancel = () => {
-    setShowForm(null);
-    reset();
-    setIsPump(false);
-  };
+  const {cancel} = React.useContext(CompoundPejlingContext);
 
   return (
-    <Button bttype="tertiary" fullWidth={false} onClick={handleCancel}>
+    <Button bttype="tertiary" fullWidth={false} onClick={cancel}>
       Annuller
     </Button>
   );

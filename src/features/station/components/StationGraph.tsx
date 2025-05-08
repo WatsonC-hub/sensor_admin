@@ -6,7 +6,7 @@ import PlotlyGraph from '~/components/PlotlyGraph';
 import {setGraphHeight} from '~/consts';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {controlData} from '~/types';
+import {ControlData} from '~/types';
 
 import useStationGraphHook from '../hooks/useStationGraphHook';
 
@@ -20,7 +20,7 @@ interface PlotGraphProps {
 }
 
 export default function PlotGraph({dynamicMeasurement}: PlotGraphProps) {
-  const [controlData, setControlData] = useState<Array<controlData>>();
+  const [controlData, setControlData] = useState<Array<ControlData>>();
   const [xRange, setXRange] = useState(initRange);
 
   const {
