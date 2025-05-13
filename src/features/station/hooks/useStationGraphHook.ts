@@ -8,11 +8,11 @@ import {useGraphData} from '~/hooks/query/useGraphData';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
-import {ControlData} from '~/types';
+import {ControlDataGraph} from '~/types';
 
 const useStationGraphHook = (
   dynamicMeasurement: Array<string | number> | undefined,
-  controlData: Array<ControlData> | undefined,
+  controlData: Array<ControlDataGraph> | undefined,
   xRange: Array<string>
 ) => {
   const {ts_id} = useAppContext(['ts_id']);

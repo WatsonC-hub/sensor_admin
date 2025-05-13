@@ -1,7 +1,7 @@
 import {
-  PejlingBoreholeItem,
+  PejlingBoreholeSchemaType,
   pejlingBoreholeSchema,
-  PejlingItem,
+  PejlingSchemaType,
   pejlingSchema,
 } from '../PejlingSchema';
 import {useForm} from 'react-hook-form';
@@ -43,6 +43,7 @@ const getSchemaAndForm = (loctype_id: number = -1, tstype_id: number = -1) => {
       break;
     default:
       selectedSchema = pejlingSchema;
+      selectedForm = PejlingForm;
       selectedTable = isMobile ? PejlingMeasurementsTableMobile : PejlingMeasurementsTableDesktop;
   }
 
@@ -56,14 +57,18 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
     get: {data: mpData},
   } = useMaalepunkt();
 
-  const data = loctype_id === 9 ? boreholeInitialData() : initialData();
+  const getInitialData = () => {
+    return loctype_id === 9 ? boreholeInitialData() : initialData();
+  };
+
+  const data = getInitialData();
 
   const {data: parsedData} = schema.safeParse({...data});
 
   const formMethods = useForm({
     resolver: (...opts) => {
       const values = {
-        ...(opts[0] as PejlingBoreholeItem | PejlingItem),
+        ...(opts[0] as PejlingBoreholeSchemaType | PejlingSchemaType),
         useforcorrection: Number(opts[0].useforcorrection),
       };
 
@@ -72,9 +77,9 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
 
       const parsed = schema.safeParse(values);
 
-      if (values.notPossible) {
-        values.measurement = null;
-      }
+      // if (values.notPossible) {
+      //   values.measurement = null;
+      // }
 
       if (!parsed.success) {
         for (const [key, messages] of Object.entries(parsed.error.flatten().fieldErrors)) {
@@ -113,7 +118,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
     },
   });
 
-  return [formMethods, form, table] as const;
+  return [formMethods, form, table, getInitialData] as const;
 };
 
 export default usePejlingForm;

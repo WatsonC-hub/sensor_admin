@@ -17,10 +17,10 @@ import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useQueryTable} from '~/hooks/useTable';
-import {BoreholePejlingItem} from '~/types';
+import {PejlingItem} from '~/types';
 
 interface Props {
-  handleEdit: (kontrol: BoreholePejlingItem) => void;
+  handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -41,7 +41,7 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
     setMpId(id);
     setDialogOpen(true);
   };
-  const columns = useMemo<MRT_ColumnDef<BoreholePejlingItem>[]>(
+  const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
       {
         accessorFn: (row) => convertDateWithTimeStamp(row.timeofmeas),
@@ -76,7 +76,7 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
               header: `Kote [m DVR90]`,
               size: 140,
             },
-          ] as MRT_ColumnDef<BoreholePejlingItem>[])
+          ] as MRT_ColumnDef<PejlingItem>[])
         : []),
       {
         accessorFn: (row) =>
@@ -91,11 +91,9 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
     [unit, isWaterlevel]
   );
 
-  const [tableState, reset] = useStatefullTableAtom<BoreholePejlingItem>(
-    'PejlingBoreholeTableState'
-  );
+  const [tableState, reset] = useStatefullTableAtom<PejlingItem>('PejlingBoreholeTableState');
 
-  const options: Partial<MRT_TableOptions<BoreholePejlingItem>> = {
+  const options: Partial<MRT_TableOptions<PejlingItem>> = {
     enableRowActions: true,
     renderRowActions: ({row}) => (
       <RenderActions
@@ -113,7 +111,7 @@ export default function PejlingBoreholeTableDesktop({handleEdit, handleDelete, d
     },
   };
 
-  const table = useQueryTable<BoreholePejlingItem>(
+  const table = useQueryTable<PejlingItem>(
     columns,
     get,
     options,

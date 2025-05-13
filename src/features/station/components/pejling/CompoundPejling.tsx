@@ -8,9 +8,9 @@ import {
   RadioGroup,
   Checkbox,
 } from '@mui/material';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {PejlingBoreholeItem, PejlingItem} from './PejlingSchema';
+import {PejlingBoreholeSchemaType, PejlingSchemaType} from './PejlingSchema';
 import {Controller, useFormContext} from 'react-hook-form';
 import {correction_map} from '~/consts';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -27,7 +27,7 @@ import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 
 interface PejlingProps {
-  submit: (values: PejlingItem | PejlingBoreholeItem) => void;
+  submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
   cancel: () => void;
   latestMeasurement: LatestMeasurement | undefined;
   openAddMP: () => void;
@@ -40,7 +40,8 @@ interface CompoundPejlingProps extends PejlingProps {
   isWaterLevel?: boolean;
   currentMP?: Maalepunkt | null;
   elevationDiff?: number;
-  notPossible?: boolean;
+  notPossible: boolean;
+  setNotPossible: (notPossible: boolean) => void;
 }
 
 const CompoundPejlingContext = React.createContext<CompoundPejlingProps>({
@@ -54,6 +55,7 @@ const CompoundPejlingContext = React.createContext<CompoundPejlingProps>({
   currentMP: null,
   elevationDiff: 0,
   notPossible: false,
+  setNotPossible: () => {},
 });
 
 const CompoundPejling = ({
@@ -64,15 +66,16 @@ const CompoundPejling = ({
   setDynamic,
   latestMeasurement,
 }: PejlingProps) => {
-  const {watch} = useFormContext<PejlingItem | PejlingBoreholeItem>();
+  const {watch, getValues} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
   const timeofmeas = watch('timeofmeas');
   const measurement = watch('measurement');
-  const notPossible = watch('notPossible');
+  const [notPossible, setNotPossible] = useState<boolean>(!!getValues('extrema'));
+
   const {data: timeseries} = useTimeseriesData();
   const isWaterLevel = timeseries?.tstype_id === 1;
-  const [elevationDiff, setElevationDiff] = React.useState<number | undefined>(undefined);
-  const [hide, setHide] = React.useState<boolean>(false);
-  const [currentMP, setCurrentMP] = React.useState<Maalepunkt | null>(null);
+  const [elevationDiff, setElevationDiff] = useState<number | undefined>(undefined);
+  const [hide, setHide] = useState<boolean>(false);
+  const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
   const tstype_id = timeseries?.tstype_id;
   const {
     get: {data: mpData},
@@ -128,6 +131,7 @@ const CompoundPejling = ({
         isWaterLevel,
         elevationDiff,
         notPossible,
+        setNotPossible,
       }}
     >
       {children}
@@ -150,7 +154,7 @@ const SubmitButton = () => {
   const {
     handleSubmit,
     formState: {errors},
-  } = useFormContext<PejlingItem | PejlingBoreholeItem>();
+  } = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
 
   return (
     <Button
@@ -158,24 +162,23 @@ const SubmitButton = () => {
       fullWidth={false}
       startIcon={<Save />}
       disabled={Object.keys(errors).length > 0}
-      onClick={handleSubmit(submit, (e) => {
-        console.log(e);
-      })}
+      onClick={handleSubmit(submit, () => {})}
     >
       Gem
     </Button>
   );
 };
 
-const Measurement = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
-  const {notPossible, isWaterLevel} = useContext(CompoundPejlingContext);
+const Measurement = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
+  const {isWaterLevel, notPossible} = useContext(CompoundPejlingContext);
   const {
     formState: {errors},
-  } = useFormContext<PejlingItem>();
+  } = useFormContext<PejlingSchemaType>();
 
   const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
   const {data: metadata} = useTimeseriesData();
   const stationUnit = metadata?.unit;
+
   return (
     <FormInput
       type="number"
@@ -194,7 +197,7 @@ const Measurement = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
   );
 };
 
-const TimeOfMeas = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
+const TimeOfMeas = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
   return (
     <FormInput
       name="timeofmeas"
@@ -208,7 +211,7 @@ const TimeOfMeas = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
   );
 };
 
-const Comment = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
+const Comment = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
   return (
     <FormInput
       name="comment"
@@ -223,7 +226,7 @@ const Comment = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
   );
 };
 
-const Correction = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
+const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
   const {isMobile} = useBreakpoints();
   const {control} = useFormContext();
   const {isWaterLevel} = useContext(CompoundPejlingContext);
@@ -300,25 +303,22 @@ const Correction = (props: Omit<FormInputProps<PejlingItem>, 'name'>) => {
 };
 
 const NotPossible = () => {
-  const {control} = useFormContext<PejlingItem>();
+  const {notPossible, setNotPossible} = useContext(CompoundPejlingContext);
+  const {setValue} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
+
   return (
-    <Controller
-      name="notPossible"
-      control={control}
-      defaultValue={false}
-      render={({field: {value, onChange}}) => (
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={value}
-              onChange={(e) => {
-                onChange(e);
-              }}
-            />
-          }
-          label="Måling ikke mulig"
+    <FormControlLabel
+      control={
+        <Checkbox
+          checked={notPossible}
+          onChange={(e) => {
+            setValue('measurement', e.target.checked ? null : 0);
+            setValue('extrema', e.target.checked ? 'A' : undefined);
+            setNotPossible(e.target.checked);
+          }}
         />
-      )}
+      }
+      label="Måling ikke mulig"
     />
   );
 };
@@ -328,19 +328,22 @@ const MPAlert = ({openAddMP}: {openAddMP: () => void}) => {
 };
 
 const Extrema = () => {
-  const {control} = useFormContext<PejlingBoreholeItem>();
+  const {notPossible} = useContext(CompoundPejlingContext);
+  const {control} = useFormContext<PejlingBoreholeSchemaType>();
   return (
     <Controller
       control={control}
       name="extrema"
-      render={({field}) => {
+      render={({field: {onChange, value}}) => {
+        if (!notPossible) return <></>;
         return (
           <>
             <FormControl>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue=""
-                onChange={field.onChange}
+                value={value}
+                onChange={onChange}
                 name="radio-buttons-group"
               >
                 <FormControlLabel value="O" control={<Radio />} label="Overløb" />
@@ -357,13 +360,11 @@ const Extrema = () => {
 
 const WaterlevelAlert = () => {
   const {
-    watch,
     formState: {errors},
-  } = useFormContext<PejlingItem | PejlingBoreholeItem>();
-  const {latestMeasurement, hide, isWaterLevel, currentMP, elevationDiff} =
+  } = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
+  const {latestMeasurement, hide, isWaterLevel, currentMP, elevationDiff, notPossible} =
     useContext(CompoundPejlingContext);
   const pejlingOutOfRange = get(errors, 'timeofmeas')?.type == 'outOfRange';
-  const notPossible = watch('notPossible');
 
   return (
     <>
@@ -401,7 +402,7 @@ const IsPump = () => {
 };
 
 const Service = () => {
-  const {control} = useFormContext<PejlingBoreholeItem>();
+  const {control} = useFormContext<PejlingBoreholeSchemaType>();
   return (
     <Controller
       name="service"
@@ -425,7 +426,7 @@ const Service = () => {
   );
 };
 
-const PumpStop = (props: Omit<FormInputProps<PejlingBoreholeItem>, 'name'>) => {
+const PumpStop = (props: Omit<FormInputProps<PejlingBoreholeSchemaType>, 'name'>) => {
   return (
     <FormInput
       type="datetime-local"
