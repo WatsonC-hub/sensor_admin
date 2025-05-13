@@ -245,7 +245,6 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
             <RadioGroup
               value={value + ''}
               onChange={(e) => {
-                console.log(e.target.value);
                 if (e.target.value == '-1') onChange(2);
                 else onChange(e.target.value);
               }}
