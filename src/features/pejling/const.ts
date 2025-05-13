@@ -1,5 +1,8 @@
 import moment from 'moment';
-import {PejlingBoreholeItem, PejlingItem} from '../station/components/pejling/PejlingSchema';
+import {
+  PejlingBoreholeSchemaType,
+  PejlingSchemaType,
+} from '../station/components/pejling/PejlingSchema';
 
 export const initialData = () =>
   ({
@@ -7,15 +10,15 @@ export const initialData = () =>
     measurement: 0,
     useforcorrection: 0,
     comment: '',
-  }) as PejlingItem;
+  }) as PejlingSchemaType;
 
 export const boreholeInitialData = () =>
   ({
     timeofmeas: moment().format('YYYY-MM-DDTHH:mm'),
     measurement: 0,
     useforcorrection: 0,
-    comment: undefined,
+    comment: '',
     service: false,
     pumpstop: null,
     extrema: undefined,
-  }) as PejlingBoreholeItem;
+  }) as PejlingBoreholeSchemaType;

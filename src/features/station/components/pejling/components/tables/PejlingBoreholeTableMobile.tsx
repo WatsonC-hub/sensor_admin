@@ -15,10 +15,10 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useQueryTable} from '~/hooks/useTable';
-import {BoreholePejlingItem} from '~/types';
+import {PejlingItem} from '~/types';
 
 interface Props {
-  handleEdit: (kontrol: BoreholePejlingItem) => void;
+  handleEdit: (kontrol: PejlingItem) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -39,7 +39,7 @@ export default function PejlingBoreholeTableMobile({handleEdit, handleDelete, di
 
   const {get} = usePejling();
 
-  const columns = useMemo<MRT_ColumnDef<BoreholePejlingItem>[]>(
+  const columns = useMemo<MRT_ColumnDef<PejlingItem>[]>(
     () => [
       {
         accessorFn: (row) => row,
@@ -88,7 +88,7 @@ export default function PejlingBoreholeTableMobile({handleEdit, handleDelete, di
     [unit, disabled, handleEdit]
   );
 
-  const options: Partial<MRT_TableOptions<BoreholePejlingItem>> = {
+  const options: Partial<MRT_TableOptions<PejlingItem>> = {
     localization: {noRecordsToDisplay: 'Ingen kontrolmålinger at vise'},
     renderDetailPanel: ({row}) => (
       <Box sx={renderDetailStyle}>
@@ -126,7 +126,7 @@ export default function PejlingBoreholeTableMobile({handleEdit, handleDelete, di
     ),
   };
 
-  const table = useQueryTable<BoreholePejlingItem>(
+  const table = useQueryTable<PejlingItem>(
     columns,
     get,
     options,
