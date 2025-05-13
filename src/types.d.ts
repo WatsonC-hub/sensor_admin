@@ -171,15 +171,13 @@ export type PejlingItem = {
   referenced_measurement: number | null;
   timeofmeas: string;
   useforcorrection: number;
-  display_name?: string;
+  display_name: string | null;
+  pumpstop: string | null;
+  service: boolean | null;
+  extrema: string | null;
 };
 
-export type BoreholePejlingItem = PejlingItem & {
-  pumpstop?: string;
-  service?: boolean;
-};
-
-export type ControlData = {
+export type ControlDataGraph = {
   timeofmeas: string;
   waterlevel: number | null;
   useforcorrection: number;
