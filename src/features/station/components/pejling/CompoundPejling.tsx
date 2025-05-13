@@ -197,13 +197,22 @@ const Measurement = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => 
   );
 };
 
-const TimeOfMeas = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
+const TimeOfMeas = (
+  props: Omit<FormInputProps<PejlingSchemaType | PejlingBoreholeSchemaType>, 'name'>
+) => {
+  const {watch, trigger} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
+  const service = watch('service');
   return (
     <FormInput
       name="timeofmeas"
       label="Dato"
       fullWidth
       type="datetime-local"
+      onChangeCallback={() => {
+        if (!service) {
+          trigger('pumpstop');
+        }
+      }}
       required
       sx={{mb: 2}}
       {...props}
@@ -401,7 +410,7 @@ const IsPump = () => {
 };
 
 const Service = () => {
-  const {control} = useFormContext<PejlingBoreholeSchemaType>();
+  const {control, trigger} = useFormContext<PejlingBoreholeSchemaType>();
   return (
     <Controller
       name="service"
@@ -415,6 +424,7 @@ const Service = () => {
               checked={value}
               onChange={(e) => {
                 onChange(e);
+                trigger('pumpstop');
               }}
             />
           }
@@ -426,12 +436,21 @@ const Service = () => {
 };
 
 const PumpStop = (props: Omit<FormInputProps<PejlingBoreholeSchemaType>, 'name'>) => {
+  const {watch} = useFormContext<PejlingBoreholeSchemaType>();
+  const timeofmeas = watch('timeofmeas');
+  const service = watch('service');
   return (
     <FormInput
       type="datetime-local"
       name="pumpstop"
       label="Tidspunkt for pumpestop"
       fullWidth
+      disabled={service}
+      slotProps={{
+        htmlInput: {
+          max: moment(timeofmeas).format('YYYY-MM-DDTHH:mm:ss'),
+        },
+      }}
       {...props}
     />
   );
