@@ -26,8 +26,8 @@ const baseLocationSchema = z.object({
 });
 
 const defaultAddLocationSchema = baseLocationSchema.extend({
-  loc_name: z.string({message: 'Lokationsnavn skal udfyldes'}).min(1, {
-    message: 'Lokationsnavn skal være mindst 1 tegn',
+  loc_name: z.string({message: 'Lokationsnavn skal udfyldes'}).min(3, {
+    message: 'Lokationsnavn skal være mindst 3 tegn',
   }),
 });
 
