@@ -14,10 +14,10 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
 import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
 import {
-  PejlingBoreholeItem,
-  PejlingItem,
+  PejlingBoreholeSchemaType,
+  PejlingSchemaType,
 } from '~/features/station/components/pejling/PejlingSchema';
-import {PejlingItem as PejlingWithId, LatestMeasurement} from '~/types';
+import {PejlingItem, LatestMeasurement} from '~/types';
 import PlotGraph from '~/features/station/components/StationGraph';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
@@ -29,10 +29,8 @@ import {
 } from '~/hooks/useQueryStateParameters';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-import {Kontrol} from '../../boreholeno/components/tableComponents/PejlingMeasurementsTableDesktop';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import {boreholeInitialData, initialData} from '~/features/pejling/const';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -58,7 +56,7 @@ const Pejling = () => {
     location_permissions,
   } = usePermissions(loc_id);
 
-  const [formMethods, PejlingForm, Table] = usePejlingForm({
+  const [formMethods, PejlingForm, Table, getInitialData] = usePejlingForm({
     loctype_id: timeseries_data?.loctype_id,
     tstype_id: timeseries_data?.tstype_id,
   });
@@ -85,7 +83,7 @@ const Pejling = () => {
     setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
   }, [measurements]);
 
-  const handlePejlingSubmit = (values: PejlingItem | PejlingBoreholeItem) => {
+  const handlePejlingSubmit = (values: PejlingSchemaType | PejlingBoreholeSchemaType) => {
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -94,17 +92,10 @@ const Pejling = () => {
       },
     };
 
-    let resetData: Record<string, any>;
-    if ('pumpstop' in values) {
-      resetData = boreholeInitialData();
-    } else {
-      resetData = initialData();
-    }
-
     if (gid === undefined) {
       postPejling.mutate(payload, {
         onSuccess: () => {
-          reset(resetData);
+          reset(getInitialData());
           setDynamic([]);
           setShowForm(null);
         },
@@ -113,7 +104,7 @@ const Pejling = () => {
       payload.path = `${ts_id}/${gid}`;
       putPejling.mutate(payload, {
         onSuccess: () => {
-          reset(resetData);
+          reset(getInitialData());
           setShowForm(null);
           setGid(undefined);
         },
@@ -123,12 +114,13 @@ const Pejling = () => {
 
   const handleCancel = () => {
     setShowForm(null);
-    reset(initialData());
+    reset(getInitialData());
     setGid(undefined);
   };
 
-  const handleEdit = (data: PejlingWithId | Kontrol) => {
+  const handleEdit = (data: PejlingItem) => {
     data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
+    console.log(data);
     reset(data);
     setShowForm(true);
     setGid(data.gid);
@@ -215,7 +207,8 @@ const Pejling = () => {
           text="Tilføj kontrol"
           disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           onClick={() => {
-            reset(initialData);
+            setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
+            reset(getInitialData());
             setShowForm(true);
           }}
           sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
