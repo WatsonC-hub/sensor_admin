@@ -1,7 +1,4 @@
-import moment from 'moment';
 import React from 'react';
-import {useFormContext} from 'react-hook-form';
-import {PejlingBoreholeSchemaType} from '../PejlingSchema';
 import {Grid2} from '@mui/material';
 import CompoundPejling from '../CompoundPejling';
 import {useAtomValue} from 'jotai';
@@ -9,11 +6,6 @@ import {boreholeIsPumpAtom} from '~/state/atoms';
 
 const PejlingBoreholeForm = () => {
   const isPump = useAtomValue(boreholeIsPumpAtom);
-  const {watch} = useFormContext<PejlingBoreholeSchemaType>();
-
-  const timeofmeas = watch('timeofmeas');
-  // const {notPossible} = watch('notPossible');
-  const service = watch('service');
 
   return (
     <Grid2
@@ -51,15 +43,7 @@ const PejlingBoreholeForm = () => {
         {isPump && (
           <>
             <CompoundPejling.Service />
-            <CompoundPejling.PumpStop
-              disabled={service}
-              slotProps={{
-                htmlInput: {
-                  max: moment(timeofmeas).format('YYYY-MM-DDTHH:mm:ss'),
-                },
-              }}
-              sx={{maxWidth: 200}}
-            />
+            <CompoundPejling.PumpStop sx={{maxWidth: 200}} />
           </>
         )}
       </Grid2>

@@ -34,7 +34,6 @@ import {boreholeIsPumpAtom} from '~/state/atoms';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
-  // const [mode, setMode] = useState<'Add' | 'Edit'>('Add');
   const setIsPump = useSetAtom(boreholeIsPumpAtom);
   const [gid, setGid] = useState<number | undefined>(undefined);
   const [dynamic, setDynamic] = useState<Array<string | number> | undefined>();
@@ -48,8 +47,6 @@ const Pejling = () => {
     put: putPejling,
     del: delPejling,
   } = usePejling();
-
-  // const mode = gid === undefined ? 'Add' : 'Edit';
 
   const {
     feature_permission_query: {data: permissions},

@@ -77,15 +77,12 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
 
       const parsed = schema.safeParse(values);
 
-      // if (values.notPossible) {
-      //   values.measurement = null;
-      // }
-
       if (!parsed.success) {
         for (const [key, messages] of Object.entries(parsed.error.flatten().fieldErrors)) {
           if (messages && messages.length > 0) {
             const [message] = messages;
-            errors[key] = {type: 'custom', message};
+            if (key === 'pumpstop' && 'service' in values && values.service === true) continue;
+            else errors[key] = {type: 'custom', message};
           }
         }
       }
