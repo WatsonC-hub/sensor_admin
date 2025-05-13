@@ -49,7 +49,9 @@ const CreateStation = () => {
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
-  const [locationFormMethods, LocationForm] = useLocationForm({
+  const [locationFormMethods, LocationForm] = useLocationForm<
+    DefaultAddLocation | BoreholeAddLocation
+  >({
     mode: 'Add',
     defaultValues: defaultValues,
     context: {
@@ -176,6 +178,95 @@ const CreateStation = () => {
       stationNavigate(data.loc_id, data.ts_id);
     },
   });
+
+  const handleLocationSubmit = async () => {
+    const isLocationValid = await triggerLocation();
+    if (!isLocationValid) {
+      return;
+    }
+
+    const locationData = getLocationValues();
+    if (isLocationValid) {
+      stamdataNewLocationMutation.mutate(locationData);
+    }
+  };
+
+  const handleTimeseriesSubmit = async () => {
+    const isLocationValid = await triggerLocation();
+    const isTimeseriesValid = await triggerTimeseries();
+    if (!isTimeseriesValid || !isLocationValid) {
+      return;
+    }
+
+    const locationData = getLocationValues();
+    const timeseriesData = getTimeseriesValues();
+    const isWaterLevel = timeseriesData.tstype_id === 1;
+
+    let form: {
+      location: DefaultAddLocation | BoreholeAddLocation;
+      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
+      watlevmp?: Watlevmp;
+    };
+    if (isWaterLevel) {
+      const isWatlevmpValid = await triggerWatlevmp();
+      if (!isWatlevmpValid) {
+        return;
+      }
+      const watlevmpData = getWatlevmpValues();
+      form = {
+        location: locationData,
+        timeseries: timeseriesData,
+        watlevmp: watlevmpData,
+      };
+    } else {
+      form = {
+        location: locationData,
+        timeseries: timeseriesData,
+      };
+    }
+    stamdataNewTimeseriesMutation.mutate(form);
+  };
+
+  const handleStamdataSubmit = async () => {
+    const isLocationValid = await triggerLocation();
+    const isTimeseriesValid = await triggerTimeseries();
+    const isUnitValid = await triggerUnit();
+
+    if (!isLocationValid || !isTimeseriesValid || !isUnitValid) {
+      return;
+    }
+
+    const locationData = getLocationValues();
+    const timeseriesData = getTimeseriesValues();
+    const unitData = getUnitValues();
+    const isWaterLevel = timeseriesData.tstype_id === 1;
+    let form: {
+      location: DefaultAddLocation | BoreholeAddLocation;
+      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
+      unit: AddUnit;
+      watlevmp?: Watlevmp;
+    };
+    if (isWaterLevel) {
+      const isWatlevmpValid = await triggerWatlevmp();
+      if (!isWatlevmpValid) {
+        return;
+      }
+      const watlevmpData = getWatlevmpValues();
+      form = {
+        location: locationData,
+        timeseries: timeseriesData,
+        unit: unitData,
+        watlevmp: watlevmpData,
+      };
+    } else {
+      form = {
+        location: locationData,
+        timeseries: timeseriesData,
+        unit: unitData,
+      };
+    }
+    stamdataNewMutation.mutate(form);
+  };
 
   const handleSubmit = async () => {
     const isLocationValid = isLocationDirty ? await triggerLocation() : true;
