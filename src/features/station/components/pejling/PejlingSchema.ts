@@ -21,7 +21,7 @@ const pejlingBoreholeSchema = baseSchema
   })
   .refine(
     (data) => {
-      if (data.pumpstop && data.pumpstop > data.timeofmeas) {
+      if (data.service === false && data.pumpstop && data.pumpstop > data.timeofmeas) {
         return false;
       }
       return true;

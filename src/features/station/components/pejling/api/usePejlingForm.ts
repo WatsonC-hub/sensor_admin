@@ -4,7 +4,7 @@ import {
   PejlingSchemaType,
   pejlingSchema,
 } from '../PejlingSchema';
-import {useForm} from 'react-hook-form';
+import {FieldErrors, useForm} from 'react-hook-form';
 import PejlingForm from '../components/PejlingForm';
 import {z, ZodType} from 'zod';
 import PejlingBoreholeForm from '../components/PejlingBoreholeForm';
@@ -16,6 +16,7 @@ import PejlingBoreholeTableMobile from '../components/tables/PejlingBoreholeTabl
 import PejlingBoreholeTableDesktop from '../components/tables/PejlingBoreholeTableDesktop';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import moment from 'moment';
+import {zodResolver} from '@hookform/resolvers/zod';
 
 type PejlingFormProps = {
   loctype_id: number | undefined;
@@ -66,27 +67,15 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
   const {data: parsedData} = schema.safeParse({...data});
 
   const formMethods = useForm({
-    resolver: (...opts) => {
+    /**Resolves the zodschema and then adds custom errors if present */
+    resolver: async (...opts) => {
       const values = {
         ...(opts[0] as PejlingBoreholeSchemaType | PejlingSchemaType),
         useforcorrection: Number(opts[0].useforcorrection),
       };
 
       const mpData = opts[1]?.mpData;
-      const errors = {} as Record<string, {type: string; message: string}>;
-
-      const parsed = schema.safeParse(values);
-
-      if (!parsed.success) {
-        for (const [key, messages] of Object.entries(parsed.error.flatten().fieldErrors)) {
-          if (messages && messages.length > 0) {
-            const [message] = messages;
-            if (key === 'pumpstop' && 'service' in values && values.service === true) continue;
-            else errors[key] = {type: 'custom', message};
-          }
-        }
-      }
-
+      const out = await zodResolver(schema)(...opts);
       const mp = mpData?.filter((elem) => {
         if (
           moment(values.timeofmeas).isSameOrAfter(elem.startdate) &&
@@ -96,17 +85,17 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
         }
       });
 
-      if (mpData && mp && mp.length === 0 && tstype_id === 1) {
-        errors.timeofmeas = {
-          type: 'outOfRange',
-          message: 'Tidspunkt er uden for et målepunkt',
+      if (mpData && (!mp || mp.length === 0) && tstype_id === 1) {
+        out.errors = {
+          ...out.errors,
+          timeofmeas: {
+            type: 'outOfRange',
+            message: 'Tidspunkt er uden for et målepunkt',
+          },
         };
       }
 
-      return {
-        values: parsed.success ? parsed.data : {},
-        errors,
-      };
+      return out;
     },
     defaultValues: parsedData,
     mode: 'onTouched',
