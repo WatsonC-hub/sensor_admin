@@ -23,7 +23,6 @@ const PejlingForm = () => {
       >
         <CompoundPejling.NotPossible />
       </Grid2>
-      <CompoundPejling.Extrema />
 
       <Grid2 size={12} maxWidth={400}>
         <CompoundPejling.Measurement />
