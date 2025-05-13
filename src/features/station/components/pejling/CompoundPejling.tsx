@@ -238,11 +238,17 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
       control={control}
       name="useforcorrection"
       rules={{required: true}}
-      render={({field}) => {
+      render={({field: {value, onChange}}) => {
         return (
           <FormControl component="fieldset">
             <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
-            <RadioGroup value={field.value + ''} onChange={field.onChange}>
+            <RadioGroup
+              value={value + ''}
+              onChange={(e) => {
+                if (e.target.value == '-1') onChange(2);
+                else onChange(e.target.value);
+              }}
+            >
               <FormControlLabel
                 value={0}
                 control={<Radio />}
@@ -258,7 +264,7 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
                 }
               />
               <FormControlLabel
-                value={-1}
+                value={value == '0' || value == '1' || value == '3' ? -1 : value}
                 control={<Radio />}
                 label={
                   <Typography variant={isMobile ? 'body2' : 'body1'}>
@@ -266,7 +272,7 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
                   </Typography>
                 }
               />
-              {['-1', '2', '4', '5', '6'].includes(field.value.toString()) && (
+              {['-1', '2', '4', '5', '6'].includes(value.toString()) && (
                 <>
                   {Object.keys(correction_map)
                     .filter((x) => !['0', '1', '3'].includes(x.toString()))
