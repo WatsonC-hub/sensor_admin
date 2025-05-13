@@ -81,6 +81,7 @@ const Pejling = () => {
   }, [measurements]);
 
   const handlePejlingSubmit = (values: PejlingSchemaType | PejlingBoreholeSchemaType) => {
+    console.log('handlePejlingSubmit', values);
     const payload = {
       path: `${ts_id}`,
       data: {
