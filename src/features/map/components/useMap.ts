@@ -141,8 +141,8 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: pan == null ? [56.215868, 8.228759] : pan,
-      zoom: zoom == null ? 6 : zoom,
+      center: [56.215868, 8.228759],
+      zoom: 6,
       layers: [defaultMapBox],
       tapHold: true,
       contextmenu: true,
