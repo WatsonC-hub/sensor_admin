@@ -22,7 +22,7 @@ const baseLocationSchema = z.object({
   loctype_id: z
     .number({message: 'Vælg lokationstype'})
     .min(1, {message: 'Lokationstype skal vælges'}),
-  initial_project_no: z.string({message: 'Projektnummer skal udfyldes'}),
+  initial_project_no: z.string({message: 'Projektnummer skal udfyldes'}).nullable(),
 });
 
 const defaultAddLocationSchema = baseLocationSchema.extend({
@@ -31,12 +31,10 @@ const defaultAddLocationSchema = baseLocationSchema.extend({
   }),
 });
 
-const defaultEditLocationSchema = defaultAddLocationSchema.extend({
-  initial_project_no: z.string().nullish(),
-});
+const defaultEditLocationSchema = defaultAddLocationSchema;
 
 const boreholeAddLocationSchema = baseLocationSchema.extend({
-  boreholeno: z.string().optional(),
+  boreholeno: z.string().nullish(),
   suffix: z.string().nullish(),
 });
 

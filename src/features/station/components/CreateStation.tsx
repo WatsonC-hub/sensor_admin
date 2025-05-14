@@ -455,6 +455,7 @@ const CreateStation = () => {
               onClick={async () => {
                 // Handle submit based on the active step
                 // But this also means that the user can fill out the form, but still only sumbit the first step
+                console.log('location_errors', locationErrors);
                 if (activeStep === 0) {
                   const location_valid = await triggerLocation();
                   if (!location_valid) {
@@ -470,6 +471,7 @@ const CreateStation = () => {
                   const location_valid = await triggerLocation();
                   const isWaterlevel = tstype_id === 1;
                   const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
+                  console.log('location_errors', locationErrors);
                   if (!timeseries_valid || !location_valid || !isWatlevmpValid) {
                     return;
                   }
@@ -482,7 +484,7 @@ const CreateStation = () => {
                   handleStamdataSubmit();
                 }
               }}
-              disabled={loctype_id === -1}
+              disabled={loctype_id === -1 || (state?.loc_id && activeStep === 0)}
             >
               Gem & afslut
             </Button>

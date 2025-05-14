@@ -13,7 +13,12 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import useLocationForm from '~/features/station/api/useLocationForm';
 import StamdataLocation from '~/features/station/components/stamdata/StamdataLocation';
-import {boreholeEditLocationSchema, defaultEditLocationSchema} from '~/features/station/schema';
+import {
+  BoreholeEditLocation,
+  boreholeEditLocationSchema,
+  DefaultEditLocation,
+  defaultEditLocationSchema,
+} from '~/features/station/schema';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {queryClient} from '~/queryClient';
