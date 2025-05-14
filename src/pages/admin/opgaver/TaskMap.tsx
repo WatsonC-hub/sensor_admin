@@ -70,7 +70,7 @@ const Map = ({clickCallback}: MapProps) => {
           const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
           if (typeof coords == 'object') {
-            createStamdata(undefined, {
+            createStamdata({
               state: {
                 x: parseFloat(coords.Easting.toFixed(2)),
                 y: parseFloat(coords.Northing.toFixed(2)),

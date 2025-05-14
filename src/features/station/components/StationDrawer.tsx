@@ -109,7 +109,7 @@ const StationDrawer = () => {
           page: stationPages.STAMDATA,
           requiredTsId: false,
           onClick: () => {
-            createStamdata('tidsserie', {
+            createStamdata({
               state: {
                 ...(ts_id ? metadata : locationdata),
                 initial_project_no: ts_id ? metadata?.projectno : locationdata?.projectno,
