@@ -23,7 +23,6 @@ import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
 import {useAppContext} from '~/state/contexts';
 import {DialAction} from '~/types';
 
-import PlotGraph from './QAGraph';
 import {useSetAtom} from 'jotai';
 import {
   initiateConfirmTimeseriesAtom,
@@ -218,7 +217,6 @@ const Layout = ({children}: LayoutProps) => {
             gap={5}
             sx={{marginBottom: 0.5, marginTop: 0.2}}
           >
-            <PlotGraph />
             <Divider />
           </Box>
         </Grid>
