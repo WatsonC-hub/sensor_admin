@@ -164,7 +164,7 @@ const Layout = ({children}: LayoutProps) => {
                 title: 'Opret tidsserie',
                 icon: <AddIcon />,
                 onClick: () => {
-                  createStamdata('tidsserie', {
+                  createStamdata({
                     state: {...metadata, initial_project_no: metadata?.projectno},
                   });
                 },

@@ -95,7 +95,7 @@ const Intakeno = (
       );
       return data;
     },
-    enabled: boreholeno !== undefined,
+    enabled: boreholeno !== undefined && boreholeno !== null,
   });
 
   return (

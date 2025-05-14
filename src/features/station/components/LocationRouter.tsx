@@ -54,7 +54,7 @@ export default function LocationRouter() {
               <Button
                 bttype="primary"
                 onClick={() => {
-                  createStamdata(ts_id ? '2' : 'tidsserie', {
+                  createStamdata({
                     state: {
                       ...metadata,
                       initial_project_no: metadata?.projectno,
