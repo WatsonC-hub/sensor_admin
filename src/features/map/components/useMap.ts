@@ -534,8 +534,9 @@ const useMap = <TData extends object>(
   }, [data, leafletMapRoutes, geoJsonRef.current]);
 
   useEffect(() => {
-    if (zoom !== null && pan !== null) {
-      mapRef.current?.setView(pan, zoom);
+    if (zoom !== null && pan !== null && mapRef.current) {
+      const localPan = pan ? pan : mapRef.current.getCenter();
+      mapRef.current.setView(localPan, zoom);
     } else {
       if (markerLayerRef.current?.getBounds().isValid() && mapRef.current) {
         const zoom = mapRef.current.getZoom();
@@ -543,7 +544,7 @@ const useMap = <TData extends object>(
         mapRef.current.setView(localPan, zoom);
       }
     }
-  }, [data]);
+  }, [mapRef.current]);
 
   useEffect(() => {
     plotParkingsInLayer();
