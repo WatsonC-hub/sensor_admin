@@ -14,11 +14,11 @@ import {useAppContext} from '~/state/contexts';
 
 type Props = {
   children: React.ReactNode;
-  boreholeno?: string | undefined;
+  boreholeno?: string | null;
 };
 
 type TimeseriesContextType = {
-  boreholeno?: string | undefined;
+  boreholeno?: string | null;
 };
 
 const TimeseriesContext = React.createContext<TimeseriesContextType>({

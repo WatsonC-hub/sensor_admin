@@ -65,7 +65,7 @@ const getSchemaAndForm = <T extends FieldValues>(
 
   if (user?.superUser === false && mode === 'Add') {
     selectedSchema = selectedSchema.extend({
-      initial_project_no: z.string().optional(),
+      initial_project_no: z.string().nullish(),
     });
   }
 
