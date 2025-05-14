@@ -32,7 +32,7 @@ const defaultAddLocationSchema = baseLocationSchema.extend({
 });
 
 const defaultEditLocationSchema = defaultAddLocationSchema.extend({
-  initial_project_no: z.string().optional(),
+  initial_project_no: z.string().nullish(),
 });
 
 const boreholeAddLocationSchema = baseLocationSchema.extend({
@@ -41,7 +41,7 @@ const boreholeAddLocationSchema = baseLocationSchema.extend({
 });
 
 const boreholeEditLocationSchema = boreholeAddLocationSchema.extend({
-  initial_project_no: z.string().optional(),
+  initial_project_no: z.string().nullish(),
 });
 
 const baseTimeseriesSchema = z.object({
