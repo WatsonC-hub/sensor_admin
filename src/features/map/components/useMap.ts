@@ -126,8 +126,8 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: [56.215868, 8.228759],
-      zoom: 7,
+      center: pan == null ? [56.215868, 8.228759] : pan,
+      zoom: zoom == null ? 7 : zoom,
       layers: [defaultMapBox],
       tapHold: true,
       renderer: L.canvas({tolerance: 5}),
@@ -477,6 +477,8 @@ const useMap = <TData extends object>(
   };
 
   useEffect(() => {
+    const existingMap = L.DomUtil.get(id);
+    if (existingMap && '_leaflet_id' in existingMap) existingMap._leaflet_id = null;
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup();
     markerLayerRef.current = L.featureGroup().addTo(mapRef.current);
@@ -534,18 +536,19 @@ const useMap = <TData extends object>(
     plotRoutesInLayer();
   }, [data, leafletMapRoutes, geoJsonRef.current]);
 
-  useEffect(() => {
-    if (zoom !== null && pan !== null && mapRef.current) {
-      const localPan = pan ? pan : mapRef.current.getCenter();
-      mapRef.current.setView(localPan, zoom);
-    } else {
-      if (markerLayerRef.current?.getBounds().isValid() && mapRef.current) {
-        const zoom = mapRef.current.getZoom();
-        const localPan = pan ? pan : mapRef.current.getCenter();
-        mapRef.current.setView(localPan, zoom);
-      }
-    }
-  }, [mapRef.current]);
+  // useEffect(() => {
+  //   if (zoom !== null && pan !== null && mapRef.current) {
+  //     // const localPan = pan ? pan : mapRef.current.getCenter();
+  //     mapRef.current.setView(pan, zoom);
+  //   }
+  //   // else {
+  //   //   if (markerLayerRef.current?.getBounds().isValid() && mapRef.current) {
+  //   //     const zoom = mapRef.current.getZoom();
+  //   //     const localPan = pan ? pan : mapRef.current.getCenter();
+  //   //     mapRef.current.setView(localPan, zoom);
+  //   //   }
+  //   // }
+  // }, [mapRef.current]);
 
   useEffect(() => {
     plotParkingsInLayer();
