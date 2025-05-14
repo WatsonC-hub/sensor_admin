@@ -1,6 +1,6 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, MenuItem, Switch, Typography} from '@mui/material';
+import {Box, FormControlLabel, MenuItem, Switch, TextFieldProps, Typography} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -12,11 +12,13 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
 import {useTaskStore} from '../api/useTaskStore';
+import {merge} from 'lodash';
+import {useLocationData} from '~/hooks/query/useMetadata';
 
 const zodSchema = z.object({
+  ts_id: z.number().optional(),
   name: z
     .string({required_error: 'Navn skal være angivet'})
-    .min(8, 'Navn skal være mindst 16 tegn')
     .max(255, 'Navn må maks være 255 tegn')
     .optional(),
   description: z.string().nullish(),
@@ -149,6 +151,17 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
     getUsers: {data: taskUsers},
   } = useTasks();
   const {control} = useFormContext<FormValues>();
+
+  const textfieldProps = {
+    label: 'Ansvarlig',
+    placeholder: 'Vælg opgave ansvarlig',
+  };
+
+  let mergedProps: Partial<TextFieldProps> = textfieldProps;
+  if (props.textFieldsProps) {
+    mergedProps = merge(textfieldProps, props.textFieldsProps);
+  }
+
   return (
     <Controller
       name="assigned_to"
@@ -187,13 +200,38 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
               </li>
             );
           }}
-          textFieldsProps={{
-            label: 'Ansvarlig',
-            placeholder: 'Vælg opgave ansvarlig',
-          }}
+          textFieldsProps={mergedProps}
         />
       )}
     />
+  );
+};
+
+const AssignedToSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {
+    getUsers: {data: taskUsers},
+  } = useTasks();
+
+  return (
+    <FormInput
+      name="assigned_to"
+      label="Ansvarlig"
+      select
+      size="small"
+      placeholder="Vælg ansvarlig..."
+      fullWidth
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      {taskUsers?.map((user) => {
+        return (
+          <MenuItem key={user.id} value={user.id}>
+            {user.display_name}
+          </MenuItem>
+        );
+      })}
+    </FormInput>
   );
 };
 
@@ -243,7 +281,7 @@ const BlockNotifications = ({notification_id, onChangeCallback}: BlockNotificati
                     } else {
                       onChange([notification_id]);
                     }
-                    onChangeCallback && onChangeCallback(e);
+                    if (onChangeCallback) onChangeCallback(e);
                   }}
                 />
               }
@@ -269,10 +307,10 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       disabled={disabled || props.disabled}
     >
       <MenuItem key={'bloker'} value={'false'}>
-        Tidsserie
+        tidsserie
       </MenuItem>
       <MenuItem key={'bloker_alle'} value={'true'}>
-        Lokation
+        lokation
       </MenuItem>
     </FormInput>
     // <Controller<FormValues, 'block_on_location'>
@@ -358,6 +396,31 @@ const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   );
 };
 
+const selectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+  const {disabled} = React.useContext(TaskFormContext);
+  const {data: metadata} = useLocationData();
+
+  return (
+    <FormInput
+      name="ts_id"
+      select
+      size="small"
+      placeholder="Vælg..."
+      fullWidth
+      {...props}
+      disabled={disabled || props.disabled}
+    >
+      {metadata?.timeseries?.map((timeseries) => {
+        return (
+          <MenuItem key={timeseries.ts_id} value={timeseries.ts_id}>
+            {(timeseries.prefix ? timeseries.prefix + ' - ' : '') + ' ' + timeseries.tstype_name}
+          </MenuItem>
+        );
+      })}
+    </FormInput>
+  );
+};
+
 TaskForm.SubmitButton = TaskSubmitButton;
 TaskForm.Input = Input;
 TaskForm.StatusSelect = StatusSelect;
@@ -366,5 +429,7 @@ TaskForm.BlockNotifications = BlockNotifications;
 TaskForm.DueDate = DueDate;
 TaskForm.BlockOnLocation = BlockOnLocation;
 TaskForm.BlockAll = BlockAll;
+TaskForm.SelectTimeseries = selectTimeseries;
+TaskForm.AssignedToSelect = AssignedToSelect;
 
 export default TaskForm;

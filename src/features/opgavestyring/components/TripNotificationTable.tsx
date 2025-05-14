@@ -41,7 +41,7 @@ const TripNotificationTable = ({notifications}: Props) => {
                 iconDetails={{
                   color: row.original.color,
                   flag: row.original.flag,
-                  opgave: row.original.opgave,
+                  tooltip: row.original.opgave,
                   notification_id: row.original.notification_id,
                 }}
                 enableTooltip={true}

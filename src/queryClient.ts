@@ -54,7 +54,7 @@ const queryClient = new QueryClient({
   },
   mutationCache: new MutationCache({
     onSuccess: () => {
-      console.log('Data gemt!');
+      queryClient.invalidateQueries({queryKey: ['map']});
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {

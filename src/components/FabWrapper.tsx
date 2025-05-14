@@ -3,7 +3,6 @@ import {merge} from 'lodash';
 import React from 'react';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAppContext} from '~/state/contexts';
 
 interface Props extends Omit<FabProps, 'variant'> {
   text: string;
@@ -18,11 +17,10 @@ const fabTextStyle = {
 };
 
 const FabWrapper = ({text, icon, onClick, showText = false, ...otherProps}: Props) => {
-  const {ts_id} = useAppContext([], ['ts_id']);
-  const {isMobile, isTouch} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
   let sx = {
     position: 'sticky',
-    bottom: isMobile || !ts_id ? 65 : 10,
+    bottom: 10,
     right: 20,
     padding: 2,
     ml: 'auto',

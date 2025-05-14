@@ -1,4 +1,4 @@
-import {Alert, Box, Typography} from '@mui/material';
+import {Alert, Box, Typography, IconButton} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
 import React from 'react';
@@ -13,7 +13,6 @@ import {useAppContext} from '~/state/contexts';
 
 import MinimalSelect from './MinimalSelect';
 import StationDrawer from './StationDrawer';
-import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 import {useUser} from '~/features/auth/useUser';
 import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
@@ -22,6 +21,12 @@ import StationPageBoxLayout from './StationPageBoxLayout';
 import ActionArea from './ActionArea';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {stationPages} from '~/helpers/EnumHelper';
+import EditLocation from '~/pages/field/station/stamdata/EditLocation';
+
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import {useAtom} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
+import {useDisplayState} from '~/hooks/ui';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
@@ -54,9 +59,10 @@ export default function LocationRouter() {
               <Button
                 bttype="primary"
                 onClick={() => {
-                  createStamdata(ts_id ? '2' : '1', {
+                  createStamdata({
                     state: {
                       ...metadata,
+                      initial_project_no: metadata?.projectno,
                     },
                   });
                 }}
@@ -98,6 +104,9 @@ interface LayoutProps {
 const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useLocationData();
   const {isMobile} = useBreakpoints();
+  const setLocId = useDisplayState((state) => state.setLocId);
+  const [pageToShow, setPageToShow] = useStationPages();
+  const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
 
   return (
     <>
@@ -113,8 +122,23 @@ const Layout = ({children}: LayoutProps) => {
           {isMobile && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
-          <NavBar.Home />
-          <NavBar.Menu highligtFirst={false} />
+          {!isMobile && (
+            <IconButton
+              onClick={() => {
+                setFullscreen((prev) => !prev);
+              }}
+              color="inherit"
+              size="large"
+            >
+              {fullscreen ? <FullscreenExit /> : <Fullscreen />}
+            </IconButton>
+          )}
+          <NavBar.Close
+            onClick={() => {
+              if (pageToShow) setPageToShow(null);
+              setLocId(null);
+            }}
+          />
         </Box>
       </NavBar>
 

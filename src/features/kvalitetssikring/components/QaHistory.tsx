@@ -17,7 +17,6 @@ import {useAppContext} from '~/state/contexts';
 import {useCertifyQa} from '../api/useCertifyQa';
 
 import AdjustmentDataTable from './AdjustmentDataTable';
-import QAGraph from '~/pages/admin/kvalitetssikring/QAGraph';
 import CustomSpeedDial, {CustomTooltip} from '~/components/CustomSpeedDial';
 import {Verified, Delete, Save} from '@mui/icons-material';
 import {DialAction} from '~/types';
@@ -29,13 +28,12 @@ import {
   levelCorrectionAtom,
 } from '~/state/atoms';
 import StepWizard from '../wizard/StepWizard';
-import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useQAHistory from '../api/useQAHistory';
 import moment from 'moment';
 import Button from '~/components/Button';
 import {toast} from 'react-toastify';
+import GraphManager from '~/features/station/components/GraphManager';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -44,7 +42,6 @@ export default function QAHistory() {
   const setLevelCorrection = useSetAtom(levelCorrectionAtom);
   const setInitiateConfirmTimeseries = useSetAtom(initiateConfirmTimeseriesAtom);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const {isMobile} = useBreakpoints();
   const speedDialActions: Array<DialAction> = [];
   const {
     get: {data: certify},
@@ -192,19 +189,20 @@ export default function QAHistory() {
 
   return (
     <>
-      <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
-        <Box width={'100%'}>
-          <QAGraph />
-        </Box>
-        <DataToShow />
+      <Box>
+        <GraphManager
+          defaultDataToShow={{
+            Kontrolmålinger: true,
+            Godkendt: true,
+            Algoritmer: true,
+          }}
+        />
       </Box>
       <Divider />
       <StationPageBoxLayout>
         <StepWizard />
-        <Box width={'100%'} m="auto" borderRadius={4}>
-          <Typography variant="h5">Aktive justeringer</Typography>
-          <AdjustmentDataTable data={data} />
-        </Box>
+        <Typography variant="h5">Aktive justeringer</Typography>
+        <AdjustmentDataTable data={data} />
         <CustomSpeedDial actions={speedDialActions} />
       </StationPageBoxLayout>
       {dialog}

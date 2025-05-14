@@ -37,7 +37,6 @@ export const useTaskManagement = ({loc_ids}: TaskManagement) => {
       const unique_ts_ids: Array<number> = [
         ...new Set(results.map((result) => result.data.map((elem: {ts_id: number}) => elem.ts_id))),
       ];
-      console.log(unique_ts_ids);
 
       return {
         data: results.map((result) => result.data).flat(),

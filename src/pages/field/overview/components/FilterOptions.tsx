@@ -1,6 +1,5 @@
 import {CloseOutlined, RestartAlt} from '@mui/icons-material';
 import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
-import {RESET} from 'jotai/utils';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
 
@@ -9,23 +8,28 @@ import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
 import FormToggleSwitch from '~/components/FormToggleSwitch';
 import {useUser} from '~/features/auth/useUser';
+import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
 interface FilterOptionsProps {
-  filters: Filter;
-  onSubmit: (filter: Filter | typeof RESET) => void;
   onClose: () => void;
 }
 
-const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
+const FilterOptions = ({onClose}: FilterOptionsProps) => {
   const user = useUser();
+  const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
+    state.filters,
+    state.setFilters,
+    state.setLocIds,
+  ]);
 
   const formMethods = useForm<Filter>({values: filters});
 
   const submit = (data: Filter) => {
-    onSubmit(data);
+    setMapFilter(data);
+    setLocIds([]);
   };
 
   const reset = () => {
@@ -35,7 +39,7 @@ const FilterOptions = ({filters, onSubmit, onClose}: FilterOptionsProps) => {
     };
 
     formMethods.reset(mapFilter);
-    onSubmit(mapFilter);
+    setMapFilter(mapFilter);
   };
 
   return (

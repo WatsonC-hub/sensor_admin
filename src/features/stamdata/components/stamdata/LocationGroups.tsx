@@ -7,7 +7,7 @@ import {Noop} from 'react-hook-form';
 
 import Button from '~/components/Button';
 import {getGroupLink} from '~/helpers/links';
-import {apiClient} from '~/pages/field/fieldAPI';
+import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 
 const filter = createFilterOptions<Group>({
@@ -116,7 +116,7 @@ const LocationGroups = ({
         });
       }}
       renderOption={(props, option) => (
-        <li {...props}>
+        <li {...props} key={option.id}>
           <Typography display="inline" variant="body2" color="grey.400">
             {option.id === '' && 'Opret - '}
           </Typography>

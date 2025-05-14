@@ -13,7 +13,6 @@ import {
   type TaskStatus,
   DBTask,
   DeleteTaskFromItinerary,
-  MoveTaskToDifferentItinerary,
 } from '../types';
 
 type Mutation<TData> = {
@@ -106,15 +105,6 @@ export const deleteTaskFromItineraryOptions = {
   },
 };
 
-export const moveTaskToItineraryOptions = {
-  mutationKey: ['taskItinerary_move'],
-  mutationFn: async (mutation_data: MoveTaskToDifferentItinerary) => {
-    const {path, data} = mutation_data;
-    const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
-    return result;
-  },
-};
-
 // /location_related_tasks/{loc_id}
 export const useTasks = () => {
   const queryClient = useQueryClient();
@@ -138,12 +128,15 @@ export const useTasks = () => {
     },
     staleTime: 1000 * 60 * 5,
   });
+
   const post = useMutation<unknown, APIError, PostTask>({
     ...tasksPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['tasks', include_closed],
-      });
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
+
       toast.success('Opgaver gemt');
     },
   });
@@ -170,7 +163,6 @@ export const useTasks = () => {
       const {path} = variables;
       if (path != data.id) {
         const previous = queryClient.getQueryData<Task[]>(['tasks', include_closed]);
-        queryClient.invalidateQueries({queryKey: ['tasks', !include_closed]});
         queryClient.setQueryData<Task[]>(
           ['tasks', include_closed],
           previous?.map((task) => {
@@ -181,29 +173,31 @@ export const useTasks = () => {
             return task;
           })
         );
-        queryClient.invalidateQueries({queryKey: ['overblik']});
+
         setShownMapTaskIds([...shownMapTaskIds, data.id]);
         setSelectedTask(data.id);
       }
 
-      queryClient.invalidateQueries({
-        queryKey: ['taskHistory', path],
-      });
-      // toast.success('Opgaver ændret');
+      queryClient.invalidateQueries({queryKey: ['taskHistory', path]});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
+      queryClient.invalidateQueries({queryKey: ['timeseries']});
+
+      toast.success('Opgave ændret');
     },
-    onError: (e) => {
-      console.log(e);
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+    onError: () => {
+      queryClient.invalidateQueries({queryKey: ['tasks']});
     },
   });
   const del = useMutation({
     ...tasksDelOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
 
       toast.success('Opgave slettet');
     },
@@ -215,12 +209,11 @@ export const useTasks = () => {
       toast.error('Noget gik galt');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['overblik'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['map']});
+
       toast.success('Opgave oprettet');
     },
   });
@@ -229,12 +222,10 @@ export const useTasks = () => {
     ...notificationUpdateStatus,
     onSuccess: () => {
       toast.success('Opgave opdateret');
-      queryClient.invalidateQueries({
-        queryKey: ['overblik'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['itineraries']});
+      queryClient.invalidateQueries({queryKey: ['map']});
     },
   });
 
@@ -258,16 +249,6 @@ export const useTasks = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // const getProjects = useQuery<TaskProject[], APIError>({
-  //   queryKey: ['task_projects'],
-  //   queryFn: async () => {
-  //     const {data} = await apiClient.get('/sensor_admin/tasks/projects');
-
-  //     return data;
-  //   },
-  //   staleTime: 1000 * 60 * 5,
-  // });
-
   const deleteTaskFromItinerary = useMutation<unknown, APIError, DeleteTaskFromItinerary>({
     ...deleteTaskFromItineraryOptions,
     onSuccess: (data, variables) => {
@@ -286,37 +267,12 @@ export const useTasks = () => {
           return task;
         })
       );
-      queryClient.invalidateQueries({
-        queryKey: ['itineraries', splitted[0]],
-      });
-    },
-  });
+      queryClient.invalidateQueries({queryKey: ['overblik']});
+      queryClient.invalidateQueries({queryKey: ['map']});
+      queryClient.invalidateQueries({queryKey: ['itineraries', splitted[0]]});
+      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
 
-  const moveTask = useMutation<unknown, APIError, MoveTaskToDifferentItinerary>({
-    ...moveTaskToItineraryOptions,
-    onSuccess: (_, variables) => {
-      const {path, data} = variables;
-      const task_itinerary_id = path;
-      const previous = queryClient.getQueryData<Task[]>(['tasks']);
-      queryClient.setQueryData<Task[]>(
-        ['tasks'],
-        previous?.map((task) => {
-          if (data.task_ids.includes(task.id)) {
-            const updated = {...task, itinerary_id: task_itinerary_id};
-
-            return updated;
-          }
-          return task;
-        })
-      );
-
-      queryClient.invalidateQueries({
-        queryKey: ['itineraries'],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ['tasks'],
-      });
+      toast.success('Opgaver fjernet fra tur');
     },
   });
 
@@ -330,7 +286,6 @@ export const useTasks = () => {
     getUsers,
     getStatus,
     deleteTaskFromItinerary,
-    moveTask,
     // getProjects,
   };
 };

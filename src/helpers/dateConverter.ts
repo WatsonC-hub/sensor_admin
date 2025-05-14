@@ -2,13 +2,14 @@
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 
+import dayjs from 'dayjs';
 import moment from 'moment';
 
 const convertDate = (date: string) => {
   return moment(date).format('DD-MM-YYYY');
 };
 
-const convertDateWithTimeStamp = (dateString: string | null) => {
+const convertDateWithTimeStamp = (dateString: string | null | undefined) => {
   if (dateString === null) {
     return '';
   }
@@ -21,7 +22,11 @@ const checkEndDateIsUnset = (dateString: string) => {
   return date.getFullYear() === 2099;
 };
 
-const calculatePumpstop = (timeofmeas: string, pumpstop: string, service: boolean) => {
+const calculatePumpstop = (
+  timeofmeas: string,
+  pumpstop: string | null,
+  service: boolean | null
+) => {
   return pumpstop !== null
     ? moment(timeofmeas).diff(moment(pumpstop), 'hours') + ' timer siden'
     : service === true
@@ -44,6 +49,10 @@ const splitTimeFromDate = (dateString: string) => {
   return time;
 };
 
+const convertToShorthandDate = (date: string | null | undefined) => {
+  return dayjs(date).format('DD MMM YYYY');
+};
+
 export {
   convertDate,
   checkEndDateIsUnset,
@@ -51,4 +60,5 @@ export {
   calculatePumpstop,
   limitDecimalNumbers,
   splitTimeFromDate,
+  convertToShorthandDate,
 };

@@ -91,7 +91,7 @@ const TripContactTable = ({ressources}: Props) => {
   );
 
   return (
-    <Box>
+    <Box p={1}>
       <MaterialReactTable table={table} />
     </Box>
   );

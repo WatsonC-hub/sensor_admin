@@ -1,3 +1,5 @@
+import {DataToShow} from './types';
+
 let mapToken: string;
 
 export const isProduction = import.meta.env.PROD;
@@ -15,72 +17,6 @@ export const navIconStyle = (isSelected: boolean) => {
 };
 
 export const mapboxToken = mapToken;
-
-export const boreholeColors: Record<
-  number,
-  {
-    color: string;
-    text: string;
-  }
-> = {
-  1: {
-    color: '#4caf50',
-    text: 'OK',
-  },
-  2: {
-    color: '#f1c21b',
-    text: 'Skal snart pejles',
-  },
-  3: {
-    color: '#ff832b',
-    text: 'Pejleinterval overskredet',
-  },
-  0: {
-    color: '#4caf50',
-    text: 'OK',
-  },
-};
-
-// Colors ['#d32f2f', '#ff8c2e', '#ffb13f', '#4caf50', '#9F2B68', '#334FFF']
-export const sensorColors: Record<
-  number,
-  {
-    color: string;
-    text: string;
-  }
-> = {
-  3: {
-    color: '#d32f2f',
-    text: 'Kritisk',
-  },
-  2: {
-    color: '#ff832b',
-    text: 'Advarsel',
-  },
-  1: {
-    color: '#f1c21b',
-    text: 'Info',
-  },
-  0: {
-    color: '#4caf50',
-    text: 'OK',
-  },
-  '-1': {
-    color: '#9F2B68',
-    text: 'Ukendt',
-  },
-};
-
-export const sensorLocationTypeColors: Record<number | string, {color: string; text: string}> = {
-  12: {
-    color: '#AFFFAD',
-    text: 'Enkeltmåling',
-  },
-  '-1': {
-    color: '#70C8FF',
-    text: 'Ny opsætning',
-  },
-};
 
 export const correction_map: Record<number, string> = {
   0: 'Kontrol',
@@ -104,7 +40,7 @@ export const qaHistorySkeletonHeight = '40px';
 export const tabsHeight = '48px';
 
 export const calculateContentHeight = (pixelToSubtract: number) => {
-  return `calc(100vh - ${pixelToSubtract}px)`;
+  return `calc(100dvh - ${pixelToSubtract}px)`;
 };
 
 export const setTableBoxStyle = (pixelToSubtract: number) => {
@@ -165,4 +101,15 @@ export const httpStatusDescriptions = {
   '502': 'Forkert svar fra serveren',
   '503': 'Service utilgængelig - Serveren er midlertidigt nede',
   '504': 'Forbindelsen tog for lang tid',
+};
+
+export const defaultDataToShow: DataToShow = {
+  Algoritmer: false,
+  Kontrolmålinger: true,
+  Godkendt: false,
+  Nedbør: false,
+  'Korrigerede spring': false,
+  'Valide værdier': false,
+  'Fjernet data': false,
+  Rådata: false,
 };

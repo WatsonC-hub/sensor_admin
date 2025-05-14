@@ -11,7 +11,6 @@ type Props = {
 };
 
 const TripContactTable = ({contacts}: Props) => {
-  console.log(contacts);
   const columns = useMemo<MRT_ColumnDef<TaskContact>[]>(
     () => [
       {

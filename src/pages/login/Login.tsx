@@ -10,7 +10,8 @@ import React, {useState} from 'react';
 
 import Button from '~/components/Button';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import {apiClient, loginAPI, resetPassword} from '~/pages/field/fieldAPI';
+import {apiClient} from '~/apiClient';
+import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
 
 export default function Login() {

@@ -1,85 +1,27 @@
-import {Box, Divider, Tab, Tabs, Typography} from '@mui/material';
-import {parseAsArrayOf, parseAsStringLiteral, parseAsInteger, useQueryState} from 'nuqs';
+import {Box, Divider} from '@mui/material';
 import React from 'react';
-import {useParams} from 'react-router-dom';
 
-import NavBar from '~/components/NavBar';
-import {tabsHeight} from '~/consts';
 import {useTaskManagement} from '~/features/opgavestyring/api/useTaskManagement';
-import TripNotificationTable from '~/features/opgavestyring/components/TripNotificationTable';
-import TripOverview from '~/features/opgavestyring/components/TripOverview';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
-import TripTaskTable from '~/features/opgavestyring/components/TripTaskTable';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
-import TabPanel from '~/pages/field/overview/TabPanel';
-
-const tabValues = ['forberedelse', 'overblik'] as const;
+import {useDisplayState} from '~/hooks/ui';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const Trip = () => {
-  const params = useParams();
+  const {isMobile} = useBreakpoints();
 
-  // const {tasks} = useTaskStore();
-
-  const [queryLocIds] = useQueryState('loc_ids', parseAsArrayOf(parseAsInteger).withDefault([]));
+  const {itinerary_id} = useDisplayState((state) => state);
 
   const {
     getItineraryTasks: {data: tasks},
-  } = useTaskItinerary(params.trip_id);
-
-  const [tabValue, setTabValue] = useQueryState(
-    'page',
-    parseAsStringLiteral(tabValues).withDefault('forberedelse')
-  );
+  } = useTaskItinerary(itinerary_id!);
 
   const loc_ids = [...new Set(tasks?.map((task) => task.loc_id))];
-  console.log('loc_ids', loc_ids);
-  const {data} = useTaskManagement({loc_ids: loc_ids.length > 0 ? loc_ids : queryLocIds});
+  const {data} = useTaskManagement({loc_ids: loc_ids});
 
   return (
-    <Box mb={2}>
-      <NavBar />
-      <Box
-        display={'flex'}
-        flexDirection={'column'}
-        gap={2}
-        m={'auto'}
-        width={'100%'}
-        maxWidth={1080}
-      >
-        <Tabs
-          value={tabValue ?? 'forberedelse'}
-          onChange={(_, newValue) => setTabValue(newValue)}
-          variant={'fullWidth'}
-          aria-label="simple tabs example"
-          scrollButtons="auto"
-          sx={{
-            '& .MuiTab-root': {
-              height: tabsHeight,
-              minHeight: tabsHeight,
-            },
-            marginTop: 1,
-          }}
-        >
-          <Tab value={'forberedelse'} label={'Forberedelse'} />
-          <Tab value={'overblik'} label={'Kort overblik'} />
-        </Tabs>
-        <Divider />
-        <TabPanel value={tabValue} index="forberedelse">
-          <TripPreparation data={data} />
-        </TabPanel>
-        <TabPanel value={tabValue} index="overblik">
-          <TripOverview />
-        </TabPanel>
-        <Typography ml={2} variant="h5">
-          Notifikationer
-        </Typography>
-        <TripNotificationTable notifications={data?.notifications} />
-
-        <Typography ml={2} variant="h5">
-          Opgaver
-        </Typography>
-        <TripTaskTable tasks={data?.tasks} trip_id={params.trip_id} />
-      </Box>
+    <Box display={'flex'} flexDirection={'column'} mt={4} mb={isMobile ? 0 : 2}>
+      <TripPreparation data={data} />
     </Box>
   );
 };

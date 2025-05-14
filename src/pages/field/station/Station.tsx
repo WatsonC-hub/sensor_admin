@@ -1,5 +1,4 @@
-import AddIcon from '@mui/icons-material/Add';
-import {Box, Divider, Typography} from '@mui/material';
+import {Box, Divider, IconButton, Typography} from '@mui/material';
 import React, {ReactNode, useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
@@ -14,26 +13,29 @@ import ActionArea from '~/features/station/components/ActionArea';
 import BatteryStatus from '~/features/station/components/BatteryStatus';
 import MinimalSelect from '~/features/station/components/MinimalSelect';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useDisplayState} from '~/hooks/ui';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
 import EditUnit from './stamdata/EditUnit';
-import EditTimeseries from './stamdata/EditTimeseries';
-import EditLocation from './stamdata/EditLocation';
 import ImagePage from './stamdata/ImagePage';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
-import PlotGraph from '~/features/station/components/StationGraph';
+import {useAtom} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
+import {Fullscreen, FullscreenExit} from '@mui/icons-material';
+import GraphManager from '~/features/station/components/GraphManager';
+import EditLocation from './stamdata/EditLocation';
+import EditTimeseries from './stamdata/EditTimeseries';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
-  const [showForm] = useShowFormState();
+  const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const user = useUser();
 
@@ -49,7 +51,8 @@ export default function Station() {
         pageToShow === 'algoritmer')
     )
       setPageToShow('pejling');
-  }, [ts_id, showForm]);
+    setShowForm(null);
+  }, [ts_id, pageToShow]);
 
   return (
     <Layout>
@@ -58,7 +61,11 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>
@@ -68,28 +75,12 @@ export default function Station() {
       )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
-          <Box
-            sx={{
-              borderRadius: 4,
-              boxShadow: 3,
-              padding: '16px',
-            }}
-          >
-            <EditLocation />
-          </Box>
+          <EditLocation />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.GENERELTIDSSERIE && (
         <StationPageBoxLayout>
-          <Box
-            sx={{
-              borderRadius: 4,
-              boxShadow: 3,
-              padding: '16px',
-            }}
-          >
-            <EditTimeseries />
-          </Box>
+          <EditTimeseries />
         </StationPageBoxLayout>
       )}
       {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms />}
@@ -97,7 +88,11 @@ export default function Station() {
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>
@@ -134,15 +129,17 @@ interface LayoutProps {
 }
 
 const Layout = ({children}: LayoutProps) => {
-  const {isMobile} = useBreakpoints();
+  const {isTouch, isMobile} = useBreakpoints();
   const {data: locationdata} = useLocationData();
-  const {data: metadata} = useTimeseriesData();
   const user = useUser();
-  const {createStamdata} = useNavigationFunctions();
+  const setTsId = useDisplayState((state) => state.setTsId);
+  const [pageToShow, setPageToShow] = useStationPages();
+  const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
+
   return (
     <>
-      <NavBar>
-        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+      <NavBar key={'station'} zIndex={9999}>
+        {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
           {!isMobile && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
@@ -153,40 +150,48 @@ const Layout = ({children}: LayoutProps) => {
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
-          <NavBar.Home />
           {user?.adminAccess && <NotificationList />}
-          <NavBar.Menu
-            highligtFirst={false}
-            items={[
-              {
-                title: 'Opret tidsserie',
-                icon: <AddIcon />,
-                onClick: () => {
-                  createStamdata(undefined, {state: {...metadata}});
-                },
-              },
-            ]}
+          {!isMobile && (
+            <IconButton
+              onClick={() => {
+                setFullscreen((prev) => !prev);
+              }}
+              color="inherit"
+              size="large"
+            >
+              {fullscreen ? <FullscreenExit /> : <Fullscreen />}
+            </IconButton>
+          )}
+          <NavBar.Close
+            onClick={() => {
+              if (pageToShow) setPageToShow(null);
+              setTsId(null);
+            }}
           />
         </Box>
       </NavBar>
       <Box
         component="main"
-        sx={{flexGrow: 1, display: 'flex', flexDirection: 'row', maxHeight: 'calc(100vh - 64px)'}}
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          overflow: 'hidden',
+        }}
       >
         <StationDrawer />
         <Box
           display="flex"
-          width={'100%'}
           flexGrow={1}
-          gap={1}
           minWidth={0}
+          gap={1}
           flexDirection={'column'}
           overflow="auto"
         >
           {children}
-          {isMobile && <ActionArea />}
         </Box>
       </Box>
+      {isMobile && <ActionArea />}
     </>
   );
 };

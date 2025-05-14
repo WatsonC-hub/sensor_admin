@@ -26,8 +26,9 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SmallLogo from '~/logo.svg?react';
 import {captureDialogAtom, drawerOpenAtom} from '~/state/atoms';
-
+import CloseIcon from '@mui/icons-material/Close';
 import Button from './Button';
+import {useDisplayState} from '~/hooks/ui';
 import {useNavigate} from 'react-router-dom';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
@@ -52,13 +53,13 @@ const LogOut = ({children}: {children?: ReactNode}) => {
 };
 
 export const HomeButton = () => {
-  const {field} = useNavigationFunctions();
+  const {home} = useNavigationFunctions();
 
   return (
     <IconButton
       color="inherit"
       onClick={() => {
-        field();
+        home();
       }}
       size="large"
     >
@@ -67,9 +68,9 @@ export const HomeButton = () => {
   );
 };
 
-export const AppBarLayout = ({children}: {children?: ReactNode}) => {
+export const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return (
-    <AppBar position="sticky" enableColorOnDark sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
+    <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
       <Toolbar
         sx={{
           height: appBarHeight,
@@ -129,9 +130,13 @@ export const AppBarLayout = ({children}: {children?: ReactNode}) => {
 export const NavBarMenu = ({
   highligtFirst,
   items,
+  disableLogout = false,
+  disableProfile = true,
 }: {
   highligtFirst?: boolean;
   items?: {title: string; icon: ReactNode; onClick: () => void}[];
+  disableLogout?: boolean;
+  disableProfile?: boolean;
 }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -182,25 +187,29 @@ export const NavBarMenu = ({
             </MenuItem>
           ))}
 
-        <MenuItem
-          key="profile"
-          onClick={() => {
-            window.location.href = 'https://admin.watsonc.dk/profile';
-          }}
-        >
-          <ListItemIcon>
-            <Person />
-          </ListItemIcon>
-          Profil
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <LogOut>
+        {!disableProfile && (
+          <MenuItem
+            key="profile"
+            onClick={() => {
+              window.location.href = 'https://admin.watsonc.dk/profile';
+            }}
+          >
             <ListItemIcon>
-              <LogoutIcon fontSize="medium" />
+              <Person />
             </ListItemIcon>
-            {'Logout'}
-          </LogOut>
-        </MenuItem>
+            Profil
+          </MenuItem>
+        )}
+        {!disableLogout && (
+          <MenuItem onClick={handleClose}>
+            <LogOut>
+              <ListItemIcon>
+                <LogoutIcon fontSize="medium" />
+              </ListItemIcon>
+              {'Logout'}
+            </LogOut>
+          </MenuItem>
+        )}
       </Menu>
     </>
   );
@@ -245,6 +254,48 @@ const GoBack = () => {
   );
 };
 
+const Close = ({onClick}: {onClick: () => void}) => {
+  return (
+    <IconButton color="inherit" onClick={onClick} size="large">
+      <CloseIcon />
+    </IconButton>
+  );
+};
+
+const LocationList = () => {
+  const [loc_list, setLocList] = useDisplayState((state) => [state.loc_list, state.setLocList]);
+
+  return (
+    <Button
+      sx={{
+        color: loc_list ? 'secondary.main' : 'inherit',
+      }}
+      bttype={'primary'}
+      onClick={() => setLocList(!loc_list)}
+      startIcon={<MapRounded />}
+    >
+      Lokationsliste
+    </Button>
+  );
+};
+
+const TripList = () => {
+  const [trip_list, setTripList] = useDisplayState((state) => [state.trip_list, state.setTripList]);
+
+  return (
+    <Button
+      sx={{
+        color: trip_list ? 'secondary.main' : 'inherit',
+      }}
+      bttype={'primary'}
+      onClick={() => setTripList(!trip_list)}
+      startIcon={<MapRounded />}
+    >
+      Ture
+    </Button>
+  );
+};
+
 const ScannerAsTitle = () => {
   const setOpenQRScanner = useSetAtom(captureDialogAtom);
 
@@ -282,8 +333,8 @@ const Title = ({title}: {title: string}) => {
   );
 };
 
-const NavBar = ({children}: {children?: ReactNode}) => {
-  return <AppBarLayout>{children}</AppBarLayout>;
+const NavBar = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
+  return <AppBarLayout zIndex={zIndex}>{children}</AppBarLayout>;
 };
 
 NavBar.Logo = Logo;
@@ -292,6 +343,9 @@ NavBar.Menu = NavBarMenu;
 NavBar.Home = HomeButton;
 NavBar.Title = Title;
 NavBar.Scanner = ScannerAsTitle;
+NavBar.Close = Close;
+NavBar.LocationList = LocationList;
+NavBar.TripList = TripList;
 NavBar.StationDrawerMenu = StationDrawerMenu;
 
 export default NavBar;

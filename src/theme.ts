@@ -12,6 +12,15 @@ declare module '@mui/material' {
 
 const theme = createTheme(
   {
+    components: {
+      MuiDialog: {
+        styleOverrides: {
+          paper: {
+            borderRadius: 16,
+          },
+        },
+      },
+    },
     palette: {
       mode: 'light',
       primary: {
@@ -35,6 +44,7 @@ const theme = createTheme(
     typography: {
       fontFamily: 'Open Sans',
     },
+
     breakpoints: {
       values: {
         xs: 0,

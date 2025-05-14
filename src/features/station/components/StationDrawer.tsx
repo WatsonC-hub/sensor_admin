@@ -1,6 +1,7 @@
+import AddIcon from '@mui/icons-material/Add';
+
 import {
   AddCircle,
-  Menu,
   PhotoLibraryRounded,
   PlaylistAddCheck,
   StraightenRounded,
@@ -9,7 +10,6 @@ import {
 } from '@mui/icons-material';
 import {
   Drawer,
-  Toolbar,
   Box,
   List,
   ListItem,
@@ -19,7 +19,6 @@ import {
   ListItemButton,
   ClickAwayListener,
   Tooltip,
-  IconButton,
   Typography,
 } from '@mui/material';
 import {useAtom} from 'jotai';
@@ -48,8 +47,9 @@ import {getAlgorithmOptions} from '~/features/kvalitetssikring/api/useAlgorithms
 import {getImageOptions} from '../api/useImages';
 import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 type Item = {
   text: string;
@@ -65,13 +65,14 @@ type DrawerItems = {
   text?: string;
   items: Item[];
   disabled?: boolean;
-  settings?: {
+  settings?: Array<{
     icon: ReactNode;
     page: StationPages;
     disabled?: boolean;
     requiredTsId: boolean;
     onHover?: () => void;
-  };
+    onClick?: () => void;
+  }>;
 };
 
 const navIconStyle = (isSelected: boolean) => {
@@ -81,9 +82,11 @@ const StationDrawer = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const {isMobile, isMonitor} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
+  const {data: locationdata} = useLocationData();
   const user = useUser();
+  const {createStamdata} = useNavigationFunctions();
 
   const handlePrefetch = <TData extends object>(
     options: OmitKeyof<UseQueryOptions<TData, APIError>, 'queryFn'>
@@ -95,18 +98,33 @@ const StationDrawer = () => {
     setOpen(newOpen);
   };
 
-  const open = isMonitor || openAtom;
+  const open = openAtom;
 
   const items: DrawerItems[] = [
     {
       text: 'Tidsserie',
-      settings: {
-        icon: <Edit />,
-        page: stationPages.GENERELTIDSSERIE,
-        requiredTsId: true,
-        disabled: metadata?.calculated || !metadata?.ts_id,
-        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-      },
+      settings: [
+        {
+          icon: <AddIcon />,
+          page: stationPages.STAMDATA,
+          requiredTsId: false,
+          onClick: () => {
+            createStamdata({
+              state: {
+                ...(ts_id ? metadata : locationdata),
+                initial_project_no: ts_id ? metadata?.projectno : locationdata?.projectno,
+              },
+            });
+          },
+        },
+        {
+          icon: <Edit />,
+          page: stationPages.GENERELTIDSSERIE,
+          requiredTsId: true,
+          disabled: metadata?.calculated || !metadata?.ts_id,
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        },
+      ],
       items: [
         {
           text: 'Kontrol',
@@ -155,24 +173,19 @@ const StationDrawer = () => {
           disabled: !user?.QAPermission || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
         },
-        // {
-        //   text: 'Stamdata',
-        //   page: stationPages.GENERELTIDSSERIE,
-        //   icon: <Edit />,
-        //   requiredTsId: true,
-        //   onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-        // },
       ],
     },
 
     {
       text: 'Lokation',
-      settings: {
-        page: stationPages.GENERELTLOKATION,
-        icon: <Edit />,
-        requiredTsId: false,
-        onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
-      },
+      settings: [
+        {
+          page: stationPages.GENERELTLOKATION,
+          icon: <Edit />,
+          requiredTsId: false,
+          onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+        },
+      ],
       items: [
         {
           text: 'Billeder',
@@ -219,7 +232,7 @@ const StationDrawer = () => {
   const drawerItems = filteredItems.map((category) => {
     return (
       <Box key={category.text}>
-        {open && (
+        {
           <ListItem
             key={category.text}
             sx={{
@@ -231,23 +244,31 @@ const StationDrawer = () => {
             }}
           >
             <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-            {category.settings && !category.settings.disabled && (
-              <ListItemIcon
-                sx={{
-                  color: navIconStyle(pageToShow === category.settings.page),
-                  minWidth: 0,
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  if (category.settings) setPageToShow(category.settings.page);
-                  if (open) toggleDrawer(false);
-                }}
-              >
-                {category.settings.icon}
-              </ListItemIcon>
-            )}
+            <Box alignItems={'center'} display="flex" gap={1}>
+              {category.settings &&
+                category.settings
+                  .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
+                  .map((setting, index) => (
+                    <ListItemIcon
+                      key={index}
+                      sx={{
+                        color: navIconStyle(pageToShow === setting.page),
+                        minWidth: 0,
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => {
+                        if (setting.onClick) {
+                          setting.onClick();
+                        } else setPageToShow(setting.page);
+                        if (open) toggleDrawer(false);
+                      }}
+                    >
+                      {setting.icon}
+                    </ListItemIcon>
+                  ))}
+            </Box>
           </ListItem>
-        )}
+        }
         {category.items
           .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
@@ -276,7 +297,7 @@ const StationDrawer = () => {
                   py: 1,
                 }}
               >
-                <Tooltip title={!open ? item.text : ''} placement="right">
+                <Tooltip title={item.text} placement="right">
                   <ListItemButton
                     sx={{
                       borderRadius: '9999px',
@@ -293,7 +314,7 @@ const StationDrawer = () => {
                     >
                       {item.icon}
                     </ListItemIcon>
-                    {open && <ListItemText>{item.text}</ListItemText>}
+                    <ListItemText>{item.text}</ListItemText>
                   </ListItemButton>
                 </Tooltip>
               </ListItem>
@@ -304,7 +325,7 @@ const StationDrawer = () => {
     );
   });
 
-  if (isMobile) {
+  if (isTouch) {
     return (
       <Layout variant="temporary">
         <List>{drawerItems}</List>
@@ -312,21 +333,8 @@ const StationDrawer = () => {
     );
   }
 
-  if (isMonitor) {
-    return (
-      <Layout variant="permanent">
-        <List>{drawerItems}</List>
-      </Layout>
-    );
-  }
-
   return (
     <Layout variant="permanent">
-      <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
-        <IconButton sx={{color: 'white'}}>
-          <Menu />
-        </IconButton>
-      </Toolbar>
       <List>{drawerItems}</List>
     </Layout>
   );
@@ -342,46 +350,36 @@ const Layout = ({children, variant}: LayoutProps) => {
   const {data: locationdata} = useLocationData();
   const {isMonitor, isMobile} = useBreakpoints();
   const open = isMonitor || openAtom;
-  const width = open ? drawerWidth : 48;
+
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
   };
 
   return (
-    <Box>
-      <Drawer
-        variant={variant}
-        open={open}
-        sx={{
-          width: width,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
-            width: width,
-            backgroundColor: 'primary.main',
-            pt: '64px',
-            pb: isMobile ? '64px' : '0px',
-          },
-        }}
-      >
-        <Box pt={2} pl={2}>
-          {!isMobile && <MinimalSelect />}
-          {isMobile && (
-            <Typography
-              textOverflow="ellipsis"
-              overflow="hidden"
-              px={2}
-              whiteSpace="wrap"
-              color="white"
-            >
-              {locationdata?.loc_name}
-            </Typography>
-          )}
-        </Box>
-        <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
-          <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
-        </ClickAwayListener>
-      </Drawer>
-    </Box>
+    <Drawer
+      variant={variant}
+      open={open}
+      sx={{
+        width: drawerWidth,
+        [`& .MuiDrawer-paper`]: {
+          width: drawerWidth,
+          position: 'relative',
+          backgroundColor: 'primary.main',
+        },
+      }}
+    >
+      <Box pt={2} px={1}>
+        {!isMobile && <MinimalSelect />}
+        {isMobile && (
+          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
+            {locationdata?.loc_name}
+          </Typography>
+        )}
+      </Box>
+      <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
+        <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
+      </ClickAwayListener>
+    </Drawer>
   );
 };
 

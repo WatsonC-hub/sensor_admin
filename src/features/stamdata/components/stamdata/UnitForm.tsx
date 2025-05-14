@@ -23,9 +23,9 @@ export default function UnitForm({mode}: UnitFormProps) {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  const startdate = watch('unit.startdate');
+  const startdate = watch('startdate');
   // const enddate = watch('unit.enddate');
-  const unit_uuid: string = watch('unit.unit_uuid');
+  const unit_uuid: string = watch('unit_uuid');
 
   const {
     get: {data: availableUnits},
@@ -67,23 +67,25 @@ export default function UnitForm({mode}: UnitFormProps) {
       </Grid>
       <Grid item xs={12} sm={3}>
         <FormInput
-          name="unit.startdate"
+          name="startdate"
           label="Startdato"
           disabled={!unit || startdate === undefined || disabled}
           fullWidth
           type="datetime-local"
+          sx={{p: 0}}
           required
         />
       </Grid>
       <Grid item xs={12} sm={3}>
         {editMode && (
           <FormInput
-            name="unit.enddate"
+            name="enddate"
             label="Slutdato"
             fullWidth
             disabled={!unit || startdate === undefined || disabled}
             type="datetime-local"
             required
+            sx={{p: 0}}
             inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}
           />
         )}

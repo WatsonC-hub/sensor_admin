@@ -15,7 +15,6 @@ import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import QAHistory from '~/features/kvalitetssikring/components/QaHistory';
 import StepWizard from '~/features/kvalitetssikring/wizard/StepWizard';
 import {qaAdjustment, qaPages, qaPagesLiteral} from '~/helpers/EnumHelper';
-import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAdjustmentState, useQAPageState} from '~/hooks/useQueryStateParameters';
@@ -24,7 +23,6 @@ import DataToShow from '~/pages/admin/kvalitetssikring/components/DataToShow';
 import {useAppContext} from '~/state/contexts';
 import {DialAction} from '~/types';
 
-import PlotGraph from './QAGraph';
 import {useSetAtom} from 'jotai';
 import {
   initiateConfirmTimeseriesAtom,
@@ -158,7 +156,6 @@ const Layout = ({children}: LayoutProps) => {
   const {isMobile} = useBreakpoints();
   const {ts_id} = useAppContext(['ts_id']);
   const {field, station} = useNavigationFunctions();
-  const {data: timeseries_data} = useTimeseriesData();
   const handleChange = (event: any, newValue: (typeof qaPagesLiteral)[number]) => {
     setPageToShow(newValue);
   };
@@ -197,7 +194,7 @@ const Layout = ({children}: LayoutProps) => {
                 title: 'Til service',
                 icon: <QueryStatsIcon />,
                 onClick: () => {
-                  station(timeseries_data?.loc_id, timeseries_data?.ts_id);
+                  station(ts_id);
                 },
               },
               {
@@ -220,7 +217,6 @@ const Layout = ({children}: LayoutProps) => {
             gap={5}
             sx={{marginBottom: 0.5, marginTop: 0.2}}
           >
-            <PlotGraph />
             <Divider />
           </Box>
         </Grid>

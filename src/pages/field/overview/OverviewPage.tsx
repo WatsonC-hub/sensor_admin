@@ -18,10 +18,11 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeTable from '~/pages/field/overview/components/BoreholeTable';
 import StationTable from '~/pages/field/overview/components/StationTable';
-import {TableData, BoreholeData} from '~/types';
+import {TableData} from '~/types';
 
 import Map from './Map';
 import {useUser} from '~/features/auth/useUser';
+import useBorehole from '~/features/station/api/useBorehole';
 
 const tabAtom = atom(0);
 const tabAtomInner = atom(0);
@@ -32,7 +33,9 @@ export default function OverviewPage() {
   const [tabValueInner, setTabValueInner] = useAtom<number>(tabAtomInner);
   const user = useUser();
   const {admin, createStamdata} = useNavigationFunctions();
-
+  const {
+    get: {data: boreholetabledata},
+  } = useBorehole();
   const {data: tabledata} = useQuery<TableData[]>({
     queryKey: ['station_list'],
     queryFn: async () => {
@@ -45,16 +48,6 @@ export default function OverviewPage() {
     refetchOnMount: false,
     refetchOnReconnect: false,
     staleTime: 10 * 1000,
-  });
-
-  const {data: boreholetabledata} = useQuery<BoreholeData[]>({
-    queryKey: ['borehole_list'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/borehole_list`);
-      return data;
-    },
-    staleTime: 10 * 1000,
-    enabled: user?.boreholeAccess,
   });
 
   const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {

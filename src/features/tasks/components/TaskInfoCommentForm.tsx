@@ -10,6 +10,7 @@ import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
 
 import {useTaskStore} from '../api/useTaskStore';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 const taskCommentSchema = z.object({
   id: z.string().optional(),
@@ -41,6 +42,8 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
 
   const {selectedTask} = useTaskStore();
 
+  const {isMonitor} = useBreakpoints();
+
   const schemaData = taskCommentSchema.safeParse(initialValues);
 
   const formMethods = useForm<InferTaskComment>({
@@ -63,7 +66,14 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" maxHeight={'100%'} gap={2}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      mt={isMonitor ? 3 : 0}
+      mb={isMonitor ? 5 : 0}
+      maxHeight={'100%'}
+      gap={2}
+    >
       <Box
         // maxHeight={'100%'}
         display={'flex'}

@@ -12,14 +12,13 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
-import {boreholeColors} from '~/consts';
+
 import {NotificationMap, useNotificationOverviewMap} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeActions from '~/pages/field/overview/components/BoreholeActions';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
 import DrawerComponent from '~/pages/field/overview/components/DrawerComponent';
 import LegendContent from '~/pages/field/overview/components/LegendContent';
-import {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import SearchAndFilterMap from '~/pages/field/overview/components/SearchAndFilterMap';
 import SensorActions from '~/pages/field/overview/components/SensorActions';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
@@ -38,17 +37,19 @@ import {
 import {useMapUtilityStore} from '~/state/store';
 import {useUser} from '~/features/auth/useUser';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
+import {AppContext} from '~/state/contexts';
+import {getColor} from '~/features/notifications/utils';
+import {boreholeColors} from '~/features/notifications/consts';
 
-const leafletIcons = Object.keys(boreholeColors).map((key) => {
-  const index = parseInt(key);
+const leafletIcons = Object.entries(boreholeColors).map(([, values]) => {
+  // const index = parseInt(key);
   return new L.DivIcon({
     className: 'custom-div-icon',
-    html: L.Util.template(boreholeSVG, {color: boreholeColors[index].color}),
+    html: L.Util.template(boreholeSVG, {color: values.color}),
     iconSize: [24, 24],
     iconAnchor: [12, 12],
   });
 });
-
 interface LocItems {
   name: string;
   sensor: boolean;
@@ -56,7 +57,7 @@ interface LocItems {
 }
 
 interface MapProps {
-  clickCallback?: (data: NotificationMap | BoreholeMapData) => void;
+  clickCallback?: (data: NotificationMap | BoreholeMapData | null) => void;
 }
 
 // type TaskStyling = 'upcoming' | '';
@@ -111,11 +112,11 @@ const Map = ({clickCallback}: MapProps) => {
   ]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
 
-  const user = useUser();
+  const {superUser, iotAccess, boreholeAccess} = useUser();
 
   const {data: boreholeMapdata} = useBoreholeMap();
 
-  const {data: mapData} = useNotificationOverviewMap({enabled: user?.iotAccess});
+  const {data: mapData} = useNotificationOverviewMap({enabled: iotAccess});
 
   const data = useMemo(() => {
     return [...(mapData ?? []), ...(boreholeMapdata ?? [])];
@@ -123,7 +124,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user?.iotAccess)
+  if (iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -132,7 +133,7 @@ const Map = ({clickCallback}: MapProps) => {
           const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
           if (typeof coords == 'object') {
-            createStamdata(undefined, {
+            createStamdata({
               state: {
                 x: parseFloat(coords.Easting.toFixed(2)),
                 y: parseFloat(coords.Northing.toFixed(2)),
@@ -242,13 +243,13 @@ const Map = ({clickCallback}: MapProps) => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          createStamdata('1', {state: element});
+          createStamdata({state: element});
         },
         icon: '/leaflet-images/marker.png',
       },
     ];
 
-    if (user?.superUser) {
+    if (superUser) {
       locationMenu = [
         ...locationMenu,
         {
@@ -256,7 +257,6 @@ const Map = ({clickCallback}: MapProps) => {
           callback: () => {
             if (map) {
               setSelectLocId(element.loc_id);
-              console.log('test');
               setEditRouteLayer('create');
 
               map.pm.enableDraw('Line');
@@ -442,11 +442,7 @@ const Map = ({clickCallback}: MapProps) => {
       <Box
       //position={'absolute'} zIndex={1000} p={1} width={'100%'}
       >
-        <SearchAndFilterMap
-          data={data}
-          setData={setFilteredData}
-          handleSearchSelect={handleSearchSelect}
-        />
+        <SearchAndFilterMap data={data as any} handleSearchSelect={handleSearchSelect} />
       </Box>
       <Box display="flex" position="relative" flexGrow={1}>
         <Box id="test" position="absolute" sx={{height: '100%', width: '100%'}} />
@@ -458,11 +454,15 @@ const Map = ({clickCallback}: MapProps) => {
           actions={getDrawerActions(selectedMarker)}
         >
           {selectedMarker && 'notification_id' in selectedMarker && (
-            <SensorContent data={selectedMarker} />
+            <AppContext.Provider value={{loc_id: selectedMarker.loc_id}}>
+              <SensorContent />
+            </AppContext.Provider>
           )}
           {selectedMarker == null && <LegendContent />}
-          {selectedMarker && 'boreholeno' in selectedMarker && user?.boreholeAccess && (
-            <BoreholeContent data={selectedMarker} />
+          {selectedMarker && 'boreholeno' in selectedMarker && boreholeAccess && (
+            <AppContext.Provider value={{boreholeno: selectedMarker.boreholeno}}>
+              <BoreholeContent />
+            </AppContext.Provider>
           )}
         </DrawerComponent>
       </Box>

@@ -1,7 +1,9 @@
-import {UseQueryResult, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {reverse, sortBy} from 'lodash';
+import {UseQueryResult, queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
+import {sortBy} from 'lodash';
 
 import {apiClient} from '~/apiClient';
+import {useUser} from '~/features/auth/useUser';
+import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import {Group} from '~/types';
 
 export interface Notification {
@@ -17,8 +19,8 @@ export interface Notification {
   opgave: string | null;
   dato: string | null;
   color: string | null;
-  flag: number;
-  notification_id: number;
+  flag: FlagEnum;
+  notification_id: NotificationIDEnum;
   status: 'SCHEDULED' | 'POSTPONED' | 'IGNORED' | null;
   enddate: string | null;
   projectno: string | null;
@@ -29,7 +31,7 @@ export interface Notification {
   groups: Group[];
   loctype_id: number;
   calculated: boolean | null;
-  type: 'task' | 'notification' | 'none';
+  type: 'task' | 'notification' | 'itinerary' | 'none';
   parking_id: number;
 }
 
@@ -42,16 +44,16 @@ type NotificationOverviewOptions = Partial<
   Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
 >;
 
-const sortByNotifyType = (item: Notification) => {
-  switch (item.notify_type) {
-    case 'primary':
-      return 3;
-    case 'obs':
+const sortByType = (item: Notification) => {
+  switch (item.type) {
+    case 'notification':
+      return 0;
+    case 'task':
       return 2;
-    case 'station':
+    case 'itinerary':
       return 1;
     default:
-      return 0;
+      return 3;
   }
 };
 
@@ -66,16 +68,41 @@ const nullState: Partial<Notification> = {
   notify_type: null,
 };
 
+// const tmpGetFlag = (item: Notification) => {
+//   if (item.notify_type === 'obs' && item.notification_id === 42) {
+//     return 2;
+//   } else if ([141, 171].includes(item.notification_id)) {
+//     return 2;
+//   } else if ([12].includes(item.notification_id)) {
+//     return 3;
+//   } else {
+//     return item.flag;
+//   }
+// };
+
+// const tempNotificationTransform = (data: Notification[]): Notification[] => {
+//   return data.map((item) => {
+//     return {
+//       ...item,
+//       notify_type: 'primary',
+//       flag: tmpGetFlag(item),
+//     };
+//   });
+// };
+
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
+  const {iotAccess} = useUser();
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/overblik`);
+
       return data;
     },
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
     staleTime: 10 * 1000,
+    enabled: iotAccess,
     ...options,
   });
   return query;
@@ -89,6 +116,7 @@ export const useLocationNotificationOverview = (loc_id: number) => {
       return data;
     },
     staleTime: 10,
+    enabled: loc_id !== undefined && loc_id !== -1,
   });
 };
 
@@ -98,25 +126,22 @@ export const useNotificationOverviewMap = (
   // @ts-expect-error - This is a valid use case for the hook
   return useNotificationOverview({
     select: (data) => {
-      const sorted = reverse(
-        sortBy(data, [
-          sortByNotifyType,
-          (item) => (item.status ? item.status : ''),
-          (item) => item.flag,
-          (item) => (item.projectno ? item.projectno : ''),
-        ])
-      );
+      const sorted = sortBy(data, [
+        sortByType,
+        (item) => -item.flag,
+        (item) => (item.projectno ? item.projectno : ''),
+      ]);
 
       const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
         const existing = acc.find((accItem) => accItem.loc_id === item.loc_id);
 
         if (existing) {
-          if (item.type === 'task') {
-            existing.type = 'task';
-          }
-          if (item.type === 'notification' && existing.type !== 'task') {
-            existing.type = 'notification';
-          }
+          // if (item.type === 'task') {
+          //   existing.type = 'task';
+          // }
+          // if (item.type === 'notification' && existing.type !== 'task') {
+          //   existing.type = 'notification';
+          // }
 
           if (item.notify_type === 'obs') {
             existing.obsNotifications.push(item);
@@ -144,4 +169,77 @@ export const useNotificationOverviewMap = (
     },
     ...options,
   });
+};
+
+export interface MapOverview {
+  loc_id: number;
+  loc_name: string;
+  longitude: number;
+  latitude: number;
+  loctype_id: number;
+  parking_id: number | null;
+  itinerary_id: string | null;
+  no_unit: boolean;
+  inactive: boolean | null;
+  is_customer_service: boolean | null;
+  projectno: string | null;
+  has_task: boolean;
+  groups: Group[];
+  flag: FlagEnum | null;
+  notification_id: NotificationIDEnum | null;
+  due_date: string | null;
+}
+
+const mapOverviewOptions = queryOptions<MapOverview[]>({
+  queryKey: ['map'],
+  queryFn: async () => {
+    const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
+    return data;
+  },
+  refetchInterval: 1000 * 60 * 60,
+});
+
+type MapOverviewOptions<T> = Partial<
+  Omit<UseQueryOptions<MapOverview[], Error, T>, 'queryKey' | 'queryFn'>
+>;
+
+export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
+  return useQuery({
+    ...mapOverviewOptions,
+    ...options,
+    select: options?.select as (data: MapOverview[]) => T,
+  });
+};
+
+export interface TimeseriesStatus {
+  ts_id: number;
+  loc_id: number;
+  parameter: string;
+  prefix: string | null;
+  is_calculated: boolean;
+  notification_id: NotificationIDEnum | null;
+  flag: FlagEnum | null;
+  opgave: string | null;
+  has_task: boolean;
+  due_date: string | null;
+  no_unit: boolean;
+  inactive: boolean | null;
+  projectno: string | null;
+  is_customer_service: boolean | null;
+}
+
+export const timeseriesStatusOptions = (loc_id: number) =>
+  queryOptions({
+    queryKey: ['timeseries', loc_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<TimeseriesStatus[]>(
+        `/sensor_field/timeseries_status/${loc_id}`
+      );
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
+  });
+
+export const useTimeseriesStatus = (loc_id: number) => {
+  return useQuery(timeseriesStatusOptions(loc_id));
 };

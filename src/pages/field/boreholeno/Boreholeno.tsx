@@ -11,11 +11,10 @@ import Images from '~/components/Images';
 import MaalepunktForm from '~/components/MaalepunktForm';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
-import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import ActionAreaBorehole from '~/pages/field/boreholeno/ActionAreaBorehole';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
 import BoreholeStamdata from '~/pages/field/boreholeno/BoreholeStamdata';
 import LastJupiterMP from '~/pages/field/boreholeno/components/LastJupiterMP';
@@ -34,7 +33,6 @@ import {
 const Boreholeno = () => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
   const queryClient = useQueryClient();
-  const {isMobile, isTouch} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
 
@@ -289,7 +287,7 @@ const Boreholeno = () => {
   if (!intakeno) return '';
 
   return (
-    <Box display="flex" height={'max-content'} flexDirection={'column'}>
+    <>
       {pageToShow !== stationPages.BILLEDER && pageToShow !== stationPages.STAMDATA && (
         <Box
           display={'flex'}
@@ -304,107 +302,99 @@ const Boreholeno = () => {
           <Divider />
         </Box>
       )}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          maxWidth: '1280px',
-          width: isTouch ? '100%' : 'fit-content',
-          alignSelf: 'center',
-        }}
-      >
-        {pageToShow === stationPages.PEJLING && showForm === true && (
-          <PejlingFormBorehole
-            formData={pejlingData}
-            changeFormData={changePejlingData}
-            handleSubmit={handlePejlingSubmit}
-            resetFormData={() => {
-              resetPejlingData();
-              setShowForm(null);
-            }}
-            mpData={watlevmp}
-            openAddMP={openAddMP}
-            lastMeasurementPump={
-              measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
-            }
-          />
-        )}
-        {pageToShow === stationPages.MAALEPUNKT && (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              flexWrap: 'wrap',
-              alignContent: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            gap={1}
-          >
-            <LastJupiterMP
-              lastOurMP={watlevmp?.[0]}
-              watlevmpMutate={addOrEditWatlevmp}
-              setAddMPOpen={setShowForm}
-            />
 
-            {showForm && (
-              <MaalepunktForm
-                formData={mpData}
-                changeFormData={changeMpData}
-                handleSubmit={handleMpSubmit}
-                handleCancel={handleMpCancel}
-              />
-            )}
-          </Box>
-        )}
-        {pageToShow === stationPages.MAALEPUNKT && (
-          <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
-            <MaalepunktTable
-              watlevmp={watlevmp}
-              handleEdit={handleEditWatlevmp}
-              handleDelete={handleDelete('watlevmp')}
-            />
-            <FabWrapper
-              icon={<AddCircle />}
-              text="Tilføj målepunkt"
-              onClick={() => {
-                setShowForm(true);
-                resetMpData();
-              }}
-              disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
-              sx={{
-                visibility: pageToShow === 'målepunkt' && showForm === null ? 'visible' : 'hidden',
-              }}
-            />
-          </Box>
-        )}
-        {pageToShow === stationPages.PEJLING && (
-          <Box display={'flex'} flexDirection={'column'} gap={!isMobile ? 8.5 : undefined}>
-            <PejlingMeasurements
-              measurements={measurements}
-              handleEdit={handleEditPejling}
-              handleDelete={handleDelete('pejling')}
-            />
-            <FabWrapper
-              icon={<AddCircle />}
-              text="Tilføj pejling"
-              onClick={() => {
+      {pageToShow === stationPages.PEJLING && (
+        <StationPageBoxLayout>
+          {showForm === true && (
+            <PejlingFormBorehole
+              formData={pejlingData}
+              changeFormData={changePejlingData}
+              handleSubmit={handlePejlingSubmit}
+              resetFormData={() => {
                 resetPejlingData();
-                setShowForm(true);
+                setShowForm(null);
               }}
-              disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
-              sx={{
-                visibility:
-                  pageToShow === stationPages.PEJLING && showForm === null ? 'visible' : 'hidden',
-              }}
+              mpData={watlevmp}
+              openAddMP={openAddMP}
+              lastMeasurementPump={
+                measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false
+              }
             />
-          </Box>
-        )}
-        {pageToShow === stationPages.STAMDATA && <BoreholeStamdata />}
-      </Box>
+          )}
+          <PejlingMeasurements
+            measurements={measurements}
+            handleEdit={handleEditPejling}
+            handleDelete={handleDelete('pejling')}
+          />
+          <FabWrapper
+            icon={<AddCircle />}
+            text="Tilføj pejling"
+            onClick={() => {
+              resetPejlingData();
+              setShowForm(true);
+            }}
+            disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
+            sx={{
+              visibility:
+                pageToShow === stationPages.PEJLING && showForm === null ? 'visible' : 'hidden',
+            }}
+          />
+        </StationPageBoxLayout>
+      )}
+      {pageToShow === stationPages.MAALEPUNKT && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            flexWrap: 'wrap',
+            alignContent: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          gap={1}
+        >
+          <LastJupiterMP
+            lastOurMP={watlevmp?.[0]}
+            watlevmpMutate={addOrEditWatlevmp}
+            setAddMPOpen={setShowForm}
+          />
+
+          {showForm && (
+            <MaalepunktForm
+              formData={mpData}
+              changeFormData={changeMpData}
+              handleSubmit={handleMpSubmit}
+              handleCancel={handleMpCancel}
+            />
+          )}
+        </Box>
+      )}
+      {pageToShow === stationPages.MAALEPUNKT && (
+        <StationPageBoxLayout>
+          <MaalepunktTable
+            watlevmp={watlevmp}
+            handleEdit={handleEditWatlevmp}
+            handleDelete={handleDelete('watlevmp')}
+          />
+          <FabWrapper
+            icon={<AddCircle />}
+            text="Tilføj målepunkt"
+            onClick={() => {
+              setShowForm(true);
+              resetMpData();
+            }}
+            disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
+            sx={{
+              visibility: pageToShow === 'målepunkt' && showForm === null ? 'visible' : 'hidden',
+            }}
+          />
+        </StationPageBoxLayout>
+      )}
+
+      {pageToShow === stationPages.STAMDATA && <BoreholeStamdata />}
 
       {pageToShow === stationPages.BILLEDER && (
-        <Box>
+        <StationPageBoxLayout>
           <Images
             type={'borehole'}
             typeId={boreholeno}
@@ -418,6 +408,9 @@ const Boreholeno = () => {
             disabled={!permissions?.borehole_plantids?.boreholenos?.includes(boreholeno)}
             onClick={() => {
               if (fileInputRef.current) fileInputRef.current.click();
+            }}
+            sx={{
+              bottom: 70,
             }}
           />
           <div>
@@ -435,7 +428,7 @@ const Boreholeno = () => {
               }}
             />
           </div>
-        </Box>
+        </StationPageBoxLayout>
       )}
       <input
         type="file"
@@ -444,8 +437,7 @@ const Boreholeno = () => {
         onChange={handleFileRead}
         onClick={handleFileInputClick}
       />
-      <ActionAreaBorehole />
-    </Box>
+    </>
   );
 };
 

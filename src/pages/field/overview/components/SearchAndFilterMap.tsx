@@ -9,15 +9,15 @@ import {
   Badge,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import {atom, useAtom} from 'jotai';
-import {atomWithStorage} from 'jotai/utils';
-import React, {useState, useRef, SyntheticEvent, MouseEventHandler, useEffect} from 'react';
-import {useUser} from '~/features/auth/useUser';
 
-import {NotificationMap} from '~/hooks/query/useNotificationOverview';
+import React, {useState, useRef, SyntheticEvent, MouseEventHandler} from 'react';
+import {useUser} from '~/features/auth/useUser';
+import {useMapFilterStore} from '~/features/map/store';
+
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
-import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
+import {defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import FilterOptions from '~/pages/field/overview/components/FilterOptions';
 import {BoreholeMapData} from '~/types';
 
@@ -27,9 +27,7 @@ interface LocItems {
   group: string;
 }
 
-const typeAheadAtom = atom<string>('');
-
-const mapFilterAtom = atomWithStorage<Filter>('mapFilter', defaultMapFilter);
+// const mapFilterAtom = atomWithStorage<Filter>('mapFilter', defaultMapFilter);
 
 const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: T): number => {
   return Object.entries(filter).reduce((acc, entry) => {
@@ -47,91 +45,19 @@ const getNumberOfNonDefaultFilters = <T extends object>(filter: T, default_val: 
 };
 
 type Props = {
-  data: (NotificationMap | BoreholeMapData)[];
-  setData: (data: (NotificationMap | BoreholeMapData)[]) => void;
+  data: (MapOverview | BoreholeMapData)[];
   handleSearchSelect: (e: SyntheticEvent, value: string | LocItems | null) => void;
 };
 
-const searchValue = (value: any, search_string: string): boolean => {
-  if (typeof value === 'string') {
-    return value.toLowerCase().includes(search_string.toLowerCase());
-  }
-  if (typeof value === 'number') {
-    return value.toString().includes(search_string);
-  }
-  if (Array.isArray(value)) {
-    return value.some((val) => searchValue(val, search_string));
-  }
-  if (typeof value === 'object' && value !== null) {
-    return searchElement(value, search_string);
-  }
-  return false;
-};
-
-const searchElement = (elem: object, search_string: string) => {
-  return Object.values(elem).some((value) => searchValue(value, search_string));
-};
-
-const searchAcrossAll = (data: (NotificationMap | BoreholeMapData)[], search_string: string) => {
-  if (search_string === '') return data;
-  return data.filter((elem) => searchElement(elem, search_string));
-};
-
-const filterSensor = (data: NotificationMap, filter: Filter['sensor']) => {
-  if (data.loctype_id === 12) return filter.isSingleMeasurement;
-  const serviceFilter =
-    filter.isCustomerService === 'indeterminate'
-      ? true
-      : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
-  const activeFilter = data.active == true || data.active == null ? true : filter.showInactive;
-  const keepLocationsWithoutNotifications =
-    data.type === 'none' ? !filter.hideLocationsWithoutNotifications : true;
-  return (
-    keepLocationsWithoutNotifications &&
-    activeFilter &&
-    serviceFilter &&
-    !filter.isSingleMeasurement
-  );
-};
-
-const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
-  switch (filter.hasControlProgram) {
-    case true:
-      return data.num_controls_in_a_year.some((num) => num > 0);
-    case false:
-      return !data.num_controls_in_a_year.some((num) => num > 0);
-    case 'indeterminate':
-      return true;
-  }
-};
-
-const filterData = (data: (NotificationMap | BoreholeMapData)[], filter: Filter) => {
-  let filteredData = data;
-
-  filteredData = filteredData.filter((elem): elem is NotificationMap =>
-    'notification_id' in elem ? filterSensor(elem, filter.sensor) : true
-  );
-
-  filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
-    'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
-  );
-
-  if (filter.groups && filter.groups.length > 0) {
-    filteredData = filteredData.filter((elem) => {
-      if (elem.groups !== null) {
-        return filter.groups.some((group) => elem.groups.some((item) => item.id === group.id));
-      }
-      return false;
-    });
-  }
-
-  return filteredData;
-};
-
-const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
+const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
   const searchRef = useRef(null);
-  const [typeAhead, setTypeAhead] = useAtom(typeAheadAtom);
-  const [mapFilter, setMapFilter] = useAtom(mapFilterAtom);
+
+  // const [mapFilter, setMapFilter] = useAtom(mapFilterAtom);
+  const [typeAhead, setTypeAhead, mapFilter] = useMapFilterStore((state) => [
+    state.search,
+    state.setSearch,
+    state.filters,
+  ]);
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const {isTouch} = useBreakpoints();
@@ -153,9 +79,8 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
     if (search_string) {
       const filteredSensor = data
         .filter(
-          (elem): elem is NotificationMap =>
-            'notification_id' in elem &&
-            elem.loc_name.toLowerCase().includes(search_string?.toLowerCase())
+          (elem): elem is MapOverview =>
+            'loc_id' in elem && elem.loc_name.toLowerCase().includes(search_string?.toLowerCase())
         )
         .map((elem) => {
           return {name: elem.loc_name, sensor: true, group: 'IoT'};
@@ -176,13 +101,6 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
       }
     }
   };
-
-  useEffect(() => {
-    if (data.length > 0) {
-      const filtered = filterData(searchAcrossAll(data, mapFilter.freeText ?? ''), mapFilter);
-      setData(filtered);
-    }
-  }, [mapFilter, data, setData]);
 
   const handleOpenFilter: MouseEventHandler<HTMLButtonElement> = () => {
     setAnchorEl(searchRef.current);
@@ -233,7 +151,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         )}
         sx={{
           width: isTouch ? '90%' : 300,
-          marginLeft: '5%',
+          marginLeft: '16px',
           marginBottom: '12px',
           marginTop: '12px',
         }}
@@ -250,14 +168,7 @@ const SearchAndFilter = ({data, setData, handleSearchSelect}: Props) => {
         }}
         sx={{'& .MuiPaper-root': {width: isTouch ? '90%' : 500, p: 1}}}
       >
-        <FilterOptions
-          filters={mapFilter}
-          onClose={handleClose}
-          onSubmit={(filter) => {
-            // handleClose();
-            setMapFilter(filter);
-          }}
-        />
+        <FilterOptions onClose={handleClose} />
       </Menu>
     </>
   );

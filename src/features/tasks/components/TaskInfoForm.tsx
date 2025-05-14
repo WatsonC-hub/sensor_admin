@@ -7,7 +7,6 @@ import {
   AccordionSummary,
   Box,
   Grid,
-  Stack,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -19,7 +18,6 @@ import DeleteAlert from '~/components/DeleteAlert';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
-import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 // import {useTaskStore} from '../api/useTaskStore';
 
@@ -29,12 +27,10 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
-  // const {setIsDraggingTask} = useTaskStore();
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
   //   : '';
-  const {station, adminKvalitetssikring} = useNavigationFunctions();
   const {
     patch,
     del,
@@ -105,30 +101,25 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   };
 
   return (
-    <Box display={'flex'} flexDirection={'column'} gap={2}>
-      <Stack display={'flex'} flexDirection={'row'} justifyContent={'space-evenly'}>
-        <Button bttype="tertiary" onClick={() => station(selectedTask.loc_id, selectedTask.ts_id)}>
-          <Typography>Gå til tidsserie</Typography>
-        </Button>
-        <Button bttype="tertiary" onClick={() => adminKvalitetssikring(selectedTask.ts_id)}>
-          <Typography>Gå til QA</Typography>
-        </Button>
-      </Stack>
-      <Grid container spacing={0}>
+    <Box display={'flex'} flexDirection={'column'}>
+      <Typography variant="h6" fontWeight={600} mb={1}>
+        Opgaveoplysninger
+      </Typography>
+      <Typography>
+        Tidsserie: {selectedTask.tstype_name}{' '}
+        {selectedTask.prefix ? ' - ' + selectedTask.prefix : ''}
+      </Typography>
+      <Grid container spacing={1}>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input
+            sx={{pb: 0}}
             label={'Navn'}
             name="name"
             onBlurCallback={async () => await handlePatch('name')}
           />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.StatusSelect
-            onBlurCallback={async () => await handlePatch('status_id')}
-            sx={{
-              mb: 2,
-            }}
-          />
+          <TaskForm.StatusSelect onBlurCallback={async () => await handlePatch('status_id')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.DueDate
@@ -144,80 +135,42 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             disabled={selectedTask.itinerary_id !== null}
           />
         </Grid>
-        <Grid item mobile={12} py={1}>
-          <Accordion
-            disableGutters={true}
-            sx={{
-              border: '1px solid',
-              borderColor: 'primary.main',
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
+        <Grid item mobile={12} pb={1}>
+          <Grid container display={'flex'} flexDirection={'row'} alignItems={'start'} spacing={0}>
+            <Grid
+              item
+              mobile={12}
+              laptop={12}
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              gap={1}
             >
-              Flere informationer
-            </AccordionSummary>
-            <AccordionDetails>
-              <Grid
-                container
-                display={'flex'}
-                flexDirection={'row'}
-                alignItems={'center'}
-                spacing={1}
-                px={1}
-              >
-                <Grid
-                  item
-                  mobile={12}
-                  laptop={6}
-                  display={'flex'}
-                  flexDirection={'row'}
-                  alignItems={'center'}
-                  gap={2}
-                >
-                  <Typography>Bloker</Typography>
-                  <TaskForm.BlockAll
-                    onBlurCallback={async () => await handlePatch('block_all')}
-                    onChangeCallback={(e) => {
-                      console.log(e);
-                    }}
-                  />
-                </Grid>
-                <Grid
-                  item
-                  mobile={12}
-                  laptop={6}
-                  display={'flex'}
-                  flexDirection={'row'}
-                  alignItems={'center'}
-                  gap={2}
-                  mt={-3}
-                >
-                  <Typography>notifikationer på</Typography>
-                  <TaskForm.BlockOnLocation
-                    onBlurCallback={async () => await handlePatch('block_on_location')}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Lokationsnavn" name="location_name" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Lokationstype" name="loctypename" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Tidsserie type" name="tstype_name" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={6}>
-                <TaskForm.Input label="Projektnummer" name="projectno" disabled />
-              </Grid>
-              <Grid item mobile={12} tablet={12} laptop={12}>
-                <TaskForm.Input label="Projektinfo" name="project_text" disabled />
-              </Grid>
-            </AccordionDetails>
-          </Accordion>
+              <Typography>Bloker</Typography>
+              <TaskForm.BlockAll
+                sx={{pb: 0}}
+                onBlurCallback={async () => await handlePatch('block_all')}
+                onChangeCallback={(e) => {
+                  console.log(e);
+                }}
+              />
+            </Grid>
+            <Grid
+              item
+              mobile={12}
+              laptop={12}
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              gap={1}
+            >
+              <Typography>på</Typography>
+              <TaskForm.BlockOnLocation
+                sx={{pb: 0}}
+                onBlurCallback={async () => await handlePatch('block_on_location')}
+              />
+            </Grid>
+          </Grid>
         </Grid>
         {/* <Grid item mobile={12} tablet={12} laptop={6}>
         </Grid> */}
@@ -233,33 +186,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           />
         </Grid>
       </Grid>
-
-      <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={2}>
-        {/* <div
-          id="drag-handle"
-          draggable
-          style={{
-            cursor: 'move',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '50px',
-            height: '50px',
-            backgroundColor: 'lightgrey',
-            borderRadius: '5px',
-            margin: '5px',
-          }}
-          onDragStart={(e) => {
-            setIsDraggingTask(true);
-            e.dataTransfer.setData('text/plain', JSON.stringify(selectedTask));
-          }}
-          onDragEnd={() => {
-            setIsDraggingTask(false);
-          }}
-        >
-          <DragHandleIcon fontSize="large" />
-        </div> */}
-
+      <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
         <Box>
           <Tooltip arrow title={deleteTaskTitle}>
             <div>

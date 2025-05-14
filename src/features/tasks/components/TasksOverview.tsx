@@ -1,147 +1,259 @@
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import MapIcon from '@mui/icons-material/Map';
-import {Box, BoxProps, Tab, Tabs} from '@mui/material';
-import {atom, useAtom} from 'jotai';
-import React, {SyntheticEvent} from 'react';
+import {Box} from '@mui/material';
 
-import {tabsHeight, calculateContentHeight} from '~/consts';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
-// import {NotificationMap} from '~/hooks/query/useNotificationOverview';
-import Map from '~/pages/field/overview/Map';
-// import {BoreholeMapData} from '~/types';
+import React from 'react';
+import WindowManager from '~/components/ui/WindowManager';
+import {DragDropProvider} from '@dnd-kit/react';
+import TaskMap from '~/pages/admin/opgaver/TaskMap';
+import TaskInfo from './TaskInfo';
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
+import {AppContext} from '~/state/contexts';
+import Station from '~/pages/field/station/Station';
 
-import TaskTable from './TaskTable';
-
-function TabPanel(props: {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-  keepMounted?: boolean;
-  other?: BoxProps;
-}) {
-  const {children, value, index, keepMounted, ...other} = props;
-  return (
-    <Box
-      display={value === index ? 'flex' : 'none'}
-      flexDirection="column"
-      flexGrow={1}
-      role="tabpanel"
-      hidden={value !== index}
-      id={`full-width-tabpanel-${index}`}
-      aria-labelledby={`full-width-tab-${index}`}
-      {...other}
-    >
-      {keepMounted ? <>{children}</> : value === index && <>{children}</>}
-    </Box>
-  );
-}
-
-const tabAtom = atom<number>(0);
+import {BoreholeMapData} from '~/types';
+import SensorContent from '~/pages/field/overview/components/SensorContent';
+import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
+import {useRawTaskStore} from '../store';
+import {locationMetadataQueryOptions, metadataQueryOptions} from '~/hooks/query/useMetadata';
+import {useQuery} from '@tanstack/react-query';
+import {displayStore, useDisplayState} from '~/hooks/ui';
+import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import LocationList from './LocationList';
+import TaskItiniaries from './TaskItiniaries';
+import LocationRouter from '~/features/station/components/LocationRouter';
+import Trip from '~/pages/admin/opgaver/Trip';
+import {useTaskItinerary} from '../api/useTaskItinerary';
+import {useAtomValue} from 'jotai';
+import {fullScreenAtom} from '~/state/atoms';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
 
 const TasksOverview = () => {
-  const [tabValue, setTabValue] = useAtom<number>(tabAtom);
+  const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
+    state.selectedTaskId,
+    state.setSelectedTask,
+  ]);
 
-  const {shownMapTaskIds, shownListTaskIds, setSelectedTask} = useTaskStore();
+  const [, setPageToShow] = useStationPages();
 
-  const handleChange = (_: SyntheticEvent<Element, Event>, newValue: number) => {
-    setTabValue(newValue);
+  const {
+    loc_id,
+    setLocId,
+    ts_id,
+    closeLocation,
+    boreholeno,
+    setBoreholeNo,
+    intakeno,
+    loc_list,
+    setLocList,
+    trip_list,
+    setTripList,
+    itinerary_id,
+    setItineraryId,
+  } = useDisplayState((state) => state);
+
+  // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
+  const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
+  const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
+  const {addLocationToTrip} = useTaskItinerary();
+  const {isMobile, isTouch} = useBreakpoints();
+  const fullScreen = useAtomValue(fullScreenAtom);
+
+  const handleDrop = (event: any) => {
+    if (event.operation.source === null || event.operation.target === null) return;
+
+    const itinerary_id = event.operation.target.data.itinerary_id;
+    const loc_id = event.operation.source.data.loc_id;
+
+    addLocationToTrip.mutate({
+      path: `${itinerary_id}`,
+      data: {
+        loc_id: [loc_id],
+      },
+    });
   };
 
-  // const [{onColumnFiltersChange}] = useStatefullTableAtom('taskTableState');
+  const clickCallback = (data: MapOverview | BoreholeMapData | null) => {
+    const {loc_id, selectedTask, boreholeno} = displayStore.getState();
 
-  const clickCallback = () => {
-    // if ('loc_id' in data) {
-    //   const tasks = activeTasks.filter((task) => task.loc_id === data.loc_id);
-    //   // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
-    //   if (tasks.length == 1) {
-    //     setSelectedTask(tasks[0].id);
-    //   } else {
-    //     setSelectedTask(null);
-    //   }
-    // }
-    setSelectedTask(null);
+    if (data === null && (loc_id !== null || selectedTask !== null || boreholeno !== null)) {
+      setLocId(null);
+      setSelectedTask(null);
+      setBoreholeNo(null);
+      setPageToShow(null);
+      return;
+    }
+    if (data === null) return;
+
+    if ('loc_id' in data) {
+      // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
+      // console.log('data', data);
+      setLocId(data.loc_id);
+      setSelectedTask(null);
+    } else if ('boreholeno' in data) {
+      // console.log('boreholeno', data);
+      setBoreholeNo(data.boreholeno);
+    }
   };
 
   return (
-    <Box display="flex" flexDirection="column" minHeight={`calc(100vh-68px)`}>
-      <Tabs
-        value={tabValue}
-        onChange={handleChange}
-        variant="fullWidth"
-        aria-label="simple tabs example"
+    <Box
+      display="flex"
+      flexDirection="column"
+      flexGrow={1}
+      overflow="hidden"
+      alignItems="stretch"
+      position="relative"
+    >
+      <Box
         sx={{
-          '& .MuiTab-root': {
-            // height: '48px',
-            minHeight: tabsHeight,
-            borderBottom: '1px solid #e0e0e0',
-          },
+          height: '100%',
         }}
       >
-        <Tab
-          label={
-            <Box>
-              Kort{' '}
-              <Box
-                component="span"
-                sx={{
-                  display: shownMapTaskIds.length > 0 ? 'inline' : 'none',
-                  color: shownMapTaskIds.length > 0 ? 'error.main' : undefined,
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
-                }}
-              >
-                !
-              </Box>
+        <TaskMap key="taskmap" clickCallback={clickCallback} />
+      </Box>
+      <DragDropProvider
+        key={loc_id}
+        onDragStart={() => {
+          if (!trip_list && !isTouch) setTripList(true);
+        }}
+        onDragEnd={handleDrop}
+      >
+        <WindowManager minColumnWidth={400}>
+          <WindowManager.Window
+            key="triplist"
+            show={trip_list}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setTripList(false);
+            }}
+            sx={{
+              borderBottomLeftRadius: isMobile ? 0 : 3,
+            }}
+            height={isMobile ? '50%' : '100%'}
+          >
+            <TaskItiniaries />
+          </WindowManager.Window>
+          <WindowManager.Window
+            key="locationlist"
+            show={loc_list}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setLocList(false);
+            }}
+            // fullScreen={isMobile}
+            sx={{
+              borderBottomLeftRadius: isMobile ? 0 : 3,
+            }}
+            height={isMobile ? '50%' : '100%'}
+          >
+            <LocationList />
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="location"
+            show={loc_id !== null}
+            minSize={1}
+            height={isMobile ? '100%' : '100%'}
+            onClose={() => {
+              // setSelectedData(null);
+              closeLocation();
+              setSelectedTask(null);
+            }}
+            sx={{
+              m: isMobile ? 0.5 : undefined,
+            }}
+          >
+            <AppContext.Provider value={{loc_id: loc_id!}}>
+              <SensorContent />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="itinerary"
+            show={itinerary_id !== null}
+            minSize={1}
+            onClose={() => setItineraryId(null)}
+            height="100%"
+          >
+            <Trip />
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="boreholeinfo"
+            show={boreholeno !== null}
+            minSize={1}
+            onClose={() => {
+              // setSelectedData(null);
+              setBoreholeNo(null);
+            }}
+          >
+            <AppContext.Provider value={{boreholeno: boreholeno!}}>
+              <BoreholeContent />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="taskinfo"
+            show={selectedTask !== null}
+            minSize={2}
+            onClose={() => setSelectedTask(null)}
+          >
+            <Box p={1} overflow="auto">
+              <TaskInfo />
             </Box>
-          }
-          icon={<MapIcon />}
-          iconPosition="start"
-        />
-        <Tab
-          icon={<FormatListBulletedIcon />}
-          iconPosition="start"
-          label={
-            <Box>
-              Liste{' '}
-              <Box
-                component="span"
-                sx={{
-                  display: shownListTaskIds.length > 0 ? 'inline' : 'none',
-                  color: shownListTaskIds.length > 0 ? 'error.main' : undefined,
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
-                }}
-              >
-                !
-              </Box>
-            </Box>
-          }
-        />
-        {/* <Tab icon={<CalendarMonth />} iconPosition="start" label="Kalender" /> */}
-      </Tabs>
-      <TabPanel key={'map'} value={tabValue} index={0}>
-        <Box
-          justifyContent={'center'}
-          alignSelf={'center'}
-          // p={1}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            height: calculateContentHeight(128),
-            width: '100%',
-            justifySelf: 'center',
-            overflow: 'hidden',
-          }}
-        >
-          <Map key="taskmap" clickCallback={clickCallback} />
-        </Box>
-      </TabPanel>
-      <TabPanel value={tabValue} index={1}>
-        <TaskTable key="tasktable" />
-      </TabPanel>
-      {/* <TabPanel value={tabValue} index={2}>
-        <TaskCalendar key="taskcalendar" />
-      </TabPanel> */}
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="boreholepage"
+            show={boreholeno !== null && intakeno !== null}
+            minSize={2}
+            maxSize={4}
+            fullScreen={isMobile || fullScreen}
+            height="100%"
+            sx={{
+              borderRadius: isMobile ? 0 : 3,
+            }}
+          >
+            <AppContext.Provider value={{boreholeno: boreholeno!, intakeno: intakeno!}}>
+              <BoreholeRouter />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="station"
+            id="station"
+            show={ts_id !== null}
+            minSize={2}
+            maxSize={4}
+            fullScreen={isMobile || fullScreen}
+            sx={{
+              borderRadius: isMobile ? 0 : 3,
+            }}
+            height="100%"
+          >
+            <AppContext.Provider value={{loc_id: metadata ? metadata.loc_id : -1, ts_id: ts_id!}}>
+              <Station />
+            </AppContext.Provider>
+          </WindowManager.Window>
+
+          <WindowManager.Window
+            key="locationstation"
+            show={loc_id !== null && locationData?.timeseries.length === 0}
+            minSize={2}
+            maxSize={4}
+            onClose={() => setSelectedTask(null)}
+            fullScreen={isMobile || fullScreen}
+            height="100%"
+          >
+            <AppContext.Provider value={{loc_id: loc_id ?? undefined}}>
+              <LocationRouter />
+            </AppContext.Provider>
+          </WindowManager.Window>
+        </WindowManager>
+      </DragDropProvider>
+      {/* </Box> */}
     </Box>
   );
 };

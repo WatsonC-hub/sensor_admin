@@ -8,7 +8,7 @@ import {createRoot} from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// eslint-disable-next-line import/no-unresolved
+
 import {registerSW} from 'virtual:pwa-register';
 
 import NetworkStatus from '~/components/NetworkStatus';
@@ -18,6 +18,11 @@ import theme from '~/theme';
 import App from './App';
 
 import '~/index.css';
+import moment from 'moment';
+import 'moment/locale/da';
+import dayjs from 'dayjs';
+dayjs.locale('da');
+moment.locale('da');
 
 if (import.meta.env.PROD) {
   Sentry.init({

@@ -89,6 +89,7 @@ export type Kontrol = {
   organisationname: string;
   uploaded_status: boolean;
   display_name?: string;
+  extrema?: string | null;
 };
 
 export type BoreholeMeasurement = {
@@ -170,14 +171,13 @@ export type PejlingItem = {
   referenced_measurement: number | null;
   timeofmeas: string;
   useforcorrection: number;
-  disttowatertable_m?: number | null;
-  pumpstop?: string | null;
-  extrema?: string | null;
-  service?: boolean;
-  display_name?: string;
+  display_name: string | null;
+  pumpstop: string | null;
+  service: boolean | null;
+  extrema: string | null;
 };
 
-export type controlData = {
+export type ControlDataGraph = {
   timeofmeas: string;
   waterlevel: number | null;
   useforcorrection: number;
@@ -440,6 +440,7 @@ export type TaskRessources = {
 };
 
 export type TaskUnits = {
+  name: string;
   terminal_type: string;
   sensorinfo: string;
   sensor_id: string;
@@ -462,7 +463,7 @@ export type TaskNotifications = {
 };
 
 export type LocationTasks = {
-  id: number;
+  id: string;
   loc_id: number;
   ts_id: number;
   status_id: number;
@@ -474,4 +475,17 @@ export type LocationTasks = {
   description: string;
   status_name: string;
   display_name: string;
+  blocks_notifications: number[];
+  notification_name: string;
+};
+
+export type DataToShow = {
+  Algoritmer: boolean;
+  Kontrolmålinger: boolean;
+  Godkendt: boolean;
+  Nedbør: boolean;
+  'Korrigerede spring': boolean;
+  'Valide værdier': boolean;
+  'Fjernet data': boolean;
+  Rådata: boolean;
 };

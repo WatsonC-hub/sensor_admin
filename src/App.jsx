@@ -5,22 +5,22 @@ import {ErrorBoundary} from 'react-error-boundary';
 
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
-import Redirecter from '~/Redirecter';
+import Home from '~/Home';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 import useBreakpoints from './hooks/useBreakpoints';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import {useUser} from './features/auth/useUser';
+import DisplayStateProvider from './helpers/DisplayStateProvider';
 
 function App() {
-  const {field} = useNavigationFunctions();
-
+  const {home} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const user = useUser();
 
   useEffect(() => {
     if (isMobile && location.pathname == '/') {
-      field();
+      home();
     }
   }, [isMobile]);
 
@@ -69,7 +69,9 @@ function App() {
       }}
     >
       <Suspense fallback={<LoadingSkeleton />}>
-        <Redirecter />
+        <DisplayStateProvider>
+          <Home />
+        </DisplayStateProvider>
       </Suspense>
     </ErrorBoundary>
   );

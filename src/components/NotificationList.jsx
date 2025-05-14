@@ -13,9 +13,9 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
-import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
+import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
-
+import {getColor} from '~/features/notifications/utils';
 // Mock data for notifications
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -26,7 +26,7 @@ const NotificationList = () => {
   const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
 
   let loc_id = undefined;
-  const {setSelectedTask, activeTasks} = useTaskStore();
+  const {setSelectedTask, tasks} = useTaskStore();
   const {tasks: tasksNavigation} = useNavigationFunctions();
   const {data: metadata} = useTimeseriesData();
 
@@ -43,11 +43,6 @@ const NotificationList = () => {
     setModalOpen(true);
     handleClose();
   };
-
-  // const openUpdateModal = () => {
-  //   setUpdateModalOpen(true);
-  //   handleClose();
-  // };
 
   const closeModal = () => {
     setModalOpen(false);
@@ -84,9 +79,7 @@ const NotificationList = () => {
 
   const badgeColor = getColor(notifications[maxFlagIndex]);
 
-  const tasksOnStation = activeTasks?.filter(
-    (task) => task.loc_id == loc_id && !task.id.includes(':')
-  );
+  const tasksOnStation = tasks?.filter((task) => task.loc_id == loc_id && !task.id.includes(':'));
 
   return (
     <div>
@@ -207,7 +200,6 @@ const NotificationList = () => {
               sx={{gap: 0.5}}
               onClick={() => {
                 setSelectedTask(task.id);
-                tasksNavigation();
               }}
             >
               <ListItemIcon

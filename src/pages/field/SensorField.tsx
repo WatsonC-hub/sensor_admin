@@ -1,5 +1,5 @@
 import {useAtom} from 'jotai';
-import React, {useState} from 'react';
+import React from 'react';
 import {Route, Routes} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
@@ -10,16 +10,15 @@ import LocationRouter from '~/features/station/components/LocationRouter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
-import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import {captureDialogAtom} from '~/state/atoms';
 import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
 import CreateStamdataProvider from '~/state/CreateStamdataProvider';
 import StationRouterProvider from '~/state/StationRouterProvider';
 
 import Station from './station/Station';
+import CreateStation from '~/features/station/components/CreateStation';
 
 function SensorField() {
-  const [, setAddStationDisabled] = useState(false);
   const [open, setOpen] = useAtom(captureDialogAtom);
 
   async function getData(labelid: string | number) {
@@ -48,15 +47,15 @@ function SensorField() {
       if (resp.loc_id) {
         if (resp.ts_id) {
           // navigate(`/field/location/${resp.loc_id}/${resp.ts_id}`, {replace: true});
-          station(resp.loc_id, resp.ts_id, options);
+          station(resp.ts_i);
         } else {
           // navigate(`/field/location/${resp.loc_id}`, {replace: true});
-          location(resp.loc_id, options);
+          location(resp.loc_id);
         }
       } else if (resp.boreholeno) {
         if (resp.intakeno) {
           // navigate(`/field/borehole/${resp.boreholeno}/${resp.intakeno}`, {replace: true});
-          boreholeIntake(resp.boreholeno, resp.intakeno, options);
+          boreholeIntake(resp.boreholeno, resp.intakeno);
         } else {
           // navigate(`/field/borehole/${resp.boreholeno}`, {replace: true});
           borehole(resp.boreholeno, options);
@@ -98,7 +97,8 @@ function SensorField() {
           path="stamdata"
           element={
             <CreateStamdataProvider>
-              <OpretStamdata setAddStationDisabled={setAddStationDisabled} />
+              <CreateStation />
+              {/* <OpretStamdata /> */}
             </CreateStamdataProvider>
           }
         />

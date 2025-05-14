@@ -1,8 +1,8 @@
 import InfoIcon from '@mui/icons-material/Info';
 import {Box, Tooltip, Typography} from '@mui/material';
 import React, {useContext} from 'react';
+import {boreholeColors} from '~/features/notifications/consts';
 
-import {boreholeColors} from '~/consts';
 import BoreholeIcon from '~/pages/field/overview/components/BoreholeIcon';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {DrawerContext} from '~/state/contexts';

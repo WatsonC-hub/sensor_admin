@@ -16,7 +16,7 @@ import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
-  handleDelete: (gid: number | undefined) => void;
+  handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 
@@ -85,7 +85,6 @@ export default function PejlingMeasurementsTableDesktop({
     renderRowActions: ({row}) => (
       <RenderActions
         handleEdit={() => {
-          console.log(row);
           handleEdit(row.original);
         }}
         onDeleteBtnClick={() => {

@@ -1,28 +1,17 @@
 import {MenuItem} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 
-import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
+import useLocationType from '../../api/useLocationType';
 
 interface LocationTypeSelectProps {
   disable: boolean;
 }
 
-type locationType = {
-  loctype_id: number;
-  loctypename: string;
-};
-
 export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
-  const {data} = useQuery({
-    queryKey: ['location_types'],
-    queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
-      return data;
-    },
-    refetchOnWindowFocus: false,
-  });
+  const {
+    get: {data},
+  } = useLocationType();
 
   return (
     <FormInput
@@ -36,7 +25,7 @@ export default function LocationTypeSelect({disable}: LocationTypeSelectProps) {
       <MenuItem value={-1} key={-1}>
         Vælg type
       </MenuItem>
-      {data?.map((item: locationType) => (
+      {data?.map((item) => (
         <MenuItem value={item.loctype_id} key={item.loctype_id}>
           {item.loctypename}
         </MenuItem>

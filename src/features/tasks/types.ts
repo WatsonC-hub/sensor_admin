@@ -11,6 +11,8 @@
 //     longitude: '{{floating(8.24402, 14.70664)}}'
 //   }
 
+import {FlagEnum} from '../notifications/consts';
+
 export type ID = string;
 
 // const example = {
@@ -60,6 +62,7 @@ export type Task = {
   created_display_name: string;
   created_at: string;
   updated_at: string;
+  updated_by: string;
   tstype_name: string;
   loctypename: string;
   projectno: string | null;
@@ -69,6 +72,8 @@ export type Task = {
   block_all: boolean;
   itinerary_id: string | null;
   can_edit: boolean;
+  flag: FlagEnum;
+  prefix: string | null;
 };
 
 export type DBTask = {
@@ -174,6 +179,7 @@ export type Taskitinerary = {
   id: ID;
   due_date?: string | null;
   assigned_to?: string | null;
+  completed?: boolean;
   created_by: string;
   created_at: string;
 };
@@ -187,10 +193,14 @@ export type TaskitineraryItem = {
 };
 
 export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'> & {
-  task_ids: ID[];
+  loc_ids: number[];
 };
 
-export type PatchTaskitinerary = Partial<Omit<Taskitinerary, 'id' | 'created_at'>>;
+export type PatchTaskitinerary = {
+  path: string;
+  data: Partial<Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'>>;
+};
+
 export type AddTasksToitinerary = {
   task_ids: ID[];
 };
@@ -199,7 +209,11 @@ export type DeleteTaskFromItinerary = {
   path: string;
 };
 
-export type MoveTaskToDifferentItinerary = {
+export type completeItinerary = {
   path: string;
-  data: AddTasksToitinerary & {loc_id: Array<number>};
+};
+
+export type AddLocationToItinerary = {
+  path: string;
+  data: {loc_id: Array<number>};
 };

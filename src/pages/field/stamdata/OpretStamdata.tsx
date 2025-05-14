@@ -44,16 +44,12 @@ function TabPanel({value, index, children, ...other}: TabPanelProps) {
   );
 }
 
-interface OpretStamdataProps {
-  setAddStationDisabled: (value: boolean) => void;
-}
-
 type CreateValues = z.infer<typeof metadataSchema>;
 type Timeseries = CreateValues['timeseries'];
 type Unit = CreateValues['unit'];
 type Watlevmp = CreateValues['watlevmp'];
 
-export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProps) {
+export default function OpretStamdata() {
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   const [udstyrDialogOpen, setUdstyrDialogOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -62,6 +58,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
   state = state ?? {};
 
   const [tabValue, setTabValue] = useCreateTabState();
+
   const formMethods = useForm({
     resolver: zodResolver(metadataSchema),
     defaultValues: {
@@ -124,7 +121,6 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
   const cancel = () => {
     navigate(-1);
-    setAddStationDisabled(false);
   };
 
   const nextTab = async () => {
@@ -198,6 +194,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     const timeseriesValid = await trigger('timeseries');
     const isWaterlevel = getValues()?.timeseries.tstype_id === 1;
     let watlevmpValid = true;
+
     if (isWaterlevel) {
       watlevmpValid = await trigger('watlevmp');
     }
@@ -223,7 +220,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
 
     stamdataNewTimeseriesMutation.mutate(form, {
       onSuccess: (data) => {
-        stationNavigate(data.loc_id, data.ts_id);
+        stationNavigate(data.ts_id);
       },
     });
   };
@@ -268,7 +265,7 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
       () =>
         stamdataNewMutation.mutateAsync(form, {
           onSuccess: (data) => {
-            stationNavigate(data.loc_id, data.ts_id);
+            stationNavigate(data.ts_id);
           },
         }),
       {

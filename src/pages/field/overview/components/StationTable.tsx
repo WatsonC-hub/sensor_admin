@@ -84,7 +84,13 @@ export default function StationTable({data}: Props) {
               fontSize: isTouch ? '1.5rem' : '2rem',
             }}
           >
-            <NotificationIcon iconDetails={row.original} enableTooltip />
+            <NotificationIcon
+              iconDetails={{
+                ...row.original,
+                tooltip: row.original.opgave,
+              }}
+              enableTooltip
+            />
           </Box>
         ),
         sortingFn: (a, b) => {
@@ -262,7 +268,7 @@ export default function StationTable({data}: Props) {
         <Button
           bttype="primary"
           onClick={() => {
-            station(row.original.loc_id, row.original.ts_id);
+            station(row.original.ts_id);
           }}
           startIcon={<ShowChartRoundedIcon />}
         >
@@ -279,7 +285,7 @@ export default function StationTable({data}: Props) {
     muiTableBodyRowProps: ({row}) => {
       return {
         onDoubleClick: () => {
-          station(row.original.loc_id, row.original.ts_id);
+          station(row.original.ts_id);
         },
       };
     },

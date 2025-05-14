@@ -10,6 +10,7 @@ import {useTaskStore} from '../api/useTaskStore';
 import {Taskitinerary} from '../types';
 
 import Droppable from './Droppable';
+import {useTaskItinerary} from '../api/useTaskItinerary';
 
 interface TaskItineraryCardProps {
   itinerary: Taskitinerary;
@@ -20,22 +21,22 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
 
   const {
     getUsers: {data: users},
-    moveTask,
   } = useTasks();
+
+  const {complete, addLocationToTrip} = useTaskItinerary(itinerary.id);
 
   const {selectedTask, isDraggingTask, selectedLocIds, tasks} = useTaskStore();
 
   return (
-    <Droppable
-      onDrop={(e) => {
+    <Droppable<{loc_id: number}>
+      onDrop={(e, data) => {
         e.preventDefault();
-        console.log('DROP');
-        console.log(e.dataTransfer.getData('text/plain'));
-        if (selectedTask)
-          moveTask.mutate({
-            path: `${itinerary.id}`,
-            data: {task_ids: [selectedTask.id], loc_id: [selectedTask.loc_id]},
-          });
+        addLocationToTrip.mutate({
+          path: `${itinerary.id}`,
+          data: {
+            loc_id: [data.loc_id],
+          },
+        });
       }}
     >
       {({isDraggingOver}) => {
@@ -84,23 +85,7 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
               </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: 'center'}}>
-              <Button
-                disabled={selectedLocIds.length === 0}
-                onClick={() => {
-                  moveTask.mutate({
-                    path: `${itinerary.id}`,
-                    data: {
-                      task_ids: tasks
-                        ? tasks
-                            .filter((task) => selectedLocIds.includes(task.loc_id))
-                            .map((task) => task.id)
-                        : [],
-                      loc_id: selectedLocIds,
-                    },
-                  });
-                }}
-                bttype="itinerary"
-              >
+              <Button disabled={selectedLocIds.length === 0} onClick={() => {}} bttype="itinerary">
                 Tilføj
               </Button>
               <Button
@@ -110,6 +95,14 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
                 bttype="itinerary"
               >
                 Se tur
+              </Button>
+              <Button
+                onClick={() => {
+                  complete.mutate({path: `${itinerary.id}`});
+                }}
+                bttype="itinerary"
+              >
+                Afslut
               </Button>
             </CardActions>
           </GenericCard>

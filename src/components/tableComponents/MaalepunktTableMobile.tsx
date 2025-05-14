@@ -128,7 +128,7 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
   );
 
   return (
-    <Box sx={setTableBoxStyle(320)} width={'100%'}>
+    <Box sx={data && data.length > 4 ? setTableBoxStyle(320) : {}} width={'100%'}>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
