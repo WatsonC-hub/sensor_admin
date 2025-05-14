@@ -10,7 +10,6 @@ import LocationRouter from '~/features/station/components/LocationRouter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
 import OverviewPage from '~/pages/field/overview/OverviewPage';
-import OpretStamdata from '~/pages/field/stamdata/OpretStamdata';
 import {captureDialogAtom} from '~/state/atoms';
 import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
 import CreateStamdataProvider from '~/state/CreateStamdataProvider';

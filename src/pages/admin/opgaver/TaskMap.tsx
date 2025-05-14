@@ -148,7 +148,7 @@ const Map = ({clickCallback}: MapProps) => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          createStamdata('1', {state: element});
+          createStamdata({state: element});
         },
         icon: '/leaflet-images/marker.png',
       },
