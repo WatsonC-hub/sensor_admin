@@ -98,7 +98,7 @@ const NotificationIcon = ({
   }
   if (
     (iconDetails.notification_id === 0 ||
-      iconDetails.flag === -1 ||
+      iconDetails.flag === null ||
       iconDetails.notification_id == undefined) &&
     enableTooltip
   )
@@ -111,7 +111,7 @@ const NotificationIcon = ({
     );
   else if (
     (iconDetails.notification_id === 0 ||
-      iconDetails.flag === -1 ||
+      iconDetails.flag === null ||
       iconDetails.notification_id == undefined) &&
     !enableTooltip
   ) {
