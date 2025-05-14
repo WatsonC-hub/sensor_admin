@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import NavBar from '~/components/NavBar';
 import {Box, Grid2, Step, StepButton, StepLabel, Stepper, Typography} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -31,14 +31,18 @@ import {toast} from 'react-toastify';
 import {ArrowBack, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {queryClient} from '~/queryClient';
+import AlertDialog from '~/components/AlertDialog';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertMessage, setAlertMessage] = useState('');
   const size = isMobile ? 12 : 6;
   const navigate = useNavigate();
   const {location: locationNavigate, station: stationNavigate} = useNavigationFunctions();
   let {state} = useLocation();
-  const [activeStep, setActiveStep] = React.useState(
+  const [activeStep, setActiveStep] = useState(
     state === undefined || state === null ? 0 : state.loc_id ? 1 : 0
   );
 
@@ -51,7 +55,9 @@ const CreateStation = () => {
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
-  const [locationFormMethods, LocationForm] = useLocationForm({
+  const [locationFormMethods, LocationForm] = useLocationForm<
+    DefaultAddLocation | BoreholeAddLocation
+  >({
     mode: 'Add',
     defaultValues: defaultValues,
     context: {
@@ -63,7 +69,7 @@ const CreateStation = () => {
   const {
     getValues: getLocationValues,
     trigger: triggerLocation,
-    formState: {errors: locationErrors, isDirty: isLocationDirty},
+    formState: {errors: locationErrors},
     watch: watchLocation,
     reset: resetLocation,
   } = locationFormMethods;
@@ -124,7 +130,7 @@ const CreateStation = () => {
   const {
     getValues: getWatlevmpValues,
     trigger: triggerWatlevmp,
-    formState: {errors: watlevmpErrors, isDirty: isWatlevmpDirty},
+    formState: {errors: watlevmpErrors},
     clearErrors: clearWatlevmpErrors,
   } = watlevmpFormMethods;
 
@@ -188,77 +194,93 @@ const CreateStation = () => {
     },
   });
 
-  const handleSubmit = async () => {
-    const isLocationValid = isLocationDirty ? await triggerLocation() : true;
-    const isTimeseriesValid = isTimeseriesDirty ? await triggerTimeseries() : true;
-    const isUnitValid = isUnitDirty ? await triggerUnit() : true;
+  const handleLocationSubmit = async () => {
+    const isLocationValid = await triggerLocation();
+    if (!isLocationValid) {
+      return;
+    }
+
+    const locationData = getLocationValues();
+    if (isLocationValid) {
+      stamdataNewLocationMutation.mutate(locationData);
+    }
+  };
+
+  const handleTimeseriesSubmit = async () => {
+    const isLocationValid = await triggerLocation();
+    const isTimeseriesValid = await triggerTimeseries();
+    if (!isTimeseriesValid || !isLocationValid) {
+      return;
+    }
+
+    const locationData = getLocationValues();
+    const timeseriesData = getTimeseriesValues();
+    const isWaterLevel = timeseriesData.tstype_id === 1;
+
+    let form: {
+      location: DefaultAddLocation | BoreholeAddLocation;
+      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
+      watlevmp?: Watlevmp;
+    };
+    if (isWaterLevel) {
+      const isWatlevmpValid = await triggerWatlevmp();
+      if (!isWatlevmpValid) {
+        return;
+      }
+      const watlevmpData = getWatlevmpValues();
+      form = {
+        location: locationData,
+        timeseries: timeseriesData,
+        watlevmp: watlevmpData,
+      };
+    } else {
+      form = {
+        location: locationData,
+        timeseries: timeseriesData,
+      };
+    }
+    stamdataNewTimeseriesMutation.mutate(form);
+  };
+
+  const handleStamdataSubmit = async () => {
+    const isLocationValid = await triggerLocation();
+    const isTimeseriesValid = isTimeseriesDirty ? await triggerTimeseries() : false;
+    const isUnitValid = isUnitDirty ? await triggerUnit() : false;
+
+    if (!isLocationValid || !isTimeseriesValid || !isUnitValid) {
+      return;
+    }
 
     const locationData = getLocationValues();
     const timeseriesData = getTimeseriesValues();
     const unitData = getUnitValues();
-    const watlevmpData = getWatlevmpValues();
     const isWaterLevel = timeseriesData.tstype_id === 1;
-
-    const isWatlevmpValid = isWaterLevel
-      ? isWatlevmpDirty
-        ? await triggerWatlevmp()
-        : true
-      : true;
-
-    let form;
-
-    if (isLocationValid && isLocationDirty && !isTimeseriesDirty && !isUnitDirty) {
-      stamdataNewLocationMutation.mutate(locationData as BoreholeAddLocation | DefaultAddLocation);
-    }
-
-    if (isLocationValid && isTimeseriesValid && isTimeseriesDirty && !isUnitDirty) {
-      if (isWaterLevel && isWatlevmpValid && isWatlevmpDirty) {
-        form = {
-          location: locationData,
-          timeseries: timeseriesData,
-          watlevmp: watlevmpData,
-        } as {
-          location: DefaultAddLocation | BoreholeAddLocation;
-          timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
-          watlevmp?: Watlevmp;
-        };
-      } else {
-        form = {
-          location: locationData,
-          timeseries: timeseriesData,
-        } as {
-          location: DefaultAddLocation | BoreholeAddLocation;
-          timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
-        };
+    let form: {
+      location: DefaultAddLocation | BoreholeAddLocation;
+      timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
+      unit: AddUnit;
+      watlevmp?: Watlevmp;
+    };
+    if (isWaterLevel) {
+      const isWatlevmpValid = await triggerWatlevmp();
+      if (!isWatlevmpValid) {
+        return;
       }
-      stamdataNewTimeseriesMutation.mutate(form);
-    }
-
-    if (isLocationValid && isTimeseriesValid && isWatlevmpValid && isUnitValid && isUnitDirty) {
+      const watlevmpData = getWatlevmpValues();
       form = {
-        unit: unitData,
         location: locationData,
         timeseries: timeseriesData,
-        watlevmp: isWaterLevel ? watlevmpData : undefined,
-      } as {
-        location: DefaultAddLocation | BoreholeAddLocation;
-        timeseries: DefaultAddTimeseries | BoreholeAddTimeseries;
-        watlevmp?: Watlevmp;
-        unit: AddUnit;
+        unit: unitData,
+        watlevmp: watlevmpData,
       };
-
-      stamdataNewMutation.mutate(form);
+    } else {
+      form = {
+        location: locationData,
+        timeseries: timeseriesData,
+        unit: unitData,
+      };
     }
-  };
-
-  const denyStepping = () => {
-    if (activeStep === 0) {
-      return Object.keys(locationErrors).length > 0 || loctype_id === -1;
-    } else if (activeStep === 1) {
-      return Object.keys(timeseriesErrors).length > 0 || Object.keys(watlevmpErrors).length > 0;
-    }
-
-    return false;
+    stamdataNewMutation.mutate(form);
   };
 
   const validateStepping = async () => {
@@ -271,7 +293,7 @@ const CreateStation = () => {
         valid = await triggerWatlevmp();
       }
     }
-    return !denyStepping() && valid;
+    return valid;
   };
 
   useEffect(() => {
@@ -312,7 +334,6 @@ const CreateStation = () => {
               completed={Object.keys(locationErrors).length === 0 && activeStep !== 0}
             >
               <StepButton
-                disabled={denyStepping()}
                 onClick={async () => {
                   if (activeStep !== 0) {
                     setActiveStep(0);
@@ -338,13 +359,9 @@ const CreateStation = () => {
               <StepButton
                 onClick={async () => {
                   if (activeStep !== 1) {
-                    const isLocationValid = await triggerLocation();
-                    if (isLocationValid) {
-                      setActiveStep(1);
-                    }
+                    setActiveStep(1);
                   }
                 }}
-                disabled={denyStepping()}
               >
                 <StepLabel
                   error={
@@ -362,13 +379,7 @@ const CreateStation = () => {
               <StepButton
                 onClick={async () => {
                   if (activeStep !== 2) {
-                    const isTimeseriesValid = await triggerTimeseries();
-                    const isLocationValid = await triggerLocation();
-                    const isWaterlevel = tstype_id === 1;
-                    const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
-                    if (isTimeseriesValid && isWatlevmpValid && isLocationValid) {
-                      setActiveStep(2);
-                    }
+                    setActiveStep(2);
                   }
                 }}
               >
@@ -416,7 +427,7 @@ const CreateStation = () => {
               bttype="primary"
               color="inherit"
               startIcon={!isMobile && <ArrowBack />}
-              disabled={activeStep === 0 || denyStepping()}
+              disabled={activeStep === 0}
               onClick={async () => {
                 setActiveStep(activeStep - 1);
               }}
@@ -427,7 +438,7 @@ const CreateStation = () => {
             </Button>
             <Button
               bttype="primary"
-              disabled={activeStep === 2 || denyStepping()}
+              disabled={activeStep === 2}
               endIcon={!isMobile && <ArrowForwardIcon fontSize="small" />}
               onClick={async () => {
                 const valid = await validateStepping();
@@ -441,7 +452,36 @@ const CreateStation = () => {
             <Button
               bttype="primary"
               startIcon={<Save />}
-              onClick={handleSubmit}
+              onClick={async () => {
+                // Handle submit based on the active step
+                // But this also means that the user can fill out the form, but still only sumbit the first step
+                if (activeStep === 0) {
+                  const location_valid = await triggerLocation();
+                  if (!location_valid) {
+                    return;
+                  }
+                  setAlertTitle('Opret lokation');
+                  setAlertMessage(
+                    'Du er i gang med at oprette en lokation uden tidsserie og udstyr. Er du sikker på at du vil fortsætte?'
+                  );
+                  setShowAlert(true);
+                } else if (activeStep === 1) {
+                  const timeseries_valid = await triggerTimeseries();
+                  const location_valid = await triggerLocation();
+                  const isWaterlevel = tstype_id === 1;
+                  const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
+                  if (!timeseries_valid || !location_valid || !isWatlevmpValid) {
+                    return;
+                  }
+                  setAlertTitle('Opret tidsserie');
+                  setAlertMessage(
+                    'Du er i gang med at oprette en lokation og tidsserie uden udstyr. Er du sikker på at du vil fortsætte?'
+                  );
+                  setShowAlert(true);
+                } else if (activeStep === 2) {
+                  handleStamdataSubmit();
+                }
+              }}
               disabled={loctype_id === -1}
             >
               Gem & afslut
@@ -449,6 +489,19 @@ const CreateStation = () => {
           </Grid2>
         </Grid2>
       </Box>
+      <AlertDialog
+        open={showAlert}
+        setOpen={setShowAlert}
+        title={alertTitle}
+        message={alertMessage}
+        handleOpret={() => {
+          if (activeStep === 0) {
+            handleLocationSubmit();
+          } else if (activeStep === 1) {
+            handleTimeseriesSubmit();
+          }
+        }}
+      />
     </>
   );
 };

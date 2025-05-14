@@ -136,7 +136,7 @@ const Map = ({clickCallback}: MapProps) => {
           const coords = utm.convertLatLngToUtm(e.latlng.lat, e.latlng.lng, 32);
 
           if (typeof coords == 'object') {
-            createStamdata(undefined, {
+            createStamdata({
               state: {
                 x: parseFloat(coords.Easting.toFixed(2)),
                 y: parseFloat(coords.Northing.toFixed(2)),
@@ -246,7 +246,7 @@ const Map = ({clickCallback}: MapProps) => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          createStamdata('1', {state: element});
+          createStamdata({state: element});
         },
         icon: '/leaflet-images/marker.png',
       },

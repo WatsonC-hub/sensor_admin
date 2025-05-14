@@ -59,15 +59,11 @@ const defaultEditTimeseriesSchema = baseTimeseriesSchema.extend({prefix: z.strin
 const defaultAddTimeseriesSchema = baseAddTimeseriesSchema.extend({prefix: z.string().nullish()});
 
 const boreholeEditTimeseriesSchema = baseTimeseriesSchema.extend({
-  intakeno: z.number({required_error: 'Vælg indtag'}).gte(0, {
-    message: 'Vælg indtag',
-  }),
+  intakeno: z.number().optional(),
 });
 
 const boreholeAddTimeseriesSchema = baseAddTimeseriesSchema.extend({
-  intakeno: z.number({required_error: 'Vælg indtag'}).gte(0, {
-    message: 'Vælg indtag',
-  }),
+  intakeno: z.number().optional(),
 });
 
 const watlevmpAddSchema = z.object({
