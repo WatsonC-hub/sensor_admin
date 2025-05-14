@@ -38,6 +38,7 @@ interface PejlingProps {
 interface CompoundPejlingProps extends PejlingProps {
   hide: boolean;
   isWaterLevel?: boolean;
+  isFlow?: boolean;
   currentMP?: Maalepunkt | null;
   elevationDiff?: number;
   notPossible: boolean;
@@ -52,6 +53,7 @@ const CompoundPejlingContext = React.createContext<CompoundPejlingProps>({
   latestMeasurement: undefined,
   hide: false,
   isWaterLevel: false,
+  isFlow: false,
   currentMP: null,
   elevationDiff: 0,
   notPossible: false,
@@ -73,6 +75,7 @@ const CompoundPejling = ({
 
   const {data: timeseries} = useTimeseriesData();
   const isWaterLevel = timeseries?.tstype_id === 1;
+  const isFlow = timeseries?.tstype_id === 2;
   const [elevationDiff, setElevationDiff] = useState<number | undefined>(undefined);
   const [hide, setHide] = useState<boolean>(false);
   const [currentMP, setCurrentMP] = useState<Maalepunkt | null>(null);
@@ -132,6 +135,7 @@ const CompoundPejling = ({
         elevationDiff,
         notPossible,
         setNotPossible,
+        isFlow,
       }}
     >
       {children}
@@ -162,7 +166,7 @@ const SubmitButton = () => {
       fullWidth={false}
       startIcon={<Save />}
       disabled={Object.keys(errors).length > 0}
-      onClick={handleSubmit(submit, () => {})}
+      onClick={handleSubmit(submit, (errors) => console.log(errors))}
     >
       Gem
     </Button>
@@ -238,16 +242,16 @@ const Comment = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
 const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
   const {isMobile} = useBreakpoints();
   const {control} = useFormContext();
-  const {isWaterLevel} = useContext(CompoundPejlingContext);
+  const {isWaterLevel, isFlow} = useContext(CompoundPejlingContext);
 
-  if (!isWaterLevel) return null;
+  if (!(isWaterLevel || isFlow)) return null;
 
   return (
     <Controller
       control={control}
       name="useforcorrection"
       rules={{required: true}}
-      render={({field: {value, onChange}}) => {
+      render={({field: {value, onChange}, fieldState: {error}}) => {
         return (
           <FormControl component="fieldset">
             <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
@@ -302,6 +306,11 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
                 </>
               )}
             </RadioGroup>
+            {error && (
+              <Typography variant="caption" color="error">
+                {error.message}
+              </Typography>
+            )}
           </FormControl>
         );
       }}
