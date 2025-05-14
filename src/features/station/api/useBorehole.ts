@@ -34,7 +34,7 @@ export const boreholesOptions = () => {
   });
 };
 
-export const useSearchBorehole = (boreholeno: string | undefined) => {
+export const useSearchBorehole = (boreholeno: string | undefined | null) => {
   const user = useUser();
   const searched_boreholes = useQuery({
     queryKey: ['search_borehole', boreholeno],
@@ -46,7 +46,8 @@ export const useSearchBorehole = (boreholeno: string | undefined) => {
       return data;
     },
     staleTime: 10 * 1000,
-    enabled: boreholeno !== undefined && boreholeno !== '' && user?.boreholeAccess,
+    enabled:
+      boreholeno !== undefined && boreholeno !== null && boreholeno !== '' && user?.boreholeAccess,
   });
   return searched_boreholes;
 };

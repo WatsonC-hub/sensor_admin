@@ -9,7 +9,7 @@ import {useUser} from '~/features/auth/useUser';
 import useLocationProject, {Project} from '../../api/useLocationProject';
 
 interface LocationProjectsProps {
-  value: string | undefined;
+  value: string | undefined | null;
   setValue: (value: string | undefined) => void;
   onBlur: Noop;
   error: FieldError | undefined;
