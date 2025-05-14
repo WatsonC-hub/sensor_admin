@@ -38,7 +38,7 @@ export const routeStyle: L.PathOptions = {
   opacity: 0.8,
 };
 
-export const zoomAtom = atomWithTimedStorage<number | null>('mapZoom', 7, 1000 * 60 * 30);
+export const zoomAtom = atomWithTimedStorage<number | null>('mapZoom', null, 1000 * 60 * 30);
 export const panAtom = atomWithTimedStorage<L.LatLng | null>('mapPan', null, 1000 * 60 * 30);
 
 export const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;

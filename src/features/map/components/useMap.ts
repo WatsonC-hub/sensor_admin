@@ -316,7 +316,7 @@ const useMap = <TData extends object>(
 
   const plotRoutesInLayer = () => {
     geoJsonRef.current?.clearLayers();
-    if (geoJsonRef.current) {
+    if (geoJsonRef.current && zoom && zoom > zoomThresholdForParking) {
       const active_loc_ids = data.map((item) => {
         if ('loc_id' in item) {
           return item.loc_id;
@@ -380,7 +380,15 @@ const useMap = <TData extends object>(
 
   const plotParkingsInLayer = () => {
     parkingLayerRef.current?.clearLayers();
-    if (mapRef && mapRef.current && parkings && parkings.length > 0 && data.length > 0) {
+    if (
+      mapRef &&
+      mapRef.current &&
+      parkings &&
+      parkings.length > 0 &&
+      data.length > 0 &&
+      zoom &&
+      zoom > zoomThresholdForParking
+    ) {
       const active_loc_ids = data.map((item) => {
         if ('loc_id' in item) {
           return item.loc_id;
@@ -559,19 +567,18 @@ const useMap = <TData extends object>(
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
 
-  // useEffect(() => {
-  //   if (zoom !== null && pan !== null && mapRef.current) {
-  //     // const localPan = pan ? pan : mapRef.current.getCenter();
-  //     mapRef.current.setView(pan, zoom);
-  //   }
-  //   // else {
-  //   //   if (markerLayerRef.current?.getBounds().isValid() && mapRef.current) {
-  //   //     const zoom = mapRef.current.getZoom();
-  //   //     const localPan = pan ? pan : mapRef.current.getCenter();
-  //   //     mapRef.current.setView(localPan, zoom);
-  //   //   }
-  //   // }
-  // }, [mapRef.current]);
+  useEffect(() => {
+    if (zoom !== null && pan !== null && mapRef.current) {
+      // const localPan = pan ? pan : mapRef.current.getCenter();
+      mapRef.current.setView(pan, zoom);
+    } else {
+      if (markerLayerRef.current?.getBounds().isValid() && mapRef.current) {
+        const zoom = mapRef.current.getZoom();
+        const localPan = pan ? pan : mapRef.current.getCenter();
+        mapRef.current.setView(localPan, zoom);
+      }
+    }
+  }, [mapRef.current]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);
