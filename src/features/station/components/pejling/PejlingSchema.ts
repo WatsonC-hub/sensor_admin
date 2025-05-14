@@ -5,10 +5,7 @@ const baseSchema = z.object({
   measurement: z.number().nullable(),
   timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
   comment: z.string().optional(),
-  useforcorrection: z
-    .number()
-    .default(0)
-    .transform((val) => Number(val)),
+  useforcorrection: z.coerce.number().default(0),
 });
 
 const pejlingSchema = baseSchema;

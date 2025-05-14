@@ -4,7 +4,7 @@ import {
   PejlingSchemaType,
   pejlingSchema,
 } from '../PejlingSchema';
-import {FieldErrors, useForm} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import PejlingForm from '../components/PejlingForm';
 import {z, ZodType} from 'zod';
 import PejlingBoreholeForm from '../components/PejlingBoreholeForm';

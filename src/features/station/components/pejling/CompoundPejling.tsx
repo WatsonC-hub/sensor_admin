@@ -162,7 +162,7 @@ const SubmitButton = () => {
       fullWidth={false}
       startIcon={<Save />}
       disabled={Object.keys(errors).length > 0}
-      onClick={handleSubmit(submit, () => {})}
+      onClick={handleSubmit(submit, (errors) => console.log(errors))}
     >
       Gem
     </Button>
@@ -247,7 +247,7 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
       control={control}
       name="useforcorrection"
       rules={{required: true}}
-      render={({field: {value, onChange}}) => {
+      render={({field: {value, onChange}, fieldState: {error}}) => {
         return (
           <FormControl component="fieldset">
             <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>
@@ -302,6 +302,11 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
                 </>
               )}
             </RadioGroup>
+            {error && (
+              <Typography variant="caption" color="error">
+                {error.message}
+              </Typography>
+            )}
           </FormControl>
         );
       }}
