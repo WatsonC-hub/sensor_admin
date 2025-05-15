@@ -275,6 +275,7 @@ const Map = ({clickCallback}: MapProps) => {
   );
 
   useEffect(() => {
+    if (!doneRendering) return;
     markerLayer?.clearLayers();
     const sorted = filteredData?.sort((a, b) => {
       if ('loc_id' in a && 'loc_id' in b) {

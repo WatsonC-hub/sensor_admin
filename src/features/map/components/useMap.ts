@@ -498,9 +498,8 @@ const useMap = <TData extends object>(
   };
 
   useEffect(() => {
-    const existingMap = L.DomUtil.get(id);
-    if (existingMap && '_leaflet_id' in existingMap) existingMap._leaflet_id = null;
     mapRef.current = buildMap();
+
     parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
       disableClusteringAtZoom: 15,
@@ -534,7 +533,7 @@ const useMap = <TData extends object>(
       },
     }).addTo(mapRef.current);
 
-    markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
+    markerLayerRef.current.on('click', function (e: L.LeafletMouseEvent) {
       L.DomEvent.stopPropagation(e);
       setSelectedMarkerWithCallback(e.sourceTarget.options.data);
       highlightParking(e.sourceTarget.options.data.loc_id, true);
@@ -543,8 +542,8 @@ const useMap = <TData extends object>(
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup().addTo(mapRef.current);
 
-    geoJsonRef.current?.setStyle(routeStyle);
-    mapRef.current?.pm.setGlobalOptions({
+    geoJsonRef.current.setStyle(routeStyle);
+    mapRef.current.pm.setGlobalOptions({
       snappable: true,
       snapDistance: 5,
       pathOptions: routeStyle,
@@ -553,26 +552,33 @@ const useMap = <TData extends object>(
     setDoneRendering(true);
 
     return () => {
-      setDoneRendering(false);
       if (mapRef.current) {
+        setDoneRendering(false);
         mapRef.current.remove();
       }
     };
-  }, []);
+  }, [mapRef.current == null]); // To make sure the map is only created once and that it atleast renders twice. Fixes the issue with the tiles not correctly rendering.
 
   useEffect(() => {
+    if (!geoJsonRef.current) return;
     plotRoutesInLayer();
   }, [data, leafletMapRoutes, geoJsonRef.current]);
 
   useEffect(() => {
+    if (!parkingLayerRef.current) return;
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
 
   useEffect(() => {
-    if (mapRef.current) onMapMoveEndEvent(mapRef.current);
+    if (!mapRef.current) return;
+    if (mapRef.current) {
+      onMapMoveEndEvent(mapRef.current);
+    }
 
     return () => {
-      if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
+      if (mapRef.current) {
+        mapRef.current.off('moveend', mapEvent);
+      }
     };
   }, [leafletMapRoutes, parkings]);
 
