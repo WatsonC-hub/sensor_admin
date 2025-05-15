@@ -517,7 +517,8 @@ const useMap = <TData extends object>(
           if ('loc_id' in marker.options.data) {
             return getColor(marker.options.data);
           }
-          return boreholeColors[marker.options.data.status as keyof typeof boreholeColors].color;
+          const max_status = Math.max(marker.options.data.status);
+          return boreholeColors[max_status as keyof typeof boreholeColors]?.color;
         });
 
         const color = getMaxColor(colors);
