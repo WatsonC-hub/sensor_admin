@@ -9,6 +9,9 @@ import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import {useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import 'maplibre-gl/dist/maplibre-gl.js';
+import '@maplibre/maplibre-gl-leaflet/leaflet-maplibre-gl.js';
 
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
@@ -126,14 +129,21 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: pan == null ? [56.215868, 8.228759] : pan,
-      zoom: zoom == null ? 7 : zoom,
-      layers: [defaultMapBox],
+      center: [56.215868, 8.228759],
+      zoom: 6,
+
       tapHold: true,
       renderer: L.canvas({tolerance: 5}),
       contextmenu: true,
       contextmenuItems: items,
+      maxZoom: 20,
     });
+
+    const vector = L.maplibreGL({
+      style: '/api/static/map_style.json',
+    }).addTo(map);
+
+    map.zoomControl.setPosition('bottomright');
 
     map.pm.setLang('da');
 
@@ -147,12 +157,18 @@ const useMap = <TData extends object>(
 
     L.control.layers(baseMaps).addTo(map);
 
-    new LocateControl({
-      showPopup: false,
-      strings: {title: 'Find mig'},
-      circleStyle: {interactive: false},
-      locateOptions: {enableHighAccuracy: true},
-    }).addTo(map);
+    // new LocateControl({
+    //   showPopup: false,
+    //   strings: {title: 'Find mig'},
+    //   circleStyle: {interactive: false},
+    //   locateOptions: {enableHighAccuracy: true},
+    //   position: 'bottomright',
+    // }).addTo(map);
+
+    // L.basemapControl({
+    //   position: 'bottomleft',
+    //   layers: [{layer: defaultMapBox}, {layer: satelitemapbox}],
+    // }).addTo(map);
 
     onMapClickEvent(map);
     onCreateRouteEvent(map);
