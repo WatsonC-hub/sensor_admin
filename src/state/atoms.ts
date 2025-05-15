@@ -129,7 +129,9 @@ export const atomWithPartialTimedStorage = <T extends object>(
   });
 
 export const atomWithTimedStorage = <T>(key: string, initialValue: T, timeout_ms: number) =>
-  atomWithStorage(key, initialValue, createTimedStorage(timeout_ms));
+  atomWithStorage(key, initialValue, createTimedStorage(timeout_ms), {
+    getOnInit: true,
+  });
 
 export const captureDialogAtom = atom(false);
 

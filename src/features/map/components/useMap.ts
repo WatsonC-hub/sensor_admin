@@ -141,8 +141,8 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: [56.215868, 8.228759],
-      zoom: 6,
+      center: pan,
+      zoom: zoom,
       layers: [defaultMapBox],
       tapHold: true,
       contextmenu: true,
@@ -566,19 +566,6 @@ const useMap = <TData extends object>(
   useEffect(() => {
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
-
-  useEffect(() => {
-    if (zoom !== null && pan !== null && mapRef.current) {
-      // const localPan = pan ? pan : mapRef.current.getCenter();
-      mapRef.current.setView(pan, zoom);
-    } else {
-      if (markerLayerRef.current?.getBounds().isValid() && mapRef.current) {
-        const zoom = mapRef.current.getZoom();
-        const localPan = pan ? pan : mapRef.current.getCenter();
-        mapRef.current.setView(localPan, zoom);
-      }
-    }
-  }, [mapRef.current]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);
