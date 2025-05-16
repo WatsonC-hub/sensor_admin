@@ -322,7 +322,7 @@ const useMap = <TData extends object>(
           return item.loc_id;
         }
       });
-      if (mapRef && mapRef.current && data.length > 0) {
+      if (mapRef && mapRef.current && data.length > 0 && zoom > zoomThresholdForParking) {
         if (leafletMapRoutes && leafletMapRoutes.length > 0) {
           leafletMapRoutes.forEach((route: LeafletMapRoute) => {
             if (active_loc_ids.includes(route.geo_route.loc_id)) {
@@ -380,7 +380,15 @@ const useMap = <TData extends object>(
 
   const plotParkingsInLayer = () => {
     parkingLayerRef.current?.clearLayers();
-    if (mapRef && mapRef.current && parkings && parkings.length > 0 && data.length > 0) {
+    if (
+      mapRef &&
+      mapRef.current &&
+      parkings &&
+      parkings.length > 0 &&
+      data.length > 0 &&
+      zoom &&
+      zoom > zoomThresholdForParking
+    ) {
       const active_loc_ids = data.map((item) => {
         if ('loc_id' in item) {
           return item.loc_id;
