@@ -55,7 +55,10 @@ const TaskItiniaries = () => {
   } = useTaskItinerary(undefined, {
     select: (data) => {
       const reduced = data
-        .sort((a, b) => (moment(a.due_date).isAfter(moment(b.due_date)) ? 1 : -1))
+        .sort((a, b) => {
+          if (a.due_date === b.due_date) return 0;
+          return moment(a.due_date).isAfter(moment(b.due_date)) ? 1 : -1;
+        })
         .reduce(
           (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
             const date = dayjs(itinerary.due_date).format('MMMM YYYY');
