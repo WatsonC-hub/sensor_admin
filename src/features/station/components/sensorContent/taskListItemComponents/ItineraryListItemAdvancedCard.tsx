@@ -28,6 +28,8 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
     const data = {
       ts_id: task.ts_id,
       status_id: status_id,
+      assigned_to: task.assigned_to,
+      due_date: task.due_date,
     };
     const payload = {
       path: task.id,
