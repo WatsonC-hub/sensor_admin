@@ -126,8 +126,8 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: pan == null ? [56.215868, 8.228759] : pan,
-      zoom: zoom == null ? 7 : zoom,
+      center: pan,
+      zoom: zoom,
       layers: [defaultMapBox],
       tapHold: true,
       renderer: L.canvas({tolerance: 5}),
@@ -536,23 +536,17 @@ const useMap = <TData extends object>(
     plotRoutesInLayer();
   }, [data, leafletMapRoutes, geoJsonRef.current]);
 
-  // useEffect(() => {
-  //   if (zoom !== null && pan !== null && mapRef.current) {
-  //     // const localPan = pan ? pan : mapRef.current.getCenter();
-  //     mapRef.current.setView(pan, zoom);
-  //   }
-  //   // else {
-  //   //   if (markerLayerRef.current?.getBounds().isValid() && mapRef.current) {
-  //   //     const zoom = mapRef.current.getZoom();
-  //   //     const localPan = pan ? pan : mapRef.current.getCenter();
-  //   //     mapRef.current.setView(localPan, zoom);
-  //   //   }
-  //   // }
-  // }, [mapRef.current]);
-
   useEffect(() => {
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
+
+  useEffect(() => {
+    if (mapRef.current) onMapMoveEndEvent(mapRef.current);
+
+    return () => {
+      if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
+    };
+  }, [leafletMapRoutes, parkings]);
 
   return {
     map: mapRef.current,

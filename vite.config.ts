@@ -99,7 +99,7 @@ export default defineConfig({
     VitePWA(pwaOptions),
     viteTsconfigPaths(),
     {
-      ...strip({include: /\**\/*.js/}),
+      ...strip({include: /\**\/*.js/, functions: ['console.log', 'assert.*']}),
       // { include: /\**\/*.js/ } // <- this works, but the default of '**/*.js' doesn't
       apply: 'build',
     },

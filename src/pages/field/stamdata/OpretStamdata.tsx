@@ -182,7 +182,6 @@ export default function OpretStamdata({setAddStationDisabled}: OpretStamdataProp
     const location = {
       location: {
         ...getValues().location,
-        initial_project_no: getValues().location.projectno,
       },
     };
 
