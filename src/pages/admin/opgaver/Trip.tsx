@@ -20,7 +20,7 @@ const Trip = () => {
   const {data} = useTaskManagement({loc_ids: loc_ids});
 
   return (
-    <Box display={'flex'} flexDirection={'column'} mt={4} mb={isMobile ? 0 : 2}>
+    <Box display={'flex'} flexDirection={'column'} mt={4} mb={isMobile ? 0 : 2} overflow={'hidden'}>
       <TripPreparation data={data} />
     </Box>
   );

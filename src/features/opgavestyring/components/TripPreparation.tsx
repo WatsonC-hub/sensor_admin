@@ -30,6 +30,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
     <Box
       display={'flex'}
       flexDirection={'column'}
+      overflow={'auto'}
       gap={1}
       // sx={{paddingBottom: 'env(--safe-area-inset-bottom, 16px)'}}
     >
