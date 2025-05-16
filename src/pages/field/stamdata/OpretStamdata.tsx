@@ -177,7 +177,6 @@ export default function OpretStamdata() {
     const location = {
       location: {
         ...getValues().location,
-        initial_project_no: getValues().location.projectno,
       },
     };
 

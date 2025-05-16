@@ -58,7 +58,6 @@ function ImageCard({image, deleteMutation, handleEdit}: ImageCardProps) {
   return (
     <GenericCard
       sx={{
-        margin: 'auto',
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column ',

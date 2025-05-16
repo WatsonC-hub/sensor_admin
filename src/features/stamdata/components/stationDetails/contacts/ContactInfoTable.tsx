@@ -53,8 +53,6 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  console.log(dirtyFields);
-
   const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
       {
@@ -146,6 +144,7 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     enableRowActions: true,
     muiTablePaperProps: {},
     muiTableContainerProps: {},
+    enableColumnPinning: true,
     enableEditing: true,
     editDisplayMode: 'modal',
     muiTableBodyRowProps: ({row, table}) => {
@@ -194,11 +193,15 @@ const ContactInfoTable = ({delContact, editContact}: Props) => {
     renderToolbarInternalActions: ({table}) => {
       return <RenderInternalActions table={table} reset={resetState} />;
     },
+    initialState: {
+      columnPinning: {right: ['mrt-row-actions']},
+    },
     displayColumnDefOptions: {
       'mrt-row-actions': {
         size: 0, //if using layoutMode that is not 'semantic', the columns will not auto-size, so you need to set the size manually
         grow: false,
         header: '',
+
         muiTableHeadCellProps: {
           align: 'right',
         },

@@ -119,6 +119,15 @@ export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
               prefix: data.prefix,
               tstype_name: data.tstype_name,
             };
+          })
+          .sort((a, b) => {
+            if (a.tstype_id === b.tstype_id) {
+              if (a.prefix === null && b.prefix === null) return a.tstype_id - b.tstype_id;
+              if (a.prefix === null) return 1;
+              if (b.prefix === null) return -1;
+              return a.prefix?.localeCompare(b.prefix);
+            }
+            return a.tstype_id - b.tstype_id;
           }),
       };
       return location_data;
