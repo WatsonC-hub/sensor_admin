@@ -54,22 +54,17 @@ const TaskItiniaries = () => {
     get: {data},
   } = useTaskItinerary(undefined, {
     select: (data) => {
-      const reduced = data
-        .sort((a, b) => {
-          if (a.due_date === b.due_date) return 0;
-          return moment(a.due_date).isAfter(moment(b.due_date)) ? 1 : -1;
-        })
-        .reduce(
-          (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
-            const date = dayjs(itinerary.due_date).format('MMMM YYYY');
-            if (!acc[date]) {
-              acc[date] = [];
-            }
-            acc[date].push(itinerary);
-            return acc;
-          },
-          {} as Record<string, Taskitinerary[]>
-        );
+      const reduced = data.reduce(
+        (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
+          const date = dayjs(itinerary.due_date).format('MMMM YYYY');
+          if (!acc[date]) {
+            acc[date] = [];
+          }
+          acc[date].push(itinerary);
+          return acc;
+        },
+        {} as Record<string, Taskitinerary[]>
+      );
       return reduced;
     },
   });
