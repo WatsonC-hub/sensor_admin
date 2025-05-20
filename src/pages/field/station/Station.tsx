@@ -134,7 +134,7 @@ interface LayoutProps {
 }
 
 const Layout = ({children}: LayoutProps) => {
-  const {isMobile} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
   const {data: locationdata} = useLocationData();
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
@@ -142,14 +142,14 @@ const Layout = ({children}: LayoutProps) => {
   return (
     <>
       <NavBar>
-        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+        {isTouch ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          {!isMobile && (
+          {!isTouch && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
               {locationdata?.loc_name}
             </Typography>
           )}
-          {isMobile && <MinimalSelect />}
+          {isTouch && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
@@ -184,7 +184,7 @@ const Layout = ({children}: LayoutProps) => {
           overflow="auto"
         >
           {children}
-          {isMobile && <ActionArea />}
+          {isTouch && <ActionArea />}
         </Box>
       </Box>
     </>
