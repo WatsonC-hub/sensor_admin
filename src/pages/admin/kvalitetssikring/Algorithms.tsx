@@ -4,9 +4,8 @@ import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 import {useAppContext} from '~/state/contexts';
-import QAGraph from './QAGraph';
-import DataToShow from './components/DataToShow';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import GraphManager from '~/features/station/components/GraphManager';
 
 const Algorithms = () => {
   const {ts_id} = useAppContext(['ts_id']);
@@ -19,9 +18,15 @@ const Algorithms = () => {
     <>
       <Box display="flex" flexDirection={isMobile ? 'column-reverse' : 'row'}>
         <Box width={'100%'}>
-          <QAGraph />
+          <GraphManager
+            defaultDataToShow={{
+              Kontrolmålinger: true,
+              Godkendt: true,
+              Algoritmer: true,
+            }}
+          />
         </Box>
-        <DataToShow />
+        {/* <DataToShow /> */}
       </Box>
       <Divider />
       <StationPageBoxLayout>
