@@ -122,7 +122,9 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                   if (reason) {
                     if (reason.default_actions?.includes('CLOSE')) {
                       const action = actions?.find((action) => action.action.includes('CLOSE'));
-                      formMethods.setValue('action', action?.action);
+                      if (action) {
+                        formMethods.setValue('action', action.action);
+                      }
                     } else {
                       formMethods.setValue('action', reason.default_actions ?? 'DO_NOTHING');
                     }
