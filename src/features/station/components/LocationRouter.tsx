@@ -1,4 +1,4 @@
-import {Alert, Box, Typography, IconButton} from '@mui/material';
+import {Alert, Box, IconButton, Tooltip, Typography} from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import {useQueryClient} from '@tanstack/react-query';
 import React from 'react';
@@ -15,6 +15,7 @@ import MinimalSelect from './MinimalSelect';
 import StationDrawer from './StationDrawer';
 import Huskeliste from '~/features/stamdata/components/stationDetails/ressourcer/Huskeliste';
 import {useUser} from '~/features/auth/useUser';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import LocationAccess from '~/features/stamdata/components/stationDetails/locationAccessKeys/LocationAccess';
 import ContactInfo from '~/features/stamdata/components/stationDetails/contacts/ContactInfo';
 import StationPageBoxLayout from './StationPageBoxLayout';
@@ -30,7 +31,7 @@ import {useDisplayState} from '~/hooks/ui';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
-  const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  useAppContext(['loc_id']);
   const {createStamdata} = useNavigationFunctions();
   const [pageToShow] = useStationPages();
   const {data: metadata} = useLocationData();
@@ -126,6 +127,19 @@ const Layout = ({children}: LayoutProps) => {
           {isMobile && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          {metadata?.projectno && (
+            <Tooltip title="Vis projektside" arrow>
+              <IconButton
+                size="large"
+                href={`https://www.watsonc.dk/calypso/projekt/?project=${metadata?.projectno}`}
+                target="_blank"
+                rel="noopener"
+                color="inherit"
+              >
+                <OpenInNewIcon sx={{px: 0}} />
+              </IconButton>
+            </Tooltip>
+          )}
           {!isMobile && (
             <IconButton
               onClick={() => {

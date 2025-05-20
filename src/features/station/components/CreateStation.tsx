@@ -142,7 +142,6 @@ const CreateStation = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({queryKey: ['timeseries', loc_id]});
       toast.success('Lokation oprettet');
-      navigate('/');
       locationNavigate(data.loc_id);
     },
   });
