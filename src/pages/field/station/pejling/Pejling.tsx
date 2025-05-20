@@ -11,13 +11,7 @@ import FabWrapper from '~/components/FabWrapper';
 import {usePejling} from '~/features/pejling/api/usePejling';
 import LatestMeasurementTable from '~/features/pejling/components/LatestMeasurementTable';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
-import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
-import {
-  PejlingBoreholeSchemaType,
-  PejlingSchemaType,
-} from '~/features/station/components/pejling/PejlingSchema';
-import {PejlingItem, LatestMeasurement} from '~/types';
+
 import GraphManager from '~/features/station/components/GraphManager';
 import usePejlingForm from '~/features/station/components/pejling/api/usePejlingForm';
 import CompoundPejling from '~/features/station/components/pejling/CompoundPejling';
