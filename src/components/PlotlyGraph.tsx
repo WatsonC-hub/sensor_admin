@@ -61,7 +61,6 @@ export default function PlotlyGraph({
   const {data: metadata} = useTimeseriesData();
   const tstype_name = metadata?.tstype_name;
   const unit = metadata?.unit;
-
   const plot = document.getElementById('graph');
   if (plot) Plotly.Plots.resize(plot);
   // console.log('plot', Plotly.rezi);
