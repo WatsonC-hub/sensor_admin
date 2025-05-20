@@ -16,7 +16,7 @@ import {PejlingItem} from '~/types';
 
 interface Props {
   handleEdit: (kontrol: PejlingItem) => void;
-  handleDelete: (gid: number | undefined) => void;
+  handleDelete: (gid: number) => void;
   disabled: boolean;
 }
 

@@ -18,8 +18,8 @@ import {useEditTabState, useShowFormState, useStationPages} from '~/hooks/useQue
 import TabPanel from '~/pages/field/overview/TabPanel';
 import {useAppContext} from '~/state/contexts';
 
-import EditLocation from './EditLocation';
-import EditTimeseries from './EditTimeseries';
+import EditLocation from './EditLocation_old';
+import EditTimeseries from './EditTimeseries_old';
 import EditUnit from './EditUnit';
 
 export default function EditStamdata() {

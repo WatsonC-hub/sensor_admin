@@ -44,7 +44,6 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
       }),
     });
   }
-  console.log(data);
 
   const formMethods = useForm({
     resolver: zodResolver(schema),

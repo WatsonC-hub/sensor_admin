@@ -22,19 +22,19 @@ import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
 import {useAppContext} from '~/state/contexts';
 import EditUnit from './stamdata/EditUnit';
-import EditTimeseries from './stamdata/EditTimeseries';
-import EditLocation from './stamdata/EditLocation';
 import ImagePage from './stamdata/ImagePage';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
 import GraphManager from '~/features/station/components/GraphManager';
+import EditLocation from './stamdata/EditLocation';
+import EditTimeseries from './stamdata/EditTimeseries';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
-  const [showForm] = useShowFormState();
+  const [, setShowForm] = useShowFormState();
   const [pageToShow, setPageToShow] = useStationPages();
   const user = useUser();
 
@@ -50,7 +50,8 @@ export default function Station() {
         pageToShow === 'algoritmer')
     )
       setPageToShow('pejling');
-  }, [ts_id, showForm]);
+    setShowForm(null);
+  }, [ts_id, pageToShow]);
 
   return (
     <Layout>
@@ -148,6 +149,7 @@ const Layout = ({children}: LayoutProps) => {
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
   const {createStamdata} = useNavigationFunctions();
+
   return (
     <>
       <NavBar>
@@ -184,7 +186,9 @@ const Layout = ({children}: LayoutProps) => {
                 title: 'Opret tidsserie',
                 icon: <AddIcon />,
                 onClick: () => {
-                  createStamdata(undefined, {state: {...metadata}});
+                  createStamdata({
+                    state: {...metadata, initial_project_no: metadata?.projectno},
+                  });
                 },
               },
             ]}

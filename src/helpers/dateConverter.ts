@@ -21,7 +21,11 @@ const checkEndDateIsUnset = (dateString: string) => {
   return date.getFullYear() === 2099;
 };
 
-const calculatePumpstop = (timeofmeas: string, pumpstop: string, service: boolean) => {
+const calculatePumpstop = (
+  timeofmeas: string,
+  pumpstop: string | null,
+  service: boolean | null
+) => {
   return pumpstop !== null
     ? moment(timeofmeas).diff(moment(pumpstop), 'hours') + ' timer siden'
     : service === true
