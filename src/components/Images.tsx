@@ -1,4 +1,3 @@
-import {Grid2} from '@mui/material';
 import ImageViewer from '~/components/ImageViewer';
 import useImages from '~/features/station/api/useImages';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
@@ -31,11 +30,7 @@ function Images({type, typeId, setOpenSave, setActiveImage, setShowForm}: Props)
     setShowForm(true);
   };
 
-  return (
-    <Grid2 container spacing={2}>
-      <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />
-    </Grid2>
-  );
+  return <ImageViewer deleteMutation={deleteImage} handleEdit={handleEdit} images={images} />;
 }
 
 export default Images;
