@@ -285,7 +285,7 @@ const TasksOverview = () => {
       {/* </Box> */}
       <LocationHighlighter
         selectedLocId={loc_id ? loc_id : boreholeno ? boreholeno : null}
-        color="#212121"
+        color="#1380c4"
       />
     </Box>
   );
