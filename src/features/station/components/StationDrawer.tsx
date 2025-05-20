@@ -18,7 +18,6 @@ import {
   Divider,
   ListItemButton,
   ClickAwayListener,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import {useAtom} from 'jotai';
@@ -232,45 +231,6 @@ const StationDrawer = () => {
   const drawerItems = filteredItems.map((category) => {
     return (
       <Box key={category.text}>
-<<<<<<< HEAD
-        {
-          <ListItem
-            key={category.text}
-            sx={{
-              borderRadius: '9999px',
-              pb: 0,
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-            <Box alignItems={'center'} display="flex" gap={1}>
-              {category.settings &&
-                category.settings
-                  .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
-                  .map((setting, index) => (
-                    <ListItemIcon
-                      key={index}
-                      sx={{
-                        color: navIconStyle(pageToShow === setting.page),
-                        minWidth: 0,
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => {
-                        if (setting.onClick) {
-                          setting.onClick();
-                        } else setPageToShow(setting.page);
-                        if (open) toggleDrawer(false);
-                      }}
-                    >
-                      {setting.icon}
-                    </ListItemIcon>
-                  ))}
-            </Box>
-          </ListItem>
-        }
-=======
         <ListItem
           key={category.text}
           sx={{
@@ -282,24 +242,31 @@ const StationDrawer = () => {
           }}
         >
           <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-          {category.settings && !category.settings.disabled && (
-            <ListItemIcon
-              sx={{
-                color: navIconStyle(pageToShow === category.settings.page),
-                minWidth: 0,
-                cursor: 'pointer',
-              }}
-              onClick={() => {
-                if (category.settings) setPageToShow(category.settings.page);
-                if (open) toggleDrawer(false);
-              }}
-            >
-              {category.settings.icon}
-            </ListItemIcon>
-          )}
+          <Box alignItems={'center'} display="flex" gap={1}>
+            {category.settings &&
+              category.settings
+                .filter((setting) => setting?.disabled == false || setting?.disabled == undefined)
+                .map((setting, index) => (
+                  <ListItemIcon
+                    key={index}
+                    sx={{
+                      color: navIconStyle(pageToShow === setting.page),
+                      minWidth: 0,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      if (setting.onClick) {
+                        setting.onClick();
+                      } else setPageToShow(setting.page);
+                      if (open) toggleDrawer(false);
+                    }}
+                  >
+                    {setting.icon}
+                  </ListItemIcon>
+                ))}
+          </Box>
         </ListItem>
 
->>>>>>> development
         {category.items
           .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
