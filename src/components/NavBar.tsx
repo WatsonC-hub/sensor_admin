@@ -11,6 +11,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material';
 
@@ -55,15 +56,17 @@ export const HomeButton = () => {
   const {field} = useNavigationFunctions();
 
   return (
-    <IconButton
-      color="inherit"
-      onClick={() => {
-        field();
-      }}
-      size="large"
-    >
-      <MapRounded />
-    </IconButton>
+    <Tooltip title="Tilbage til kortet" arrow>
+      <IconButton
+        color="inherit"
+        onClick={() => {
+          field();
+        }}
+        size="large"
+      >
+        <MapRounded />
+      </IconButton>
+    </Tooltip>
   );
 };
 
