@@ -297,26 +297,22 @@ const StationDrawer = () => {
                   py: 1,
                 }}
               >
-                <Tooltip title={item.text} placement="right">
-                  <ListItemButton
-                    sx={{
-                      borderRadius: '9999px',
-                      color: navIconStyle(pageToShow === item.page),
-                      py: 0,
-                    }}
-                    onClick={() => {
-                      setPageToShow(item.page);
-                      if (open) toggleDrawer(false);
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText>{item.text}</ListItemText>
-                  </ListItemButton>
-                </Tooltip>
+                <ListItemButton
+                  sx={{
+                    borderRadius: '9999px',
+                    color: navIconStyle(pageToShow === item.page),
+                    py: 0,
+                  }}
+                  onClick={() => {
+                    setPageToShow(item.page);
+                    if (open) toggleDrawer(false);
+                  }}
+                >
+                  <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText>{item.text}</ListItemText>
+                </ListItemButton>
               </ListItem>
             );
           })}
@@ -338,6 +334,17 @@ const StationDrawer = () => {
       <List>{drawerItems}</List>
     </Layout>
   );
+
+  // return (
+  //   <Layout variant="permanent">
+  //     <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
+  //       <IconButton sx={{color: 'white'}}>
+  //         <Menu />
+  //       </IconButton>
+  //     </Toolbar>
+  //     <List>{drawerItems}</List>
+  //   </Layout>
+  // );
 };
 
 type LayoutProps = {
@@ -348,9 +355,8 @@ type LayoutProps = {
 const Layout = ({children, variant}: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const {data: locationdata} = useLocationData();
-  const {isMonitor, isMobile} = useBreakpoints();
-  const open = isMonitor || openAtom;
-
+  const {isTouch} = useBreakpoints();
+  const open = openAtom;
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
   };
@@ -369,8 +375,8 @@ const Layout = ({children, variant}: LayoutProps) => {
       }}
     >
       <Box pt={2} px={1}>
-        {!isMobile && <MinimalSelect />}
-        {isMobile && (
+        {!isTouch && <MinimalSelect />}
+        {isTouch && (
           <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
             {locationdata?.loc_name}
           </Typography>

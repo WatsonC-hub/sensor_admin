@@ -141,12 +141,12 @@ const Layout = ({children}: LayoutProps) => {
       <NavBar key={'station'} zIndex={9999}>
         {isTouch && <NavBar.StationDrawerMenu />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          {!isMobile && (
+          {!isTouch && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
               {locationdata?.loc_name}
             </Typography>
           )}
-          {isMobile && <MinimalSelect />}
+          {isTouch && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
           <BatteryStatus />
