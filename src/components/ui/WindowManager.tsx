@@ -25,6 +25,13 @@ const WindowManager = ({children, minColumnWidth}: WindowManagerProps) => {
       (child as React.ReactElement<WindowProps>)?.props?.show
   ) as React.ReactElement<WindowProps>[];
 
+  arrayedChildren.sort((a, b) => {
+    if (isMobile) {
+      return (a.props.mobilePriority || 0) - (b.props.mobilePriority || 0);
+    }
+    return a.props.priority - b.props.priority;
+  });
+
   if (isMobile && arrayedChildren.length > 0) {
     return (
       <Box
@@ -141,6 +148,8 @@ type WindowProps = {
   width?: number | string;
   id?: string;
   sx?: SxProps;
+  priority: number;
+  mobilePriority?: number;
 };
 
 const Window = ({

@@ -2,7 +2,6 @@ import {Box} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {TaskUnits} from '~/types';
@@ -11,7 +10,28 @@ type Props = {
   units: Array<TaskUnits> | undefined;
 };
 
+type ReducedUnits = {
+  terminal_type: string;
+  sensorinfo: string;
+};
+
 const TripUnitTable = ({units}: Props) => {
+  const reducedUnits: Record<string, ReducedUnits> | undefined = units?.reduce(
+    (acc: Record<string, ReducedUnits>, unit) => {
+      if (!acc[unit.terminal_type]) {
+        acc[unit.terminal_type] = {
+          terminal_type:
+            units?.filter((u) => u.terminal_type === unit.terminal_type).length +
+            'x ' +
+            unit.terminal_type,
+          sensorinfo: unit.sensorinfo,
+        };
+      }
+      return acc;
+    },
+    {}
+  );
+
   units?.sort((a, b) => {
     if (a.name === b.name) {
       if (a.startdate > b.startdate) return -1;
@@ -21,18 +41,18 @@ const TripUnitTable = ({units}: Props) => {
     return 0;
   });
 
-  const columns = useMemo<MRT_ColumnDef<TaskUnits>[]>(
+  const columns = useMemo<MRT_ColumnDef<ReducedUnits>[]>(
     () => [
-      {
-        header: 'Navn',
-        accessorKey: 'name',
-        size: 100,
-      },
-      {
-        header: 'Tidsserie type',
-        accessorKey: 'tstype_name',
-        size: 100,
-      },
+      // {
+      //   header: 'Navn',
+      //   accessorKey: 'name',
+      //   size: 100,
+      // },
+      // {
+      //   header: 'Tidsserie type',
+      //   accessorKey: 'tstype_name',
+      //   size: 100,
+      // },
       {
         header: 'Terminal',
         accessorKey: 'terminal_type',
@@ -43,24 +63,24 @@ const TripUnitTable = ({units}: Props) => {
         accessorKey: 'sensorinfo',
         size: 100,
       },
-      {
-        accessorFn: (row) => convertDateWithTimeStamp(row.startdate),
-        id: 'startdate',
-        header: 'Start dato',
-        accessorKey: 'startdate',
-        size: 100,
-      },
-      {
-        accessorFn: (row) => convertDateWithTimeStamp(row.enddate),
-        id: 'enddate',
-        header: 'Slut dato',
-        size: 100,
-      },
+      // {
+      //   accessorFn: (row) => convertDateWithTimeStamp(row.),
+      //   id: 'startdate',
+      //   header: 'Start dato',
+      //   accessorKey: 'startdate',
+      //   size: 100,
+      // },
+      // {
+      //   accessorFn: (row) => convertDateWithTimeStamp(row.enddate),
+      //   id: 'enddate',
+      //   header: 'Slut dato',
+      //   size: 100,
+      // },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<TaskUnits>> = useMemo(
+  const options: Partial<MRT_TableOptions<ReducedUnits>> = useMemo(
     () => ({
       enableFullScreenToggle: false,
       enableGlobalFilter: false,
@@ -94,9 +114,9 @@ const TripUnitTable = ({units}: Props) => {
     []
   );
 
-  const table = useTable<TaskUnits>(
+  const table = useTable<ReducedUnits>(
     columns,
-    units,
+    reducedUnits ? Object.values(reducedUnits) : undefined,
     options,
     undefined,
     TableTypes.TABLE,

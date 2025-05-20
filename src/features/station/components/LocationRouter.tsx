@@ -72,7 +72,11 @@ export default function LocationRouter() {
             </StationPageBoxLayout>
           </Box>
         )}
-      {pageToShow === stationPages.BILLEDER && <ImagePage />}
+      {pageToShow === stationPages.BILLEDER && (
+        <StationPageBoxLayout>
+          <ImagePage />
+        </StationPageBoxLayout>
+      )}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
           <EditLocation />

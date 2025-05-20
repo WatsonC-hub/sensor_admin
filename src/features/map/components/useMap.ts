@@ -7,7 +7,7 @@ import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
-import L from 'leaflet';
+import L, {marker} from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import './L.basemapControl';
@@ -36,7 +36,7 @@ import {
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
-import {setIconSize} from '../utils';
+import {getNotificationIcon, setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
@@ -75,6 +75,7 @@ const useMap = <TData extends object>(
 
   const setSelectedMarkerWithCallback = (data: TData | null | undefined) => {
     setSelectedMarker(data);
+
     if (data && 'loc_id' in data) {
       setSelectedLocId(data.loc_id as number);
     }
@@ -316,13 +317,13 @@ const useMap = <TData extends object>(
 
   const plotRoutesInLayer = () => {
     geoJsonRef.current?.clearLayers();
-    if (geoJsonRef.current && zoom && zoom > zoomThresholdForParking) {
+    if (geoJsonRef.current) {
       const active_loc_ids = data.map((item) => {
         if ('loc_id' in item) {
           return item.loc_id;
         }
       });
-      if (mapRef && mapRef.current && data.length > 0) {
+      if (mapRef && mapRef.current && data.length > 0 && zoom > zoomThresholdForParking) {
         if (leafletMapRoutes && leafletMapRoutes.length > 0) {
           leafletMapRoutes.forEach((route: LeafletMapRoute) => {
             if (active_loc_ids.includes(route.geo_route.loc_id)) {
@@ -498,8 +499,9 @@ const useMap = <TData extends object>(
   };
 
   useEffect(() => {
+    const existingMap = L.DomUtil.get(id);
+    if (existingMap && '_leaflet_id' in existingMap) existingMap._leaflet_id = null;
     mapRef.current = buildMap();
-
     parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
       disableClusteringAtZoom: 15,
@@ -528,12 +530,13 @@ const useMap = <TData extends object>(
             color: color,
             icon: '',
             num: num,
+            locId: 'empty',
           }),
         });
       },
     }).addTo(mapRef.current);
 
-    markerLayerRef.current.on('click', function (e: L.LeafletMouseEvent) {
+    markerLayerRef.current?.on('click', function (e: L.LeafletMouseEvent) {
       L.DomEvent.stopPropagation(e);
       setSelectedMarkerWithCallback(e.sourceTarget.options.data);
       highlightParking(e.sourceTarget.options.data.loc_id, true);
@@ -542,8 +545,8 @@ const useMap = <TData extends object>(
     tooltipRef.current = L.featureGroup();
     geoJsonRef.current = L.featureGroup().addTo(mapRef.current);
 
-    geoJsonRef.current.setStyle(routeStyle);
-    mapRef.current.pm.setGlobalOptions({
+    geoJsonRef.current?.setStyle(routeStyle);
+    mapRef.current?.pm.setGlobalOptions({
       snappable: true,
       snapDistance: 5,
       pathOptions: routeStyle,
@@ -552,33 +555,26 @@ const useMap = <TData extends object>(
     setDoneRendering(true);
 
     return () => {
+      setDoneRendering(false);
       if (mapRef.current) {
-        setDoneRendering(false);
         mapRef.current.remove();
       }
     };
-  }, [mapRef.current == null]); // To make sure the map is only created once and that it atleast renders twice. Fixes the issue with the tiles not correctly rendering.
+  }, []);
 
   useEffect(() => {
-    if (!geoJsonRef.current) return;
     plotRoutesInLayer();
   }, [data, leafletMapRoutes, geoJsonRef.current]);
 
   useEffect(() => {
-    if (!parkingLayerRef.current) return;
     plotParkingsInLayer();
   }, [parkingLayerRef.current, parkings, data]);
 
   useEffect(() => {
-    if (!mapRef.current) return;
-    if (mapRef.current) {
-      onMapMoveEndEvent(mapRef.current);
-    }
+    if (mapRef.current) onMapMoveEndEvent(mapRef.current);
 
     return () => {
-      if (mapRef.current) {
-        mapRef.current.off('moveend', mapEvent);
-      }
+      if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
     };
   }, [leafletMapRoutes, parkings]);
 

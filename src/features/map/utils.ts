@@ -18,6 +18,7 @@ export const getBoreholesIcon = (marker: BoreholeMapData) => {
     color: getBoreholeColor(marker),
     icon: icon,
     num: '',
+    locId: marker.boreholeno,
   });
 
   return L.divIcon({
@@ -29,7 +30,12 @@ export const getBoreholesIcon = (marker: BoreholeMapData) => {
 
 export const getNotificationIcon = (marker: MapOverview) => {
   const icon = getIcon(marker, true);
-  const iconURL = L.Util.template(dropletSVG, {color: getColor(marker), icon: icon, num: ''});
+  const iconURL = L.Util.template(dropletSVG, {
+    color: getColor(marker),
+    icon: icon,
+    num: '',
+    locId: marker.loc_id,
+  });
   return L.divIcon({
     className: 'svg-icon',
     html: iconURL,

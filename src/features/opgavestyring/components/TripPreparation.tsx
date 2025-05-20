@@ -9,7 +9,7 @@ import {TaskCollection} from '~/types';
 import TripTaskTable from './TripTaskTable';
 import TripTaskCardList from './TripTaskCardList';
 import Button from '~/components/Button';
-import {Check, Delete} from '@mui/icons-material';
+import {Check} from '@mui/icons-material';
 import AlertDialog from '~/components/AlertDialog';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
@@ -30,6 +30,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
     <Box
       display={'flex'}
       flexDirection={'column'}
+      overflow={'auto'}
       gap={1}
       // sx={{paddingBottom: 'env(--safe-area-inset-bottom, 16px)'}}
     >
@@ -88,8 +89,9 @@ const TripPreparation = ({data}: TripPreparationProps) => {
       <AlertDialog
         open={completeOpen}
         setOpen={setCompleteOpen}
-        title="Færdiggør opgave"
-        message="Færdiggørelse fjerner alle lokationer fra turen og ændrer ansvarlig på ikke færdiggjorte opgaver. Er du sikker på at du vil færdiggøre opgaven?"
+        title="Færdiggør tur"
+        message="Ansvarlig og forfaldsdato på alle opgaver på lokationer tilhørende turen ændres til turens ansvarlig og forfaldsdato. Turen bliver derefter færdiggjort. Er du sikker på at du vil færdiggøre turen?"
+        // message="Færdiggørelse fjerner alle lokationer fra turen og ændrer ansvarlig på ikke færdiggjorte opgaver. Er du sikker på at du vil færdiggøre opgaven?"
         handleOpret={() => {
           complete.mutate({path: `${itinerary_id}`});
           setItineraryId(null);

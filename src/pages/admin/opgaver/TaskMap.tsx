@@ -55,13 +55,13 @@ const Map = ({clickCallback}: MapProps) => {
   // const {hiddenTasks, shownTasks} = useTaskStore();
   // const selectedStyle = useAtomValue<TaskStyling>(taskStyleAtom);
 
-  const {superUser, iotAccess} = useUser();
+  const user = useUser();
 
   const {data, mapFilteredData: filteredData, setExtraData} = useFilteredMapData();
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (iotAccess)
+  if (user.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -154,7 +154,7 @@ const Map = ({clickCallback}: MapProps) => {
       },
     ];
 
-    if (superUser) {
+    if (user.superUser) {
       locationMenu = [
         ...locationMenu,
         {
@@ -275,7 +275,6 @@ const Map = ({clickCallback}: MapProps) => {
   );
 
   useEffect(() => {
-    if (!doneRendering) return;
     markerLayer?.clearLayers();
     const sorted = filteredData?.sort((a, b) => {
       if ('loc_id' in a && 'loc_id' in b) {

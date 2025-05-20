@@ -26,6 +26,7 @@ import {useTaskItinerary} from '../api/useTaskItinerary';
 import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
+import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 
 const TasksOverview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
@@ -80,6 +81,9 @@ const TasksOverview = () => {
       setSelectedTask(null);
       setBoreholeNo(null);
       setPageToShow(null);
+      document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
+        svg.classList.remove('selected-marker');
+      });
       return;
     }
     if (data === null) return;
@@ -89,6 +93,12 @@ const TasksOverview = () => {
       // console.log('data', data);
       setLocId(data.loc_id);
       setSelectedTask(null);
+      document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
+        svg.classList.remove('selected-marker');
+        if (svg.getAttribute('data-loc-id') === data.loc_id.toString()) {
+          svg.classList.add('selected-marker');
+        }
+      });
     } else if ('boreholeno' in data) {
       // console.log('boreholeno', data);
       setBoreholeNo(data.boreholeno);
@@ -121,6 +131,8 @@ const TasksOverview = () => {
         <WindowManager minColumnWidth={400}>
           <WindowManager.Window
             key="triplist"
+            priority={1}
+            mobilePriority={1}
             show={trip_list}
             minSize={1}
             onClose={() => {
@@ -134,8 +146,11 @@ const TasksOverview = () => {
           >
             <TaskItiniaries />
           </WindowManager.Window>
+
           <WindowManager.Window
             key="locationlist"
+            priority={2}
+            mobilePriority={2}
             show={loc_list}
             minSize={1}
             onClose={() => {
@@ -155,6 +170,8 @@ const TasksOverview = () => {
             key="location"
             show={loc_id !== null}
             minSize={1}
+            priority={3}
+            mobilePriority={3}
             height={isMobile ? '100%' : '100%'}
             onClose={() => {
               // setSelectedData(null);
@@ -172,6 +189,8 @@ const TasksOverview = () => {
 
           <WindowManager.Window
             key="itinerary"
+            priority={4}
+            mobilePriority={4}
             show={itinerary_id !== null}
             minSize={1}
             onClose={() => setItineraryId(null)}
@@ -182,6 +201,8 @@ const TasksOverview = () => {
 
           <WindowManager.Window
             key="boreholeinfo"
+            priority={5}
+            mobilePriority={5}
             show={boreholeno !== null}
             minSize={1}
             onClose={() => {
@@ -196,6 +217,8 @@ const TasksOverview = () => {
 
           <WindowManager.Window
             key="taskinfo"
+            priority={6}
+            mobilePriority={9}
             show={selectedTask !== null}
             minSize={2}
             onClose={() => setSelectedTask(null)}
@@ -207,6 +230,8 @@ const TasksOverview = () => {
 
           <WindowManager.Window
             key="boreholepage"
+            priority={7}
+            mobilePriority={6}
             show={boreholeno !== null && intakeno !== null}
             minSize={2}
             maxSize={4}
@@ -224,6 +249,8 @@ const TasksOverview = () => {
           <WindowManager.Window
             key="station"
             id="station"
+            priority={8}
+            mobilePriority={7}
             show={ts_id !== null}
             minSize={2}
             maxSize={4}
@@ -241,6 +268,8 @@ const TasksOverview = () => {
           <WindowManager.Window
             key="locationstation"
             show={loc_id !== null && locationData?.timeseries.length === 0}
+            priority={9}
+            mobilePriority={8}
             minSize={2}
             maxSize={4}
             onClose={() => setSelectedTask(null)}
@@ -254,6 +283,10 @@ const TasksOverview = () => {
         </WindowManager>
       </DragDropProvider>
       {/* </Box> */}
+      <LocationHighlighter
+        selectedLocId={loc_id ? loc_id : boreholeno ? boreholeno : null}
+        color="#212121"
+      />
     </Box>
   );
 };
