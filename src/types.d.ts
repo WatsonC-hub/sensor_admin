@@ -402,3 +402,14 @@ export type DialAction = {
   toastTip: string;
   dialog?: boolean;
 };
+
+export type DataToShow = {
+  Algoritmer: boolean;
+  Kontrolmålinger: boolean;
+  Godkendt: boolean;
+  Nedbør: boolean;
+  'Korrigerede spring': boolean;
+  'Valide værdier': boolean;
+  'Fjernet data': boolean;
+  Rådata: boolean;
+};

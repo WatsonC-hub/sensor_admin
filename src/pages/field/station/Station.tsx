@@ -29,7 +29,7 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
-import PlotGraph from '~/features/station/components/StationGraph';
+import GraphManager from '~/features/station/components/GraphManager';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -59,7 +59,11 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>
@@ -98,7 +102,11 @@ export default function Station() {
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>
