@@ -346,7 +346,7 @@ const Layout = ({children, variant}: LayoutProps) => {
         variant={variant}
         open={open}
         sx={{
-          // width: width,
+          width: drawerWidth,
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
