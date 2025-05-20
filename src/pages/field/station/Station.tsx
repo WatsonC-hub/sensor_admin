@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import {Box, Divider, Typography} from '@mui/material';
+import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
 import React, {ReactNode, useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
@@ -16,6 +16,7 @@ import MinimalSelect from '~/features/station/components/MinimalSelect';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
@@ -152,6 +153,19 @@ const Layout = ({children}: LayoutProps) => {
           {isTouch && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          {locationdata?.projectno && (
+            <Tooltip title="Vis projektside" arrow>
+              <IconButton
+                size="large"
+                href={`https://www.watsonc.dk/calypso/projekt/?project=${locationdata?.projectno}`}
+                target="_blank"
+                rel="noopener"
+                color="inherit"
+              >
+                <OpenInNewIcon sx={{px: 0}} />
+              </IconButton>
+            </Tooltip>
+          )}
           <BatteryStatus />
           <NavBar.Home />
           {user?.adminAccess && <NotificationList />}
