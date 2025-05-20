@@ -5,8 +5,11 @@ export const isString = (item: any): item is string => {
   return typeof item === 'string';
 };
 
-type AutoCompleteFieldProps<T> = Omit<AutocompleteProps<T, false, false, false>, 'renderInput'> & {
-  selectValue: T;
+export type AutoCompleteFieldProps<T> = Omit<
+  AutocompleteProps<T, false, false, false>,
+  'renderInput'
+> & {
+  selectValue: T | null;
   onChange: (value: T | null) => void;
   labelKey: keyof T;
   options: T[];

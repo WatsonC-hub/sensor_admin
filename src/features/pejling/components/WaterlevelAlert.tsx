@@ -12,7 +12,7 @@ type Props = {
   pejlingOutOfRange: boolean;
 };
 
-const WaterlevelAlert = ({
+const DisplayWaterlevelAlert = ({
   elevationDiff,
   pejlingOutOfRange,
   latestMeasurementSeverity,
@@ -31,26 +31,23 @@ const WaterlevelAlert = ({
         flexDirection: 'column',
         gap: 2,
       }}
+      mx={'auto'}
+      maxWidth={400}
     >
-      <Alert
-        severity={latestMeasurementSeverity}
-        sx={{
-          display: hide ? 'none' : 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        {elevationDiff ? (
+      {elevationDiff !== undefined && (
+        <Alert
+          severity={latestMeasurementSeverity}
+          sx={{
+            display: hide ? 'none' : 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <Typography>
             Forskel til seneste måling: {limitDecimalNumbers(elevationDiff)} m
           </Typography>
-        ) : (
-          <Typography>
-            Forskel kan ikke beregnes uden en seneste værdi eller hvis pejlingen ligger udenfor et
-            målepunkt
-          </Typography>
-        )}
-      </Alert>
+        </Alert>
+      )}
       <Alert
         severity={pejlingOutOfRange ? 'error' : 'info'}
         sx={{
@@ -60,10 +57,7 @@ const WaterlevelAlert = ({
         }}
       >
         {pejlingOutOfRange ? (
-          <Typography>
-            Der er intet målepunkt registreret på det valgte tidspunkt eller det valgte tidspunkt
-            ligger efter slutdatoen på målepunktet.
-          </Typography>
+          <Typography>Der er intet målepunkt registreret på det valgte tidspunkt.</Typography>
         ) : (
           <>
             <Typography>Målepunkt: {MPTitle}</Typography>
@@ -75,4 +69,4 @@ const WaterlevelAlert = ({
   );
 };
 
-export default WaterlevelAlert;
+export default DisplayWaterlevelAlert;

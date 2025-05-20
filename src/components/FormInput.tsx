@@ -3,7 +3,7 @@ import moment from 'moment';
 import {ChangeEvent, FocusEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
 
-type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
+export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
   warning?: (value: any) => string | undefined;
   children?: React.ReactNode;
