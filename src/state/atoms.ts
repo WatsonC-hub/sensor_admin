@@ -4,6 +4,7 @@ import type {SyncStorage} from 'jotai/vanilla/utils/atomWithStorage';
 import {merge} from 'lodash';
 import type {MRT_TableState, MRT_RowData} from 'material-react-table';
 import {PlotDatum} from 'plotly.js';
+import {DataToShow} from '~/types';
 
 function createTimedStorage<T>(timeout_ms: number): SyncStorage<T> {
   return {
@@ -118,7 +119,9 @@ export const atomWithPartialTimedStorage = <T>(
 ) => atomWithStorage(key, initialValue, createPartialTimedStorage(timeout_ms, partialKeys));
 
 export const atomWithTimedStorage = <T>(key: string, initialValue: T, timeout_ms: number) =>
-  atomWithStorage(key, initialValue, createTimedStorage(timeout_ms));
+  atomWithStorage(key, initialValue, createTimedStorage(timeout_ms), {
+    getOnInit: true,
+  });
 
 export const captureDialogAtom = atom(false);
 
@@ -173,16 +176,7 @@ export const boreholeTableAtom = atomWithStorage('BoreholeTableState', {
   density: 'compact',
 });
 
-export const dataToShowAtom = atom({
-  Algoritmer: true,
-  Kontrolmålinger: true,
-  Godkendt: true,
-  Nedbør: false,
-  // 'Kvalitets stempel': false,
-  'Korrigerede spring': false,
-  'Valide værdier': false,
-  'Fjernet data': false,
-});
+export const dataToShowAtom = atom<Partial<DataToShow>>({});
 
 export const drawerOpenAtom = atom<boolean>(false);
 export const initiateSelectAtom = atom<boolean>(false);

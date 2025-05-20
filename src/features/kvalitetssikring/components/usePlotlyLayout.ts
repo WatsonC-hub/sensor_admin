@@ -20,6 +20,9 @@ const global: Partial<Layout> = {
     },
   },
   showlegend: true,
+  modebar: {
+    orientation: 'v',
+  },
   legend: {
     x: 0,
     y: -0.15,

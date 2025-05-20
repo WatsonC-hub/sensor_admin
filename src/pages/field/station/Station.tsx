@@ -1,5 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
-import {Box, Divider, Typography} from '@mui/material';
+import {Box, Divider, IconButton, Tooltip, Typography} from '@mui/material';
 import React, {ReactNode, useEffect} from 'react';
 
 import NavBar from '~/components/NavBar';
@@ -16,6 +16,7 @@ import MinimalSelect from '~/features/station/components/MinimalSelect';
 import {useLocationData, useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Algorithms from '~/pages/admin/kvalitetssikring/Algorithms';
 import Pejling from '~/pages/field/station/pejling/Pejling';
 import Tilsyn from '~/pages/field/station/tilsyn/Tilsyn';
@@ -26,7 +27,7 @@ import StationPageBoxLayout from '~/features/station/components/StationPageBoxLa
 import useBreakpoints from '~/hooks/useBreakpoints';
 import StationDrawer from '~/features/station/components/StationDrawer';
 import {stationPages} from '~/helpers/EnumHelper';
-import PlotGraph from '~/features/station/components/StationGraph';
+import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
 
@@ -59,7 +60,11 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>
@@ -98,7 +103,11 @@ export default function Station() {
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
-            <PlotGraph />
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
           </Box>
           <Divider />
           <StationPageBoxLayout>
@@ -135,7 +144,7 @@ interface LayoutProps {
 }
 
 const Layout = ({children}: LayoutProps) => {
-  const {isMobile} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
   const {data: locationdata} = useLocationData();
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
@@ -144,16 +153,29 @@ const Layout = ({children}: LayoutProps) => {
   return (
     <>
       <NavBar>
-        {isMobile ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
+        {isTouch ? <NavBar.StationDrawerMenu /> : <NavBar.GoBack />}
         <Box display="block" flexGrow={1} overflow="hidden">
-          {!isMobile && (
+          {!isTouch && (
             <Typography pl={1.7} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
               {locationdata?.loc_name}
             </Typography>
           )}
-          {isMobile && <MinimalSelect />}
+          {isTouch && <MinimalSelect />}
         </Box>
         <Box display="flex" justifyContent="center" alignItems="center" flexShrink={0}>
+          {locationdata?.projectno && (
+            <Tooltip title="Vis projektside" arrow>
+              <IconButton
+                size="large"
+                href={`https://www.watsonc.dk/calypso/projekt/?project=${locationdata?.projectno}`}
+                target="_blank"
+                rel="noopener"
+                color="inherit"
+              >
+                <OpenInNewIcon sx={{px: 0}} />
+              </IconButton>
+            </Tooltip>
+          )}
           <BatteryStatus />
           <NavBar.Home />
           {user?.adminAccess && <NotificationList />}
@@ -188,7 +210,7 @@ const Layout = ({children}: LayoutProps) => {
           overflow="auto"
         >
           {children}
-          {isMobile && <ActionArea />}
+          {isTouch && <ActionArea />}
         </Box>
       </Box>
     </>

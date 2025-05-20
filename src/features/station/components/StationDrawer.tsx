@@ -81,7 +81,7 @@ const StationDrawer = () => {
   const {ts_id, loc_id} = useAppContext(['loc_id'], ['ts_id']);
   const [pageToShow, setPageToShow] = useStationPages();
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
-  const {isMobile, isMonitor} = useBreakpoints();
+  const {isTouch} = useBreakpoints();
   const {data: metadata} = useTimeseriesData();
   const user = useUser();
 
@@ -95,7 +95,7 @@ const StationDrawer = () => {
     setOpen(newOpen);
   };
 
-  const open = isMonitor || openAtom;
+  const open = openAtom;
 
   const items: DrawerItems[] = [
     {
@@ -276,26 +276,22 @@ const StationDrawer = () => {
                   py: 1,
                 }}
               >
-                <Tooltip title={!open ? item.text : ''} placement="right">
-                  <ListItemButton
-                    sx={{
-                      borderRadius: '9999px',
-                      color: navIconStyle(pageToShow === item.page),
-                      py: 0,
-                    }}
-                    onClick={() => {
-                      setPageToShow(item.page);
-                      if (open) toggleDrawer(false);
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    {open && <ListItemText>{item.text}</ListItemText>}
-                  </ListItemButton>
-                </Tooltip>
+                <ListItemButton
+                  sx={{
+                    borderRadius: '9999px',
+                    color: navIconStyle(pageToShow === item.page),
+                    py: 0,
+                  }}
+                  onClick={() => {
+                    setPageToShow(item.page);
+                    if (open) toggleDrawer(false);
+                  }}
+                >
+                  <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText>{item.text}</ListItemText>
+                </ListItemButton>
               </ListItem>
             );
           })}
@@ -304,7 +300,7 @@ const StationDrawer = () => {
     );
   });
 
-  if (isMobile) {
+  if (isTouch) {
     return (
       <Layout variant="temporary">
         <List>{drawerItems}</List>
@@ -312,24 +308,22 @@ const StationDrawer = () => {
     );
   }
 
-  if (isMonitor) {
-    return (
-      <Layout variant="permanent">
-        <List>{drawerItems}</List>
-      </Layout>
-    );
-  }
-
   return (
     <Layout variant="permanent">
-      <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
-        <IconButton sx={{color: 'white'}}>
-          <Menu />
-        </IconButton>
-      </Toolbar>
       <List>{drawerItems}</List>
     </Layout>
   );
+
+  // return (
+  //   <Layout variant="permanent">
+  //     <Toolbar disableGutters sx={{justifyContent: 'center'}} onClick={() => toggleDrawer(!open)}>
+  //       <IconButton sx={{color: 'white'}}>
+  //         <Menu />
+  //       </IconButton>
+  //     </Toolbar>
+  //     <List>{drawerItems}</List>
+  //   </Layout>
+  // );
 };
 
 type LayoutProps = {
@@ -340,9 +334,8 @@ type LayoutProps = {
 const Layout = ({children, variant}: LayoutProps) => {
   const [openAtom, setOpen] = useAtom(drawerOpenAtom);
   const {data: locationdata} = useLocationData();
-  const {isMonitor, isMobile} = useBreakpoints();
-  const open = isMonitor || openAtom;
-  const width = open ? drawerWidth : 48;
+  const {isTouch} = useBreakpoints();
+  const open = openAtom;
   const toggleDrawer = (newOpen: boolean) => {
     setOpen(newOpen);
   };
@@ -353,19 +346,19 @@ const Layout = ({children, variant}: LayoutProps) => {
         variant={variant}
         open={open}
         sx={{
-          width: width,
+          width: drawerWidth,
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
-            width: width,
+            width: drawerWidth,
             backgroundColor: 'primary.main',
             pt: '64px',
-            pb: isMobile ? '64px' : '0px',
+            pb: isTouch ? '64px' : '0px',
           },
         }}
       >
         <Box pt={2} pl={2}>
-          {!isMobile && <MinimalSelect />}
-          {isMobile && (
+          {!isTouch && <MinimalSelect />}
+          {isTouch && (
             <Typography
               textOverflow="ellipsis"
               overflow="hidden"

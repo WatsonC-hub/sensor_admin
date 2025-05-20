@@ -1,37 +1,83 @@
-import {useTheme} from '@mui/material';
+import {Box, useTheme} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import {useAtomValue} from 'jotai';
+import {useAtom, useAtomValue, useSetAtom} from 'jotai';
 import moment from 'moment';
-import {useMemo} from 'react';
-
+import {Layout} from 'plotly.js';
+import React, {useEffect, useMemo, useState} from 'react';
+import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
+import PlotlyGraph from '~/components/PlotlyGraph';
+import {
+  correction_map,
+  setGraphHeight,
+  defaultDataToShow as globalDefaultDataToShow,
+} from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
+import {usePejling} from '~/features/pejling/api/usePejling';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
-import {useControlData} from '~/hooks/query/useControlData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
-import {dataToShowAtom} from '~/state/atoms';
-import {QaGraphLabel} from '~/types';
+import useBreakpoints from '~/hooks/useBreakpoints';
+import {useStationPages} from '~/hooks/useQueryStateParameters';
+import {
+  dataToShowAtom,
+  initiateConfirmTimeseriesAtom,
+  initiateSelectAtom,
+  levelCorrectionAtom,
+  qaSelection,
+} from '~/state/atoms';
+import {useAppContext} from '~/state/contexts';
+import {DataToShow, QaGraphLabel} from '~/types';
 
-const useQAGraph = (ts_id: number, xRange: Array<string>) => {
+interface GraphManagerProps {
+  dynamicMeasurement?: Array<string | number>;
+  defaultDataToShow?: Partial<DataToShow>;
+}
+
+const initRange = [
+  moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+  moment().format('YYYY-MM-DDTHH:mm'),
+];
+
+const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps) => {
+  const {ts_id} = useAppContext(['ts_id']);
+
+  const setSelection = useSetAtom(qaSelection);
+  const [initiateSelect, setInitiateSelect] = useAtom(initiateSelectAtom);
+  const levelCorrection = useAtomValue(levelCorrectionAtom);
+  const initiateConfirmTimeseries = useAtomValue(initiateConfirmTimeseriesAtom);
+  const [pagetoShow] = useStationPages();
   const {data: timeseries_data} = useTimeseriesData();
-  const dataToShow = useAtomValue(dataToShowAtom);
-  const theme = useTheme();
   const loc_name = timeseries_data?.loc_name;
   const ts_name = timeseries_data?.ts_name;
-  const {data: adjustmentData} = useAdjustmentData(ts_id);
-  const {data: controlData} = useControlData(ts_id);
-
-  const {
-    get: {data: certify},
-  } = useCertifyQa(ts_id);
-
+  const {isMobile} = useBreakpoints();
+  const dataToShowSelected = useAtomValue(dataToShowAtom);
+  const [xRange, setXRange] = useState(initRange);
   const {data: graphData} = useGraphData(ts_id, xRange);
   const {data: edgeDates} = useEdgeDates(ts_id);
+  const theme = useTheme();
+
+  const layout: Partial<Layout> = {
+    yaxis3: {
+      visible: false,
+    },
+  };
+
+  const dataToShow: DataToShow = {
+    ...globalDefaultDataToShow,
+    ...defaultDataToShow,
+    ...dataToShowSelected,
+  };
+
   const {
     get: {data: certifedData},
   } = useCertifyQa(ts_id);
+  const {
+    get: {data: controlData},
+  } = usePejling();
+
+  const {data: adjustmentData} = useAdjustmentData(ts_id);
 
   const {data: qaData} = useQuery({
     queryKey: ['qa_labels', ts_id],
@@ -41,6 +87,7 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
       });
       return data;
     },
+    enabled: dataToShow['Algoritmer'] && !timeseries_data?.calculated,
   });
 
   const {data: removed_data} = useQuery({
@@ -49,7 +96,7 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
       const {data} = await apiClient.get(`/sensor_admin/removed_data/${ts_id}`);
       return data;
     },
-    enabled: dataToShow['Fjernet data'],
+    enabled: dataToShow['Fjernet data'] && !timeseries_data?.calculated,
     refetchOnWindowFocus: false,
   });
 
@@ -66,28 +113,23 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
     enabled: dataToShow['Nedbør'] && edgeDates !== undefined,
     refetchOnWindowFocus: false,
   });
-  const xControl = controlData?.map((d) => d.timeofmeas);
-  const yControl = controlData?.map((d) => d.measurement);
-  const textControl = controlData?.map((d) => {
-    switch (d.useforcorrection) {
-      case 0:
-        return 'Kontrol';
-      case 1:
-        return 'Korrektion fremadrettet';
-      case 2:
-        return 'Korrektion fremadrettet og bagudrettet';
-      case 3:
-        return 'Korrektion lineært til forrige pejling';
-      case 4:
-        return 'Korrektion tilbage til unit';
-      case 5:
-        return 'Korrektion tilbage til forrige niveaukorrektion';
-      case 6:
-        return 'Korrektion tilbage til forrige pejling';
-      default:
-        return 'Korrektion';
-    }
+
+  const {data: rawData} = useQuery({
+    queryKey: ['rawdata', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
+      if (data === null) {
+        return [];
+      }
+      return data;
+    },
+    enabled: dataToShow.Rådata && !timeseries_data?.calculated,
+    placeholderData: [],
   });
+
+  const xControl = controlData?.map((d) => d.timeofmeas);
+  const yControl = controlData?.map((d) => d.referenced_measurement);
+  const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
 
   const [shapes, annotations] = useMemo(() => {
     const [qaShapes, qaAnnotate] = transformQAData(qaData ?? []);
@@ -100,7 +142,7 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
         case 'Godkendt':
           shapes = [
             ...shapes,
-            ...(certify?.map((d) => {
+            ...(certifedData?.map((d) => {
               return {
                 type: 'rect',
                 x0: edgeDates?.firstDate,
@@ -113,13 +155,12 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
                 line: {
                   width: 0,
                 },
-                layer: 'below',
               };
             }) ?? []),
           ];
           annotations = [
             ...annotations,
-            ...(certify?.map((d) => {
+            ...(certifedData?.map((d) => {
               return {
                 xref: 'x',
                 yref: 'paper',
@@ -268,6 +309,20 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
       mode: 'lines+markers',
       marker: {symbol: '100', size: '3', color: '#177FC1'},
     },
+    ...(dataToShow?.Rådata && !timeseries_data?.calculated
+      ? [
+          {
+            x: rawData?.x,
+            y: rawData?.y,
+            name: 'Rådata',
+            type: 'scattergl',
+            yaxis: 'y3',
+            line: {width: 2},
+            mode: 'lines',
+            marker: {symbol: '100', size: 3},
+          },
+        ]
+      : []),
     ...(dataToShow?.Kontrolmålinger
       ? [
           {
@@ -309,9 +364,119 @@ const useQAGraph = (ts_id: number, xRange: Array<string>) => {
           },
         ]
       : []),
+    {
+      x: dynamicMeasurement ? [dynamicMeasurement?.[0]] : [],
+      y: dynamicMeasurement ? [dynamicMeasurement?.[1]] : [],
+      name: '',
+      uid: 'dynamic',
+      type: 'scatter',
+      mode: 'markers',
+      showlegend: false,
+      marker: {symbol: '50', size: 8, color: 'rgb(0,120,109)'},
+    },
   ];
 
-  return {data, graphData, shapes, annotations};
+  useEffect(() => {
+    if (dynamicMeasurement?.[0] != undefined) {
+      setXRange([
+        moment(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DD'),
+        moment(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DD'),
+      ]);
+    }
+  }, [dynamicMeasurement?.[0]]);
+
+  if (pagetoShow === 'justeringer') {
+    const handlePlotlySelected = (eventData: any) => {
+      if (eventData === undefined) {
+        return;
+      } else {
+        eventData.points = eventData?.points?.map((pt: any) => {
+          return {x: pt.x, y: pt.y};
+        });
+        if (
+          graphData &&
+          levelCorrection &&
+          eventData.points.length > 0 &&
+          eventData.points.length === 1
+        ) {
+          const prevIndex =
+            graphData.x
+              .map((x) => moment(x).toISOString())
+              .indexOf(moment(eventData.points[0].x).toISOString()) - 1;
+          const prevDate = graphData.x.at(prevIndex);
+          const prevValue = graphData.y.at(prevIndex);
+
+          eventData.points = [{x: prevDate, y: prevValue}, ...eventData.points];
+        }
+        setSelection(eventData);
+        if (eventData.points && eventData.points.length > 0) toast.dismiss('juster');
+      }
+    };
+
+    const handleRelayout = (e: any) => {
+      if (e['selections'] && e['selections'].length === 0) {
+        setSelection({});
+      }
+
+      if (e['dragmode'] === 'zoom') {
+        setInitiateSelect(false);
+      } else if (e['dragmode'] === 'select') {
+        setInitiateSelect(true);
+      }
+    };
+
+    return (
+      <Box
+        style={{
+          height: setGraphHeight(isMobile),
+        }}
+        my={1}
+      >
+        <PlotlyGraph
+          plotEventProps={{
+            onSelected: handlePlotlySelected,
+            onRelayout: handleRelayout,
+            onClick: (e) => {
+              if (
+                (initiateConfirmTimeseries || levelCorrection) &&
+                e.points[0].data.mode !== 'markers'
+              ) {
+                setSelection({points: e.points});
+                if (e.points && e.points.length > 0) toast.dismiss('juster');
+              }
+            },
+          }}
+          initiateSelect={initiateSelect}
+          data={data}
+          shapes={shapes}
+          annotations={annotations}
+          layout={layout}
+          xRange={xRange}
+          setXRange={setXRange}
+          dataToShow={dataToShow}
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      style={{
+        height: setGraphHeight(isMobile),
+      }}
+      my={1}
+    >
+      <PlotlyGraph
+        layout={layout}
+        data={data}
+        shapes={shapes}
+        annotations={annotations}
+        xRange={xRange}
+        setXRange={setXRange}
+        dataToShow={dataToShow}
+      />
+    </Box>
+  );
 };
 
 const LABEL_COLORS: Record<number, string> = {
@@ -403,4 +568,4 @@ const transformQAData = (data: Array<QaGraphLabel>) => {
   return [shapelist, annotateList];
 };
 
-export default useQAGraph;
+export default GraphManager;
