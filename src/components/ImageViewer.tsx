@@ -1,4 +1,4 @@
-import {Grid} from '@mui/material';
+import {Grid2} from '@mui/material';
 import React from 'react';
 
 import ImageCard from '~/components/ImageCard';
@@ -14,25 +14,23 @@ type ImageViewerProps = {
 function ImageViewer({images, deleteMutation, handleEdit}: ImageViewerProps) {
   const {isTouch} = useBreakpoints();
   return (
-    <>
+    <Grid2 container spacing={2} mx="auto">
       {images?.map((elem, index) => {
         return (
-          <Grid
-            item
-            mobile={12}
-            tablet={12}
-            laptop={6}
-            desktop={6}
-            xl={6}
+          <Grid2
+            size={{
+              mobile: 12,
+              laptop: 6,
+            }}
             key={elem.gid}
             display={'flex'}
             justifyContent={isTouch ? 'center' : index % 2 === 0 ? 'end' : 'start'}
           >
             <ImageCard image={elem} deleteMutation={deleteMutation} handleEdit={handleEdit} />
-          </Grid>
+          </Grid2>
         );
       })}
-    </>
+    </Grid2>
   );
 }
 
