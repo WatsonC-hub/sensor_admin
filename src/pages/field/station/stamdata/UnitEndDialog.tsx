@@ -15,9 +15,9 @@ import {useAppContext} from '~/state/contexts';
 
 const unitEndSchema = z.object({
   enddate: z.string(),
-  change_reason: z.number().optional(),
-  action: z.string().optional(),
-  comment: z.string().optional(),
+  change_reason: z.number({required_error: 'Vælg årsag'}),
+  action: z.string({required_error: 'Vælg handling'}),
+  comment: z.string({required_error: 'Skriv en kommentar'}),
 });
 
 type UnitEndFormValues = z.infer<typeof unitEndSchema>;
