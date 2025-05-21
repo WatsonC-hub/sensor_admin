@@ -11,6 +11,7 @@ import Images from '~/components/Images';
 import MaalepunktForm from '~/components/MaalepunktForm';
 import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import useFormData from '~/hooks/useFormData';
@@ -404,7 +405,7 @@ const Boreholeno = () => {
       </Box>
 
       {pageToShow === stationPages.BILLEDER && (
-        <Box>
+        <StationPageBoxLayout>
           <Images
             type={'borehole'}
             typeId={boreholeno}
@@ -435,7 +436,7 @@ const Boreholeno = () => {
               }}
             />
           </div>
-        </Box>
+        </StationPageBoxLayout>
       )}
       <input
         type="file"
