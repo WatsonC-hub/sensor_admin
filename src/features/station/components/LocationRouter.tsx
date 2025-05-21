@@ -26,7 +26,7 @@ import EditLocation from '~/pages/field/station/stamdata/EditLocation';
 
 export default function LocationRouter() {
   const queryClient = useQueryClient();
-  const {ts_id} = useAppContext(['loc_id'], ['ts_id']);
+  useAppContext(['loc_id']);
   const {createStamdata} = useNavigationFunctions();
   const [pageToShow] = useStationPages();
   const {data: metadata} = useLocationData();

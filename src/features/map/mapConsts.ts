@@ -1,13 +1,3 @@
-export type TestMapData = {
-  id: number;
-  loc_id: number;
-  loc_name: string;
-  comment: string;
-  flag: number;
-  x: number;
-  y: number;
-};
-
 import L from 'leaflet';
 import utmObj from 'utm-latlng';
 
@@ -48,7 +38,7 @@ export const panAtom = atomWithTimedStorage<L.LatLng | L.LatLngTuple>(
 export const boreholeSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"/><path style="fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:2" d="M12 16V8"/></svg>`;
 
 // const parkingSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ><circle cx="12" cy="12" r="9" style="fill:#22b;fill-opacity:0.8;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:1"></circle><text x="8" y="16" style="stroke:white;fill:white;stroke-width:1">P</text></svg>`;
-export const parkingSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:{color};stroke-linecap:round;stroke-linejoin:round;stroke-width:1"></circle><text x="8.5" y="16" style="stroke:#fff;stroke-width:1">P</text></svg>`;
+const parkingSVG = `<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" style="fill:{color};fill-opacity:0.8;stroke:{color};stroke-linecap:round;stroke-linejoin:round;stroke-width:1"></circle><text x="8.5" y="16" style="stroke:#fff;stroke-width:1">P</text></svg>`;
 
 const myAttributionText =
   '&copy; <a target="_blank" href="https://download.kortforsyningen.dk/content/vilk%C3%A5r-og-betingelser">Styrelsen for Dataforsyning og Effektivisering</a>';
@@ -74,7 +64,7 @@ export const satelitemapbox = L.tileLayer(
   }
 );
 
-export const outdormapbox = L.tileLayer(
+const outdormapbox = L.tileLayer(
   `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
   {
     maxZoom: 20,
@@ -85,7 +75,7 @@ export const outdormapbox = L.tileLayer(
   }
 );
 
-export const localhostMapBox = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+const localhostMapBox = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   id: 'mapbox/outdoors-v11',

@@ -17,7 +17,7 @@ interface ContactInfoPut extends ContactInfoBase {
   data: ContactTable;
 }
 
-export const contactInfoPostOptions = {
+const contactInfoPostOptions = {
   mutationKey: ['contact_info_post'],
   mutationFn: async (mutation_data: ContactInfoPost) => {
     const {path, data} = mutation_data;
@@ -29,7 +29,7 @@ export const contactInfoPostOptions = {
   },
 };
 
-export const contactInfoPutOptions = {
+const contactInfoPutOptions = {
   mutationKey: ['contact_info_put'],
   mutationFn: async (mutation_data: ContactInfoPut) => {
     const {path, data} = mutation_data;
@@ -41,7 +41,7 @@ export const contactInfoPutOptions = {
   },
 };
 
-export const contactInfoDelOptions = {
+const contactInfoDelOptions = {
   mutationKey: ['contact_info_del'],
   mutationFn: async (mutation_data: ContactInfoBase) => {
     const {path} = mutation_data;

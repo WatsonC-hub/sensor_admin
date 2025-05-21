@@ -1,6 +1,5 @@
 import {SvgIconProps} from '@mui/material';
 import {ReactNode} from 'react';
-import {ZodBoolean, ZodDate, ZodNullable, ZodNumber, ZodString} from 'zod';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -155,15 +154,6 @@ export type TilsynItem = {
   display_name?: string;
 };
 
-export type ZodTilsynItem = {
-  batteriskift: ZodBoolean;
-  dato: ZodDate;
-  gid: ZodNumber;
-  kommentar?: ZodString;
-  tilsyn: ZodBoolean;
-  user_id: ZodNullable<ZodString>;
-};
-
 export type PejlingItem = {
   comment: string;
   gid: number;
@@ -175,12 +165,6 @@ export type PejlingItem = {
   pumpstop: string | null;
   service: boolean | null;
   extrema: string | null;
-};
-
-export type ControlDataGraph = {
-  timeofmeas: string;
-  waterlevel: number | null;
-  useforcorrection: number;
 };
 
 export type Parking = {
@@ -215,13 +199,6 @@ export type ContactInfo = {
   contact_type: string;
 };
 
-export type baseContactInfo = {
-  id?: string | null;
-  navn: string;
-  telefonnummer?: number;
-  email: string;
-};
-
 export type ContactTable = {
   id: string;
   navn: string;
@@ -234,17 +211,6 @@ export type ContactTable = {
   relation_id: number;
   contact_type: string;
   contact_role_name?: string;
-};
-
-export type ContactInfoOptions = {
-  id?: string | null;
-  navn: string;
-  email: string;
-  loc_id?: number;
-};
-
-export type StationDetails = {
-  ressourcer: Array<Ressourcer>;
 };
 
 export type Access = {
@@ -266,13 +232,6 @@ export type AccessTable = {
   koden: string;
   kommentar: string;
   contact_name?: string;
-};
-
-export type QATableType = {
-  ts_id: number;
-  calypso_id?: number;
-  ts_name: string;
-  tstype_name;
 };
 
 export type BatteryStatusType = {
@@ -375,22 +334,6 @@ export type QaGraphLabel = {
   algorithm: string;
   label_id: number;
   name: string;
-};
-
-export type FieldLocation = {
-  loc_id?: number;
-  loc_name: string;
-  mainloc: string;
-  subloc: string;
-  subsubloc: string;
-  x: number;
-  y: number;
-  groups: string[];
-  terrainqual: string;
-  terrainlevel: number;
-  description: string;
-  loctype_id: number;
-  initial_project_no: string | null;
 };
 
 export type DialAction = {

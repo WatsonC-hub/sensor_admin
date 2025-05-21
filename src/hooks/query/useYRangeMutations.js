@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {rerunToast} from '~/helpers/toasts';
 
-export const yRangePostOptions = {
+const yRangePostOptions = {
   mutationKey: 'y_range_post',
   mutationFn: async (mutation_data) => {
     const {path, data} = mutation_data;
@@ -13,7 +13,7 @@ export const yRangePostOptions = {
   },
 };
 
-export const yRangeDelOptions = {
+const yRangeDelOptions = {
   mutationKey: 'y_range_del',
   mutationFn: async (mutation_data) => {
     const {path} = mutation_data;

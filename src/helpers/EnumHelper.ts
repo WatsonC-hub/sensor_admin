@@ -14,16 +14,9 @@ export const stationPages = {
   ALGORITHMS: 'algoritmer',
   JUSTERINGER: 'justeringer',
   STAMDATA: 'stamdata',
-} as const satisfies Record<string, string>;
+};
 
 export type StationPages = (typeof stationPages)[keyof typeof stationPages];
-
-export const qaPages = {
-  ALGORITHMS: 'algoritmer',
-  JUSTERINGER: 'justeringer',
-} as const;
-
-export const qaPagesLiteral = ['algoritmer', 'justeringer'] as const;
 
 export const qaAdjustment = {
   CONFIRM: 'confirm',
@@ -58,20 +51,9 @@ export enum AccessType {
   Code = 'Kode',
 }
 
-export enum ContactInfoRole {
-  DataEjer = 'Data Ejer',
-  kontakter = 'Adgangskontakt',
-}
-
 export enum ContactInfoType {
   Lokation = 'lokation',
   Projekt = 'projekt',
-}
-
-export enum QaStampLevel {
-  A = '1',
-  B = '2',
-  C = '3',
 }
 
 export enum AdjustmentTypes {

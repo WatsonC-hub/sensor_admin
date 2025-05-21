@@ -23,7 +23,7 @@ interface RessourcerPut extends RessourcerBase {
   };
 }
 
-export const ressourcerPostOptions = {
+const ressourcerPostOptions = {
   mutationKey: ['ressourcer_post'],
   mutationFn: async (mutation_data: RessourcerPost) => {
     const {path, data} = mutation_data;
@@ -32,7 +32,7 @@ export const ressourcerPostOptions = {
   },
 };
 
-export const ressourcerPutOptions = {
+const ressourcerPutOptions = {
   mutationKey: ['ressourcer_put'],
   mutationFn: async (mutation_data: RessourcerPut) => {
     const {path, data} = mutation_data;
@@ -41,7 +41,7 @@ export const ressourcerPutOptions = {
   },
 };
 
-export const ressourcerDelOptions = {
+const ressourcerDelOptions = {
   mutationKey: ['ressourcer_del'],
   mutationFn: async (mutation_data: RessourcerBase) => {
     const {path} = mutation_data;

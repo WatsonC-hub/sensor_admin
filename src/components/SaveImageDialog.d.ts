@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export interface SaveImageDialogProps {
+interface SaveImageDialogProps {
   activeImage: {
     gid: number;
     comment: string;

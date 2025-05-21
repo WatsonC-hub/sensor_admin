@@ -4,7 +4,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {rerunToast} from '~/helpers/toasts';
 
-export const levelCorrectionPostOptions = {
+const levelCorrectionPostOptions = {
   mutationKey: 'level_correction_post',
   mutationFn: async (mutation_data) => {
     const {path, data} = mutation_data;
@@ -13,7 +13,7 @@ export const levelCorrectionPostOptions = {
   },
 };
 
-export const levelCorrectionPutOptions = {
+const levelCorrectionPutOptions = {
   mutationKey: 'level_correction_put',
   mutationFn: async (mutation_data) => {
     const {path, data} = mutation_data;
@@ -22,7 +22,7 @@ export const levelCorrectionPutOptions = {
   },
 };
 
-export const levelCorrectionDelOptions = {
+const levelCorrectionDelOptions = {
   mutationKey: 'level_correction_del',
   mutationFn: async (mutation_data) => {
     const {path} = mutation_data;

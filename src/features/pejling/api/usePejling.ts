@@ -25,7 +25,7 @@ interface PejlingPost extends PejlingBase {
 
 type PejlingPut = PejlingPost;
 
-export const pejlingPostOptions = {
+const pejlingPostOptions = {
   mutationKey: ['pejling_post'],
   mutationFn: async (mutation_data: PejlingPost) => {
     const {path, data} = mutation_data;
@@ -34,7 +34,7 @@ export const pejlingPostOptions = {
   },
 };
 
-export const pejlingPutOptions = {
+const pejlingPutOptions = {
   mutationKey: ['pejling_put'],
   mutationFn: async (mutation_data: PejlingPut) => {
     const {path, data} = mutation_data;
@@ -43,7 +43,7 @@ export const pejlingPutOptions = {
   },
 };
 
-export const pejlingDelOptions = {
+const pejlingDelOptions = {
   mutationKey: ['pejling_del'],
   mutationFn: async (mutation_data: PejlingBase) => {
     const {path} = mutation_data;

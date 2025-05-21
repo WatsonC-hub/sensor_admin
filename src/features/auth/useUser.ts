@@ -2,7 +2,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 
-export type User = {
+type User = {
   user_id: number | null;
   org_id: number | null;
   boreholeAccess: boolean;
@@ -16,7 +16,7 @@ export type User = {
   ressourcePermission: boolean;
 };
 
-export const userQueryOptions = queryOptions({
+const userQueryOptions = queryOptions({
   queryKey: ['user'],
   queryFn: async () => {
     const {data} = await apiClient.get<User>(`/auth/me/secure`);

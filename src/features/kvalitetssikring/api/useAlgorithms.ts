@@ -36,7 +36,7 @@ interface AlgorithmsRevert extends AlgorithmsBase {
 //     return result;
 //   },
 // };
-export const algorithmsPutOptions = {
+const algorithmsPutOptions = {
   mutationKey: ['algorithms_put'],
   mutationFn: async (mutation_data: AlgorithmsPut) => {
     const {path, data} = mutation_data;
@@ -44,7 +44,7 @@ export const algorithmsPutOptions = {
     return result;
   },
 };
-export const algorithmsDelOptions = {
+const algorithmsDelOptions = {
   mutationKey: ['algorithms_del'],
   mutationFn: async (mutation_data: AlgorithmsBase) => {
     const {path} = mutation_data;
@@ -53,7 +53,7 @@ export const algorithmsDelOptions = {
   },
 };
 
-export const algorithmsRevertOptions = {
+const algorithmsRevertOptions = {
   mutationKey: ['algorithms_revert'],
   mutationFn: async (mutation_data: AlgorithmsRevert) => {
     const {path} = mutation_data;
