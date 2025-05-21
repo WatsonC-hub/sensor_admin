@@ -219,35 +219,34 @@ const StationDrawer = () => {
   const drawerItems = filteredItems.map((category) => {
     return (
       <Box key={category.text}>
-        {open && (
-          <ListItem
-            key={category.text}
-            sx={{
-              borderRadius: '9999px',
-              pb: 0,
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
-            {category.settings && !category.settings.disabled && (
-              <ListItemIcon
-                sx={{
-                  color: navIconStyle(pageToShow === category.settings.page),
-                  minWidth: 0,
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  if (category.settings) setPageToShow(category.settings.page);
-                  if (open) toggleDrawer(false);
-                }}
-              >
-                {category.settings.icon}
-              </ListItemIcon>
-            )}
-          </ListItem>
-        )}
+        <ListItem
+          key={category.text}
+          sx={{
+            borderRadius: '9999px',
+            pb: 0,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <ListItemText sx={{color: 'white', fontSize: 'bold'}} primary={category.text} />
+          {category.settings && !category.settings.disabled && (
+            <ListItemIcon
+              sx={{
+                color: navIconStyle(pageToShow === category.settings.page),
+                minWidth: 0,
+                cursor: 'pointer',
+              }}
+              onClick={() => {
+                if (category.settings) setPageToShow(category.settings.page);
+                if (open) toggleDrawer(false);
+              }}
+            >
+              {category.settings.icon}
+            </ListItemIcon>
+          )}
+        </ListItem>
+
         {category.items
           .filter((item) => item.disabled == undefined || !item.disabled)
           .map((item) => {
