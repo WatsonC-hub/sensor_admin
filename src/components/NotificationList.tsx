@@ -9,7 +9,7 @@ import React, {useState} from 'react';
 import CreateManualTaskModal from '~/components/CreateManuelTaskModal';
 import UpdateNotificationModal from '~/components/UpdateNotificationModal';
 import usePermissions from '~/features/permissions/api/usePermissions';
-import {useNotificationOverview} from '~/hooks/query/useNotificationOverview';
+import {Notification, useNotificationOverview} from '~/hooks/query/useNotificationOverview';
 import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 import NotificationIcon, {getColor} from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
@@ -19,14 +19,14 @@ const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
-  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
 
   let loc_id = undefined;
   const {markAsDone} = useTaskMutation();
 
   const {data, isPending} = useNotificationOverview();
-  const handleClick = (event) => {
+  const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -52,7 +52,7 @@ const NotificationList = () => {
     setUpdateModalOpen(false);
   };
 
-  const handleMarkAsDone = (notification) => {
+  const handleMarkAsDone = (notification: Notification) => {
     markAsDone.mutate({
       path: ts_id,
       data: {
@@ -69,21 +69,21 @@ const NotificationList = () => {
     feature_permission_query: {data: permissions},
   } = usePermissions(app_loc_id ?? loc_id);
 
-  const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null);
+  const onstation = data?.filter((elem) => elem.loc_id == loc_id && elem.opgave != null) ?? [];
   const manual_tasks = onstation?.filter((elem) => elem.notification_id == 0);
   const grouped = groupBy(
-    onstation?.filter((elem) => elem.notification_id != 0),
+    onstation.filter((elem) => elem.notification_id != 0),
     'notification_id'
   );
 
   const mapped = map(grouped, (group) => {
-    return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));
+    return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY))!;
   });
-  const concat = mapped?.concat(manual_tasks ?? []);
+  const concat = mapped.concat(manual_tasks ?? []);
   const notifications = sortBy(concat, (item) => item.dato).reverse();
 
   // Find index of max flag in notificaitons
-  const maxFlagIndex = notifications?.reduce(
+  const maxFlagIndex = notifications.reduce(
     (iMax, x, i, arr) => (x.flag > arr[iMax].flag ? i : iMax),
     0
   );
@@ -149,7 +149,7 @@ const NotificationList = () => {
                 secondary={
                   splitted[splitted.length - 1].replace('-', '').trim() +
                   ' - ' +
-                  notification.dato.slice(0, 10)
+                  notification.dato?.slice(0, 10)
                 }
               />
               {/* <Typography variant="caption">{}</Typography> */}

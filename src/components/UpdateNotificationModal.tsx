@@ -13,7 +13,7 @@ import {useTaskMutation} from '~/hooks/query/useTaskMutation';
 interface Props {
   open: boolean;
   closeModal: () => void;
-  notification: Notification;
+  notification: Notification | null;
 }
 
 const zodSchema = z.object({
@@ -30,10 +30,10 @@ const UpdateNotificationModal = ({open, closeModal, notification}: Props) => {
   const formMethods = useForm<FormValues>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
-      ts_id: notification.ts_id,
-      notification_id: notification.notification_id,
+      ts_id: notification?.ts_id,
+      notification_id: notification?.notification_id,
       status: 'POSTPONED',
-      enddate: notification.enddate,
+      enddate: notification?.enddate,
       notify_type: 'obs',
     },
   });

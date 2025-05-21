@@ -4,9 +4,17 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {rerunToast} from '~/helpers/toasts';
 
+type LevelCorrectionPayload = {
+  path: string;
+  data: {
+    date: string;
+    comment: string | undefined;
+  };
+};
+
 const levelCorrectionPostOptions = {
-  mutationKey: 'level_correction_post',
-  mutationFn: async (mutation_data) => {
+  mutationKey: ['level_correction_post'],
+  mutationFn: async (mutation_data: LevelCorrectionPayload) => {
     const {path, data} = mutation_data;
     const {data: res} = await apiClient.post(`/sensor_admin/qa_levelcorrection/${path}`, data);
     return res;
@@ -14,8 +22,8 @@ const levelCorrectionPostOptions = {
 };
 
 const levelCorrectionPutOptions = {
-  mutationKey: 'level_correction_put',
-  mutationFn: async (mutation_data) => {
+  mutationKey: ['level_correction_put'],
+  mutationFn: async (mutation_data: LevelCorrectionPayload) => {
     const {path, data} = mutation_data;
     const {data: res} = await apiClient.put(`/sensor_admin/qa_levelcorrection/${path}`, data);
     return res;
@@ -23,8 +31,8 @@ const levelCorrectionPutOptions = {
 };
 
 const levelCorrectionDelOptions = {
-  mutationKey: 'level_correction_del',
-  mutationFn: async (mutation_data) => {
+  mutationKey: ['level_correction_del'],
+  mutationFn: async (mutation_data: LevelCorrectionPayload) => {
     const {path} = mutation_data;
     const {data: res} = await apiClient.delete(`/sensor_admin/qa_levelcorrection/${path}`);
     return res;

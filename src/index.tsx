@@ -8,7 +8,8 @@ import {createRoot} from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// eslint-disable-next-line import/no-unresolved
+
+// @ts-expect-error this is a workaround for the missing types
 import {registerSW} from 'virtual:pwa-register';
 
 import NetworkStatus from '~/components/NetworkStatus';
