@@ -210,7 +210,7 @@ export default function AddUnitForm({
         <CaptureDialog
           open={openCaptureDialog}
           handleClose={() => setOpenCaptureDialog(false)}
-          handleScan={(data: any, calypso_id: number) => {
+          handleScan={(data: any, calypso_id: number | null) => {
             if (calypso_id === null) {
               toast.error('Ugyldigt Calypso ID');
               setOpenCaptureDialog(false);

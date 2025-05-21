@@ -85,7 +85,7 @@ const localhostMapBox = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.
 
 let defaultMap: L.TileLayer;
 
-if (isProduction) {
+if (false) {
   defaultMap = outdormapbox;
 } else {
   defaultMap = localhostMapBox;

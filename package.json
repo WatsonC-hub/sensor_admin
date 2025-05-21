@@ -51,6 +51,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "serve": "vite preview",
+    "prune": "npx ts-prune -p ./tsconfig.app.json",
     "generate": "openapi --input ./spec.json --output ./src/types/api --exportServices false --exportCore false --useOptions --useUnionTypes",
     "lint": "eslint src",
     "test": "vitest",
