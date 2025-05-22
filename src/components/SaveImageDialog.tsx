@@ -111,10 +111,10 @@ function SaveImageDialog({
             <img
               alt=""
               src={
-                activeImage.gid === -1
+                activeImage.gid === -1 && dataUri
                   ? typeof dataUri === 'string'
                     ? dataUri
-                    : new TextDecoder().decode(dataUri!)
+                    : new TextDecoder().decode(dataUri)
                   : imageUrl
               }
               style={{maxWidth: '100%', objectFit: 'cover', margin: 'auto'}}
@@ -128,7 +128,7 @@ function SaveImageDialog({
                   Kommentar
                 </Typography>
               }
-              value={activeImage.comment}
+              value={activeImage.comment ?? ''}
               variant="outlined"
               multiline
               rows={4}
