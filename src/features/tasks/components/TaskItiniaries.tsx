@@ -16,8 +16,10 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import TaskForm from './TaskForm';
 import {useDroppable} from '@dnd-kit/react';
 import dayjs from 'dayjs';
+import 'dayjs/locale/da';
 import CreateItineraryDialog from './CreateItineraryDialog';
 import Button from '~/components/Button';
+import {daDK} from '@mui/x-date-pickers/locales';
 
 export function Droppable({id, children}: {id: string; children: ReactNode}) {
   const {isDropTarget, ref: setNodeRef} = useDroppable({
@@ -156,8 +158,13 @@ const TaskItiniaries = () => {
                             })}
                           </Box>
                           <Box sx={{position: 'relative'}}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
+                            <LocalizationProvider
+                              key={itinerary.id}
+                              dateAdapter={AdapterDayjs}
+                              adapterLocale="da"
+                            >
                               <DatePicker
+                                key={itinerary.id}
                                 onChange={(date) => {
                                   if (date) {
                                     const payload = {
