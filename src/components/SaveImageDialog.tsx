@@ -22,7 +22,7 @@ interface SaveImageDialogProps {
     comment: string;
     public: boolean;
     date: string;
-    imageurl: string; // Assuming this property exists
+    imageurl?: string; // Assuming this property exists
     // Add any other properties as needed
   };
   changeData: (field: string, value: any) => void;
