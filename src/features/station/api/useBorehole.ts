@@ -21,19 +21,6 @@ const boreholeListOptions = () => {
   });
 };
 
-export const boreholesOptions = () => {
-  const user = useUser();
-  return queryOptions({
-    queryKey: ['boreholes'],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<Borehole>>(`/sensor_field/boreholes`);
-      return data;
-    },
-    staleTime: 10 * 1000,
-    enabled: user?.boreholeAccess,
-  });
-};
-
 export const useSearchBorehole = (boreholeno: string | undefined | null) => {
   const user = useUser();
   const searched_boreholes = useQuery({

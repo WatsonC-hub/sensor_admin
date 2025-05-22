@@ -1,8 +1,8 @@
 import {useState} from 'react';
 
-const computeInitialState = (initialState) => {
+const computeInitialState = (initialState: any) => {
   if (Object.values(initialState).some((value) => typeof value === 'function')) {
-    initialState = Object.entries(initialState).reduce((acc, [key, value]) => {
+    initialState = Object.entries(initialState).reduce((acc: any, [key, value]) => {
       acc[key] = typeof value === 'function' ? value() : value;
       return acc;
     }, {});
@@ -10,12 +10,12 @@ const computeInitialState = (initialState) => {
   return initialState;
 };
 
-export default function useFormData(initialState) {
+export default function useFormData(initialState: any) {
   // if any of the initial state values are functions, call them to get the initial state
 
   const [formData, setFormData] = useState(computeInitialState(initialState));
 
-  const changeFormData = (key, value) => {
+  const changeFormData = (key: string, value: any) => {
     setFormData({...formData, [key]: value});
   };
 
@@ -23,7 +23,7 @@ export default function useFormData(initialState) {
     setFormData(computeInitialState(initialState));
   };
 
-  const setFormDataFromObject = (obj) => {
+  const setFormDataFromObject = (obj: any) => {
     setFormData(obj);
   };
 

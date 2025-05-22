@@ -1,5 +1,5 @@
 import {Edit, Save} from '@mui/icons-material';
-import {CircularProgress, Grid, TextField, Typography, Box} from '@mui/material';
+import {Grid, TextField, Typography, Box} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -16,7 +16,32 @@ import Button from '~/components/Button';
 import OwnDatePicker from '~/components/OwnDatePicker';
 import {useImageUpload} from '~/hooks/query/useImageUpload';
 
-function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, handleCloseSave}) {
+interface SaveImageDialogProps {
+  activeImage: {
+    gid: number;
+    comment: string;
+    public: boolean;
+    date: string;
+    imageurl?: string; // Assuming this property exists
+    // Add any other properties as needed
+  };
+  changeData: (field: string, value: any) => void;
+  id: string | number;
+  type: string;
+  open: boolean;
+  dataUri: string | ArrayBuffer | null;
+  handleCloseSave: () => void;
+}
+
+function SaveImageDialog({
+  activeImage,
+  changeData,
+  id,
+  type,
+  open,
+  dataUri,
+  handleCloseSave,
+}: SaveImageDialogProps) {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -85,7 +110,13 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
           >
             <img
               alt=""
-              src={activeImage.gid === -1 ? dataUri : imageUrl}
+              src={
+                activeImage.gid === -1 && dataUri
+                  ? typeof dataUri === 'string'
+                    ? dataUri
+                    : new TextDecoder().decode(dataUri)
+                  : imageUrl
+              }
               style={{maxWidth: '100%', objectFit: 'cover', margin: 'auto'}}
               loading="lazy"
             />
@@ -97,7 +128,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
                   Kommentar
                 </Typography>
               }
-              value={activeImage.comment}
+              value={activeImage.comment ?? ''}
               variant="outlined"
               multiline
               rows={4}
@@ -120,7 +151,7 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
             />
             <OwnDatePicker
               label={'Dato'}
-              value={moment(activeImage.date)}
+              value={moment(activeImage.date).toDate()}
               onChange={(date) => changeData('date', moment(date).format('YYYY-MM-DD HH:mm'))}
             />
           </Grid>
@@ -130,10 +161,8 @@ function SaveImageDialog({activeImage, changeData, id, type, open, dataUri, hand
         <Button onClick={handleCloseSave} bttype="tertiary">
           Annuller
         </Button>
-        <Button onClick={saveImage} disabled={uploadImage.isLoading} bttype="primary">
-          {uploadImage.isLoading ? (
-            <CircularProgress />
-          ) : activeImage.gid == -1 ? (
+        <Button onClick={saveImage} bttype="primary">
+          {activeImage.gid == -1 ? (
             <Box display={'flex'} gap={1} alignItems={'center'}>
               <Save />
               <Typography variant="body2" fontSize={14}>

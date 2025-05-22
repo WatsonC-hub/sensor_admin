@@ -2,10 +2,6 @@ import {Autocomplete, AutocompleteProps, TextField, TextFieldProps} from '@mui/m
 import {merge} from 'lodash';
 import React from 'react';
 
-export const isString = (item: any): item is string => {
-  return typeof item === 'string';
-};
-
 export type AutoCompleteFieldProps<T> = Omit<
   AutocompleteProps<T, false, false, false>,
   'renderInput'

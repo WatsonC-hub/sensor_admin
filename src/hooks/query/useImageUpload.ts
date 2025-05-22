@@ -3,9 +3,37 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 
-const dataURLtoFile = (dataurl, filename) => {
+type ImageData = {
+  comment: string;
+  public: string;
+  date: string;
+  uri: string | ArrayBuffer | null;
+};
+
+type EditImageData = {
+  comment: string;
+  public: string;
+  date: string;
+  imageurl?: string; // Assuming this property exists
+};
+
+type ImagePayload = {
+  path: string | number;
+  data: ImageData;
+};
+
+type ImagePayloadEdit = {
+  path: string;
+  data: EditImageData;
+};
+
+const dataURLtoFile = (dataurl: string | ArrayBuffer | null, filename?: string) => {
+  if (typeof dataurl !== 'string') {
+    throw new Error('Invalid dataurl: must be a non-null string');
+  }
   const arr = dataurl.split(',');
-  const mime = arr[0].match(/:(.*?);/)[1];
+  const mimeMatch = arr[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : '';
   const bstr = atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
@@ -13,15 +41,15 @@ const dataURLtoFile = (dataurl, filename) => {
     u8arr[n - 1] = bstr.charCodeAt(n - 1);
     n -= 1; // to make eslint happy
   }
-  return new File([u8arr], filename, {type: mime});
+  return new File([u8arr], filename ?? '', {type: mime});
 };
 
-export const useImageUpload = (endpoint) => {
+export const useImageUpload = (endpoint: string) => {
   const queryClient = useQueryClient();
 
   const post = useMutation({
-    mutationKey: 'image_post',
-    mutationFn: async (mutation_data) => {
+    mutationKey: ['image_post'],
+    mutationFn: async (mutation_data: ImagePayload) => {
       const {path, data} = mutation_data;
       const file = dataURLtoFile(data.uri);
       const formData = new FormData();
@@ -48,8 +76,8 @@ export const useImageUpload = (endpoint) => {
   });
 
   const put = useMutation({
-    mutationKey: 'image_put',
-    mutationFn: async (mutation_data) => {
+    mutationKey: ['image_put'],
+    mutationFn: async (mutation_data: ImagePayloadEdit) => {
       const {path, data} = mutation_data;
       const {data: res} = await apiClient.put(`/sensor_field/${endpoint}/image/${path}`, data);
       return res;
@@ -63,8 +91,8 @@ export const useImageUpload = (endpoint) => {
   });
 
   const del = useMutation({
-    mutationKey: 'image_del',
-    mutationFn: async (mutation_data) => {
+    mutationKey: ['image_del'],
+    mutationFn: async (mutation_data: ImagePayload) => {
       const {path} = mutation_data;
       const {data: res} = await apiClient.delete(`/sensor_field/${endpoint}/image/${path}`);
       return res;

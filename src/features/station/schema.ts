@@ -98,7 +98,6 @@ const editUnitSchema = z
   });
 
 export {
-  baseAddTimeseriesSchema,
   baseLocationSchema,
   addUnitSchema,
   editUnitSchema,
@@ -123,8 +122,6 @@ type BoreholeEditLocation = z.infer<typeof boreholeEditLocationSchema>;
 type BoreholeAddTimeseries = z.infer<typeof boreholeAddTimeseriesSchema>;
 type BoreholeEditTimeseries = z.infer<typeof boreholeEditTimeseriesSchema>;
 type BaseLocation = z.infer<typeof baseLocationSchema>;
-type BaseTimeseries = z.infer<typeof baseTimeseriesSchema>;
-type BaseAddTimeseriesSchema = z.infer<typeof baseAddTimeseriesSchema>;
 type AddUnit = z.infer<typeof addUnitSchema>;
 type EditUnit = z.infer<typeof editUnitSchema>;
 type Watlevmp = z.infer<typeof watlevmpAddSchema>;
@@ -137,9 +134,7 @@ export type {
   BoreholeAddTimeseries,
   BoreholeEditTimeseries,
   DefaultEditLocation,
-  BaseAddTimeseriesSchema,
   BaseLocation,
-  BaseTimeseries,
   DefaultEditTimeseries,
   AddUnit,
   EditUnit,

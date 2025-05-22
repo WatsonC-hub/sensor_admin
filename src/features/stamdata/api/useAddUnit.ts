@@ -20,7 +20,7 @@ export interface Unit {
   sensortypename: string;
 }
 
-export interface TypeUnitPost {
+interface TypeUnitPost {
   unit_uuid: string;
   startdate: string;
   enddate: string;
@@ -37,7 +37,7 @@ export interface UnitPost extends UnitBase {
 interface UnitPut extends UnitBase {
   data: TypeUnitPost;
 }
-export const unitPostOptions = {
+const unitPostOptions = {
   mutationKey: ['unit_post'],
   mutationFn: async (mutation_data: UnitPost) => {
     const {path, data} = mutation_data;
@@ -48,7 +48,7 @@ export const unitPostOptions = {
     return result;
   },
 };
-export const unitPutOptions = {
+const unitPutOptions = {
   mutationKey: ['unit_put'],
   mutationFn: async (mutation_data: UnitPut) => {
     const {path, data} = mutation_data;
@@ -59,7 +59,7 @@ export const unitPutOptions = {
     return result;
   },
 };
-export const unitDelOptions = {
+const unitDelOptions = {
   mutationKey: ['unit_del'],
   mutationFn: async (mutation_data: UnitBase) => {
     const {path} = mutation_data;

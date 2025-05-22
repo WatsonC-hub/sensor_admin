@@ -9,7 +9,7 @@ interface LeafletMapRouteBase {
   data?: any;
 }
 
-export interface LeafletMapRoutePost extends LeafletMapRouteBase {
+interface LeafletMapRoutePost extends LeafletMapRouteBase {
   data: {
     geo_route: GeoJSON.Geometry;
   };
@@ -21,7 +21,7 @@ interface LeafletMapRoutePut extends LeafletMapRouteBase {
   };
 }
 
-export const leafletMapRoutePostOptions = {
+const leafletMapRoutePostOptions = {
   mutationKey: ['leaflet_map_route_post'],
   mutationFn: async (mutation_data: LeafletMapRoutePost) => {
     const {path, data} = mutation_data;
@@ -30,7 +30,7 @@ export const leafletMapRoutePostOptions = {
   },
 };
 
-export const leafletMapRoutePutOptions = {
+const leafletMapRoutePutOptions = {
   mutationKey: ['leaflet_map_route_put'],
   mutationFn: async (mutation_data: LeafletMapRoutePut) => {
     const {path, data} = mutation_data;
@@ -39,7 +39,7 @@ export const leafletMapRoutePutOptions = {
   },
 };
 
-export const leafletMapRouteDelOptions = {
+const leafletMapRouteDelOptions = {
   mutationKey: ['leaflet_map_route_del'],
   mutationFn: async (mutation_data: LeafletMapRouteBase) => {
     const {path} = mutation_data;

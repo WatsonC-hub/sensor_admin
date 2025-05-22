@@ -5,11 +5,17 @@ import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import Slide from '@mui/material/Slide';
 import Toolbar from '@mui/material/Toolbar';
-import {Scanner as QrReader} from '@yudiel/react-qr-scanner';
+import {IDetectedBarcode, Scanner as QrReader} from '@yudiel/react-qr-scanner';
 import React, {useEffect, useState} from 'react';
-function Transition(props) {
-  return <Slide direction="up" ref={props.ref} {...props} />;
-}
+
+import {TransitionProps} from '@mui/material/transitions';
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {children: React.ReactElement<any, any>},
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 let running = false;
 
@@ -19,7 +25,7 @@ let running = false;
 //  "https://sensor.watsonc.dk/1234",
 //  "https://sensor.watsonc.dk/1234/"
 
-function extractNumber(url) {
+function extractNumber(url: string) {
   try {
     // Ensure the URL has a valid format by adding "https://" if missing
     if (!url.startsWith('http')) {
@@ -37,10 +43,16 @@ function extractNumber(url) {
   }
 }
 
-export default function CaptureDialog({handleClose, handleScan, open}) {
+interface CaptureDialogProps {
+  handleClose: () => void;
+  handleScan: (url: string, calypso_id: number | null) => void;
+  open: boolean;
+}
+
+export default function CaptureDialog({handleClose, handleScan, open}: CaptureDialogProps) {
   const [hasPermission, setHasPermission] = useState(true);
 
-  async function handleScanning(raw_data) {
+  async function handleScanning(raw_data: IDetectedBarcode[]) {
     if (raw_data !== null && !running) {
       const url = raw_data[0].rawValue;
       running = true;
@@ -57,7 +69,8 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      navigator.permissions?.query({name: 'camera'}).then((permissionStatus) => {
+      console.log(navigator.permissions);
+      navigator.permissions?.query({name: 'camera' as PermissionName}).then((permissionStatus) => {
         if (permissionStatus.state == 'granted') {
           setHasPermission(true);
           clearInterval(intervalId);
@@ -70,15 +83,7 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
     return () => clearInterval(intervalId);
   }, []);
 
-  const camStyle = {
-    marginTop: '56px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'column',
-  };
-
-  const handleError = (error) => console.error(error);
+  const handleError = (error: unknown) => console.error(error);
 
   return (
     <Dialog fullScreen open={open} onClose={handleClose} slots={{transition: Transition}}>
@@ -95,7 +100,15 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <div style={camStyle}>
+      <div
+        style={{
+          marginTop: '56px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
         {!hasPermission ? (
           <Typography variant="subtitle2" component="h3" align="center" display="block">
             Der skal gives rettigheder til at bruge kameraet. Tjek om du har fået en forespørgsel
@@ -104,11 +117,13 @@ export default function CaptureDialog({handleClose, handleScan, open}) {
         ) : (
           <QrReader
             scanDelay={100}
-            style={{paddingTop: '64px'}}
             onError={handleError}
             onScan={handleScanning}
             // onLoad={() => setShowText(false)}
-            constraints={{video: {facingMode: 'environment'}}}
+            // constraints={{facingMode: 'environment', deviceId: 'environment'}}
+            constraints={{
+              facingMode: 'video',
+            }}
           />
         )}
       </div>

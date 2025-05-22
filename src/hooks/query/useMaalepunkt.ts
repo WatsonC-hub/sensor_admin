@@ -26,7 +26,7 @@ interface MaalepunktPut extends MaalepunktPost {
   };
 }
 
-export const maalepunktPostOptions = {
+const maalepunktPostOptions = {
   mutationKey: ['maalepunkt_post'],
   mutationFn: async (mutation_data: MaalepunktPost) => {
     const {path, data} = mutation_data;
@@ -35,7 +35,7 @@ export const maalepunktPostOptions = {
   },
 };
 
-export const maalepunktPutOptions = {
+const maalepunktPutOptions = {
   mutationKey: ['maalepunkt_put'],
   mutationFn: async (mutation_data: MaalepunktPut) => {
     const {path, data} = mutation_data;
@@ -44,7 +44,7 @@ export const maalepunktPutOptions = {
   },
 };
 
-export const maalepunktDelOptions = {
+const maalepunktDelOptions = {
   mutationKey: ['maalepunkt_del'],
   mutationFn: async (mutation_data: MaalepunktBase) => {
     const {path} = mutation_data;

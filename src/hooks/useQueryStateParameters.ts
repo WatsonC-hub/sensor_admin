@@ -1,14 +1,6 @@
 import {useQueryState, parseAsStringLiteral, parseAsBoolean} from 'nuqs';
 
-import {qaAdjustmentLiteral, qaPages, qaPagesLiteral, stationPages} from '~/helpers/EnumHelper';
-
-const editTabValues = [
-  'lokation',
-  'tidsserie',
-  'udstyr',
-  'maalepunkt',
-  'stationsinformation',
-] as const;
+import {qaAdjustmentLiteral, stationPages} from '~/helpers/EnumHelper';
 
 const createTabValues = ['lokation', 'tidsserie', 'udstyr'] as const;
 
@@ -23,21 +15,10 @@ export function useShowFormState() {
   return useQueryState('showForm', parseAsBoolean);
 }
 
-export const useEditTabState = () => {
-  return useQueryState('tab', parseAsStringLiteral(editTabValues).withDefault('lokation'));
-};
-
 export const useCreateTabState = () => {
   return useQueryState('tab', parseAsStringLiteral(createTabValues).withDefault('lokation'));
 };
 
 export const useAdjustmentState = () => {
   return useQueryState('adjust', parseAsStringLiteral(qaAdjustmentLiteral));
-};
-
-export const useQAPageState = () => {
-  return useQueryState(
-    'page',
-    parseAsStringLiteral(qaPagesLiteral).withDefault(qaPages.JUSTERINGER)
-  );
 };

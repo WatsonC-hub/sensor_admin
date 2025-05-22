@@ -1,18 +1,18 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 
-export type LocationPermissions = Record<number, 'read' | 'edit'>;
+type LocationPermissions = Record<number, 'read' | 'edit'>;
 
-export type BoreholePermissions = {
+type BoreholePermissions = {
   boreholenos: Array<string>;
   plantids: Array<string>;
 };
 
-export type GlobalPermissions = {
+type GlobalPermissions = {
   borehole_plantids: BoreholePermissions;
 };
 
-export const useGlobalPermissionsQueryOptions = () => {
+const useGlobalPermissionsQueryOptions = () => {
   return queryOptions({
     queryKey: ['borehole_permissions'],
     queryFn: async () => {
@@ -23,7 +23,7 @@ export const useGlobalPermissionsQueryOptions = () => {
   });
 };
 
-export const usePermissionsQueryOptions = (loc_id?: number) => {
+const usePermissionsQueryOptions = (loc_id?: number) => {
   return queryOptions({
     queryKey: ['permissions', loc_id],
     queryFn: async () => {

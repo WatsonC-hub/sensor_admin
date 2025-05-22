@@ -53,7 +53,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
   );
 };
 
-export const HomeButton = () => {
+const HomeButton = () => {
   const {home} = useNavigationFunctions();
 
   return (
@@ -71,7 +71,7 @@ export const HomeButton = () => {
   );
 };
 
-export const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
+const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?: number}) => {
   return (
     <AppBar position="sticky" enableColorOnDark sx={{zIndex: zIndex}}>
       <Toolbar
@@ -130,7 +130,7 @@ export const AppBarLayout = ({children, zIndex}: {children?: ReactNode; zIndex?:
 //   );
 // };
 
-export const NavBarMenu = ({
+const NavBarMenu = ({
   highligtFirst,
   items,
   disableLogout = false,

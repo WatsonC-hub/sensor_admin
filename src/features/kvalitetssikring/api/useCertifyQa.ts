@@ -23,7 +23,7 @@ interface CertifyQaPut extends CertifyQaBase {
   data: CertifyQa;
 }
 
-export const certifyQaPostOptions = {
+const certifyQaPostOptions = {
   mutationKey: ['certifyQa_post'],
   mutationFn: async (mutation_data: CertifyQaPost) => {
     const {path, data} = mutation_data;
@@ -32,7 +32,7 @@ export const certifyQaPostOptions = {
   },
 };
 
-export const certifyQaPutOptions = {
+const certifyQaPutOptions = {
   mutationKey: ['certifyQa_put'],
   mutationFn: async (mutation_data: CertifyQaPut) => {
     const {path, data} = mutation_data;
@@ -41,7 +41,7 @@ export const certifyQaPutOptions = {
   },
 };
 
-export const certifyQaDelOptions = {
+const certifyQaDelOptions = {
   mutationKey: ['certifyQa_del'],
   mutationFn: async (mutation_data: CertifyQaBase) => {
     const {path} = mutation_data;

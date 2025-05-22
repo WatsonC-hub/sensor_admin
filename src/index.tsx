@@ -9,6 +9,7 @@ import {BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// @ts-expect-error this is a workaround for the missing types
 import {registerSW} from 'virtual:pwa-register';
 
 import NetworkStatus from '~/components/NetworkStatus';

@@ -91,7 +91,7 @@ const ImagePage = () => {
         dataUri={dataUri}
         handleCloseSave={() => {
           setOpenSave(false);
-          setdataUri('');
+          setdataUri(null);
           setShowForm(null);
         }}
       />

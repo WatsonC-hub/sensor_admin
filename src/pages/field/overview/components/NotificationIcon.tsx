@@ -4,15 +4,6 @@ import {IconDetails} from '~/features/notifications/types';
 import {getColor, getIcon} from '~/features/notifications/utils';
 //Imports
 
-export const statusStyling = (flagColor: string) => {
-  return {
-    bgcolor: flagColor,
-    textAlign: 'center',
-    // width: 36,
-    // height: 36,
-  };
-};
-
 const flagStyling = (iconDetails: IconDetails) => {
   return {
     bgcolor: getColor(iconDetails),
@@ -22,7 +13,7 @@ const flagStyling = (iconDetails: IconDetails) => {
   };
 };
 
-export const CircleBox = ({
+const CircleBox = ({
   children,
   sx,
   padding = '0.0em',

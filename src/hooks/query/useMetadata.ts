@@ -4,7 +4,7 @@ import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
-export type Metadata = {
+type Metadata = {
   loc_id: number;
   loc_name: string;
   mainloc: string;
@@ -33,21 +33,7 @@ export type Metadata = {
   unit_uuid: string | null;
 };
 
-export type TimeseriesMetadata = {
-  loc_id: number;
-  loc_name: string;
-  ts_id: number | undefined;
-  tstype_id: number;
-  tstype_name: string;
-  sensor_depth_m: number;
-  maalepunktskote: number;
-  ts_name: string;
-  calculated: boolean;
-  batteriskift: string;
-  unit: string;
-};
-
-export type LocationMetadata = {
+type LocationMetadata = {
   loc_id: number;
   loc_name: string;
   boreholeno: string | undefined;
@@ -86,7 +72,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
   });
 };
 
-export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
+const locationMetadataQueryOptions = (loc_id: number | undefined) => {
   const {ts_id} = useAppContext([], ['ts_id']);
   return queryOptions({
     queryKey: ['location_data', loc_id],

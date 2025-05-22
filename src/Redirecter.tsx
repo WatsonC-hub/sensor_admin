@@ -31,9 +31,11 @@ const Redirecter = () => {
         <Route
           path="stamdata"
           element={
-            <AppContext.Provider value={{}}>
-              <OpretStamdata />
-            </AppContext.Provider>
+            <>
+              <NavBar>
+                <NavBar.Logo />
+              </NavBar>
+            </>
           }
         />
 
@@ -45,15 +47,8 @@ const Redirecter = () => {
             </>
           }
         />
-        <Route
-          path="/admin/*"
-          element={
-            <>
-              <SensorAdmin />
-            </>
-          }
-        />
-        <Route path="/:labelid" element={<ScanComponent />} /> */}
+
+        <Route path="/:labelid" element={<ScanComponent />} />
       </Routes>
     </>
   );

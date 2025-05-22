@@ -31,7 +31,8 @@ const NotificationList = () => {
   const {data: metadata} = useTimeseriesData();
 
   const {data, isPending} = useLocationNotificationOverview(metadata?.loc_id);
-  const handleClick = (event) => {
+
+  const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -66,13 +67,13 @@ const NotificationList = () => {
   );
 
   const mapped = map(grouped, (group) => {
-    return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY));
+    return maxBy(group, (item) => (item.dato ? new Date(item.dato) : Number.NEGATIVE_INFINITY))!;
   });
   const concat = mapped;
   const notifications = sortBy(concat, (item) => item.dato).reverse();
 
   // Find index of max flag in notificaitons
-  const maxFlagIndex = notifications?.reduce(
+  const maxFlagIndex = notifications.reduce(
     (iMax, x, i, arr) => (x.flag > arr[iMax].flag ? i : iMax),
     0
   );
@@ -160,7 +161,7 @@ const NotificationList = () => {
                 secondary={
                   splitted[splitted.length - 1].replace('-', '').trim() +
                   ' - ' +
-                  notification.dato.slice(0, 10)
+                  notification.dato?.slice(0, 10)
                 }
               />
               {/* <Typography variant="caption">{}</Typography> */}

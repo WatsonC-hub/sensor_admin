@@ -9,7 +9,7 @@ interface ParkeringBase {
   data?: any;
 }
 
-export interface ParkeringPost extends ParkeringBase {
+interface ParkeringPost extends ParkeringBase {
   data: {
     x: number;
     y: number;
@@ -23,7 +23,7 @@ interface ParkeringPut extends ParkeringBase {
   };
 }
 
-export const parkeringPostOptions = {
+const parkeringPostOptions = {
   mutationKey: ['parkering_post'],
   mutationFn: async (mutation_data: ParkeringPost) => {
     const {data} = mutation_data;
@@ -32,7 +32,7 @@ export const parkeringPostOptions = {
   },
 };
 
-export const parkeringPutOptions = {
+const parkeringPutOptions = {
   mutationKey: ['parkering_put'],
   mutationFn: async (mutation_data: ParkeringPut) => {
     const {path, data} = mutation_data;
@@ -41,7 +41,7 @@ export const parkeringPutOptions = {
   },
 };
 
-export const parkeringDelOptions = {
+const parkeringDelOptions = {
   mutationKey: ['parkering_del'],
   mutationFn: async (mutation_data: ParkeringBase) => {
     const {path} = mutation_data;

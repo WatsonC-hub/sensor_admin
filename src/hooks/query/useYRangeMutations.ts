@@ -4,18 +4,27 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {rerunToast} from '~/helpers/toasts';
 
-export const yRangePostOptions = {
-  mutationKey: 'y_range_post',
-  mutationFn: async (mutation_data) => {
+type YRangePayload = {
+  path: string;
+  data: {
+    mincutoff: number;
+    maxcutoff: number;
+    comment?: string | undefined;
+  };
+};
+
+const yRangePostOptions = {
+  mutationKey: ['y_range_post'],
+  mutationFn: async (mutation_data: YRangePayload) => {
     const {path, data} = mutation_data;
     const {data: res} = await apiClient.post(`/sensor_admin/qa_minmax/${path}`, data);
     return res;
   },
 };
 
-export const yRangeDelOptions = {
-  mutationKey: 'y_range_del',
-  mutationFn: async (mutation_data) => {
+const yRangeDelOptions = {
+  mutationKey: ['y_range_del'],
+  mutationFn: async (mutation_data: YRangePayload) => {
     const {path} = mutation_data;
     const {data: res} = await apiClient.delete(`/sensor_admin/qa_minmax/${path}`);
     return res;

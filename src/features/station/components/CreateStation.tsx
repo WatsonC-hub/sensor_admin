@@ -244,7 +244,7 @@ const CreateStation = () => {
   const handleStamdataSubmit = async () => {
     const isLocationValid = await triggerLocation();
     const isTimeseriesValid = isTimeseriesDirty ? await triggerTimeseries() : false;
-    const isUnitValid = isUnitDirty ? await triggerUnit() : false;
+    const isUnitValid = await triggerUnit();
 
     if (!isLocationValid || !isTimeseriesValid || !isUnitValid) {
       return;
@@ -454,7 +454,7 @@ const CreateStation = () => {
               onClick={async () => {
                 // Handle submit based on the active step
                 // But this also means that the user can fill out the form, but still only sumbit the first step
-                console.log('location_errors', locationErrors);
+
                 if (activeStep === 0) {
                   const location_valid = await triggerLocation();
                   if (!location_valid) {
@@ -470,7 +470,7 @@ const CreateStation = () => {
                   const location_valid = await triggerLocation();
                   const isWaterlevel = tstype_id === 1;
                   const isWatlevmpValid = isWaterlevel ? await triggerWatlevmp() : true;
-                  console.log('location_errors', locationErrors);
+
                   if (!timeseries_valid || !location_valid || !isWatlevmpValid) {
                     return;
                   }

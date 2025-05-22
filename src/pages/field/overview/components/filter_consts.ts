@@ -31,4 +31,4 @@ const defaultMapFilter: Filter = {
 };
 
 export {defaultMapFilter};
-export type {Inderterminate, Filter};
+export type {Filter};

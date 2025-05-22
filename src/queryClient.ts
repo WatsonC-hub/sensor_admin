@@ -1,10 +1,5 @@
 import {createSyncStoragePersister} from '@tanstack/query-sync-storage-persister';
-import {
-  MutationCache,
-  QueryClient,
-  UseMutationOptions,
-  UseQueryOptions,
-  UseQueryResult,
+import {MutationCache, QueryClient  UseQueryResult
 } from '@tanstack/react-query';
 import axios, {AxiosError} from 'axios';
 import {toast} from 'react-toastify';

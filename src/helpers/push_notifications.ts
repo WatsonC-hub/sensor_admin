@@ -12,7 +12,7 @@ export async function askPermission() {
   });
 }
 
-const urlBase64ToUint8Array = (base64String) => {
+const urlBase64ToUint8Array = (base64String: string) => {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
@@ -37,7 +37,7 @@ export function subscribeUserToPush() {
         ),
       };
 
-      return registration.pushManager.subscribe(subscribeOptions);
+      return registration?.pushManager.subscribe(subscribeOptions);
     })
     .then(function (pushSubscription) {
       console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
@@ -46,7 +46,7 @@ export function subscribeUserToPush() {
     });
 }
 
-export async function sendSubscriptionToBackEnd(subscription) {
+export async function sendSubscriptionToBackEnd(subscription: PushSubscription | undefined) {
   const response = await apiClient.post('/notifications/subscribe', {
     subscription: JSON.stringify(subscription),
   });
@@ -55,7 +55,7 @@ export async function sendSubscriptionToBackEnd(subscription) {
 
 export async function unsubscribeUserFromPush() {
   const registration = await navigator.serviceWorker.getRegistration();
-  const subscription = await registration.pushManager.getSubscription();
+  const subscription = await registration?.pushManager.getSubscription();
   if (subscription) {
     await subscription.unsubscribe();
     await apiClient.post('/notifications/unsubscribe', {

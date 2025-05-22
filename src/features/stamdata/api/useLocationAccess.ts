@@ -17,7 +17,7 @@ interface LocationAccessPut extends LocationAccessBase {
   data: Access;
 }
 
-export const locationAccessPostOptions = {
+const locationAccessPostOptions = {
   mutationKey: ['location_access_post'],
   mutationFn: async (mutation_data: LocationAccessPost) => {
     const {path, data} = mutation_data;
@@ -29,7 +29,7 @@ export const locationAccessPostOptions = {
   },
 };
 
-export const locationAccessPutOptions = {
+const locationAccessPutOptions = {
   mutationKey: ['location_access_put'],
   mutationFn: async (mutation_data: LocationAccessPut) => {
     const {path, data} = mutation_data;
@@ -41,7 +41,7 @@ export const locationAccessPutOptions = {
   },
 };
 
-export const locationAccessDelOptions = {
+const locationAccessDelOptions = {
   mutationKey: ['location_access_del'],
   mutationFn: async (mutation_data: LocationAccessBase) => {
     const {path} = mutation_data;
