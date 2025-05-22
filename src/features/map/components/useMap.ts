@@ -560,7 +560,7 @@ const useMap = <TData extends object>(
         mapRef.current.remove();
       }
     };
-  }, []);
+  }, [mapRef.current == null]);
 
   useEffect(() => {
     plotRoutesInLayer();

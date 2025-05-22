@@ -19,7 +19,6 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/da';
 import CreateItineraryDialog from './CreateItineraryDialog';
 import Button from '~/components/Button';
-import {daDK} from '@mui/x-date-pickers/locales';
 
 export function Droppable({id, children}: {id: string; children: ReactNode}) {
   const {isDropTarget, ref: setNodeRef} = useDroppable({
