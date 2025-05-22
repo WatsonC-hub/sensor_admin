@@ -6,7 +6,23 @@ import moment from 'moment';
 
 import {pejlingGetOptions} from '~/features/pejling/api/usePejling';
 import {tilsynGetOptions} from '~/features/tilsyn/api/useTilsyn';
-import {FieldLocation} from '~/types';
+
+type FieldLocation = {
+  loc_id?: number;
+  loc_name: string;
+  mainloc: string;
+  subloc: string;
+  subsubloc: string;
+  x: number;
+  y: number;
+  groups: string[];
+  terrainqual: string;
+  terrainlevel: number;
+  description: string;
+  loctype_id: number;
+  initial_project_no: string | null;
+};
+
 interface LocationData {
   data: Array<FieldLocation>;
   pending: boolean;
