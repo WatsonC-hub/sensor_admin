@@ -12,6 +12,10 @@ type LevelCorrectionPayload = {
   };
 };
 
+type LevelCorrectionDelPayload = {
+  path: string;
+};
+
 const levelCorrectionPostOptions = {
   mutationKey: ['level_correction_post'],
   mutationFn: async (mutation_data: LevelCorrectionPayload) => {
@@ -32,7 +36,7 @@ const levelCorrectionPutOptions = {
 
 const levelCorrectionDelOptions = {
   mutationKey: ['level_correction_del'],
-  mutationFn: async (mutation_data: LevelCorrectionPayload) => {
+  mutationFn: async (mutation_data: LevelCorrectionDelPayload) => {
     const {path} = mutation_data;
     const {data: res} = await apiClient.delete(`/sensor_admin/qa_levelcorrection/${path}`);
     return res;
