@@ -6,9 +6,9 @@ import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
-import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
+// import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
 import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
-import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
+// import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {useLocationNotificationOverview} from '~/hooks/query/useNotificationOverview';
@@ -20,9 +20,9 @@ import {getColor} from '~/features/notifications/utils';
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
-  const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
-  const [selectedNotification /*, setSelectedNotification*/] = useState(null);
+  // const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+  // const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
+  // const [selectedNotification /*, setSelectedNotification*/] = useState(null);
   const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
 
   let loc_id = undefined;
@@ -49,9 +49,9 @@ const NotificationList = () => {
     setModalOpen(false);
   };
 
-  const closeUpdateModal = () => {
-    setUpdateModalOpen(false);
-  };
+  // const closeUpdateModal = () => {
+  //   setUpdateModalOpen(false);
+  // };
 
   if (loc_id == undefined) {
     loc_id = data?.filter((elem) => elem.ts_id == ts_id)[0]?.loc_id;
@@ -216,7 +216,7 @@ const NotificationList = () => {
         })}
       </Menu>
       {isModalOpen && <CreateManualTaskModal open={isModalOpen} closeModal={closeModal} />}
-      {isUpdateModalOpen && (
+      {/* {isUpdateModalOpen && (
         <UpdateNotificationModal
           open={isUpdateModalOpen}
           closeModal={closeUpdateModal}
@@ -229,7 +229,7 @@ const NotificationList = () => {
           closeModal={() => setMakeTaskModalOpen(false)}
           notification={selectedNotification}
         />
-      )}
+      )} */}
     </div>
   );
 };

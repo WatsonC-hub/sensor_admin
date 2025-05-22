@@ -7,7 +7,7 @@ import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
-import L, {marker} from 'leaflet';
+import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import './L.basemapControl';
@@ -36,7 +36,7 @@ import {
 } from '../mapConsts';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
-import {getNotificationIcon, setIconSize} from '../utils';
+import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';

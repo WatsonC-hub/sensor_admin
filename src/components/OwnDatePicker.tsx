@@ -30,7 +30,7 @@ const OwnDatePicker = ({
   sx,
 }: OwnDatePickerProps) => {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
       <TextField
         label={label}
         type="datetime-local"

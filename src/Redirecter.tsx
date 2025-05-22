@@ -1,14 +1,13 @@
 import React, {useEffect} from 'react';
 import {Route, Routes, useLocation} from 'react-router-dom';
 
+import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useUser} from './features/auth/useUser';
 import TasksPage from './pages/admin/opgaver/TasksPage';
-import OpretStamdata from './pages/field/stamdata/OpretStamdata';
-import {AppContext} from './state/contexts';
 
 const Redirecter = () => {
   const {home} = useNavigationFunctions();
@@ -48,7 +47,7 @@ const Redirecter = () => {
           }
         />
 
-        <Route path="/:labelid" element={<ScanComponent />} />
+        <Route path="/:labelid" element={<ScanComponent />} />*/}
       </Routes>
     </>
   );

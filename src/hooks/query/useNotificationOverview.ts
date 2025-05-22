@@ -108,7 +108,7 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
   return query;
 };
 
-export const useLocationNotificationOverview = (loc_id: number) => {
+export const useLocationNotificationOverview = (loc_id: number | undefined) => {
   return useQuery<Notification[]>({
     queryKey: ['overblik', loc_id],
     queryFn: async () => {

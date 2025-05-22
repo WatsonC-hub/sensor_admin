@@ -1,8 +1,8 @@
 import React, {Children, cloneElement} from 'react';
 import {Box, IconButton, SxProps} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import useWindowDimensions from '~/hooks/useWindowDimensions';
 import CloseIcon from '@mui/icons-material/Close';
+import useWindowDimensions from '~/hooks/useWindowDimensions';
 
 type WindowManagerProps = {
   children: React.ReactElement<WindowProps>[];

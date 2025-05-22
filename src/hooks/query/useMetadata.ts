@@ -72,7 +72,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
   });
 };
 
-const locationMetadataQueryOptions = (loc_id: number | undefined) => {
+export const locationMetadataQueryOptions = (loc_id: number | undefined) => {
   const {ts_id} = useAppContext([], ['ts_id']);
   return queryOptions({
     queryKey: ['location_data', loc_id],
