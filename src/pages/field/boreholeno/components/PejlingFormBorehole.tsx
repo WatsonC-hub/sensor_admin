@@ -82,9 +82,9 @@ export default function PejlingFormBorehole({
     }
   }, [formData.gid, mpData]);
 
-  const handleDateChange = (date: string) => {
+  const handleDateChange = (date: Date) => {
     if (moment(date).isValid()) {
-      changeFormData('timeofmeas', date);
+      changeFormData('timeofmeas', date.toISOString());
     }
 
     const mp = mpData?.filter((elem) => {
@@ -253,8 +253,8 @@ export default function PejlingFormBorehole({
                       Tidspunkt for pejling
                     </Typography>
                   }
-                  value={formData.timeofmeas}
-                  onChange={(date: string) => handleDateChange(date)}
+                  value={moment(formData.timeofmeas).toDate()}
+                  onChange={(date: Date) => handleDateChange(date)}
                   error={pejlingOutOfRange}
                   helperText={pejlingOutOfRange ? 'Dato ligger uden for et målepunkt' : ''}
                 />
@@ -288,16 +288,18 @@ export default function PejlingFormBorehole({
                           Tidspunkt for pumpestop
                         </Typography>
                       }
-                      error={formData.pumpstop && formData.pumpstop > formData.timeofmeas}
+                      error={
+                        formData.pumpstop && formData.pumpstop > formData.timeofmeas ? true : false
+                      }
                       helperText={
                         formData.pumpstop && formData.pumpstop > formData.timeofmeas
                           ? 'Pumpestop skal være før pejletidspunkt'
                           : ''
                       }
-                      value={formData.pumpstop}
-                      onChange={(date: string) => changeFormData('pumpstop', date)}
+                      value={moment(formData.pumpstop).toDate()}
+                      onChange={(date) => changeFormData('pumpstop', date.toISOString())}
                       disabled={!!formData.service}
-                      max={formData.timeofmeas}
+                      max={moment(formData.timeofmeas).toDate()}
                     />
                   </>
                 )}

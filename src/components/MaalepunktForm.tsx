@@ -29,13 +29,13 @@ export default function MaalepunktForm({
     }, 2500);
   };
 
-  const handleStartdateChange = (date: string) => {
+  const handleStartdateChange = (date: Date) => {
     if (moment(date).isValid()) {
       changeFormData('startdate', date);
     }
   };
 
-  const handleEnddateChange = (date: string) => {
+  const handleEnddateChange = (date: Date) => {
     if (moment(date).isValid()) {
       changeFormData('enddate', date);
     }
@@ -87,8 +87,8 @@ export default function MaalepunktForm({
           <Grid item xs={12} sm={6}>
             <OwnDatePicker
               label={'Start dato'}
-              value={formData.startdate}
-              onChange={(date: string) => handleStartdateChange(date)}
+              value={moment(formData.startdate).toDate()}
+              onChange={(date: Date) => handleStartdateChange(date)}
               fullWidth
             />
           </Grid>
@@ -96,8 +96,8 @@ export default function MaalepunktForm({
             <Grid item xs={12} sm={6}>
               <OwnDatePicker
                 label={'Slut dato'}
-                value={formData.enddate}
-                onChange={(date: string) => handleEnddateChange(date)}
+                value={moment(formData.enddate).toDate()}
+                onChange={(date: Date) => handleEnddateChange(date)}
                 fullWidth
               />
             </Grid>
