@@ -30,22 +30,23 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
     const mpData = getValues();
     const mutationOptions = {
       onSuccess: () => {
+        reset(initialWatlevmpData());
         setShowForm(null);
       },
     };
 
     const data = {
       ...mpData,
-      startDate: moment(mpData.startDate).toISOString(),
-      endDate: moment(mpData.endDate).toISOString(),
+      startDate: moment(mpData.startdate).toISOString(),
+      endDate: moment(mpData.enddate).toISOString(),
     };
 
     if (mpData.gid === undefined) {
       const payload = {
         data: {
           ...data,
-          startDate: moment(mpData.startDate).toISOString(),
-          endDate: moment(mpData.endDate).toISOString(),
+          startDate: moment(mpData.startdate).toISOString(),
+          endDate: moment(mpData.enddate).toISOString(),
         },
         path: `${ts_id}`,
       };
@@ -61,7 +62,10 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
 
   return (
     <Box maxWidth={600} margin="auto">
-      <Form formMethods={formMethods} label="Indberet målepunkt">
+      <Form
+        formMethods={formMethods}
+        label={defaultValues?.gid ? 'Rediger målepunkt' : 'Indberet målepunkt'}
+      >
         <Form.FormInput
           name="elevation"
           label="Pejlepunkt [m]"
@@ -74,12 +78,12 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
           }}
         />
         <Form.FormInput
-          name="startDate"
+          name="startdate"
           label={defaultValues?.gid !== undefined ? 'Start dato' : 'Dato'}
           type="datetime-local"
         />
         {defaultValues?.gid !== undefined && (
-          <Form.FormInput name="endDate" label="Slut dato" type="datetime-local" />
+          <Form.FormInput name="enddate" label="Slut dato" type="datetime-local" />
         )}
 
         <Form.FormInput

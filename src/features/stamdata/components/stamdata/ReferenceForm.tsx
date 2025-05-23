@@ -14,11 +14,12 @@ import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
 import {Maalepunkt} from '~/types';
+import moment from 'moment';
 
 const schema = z.object({
   gid: z.number().optional(),
-  startDate: z.string(),
-  endDate: z.string().optional(),
+  startdate: z.string(),
+  enddate: z.string().default(moment('2099-01-01').format('YYYY-MM-DDTHH:mm')),
   elevation: z.number().nullable(),
   mp_description: z.string().optional(),
 });
@@ -55,7 +56,6 @@ export default function ReferenceForm() {
   };
 
   const handleEdit = (data: Maalepunkt) => {
-    console.log('handleEdit', data);
     reset(data);
     setShowForm(true);
   };
