@@ -17,10 +17,8 @@ const SyncForm = ({formMethods, loctype_id, tstype_id}: SyncFormProps) => {
   return (
     <Box>
       <Form formMethods={formMethods} label="Synkronisering" gridSizes={12}>
-        <Form.Checkbox key="dmp" name="dmp" label="DMP" />
-        {loctype_id === 9 && isWaterLevel && (
-          <Form.Checkbox key="jupiter" name="jupiter" label="Jupiter" />
-        )}
+        <Form.Checkbox name="dmp" label="DMP" />
+        {loctype_id === 9 && isWaterLevel && <Form.Checkbox name="jupiter" label="Jupiter" />}
       </Form>
     </Box>
   );

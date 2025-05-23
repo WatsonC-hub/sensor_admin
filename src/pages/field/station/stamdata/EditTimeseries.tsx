@@ -75,8 +75,8 @@ const EditTimeseries = () => {
   const SyncMethods = useForm<SyncFormValues>({
     resolver: zodResolver(SyncSchema),
     defaultValues: {
-      dmp: metadata?.syncDmp,
-      jupiter: metadata?.syncJupiter,
+      dmp: metadata?.syncDmp ?? false,
+      jupiter: metadata?.syncJupiter ?? false,
     },
     mode: 'onChange',
   });
