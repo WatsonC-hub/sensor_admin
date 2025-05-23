@@ -11,12 +11,7 @@ type UpdateTask = {
   notify_type?: 'obs' | 'primary' | 'station' | null | undefined;
 };
 
-type TaskUpdateMutation = {
-  path: string;
-  data: UpdateTask;
-};
-
-export const taskMutationPostOptions = {
+const taskMutationPostOptions = {
   mutationKey: ['task_mutation_post'],
   mutationFn: async (mutation_data: any) => {
     const {path, data} = mutation_data;
@@ -25,20 +20,11 @@ export const taskMutationPostOptions = {
   },
 };
 
-export const taskMutationMarkAsDoneOptions = {
+const taskMutationMarkAsDoneOptions = {
   mutationKey: ['task_mutation_mark_as_done'],
   mutationFn: async (mutation_data: any) => {
     const {path, data} = mutation_data;
     const {data: res} = await apiClient.put(`/sensor_admin/task/${path}/mark_as_done`, data);
-    return res;
-  },
-};
-
-export const taskMutationUpdate = {
-  mutationKey: ['task_mutation_update'],
-  mutationFn: async (variables: TaskUpdateMutation) => {
-    const {path, data} = variables;
-    const {data: res} = await apiClient.put<TaskUpdateMutation>(`/sensor_admin/task/${path}`, data);
     return res;
   },
 };
@@ -72,19 +58,6 @@ export const useTaskMutation = () => {
       toast.success('Opgave færdiggjort');
     },
   });
-
-  // const update = useMutation({
-  //   ...taskMutationUpdate,
-  //   onError: () => {
-  //     toast.error('Noget gik galt');
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['overblik'],
-  //     });
-  //     //   toast.success('Opdateret');
-  //   },
-  // });
 
   const update = useMutation({
     mutationKey: ['task_mutation_update'],

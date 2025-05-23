@@ -78,7 +78,11 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
                     <>
                       <Button
                         bttype="link"
-                        href={'https://admin.watsonc.dk/projects'}
+                        href={
+                          selectedValue !== null
+                            ? `https://www.watsonc.dk/calypso/projekt/?project=${selectedValue?.project_no}`
+                            : 'https://admin.watsonc.dk/projects'
+                        }
                         target="_blank"
                         rel="noopener"
                         sx={{textTransform: 'none'}}

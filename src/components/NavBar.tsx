@@ -52,7 +52,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
   );
 };
 
-export const HomeButton = () => {
+const HomeButton = () => {
   const {field} = useNavigationFunctions();
 
   return (
@@ -70,7 +70,7 @@ export const HomeButton = () => {
   );
 };
 
-export const AppBarLayout = ({children}: {children?: ReactNode}) => {
+const AppBarLayout = ({children}: {children?: ReactNode}) => {
   return (
     <AppBar position="sticky" enableColorOnDark sx={{zIndex: (theme) => theme.zIndex.drawer + 1}}>
       <Toolbar
@@ -129,7 +129,7 @@ export const AppBarLayout = ({children}: {children?: ReactNode}) => {
 //   );
 // };
 
-export const NavBarMenu = ({
+const NavBarMenu = ({
   highligtFirst,
   items,
 }: {

@@ -5,22 +5,13 @@ import {useQueryClient, useQuery, useMutation} from '@tanstack/react-query';
 import moment from 'moment';
 import {useForm, FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {z} from 'zod';
+import {z, ZodObject} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
 import {useAppContext} from '~/state/contexts';
-
-const unitEndSchema = z.object({
-  enddate: z.string(),
-  change_reason: z.number({required_error: 'Vælg årsag'}),
-  action: z.string({required_error: 'Vælg handling'}),
-  comment: z.string({required_error: 'Skriv en kommentar'}),
-});
-
-type UnitEndFormValues = z.infer<typeof unitEndSchema>;
 
 interface UnitEndDateDialogProps {
   openDialog: boolean;
@@ -36,6 +27,26 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   const queryClient = useQueryClient();
   const {ts_id} = useAppContext(['ts_id']);
   const user = useUser();
+
+  let unitEndSchema: ZodObject<any>;
+
+  const requiredUnitEndSchema = z.object({
+    enddate: z.string(),
+    change_reason: z.number({required_error: 'Vælg årsag'}),
+    action: z.string({required_error: 'Vælg handling'}),
+    comment: z.string().optional(),
+  });
+
+  type UnitEndFormValues = z.infer<typeof requiredUnitEndSchema>;
+
+  unitEndSchema = requiredUnitEndSchema;
+
+  if (!user?.superUser) {
+    unitEndSchema = unitEndSchema.omit({
+      change_reason: true,
+      action: true,
+    });
+  }
 
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
@@ -171,7 +182,9 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
           <Button
             bttype="primary"
             startIcon={<SaveIcon />}
-            onClick={formMethods.handleSubmit(submit)}
+            onClick={formMethods.handleSubmit(submit, (errors) => {
+              console.log(errors);
+            })}
           >
             Gem
           </Button>

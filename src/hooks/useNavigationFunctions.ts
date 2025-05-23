@@ -5,7 +5,7 @@ export const useNavigationFunctions = () => {
   const navigate = useNavigate();
 
   const homeFunctions = {
-    home: () => navigate('/'),
+    home: () => navigate('/field'),
     register: () => navigate('/register'),
   };
 

@@ -20,7 +20,7 @@ function ImageViewer({images, deleteMutation, handleEdit}: ImageViewerProps) {
           <Grid2
             size={{
               mobile: 12,
-              laptop: 6,
+              laptop: images.length === 1 ? 12 : 6,
             }}
             key={elem.gid}
             display={'flex'}

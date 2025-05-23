@@ -17,15 +17,6 @@ import React from 'react';
 import {sensorColors, sensorLocationTypeColors} from '~/consts';
 //Imports
 
-export const statusStyling = (flagColor: string) => {
-  return {
-    bgcolor: flagColor,
-    textAlign: 'center',
-    // width: 36,
-    // height: 36,
-  };
-};
-
 const flagStyling = (iconDetails: IconDetails) => {
   return {
     bgcolor: getColor(iconDetails),
@@ -35,7 +26,7 @@ const flagStyling = (iconDetails: IconDetails) => {
   };
 };
 
-export const CircleBox = ({
+const CircleBox = ({
   children,
   sx,
   padding = '0.0em',

@@ -1,6 +1,5 @@
 import {
   AddCircle,
-  Menu,
   PhotoLibraryRounded,
   PlaylistAddCheck,
   StraightenRounded,
@@ -9,7 +8,6 @@ import {
 } from '@mui/icons-material';
 import {
   Drawer,
-  Toolbar,
   Box,
   List,
   ListItem,
@@ -18,8 +16,6 @@ import {
   Divider,
   ListItemButton,
   ClickAwayListener,
-  Tooltip,
-  IconButton,
   Typography,
 } from '@mui/material';
 import {useAtom} from 'jotai';

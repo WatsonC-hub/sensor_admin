@@ -13,20 +13,25 @@ interface MaalepunktBase {
 }
 
 interface MaalepunktPost extends MaalepunktBase {
-  data: {startdate: string; enddate: string; elevation?: number; mp_description: string};
+  data: {
+    startDate: string;
+    endDate: string;
+    elevation: number | null;
+    mp_description?: string;
+  };
 }
 
 interface MaalepunktPut extends MaalepunktPost {
   data: {
-    gid: number;
-    startdate: string;
-    enddate: string;
-    elevation?: number;
-    mp_description: string;
+    gid?: number;
+    startDate: string;
+    endDate: string;
+    elevation: number | null;
+    mp_description?: string;
   };
 }
 
-export const maalepunktPostOptions = {
+const maalepunktPostOptions = {
   mutationKey: ['maalepunkt_post'],
   mutationFn: async (mutation_data: MaalepunktPost) => {
     const {path, data} = mutation_data;
@@ -35,7 +40,7 @@ export const maalepunktPostOptions = {
   },
 };
 
-export const maalepunktPutOptions = {
+const maalepunktPutOptions = {
   mutationKey: ['maalepunkt_put'],
   mutationFn: async (mutation_data: MaalepunktPut) => {
     const {path, data} = mutation_data;
@@ -44,7 +49,7 @@ export const maalepunktPutOptions = {
   },
 };
 
-export const maalepunktDelOptions = {
+const maalepunktDelOptions = {
   mutationKey: ['maalepunkt_del'],
   mutationFn: async (mutation_data: MaalepunktBase) => {
     const {path} = mutation_data;
@@ -64,8 +69,8 @@ export const getMaalepunktOptions = (ts_id: number | undefined) =>
       return data.map((m) => {
         return {
           ...m,
-          startdate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
-          enddate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
+          startDate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
+          endDate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
         };
       });
     },

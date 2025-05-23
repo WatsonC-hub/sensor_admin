@@ -190,10 +190,12 @@ const Measurement = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => 
       label={isWaterLevel ? 'Pejling (nedstik)' : 'Måling'}
       rules={{required: !notPossible}}
       disabled={notPossible || (isWaterLevel && pejlingOutOfRange)}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="start">{isWaterLevel ? 'm' : stationUnit}</InputAdornment>
-        ),
+      slotProps={{
+        input: {
+          endAdornment: (
+            <InputAdornment position="start">{isWaterLevel ? 'm' : stationUnit}</InputAdornment>
+          ),
+        },
       }}
       fullWidth
       {...props}

@@ -16,7 +16,7 @@ import RenderActions from '~/helpers/RowActions';
 import {useStatefullTableAtom} from '~/hooks/useStatefulTableAtom';
 import {useTable} from '~/hooks/useTable';
 
-export type Kontrol = {
+type Kontrol = {
   comment: string;
   gid: number;
   disttowatertable_m: number;

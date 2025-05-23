@@ -9,6 +9,7 @@ import TransferList from '~/features/stamdata/components/stationDetails/ressourc
 import {ressourcer} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
+import {Ressourcer} from './multiselect/types';
 
 const Huskeliste = () => {
   const {isMobile} = useBreakpoints();
@@ -21,7 +22,7 @@ const Huskeliste = () => {
 
   const schema = ressourcer;
   const result = schema.safeParse(related);
-  const formMethods = useForm({
+  const formMethods = useForm<{ressourcer: Ressourcer[]}>({
     resolver: zodResolver(schema),
     defaultValues: {
       ressourcer: result.success ? result.data : [],

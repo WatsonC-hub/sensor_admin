@@ -33,7 +33,7 @@ interface TilsynPut extends TilsynPost {
   };
 }
 
-export const tilsynPostOptions = {
+const tilsynPostOptions = {
   mutationKey: ['tilsyn_post'],
   mutationFn: async (mutation_data: TilsynPost) => {
     const {path, data} = mutation_data;
@@ -42,7 +42,7 @@ export const tilsynPostOptions = {
   },
 };
 
-export const tilsynPutOptions = {
+const tilsynPutOptions = {
   mutationKey: ['tilsyn_put'],
   mutationFn: async (mutation_data: TilsynPut) => {
     const {path, data} = mutation_data;
@@ -51,7 +51,7 @@ export const tilsynPutOptions = {
   },
 };
 
-export const tilsynDelOptions = {
+const tilsynDelOptions = {
   mutationKey: ['tilsyn_del'],
   mutationFn: async (mutation_data: TilsynBase) => {
     const {path} = mutation_data;

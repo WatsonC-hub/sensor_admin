@@ -33,9 +33,9 @@ const NetworkStatus = () => {
     // return <WifiOffIcon />;
   }
 
-  prevStatus = online;
+  prevStatus! = online;
 
-  return;
+  return null;
 };
 
 export default NetworkStatus;
