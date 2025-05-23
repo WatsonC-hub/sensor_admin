@@ -10,15 +10,15 @@ type SyncFormProps = {
   tstype_id?: number | undefined;
 };
 
-const Form = createTypedForm<SyncFormValues>();
-
 const SyncForm = ({formMethods, loctype_id, tstype_id}: SyncFormProps) => {
+  const Form = createTypedForm<SyncFormValues>();
+
   const isWaterLevel = tstype_id === 1;
   return (
     <Box>
       <Form formMethods={formMethods} label="Synkronisering" gridSizes={12}>
-        <Form.Checkbox name="dmp" label="DMP" />
-        {loctype_id === 9 && isWaterLevel && <Form.Checkbox name="jupiter" label="Jupiter" />}
+        <Form.Checkbox name="sync_dmp" label="DMP" />
+        {loctype_id === 9 && isWaterLevel && <Form.Checkbox name="sync_jupiter" label="Jupiter" />}
       </Form>
     </Box>
   );

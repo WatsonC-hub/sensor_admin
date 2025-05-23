@@ -31,8 +31,8 @@ type Metadata = {
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
-  syncDmp: boolean | null;
-  syncJupiter: boolean | null;
+  sync_dmp: boolean | null;
+  sync_jupiter: boolean | null;
 };
 
 type LocationMetadata = {
@@ -59,8 +59,8 @@ type LocationMetadata = {
     prefix: string | null;
     tstype_name: string;
     intakeno: number;
-    syncDmp: boolean | null;
-    syncJupiter: boolean | null;
+    sync_dmp: boolean | null;
+    sync_jupiter: boolean | null;
   }>;
 };
 

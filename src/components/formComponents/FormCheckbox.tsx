@@ -1,15 +1,22 @@
-import {GridBaseProps, Grid2, FormControlLabel, Checkbox} from '@mui/material';
+import {GridBaseProps, Grid2, FormControlLabel, Checkbox, CheckboxProps, Box} from '@mui/material';
 import React from 'react';
 import {FieldValues, useFormContext, Controller, Path} from 'react-hook-form';
 import {FormContext} from './const';
 
-type CheckboxProps<T extends FieldValues> = {
+type FormCheckboxProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   gridSizes?: GridBaseProps['size'];
-};
+  icon?: React.ReactNode;
+} & Omit<CheckboxProps, 'name' | 'checked' | 'onChange' | 'inputRef'>;
 
-const FormCheckbox = <T extends FieldValues>({name, label, gridSizes}: CheckboxProps<T>) => {
+const FormCheckbox = <T extends FieldValues>({
+  name,
+  label,
+  gridSizes,
+  icon,
+  ...props
+}: FormCheckboxProps<T>) => {
   const {control} = useFormContext<T>();
   const {gridSizes: contextGridSizes} = React.useContext(FormContext);
   return (
@@ -22,15 +29,21 @@ const FormCheckbox = <T extends FieldValues>({name, label, gridSizes}: CheckboxP
             render={({field}) => (
               <Checkbox
                 {...field}
-                checked={field.value ?? false}
+                checked={!!field.value}
                 onChange={(e) => {
                   field.onChange(e.target.checked);
                 }}
+                {...props}
               />
             )}
           />
         }
-        label={label}
+        label={
+          <Box sx={{display: 'flex', alignItems: 'center'}}>
+            {icon}
+            {label}
+          </Box>
+        }
       />
     </Grid2>
   );

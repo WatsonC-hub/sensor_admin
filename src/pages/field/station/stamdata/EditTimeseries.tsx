@@ -21,8 +21,8 @@ import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
 const SyncSchema = z.object({
-  dmp: z.boolean().nullable(),
-  jupiter: z.boolean().nullable(),
+  sync_dmp: z.boolean().optional(),
+  sync_jupiter: z.boolean().optional(),
 });
 
 export type SyncFormValues = z.infer<typeof SyncSchema>;
@@ -34,6 +34,8 @@ const EditTimeseries = () => {
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
   const size = isMobile ? 12 : 6;
+
+  console.log('EditTimeseries', metadata);
 
   const isSyncAvailable =
     metadata?.tstype_id === 1 ||
@@ -75,10 +77,10 @@ const EditTimeseries = () => {
   const SyncMethods = useForm<SyncFormValues>({
     resolver: zodResolver(SyncSchema),
     defaultValues: {
-      dmp: metadata?.syncDmp ?? false,
-      jupiter: metadata?.syncJupiter ?? false,
+      sync_dmp: metadata?.sync_dmp ?? undefined,
+      sync_jupiter: metadata?.sync_jupiter ?? undefined,
     },
-    mode: 'onChange',
+    mode: 'onTouched',
   });
 
   const {
@@ -104,6 +106,10 @@ const EditTimeseries = () => {
 
   useEffect(() => {
     if (metadata != undefined) {
+      resetSync({
+        sync_dmp: metadata?.sync_dmp ?? undefined,
+        sync_jupiter: metadata?.sync_jupiter ?? undefined,
+      });
       reset(defaultValues);
     }
   }, [metadata]);
