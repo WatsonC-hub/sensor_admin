@@ -28,7 +28,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   sx,
   className,
   InputLabelProps,
-  InputProps,
+  slotProps,
   onKeyDown,
   helperText,
   fullWidth = true,
@@ -100,21 +100,29 @@ const FormInput = <TFieldValues extends FieldValues>({
               }
               if (onKeyDown) onKeyDown(e);
             }}
-            InputProps={
-              type === 'number'
-                ? {
-                    sx: {
-                      '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-                        display: 'none',
-                      },
-                      '& input[type=number]': {
-                        MozAppearance: 'textfield',
-                      },
-                    },
-                    ...InputProps,
-                  }
-                : InputProps
-            }
+            slotProps={{
+              input: {
+                ...slotProps?.input,
+                sx:
+                  type === 'number'
+                    ? {
+                        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+                          display: 'none',
+                        },
+                        '& input[type=number]': {
+                          MozAppearance: 'textfield',
+                        },
+                      }
+                    : {},
+              },
+              inputLabel: {
+                shrink: true,
+                sx: {
+                  zIndex: 0,
+                },
+                ...slotProps?.inputLabel,
+              },
+            }}
             onChange={(e) => {
               if (type === 'number' && e.target.value !== '') {
                 onChange(transform(Number(e.target.value)));
