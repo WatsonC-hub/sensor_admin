@@ -1,28 +1,42 @@
+import {zodResolver} from '@hookform/resolvers/zod';
 import {AddCircle} from '@mui/icons-material';
-import moment from 'moment';
+import {useForm} from 'react-hook-form';
+import {z} from 'zod';
 import FabWrapper from '~/components/FabWrapper';
 
-import MaalepunktForm from '~/components/MaalepunktForm';
 import MaalepunktTableDesktop from '~/components/tableComponents/MaalepunktTableDesktop';
 import MaalepunktTableMobile from '~/components/tableComponents/MaalepunktTableMobile';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import WatlevMPForm from '~/features/station/components/watlevmp/WatlevMPForm';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import useFormData from '~/hooks/useFormData';
 import {useShowFormState} from '~/hooks/useQueryStateParameters';
 import {useAppContext} from '~/state/contexts';
+import {initialWatlevmpData} from './const';
+import {Maalepunkt} from '~/types';
+
+const schema = z.object({
+  gid: z.number().optional(),
+  startDate: z.string(),
+  endDate: z.string().optional(),
+  elevation: z.number().nullable(),
+  mp_description: z.string().optional(),
+});
+
+export type WatlevMPFormValues = z.infer<typeof schema>;
 
 export default function ReferenceForm() {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const {isMobile} = useBreakpoints();
   const [showForm, setShowForm] = useShowFormState();
-  const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
-    gid: -1,
-    startdate: () => moment().format('YYYY-MM-DDTHH:mm'),
-    enddate: () => moment('2099-01-01').format('YYYY-MM-DDTHH:mm'),
-    elevation: null,
-    mp_description: '',
+
+  const formMethods = useForm<WatlevMPFormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: initialWatlevmpData(),
+    mode: 'onTouched',
   });
+
+  const {reset} = formMethods;
 
   const {
     feature_permission_query: {data: permissions},
@@ -33,69 +47,22 @@ export default function ReferenceForm() {
 
   const {
     get: {data: watlevmp},
-    post: postWatlevmp,
-    put: putWatlevmp,
     del: deleteWatlevmp,
   } = useMaalepunkt();
 
-  const handleMaalepunktSubmit = () => {
-    const mutationOptions = {
-      onSuccess: () => {
-        resetMpData();
-        setShowForm(null);
-      },
-    };
-
-    if (mpData.gid === -1) {
-      const payload = {
-        data: {
-          ...mpData,
-          startdate: moment(mpData.startdate).toISOString(),
-          enddate: moment(mpData.enddate).toISOString(),
-        },
-        path: `${ts_id}`,
-      };
-      postWatlevmp.mutate(payload, mutationOptions);
-    } else {
-      const payload = {
-        data: mpData,
-        path: `${ts_id}/${mpData.gid}`,
-      };
-      putWatlevmp.mutate(payload, mutationOptions);
-    }
-  };
-
-  const handleMpCancel = () => {
-    resetMpData();
-    setShowForm(null);
-  };
-
   const handleDeleteMaalepunkt = (gid: number | undefined) => {
-    deleteWatlevmp.mutate(
-      {path: `${ts_id}/${gid}`},
-      {
-        onSuccess: () => {
-          resetMpData();
-        },
-      }
-    );
+    deleteWatlevmp.mutate({path: `${ts_id}/${gid}`});
   };
 
-  const handleEdit = (data: object) => {
-    setMpData(data);
+  const handleEdit = (data: Maalepunkt) => {
+    console.log('handleEdit', data);
+    reset(data);
     setShowForm(true);
   };
 
   return (
     <>
-      {showForm && (
-        <MaalepunktForm
-          formData={mpData}
-          changeFormData={changeMpData}
-          handleSubmit={handleMaalepunktSubmit}
-          handleCancel={handleMpCancel}
-        />
-      )}
+      {showForm && <WatlevMPForm formMethods={formMethods} />}
       {isMobile ? (
         <MaalepunktTableMobile
           data={watlevmp}

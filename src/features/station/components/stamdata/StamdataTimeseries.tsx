@@ -158,8 +158,10 @@ const SensorDepth = (
       name="sensor_depth_m"
       disabled={props.disabled}
       fullWidth
-      InputProps={{
-        endAdornment: <InputAdornment position="start">m</InputAdornment>,
+      slotProps={{
+        input: {
+          endAdornment: <InputAdornment position="start">m</InputAdornment>,
+        },
       }}
       {...props}
     />

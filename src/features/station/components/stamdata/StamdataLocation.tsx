@@ -205,6 +205,15 @@ const TerrainQuote = (
       type="number"
       required
       placeholder="Indtast terræn kote"
+      slotProps={{
+        input: {
+          endAdornment: (
+            <InputAdornment position="end">
+              <Typography>m</Typography>
+            </InputAdornment>
+          ),
+        },
+      }}
       {...props}
     />
   );
