@@ -84,6 +84,7 @@ const EditUnit = () => {
 
   const Submit = async (data: z.infer<typeof editUnitSchema>) => {
     const payload = {
+      gid: selectedUnit,
       ...data,
       startdate: moment(data.startdate).toISOString(),
       enddate: moment(data.enddate).toISOString(),
