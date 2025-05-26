@@ -10,9 +10,9 @@ type SyncFormProps = {
   tstype_id?: number | undefined;
 };
 
-const SyncForm = ({formMethods, loctype_id, tstype_id}: SyncFormProps) => {
-  const Form = createTypedForm<SyncFormValues>();
+const Form = createTypedForm<SyncFormValues>();
 
+const SyncForm = ({formMethods, loctype_id, tstype_id}: SyncFormProps) => {
   const isWaterLevel = tstype_id === 1;
   return (
     <Box>
