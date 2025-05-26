@@ -1,6 +1,5 @@
 import React, {useEffect} from 'react';
-import {Route, Routes, useLocation} from 'react-router-dom';
-import NavBar from '~/components/NavBar';
+import {Navigate, Route, Routes, useLocation} from 'react-router-dom';
 import ScanComponent from '~/components/ScanComponent';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import SensorField from '~/pages/field/SensorField';
@@ -33,16 +32,14 @@ const Redirecter = () => {
     <>
       <RemoveTrailingSlash />
       <Routes>
-        <Route
+        {/* <Route
           path="/"
           element={
             <>
-              <NavBar>
-                <NavBar.Logo />
-              </NavBar>
+              <Navigate to={'/field'} replace />
             </>
           }
-        />
+        /> */}
         <Route
           path="/field/*"
           element={
@@ -53,6 +50,14 @@ const Redirecter = () => {
         />
 
         <Route path="/:labelid" element={<ScanComponent />} />
+        <Route
+          path="*"
+          element={
+            <>
+              <Navigate to={'/field'} replace />
+            </>
+          }
+        />
       </Routes>
     </>
   );
