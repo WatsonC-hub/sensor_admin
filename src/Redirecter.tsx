@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
-import {Route, Routes, useLocation} from 'react-router-dom';
+import {Navigate, Route, Routes, useLocation} from 'react-router-dom';
 
-import NavBar from '~/components/NavBar';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
@@ -31,9 +30,7 @@ const Redirecter = () => {
           path="stamdata"
           element={
             <>
-              <NavBar>
-                <NavBar.Logo />
-              </NavBar>
+              <Navigate to={'/field'} replace />
             </>
           }
         />
@@ -48,6 +45,14 @@ const Redirecter = () => {
         />
 
         <Route path="/:labelid" element={<ScanComponent />} />*/}
+        <Route
+          path="*"
+          element={
+            <>
+              <Navigate to={'/'} replace />
+            </>
+          }
+        />
       </Routes>
     </>
   );

@@ -16,7 +16,7 @@ type User = {
   ressourcePermission: boolean;
 };
 
-const userQueryOptions = queryOptions({
+export const userQueryOptions = queryOptions({
   queryKey: ['user'],
   queryFn: async () => {
     const {data} = await apiClient.get<User>(`/auth/me/secure`);
