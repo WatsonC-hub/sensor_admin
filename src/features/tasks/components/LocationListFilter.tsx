@@ -19,6 +19,11 @@ const LocationListFilter = () => {
     getUsers: {data: taskUsers},
   } = useTasks();
 
+  const expandedUserList = [
+    ...(taskUsers !== undefined ? taskUsers : []),
+    {id: 'ikke tildelt', display_name: 'Ikke tildelt'},
+  ];
+
   return (
     <Box p={1} display={'flex'} flexDirection={'column'} gap={1}>
       <Typography variant={'h6'} fontWeight={'bold'}>
@@ -57,7 +62,7 @@ const LocationListFilter = () => {
 
         <ExtendedAutocomplete<TaskUser>
           labelKey="display_name"
-          options={taskUsers ?? []}
+          options={expandedUserList ?? []}
           getOptionLabel={(option) => option.display_name}
           getOptionKey={(option) => option.id}
           fullWidth={false}

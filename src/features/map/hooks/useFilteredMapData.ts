@@ -118,7 +118,10 @@ export const useFilteredMapData = () => {
       filteredList = filteredList.filter((elem) => {
         if ('loc_id' in elem) {
           return tasks?.some(
-            (task) => task.loc_id === elem.loc_id && task.assigned_to === assignedToListFilter.id
+            (task) =>
+              task.loc_id === elem.loc_id &&
+              (task.assigned_to === assignedToListFilter.id ||
+                (assignedToListFilter.id === 'ikke tildelt' && task.assigned_to === null))
           );
         }
         return false;

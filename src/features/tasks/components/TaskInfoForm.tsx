@@ -1,15 +1,6 @@
 import {Delete} from '@mui/icons-material';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Grid,
-  Tooltip,
-  Typography,
-} from '@mui/material';
+import {Box, Grid, Tooltip, Typography} from '@mui/material';
 import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 
@@ -122,17 +113,13 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           <TaskForm.StatusSelect onBlurCallback={async () => await handlePatch('status_id')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.DueDate
-            onBlurCallback={async () => await handlePatch('due_date')}
-            disabled={selectedTask.itinerary_id !== null}
-          />
+          <TaskForm.DueDate onBlurCallback={async () => await handlePatch('due_date')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.AssignedTo
             onBlur={async () => {
               await handlePatch('assigned_to');
             }}
-            disabled={selectedTask.itinerary_id !== null}
           />
         </Grid>
         <Grid item mobile={12} pb={1}>
