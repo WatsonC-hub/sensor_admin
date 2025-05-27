@@ -1,6 +1,5 @@
 import {Box} from '@mui/material';
 import Button from '~/components/Button';
-import AssignmentIcon from '@mui/icons-material/Assignment';
 import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
 import TaskList from '~/features/station/components/sensorContent/TaskList';
 import TimeseriesList from '~/features/station/components/sensorContent/TimeseriesList';
@@ -37,7 +36,7 @@ const SensorContent = () => {
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
       <LocationInfo />
       <TimeseriesList />
-      <TaskList />
+      <TaskList setCreateTaskDialog={setCreateTaskDialog} />
       {location?.itinerary_id && <ItineraryCardList itinerary_id={location.itinerary_id} />}
 
       <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
@@ -67,14 +66,6 @@ const SensorContent = () => {
             </Button>
           </Box>
         )}
-
-        <Button
-          bttype="primary"
-          onClick={() => setCreateTaskDialog(true)}
-          startIcon={<AssignmentIcon fontSize="small" />}
-        >
-          Opret ny opgave
-        </Button>
       </Box>
 
       <TaskHistoryList />
