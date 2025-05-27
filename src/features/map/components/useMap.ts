@@ -101,9 +101,9 @@ const useMap = <TData extends object>(
     {
       text: 'Google Maps',
       callback: function (e: L.ContextMenuItemClickEvent) {
-        if (e.relatedTarget) {
+        if (e.relatedTarget && 'data' in e.relatedTarget.options) {
           window.open(
-            `https://www.google.com/maps/search/?api=1&query=${e.latlng.lat},${e.latlng.lng}`,
+            `https://www.google.com/maps/search/?api=1&query=${e.relatedTarget.options.data.latitude},${e.relatedTarget.options.data.longitude}`,
             '_blank'
           );
         } else {

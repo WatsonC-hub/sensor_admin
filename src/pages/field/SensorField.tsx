@@ -1,6 +1,6 @@
 import {useAtom} from 'jotai';
 import React from 'react';
-import {Route, Routes} from 'react-router-dom';
+import {Navigate, Route, Routes} from 'react-router-dom';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -117,6 +117,14 @@ function SensorField() {
             <BoreholeRouterProvider>
               <BoreholeRouter />
             </BoreholeRouterProvider>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <>
+              <Navigate to={'/field'} replace />
+            </>
           }
         />
       </Routes>

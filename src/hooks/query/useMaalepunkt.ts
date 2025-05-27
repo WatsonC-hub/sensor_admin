@@ -13,16 +13,21 @@ interface MaalepunktBase {
 }
 
 interface MaalepunktPost extends MaalepunktBase {
-  data: {startdate: string; enddate: string; elevation?: number; mp_description: string};
+  data: {
+    startDate: string;
+    endDate: string;
+    elevation: number | null;
+    mp_description?: string;
+  };
 }
 
 interface MaalepunktPut extends MaalepunktPost {
   data: {
-    gid: number;
-    startdate: string;
-    enddate: string;
-    elevation?: number;
-    mp_description: string;
+    gid?: number;
+    startDate: string;
+    endDate: string;
+    elevation: number | null;
+    mp_description?: string;
   };
 }
 
@@ -64,8 +69,8 @@ export const getMaalepunktOptions = (ts_id: number | undefined) =>
       return data.map((m) => {
         return {
           ...m,
-          startdate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
-          enddate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
+          startDate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
+          endDate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
         };
       });
     },

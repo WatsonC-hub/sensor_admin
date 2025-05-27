@@ -31,6 +31,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Button from './Button';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigate} from 'react-router-dom';
+import {userQueryOptions} from '~/features/auth/useUser';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();
@@ -40,6 +41,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
     home();
     apiClient.get('/auth/logout/secure');
     queryClient.clear();
+    queryClient.fetchQuery(userQueryOptions);
   };
 
   return (

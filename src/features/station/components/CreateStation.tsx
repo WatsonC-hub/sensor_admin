@@ -479,7 +479,7 @@ const CreateStation = () => {
                     'Du er i gang med at oprette en lokation og tidsserie uden udstyr. Er du sikker på at du vil fortsætte?'
                   );
                   setShowAlert(true);
-                } else if (activeStep === 2) {
+                } else if (activeStep === 2 && isUnitDirty) {
                   handleStamdataSubmit();
                 }
               }}
@@ -498,7 +498,7 @@ const CreateStation = () => {
         handleOpret={() => {
           if (activeStep === 0) {
             handleLocationSubmit();
-          } else if (activeStep === 1) {
+          } else if (activeStep === 1 || (activeStep === 2 && !isUnitDirty)) {
             handleTimeseriesSubmit();
           }
         }}

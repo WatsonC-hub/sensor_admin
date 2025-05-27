@@ -13,6 +13,10 @@ type YRangePayload = {
   };
 };
 
+type YRangeDelPayload = {
+  path: string;
+};
+
 const yRangePostOptions = {
   mutationKey: ['y_range_post'],
   mutationFn: async (mutation_data: YRangePayload) => {
@@ -24,7 +28,7 @@ const yRangePostOptions = {
 
 const yRangeDelOptions = {
   mutationKey: ['y_range_del'],
-  mutationFn: async (mutation_data: YRangePayload) => {
+  mutationFn: async (mutation_data: YRangeDelPayload) => {
     const {path} = mutation_data;
     const {data: res} = await apiClient.delete(`/sensor_admin/qa_minmax/${path}`);
     return res;

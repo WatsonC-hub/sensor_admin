@@ -24,6 +24,7 @@ import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {stationPages} from '~/helpers/EnumHelper';
 
 import {useAppContext} from '~/state/contexts';
+import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 
 type Props = {
   children: React.ReactNode;
@@ -205,6 +206,15 @@ const TerrainQuote = (
       type="number"
       required
       placeholder="Indtast terræn kote"
+      slotProps={{
+        input: {
+          endAdornment: (
+            <InputAdornment position="end">
+              <Typography>m</Typography>
+            </InputAdornment>
+          ),
+        },
+      }}
       {...props}
     />
   );
@@ -431,6 +441,8 @@ const InitialProjectNo = (
   const {control} = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
+  const {data: units} = useUnitHistory();
+  const unitPresent = units && units.length > 0 ? true : false;
 
   return (
     <Controller
@@ -443,14 +455,7 @@ const InitialProjectNo = (
           setValue={onChange}
           onBlur={onBlur}
           error={error}
-          disable={user?.superUser === false || props.disabled}
-          //   disable={
-          //     disable ||
-          //     (getValues().unit !== undefined &&
-          //       getValues('unit').unit_uuid !== '' &&
-          //       getValues().unit.unit_uuid !== null &&
-          //       getValues().unit.unit_uuid !== undefined)
-          //   }
+          disable={user?.superUser === false || props.disabled || unitPresent}
         />
       )}
     />
