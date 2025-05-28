@@ -188,6 +188,8 @@ export type Group = {
 
 export type SimpleItinerary = {
   name: string;
+  assigned_to_name: string | null;
+  due_date: string | null;
   id: string | null;
 };
 

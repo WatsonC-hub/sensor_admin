@@ -3,6 +3,7 @@ import React from 'react';
 import {Noop} from 'react-hook-form';
 import {ItineraryColors} from '~/features/notifications/consts';
 import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import {useTasks} from '~/features/tasks/api/useTasks';
 import {SimpleItinerary} from '~/types';
 
 type Props = {
@@ -14,12 +15,18 @@ type Props = {
 
 const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: Props) => {
   const {
+    getUsers: {data: users},
+  } = useTasks();
+  const {
     get: {data: options},
   } = useTaskItinerary(undefined, {
     select: (data) =>
       data.map((itinerary) => ({
         name: itinerary.name,
         id: itinerary.id,
+        assigned_to_name:
+          users?.find((user) => user.id === itinerary.assigned_to)?.display_name ?? '',
+        due_date: itinerary.due_date ?? '',
       })) as SimpleItinerary[],
   });
 
@@ -40,7 +47,7 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
         setValue(
           newValue.map((item) => {
             if (typeof item === 'string') {
-              return {name: item, id: ''};
+              return {name: item, id: '', assigned_to_name: '', due_date: ''};
             }
             return item;
           })
@@ -53,7 +60,9 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
           return option;
         }
 
-        return `${option.id}`;
+        return `${option.name ? option.name + ' - ' : ''}${
+          option.assigned_to_name ? `(${option.assigned_to_name})` : ''
+        }${option.due_date ? ` - ${option.due_date}` : ''}`;
         // return `${option.id.slice(0, 4)} - ${option.group_name}`;
       }}
       isOptionEqualToValue={(option, value) => {
@@ -63,7 +72,9 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
         return value.map((option, index) => {
           const content = (
             <Typography display="inline" variant="body2">
-              {option.id}
+              {option.name ? option.name + ' - ' : ''}
+              {option.assigned_to_name ? ` ${option.assigned_to_name} -` : ''}
+              {option.due_date ? ` ${option.due_date}` : ''}
             </Typography>
           );
 
@@ -84,11 +95,10 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
       }}
       renderOption={(props, option) => (
         <li {...props} key={option.id}>
-          <Typography display="inline" variant="body2" color="grey.400">
-            {option.id === '' && 'Opret - '}
-          </Typography>
           <Typography display="inline" variant="body2">
-            {option.id}
+            {option.name ? option.name + ' - ' : ''}
+            {option.assigned_to_name ? ` ${option.assigned_to_name} -` : ''}
+            {option.due_date ? ` ${option.due_date}` : ''}
           </Typography>
         </li>
       )}
