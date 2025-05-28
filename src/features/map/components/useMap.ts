@@ -145,6 +145,7 @@ const useMap = <TData extends object>(
     const map = L.map(id, {
       center: pan,
       zoom: zoom,
+      maxZoom: 18,
       layers: [defaultMapBox],
       tapHold: true,
       contextmenu: true,

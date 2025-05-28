@@ -56,7 +56,6 @@ export const toposkaermkortwmts = L.tileLayer.wms(
 export const satelitemapbox = L.tileLayer(
   `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
   {
-    maxZoom: 20,
     attribution: `© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>`,
     id: 'mapbox/satellite-streets-v11',
     tileSize: 512,
@@ -67,7 +66,6 @@ export const satelitemapbox = L.tileLayer(
 const outdormapbox = L.tileLayer(
   `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`,
   {
-    maxZoom: 20,
     attribution: `© <a href="https://www.mapbox.com/about/maps/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> <strong><a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a></strong>`,
     id: 'mapbox/outdoors-v11',
     tileSize: 512,
