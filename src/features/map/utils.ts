@@ -19,6 +19,7 @@ export const getBoreholesIcon = (marker: BoreholeMapData) => {
     icon: icon,
     num: '',
     locId: marker.boreholeno,
+    itineraryId: null,
   });
 
   return L.divIcon({
@@ -35,6 +36,7 @@ export const getNotificationIcon = (marker: MapOverview) => {
     icon: icon,
     num: '',
     locId: marker.loc_id,
+    itineraryId: marker.itinerary_id,
   });
   return L.divIcon({
     className: 'svg-icon',

@@ -186,6 +186,11 @@ export type Group = {
   new?: boolean;
 };
 
+export type SimpleItinerary = {
+  name: string;
+  id: string | null;
+};
+
 export type ContactInfo = {
   id?: string | null;
   navn: string;

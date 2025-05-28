@@ -292,27 +292,25 @@ const Map = ({clickCallback}: MapProps) => {
       return 0;
     });
 
-    sorted?.forEach((element) => {
+    const markers = sorted?.map((element) => {
       if ('loc_id' in element) {
         const marker = createLocationMarker(element);
 
         if (marker) {
           marker.bindTooltip(element.loc_name, {direction: 'top', offset: [0, -10]});
-
-          if (markerLayer) {
-            marker.addTo(markerLayer);
-          }
         }
+
+        return marker;
       } else {
         const marker = createBoreholeMarker(element);
 
         marker.bindTooltip(element.boreholeno, {direction: 'top', offset: [0, -10]});
 
-        if (markerLayer) {
-          marker.addTo(markerLayer);
-        }
+        return marker;
       }
     });
+
+    markerLayer?.addLayers(markers || []);
   }, [filteredData, doneRendering]);
 
   return (

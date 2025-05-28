@@ -27,6 +27,7 @@ import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
+import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
 
 const TasksOverview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
@@ -283,6 +284,7 @@ const TasksOverview = () => {
         </WindowManager>
       </DragDropProvider>
       {/* </Box> */}
+      <ItineraryHighlighter />
       <LocationHighlighter
         selectedLocId={loc_id ? loc_id : boreholeno ? boreholeno : null}
         color="#1380c4"

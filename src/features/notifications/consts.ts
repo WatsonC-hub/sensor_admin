@@ -128,3 +128,5 @@ export enum NotificationIDEnum {
   DELTA_FUNCTION_EXCEEDED_2 = 174,
   CONTROL_MEASUREMENT = 207,
 }
+
+export const ItineraryColors = ['red', 'purple', 'blue', 'brown', 'green', 'cyan'];

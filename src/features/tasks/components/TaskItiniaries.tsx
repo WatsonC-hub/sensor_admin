@@ -1,8 +1,9 @@
-import {Box, Typography, Card} from '@mui/material';
+import {Box, Typography, Card, IconButton, TextField} from '@mui/material';
 import React, {ReactNode, useState} from 'react';
 import {Person} from '@mui/icons-material';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
-
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
 import {useTaskItinerary} from '../api/useTaskItinerary';
@@ -19,6 +20,9 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/da';
 import CreateItineraryDialog from './CreateItineraryDialog';
 import Button from '~/components/Button';
+import {useMapFilterStore} from '~/features/map/store';
+import {ItineraryColors} from '~/features/notifications/consts';
+import {useUser} from '~/features/auth/useUser';
 
 export function Droppable({id, children}: {id: string; children: ReactNode}) {
   const {isDropTarget, ref: setNodeRef} = useDroppable({
@@ -50,12 +54,19 @@ export function Droppable({id, children}: {id: string; children: ReactNode}) {
 
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
+  const user = useUser();
   const {
     get: {data},
   } = useTaskItinerary(undefined, {
     select: (data) => {
       const reduced = data.reduce(
         (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
+          if (itinerary.assigned_to === user.user_id) {
+            acc['Mine ture'] = [];
+            acc['Mine ture'].push(itinerary);
+            return acc;
+          }
+
           const date = dayjs(itinerary.due_date).format('MMMM YYYY');
           if (!acc[date]) {
             acc[date] = [];
@@ -69,7 +80,11 @@ const TaskItiniaries = () => {
     },
   });
 
-  const setItineraryId = useDisplayState((state) => state.setItineraryId);
+  const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
+  const [setItineraryId, setLocId] = useDisplayState((state) => [
+    state.setItineraryId,
+    state.setLocId,
+  ]);
   const {
     getUsers: {data: users},
   } = useTasks();
@@ -125,12 +140,26 @@ const TaskItiniaries = () => {
                     {}
                   );
 
+                  let color = undefined;
+
+                  if (filters.itineraries.map((SI) => SI.id).includes(itinerary.id)) {
+                    const index = filters.itineraries.findIndex((SI) => SI.id === itinerary.id);
+                    color = ItineraryColors[index];
+                  }
+
                   const due_date = itinerary.due_date
                     ? convertToShorthandDate(itinerary.due_date)
                     : 'Ingen dato';
 
                   return (
-                    <Card key={itinerary.id} sx={{borderRadius: 2.5, mx: 1}}>
+                    <Card
+                      key={itinerary.id}
+                      sx={{
+                        borderRadius: 2.5,
+                        mx: 1,
+                        border: color ? `3px solid ${color}` : 'none',
+                      }}
+                    >
                       <Droppable id={itinerary.id}>
                         <Box
                           component="span"
@@ -216,22 +245,66 @@ const TaskItiniaries = () => {
                           </Box>
                         </Box>
                         <Box
-                          width={'80%'}
-                          p={1}
+                          width={'70%'}
+                          px={1}
+                          pb={1}
                           gap={0.5}
                           display={'flex'}
                           flexDirection={'column'}
+                          justifyContent={'center'}
                           onClick={(e) => {
                             if (
                               'localName' in e.target &&
                               (e.target.localName as string) !== 'path' &&
                               (e.target.localName as string) !== 'input' &&
                               (e.target.localName as string) !== 'li' &&
-                              (e.target.localName as string) !== 'p'
+                              (e.target.localName as string) !== 'p' &&
+                              (e.target.localName as string) !== 'span'
                             )
                               setItineraryId(itinerary.id);
                           }}
                         >
+                          <TextField
+                            defaultValue={itinerary.name}
+                            size="small"
+                            variant="outlined"
+                            placeholder="Indtast tur navn..."
+                            onBlur={(e) => {
+                              if ('value' in e.target && e.target.value !== itinerary.name) {
+                                const payload = {
+                                  path: `${itinerary.id}`,
+                                  data: {
+                                    name: e.target.value,
+                                  },
+                                };
+                                updateItinerary.mutate(payload);
+                              }
+                            }}
+                            sx={{
+                              pt: 0.8,
+                              pb: 0.4,
+                              minWidth: 0,
+                              '& .MuiOutlinedInput-root': {
+                                padding: 0,
+                                '& fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&:hover fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '&.Mui-focused fieldset': {
+                                  borderColor: 'white',
+                                },
+                                '& input': {
+                                  padding: '2px 6px',
+                                  color: 'white',
+                                  fontSize: '0.875rem',
+                                  fontWeight: 'bold',
+                                },
+                              },
+                            }}
+                          />
+
                           <Box display="flex" gap={0.5} flexDirection={'row'} alignItems={'center'}>
                             <Person fontSize="small" />
                             <TaskForm
@@ -312,23 +385,68 @@ const TaskItiniaries = () => {
                               >
                                 <Box display="flex" gap={0.5} flexDirection={'row'}>
                                   <AssignmentOutlinedIcon fontSize="small" />
+                                  <Button
+                                    bttype="link"
+                                    size="small"
+                                    onClick={() => {
+                                      setLocId(loc_id);
+                                    }}
+                                    sx={{
+                                      p: 0,
+                                      textTransform: 'inherit',
+                                      color: 'blue',
+                                    }}
+                                  >
+                                    <Typography variant="caption" alignSelf={'center'}>
+                                      {grouped_location_tasks?.[loc_id][0].location_name + ', '}
+                                    </Typography>
+                                  </Button>
                                   <Typography variant="caption">
                                     {grouped_location_tasks?.[loc_id].length}
                                     {grouped_location_tasks?.[loc_id].length === 1
-                                      ? ' Opgave,'
-                                      : ' Opgaver,'}
+                                      ? ' Opgave'
+                                      : ' Opgaver'}
                                   </Typography>
                                 </Box>
-                                <Typography
-                                  variant="caption"
-                                  lineHeight={1.25}
-                                  alignSelf={'center'}
-                                >
-                                  {grouped_location_tasks?.[loc_id][0].location_name}
-                                </Typography>
                               </Box>
                             );
                           })}
+                        </Box>
+                        <Box
+                          width={'10%'}
+                          display={'flex'}
+                          flexDirection={'row'}
+                          alignItems={'center'}
+                        >
+                          <IconButton
+                            sx={{
+                              color: 'primary.contrastText',
+                            }}
+                            onClick={() => {
+                              if (filters.itineraries.map((SI) => SI.id).includes(itinerary.id)) {
+                                setFilters({
+                                  ...filters,
+                                  itineraries: filters.itineraries.filter(
+                                    (SI) => SI.id !== itinerary.id
+                                  ),
+                                });
+                              } else {
+                                setFilters({
+                                  ...filters,
+                                  itineraries: [
+                                    ...filters.itineraries,
+                                    {name: itinerary.name, id: itinerary.id},
+                                  ],
+                                });
+                              }
+                            }}
+                          >
+                            {filters.itineraries.map((SI) => SI.id).includes(itinerary.id) ? (
+                              <ToggleOnIcon />
+                            ) : (
+                              <ToggleOffIcon />
+                            )}
+                          </IconButton>
                         </Box>
                       </Droppable>
                     </Card>

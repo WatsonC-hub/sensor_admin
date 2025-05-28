@@ -12,6 +12,7 @@ import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+import HighlightItineraries from './HighlightItineraries';
 
 interface FilterOptionsProps {
   onClose: () => void;
@@ -154,6 +155,22 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               label="Filtrer grupper"
               disableLink
               creatable={false}
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Controller
+          name="itineraries"
+          control={formMethods.control}
+          render={({field: {onChange, value}}) => (
+            <HighlightItineraries
+              value={value}
+              setValue={(value) => {
+                onChange(value);
+                formMethods.handleSubmit(submit)();
+              }}
+              label="Fremhæv ture"
             />
           )}
         />

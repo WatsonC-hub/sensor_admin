@@ -1,4 +1,4 @@
-import type {Group} from '~/types';
+import type {Group, SimpleItinerary} from '~/types';
 
 type Inderterminate = boolean | 'indeterminate';
 
@@ -14,6 +14,7 @@ interface Filter {
     hideLocationsWithoutNotifications: boolean;
   };
   groups: Group[];
+  itineraries: SimpleItinerary[];
 }
 
 const defaultMapFilter: Filter = {
@@ -28,6 +29,7 @@ const defaultMapFilter: Filter = {
     hideLocationsWithoutNotifications: false,
   },
   groups: [],
+  itineraries: [],
 };
 
 export {defaultMapFilter};

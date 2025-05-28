@@ -182,6 +182,7 @@ export type Taskitinerary = {
   completed?: boolean;
   created_by: string;
   created_at: string;
+  name: string;
 };
 
 export type TaskitineraryItem = {

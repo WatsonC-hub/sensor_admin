@@ -43,6 +43,7 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
   const keepLocationsWithoutNotifications =
     (!data.has_task || !moment(data.due_date).isBefore(moment().add(1, 'month').toDate())) &&
+    !data.itinerary_id &&
     data.flag === null &&
     !data.no_unit
       ? !filter.hideLocationsWithoutNotifications
