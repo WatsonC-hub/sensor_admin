@@ -85,6 +85,7 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
               sx={{
                 backgroundColor: ItineraryColors[index],
                 color: 'HighlightText',
+                opacity: 0.8,
               }}
               component={'div'}
               {...getTagProps({index})}

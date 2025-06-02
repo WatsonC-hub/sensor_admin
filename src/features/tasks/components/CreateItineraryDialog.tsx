@@ -55,7 +55,13 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
           }}
         >
           <Box display={'flex'} flexDirection={'row'}>
-            <FormInput name="name" size="small" label="Tur navn" required={false} />
+            <FormInput
+              name="name"
+              size="small"
+              label="Tur navn"
+              placeholder="Indtast navnet på turen..."
+              required={false}
+            />
           </Box>
           <Box display={'flex'} flexDirection={'row'}>
             <TaskForm.DueDate />
