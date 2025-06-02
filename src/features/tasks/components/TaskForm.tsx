@@ -23,6 +23,7 @@ import {useTaskStore} from '../api/useTaskStore';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import moment from 'moment';
+import {toast} from 'react-toastify';
 
 const zodSchema = z.object({
   ts_id: z.number().optional(),
@@ -440,44 +441,55 @@ const DueDateDialog = (
 ) => {
   const {setValue} = useFormContext<FormValues>();
   const {ts_id, open, onClose, onSubmit} = props;
-  const {data: nextDueDate} = getNextDueDate(ts_id, open);
+  const {data: nextDueDate, error, isPending} = getNextDueDate(ts_id, open);
 
   useEffect(() => {
-    if (nextDueDate && open) {
+    if (nextDueDate && open && !isPending) {
       setValue('due_date', moment(nextDueDate).format('YYYY-MM-DD'), {
         shouldDirty: true,
         shouldTouch: true,
       });
     }
-  }, [nextDueDate, open]);
+  }, [nextDueDate]);
+
+  useEffect(() => {
+    if (error && open && error.response && typeof error.response.data.detail === 'string') {
+      toast.error(error.response.data.detail);
+      onClose();
+    }
+  }, [error, open]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <Box display={'flex'} flexDirection={'column'} gap={2} p={2} alignItems={'center'}>
-        <Typography variant="h6">Sæt forfaldsdato til næste kontrol måling</Typography>
-        <FormInput name="due_date" label="Forfaldsdato" type="date" size="small" {...props} />
-      </Box>
-      <Box
-        display={'flex'}
-        flexDirection={'row'}
-        justifyContent={'flex-end'}
-        alignItems={'center'}
-        p={2}
-      >
-        <Button bttype="tertiary" onClick={onClose} sx={{mr: 1}}>
-          Luk
-        </Button>
-        <Button
-          bttype="primary"
-          onClick={() => {
-            onSubmit();
-          }}
-          startIcon={<Save />}
-        >
-          Gem
-        </Button>
-      </Box>
-    </Dialog>
+    <>
+      {error === null && !isPending && (
+        <Dialog open={open} onClose={onClose}>
+          <Box display={'flex'} flexDirection={'column'} gap={2} p={2} alignItems={'center'}>
+            <Typography variant="h6">Sæt forfaldsdato til næste kontrol måling</Typography>
+            <FormInput name="due_date" label="Forfaldsdato" type="date" size="small" {...props} />
+          </Box>
+          <Box
+            display={'flex'}
+            flexDirection={'row'}
+            justifyContent={'flex-end'}
+            alignItems={'center'}
+            p={2}
+          >
+            <Button bttype="tertiary" onClick={onClose} sx={{mr: 1}}>
+              Luk
+            </Button>
+            <Button
+              bttype="primary"
+              onClick={() => {
+                onSubmit();
+              }}
+              startIcon={<Save />}
+            >
+              Gem
+            </Button>
+          </Box>
+        </Dialog>
+      )}
+    </>
   );
 };
 
