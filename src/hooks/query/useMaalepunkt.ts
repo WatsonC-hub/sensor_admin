@@ -14,8 +14,8 @@ interface MaalepunktBase {
 
 interface MaalepunktPost extends MaalepunktBase {
   data: {
-    startDate: string;
-    endDate: string;
+    startdate: string;
+    enddate: string;
     elevation: number | null;
     mp_description?: string;
   };
@@ -24,8 +24,8 @@ interface MaalepunktPost extends MaalepunktBase {
 interface MaalepunktPut extends MaalepunktPost {
   data: {
     gid?: number;
-    startDate: string;
-    endDate: string;
+    startdate: string;
+    enddate: string;
     elevation: number | null;
     mp_description?: string;
   };
