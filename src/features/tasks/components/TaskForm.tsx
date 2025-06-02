@@ -1,6 +1,14 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
-import {Box, FormControlLabel, MenuItem, Switch, TextFieldProps, Typography} from '@mui/material';
+import {
+  Box,
+  FormControlLabel,
+  MenuItem,
+  Switch,
+  TextFieldProps,
+  Typography,
+  Dialog,
+} from '@mui/material';
 import React, {useEffect} from 'react';
 import {Controller, FormProvider, useForm, useFormContext, UseFormReturn} from 'react-hook-form';
 import {z} from 'zod';
@@ -8,12 +16,13 @@ import {z} from 'zod';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import Button from '~/components/Button';
 import FormInput, {FormInputProps} from '~/components/FormInput';
-import {useTasks} from '~/features/tasks/api/useTasks';
+import {getNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
 import {useTaskStore} from '../api/useTaskStore';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import moment from 'moment';
 
 const zodSchema = z.object({
   ts_id: z.number().optional(),
@@ -421,6 +430,57 @@ const selectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   );
 };
 
+const DueDateDialog = (
+  props: Omit<FormInputProps<FormValues>, 'name'> & {
+    ts_id: number;
+    open: boolean;
+    onClose: () => void;
+    onSubmit: () => void;
+  }
+) => {
+  const {setValue} = useFormContext<FormValues>();
+  const {ts_id, open, onClose, onSubmit} = props;
+  const {data: nextDueDate} = getNextDueDate(ts_id, open);
+
+  useEffect(() => {
+    if (nextDueDate && open) {
+      setValue('due_date', moment(nextDueDate).format('YYYY-MM-DD'), {
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    }
+  }, [nextDueDate, open]);
+
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <Box display={'flex'} flexDirection={'column'} gap={2} p={2} alignItems={'center'}>
+        <Typography variant="h6">Sæt forfaldsdato til næste kontrol måling</Typography>
+        <FormInput name="due_date" label="Forfaldsdato" type="date" size="small" {...props} />
+      </Box>
+      <Box
+        display={'flex'}
+        flexDirection={'row'}
+        justifyContent={'flex-end'}
+        alignItems={'center'}
+        p={2}
+      >
+        <Button bttype="tertiary" onClick={onClose} sx={{mr: 1}}>
+          Luk
+        </Button>
+        <Button
+          bttype="primary"
+          onClick={() => {
+            onSubmit();
+          }}
+          startIcon={<Save />}
+        >
+          Gem
+        </Button>
+      </Box>
+    </Dialog>
+  );
+};
+
 TaskForm.SubmitButton = TaskSubmitButton;
 TaskForm.Input = Input;
 TaskForm.StatusSelect = StatusSelect;
@@ -431,5 +491,6 @@ TaskForm.BlockOnLocation = BlockOnLocation;
 TaskForm.BlockAll = BlockAll;
 TaskForm.SelectTimeseries = selectTimeseries;
 TaskForm.AssignedToSelect = AssignedToSelect;
+TaskForm.DueDateDialog = DueDateDialog;
 
 export default TaskForm;

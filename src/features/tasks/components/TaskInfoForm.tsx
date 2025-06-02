@@ -1,9 +1,9 @@
 import {Delete} from '@mui/icons-material';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
-import {Box, Grid, Tooltip, Typography} from '@mui/material';
+import {Box, Grid, IconButton, Tooltip, Typography} from '@mui/material';
 import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
-
+import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import Button from '~/components/Button';
 import DeleteAlert from '~/components/DeleteAlert';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -18,6 +18,7 @@ type TaskInfoFormProps = {
 
 const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [dueDateDialogOpen, setDueDateDialogOpen] = useState<boolean>(false);
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
@@ -31,6 +32,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const {
     trigger,
     getValues,
+    reset,
     formState: {dirtyFields},
   } = useFormContext();
 
@@ -47,6 +49,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     let field_value = getValues(field_name);
 
     const isDirty = dirtyFields[field_name];
+
+    console.log('handlePatch', field_name, field_value, isDirty);
 
     if (field_name === 'due_date' && field_value === '') field_value = null;
 
@@ -91,6 +95,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     });
   };
 
+  console.log('selectedTask', getValues().due_date);
   return (
     <Box display={'flex'} flexDirection={'column'}>
       <Typography variant="h6" fontWeight={600} mb={1}>
@@ -113,7 +118,23 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           <TaskForm.StatusSelect onBlurCallback={async () => await handlePatch('status_id')} />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.DueDate onBlurCallback={async () => await handlePatch('due_date')} />
+          <TaskForm.DueDate
+            onBlurCallback={async () => await handlePatch('due_date')}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      setDueDateDialogOpen(true);
+                    }}
+                  >
+                    <MoreTimeIcon fontSize="small" />
+                  </IconButton>
+                ),
+              },
+            }}
+          />
         </Grid>
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.AssignedTo
@@ -213,6 +234,21 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         measurementId={selectedTask.id}
         onOkDelete={() => {
           deleteTask();
+        }}
+      />
+      <TaskForm.DueDateDialog
+        ts_id={selectedTask.ts_id}
+        open={dueDateDialogOpen}
+        onSubmit={async () => {
+          await handlePatch('due_date');
+          setDueDateDialogOpen(false);
+        }}
+        onClose={() => {
+          setDueDateDialogOpen(false);
+          reset();
+        }}
+        sx={{
+          maxWidth: 200,
         }}
       />
     </Box>

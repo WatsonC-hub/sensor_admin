@@ -1,4 +1,4 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -103,6 +103,20 @@ export const deleteTaskFromItineraryOptions = {
     const {data: result} = await apiClient.delete(`/sensor_admin/tasks/itineraries/${path}`);
     return result;
   },
+};
+
+const getNextDueDateOptions = (ts_id: number, open: boolean) =>
+  queryOptions<string, APIError>({
+    queryKey: ['next_due_date', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/tasks/next_due_date/${ts_id}`);
+      return data;
+    },
+    enabled: ts_id !== undefined && ts_id !== null && open,
+  });
+
+export const getNextDueDate = (ts_id: number, open: boolean) => {
+  return useQuery(getNextDueDateOptions(ts_id, open));
 };
 
 // /location_related_tasks/{loc_id}

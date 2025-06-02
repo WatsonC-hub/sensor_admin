@@ -111,7 +111,6 @@ const TasksOverview = () => {
       display="flex"
       flexDirection="column"
       flexGrow={1}
-      overflow="hidden"
       alignItems="stretch"
       position="relative"
     >
