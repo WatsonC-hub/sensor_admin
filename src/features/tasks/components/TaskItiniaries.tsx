@@ -1,9 +1,8 @@
-import {Box, Typography, Card, IconButton, TextField, Link} from '@mui/material';
+import {Box, Typography, Card, IconButton, Link} from '@mui/material';
 import React, {ReactNode, useState} from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
+
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
 import {useTaskItinerary} from '../api/useTaskItinerary';
@@ -51,7 +50,7 @@ export function Droppable({
         boxShadow: 8,
         background: !isDropTarget
           ? `linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), ${color}`
-          : 'secondary.light',
+          : 'linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), #FFA137',
         cursor: 'pointer',
       }}
       ref={setNodeRef}
@@ -63,9 +62,7 @@ export function Droppable({
 
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
-  const [editName, setEditName] = useState<boolean>(false);
-  const [innerItineraryId, setInnerItineraryId] = useState<string | null>(null);
-  const [name, setName] = useState<string>('');
+
   const user = useUser();
   const {
     get: {data},
@@ -173,7 +170,7 @@ const TaskItiniaries = () => {
                         mx: 1,
                         border:
                           itinerary_id === itinerary.id
-                            ? `2px solid oklch(48.8% 0.243 264.376)`
+                            ? `2px solid oklch(70.8% 0.243 264.376)`
                             : 'none',
                       }}
                     >
@@ -282,72 +279,20 @@ const TaskItiniaries = () => {
                               setItineraryId(itinerary.id);
                           }}
                         >
-                          <TextField
-                            key={itinerary.id}
-                            defaultValue={itinerary.name}
-                            size="small"
-                            variant="outlined"
-                            disabled={editName === false || innerItineraryId !== itinerary.id}
-                            onBlur={(e) => {
-                              if ('value' in e.target && e.target.value !== itinerary.name) {
-                                setName(e.target.value);
-                              }
-                            }}
-                            placeholder="Indtast tur navn..."
-                            slotProps={{
-                              input: {
-                                endAdornment:
-                                  editName === false || innerItineraryId !== itinerary.id ? (
-                                    <IconButton
-                                      onClick={() => {
-                                        setEditName(true);
-                                        setInnerItineraryId(itinerary.id);
-                                        setName(itinerary.name);
-                                      }}
-                                      sx={{color: 'primary.main', width: 32, height: 32}}
-                                    >
-                                      <EditIcon sx={{p: 0.3}} />
-                                    </IconButton>
-                                  ) : (
-                                    <IconButton
-                                      onClick={() => {
-                                        setEditName(false);
-                                        setInnerItineraryId(null);
-                                        if (name !== itinerary.name) {
-                                          const payload = {
-                                            path: `${itinerary.id}`,
-                                            data: {
-                                              name: name,
-                                            },
-                                          };
-                                          updateItinerary.mutate(payload);
-                                        }
-                                      }}
-                                      sx={{color: 'primary.main', width: 32, height: 32}}
-                                    >
-                                      <CheckIcon sx={{p: 0.3}} />
-                                    </IconButton>
-                                  ),
-                              },
-                            }}
+                          <Typography
+                            fontSize={'small'}
+                            fontWeight={'bold'}
                             sx={{
+                              alignSelf: 'flex-start',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
                               pt: 0.8,
                               pb: 0.4,
                               minWidth: 0,
-                              '& .MuiOutlinedInput-root': {
-                                padding: 0,
-                                '& fieldset': {
-                                  borderColor: 'grey.700',
-                                },
-                                '& input': {
-                                  padding: '2px 6px',
-                                  fontSize: '0.875rem',
-                                  fontWeight: 'bold',
-                                },
-                              },
                             }}
-                          />
-
+                          >
+                            {itinerary.name}
+                          </Typography>
                           <Box display="flex" gap={0.5} flexDirection={'row'} alignItems={'center'}>
                             {/* <Person fontSize="small" /> */}
                             <TaskForm
@@ -426,7 +371,12 @@ const TaskItiniaries = () => {
                               >
                                 <Box display="flex" gap={0.5} flexDirection={'row'}>
                                   <Typography fontSize={'small'} width={'fit-content'}>
-                                    <Link onClick={() => setLocId(loc_id)}>
+                                    <Link
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocId(loc_id);
+                                      }}
+                                    >
                                       {grouped_location_tasks?.[loc_id][0].location_name}
                                     </Link>
                                   </Typography>

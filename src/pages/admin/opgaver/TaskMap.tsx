@@ -333,7 +333,7 @@ const Map = ({clickCallback}: MapProps) => {
         message="Vælg venligst hvor parkeringen skal oprettes."
         handleOpret={() => null}
       />
-      <Box position={'absolute'} zIndex={401} p={0} width={'100%'} mr={2}>
+      <Box position={'absolute'} zIndex={401} p={0} mr={2}>
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
       <Box id="test" sx={{width: '100%', height: '100%'}} />

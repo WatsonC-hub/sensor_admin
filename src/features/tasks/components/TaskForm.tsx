@@ -26,7 +26,7 @@ import moment from 'moment';
 import {toast} from 'react-toastify';
 
 const zodSchema = z.object({
-  ts_id: z.number().optional(),
+  ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
   name: z
     .string({required_error: 'Navn skal være angivet'})
     .max(255, 'Navn må maks være 255 tegn')
@@ -406,7 +406,7 @@ const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   );
 };
 
-const selectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+const SelectTimeseries = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
   const {data: metadata} = useLocationData();
 
@@ -501,7 +501,7 @@ TaskForm.BlockNotifications = BlockNotifications;
 TaskForm.DueDate = DueDate;
 TaskForm.BlockOnLocation = BlockOnLocation;
 TaskForm.BlockAll = BlockAll;
-TaskForm.SelectTimeseries = selectTimeseries;
+TaskForm.SelectTimeseries = SelectTimeseries;
 TaskForm.AssignedToSelect = AssignedToSelect;
 TaskForm.DueDateDialog = DueDateDialog;
 
