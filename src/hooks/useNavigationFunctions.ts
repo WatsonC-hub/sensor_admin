@@ -12,7 +12,11 @@ export const useNavigationFunctions = () => {
   const adminFunctions = {
     admin: () => navigate('/admin'),
     adminNotifikationer: () => navigate('/admin/notifikationer'),
-    adminKvalitetssikring: (ts_id: number) => navigate('/admin/kvalitetssikring/' + ts_id),
+    adminKvalitetssikring: (ts_id: number, loc_id: number) =>
+      navigate({
+        pathname: '/field/location/' + loc_id + '/' + ts_id,
+        search: '?page=justeringer',
+      }),
   };
 
   const fieldFunctions = {
