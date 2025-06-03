@@ -5,18 +5,20 @@ import {ErrorBoundary} from 'react-error-boundary';
 
 import NavBar from '~/components/NavBar';
 import LoadingSkeleton from '~/LoadingSkeleton';
-import Home from '~/Home';
+import Router from '~/Router';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 import useBreakpoints from './hooks/useBreakpoints';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import {useUser} from './features/auth/useUser';
+import {useUser, accessControlQueryOptions} from './features/auth/useUser';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
+import {useQuery} from '@tanstack/react-query';
 
 function App() {
   const {home} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const user = useUser();
+  const {isLoading} = useQuery(accessControlQueryOptions);
 
   useEffect(() => {
     if (isMobile && location.pathname == '/') {
@@ -25,6 +27,7 @@ function App() {
   }, [isMobile]);
 
   useEffect(() => {
+    // prefetch access control
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {
       // fade out
@@ -36,7 +39,7 @@ function App() {
     }
   }, []);
 
-  if (user === undefined) {
+  if (user === undefined || isLoading) {
     return <LoadingSkeleton />;
   }
 
@@ -70,7 +73,7 @@ function App() {
     >
       <Suspense fallback={<LoadingSkeleton />}>
         <DisplayStateProvider>
-          <Home />
+          <Router />
         </DisplayStateProvider>
       </Suspense>
     </ErrorBoundary>
