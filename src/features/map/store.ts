@@ -2,6 +2,7 @@ import {create} from 'zustand';
 import {createJSONStorage, devtools, persist} from 'zustand/middleware';
 import {useShallow} from 'zustand/shallow';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
+import {merge} from 'lodash';
 
 type MapFilterState = {
   search: string;
@@ -32,6 +33,10 @@ const mapFilterStore = create<MapFilterState>()(
     {
       name: 'calypso-map-filter',
       storage: createJSONStorage(() => localStorage),
+      merge: (persistedState, currentState) => {
+        const merged = merge({filters: defaultMapFilter}, currentState, persistedState);
+        return merged;
+      },
     }
   )
 );
