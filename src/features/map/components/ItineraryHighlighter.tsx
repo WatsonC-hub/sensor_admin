@@ -17,8 +17,8 @@ const ItineraryHighlighter = () => {
     styleTag.id = styleId;
 
     let rules = '';
-    if (filters.itineraries.length > 0) {
-      rules = filters.itineraries
+    if (filters?.itineraries && filters.itineraries.length > 0) {
+      rules = filters?.itineraries
         .map((itinerary, index) => {
           return `
       svg[data-itinerary-id="${itinerary.id}"] circle {

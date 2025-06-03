@@ -153,7 +153,7 @@ const TaskItiniaries = () => {
 
                   let color = undefined;
 
-                  if (filters.itineraries.map((SI) => SI.id).includes(itinerary.id)) {
+                  if (filters?.itineraries?.map((SI) => SI.id).includes(itinerary.id)) {
                     const index = filters.itineraries.findIndex((SI) => SI.id === itinerary.id);
                     color = ItineraryColors[index];
                   }
@@ -399,7 +399,7 @@ const TaskItiniaries = () => {
                               color: 'primary.contrastText',
                             }}
                             onClick={() => {
-                              if (filters.itineraries.map((SI) => SI.id).includes(itinerary.id)) {
+                              if (filters?.itineraries?.map((SI) => SI.id).includes(itinerary.id)) {
                                 setFilters({
                                   ...filters,
                                   itineraries: filters.itineraries.filter(
@@ -410,7 +410,7 @@ const TaskItiniaries = () => {
                                 setFilters({
                                   ...filters,
                                   itineraries: [
-                                    ...filters.itineraries,
+                                    ...(filters.itineraries ?? []),
                                     {
                                       name: itinerary.name,
                                       id: itinerary.id,
@@ -424,7 +424,7 @@ const TaskItiniaries = () => {
                               }
                             }}
                           >
-                            {filters.itineraries.map((SI) => SI.id).includes(itinerary.id) ? (
+                            {filters?.itineraries?.map((SI) => SI.id).includes(itinerary.id) ? (
                               <VisibilityOffIcon sx={{color: 'primary.main'}} />
                             ) : (
                               <VisibilityIcon sx={{color: 'primary.main'}} />
