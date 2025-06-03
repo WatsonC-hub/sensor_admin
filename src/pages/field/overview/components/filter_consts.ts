@@ -4,17 +4,17 @@ type Inderterminate = boolean | 'indeterminate';
 
 interface Filter {
   freeText?: string;
-  borehole?: {
+  borehole: {
     hasControlProgram: Inderterminate;
   };
-  sensor?: {
+  sensor: {
     showInactive: boolean;
     isCustomerService: Inderterminate;
     isSingleMeasurement: boolean;
     hideLocationsWithoutNotifications: boolean;
   };
-  groups?: Group[];
-  itineraries?: SimpleItinerary[];
+  groups: Group[];
+  itineraries: SimpleItinerary[];
 }
 
 const defaultMapFilter: Required<Filter> = {

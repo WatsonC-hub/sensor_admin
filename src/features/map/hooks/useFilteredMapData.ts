@@ -35,37 +35,35 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
 };
 
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
-  if (data.loctype_id === 12) return filter?.isSingleMeasurement ?? false;
+  if (data.loctype_id === 12) return filter.isSingleMeasurement;
   const serviceFilter =
-    filter?.isCustomerService === 'indeterminate'
+    filter.isCustomerService === 'indeterminate'
       ? true
-      : data.is_customer_service === filter?.isCustomerService || data.is_customer_service === null;
-  const activeFilter = data.inactive != true ? true : !filter?.showInactive || data.has_task;
+      : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
+  const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
   const keepLocationsWithoutNotifications =
     (!data.has_task || !moment(data.due_date).isBefore(moment().add(1, 'month').toDate())) &&
     !data.itinerary_id &&
     data.flag === null &&
     !data.no_unit
-      ? !filter?.hideLocationsWithoutNotifications
+      ? !filter.hideLocationsWithoutNotifications
       : true;
   return (
     keepLocationsWithoutNotifications &&
     activeFilter &&
     serviceFilter &&
-    !filter?.isSingleMeasurement
+    !filter.isSingleMeasurement
   );
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
-  switch (filter?.hasControlProgram) {
+  switch (filter.hasControlProgram) {
     case true:
       return data.num_controls_in_a_year.some((num) => num > 0);
     case false:
       return !data.num_controls_in_a_year.some((num) => num > 0);
     case 'indeterminate':
       return true;
-    default:
-      return true; // Default case if no filter is applied
   }
 };
 
@@ -83,7 +81,7 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
   if (filter.groups && filter.groups.length > 0) {
     filteredData = filteredData.filter((elem) => {
       if (elem.groups !== null) {
-        return filter?.groups?.some((group) => elem.groups.some((item) => item.id === group.id));
+        return filter.groups.some((group) => elem.groups.some((item) => item.id === group.id));
       }
       return false;
     });
