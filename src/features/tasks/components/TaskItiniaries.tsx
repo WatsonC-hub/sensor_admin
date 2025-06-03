@@ -1,7 +1,7 @@
-import {Box, Typography, Card} from '@mui/material';
+import {Box, Typography, Card, IconButton, Link} from '@mui/material';
 import React, {ReactNode, useState} from 'react';
-import {Person} from '@mui/icons-material';
-import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
@@ -19,8 +19,19 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/da';
 import CreateItineraryDialog from './CreateItineraryDialog';
 import Button from '~/components/Button';
+import {useMapFilterStore} from '~/features/map/store';
+import {ItineraryColors} from '~/features/notifications/consts';
+import {useUser} from '~/features/auth/useUser';
 
-export function Droppable({id, children}: {id: string; children: ReactNode}) {
+export function Droppable({
+  id,
+  children,
+  color,
+}: {
+  id: string;
+  children: ReactNode;
+  color?: string;
+}) {
   const {isDropTarget, ref: setNodeRef} = useDroppable({
     id: id,
     data: {itinerary_id: id},
@@ -37,8 +48,9 @@ export function Droppable({id, children}: {id: string; children: ReactNode}) {
         alignContent: 'center',
         borderRadius: 2,
         boxShadow: 8,
-        backgroundColor: !isDropTarget ? 'primary.light' : 'secondary.light',
-        color: 'primary.contrastText',
+        background: !isDropTarget
+          ? `linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), ${color}`
+          : 'linear-gradient(rgba(255,255,255,0.4), rgba(255,255,255,0.4)), #FFA137',
         cursor: 'pointer',
       }}
       ref={setNodeRef}
@@ -50,12 +62,20 @@ export function Droppable({id, children}: {id: string; children: ReactNode}) {
 
 const TaskItiniaries = () => {
   const [openDialog, setOpenDialog] = useState(false);
+
+  const user = useUser();
   const {
     get: {data},
   } = useTaskItinerary(undefined, {
     select: (data) => {
       const reduced = data.reduce(
         (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
+          if (itinerary.assigned_to === user.user_id) {
+            acc['Mine ture'] = [];
+            acc['Mine ture'].push(itinerary);
+            return acc;
+          }
+
           const date = dayjs(itinerary.due_date).format('MMMM YYYY');
           if (!acc[date]) {
             acc[date] = [];
@@ -69,7 +89,12 @@ const TaskItiniaries = () => {
     },
   });
 
-  const setItineraryId = useDisplayState((state) => state.setItineraryId);
+  const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
+  const [itinerary_id, setItineraryId, setLocId] = useDisplayState((state) => [
+    state.itinerary_id,
+    state.setItineraryId,
+    state.setLocId,
+  ]);
   const {
     getUsers: {data: users},
   } = useTasks();
@@ -82,31 +107,32 @@ const TaskItiniaries = () => {
       maxHeight={'100%'}
       gap={1}
       mt={4}
-      p={0.5}
       flexDirection={'column'}
       overflow={'hidden'}
     >
-      <Button
-        bttype="primary"
-        onClick={() => {
-          setOpenDialog(true);
-        }}
-        sx={{
-          width: '100%',
-          height: 40,
-          borderRadius: 2.5,
-          fontSize: 'small',
-          fontWeight: 'bold',
-        }}
-      >
-        Opret ny tur
-      </Button>
+      <Box px={1}>
+        <Button
+          bttype="primary"
+          onClick={() => {
+            setOpenDialog(true);
+          }}
+          sx={{
+            width: '100%',
+            height: 40,
+            borderRadius: 2.5,
+            fontSize: 'small',
+            fontWeight: 'bold',
+          }}
+        >
+          Opret ny tur
+        </Button>
+      </Box>
       {data && (
         <Box overflow={'auto'} pb={0.5}>
           {Object.entries(data).map(([month, itineraries]) => {
             return (
               <Box key={month} display="flex" flexDirection={'column'} gap={1}>
-                <Typography px={0.5} variant="body2" fontWeight={'bold'}>
+                <Typography px={0.5} pt={1} variant="body2" fontWeight={'bold'}>
                   {month}
                 </Typography>
                 {itineraries.map((itinerary) => {
@@ -125,13 +151,30 @@ const TaskItiniaries = () => {
                     {}
                   );
 
+                  let color = undefined;
+
+                  if (filters.itineraries.map((SI) => SI.id).includes(itinerary.id)) {
+                    const index = filters.itineraries.findIndex((SI) => SI.id === itinerary.id);
+                    color = ItineraryColors[index];
+                  }
+
                   const due_date = itinerary.due_date
                     ? convertToShorthandDate(itinerary.due_date)
                     : 'Ingen dato';
 
                   return (
-                    <Card key={itinerary.id} sx={{borderRadius: 2.5, mx: 1}}>
-                      <Droppable id={itinerary.id}>
+                    <Card
+                      key={itinerary.id}
+                      sx={{
+                        borderRadius: 2.5,
+                        mx: 1,
+                        border:
+                          itinerary_id === itinerary.id
+                            ? `2px solid oklch(70.8% 0.243 264.376)`
+                            : 'none',
+                      }}
+                    >
+                      <Droppable id={itinerary.id} color={color}>
                         <Box
                           component="span"
                           display={'flex'}
@@ -139,7 +182,7 @@ const TaskItiniaries = () => {
                           color={'white'}
                           justifyContent={'center'}
                           alignItems={'center'}
-                          sx={{backgroundColor: 'primary.main'}}
+                          sx={{backgroundColor: color ? color : 'primary.main'}}
                         >
                           <Box display={'flex'} flexDirection={'column'}>
                             {due_date.split(' ').map((value, index) => {
@@ -216,24 +259,42 @@ const TaskItiniaries = () => {
                           </Box>
                         </Box>
                         <Box
-                          width={'80%'}
-                          p={1}
+                          width={'70%'}
+                          px={1}
+                          pb={1}
                           gap={0.5}
                           display={'flex'}
                           flexDirection={'column'}
+                          justifyContent={'center'}
                           onClick={(e) => {
                             if (
                               'localName' in e.target &&
                               (e.target.localName as string) !== 'path' &&
                               (e.target.localName as string) !== 'input' &&
                               (e.target.localName as string) !== 'li' &&
-                              (e.target.localName as string) !== 'p'
+                              (e.target.localName as string) !== 'p' &&
+                              (e.target.localName as string) !== 'span' &&
+                              (e.target.localName as string) !== 'svg'
                             )
                               setItineraryId(itinerary.id);
                           }}
                         >
+                          <Typography
+                            fontSize={'small'}
+                            fontWeight={'bold'}
+                            sx={{
+                              alignSelf: 'flex-start',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              pt: 0.8,
+                              pb: 0.4,
+                              minWidth: 0,
+                            }}
+                          >
+                            {itinerary.name}
+                          </Typography>
                           <Box display="flex" gap={0.5} flexDirection={'row'} alignItems={'center'}>
-                            <Person fontSize="small" />
+                            {/* <Person fontSize="small" /> */}
                             <TaskForm
                               onSubmit={() => {}}
                               defaultValues={{
@@ -275,23 +336,21 @@ const TaskItiniaries = () => {
                                   label: '',
                                   sx: {
                                     fontSize: 'small',
-                                    color: 'white',
                                     width: 150,
                                     margin: 0,
                                     '& .MuiOutlinedInput-root, .MuiAutocomplete-popupIndicator, .MuiAutocomplete-clearIndicator':
                                       {
                                         fontSize: 'small',
-                                        color: 'white',
                                         border: 'none',
                                         borderRadius: 2.5,
-                                        borderColor: 'white',
+                                        borderColor: 'grey.700',
                                         '& > fieldset': {
                                           color: 'white',
-                                          borderColor: 'white',
+                                          borderColor: 'grey.700',
                                         },
                                         '& .MuiOutlinedInput-notchedOutline': {
                                           color: 'white ',
-                                          borderColor: 'white !important',
+                                          borderColor: 'grey.700',
                                         },
                                         padding: '0px !important',
                                       },
@@ -311,24 +370,66 @@ const TaskItiniaries = () => {
                                 flexDirection={'row'}
                               >
                                 <Box display="flex" gap={0.5} flexDirection={'row'}>
-                                  <AssignmentOutlinedIcon fontSize="small" />
-                                  <Typography variant="caption">
-                                    {grouped_location_tasks?.[loc_id].length}
-                                    {grouped_location_tasks?.[loc_id].length === 1
-                                      ? ' Opgave,'
-                                      : ' Opgaver,'}
+                                  <Typography fontSize={'small'} width={'fit-content'}>
+                                    <Link
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocId(loc_id);
+                                      }}
+                                    >
+                                      {grouped_location_tasks?.[loc_id][0].location_name}
+                                    </Link>
                                   </Typography>
                                 </Box>
-                                <Typography
-                                  variant="caption"
-                                  lineHeight={1.25}
-                                  alignSelf={'center'}
-                                >
-                                  {grouped_location_tasks?.[loc_id][0].location_name}
-                                </Typography>
                               </Box>
                             );
                           })}
+                          <Typography fontSize={'small'} width={'fit-content'}>
+                            Der er {itinerary_tasks?.length ?? 0} opgaver på denne tur.
+                          </Typography>
+                        </Box>
+                        <Box
+                          width={'10%'}
+                          display={'flex'}
+                          flexDirection={'row'}
+                          alignItems={'center'}
+                        >
+                          <IconButton
+                            sx={{
+                              color: 'primary.contrastText',
+                            }}
+                            onClick={() => {
+                              if (filters.itineraries.map((SI) => SI.id).includes(itinerary.id)) {
+                                setFilters({
+                                  ...filters,
+                                  itineraries: filters.itineraries.filter(
+                                    (SI) => SI.id !== itinerary.id
+                                  ),
+                                });
+                              } else {
+                                setFilters({
+                                  ...filters,
+                                  itineraries: [
+                                    ...filters.itineraries,
+                                    {
+                                      name: itinerary.name,
+                                      id: itinerary.id,
+                                      assigned_to_name:
+                                        users?.find((user) => user.id === itinerary.assigned_to)
+                                          ?.display_name ?? '',
+                                      due_date: itinerary.due_date ?? '',
+                                    },
+                                  ],
+                                });
+                              }
+                            }}
+                          >
+                            {filters.itineraries.map((SI) => SI.id).includes(itinerary.id) ? (
+                              <VisibilityOffIcon sx={{color: 'primary.main'}} />
+                            ) : (
+                              <VisibilityIcon sx={{color: 'primary.main'}} />
+                            )}
+                          </IconButton>
                         </Box>
                       </Droppable>
                     </Card>

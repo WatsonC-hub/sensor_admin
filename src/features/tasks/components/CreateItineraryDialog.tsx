@@ -6,6 +6,7 @@ import Button from '~/components/Button';
 import {useTaskItinerary} from '../api/useTaskItinerary';
 
 import TaskForm, {FormValues} from './TaskForm';
+import FormInput from '~/components/FormInput';
 
 type CreateItineraryDialogProps = {
   dialogOpen: boolean;
@@ -25,6 +26,7 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
         loc_ids: [],
         due_date: data.due_date,
         assigned_to: data.assigned_to,
+        name: data.name ?? '',
       },
       {
         onSuccess: () => {
@@ -39,6 +41,7 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
       <TaskForm
         onSubmit={onSubmit}
         defaultValues={{
+          name: '',
           assigned_to: null,
           due_date: null,
         }}
@@ -51,6 +54,15 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
             minWidth: 400,
           }}
         >
+          <Box display={'flex'} flexDirection={'row'}>
+            <FormInput
+              name="name"
+              size="small"
+              label="Tur navn"
+              placeholder="Indtast navnet på turen..."
+              required={false}
+            />
+          </Box>
           <Box display={'flex'} flexDirection={'row'}>
             <TaskForm.DueDate />
           </Box>

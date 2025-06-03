@@ -16,7 +16,7 @@ const TasksPage = () => {
 
   return (
     <>
-      <NavBar zIndex={500}>
+      <NavBar key="map" zIndex={100}>
         <NavBar.Logo />
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         <Box display={'flex'}>

@@ -51,6 +51,11 @@ export const getColor = (iconDetails: IconDetails) => {
   ) {
     if (moment(iconDetails.due_date).isBefore(moment().toDate()))
       return sensorColors[FlagEnum.WARNING].color;
+    else if (
+      moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&
+      iconDetails.itinerary_id === null
+    )
+      return sensorColors[FlagEnum.INFO].color;
     return sensorColors[FlagEnum.OK].color;
   } // Overdue}
   if (iconDetails?.no_unit == true && iconDetails?.loctype_id !== 12)

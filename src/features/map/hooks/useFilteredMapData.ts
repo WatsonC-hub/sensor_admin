@@ -42,7 +42,10 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
       : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
   const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
   const keepLocationsWithoutNotifications =
-    !data.has_task && data.flag === null && !data.no_unit
+    (!data.has_task || !moment(data.due_date).isBefore(moment().add(1, 'month').toDate())) &&
+    !data.itinerary_id &&
+    data.flag === null &&
+    !data.no_unit
       ? !filter.hideLocationsWithoutNotifications
       : true;
   return (
@@ -118,7 +121,10 @@ export const useFilteredMapData = () => {
       filteredList = filteredList.filter((elem) => {
         if ('loc_id' in elem) {
           return tasks?.some(
-            (task) => task.loc_id === elem.loc_id && task.assigned_to === assignedToListFilter.id
+            (task) =>
+              task.loc_id === elem.loc_id &&
+              (task.assigned_to === assignedToListFilter.id ||
+                (assignedToListFilter.id === 'ikke tildelt' && task.assigned_to === null))
           );
         }
         return false;

@@ -18,7 +18,7 @@ import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
 import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
 import {LeafletMapRoute, Parking, PartialBy} from '~/types';
-import droplelSVG from '~/features/notifications/icons/droplet.svg?raw';
+import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import {
   satelitemapbox,
@@ -57,6 +57,7 @@ const useMap = <TData extends object>(
     state.setEditParkingLayer,
     state.setEditRouteLayer,
   ]);
+
   const [doneRendering, setDoneRendering] = useState(false);
   const [zoom, setZoom] = useAtom(zoomAtom);
   const [pan, setPan] = useAtom(panAtom);
@@ -144,6 +145,7 @@ const useMap = <TData extends object>(
     const map = L.map(id, {
       center: pan,
       zoom: zoom,
+      maxZoom: 18,
       layers: [defaultMapBox],
       tapHold: true,
       contextmenu: true,
@@ -510,6 +512,7 @@ const useMap = <TData extends object>(
       maxClusterRadius: 50,
       zoomToBoundsOnClick: true,
       showCoverageOnHover: false,
+
       iconCreateFunction: (cluster) => {
         const childMarkers = cluster.getAllChildMarkers();
         const num = childMarkers.length;
@@ -522,15 +525,24 @@ const useMap = <TData extends object>(
           return boreholeColors[max_status as keyof typeof boreholeColors]?.color;
         });
 
+        const task_itinerary_id = childMarkers.find((marker) => {
+          return (
+            marker.options.data &&
+            'itinerary_id' in marker.options.data && // Ensure data has itinerary_id
+            marker.options.data.itinerary_id !== null
+          );
+        })?.options.data.itinerary_id;
+
         const color = getMaxColor(colors);
         return L.divIcon({
           className: 'svg-icon',
           iconAnchor: [12, 24],
-          html: L.Util.template(droplelSVG, {
+          html: L.Util.template(dropletSVG, {
             color: color,
             icon: '',
             num: num,
             locId: 'empty',
+            itineraryId: task_itinerary_id ?? 'empty',
           }),
         });
       },

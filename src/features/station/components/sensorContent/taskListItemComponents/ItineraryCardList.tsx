@@ -48,7 +48,7 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
 
   const handleDelete = () => {
     const payload = {
-      path: `${itinerary_id}/tasks/${loc_id}`,
+      path: `location/${loc_id}`,
     };
 
     deleteTaskFromItinerary.mutate(payload);

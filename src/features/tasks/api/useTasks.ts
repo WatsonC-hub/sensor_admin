@@ -1,4 +1,4 @@
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -105,25 +105,34 @@ export const deleteTaskFromItineraryOptions = {
   },
 };
 
+const getNextDueDateOptions = (ts_id: number, open: boolean) =>
+  queryOptions<string, APIError>({
+    queryKey: ['next_due_date', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get(`/sensor_admin/tasks/next_due_date/${ts_id}`);
+      return data;
+    },
+    enabled: ts_id !== undefined && ts_id !== null && open,
+  });
+
+export const getNextDueDate = (ts_id: number, open: boolean) => {
+  return useQuery(getNextDueDateOptions(ts_id, open));
+};
+
 // /location_related_tasks/{loc_id}
 export const useTasks = () => {
   const queryClient = useQueryClient();
 
-  const [setSelectedTask, include_closed, shownMapTaskIds, setShownMapTaskIds] = useRawTaskStore(
-    (state) => [
-      state.setSelectedTask,
-      state.includeClosedTasks,
-      state.shownMapTaskIds,
-      state.setShownMapTaskIds,
-    ]
-  );
+  const [setSelectedTask, shownMapTaskIds, setShownMapTaskIds] = useRawTaskStore((state) => [
+    state.setSelectedTask,
+    state.shownMapTaskIds,
+    state.setShownMapTaskIds,
+  ]);
 
   const get = useQuery<Task[], APIError>({
-    queryKey: ['tasks', include_closed],
+    queryKey: ['tasks'],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/tasks`, {
-        params: {include_closed},
-      });
+      const {data} = await apiClient.get(`/sensor_admin/tasks`, {});
       return data;
     },
     staleTime: 1000 * 60 * 5,
@@ -132,7 +141,7 @@ export const useTasks = () => {
   const post = useMutation<unknown, APIError, PostTask>({
     ...tasksPostOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['overblik']});
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['map']});
@@ -145,10 +154,10 @@ export const useTasks = () => {
     ...taskPatchOptions,
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
-      const previous = queryClient.getQueryData<Task[]>(['tasks', include_closed]);
-      queryClient.invalidateQueries({queryKey: ['tasks', !include_closed]});
+      const previous = queryClient.getQueryData<Task[]>(['tasks']);
+      queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.setQueryData<Task[]>(
-        ['tasks', include_closed],
+        ['tasks'],
         previous?.map((task) => {
           if (task.id === path) {
             const updated = {...task, ...data};
@@ -162,9 +171,9 @@ export const useTasks = () => {
     onSuccess: (data, variables) => {
       const {path} = variables;
       if (path != data.id) {
-        const previous = queryClient.getQueryData<Task[]>(['tasks', include_closed]);
+        const previous = queryClient.getQueryData<Task[]>(['tasks']);
         queryClient.setQueryData<Task[]>(
-          ['tasks', include_closed],
+          ['tasks'],
           previous?.map((task) => {
             if (task.id === path) {
               const updated = {...task, ...data};
@@ -194,7 +203,7 @@ export const useTasks = () => {
   const del = useMutation({
     ...tasksDelOptions,
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['overblik']});
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['map']});
@@ -211,7 +220,7 @@ export const useTasks = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['overblik']});
       queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['map']});
 
       toast.success('Opgave oprettet');
@@ -223,7 +232,7 @@ export const useTasks = () => {
     onSuccess: () => {
       toast.success('Opgave opdateret');
       queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['map']});
     },
@@ -270,7 +279,7 @@ export const useTasks = () => {
       queryClient.invalidateQueries({queryKey: ['overblik']});
       queryClient.invalidateQueries({queryKey: ['map']});
       queryClient.invalidateQueries({queryKey: ['itineraries', splitted[0]]});
-      queryClient.invalidateQueries({queryKey: ['tasks', include_closed]});
+      queryClient.invalidateQueries({queryKey: ['tasks']});
 
       toast.success('Opgaver fjernet fra tur');
     },

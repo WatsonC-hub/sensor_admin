@@ -128,3 +128,12 @@ export enum NotificationIDEnum {
   DELTA_FUNCTION_EXCEEDED_2 = 174,
   CONTROL_MEASUREMENT = 207,
 }
+
+export const ItineraryColors = [
+  'oklch(48.8% 0.243 264.376)',
+  'oklch(47.3% 0.137 46.201)',
+  'oklch(53.2% 0.157 131.589)',
+  'oklch(49.6% 0.265 301.924)',
+  'oklch(57.7% 0.245 27.325)',
+  ...Array.from({length: 10}, () => 'primary.main'),
+];

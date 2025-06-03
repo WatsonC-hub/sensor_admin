@@ -292,27 +292,25 @@ const Map = ({clickCallback}: MapProps) => {
       return 0;
     });
 
-    sorted?.forEach((element) => {
+    const markers = sorted?.map((element) => {
       if ('loc_id' in element) {
         const marker = createLocationMarker(element);
 
         if (marker) {
           marker.bindTooltip(element.loc_name, {direction: 'top', offset: [0, -10]});
-
-          if (markerLayer) {
-            marker.addTo(markerLayer);
-          }
         }
+
+        return marker;
       } else {
         const marker = createBoreholeMarker(element);
 
         marker.bindTooltip(element.boreholeno, {direction: 'top', offset: [0, -10]});
 
-        if (markerLayer) {
-          marker.addTo(markerLayer);
-        }
+        return marker;
       }
     });
+
+    markerLayer?.addLayers(markers || []);
   }, [filteredData, doneRendering]);
 
   return (
@@ -335,7 +333,7 @@ const Map = ({clickCallback}: MapProps) => {
         message="Vælg venligst hvor parkeringen skal oprettes."
         handleOpret={() => null}
       />
-      <Box position={'absolute'} zIndex={401} p={0} width={'100%'} mr={2}>
+      <Box position={'absolute'} zIndex={401} p={0} mr={2}>
         <SearchAndFilterMap data={data} handleSearchSelect={handleSearchSelect} />
       </Box>
       <Box id="test" sx={{width: '100%', height: '100%'}} />
