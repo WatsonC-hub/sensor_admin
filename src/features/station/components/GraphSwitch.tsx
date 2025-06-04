@@ -10,7 +10,7 @@ import {DataToShow} from '~/types';
 
 interface GraphSwitchProps {
   dataToShow: Partial<DataToShow>;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsOpen: () => void;
 }
 
 type DisableMap = {
@@ -87,16 +87,16 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
           onClick={() => {
             setDataToShow({});
           }}
-          bttype="secondary"
+          bttype="tertiary"
         >
           Nulstil
         </Button>
         <Button
           sx={{display: 'flex', justifySelf: 'end', mr: 1, textTransform: 'initial'}}
           onClick={() => {
-            setIsOpen(false);
+            setIsOpen();
           }}
-          bttype="secondary"
+          bttype="tertiary"
         >
           Luk
         </Button>

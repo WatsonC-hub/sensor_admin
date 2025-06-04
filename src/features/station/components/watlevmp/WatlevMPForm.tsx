@@ -37,17 +37,13 @@ const WatlevMPForm = ({formMethods}: WatlevMPFormProps) => {
 
     const data = {
       ...mpData,
-      startDate: moment(mpData.startdate).toISOString(),
-      endDate: moment(mpData.enddate).toISOString(),
+      startdate: moment(mpData.startdate).toISOString(),
+      enddate: moment(mpData.enddate).toISOString(),
     };
 
     if (mpData.gid === undefined) {
       const payload = {
-        data: {
-          ...data,
-          startDate: moment(mpData.startdate).toISOString(),
-          endDate: moment(mpData.enddate).toISOString(),
-        },
+        data: data,
         path: `${ts_id}`,
       };
       postWatlevmp.mutate(payload, mutationOptions);

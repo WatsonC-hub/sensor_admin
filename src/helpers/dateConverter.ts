@@ -23,10 +23,10 @@ const checkEndDateIsUnset = (dateString: string) => {
 
 const calculatePumpstop = (
   timeofmeas: string,
-  pumpstop: string | null,
+  pumpstop: string | null | undefined,
   service: boolean | null
 ) => {
-  return pumpstop !== null
+  return pumpstop !== null && pumpstop !== undefined
     ? moment(timeofmeas).diff(moment(pumpstop), 'hours') + ' timer siden'
     : service === true
       ? 'I drift'
