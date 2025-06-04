@@ -30,6 +30,7 @@ import {stationPages} from '~/helpers/EnumHelper';
 import GraphManager from '~/features/station/components/GraphManager';
 import EditLocation from './stamdata/EditLocation';
 import EditTimeseries from './stamdata/EditTimeseries';
+import Alarms from './alarms/Alarms';
 
 export default function Station() {
   const {ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -133,6 +134,11 @@ export default function Station() {
       {pageToShow === stationPages.BILLEDER && (
         <StationPageBoxLayout>
           <ImagePage />
+        </StationPageBoxLayout>
+      )}
+      {pageToShow === stationPages.ALARM && (
+        <StationPageBoxLayout>
+          <Alarms />
         </StationPageBoxLayout>
       )}
     </Layout>

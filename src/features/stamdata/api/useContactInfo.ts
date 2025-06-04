@@ -65,6 +65,18 @@ export const ContactInfoGetOptions = (loc_id: number | undefined) =>
     enabled: loc_id !== undefined && loc_id !== null,
   });
 
+export const getContactWithRoleOptions = (loc_id: number | undefined, contact_role: number) =>
+  queryOptions<Array<ContactTable> | undefined, APIError>({
+    queryKey: ['contact_with_role', contact_role],
+    queryFn: async () => {
+      const {data} = await apiClient.get<Array<ContactTable>>(
+        `/sensor_field/stamdata/contact/contact_info/${loc_id}/${contact_role}`
+      );
+      return data;
+    },
+    enabled: loc_id !== undefined,
+  });
+
 export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
   const searched_contacts = useQuery({
     queryKey: ['search_contact_info', searchString],
