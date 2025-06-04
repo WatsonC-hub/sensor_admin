@@ -31,8 +31,6 @@ type Metadata = {
   unit: string;
   prefix: string | null;
   unit_uuid: string | null;
-  sync_dmp: boolean | null;
-  sync_jupiter: boolean | null;
 };
 
 type LocationMetadata = {
@@ -59,8 +57,6 @@ type LocationMetadata = {
     prefix: string | null;
     tstype_name: string;
     intakeno: number;
-    sync_dmp: boolean | null;
-    sync_jupiter: boolean | null;
   }>;
 };
 
@@ -115,8 +111,6 @@ const locationMetadataQueryOptions = (loc_id: number | undefined) => {
               prefix: data.prefix,
               tstype_name: data.tstype_name,
               intakeno: data.intakeno,
-              syncDmp: data.syncDmp,
-              syncJupiter: data.syncJupiter,
             };
           }),
       };
