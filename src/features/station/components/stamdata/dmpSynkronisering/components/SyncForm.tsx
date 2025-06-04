@@ -18,6 +18,9 @@ const SyncForm = ({formMethods, loctype_id, tstype_id, owners}: SyncFormProps) =
   const isWaterLevel = tstype_id === 1;
   const isWaterCourseOrLake = loctype_id === 1 || loctype_id === 6;
 
+  const {watch} = formMethods;
+  const syncDmp = watch('sync_dmp');
+
   return (
     <Box display={'flex'} flexDirection={'column'} gap={1} mt={1}>
       {(isWaterCourseOrLake || isWaterLevel) && (
@@ -25,9 +28,15 @@ const SyncForm = ({formMethods, loctype_id, tstype_id, owners}: SyncFormProps) =
           {isWaterCourseOrLake && (
             <>
               <Form.Checkbox name="sync_dmp" label="DMP" />
-              <Form.Input select name="owner_name" label="Data ejer" fullWidth={false}>
+              <Form.Input
+                select
+                name="owner_name"
+                label="Data ejer"
+                disabled={!syncDmp}
+                fullWidth={false}
+              >
                 <MenuItem value="" disabled>
-                  Ingen ejere fundet
+                  Vælg data ejer
                 </MenuItem>
                 {owners?.map((owner) => (
                   <MenuItem key={owner.cvr} value={owner.name}>

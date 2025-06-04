@@ -41,6 +41,8 @@ const EditTimeseries = () => {
 
   const {
     get: {data: sync_data},
+    post: postSync,
+    del: deleteSync,
   } = useSync();
 
   const isSyncAvailable =
@@ -151,14 +153,39 @@ const EditTimeseries = () => {
   }, []);
 
   const Submit = () => {
-    const data = getTimeseriesValues();
-    const syncData = getSyncValues();
+    if (isValid && isDirty) {
+      const data = getTimeseriesValues();
+      const payload = {
+        ...data,
+      };
+      metadataEditTimeseriesMutation.mutate(payload);
+    }
 
-    const payload = {
-      ...data,
-      ...syncData,
-    };
-    metadataEditTimeseriesMutation.mutate(payload);
+    if (isSyncAvailable && syncIsValid && syncIsDirty) {
+      const syncData = getSyncValues();
+      const cvr = owners?.find((owner) => owner.name === syncData.owner_name)?.cvr;
+      console.log('cvr', cvr);
+      const syncPayload = {
+        path: `${ts_id}`,
+        data: {
+          ...(syncData.sync_dmp
+            ? {
+                ...syncData,
+                owner_cvr: cvr ? parseInt(cvr) : undefined,
+              }
+            : {}),
+          jupiter: syncData.jupiter,
+        },
+      };
+
+      console.log('syncPayload', syncPayload);
+
+      postSync.mutate(syncPayload);
+
+      if (syncData.sync_dmp == false) {
+        deleteSync.mutate({path: ts_id.toString()});
+      }
+    }
   };
 
   return (
