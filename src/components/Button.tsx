@@ -51,7 +51,7 @@ const Button = ({bttype, children, ...props}: MyButtonProps) => {
     };
   }
 
-  sx = merge(sx, props.sx);
+  sx = merge({}, props.sx, sx);
 
   return (
     <MuiButton {...props} variant={bttype == 'link' ? 'text' : 'outlined'} sx={sx}>

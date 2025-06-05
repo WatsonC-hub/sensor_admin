@@ -239,10 +239,12 @@ export default function PlotlyGraph({
               </Button>
             </Tooltip>
             <Button
-              bttype="secondary"
-              startIcon={!isMobile && <TuneRoundedIcon />}
-              sx={{textTransform: 'initial', my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
-              onClick={() => setIsOpen(!isOpen)}
+              bttype="tertiary"
+              startIcon={!isMobile && <TuneRoundedIcon fontSize="small" />}
+              sx={{my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
+              onClick={() => {
+                setIsOpen(!isOpen);
+              }}
             >
               {isMobile && <TuneRoundedIcon fontSize="small" />}
               {!isMobile && 'Grafer'}
@@ -252,9 +254,22 @@ export default function PlotlyGraph({
       </Box>
 
       {isOpen && (
-        <ClickAwayListener onClickAway={() => setIsOpen(false)}>
+        <ClickAwayListener
+          onClickAway={(e) => {
+            if (
+              isMobile &&
+              e.target instanceof Element &&
+              e.target.localName !== 'svg' &&
+              e.target.localName !== 'button' &&
+              e.target.localName !== 'path'
+            ) {
+              setIsOpen(false);
+            }
+            if (isOpen && !isMobile) setIsOpen(false);
+          }}
+        >
           <Box>
-            <GraphSwitch dataToShow={dataToShow} setIsOpen={setIsOpen} />
+            <GraphSwitch dataToShow={dataToShow} setIsOpen={() => setIsOpen(!isOpen)} />
           </Box>
         </ClickAwayListener>
       )}
