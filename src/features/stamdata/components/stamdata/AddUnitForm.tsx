@@ -110,7 +110,7 @@ export default function AddUnitForm({
     if (sensors && sensors.length === 1) {
       setUnitData((currentUnit) => ({...currentUnit, uuid: sensors[0].unit_uuid}));
       setValue('unit_uuid', sensors[0].unit_uuid, {shouldDirty: true});
-      setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
+      setValue('startdate', moment(unitData.fra).toISOString(), {
         shouldDirty: true,
       });
     }
@@ -175,7 +175,7 @@ export default function AddUnitForm({
       if (!unit) return;
 
       setValue('unit_uuid', unit.unit_uuid, {shouldDirty: true});
-      setValue('startdate', moment(unitData.fra).format('YYYY-MM-DD HH:mm:ss'), {
+      setValue('startdate', moment(unitData.fra).toISOString(), {
         shouldDirty: true,
       });
 
