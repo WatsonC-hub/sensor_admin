@@ -24,18 +24,21 @@ type useLocationFormProps<T> =
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number};
+      loc_id?: number;
     }
   | {
       mode: 'Edit';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number};
+      loc_id: number;
     };
 
 const getSchemaAndForm = <T extends FieldValues>(
   loctype_id: number,
   mode: 'Add' | 'Edit',
-  user: User
+  user: User,
+  loc_id?: number
 ) => {
   let selectedSchema: ZodObject<Record<string, any>> = baseLocationSchema;
   let selectedForm = DefaultLocationForm;
@@ -63,7 +66,7 @@ const getSchemaAndForm = <T extends FieldValues>(
       break;
   }
 
-  if (user?.superUser === false && mode === 'Add') {
+  if ((user?.superUser === false && mode === 'Add') || (mode === 'Add' && loc_id !== undefined)) {
     selectedSchema = selectedSchema.extend({
       initial_project_no: z.string().nullish(),
     });
@@ -77,11 +80,12 @@ const useLocationForm = <T extends BaseLocation>({
   mode,
   context,
   initialLocTypeId = -1,
+  loc_id,
 }: useLocationFormProps<T>) => {
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user);
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user, loc_id);
 
   const {data, success} = schema.safeParse({
     ...defaultValues,
