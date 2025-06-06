@@ -1,48 +1,34 @@
-import {Box, Checkbox} from '@mui/material';
+import {Box} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {AlarmContact} from '~/types';
+import {Alarm} from '~/types';
 
-type AlarmContactTableProps = {
-  alarmContacts: Array<AlarmContact> | undefined;
+type OtherAlarmsTableProps = {
+  otherAlarms: Array<Alarm> | undefined;
 };
 
-const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
-  const columns = useMemo<MRT_ColumnDef<AlarmContact>[]>(
+const OtherAlarmsTable = ({otherAlarms}: OtherAlarmsTableProps) => {
+  const columns = useMemo<MRT_ColumnDef<Alarm>[]>(
     () => [
       {
         header: 'Navn',
         accessorKey: 'name',
-        size: 20,
       },
       {
-        header: 'SMS/Mail/Mobil',
-        accessorKey: 'contactType',
-        size: 20,
-        maxSize: 20,
-        Cell: ({cell}) => {
-          const {sms, email, call} = cell.row.original;
-          return (
-            <>
-              <Checkbox checked={sms} disabled />
-              <Checkbox checked={email} disabled />
-              <Checkbox checked={call} disabled />
-            </>
-          );
-        },
+        header: 'Kriteria',
+        accessorKey: 'criteria',
       },
       {
         header: 'Alarm Interval (timer)',
         accessorKey: 'alarm_interval',
-        size: 20,
       },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<AlarmContact>> = {
+  const options: Partial<MRT_TableOptions<Alarm>> = {
     enableColumnActions: false,
     enableColumnFilters: false,
     enableSorting: false,
@@ -66,9 +52,9 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
     },
   };
 
-  const table = useTable<AlarmContact>(
+  const table = useTable<Alarm>(
     columns,
-    alarmContacts,
+    otherAlarms,
     options,
     undefined,
     TableTypes.TABLE,
@@ -82,4 +68,4 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
   );
 };
 
-export default AlarmContactTable;
+export default OtherAlarmsTable;

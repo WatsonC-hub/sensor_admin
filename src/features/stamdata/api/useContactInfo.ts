@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
-import {ContactInfo, ContactTable} from '~/types';
+import {AlarmContact, ContactInfo, ContactTable} from '~/types';
 
 interface ContactInfoBase {
   path: string;
@@ -65,16 +65,16 @@ export const ContactInfoGetOptions = (loc_id: number | undefined) =>
     enabled: loc_id !== undefined && loc_id !== null,
   });
 
-export const getContactWithRoleOptions = (loc_id: number | undefined, contact_role: number) =>
-  queryOptions<Array<ContactTable> | undefined, APIError>({
-    queryKey: ['contact_with_role', contact_role],
+export const getAlarmContacts = (ts_id: number | undefined) =>
+  queryOptions<Array<AlarmContact> | undefined, APIError>({
+    queryKey: ['contact_with_role', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Array<ContactTable>>(
-        `/sensor_field/stamdata/contact/contact_info/${loc_id}/${contact_role}`
+      const {data} = await apiClient.get<Array<AlarmContact>>(
+        `/sensor_field/stamdata/contact/alarm_contact/${ts_id}`
       );
       return data;
     },
-    enabled: loc_id !== undefined,
+    enabled: ts_id !== undefined,
   });
 
 export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
