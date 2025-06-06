@@ -224,6 +224,15 @@ export type AlarmContact = {
   call: boolean;
 };
 
+export type AlarmHistory = {
+  //alarm_history.date, alarm_history.sent_type, alarm_history.alarm, alarm_history.alarm_low, alarm_history.name
+  date: string;
+  sent_type: string;
+  alarm: boolean;
+  alarm_low: boolean;
+  name: string;
+};
+
 export type Alarm = {
   name: string;
   criteria: string;

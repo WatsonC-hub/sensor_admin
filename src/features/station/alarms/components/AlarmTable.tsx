@@ -14,7 +14,7 @@ import {useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
+import AlarmHistoryTable from './AlarmHistoryTable';
 type AlarmTableProps = {
   alarm: alarmTable;
 };
@@ -183,38 +183,7 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
               <Typography variant="h6" gutterBottom>
                 Alarm Historik
               </Typography>
-              <MaterialReactTable
-                columns={[
-                  {
-                    header: 'Navn',
-                    accessorKey: 'name',
-                  },
-                  {
-                    header: 'Dato',
-                    accessorFn: (row) => convertDateWithTimeStamp(row.date),
-                    id: 'date',
-                  },
-                  {
-                    header: 'Kontakt type',
-                    accessorKey: 'sent_type',
-                  },
-                  {
-                    header: 'Alarm',
-                    accessorKey: 'alarm',
-                  },
-                  {
-                    header: 'Nedre alarm niveau',
-                    accessorKey: 'alarm_low',
-                  },
-                ]}
-                data={alarmHistory}
-                enableColumnActions={false}
-                enableColumnFilters={false}
-                enableSorting={false}
-                enablePagination={false}
-                enableGlobalFilter={false}
-                enableTopToolbar={false}
-              />
+              <AlarmHistoryTable alarmHistory={alarmHistory} />
             </>
           ) : (
             <Typography variant="body2">Ingen historik tilgængelig</Typography>
