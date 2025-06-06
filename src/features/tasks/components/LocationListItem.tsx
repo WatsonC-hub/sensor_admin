@@ -6,27 +6,20 @@ import {useTaskStore} from '../api/useTaskStore';
 import {convertDate} from '~/helpers/dateConverter';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {Person} from '@mui/icons-material';
-import {useTaskItinerary} from '../api/useTaskItinerary';
+import {useGuardedTaskItinerary} from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useAccessControl} from '~/features/auth/useUser';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
 };
 
-const TripIcon = getIcon(
-  {
-    has_task: true,
-    itinerary_id: 'hej',
-    notification_id: null,
-  },
-  false
-);
-
 const LocationListItem = ({itemData, onClick}: Props) => {
   const {tasks, setSelectedTask} = useTaskStore();
+  const {advancedTaskPermission, simpleTaskPermission} = useAccessControl();
   const {isMobile} = useBreakpoints();
   const {handleRef, ref} = useDraggable({
     id: itemData.loc_id,
@@ -34,11 +27,22 @@ const LocationListItem = ({itemData, onClick}: Props) => {
     feedback: 'clone',
   });
 
+  const TripIcon = getIcon(
+    {
+      has_task: true,
+      itinerary_id: itemData.itinerary_id,
+      notification_id: null,
+      advancedTaskPermission,
+      simpleTaskPermission,
+    },
+    false
+  );
+
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
 
   const {
     getItinerary: {data: itinerary},
-  } = useTaskItinerary(itemData.itinerary_id);
+  } = useGuardedTaskItinerary(itemData.itinerary_id);
 
   return (
     <Box
@@ -125,6 +129,8 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                             flag: task.is_created ? null : task.flag,
                             itinerary_id: task.itinerary_id,
                             due_date: task.due_date,
+                            advancedTaskPermission,
+                            simpleTaskPermission,
                           }}
                         />
                         <Typography variant="body2">{task.name}</Typography>

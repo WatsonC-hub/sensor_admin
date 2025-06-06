@@ -3,10 +3,10 @@ import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
-import Home from './pages/Home';
 import {AppContext} from './state/contexts';
-import CreateStation from './features/station/components/CreateStation';
 import ScanComponent from './components/ScanComponent';
+import GuardedHome from './pages/Home';
+import GuardedCreateStation from './features/station/components/CreateStation';
 
 const Router = () => {
   return (
@@ -17,7 +17,7 @@ const Router = () => {
           path="/"
           element={
             <AppContext.Provider value={{}}>
-              <Home />
+              <GuardedHome />
             </AppContext.Provider>
           }
         />
@@ -25,7 +25,7 @@ const Router = () => {
           path="stamdata"
           element={
             <AppContext.Provider value={{}}>
-              <CreateStation />
+              <GuardedCreateStation />
             </AppContext.Provider>
           }
         />

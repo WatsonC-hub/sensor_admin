@@ -8,7 +8,7 @@ import {useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
-import {useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {useGuardedMapOverview} from '~/hooks/query/useNotificationOverview';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
@@ -28,7 +28,7 @@ const SensorContent = () => {
   const [openTripDialog, setOpenTripDialog] = useState(false);
   const {simpleTaskPermission, advancedTaskPermission} = useAccessControl();
 
-  const {data: location} = useMapOverview({
+  const {data: location} = useGuardedMapOverview({
     select: (data) => {
       return data.find((location) => location.loc_id === loc_id);
     },

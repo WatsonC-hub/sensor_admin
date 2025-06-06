@@ -1,7 +1,14 @@
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {BoreholeMapData} from '~/types';
 
-export type IconDetails = Partial<MapOverview & {color?: string | null; due_date?: string | null}>;
+export type IconDetails = Partial<
+  MapOverview & {
+    color?: string | null;
+    due_date?: string | null;
+    advancedTaskPermission?: boolean;
+    simpleTaskPermission?: boolean;
+  }
+>;
 export type BoreholeDetails = Partial<BoreholeMapData>;
 
 /*{

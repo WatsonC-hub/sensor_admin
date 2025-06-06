@@ -18,14 +18,8 @@ import type {
   PostTaskitinerary,
   Task,
   Taskitinerary,
-  // DeleteTaskFromItinerary,
-  // MoveTaskToDifferentItinerary,
 } from '../types';
-
-// type Mutation<TData> = {
-//   path: string;
-//   data: TData;
-// };
+import {withPermissionGuard} from '~/hooks/withPermissionGuard';
 
 export const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
@@ -62,25 +56,7 @@ export const addLocationToItineraryOptions = {
   },
 };
 
-// export const deleteTaskFromItineraryOptions = {
-//   mutationKey: ['taskItinerary_delete'],
-//   mutationFn: async (mutation_data: DeleteTaskFromItinerary) => {
-//     const {path} = mutation_data;
-//     const {data: result} = await apiClient.delete(`/sensor_admin/tasks/itineraries/${path}`);
-//     return result;
-//   },
-// };
-
-// export const moveTasksToItineraryOptions = {
-//   mutationKey: ['taskItinerary_move'],
-//   mutationFn: async (mutation_data: MoveTaskToDifferentItinerary) => {
-//     const {path, data} = mutation_data;
-//     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
-//     return result;
-//   },
-// };
-
-export const itineraryGetOptions = (itinerary_id?: string | null) =>
+const itineraryGetOptions = (itinerary_id?: string | null) =>
   queryOptions<Taskitinerary[], APIError>({
     queryKey: ['itineraries'],
     queryFn: async () => {
@@ -95,7 +71,7 @@ type ItineraryOptions<T> = Partial<
   Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
 >;
 
-export const useTaskItinerary = <T = Taskitinerary[]>(
+const useTaskItinerary = <T = Taskitinerary[]>(
   id?: string | null,
   options?: ItineraryOptions<T>
 ) => {
@@ -106,12 +82,6 @@ export const useTaskItinerary = <T = Taskitinerary[]>(
     ...options,
     select: options?.select as (data: Taskitinerary[]) => T,
   });
-
-  // const getByMonths = useQuery({
-  //   ...itineraryGetOptions(id),
-  //   ...options,
-  //   select: options?.select as (data: Taskitinerary[]) => T,
-  // });
 
   const getItinerary = useQuery<Taskitinerary, APIError>({
     queryKey: ['itineraries', id],
@@ -186,8 +156,10 @@ export const useTaskItinerary = <T = Taskitinerary[]>(
     getItineraryTasks,
     complete,
     addLocationToTrip,
-    // deleteTaskFromItinerary,
-    // moveTasks,
-    // getProjects,
   };
 };
+
+export const useGuardedTaskItinerary = withPermissionGuard(
+  useTaskItinerary,
+  'advancedTaskPermission'
+);

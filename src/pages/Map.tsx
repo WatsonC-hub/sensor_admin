@@ -28,7 +28,7 @@ import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {getBoreholesIcon, getNotificationIcon} from '~/features/map/utils';
 import {utm} from '../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
-import {useUser} from '~/features/auth/useUser';
+import {useAccessControl, useUser} from '~/features/auth/useUser';
 import {debounce} from 'lodash';
 import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 
@@ -43,6 +43,7 @@ interface MapProps {
 }
 
 const Map = ({clickCallback}: MapProps) => {
+  const {simpleTaskPermission, advancedTaskPermission} = useAccessControl();
   const {createStamdata} = useNavigationFunctions();
   const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
@@ -127,9 +128,8 @@ const Map = ({clickCallback}: MapProps) => {
 
   const createLocationMarker = (element: MapOverview) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
-    const debounced = debounce(() => prefetchQueries(element.loc_id), 250);
     const marker = L.marker(point, {
-      icon: getNotificationIcon(element),
+      icon: getNotificationIcon({...element}, advancedTaskPermission, simpleTaskPermission),
       interactive: true,
       riseOnHover: true,
       title: element.loc_name,
@@ -139,6 +139,7 @@ const Map = ({clickCallback}: MapProps) => {
       zIndexOffset: 1000 * (element.flag ?? 0),
     });
 
+    const debounced = debounce(() => prefetchQueries(element.loc_id), 250);
     marker.addEventListener('mouseover', () => debounced());
     marker.addEventListener('mouseout', () => {
       debounced.cancel();
@@ -310,7 +311,7 @@ const Map = ({clickCallback}: MapProps) => {
       }
     });
 
-    markerLayer?.addLayers(markers || []);
+    markerLayer?.addLayers(markers);
   }, [filteredData, doneRendering]);
 
   return (

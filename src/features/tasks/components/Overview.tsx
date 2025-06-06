@@ -22,12 +22,13 @@ import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
 import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
-import {useTaskItinerary} from '../api/useTaskItinerary';
+import {useGuardedTaskItinerary} from '../api/useTaskItinerary';
 import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
+import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Overview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
@@ -56,7 +57,8 @@ const Overview = () => {
   // const [, setSelectedData] = useState<NotificationMap | BoreholeMapData | null>(null);
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
-  const {addLocationToTrip} = useTaskItinerary();
+  const {addLocationToTrip} = useGuardedTaskItinerary();
+
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
 
@@ -291,4 +293,9 @@ const Overview = () => {
   );
 };
 
-export default Overview;
+const GuardedOverview = withComponentPermission(Overview, 'features', [
+  'boreholeAccess',
+  'iotAccess',
+]);
+
+export default GuardedOverview;

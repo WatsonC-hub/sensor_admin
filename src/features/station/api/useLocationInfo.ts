@@ -1,5 +1,6 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
+import {withPermissionGuard} from '~/hooks/withPermissionGuard';
 import {Group} from '~/types';
 
 type LocationInfo = {
@@ -27,4 +28,6 @@ const useLocationInfo = (loc_id: number | undefined) => {
   return useQuery(locationInfoOptions(loc_id));
 };
 
-export default useLocationInfo;
+export const useGuardedUseLocationInfo = withPermissionGuard(useLocationInfo, 'features', [
+  'iotAccess',
+]);

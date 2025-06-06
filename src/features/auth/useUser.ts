@@ -16,17 +16,19 @@ type User = {
   ressourcePermission: boolean;
 };
 
+export type Features = {
+  iotAccess: boolean;
+  boreholeAccess: boolean;
+  tasks: 'simple' | 'advanced' | 'none';
+  contacts: boolean;
+  keys: boolean;
+  resources: boolean;
+  routesAndParking: boolean;
+};
+
 type AccessControl = {
   role: string;
-  features: {
-    iotAccess: boolean;
-    boreholeAccess: boolean;
-    tasks: 'simple' | 'advanced' | 'none';
-    contacts: boolean;
-    keys: boolean;
-    resources: boolean;
-    routesAndParking: boolean;
-  };
+  features: Features;
   attributes: {
     [key: string]: string | number | boolean;
   };
@@ -62,10 +64,16 @@ export const accessControlQueryOptions = queryOptions({
   refetchOnReconnect: false,
 });
 
+export type AccessControlReturnType = AccessControl & {
+  superUser: boolean;
+  advancedTaskPermission: boolean;
+  simpleTaskPermission: boolean;
+};
+
 export const useAccessControl = () => {
   const {data} = useQuery(accessControlQueryOptions);
 
-  const out = {
+  const out: AccessControlReturnType = {
     ...(data as AccessControl),
     superUser: data?.role === 'superuser',
     advancedTaskPermission: data?.features.tasks === 'advanced',

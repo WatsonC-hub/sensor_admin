@@ -12,7 +12,7 @@ import TripTaskCardList from './TripTaskCardList';
 import Button from '~/components/Button';
 import {Check} from '@mui/icons-material';
 import AlertDialog from '~/components/AlertDialog';
-import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import {useGuardedTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
 
@@ -29,7 +29,7 @@ const TripPreparation = ({data}: TripPreparationProps) => {
     state.itinerary_id,
     state.setItineraryId,
   ]);
-  const {complete, patch: updateItinerary, getItinerary} = useTaskItinerary(itinerary_id);
+  const {complete, patch: updateItinerary, getItinerary} = useGuardedTaskItinerary(itinerary_id);
   const {data: itinerary} = getItinerary;
 
   if (!itinerary) {

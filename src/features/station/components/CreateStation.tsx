@@ -515,4 +515,9 @@ const CreateStation = () => {
   );
 };
 
-export default CreateStation;
+const GuardedCreateStation = withComponentPermission(CreateStation, 'features', [
+  'boreholeAccess',
+  'iotAccess',
+]);
+
+export default GuardedCreateStation;

@@ -1,13 +1,15 @@
-import {MapOverview, useMapOverview} from '~/hooks/query/useNotificationOverview';
+import {MapOverview, useGuardedMapOverview} from '~/hooks/query/useNotificationOverview';
 import {useMapFilterStore} from '../store';
 import {Filter} from '~/pages/field/overview/components/filter_consts';
 import {BoreholeMapData} from '~/types';
 import {useMemo, useState} from 'react';
-import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
+import {useGuardedBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {assignedToAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import moment from 'moment';
+import {isEmptyObject} from '~/helpers/guardHelper';
+import {useAccessControl} from '~/features/auth/useUser';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -34,7 +36,11 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
   return data.filter((elem) => searchElement(elem, search_string));
 };
 
-const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
+const filterSensor = (
+  data: MapOverview,
+  filter: Filter['sensor'],
+  simpleTaskPermission: boolean
+) => {
   if (data.loctype_id === 12) return filter.isSingleMeasurement;
   const serviceFilter =
     filter.isCustomerService === 'indeterminate'
@@ -43,7 +49,7 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
   const keepLocationsWithoutNotifications =
     (!data.has_task || !moment(data.due_date).isBefore(moment().add(1, 'month').toDate())) &&
-    !data.itinerary_id &&
+    (!data.itinerary_id || simpleTaskPermission) &&
     data.flag === null &&
     !data.no_unit
       ? !filter.hideLocationsWithoutNotifications
@@ -67,11 +73,15 @@ const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
   }
 };
 
-const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => {
+const filterData = (
+  data: (MapOverview | BoreholeMapData)[],
+  simpleTaskPermission: boolean,
+  filter: Filter
+) => {
   let filteredData = data;
 
   filteredData = filteredData.filter((elem): elem is MapOverview =>
-    'loc_id' in elem ? filterSensor(elem, filter.sensor) : true
+    'loc_id' in elem ? filterSensor(elem, filter.sensor, simpleTaskPermission) : true
   );
 
   filteredData = filteredData.filter((elem): elem is BoreholeMapData =>
@@ -91,20 +101,29 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
 };
 
 export const useFilteredMapData = () => {
-  const {data: mapData} = useMapOverview();
+  const {data: mapData} = useGuardedMapOverview();
+  const {simpleTaskPermission} = useAccessControl();
   const assignedToListFilter = useAtomValue(assignedToAtom);
-  const {data: boreholeMapdata} = useBoreholeMap();
+  const {data: boreholeMapdata} = useGuardedBoreholeMap();
   const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
   const {tasks} = useTaskStore();
 
   const data = useMemo(() => {
-    return [...(mapData ?? []), ...(boreholeMapdata ?? []), ...(extraData ? [extraData] : [])];
+    return [
+      ...(!isEmptyObject(mapData) ? (mapData ?? []) : []),
+      ...(!isEmptyObject(boreholeMapdata) ? (boreholeMapdata ?? []) : []),
+      ...(extraData ? [extraData] : []),
+    ];
   }, [mapData, boreholeMapdata, extraData]);
 
   const {filters, locIds} = useMapFilterStore((state) => state);
 
   const mapFilteredData = useMemo(() => {
-    const filteredData = filterData(searchAcrossAll(data, filters.freeText ?? ''), filters);
+    const filteredData = filterData(
+      searchAcrossAll(data, filters.freeText ?? ''),
+      simpleTaskPermission,
+      filters
+    );
     return filteredData;
   }, [data, filters]);
 

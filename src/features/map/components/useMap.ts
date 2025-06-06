@@ -47,6 +47,7 @@ const useMap = <TData extends object>(
   contextmenuItems: Array<L.ContextMenuItem>,
   selectCallback?: (data: TData | null) => void
 ) => {
+  const {advancedTaskPermission, simpleTaskPermission} = useAccessControl();
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.MarkerClusterGroup | null>(null);
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -503,8 +504,9 @@ const useMap = <TData extends object>(
   };
 
   useEffect(() => {
-    const existingMap = L.DomUtil.get(id);
-    if (existingMap && '_leaflet_id' in existingMap) existingMap._leaflet_id = null;
+    // console.log('useMap useEffect', id, mapRef.current == null);
+    // const existingMap = L.DomUtil.get(id);
+    // if (existingMap && '_leaflet_id' in existingMap) existingMap._leaflet_id = null;
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
@@ -521,7 +523,7 @@ const useMap = <TData extends object>(
 
         const colors = childMarkers.map((marker) => {
           if ('loc_id' in marker.options.data) {
-            return getColor(marker.options.data);
+            return getColor({...marker.options.data, advancedTaskPermission, simpleTaskPermission});
           }
           const max_status = Math.max(marker.options.data.status);
           return boreholeColors[max_status as keyof typeof boreholeColors]?.color;
@@ -570,11 +572,11 @@ const useMap = <TData extends object>(
 
     return () => {
       setDoneRendering(false);
-      if (mapRef.current) {
+      if (mapRef.current && markerLayerRef.current) {
         mapRef.current.remove();
       }
     };
-  }, [mapRef.current == null]);
+  }, [mapRef.current == null, doneRendering]);
 
   useEffect(() => {
     plotRoutesInLayer();

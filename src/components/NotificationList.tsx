@@ -16,9 +16,11 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
 import {getColor} from '~/features/notifications/utils';
+import {useAccessControl} from '~/features/auth/useUser';
 // Mock data for notifications
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const {simpleTaskPermission} = useAccessControl();
   const [isModalOpen, setModalOpen] = useState(false);
   // const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   // const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
@@ -124,56 +126,59 @@ const NotificationList = () => {
         keepMounted
         disableScrollLock
       >
-        <MenuItem
-          disabled={permissions?.[ts_id] !== 'edit'}
-          key="0"
-          onClick={openModal}
-          sx={{gap: 0.5}}
-        >
-          <ListItemIcon>
-            <Avatar sx={{bgcolor: 'primary'}}>
-              <AddIcon fontSize="small" />
-            </Avatar>
-          </ListItemIcon>
-          <ListItemText primary="Registrer opgave" />
-        </MenuItem>
+        {simpleTaskPermission && (
+          <MenuItem
+            disabled={permissions?.[ts_id] !== 'edit'}
+            key="0"
+            onClick={openModal}
+            sx={{gap: 0.5}}
+          >
+            <ListItemIcon>
+              <Avatar sx={{bgcolor: 'primary'}}>
+                <AddIcon fontSize="small" />
+              </Avatar>
+            </ListItemIcon>
+            <ListItemText primary="Registrer opgave" />
+          </MenuItem>
+        )}
         {isPending && <MenuItem>Indlæser...</MenuItem>}
-        {notifications?.map((notification, index) => {
-          const splitted = notification.ts_name.split(notification.loc_name);
-          return (
-            <MenuItem
-              key={index}
-              sx={{gap: 0.5}}
-              onClick={() => {
-                setSelectedTask(notification.ts_id + ':' + notification.notification_id);
-                tasksNavigation();
-              }}
-            >
-              <ListItemIcon
-                sx={{
-                  fontSize: '1.5rem',
+        {simpleTaskPermission &&
+          notifications?.map((notification, index) => {
+            const splitted = notification.ts_name.split(notification.loc_name);
+            return (
+              <MenuItem
+                key={index}
+                sx={{gap: 0.5}}
+                onClick={() => {
+                  setSelectedTask(notification.ts_id + ':' + notification.notification_id);
+                  tasksNavigation();
                 }}
               >
-                <NotificationIcon iconDetails={notification} />
-              </ListItemIcon>
-              <ListItemText
-                primary={notification.opgave}
-                secondary={
-                  splitted[splitted.length - 1].replace('-', '').trim() +
-                  ' - ' +
-                  notification.dato?.slice(0, 10)
-                }
-              />
-            </MenuItem>
-          );
-        })}
+                <ListItemIcon
+                  sx={{
+                    fontSize: '1.5rem',
+                  }}
+                >
+                  <NotificationIcon iconDetails={notification} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={notification.opgave}
+                  secondary={
+                    splitted[splitted.length - 1].replace('-', '').trim() +
+                    ' - ' +
+                    notification.dato?.slice(0, 10)
+                  }
+                />
+              </MenuItem>
+            );
+          })}
         {tasksOnStation?.map((task, index) => {
           return (
             <MenuItem
               key={index}
               sx={{gap: 0.5}}
               onClick={() => {
-                setSelectedTask(task.id);
+                if (simpleTaskPermission) setSelectedTask(task.id);
               }}
             >
               <ListItemIcon

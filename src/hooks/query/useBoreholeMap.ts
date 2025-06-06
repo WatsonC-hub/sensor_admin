@@ -2,6 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {BoreholeMapData} from '~/types';
+import {withPermissionGuard} from '../withPermissionGuard';
 
 // type Options = Partial<Omit<UseQueryOptions<BoreholeMapData[]>, 'queryKey' | 'queryFn'>>;
 
@@ -22,3 +23,7 @@ export const useBoreholeMap = <TData = BoreholeMapData[]>(
   });
   return query;
 };
+
+export const useGuardedBoreholeMap = withPermissionGuard(useBoreholeMap, 'features', [
+  'boreholeAccess',
+]);

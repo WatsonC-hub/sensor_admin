@@ -2,7 +2,7 @@ import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
 import React from 'react';
 import {Noop} from 'react-hook-form';
 import {ItineraryColors} from '~/features/notifications/consts';
-import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import {useGuardedTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {SimpleItinerary} from '~/types';
 
@@ -19,7 +19,7 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
   } = useTasks();
   const {
     get: {data: options},
-  } = useTaskItinerary(undefined, {
+  } = useGuardedTaskItinerary(undefined, {
     select: (data) =>
       data.map((itinerary) => ({
         name: itinerary.name,

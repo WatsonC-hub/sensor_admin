@@ -2,12 +2,13 @@ import React from 'react';
 
 import NavBar from '~/components/NavBar';
 
-import Overview from '~/features/tasks/components/Overview';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAccessControl} from '~/features/auth/useUser';
 import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {Box} from '@mui/material';
+import GuardedOverview from '~/features/tasks/components/Overview';
+import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
@@ -21,7 +22,7 @@ const Home = () => {
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         <Box display={'flex'}>
           <NavBar.LocationList />
-          {accessControl.features.tasks === 'advanced' && <NavBar.TripList />}
+          {accessControl.advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
             items={[
@@ -41,9 +42,11 @@ const Home = () => {
         </Box>
       </NavBar>
 
-      <Overview />
+      <GuardedOverview />
     </>
   );
 };
 
-export default Home;
+const GuardedHome = withComponentPermission(Home, 'features', ['boreholeAccess', 'iotAccess']);
+
+export default GuardedHome;

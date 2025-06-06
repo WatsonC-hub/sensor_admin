@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
-import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import {useGuardedTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {useAppContext} from '~/state/contexts';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -42,7 +42,7 @@ const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
 
   const {
     get: {data: itineraries},
-  } = useTaskItinerary();
+  } = useGuardedTaskItinerary();
 
   const itinerary = itineraries?.find((itinerary) => itinerary.id === itinerary_id);
 
