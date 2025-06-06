@@ -75,7 +75,7 @@ const Alarms = () => {
 
   return (
     <Box display="flex" flexDirection="column" gap={2} mt={1}>
-      <Dialog open={open} onClose={() => alarmMethods.reset()} fullWidth maxWidth="sm">
+      <Dialog open={open} onClose={cancel} fullWidth maxWidth="sm">
         <DialogTitle>Alarmer</DialogTitle>
         <DialogContent>
           <Form formMethods={alarmMethods} label="Alarm">
