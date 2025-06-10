@@ -51,28 +51,34 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
         header: 'Værdi',
         accessorKey: 'value',
         size: 20,
-        Cell: () => {
-          return (
-            <Typography variant="body2" sx={{whiteSpace: 'nowrap'}}>
-              {'Ikke angivet'}
-            </Typography>
-          );
+        Cell: ({row}) => {
+          if (Object.keys(row.original).length > 0) {
+            return (
+              <Typography variant="body2" sx={{whiteSpace: 'nowrap'}}>
+                {'Ikke angivet'}
+              </Typography>
+            );
+          }
+          return;
         },
       },
       {
         header: 'Alarm tilstand',
         accessorKey: 'alarmState',
         size: 20,
-        Cell: () => {
-          return (
-            <IconButton onClick={() => setAlarmOn(!alarmOn)} size="small">
-              {alarmOn ? (
-                <NotificationsIcon color="inherit" />
-              ) : (
-                <NotificationsOffIcon color="disabled" />
-              )}
-            </IconButton>
-          );
+        Cell: ({row}) => {
+          if (Object.keys(row.original).length > 0) {
+            return (
+              <IconButton onClick={() => setAlarmOn(!alarmOn)} size="small">
+                {alarmOn ? (
+                  <NotificationsIcon color="inherit" />
+                ) : (
+                  <NotificationsOffIcon color="disabled" />
+                )}
+              </IconButton>
+            );
+          }
+          return;
         },
       },
     ],
@@ -103,50 +109,54 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
         width: 'fit-content',
       },
     },
-    getIsRowExpanded: (row) => {
-      return row.original.alarmContacts?.length > 0 || row.original.otherAlarms?.length > 0;
-    },
     renderDetailPanel: ({row}) => {
       const alarmContacts = row.original.alarmContacts || [];
       const otherAlarms = row.original.otherAlarms || [];
       return (
-        <Box sx={{padding: 2}} display={'flex'} flexDirection={'row'} gap={2}>
-          {otherAlarms.length > 0 && (
-            <Box>
-              <Typography variant="body2" fontWeight={'bold'} sx={{marginBottom: 2}}>
-                Øvrige Alarmer
-              </Typography>
-              <OtherAlarmsTable otherAlarms={otherAlarms} />
-            </Box>
-          )}
-          {alarmContacts && (
-            <Box display={'flex'} flexDirection={'column'} width={'100%'}>
-              <Box display={'flex'} gap={1} justifyContent={'space-between'} alignItems={'center'}>
-                <Typography variant="body2" alignContent={'center'} fontWeight={'bold'}>
-                  Alarm Kontakter
+        Object.keys(row.original).length > 0 && (
+          <Box sx={{padding: 2}} display={'flex'} flexDirection={'row'} gap={2}>
+            {otherAlarms.length > 0 && (
+              <Box>
+                <Typography variant="body2" fontWeight={'bold'} sx={{marginBottom: 2}}>
+                  Øvrige Alarmer
                 </Typography>
-                <IconButton
-                  onClick={() => {
-                    setAlarmHistoryOpen(true);
-                    // handleRestore(row.original.gid);
-                  }}
-                  sx={{backgroundColor: 'transparent'}}
-                  size="small"
-                >
-                  <RestoreIcon />
-                  <Typography variant="caption" sx={{textDecoration: 'underline'}} ml={1}>
-                    Se historik
-                  </Typography>
-                </IconButton>
+                <OtherAlarmsTable otherAlarms={otherAlarms} />
               </Box>
-              <AlarmContactTable alarmContacts={alarmContacts} />
-            </Box>
-          )}
-        </Box>
+            )}
+            {alarmContacts && (
+              <Box display={'flex'} flexDirection={'column'} width={'100%'}>
+                <Box
+                  display={'flex'}
+                  gap={1}
+                  justifyContent={'space-between'}
+                  alignItems={'center'}
+                >
+                  <Typography variant="body2" alignContent={'center'} fontWeight={'bold'}>
+                    Alarm Kontakter
+                  </Typography>
+                  <IconButton
+                    onClick={() => {
+                      setAlarmHistoryOpen(true);
+                    }}
+                    sx={{backgroundColor: 'transparent'}}
+                    size="small"
+                  >
+                    <RestoreIcon />
+                    <Typography variant="caption" sx={{textDecoration: 'underline'}} ml={1}>
+                      Se historik
+                    </Typography>
+                  </IconButton>
+                </Box>
+                <AlarmContactTable alarmContacts={alarmContacts} />
+              </Box>
+            )}
+          </Box>
+        )
       );
     },
     renderRowActions: ({row}) => (
       <RenderActions
+        disabled={Object.keys(row.original).length === 0}
         handleEdit={() => {
           console.log('Edit action clicked for row:', row.original);
           // handleEdit(row.original);
@@ -202,7 +212,6 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
               bttype="primary"
               onClick={() => {
                 setAlarmHistoryOpen(false);
-                // handleRestore(row.original.gid);
               }}
             >
               Gem

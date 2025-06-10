@@ -80,12 +80,15 @@ const Alarms = () => {
 
   const {data: alarmContacts} = useQuery(getAlarmContacts(ts_id));
 
-  const alarm: alarmTable = {
-    name: alarms?.[0]?.name,
-    // otherAlarms: alarms?.filter((alarm) => alarm.name !== alarms?.[0]?.name) || [],
-    otherAlarms: alarms || [],
-    alarmContacts: alarmContacts || [],
-  };
+  const alarm =
+    alarms && alarms.length > 0
+      ? {
+          name: alarms?.[0]?.name,
+          // otherAlarms: alarms?.filter((alarm) => alarm.name !== alarms?.[0]?.name) || [],
+          otherAlarms: alarms || [],
+          alarmContacts: alarmContacts || [],
+        }
+      : ({} as alarmTable);
 
   const handleSubmit = (data: AlarmsFormValues) => {
     console.log('Alarm data submitted:', data);
