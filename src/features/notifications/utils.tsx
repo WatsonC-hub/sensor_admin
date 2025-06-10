@@ -54,7 +54,8 @@ export const getColor = (iconDetails: IconDetails) => {
       return sensorColors[FlagEnum.WARNING].color;
     else if (
       moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&
-      (iconDetails.itinerary_id === null || iconDetails.simpleTaskPermission)
+      (iconDetails.itinerary_id === null ||
+        (iconDetails.simpleTaskPermission && !iconDetails.advancedTaskPermission))
     )
       return sensorColors[FlagEnum.INFO].color;
     return sensorColors[FlagEnum.OK].color;

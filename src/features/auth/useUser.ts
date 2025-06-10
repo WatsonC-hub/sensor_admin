@@ -76,8 +76,8 @@ export const useAccessControl = () => {
   const out: AccessControlReturnType = {
     ...(data as AccessControl),
     superUser: data?.role === 'superuser',
-    advancedTaskPermission: data?.features.tasks === 'advanced',
-    simpleTaskPermission: data?.features.tasks === 'simple' || data?.features.tasks === 'advanced',
+    advancedTaskPermission: false, //data?.features.tasks === 'advanced',
+    simpleTaskPermission: false, //data?.features.tasks === 'simple' || data?.features.tasks === 'advanced',
   };
 
   return out;

@@ -20,6 +20,7 @@ import type {
   Taskitinerary,
 } from '../types';
 import {withPermissionGuard} from '~/hooks/withPermissionGuard';
+import {useAccessControl} from '~/features/auth/useUser';
 
 export const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
@@ -56,17 +57,6 @@ export const addLocationToItineraryOptions = {
   },
 };
 
-const itineraryGetOptions = (itinerary_id?: string | null) =>
-  queryOptions<Taskitinerary[], APIError>({
-    queryKey: ['itineraries'],
-    queryFn: async () => {
-      const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
-      return data;
-    },
-    enabled: itinerary_id !== null,
-    staleTime: 1000 * 60 * 5,
-  });
-
 type ItineraryOptions<T> = Partial<
   Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
 >;
@@ -76,9 +66,18 @@ const useTaskItinerary = <T = Taskitinerary[]>(
   options?: ItineraryOptions<T>
 ) => {
   const queryClient = useQueryClient();
+  const accessControl = useAccessControl();
+
+  const enabled = id !== null && id !== undefined && accessControl.advancedTaskPermission;
 
   const get = useQuery({
-    ...itineraryGetOptions(id),
+    queryKey: ['itineraries'],
+    queryFn: async () => {
+      const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
+      return data;
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled: enabled,
     ...options,
     select: options?.select as (data: Taskitinerary[]) => T,
   });
@@ -90,7 +89,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: id !== null && id !== undefined,
+    enabled: enabled,
   });
 
   const getItineraryTasks = useQuery<Task[], APIError>({
@@ -100,7 +99,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: id !== undefined,
+    enabled: enabled,
   });
 
   const createItinerary = useMutation<unknown, APIError, PostTaskitinerary>({
@@ -158,6 +157,8 @@ const useTaskItinerary = <T = Taskitinerary[]>(
     addLocationToTrip,
   };
 };
+
+export default useTaskItinerary;
 
 export const useGuardedTaskItinerary = withPermissionGuard(
   useTaskItinerary,

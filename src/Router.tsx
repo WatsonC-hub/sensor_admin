@@ -9,6 +9,8 @@ import GuardedHome from './pages/Home';
 import GuardedCreateStation from './features/station/components/CreateStation';
 
 const Router = () => {
+  // early return of no IoT access or borehole access
+  // redirect component
   return (
     <>
       <RemoveTrailingSlash />
