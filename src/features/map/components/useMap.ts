@@ -34,7 +34,7 @@ import {
   markerNumThreshold,
   defaultMapBox,
 } from '../mapConsts';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
@@ -67,7 +67,7 @@ const useMap = <TData extends object>(
   const {loc_id: selectedLocId} = useDisplayState((state) => state);
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
-  const accessControl = useAccessControl();
+  const user = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -332,7 +332,7 @@ const useMap = <TData extends object>(
               const geo = L.geoJSON(route.geo_route, {
                 onEachFeature: function onEachFeature(feature, layer) {
                   layer.bindContextMenu({
-                    contextmenu: accessControl.features.routesAndParking,
+                    contextmenu: user?.superUser,
                     contextmenuInheritItems: false,
                     contextmenuItems: [
                       {
@@ -402,39 +402,37 @@ const useMap = <TData extends object>(
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 
-          const parkingMenu = accessControl.features.routesAndParking
-            ? [
-                {
-                  text: 'Slet parkering',
-                  callback: () => {
-                    let locationCounter = 0;
-                    if (markerLayerRef && markerLayerRef.current) {
-                      markerLayerRef.current.eachLayer(function (marker) {
-                        if (
-                          marker instanceof L.CircleMarker &&
-                          marker.options.data &&
-                          marker.options.data.loc_id === parking.loc_id
-                        ) {
-                          locationCounter++;
-                        }
-                      });
-
-                      setDeleteId(parking.parking_id);
-                      setDisplayDelete(true);
-                      setType('parkering');
-                      if (locationCounter >= 1) {
-                        const tekst =
-                          locationCounter === 1 ? 'en lokation' : locationCounter + ' lokationer';
-                        setDeleteTitle(
-                          `Parkeringen er tilknyttet ${tekst}. Er du sikker på at du gerne vil slette parkeringen?`
-                        );
-                      }
+          const parkingMenu = [
+            {
+              text: 'Slet parkering',
+              callback: () => {
+                let locationCounter = 0;
+                if (markerLayerRef && markerLayerRef.current) {
+                  markerLayerRef.current.eachLayer(function (marker) {
+                    if (
+                      marker instanceof L.CircleMarker &&
+                      marker.options.data &&
+                      marker.options.data.loc_id === parking.loc_id
+                    ) {
+                      locationCounter++;
                     }
-                  },
-                  icon: '/parking-icon.png',
-                },
-              ]
-            : [];
+                  });
+
+                  setDeleteId(parking.parking_id);
+                  setDisplayDelete(true);
+                  setType('parkering');
+                  if (locationCounter >= 1) {
+                    const tekst =
+                      locationCounter === 1 ? 'en lokation' : locationCounter + ' lokationer';
+                    setDeleteTitle(
+                      `Parkeringen er tilknyttet ${tekst}. Er du sikker på at du gerne vil slette parkeringen?`
+                    );
+                  }
+                }
+              },
+              icon: '/parking-icon.png',
+            },
+          ];
 
           const point: L.LatLngExpression = [coords.lat, coords.lng];
           const parkingMarker = L.marker(point, {
@@ -445,7 +443,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: accessControl.features.routesAndParking,
+            contextmenu: user?.superUser,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,

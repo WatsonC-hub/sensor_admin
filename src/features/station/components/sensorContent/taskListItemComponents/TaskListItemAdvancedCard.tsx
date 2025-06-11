@@ -83,51 +83,54 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
           flexDirection: 'column',
           alignContent: 'center',
           justifyContent: 'space-between',
+          backgroundColor: task.itinerary_id ? '#fef9f4' : undefined,
         }}
       >
-        <CardHeader
-          sx={{
-            width: '100%',
-            backgroundColor: isCreated ? 'primary.main' : color,
-            color: 'white',
-            py: 0.25,
-            px: 2,
-            minHeight: 32,
-          }}
-          title={
-            <Box
-              display="flex"
-              flexDirection={'row'}
-              alignItems="center"
-              justifyContent={'space-between'}
-            >
+        {task.itinerary_id === null && (
+          <CardHeader
+            sx={{
+              width: '100%',
+              backgroundColor: isCreated ? 'primary.main' : color,
+              color: 'white',
+              py: 0.25,
+              px: 2,
+              minHeight: 32,
+            }}
+            title={
               <Box
-                display={'flex'}
+                display="flex"
                 flexDirection={'row'}
-                gap={0.5}
                 alignItems="center"
-                fontSize={14}
+                justifyContent={'space-between'}
               >
-                <NotificationIcon
-                  iconDetails={{
-                    notification_id: task.blocks_notifications[0],
-                    flag: task.is_created ? null : task.flag,
-                    has_task: task.is_created,
-                    due_date: task.due_date,
-                  }}
-                  noCircle={true}
-                />
-                <Typography variant="caption">{task.name}</Typography>
-              </Box>
-              {task.due_date && (
-                <Box display="flex" flexDirection={'row'} gap={1}>
-                  <PendingActionsIcon fontSize="small" />
-                  <Typography variant="caption">{convertDate(task.due_date)}</Typography>
+                <Box
+                  display={'flex'}
+                  flexDirection={'row'}
+                  gap={0.5}
+                  alignItems="center"
+                  fontSize={14}
+                >
+                  <NotificationIcon
+                    iconDetails={{
+                      notification_id: task.blocks_notifications[0],
+                      flag: task.is_created ? null : task.flag,
+                      has_task: task.is_created,
+                      due_date: task.due_date,
+                    }}
+                    noCircle={true}
+                  />
+                  <Typography variant="caption">{task.name}</Typography>
                 </Box>
-              )}
-            </Box>
-          }
-        />
+                {task.due_date && (
+                  <Box display="flex" flexDirection={'row'} gap={1}>
+                    <PendingActionsIcon fontSize="small" />
+                    <Typography variant="caption">{convertDate(task.due_date)}</Typography>
+                  </Box>
+                )}
+              </Box>
+            }
+          />
+        )}
         <CardContent
           sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 0}}}
         >
@@ -174,6 +177,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   },
 
                   '& .MuiOutlinedInput-root': {
+                    backgroundColor: task.itinerary_id ? 'white' : '',
                     fontSize: 'small',
                   },
                   '& .MuiInputLabel-root': {
@@ -207,6 +211,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   },
 
                   '& .MuiOutlinedInput-root': {
+                    backgroundColor: task.itinerary_id ? 'white' : '',
                     fontSize: 'small',
                   },
                   '& .MuiInputLabel-root': {
@@ -225,6 +230,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
               display={'flex'}
               flexDirection={'column'}
               justifyContent={'space-between'}
+              alignContent={task.itinerary_id ? 'start' : 'center'}
             >
               <Grid2 size={12} gap={1}>
                 {task.description && (

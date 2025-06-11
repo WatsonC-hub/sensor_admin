@@ -56,7 +56,6 @@ type Props = {
   defaultValues?: Partial<FormValues>;
   children?: React.ReactNode;
   disabled?: boolean;
-  schema?: z.ZodObject<any, any, any>;
 };
 
 const TaskFormContext = React.createContext(
@@ -73,10 +72,9 @@ const TaskForm = ({
   children,
   defaultValues,
   disabled,
-  schema = zodSchema,
 }: Props) => {
   const formMethods = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(zodSchema),
     defaultValues: defaultValues,
   });
   const {reset} = formMethods;

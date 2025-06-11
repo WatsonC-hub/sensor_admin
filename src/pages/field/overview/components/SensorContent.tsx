@@ -14,7 +14,6 @@ import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import AddToTripDialog from './AddToTripDialog';
-import {useAccessControl} from '~/features/auth/useUser';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
@@ -26,7 +25,6 @@ const SensorContent = () => {
   const {isMobile} = useBreakpoints();
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
-  const {simpleTaskPermission, advancedTaskPermission} = useAccessControl();
 
   const {data: location} = useMapOverview({
     select: (data) => {
@@ -38,57 +36,49 @@ const SensorContent = () => {
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
       <LocationInfo />
       <TimeseriesList />
-      {simpleTaskPermission && <TaskList setCreateTaskDialog={setCreateTaskDialog} />}
-      {location?.itinerary_id && advancedTaskPermission && (
-        <ItineraryCardList itinerary_id={location.itinerary_id} />
-      )}
+      <TaskList setCreateTaskDialog={setCreateTaskDialog} />
+      {location?.itinerary_id && <ItineraryCardList itinerary_id={location.itinerary_id} />}
 
-      {advancedTaskPermission && (
-        <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
-          {!isMobile ? (
-            <Box
-              display="flex"
-              ref={ref}
-              flexDirection={'row'}
-              alignItems={'center'}
-              alignSelf={'center'}
+      <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
+        {!isMobile ? (
+          <Box
+            display="flex"
+            ref={ref}
+            flexDirection={'row'}
+            alignItems={'center'}
+            alignSelf={'center'}
+          >
+            <Button
+              bttype="primary"
+              startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
             >
-              <Button
-                bttype="primary"
-                startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
-              >
-                Træk til tur
-              </Button>
-            </Box>
-          ) : (
-            <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
-              <Button
-                bttype="primary"
-                onClick={() => setOpenTripDialog(true)}
-                startIcon={<DriveEtaIcon sx={{cursor: 'auto'}} fontSize="small" />}
-              >
-                Tilføj til tur
-              </Button>
-            </Box>
-          )}
-        </Box>
-      )}
+              Træk til tur
+            </Button>
+          </Box>
+        ) : (
+          <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
+            <Button
+              bttype="primary"
+              onClick={() => setOpenTripDialog(true)}
+              startIcon={<DriveEtaIcon sx={{cursor: 'auto'}} fontSize="small" />}
+            >
+              Tilføj til tur
+            </Button>
+          </Box>
+        )}
+      </Box>
 
-      {simpleTaskPermission && <TaskHistoryList />}
+      <TaskHistoryList />
 
-      {simpleTaskPermission && (
-        <CreateManuelTaskModal
-          open={createTaskDialog}
-          closeModal={() => setCreateTaskDialog(false)}
-        />
-      )}
-      {advancedTaskPermission && (
-        <AddToTripDialog
-          open={openTripDialog}
-          onClose={() => setOpenTripDialog(false)}
-          loc_id={loc_id}
-        />
-      )}
+      <CreateManuelTaskModal
+        open={createTaskDialog}
+        closeModal={() => setCreateTaskDialog(false)}
+      />
+      <AddToTripDialog
+        open={openTripDialog}
+        onClose={() => setOpenTripDialog(false)}
+        loc_id={loc_id}
+      />
     </Box>
   );
 };

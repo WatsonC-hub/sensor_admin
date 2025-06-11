@@ -5,28 +5,13 @@ import Button from '~/components/Button';
 
 import {useTaskItinerary} from '../api/useTaskItinerary';
 
-import TaskForm from './TaskForm';
+import TaskForm, {FormValues} from './TaskForm';
 import FormInput from '~/components/FormInput';
-import {z} from 'zod';
 
 type CreateItineraryDialogProps = {
   dialogOpen: boolean;
   setDialogOpen: (dialogOpen: boolean) => void;
 };
-
-const zodSchema = z.object({
-  name: z
-    .string({required_error: 'Navn skal være angivet'})
-    .max(255, 'Navn må maks være 255 tegn')
-    .optional(),
-  due_date: z.string().nullish(),
-  assigned_to: z
-    .string()
-    .nullish()
-    .transform((value) => (value === '' ? null : value)),
-});
-
-export type FormValues = z.infer<typeof zodSchema>;
 
 const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialogProps) => {
   const {createItinerary} = useTaskItinerary();
@@ -60,7 +45,6 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
           assigned_to: null,
           due_date: null,
         }}
-        schema={zodSchema}
       >
         <DialogContent
           sx={{

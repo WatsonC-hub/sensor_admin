@@ -7,7 +7,7 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
 import FormToggleSwitch from '~/components/FormToggleSwitch';
-import {useAccessControl, useUser} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
@@ -20,7 +20,6 @@ interface FilterOptionsProps {
 
 const FilterOptions = ({onClose}: FilterOptionsProps) => {
   const user = useUser();
-  const accessControl = useAccessControl();
   const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
     state.filters,
     state.setFilters,
@@ -37,10 +36,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
   const reset = () => {
     const mapFilter: Filter = {
       ...defaultMapFilter,
-      sensor: {
-        ...defaultMapFilter.sensor,
-        isCustomerService: accessControl.superUser ? false : true,
-      },
+      sensor: {...defaultMapFilter.sensor, isCustomerService: user?.superUser ? false : true},
     };
 
     formMethods.reset(mapFilter);
@@ -58,8 +54,8 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       />
       <Divider />
       <Grid container spacing={2}>
-        {accessControl.features.boreholeAccess && (
-          <Grid item sm={accessControl.features.iotAccess ? 6 : 12} flexGrow={1}>
+        {user?.boreholeAccess && (
+          <Grid item sm={user?.iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">
               <u>Boringer</u>
             </Typography>
@@ -77,7 +73,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             />
           </Grid>
         )}
-        {accessControl.features.iotAccess && (
+        {user?.iotAccess && (
           <Grid
             item
             sm={user?.boreholeAccess ? 6 : 12}
@@ -128,18 +124,20 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 </Typography>
               }
             />
-            {accessControl.superUser && (
+            {user?.superUser && (
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
                 label="Vis kun enkeltmålinger"
                 onChangeCallback={formMethods.handleSubmit(submit)}
               />
             )}
-            <FormToggleSwitch
-              name="sensor.hideLocationsWithoutNotifications"
-              label="Skjul lokationer uden notifikationer"
-              onChangeCallback={formMethods.handleSubmit(submit)}
-            />
+            {user?.superUser && (
+              <FormToggleSwitch
+                name="sensor.hideLocationsWithoutNotifications"
+                label="Skjul lokationer uden notifikationer"
+                onChangeCallback={formMethods.handleSubmit(submit)}
+              />
+            )}
           </Grid>
         )}
       </Grid>
@@ -161,24 +159,22 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
           )}
         />
       </Grid>
-      {accessControl.advancedTaskPermission && (
-        <Grid item xs={12}>
-          <Controller
-            name="itineraries"
-            control={formMethods.control}
-            render={({field: {onChange, value}}) => (
-              <HighlightItineraries
-                value={value}
-                setValue={(value) => {
-                  onChange(value);
-                  formMethods.handleSubmit(submit)();
-                }}
-                label="Fremhæv ture"
-              />
-            )}
-          />
-        </Grid>
-      )}
+      <Grid item xs={12}>
+        <Controller
+          name="itineraries"
+          control={formMethods.control}
+          render={({field: {onChange, value}}) => (
+            <HighlightItineraries
+              value={value}
+              setValue={(value) => {
+                onChange(value);
+                formMethods.handleSubmit(submit)();
+              }}
+              label="Fremhæv ture"
+            />
+          )}
+        />
+      </Grid>
 
       <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
         <Button bttype="tertiary" onClick={reset} startIcon={<RestartAlt />}>

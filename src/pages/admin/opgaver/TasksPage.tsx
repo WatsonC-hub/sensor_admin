@@ -2,16 +2,16 @@ import React from 'react';
 
 import NavBar from '~/components/NavBar';
 
-import Overview from '~/features/tasks/components/Overview';
+import TasksOverview from '~/features/tasks/components/TasksOverview';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {Box} from '@mui/material';
 
-const Home = () => {
+const TasksPage = () => {
   const {isMobile} = useBreakpoints();
-  const accessControl = useAccessControl();
+  const {iotAccess} = useUser();
   const {createStamdata} = useNavigationFunctions();
 
   return (
@@ -21,11 +21,11 @@ const Home = () => {
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         <Box display={'flex'}>
           <NavBar.LocationList />
-          {accessControl.features.tasks === 'advanced' && <NavBar.TripList />}
+          <NavBar.TripList />
           <NavBar.Menu
             disableProfile={false}
             items={[
-              ...(accessControl.features.iotAccess
+              ...(iotAccess
                 ? [
                     {
                       title: 'Opret lokation',
@@ -41,9 +41,9 @@ const Home = () => {
         </Box>
       </NavBar>
 
-      <Overview />
+      <TasksOverview />
     </>
   );
 };
 
-export default Home;
+export default TasksPage;

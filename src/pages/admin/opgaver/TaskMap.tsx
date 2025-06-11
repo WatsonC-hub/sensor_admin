@@ -23,10 +23,10 @@ import {BoreholeMapData} from '~/types';
 import 'leaflet/dist/leaflet.css';
 
 import 'leaflet-contextmenu/dist/leaflet.contextmenu.min.css';
-import useMap from '../features/map/components/useMap';
+import useMap from '../../../features/map/components/useMap';
 import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {getBoreholesIcon, getNotificationIcon} from '~/features/map/utils';
-import {utm} from '../features/map/mapConsts';
+import {utm} from '../../../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
 import {debounce} from 'lodash';

@@ -32,7 +32,6 @@ import {ArrowBack, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {queryClient} from '~/queryClient';
 import AlertDialog from '~/components/AlertDialog';
-import {useLocationData} from '~/hooks/query/useMetadata';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -50,10 +49,9 @@ const CreateStation = () => {
   state = state ?? {};
 
   const loc_id = state?.loc_id ?? undefined;
-  const {data: locationData, isPending} = useLocationData(loc_id);
 
   const defaultValues = {
-    ...(loc_id ? {...locationData, initial_project_no: locationData?.projectno} : state),
+    ...state,
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
@@ -304,10 +302,6 @@ const CreateStation = () => {
 
     if (Object.keys(locationErrors).length > 0 && loctype_id !== -1) triggerLocation();
   }, [loctype_id]);
-
-  useEffect(() => {
-    if (!isPending && locationData) resetLocation(defaultValues);
-  }, [locationData, isPending]);
 
   useEffect(() => {
     clearWatlevmpErrors();

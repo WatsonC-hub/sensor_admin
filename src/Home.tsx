@@ -3,12 +3,12 @@ import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
-import Home from './pages/Home';
+import TasksPage from './pages/admin/opgaver/TasksPage';
 import {AppContext} from './state/contexts';
 import CreateStation from './features/station/components/CreateStation';
 import ScanComponent from './components/ScanComponent';
 
-const Router = () => {
+const Home = () => {
   return (
     <>
       <RemoveTrailingSlash />
@@ -17,7 +17,7 @@ const Router = () => {
           path="/"
           element={
             <AppContext.Provider value={{}}>
-              <Home />
+              <TasksPage />
             </AppContext.Provider>
           }
         />
@@ -36,4 +36,4 @@ const Router = () => {
   );
 };
 
-export default Router;
+export default Home;
