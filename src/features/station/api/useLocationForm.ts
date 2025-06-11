@@ -23,15 +23,13 @@ type useLocationFormProps<T> =
       mode: 'Add';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
-      context: {loc_id: number};
-      loc_id?: number;
+      context: {loc_id: number | undefined};
     }
   | {
       mode: 'Edit';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number};
-      loc_id: number;
     };
 
 const getSchemaAndForm = <T extends FieldValues>(
