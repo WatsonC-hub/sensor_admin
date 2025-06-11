@@ -1,7 +1,7 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Grid} from '@mui/material';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
@@ -21,7 +21,6 @@ interface YRangeRowProps {
 }
 
 const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
-  const [editMode, setEditMode] = useState(false);
   const {post} = useYRangeMutations();
 
   const schema = z.object({
@@ -54,7 +53,6 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
         },
       });
     }
-    setEditMode(false);
     setOpen();
   };
 
@@ -78,22 +76,8 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
         <Grid container>
           <Grid item xs={12} sm={12}>
             <Box display={'flex'} flexDirection={'row'} gap={1}>
-              <FormInput
-                name="mincutoff"
-                label="Nedre grænse"
-                fullWidth
-                type="number"
-                required
-                disabled={!editMode}
-              />
-              <FormInput
-                name="maxcutoff"
-                label="Øvre grænse"
-                fullWidth
-                type="number"
-                required
-                disabled={!editMode}
-              />
+              <FormInput name="mincutoff" label="Nedre grænse" fullWidth type="number" required />
+              <FormInput name="maxcutoff" label="Øvre grænse" fullWidth type="number" required />
             </Box>
           </Grid>
         </Grid>
@@ -102,7 +86,6 @@ const YRangeRow = ({data, setOpen}: YRangeRowProps) => {
             bttype="tertiary"
             size="small"
             onClick={() => {
-              setEditMode(false);
               reset(data);
               setOpen();
             }}
