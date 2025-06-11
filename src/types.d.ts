@@ -434,8 +434,19 @@ export type DataToShow = {
   Kontrolmålinger: boolean;
   Godkendt: boolean;
   Nedbør: boolean;
+  'Horisontale linjer': boolean;
   'Korrigerede spring': boolean;
   'Valide værdier': boolean;
   'Fjernet data': boolean;
   Rådata: boolean;
+};
+
+type HorizontalLine = {
+  name: string;
+  level: number;
+  unit: string;
+  parameter: string;
+  tstype_id: number;
+  line?: object;
+  mode?: string;
 };

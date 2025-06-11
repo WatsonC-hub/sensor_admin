@@ -432,7 +432,7 @@ const Service = () => {
           control={
             <Checkbox
               sx={{color: 'primary.main'}}
-              checked={value}
+              checked={value ?? false}
               onChange={(e) => {
                 onChange(e);
                 trigger('pumpstop');
@@ -456,7 +456,7 @@ const PumpStop = (props: Omit<FormInputProps<PejlingBoreholeSchemaType>, 'name'>
       name="pumpstop"
       label="Tidspunkt for pumpestop"
       fullWidth
-      disabled={service}
+      disabled={!!service}
       slotProps={{
         htmlInput: {
           max: moment(timeofmeas).format('YYYY-MM-DDTHH:mm:ss'),
