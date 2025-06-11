@@ -14,7 +14,7 @@ const pejlingBoreholeSchema = baseSchema
   .extend({
     extrema: z.string().nullish(),
     pumpstop: z.string().nullish(),
-    service: z.boolean().default(false),
+    service: z.boolean().nullish().default(false),
   })
   .refine(
     (data) => {
