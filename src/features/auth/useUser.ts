@@ -16,6 +16,22 @@ type User = {
   ressourcePermission: boolean;
 };
 
+type AccessControl = {
+  role: string;
+  features: {
+    iotAccess: boolean;
+    boreholeAccess: boolean;
+    tasks: 'simple' | 'advanced' | 'none';
+    contacts: boolean;
+    keys: boolean;
+    resources: boolean;
+    routesAndParking: boolean;
+  };
+  attributes: {
+    [key: string]: string | number | boolean;
+  };
+};
+
 export const userQueryOptions = queryOptions({
   queryKey: ['user'],
   queryFn: async () => {
@@ -32,4 +48,29 @@ export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
 
   return data as User;
+};
+
+export const accessControlQueryOptions = queryOptions({
+  queryKey: ['accessControl'],
+  queryFn: async () => {
+    const {data} = await apiClient.get<AccessControl>(`/auth/access-control`);
+    return data;
+  },
+  refetchOnWindowFocus: false,
+  refetchInterval: Infinity,
+  refetchOnMount: false,
+  refetchOnReconnect: false,
+});
+
+export const useAccessControl = () => {
+  const {data} = useQuery(accessControlQueryOptions);
+
+  const out = {
+    ...(data as AccessControl),
+    superUser: data?.role === 'superuser',
+    advancedTaskPermission: data?.features.tasks === 'advanced',
+    simpleTaskPermission: data?.features.tasks === 'simple' || data?.features.tasks === 'advanced',
+  };
+
+  return out;
 };

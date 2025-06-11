@@ -3,7 +3,7 @@ import {Box} from '@mui/material';
 import React from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import TaskMap from '~/pages/admin/opgaver/TaskMap';
+import Map from '~/pages/Map';
 import TaskInfo from './TaskInfo';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {AppContext} from '~/state/contexts';
@@ -29,7 +29,7 @@ import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
 
-const TasksOverview = () => {
+const Overview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
     state.selectedTaskId,
     state.setSelectedTask,
@@ -119,7 +119,7 @@ const TasksOverview = () => {
           height: '100%',
         }}
       >
-        <TaskMap key="taskmap" clickCallback={clickCallback} />
+        <Map key="taskmap" clickCallback={clickCallback} />
       </Box>
       <DragDropProvider
         key={loc_id}
@@ -282,7 +282,6 @@ const TasksOverview = () => {
           </WindowManager.Window>
         </WindowManager>
       </DragDropProvider>
-      {/* </Box> */}
       <ItineraryHighlighter />
       <LocationHighlighter
         selectedLocId={loc_id ? loc_id : boreholeno ? boreholeno : null}
@@ -292,4 +291,4 @@ const TasksOverview = () => {
   );
 };
 
-export default TasksOverview;
+export default Overview;

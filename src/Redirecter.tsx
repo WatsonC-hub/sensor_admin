@@ -6,7 +6,7 @@ import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useUser} from './features/auth/useUser';
-import TasksPage from './pages/admin/opgaver/TasksPage';
+import Home from './pages/Home';
 
 const Redirecter = () => {
   const {home} = useNavigationFunctions();
@@ -25,7 +25,7 @@ const Redirecter = () => {
     <>
       <RemoveTrailingSlash />
       <Routes>
-        <Route path="/" element={<TasksPage />} />
+        <Route path="/" element={<Home />} />
         <Route
           path="stamdata"
           element={
@@ -34,17 +34,6 @@ const Redirecter = () => {
             </>
           }
         />
-
-        {/* <Route
-          path="/field/*"
-          element={
-            <>
-              <SensorField />
-            </>
-          }
-        />
-
-        <Route path="/:labelid" element={<ScanComponent />} />*/}
         <Route
           path="*"
           element={
