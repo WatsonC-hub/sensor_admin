@@ -19,7 +19,7 @@ interface PejlingPost extends PejlingBase {
     useforcorrection: number;
     extrema?: string | null;
     pumpstop?: string | null;
-    service?: boolean;
+    service?: boolean | null;
   };
 }
 
