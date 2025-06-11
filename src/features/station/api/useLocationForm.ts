@@ -78,12 +78,11 @@ const useLocationForm = <T extends BaseLocation>({
   mode,
   context,
   initialLocTypeId = -1,
-  loc_id,
 }: useLocationFormProps<T>) => {
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user, loc_id);
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user, context.loc_id);
 
   const {data, success} = schema.safeParse({
     ...defaultValues,
