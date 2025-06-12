@@ -7,10 +7,11 @@ export type CommandAction = {
   perform: (inp?: string) => void;
   icon?: React.ReactNode; // Optional icon for the command
   description?: string; // Optional description for the command
-  input?: boolean; // Whether the command requires input
+  type: 'action' | 'input' | 'selection'; // Type of command
   inputPlaceholder?: string; // Placeholder for the input field
   shortcut?: string; // Optional keyboard shortcut for the command
   group?: string; // Optional group for categorizing commands
+  options?: {label: string; value: string}[]; // Options for selection type commands
 };
 
 type CommandRegistry = {

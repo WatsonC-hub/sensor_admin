@@ -1,8 +1,9 @@
 import {Command} from 'cmdk';
 import {CommandAction, useCommandRegistry} from './CommandContext';
-import {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect} from 'react';
 import '../styles/cmdk.css';
 import {Box} from '@mui/material';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -10,11 +11,12 @@ function CommandPalette() {
   const [actions, setActions] = useState<ReturnType<typeof getActions>>([]);
   const [selectedAction, setSelectedAction] = useState<CommandAction | null>(null);
   const {getActions} = useCommandRegistry();
-  const [page, setPage] = useState<'all' | 'input'>('all');
+  const [page, setPage] = useState<'all' | 'input' | 'selection'>('all');
+  const {isMobile} = useBreakpoints();
 
-  const updateActions = useCallback(() => {
-    setActions(getActions());
-  }, [getActions]);
+  // const updateActions = useCallback(() => {
+  //   setActions(getActions());
+  // }, [getActions]);
 
   const onClose = () => {
     setOpen(false);
@@ -24,8 +26,12 @@ function CommandPalette() {
   };
 
   const itemSelect = (action: CommandAction) => {
-    if (action.input) {
+    if (action.type === 'input') {
       setPage('input');
+      setSearch('');
+      setSelectedAction(action);
+    } else if (action.type === 'selection') {
+      setPage('selection');
       setSearch('');
       setSelectedAction(action);
     } else {
@@ -36,37 +42,50 @@ function CommandPalette() {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      const actions = getActions();
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        updateActions();
+        setActions(actions);
         setOpen((prev) => !prev);
       }
 
-      actions.forEach((action) => {
-        if (
-          action.shortcut &&
-          e.key.toLowerCase() === action.shortcut.toLowerCase() &&
-          (e.metaKey || e.ctrlKey)
-        ) {
-          e.preventDefault();
-          itemSelect(action);
-        }
-      });
+      if (e.key === 'Escape' && page !== 'all') {
+        console.log("Escape pressed, resetting to 'all' page");
+        e.preventDefault();
+        setPage('all');
+        setSelectedAction(null);
+      }
+
+      if (open) {
+        actions.forEach((action) => {
+          if (
+            action.shortcut &&
+            e.key.toLowerCase() === action.shortcut.toLowerCase() &&
+            (e.metaKey || e.ctrlKey)
+          ) {
+            e.preventDefault();
+            itemSelect(action);
+          }
+        });
+      }
     };
     window.addEventListener('keydown', down);
     return () => window.removeEventListener('keydown', down);
-  }, [actions]);
+  }, [open, page]);
 
   return (
     <Command.Dialog
       loop
+      shouldFilter={page === 'all'}
       open={open}
       onOpenChange={onClose}
+      title="Command Palette"
       label="Global Command Menu"
-      className="cmdk-overlay"
+      className={`cmdk-overlay ${isMobile ? 'mobile' : ''}`}
+      aria-describedby="cmdk-description"
     >
-      <div className="cmdk-container">
-        {selectedAction ? (
+      <div className={`cmdk-container ${isMobile ? 'mobile' : ''}`}>
+        {page === 'input' && selectedAction ? (
           <Command.Input
             placeholder={selectedAction.inputPlaceholder || 'Indtast din kommando...'}
             onKeyDown={(e) => {
@@ -88,6 +107,27 @@ function CommandPalette() {
         )}
         <Command.List className="cmdk-list">
           {page == 'all' && <Command.Empty className="cmdk-empty">Ingen resultater</Command.Empty>}
+          {page == 'selection' && (
+            <Command.Empty className="cmdk-empty">Ingen resultater</Command.Empty>
+          )}
+          {page == 'selection' &&
+            selectedAction?.options
+              ?.filter((option) => option.label.toLowerCase().includes(search.toLowerCase()))
+              .slice(0, 20)
+              .map((option) => (
+                <Command.Item
+                  key={option.value}
+                  value={option.value}
+                  className="cmdk-item"
+                  onSelect={() => {
+                    selectedAction.perform(option.value);
+                    onClose();
+                  }}
+                >
+                  <div />
+                  {option.label}
+                </Command.Item>
+              ))}
           {actions.length > 0 &&
             page == 'all' &&
             actions.map((action) => (
