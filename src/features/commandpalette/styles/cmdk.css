@@ -1,0 +1,72 @@
+/* styles/cmdk.css */
+
+.cmdk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cmdk-container {
+  background: #ffffff;
+  color: #1c1b1f;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow:
+    0px 3px 6px rgba(0, 0, 0, 0.16),
+    0px 3px 6px rgba(0, 0, 0, 0.23);
+  overflow: hidden;
+  font-family: 'Roboto', sans-serif;
+}
+
+.cmdk-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f5f5f5;
+}
+
+.cmdk-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.cmdk-item {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 24px auto;
+  gap: 1rem;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 16px;
+}
+
+.cmdk-item:hover,
+.cmdk-item[aria-selected='true'] {
+  background-color: #e8def8; /* Material 3 primary surface variant */
+}
+
+.cmdk-empty {
+  padding: 16px;
+  text-align: center;
+  color: #6f6f6f;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.cmdk-shortcut {
+  font-size: 13px;
+  color: #6f6f6f;
+  background: #f1f1f1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}

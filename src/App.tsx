@@ -11,12 +11,57 @@ import UnAuntenticatedApp from '~/UnauthenticatedApp';
 import useBreakpoints from './hooks/useBreakpoints';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import {useUser} from './features/auth/useUser';
+import CommandPalette from './features/commandpalette/components/CommandPalette';
+import {usePageActions} from './features/commandpalette/hooks/usePageActions';
+import {Home, Link, LocationOn, Timeline} from '@mui/icons-material';
 
 function App() {
-  const {field} = useNavigationFunctions();
-
+  const {field, home, location: locationNavigation, station} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const user = useUser();
+
+  usePageActions([
+    {
+      id: 'openLocation',
+      name: 'Åbn lokation',
+      input: true,
+      inputPlaceholder: 'Indtast lokation...',
+      perform: (input) => {
+        locationNavigation(Number(input));
+      },
+      icon: <LocationOn />,
+      shortcut: 'L',
+    },
+    {
+      id: 'openTimeseries',
+      name: 'Åbn tidsserie',
+      input: true,
+      inputPlaceholder: 'Indtast tidsserie ID...',
+      perform: (input) => {
+        const tsId = Number(input);
+        if (tsId) {
+          station(undefined, tsId);
+        } else {
+          console.error('Invalid timeseries ID:', input);
+        }
+      },
+      icon: <Timeline />,
+      shortcut: 'I',
+    },
+    {
+      id: 'field',
+      name: 'Gå til marken',
+      perform: field,
+      icon: <Link />,
+    },
+    {
+      id: 'home',
+      name: 'Hjem',
+      perform: home,
+      icon: <Home />,
+      shortcut: 'H',
+    },
+  ]);
 
   useEffect(() => {
     if (isMobile && location.pathname == '/') {
@@ -71,6 +116,7 @@ function App() {
       <Suspense fallback={<LoadingSkeleton />}>
         <Redirecter />
       </Suspense>
+      <CommandPalette />
     </ErrorBoundary>
   );
 }

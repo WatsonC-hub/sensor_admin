@@ -19,6 +19,7 @@ import theme from '~/theme';
 import App from './App';
 
 import '~/index.css';
+import {CommandProvider} from './features/commandpalette/components/CommandContext';
 
 if (import.meta.env.PROD) {
   Sentry.init({
@@ -58,9 +59,11 @@ root.render(
             }}
           >
             <CssBaseline />
-            <NuqsAdapter>
-              <App />
-            </NuqsAdapter>
+            <CommandProvider>
+              <NuqsAdapter>
+                <App />
+              </NuqsAdapter>
+            </CommandProvider>
             <ReactQueryDevtools initialIsOpen={false} />
             <ToastContainer
               draggablePercent={30}
