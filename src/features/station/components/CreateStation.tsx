@@ -56,11 +56,13 @@ const CreateStation = () => {
   const [locationFormMethods, LocationForm] = useLocationForm<
     DefaultAddLocation | BoreholeAddLocation
   >({
-    mode: 'Add',
-    defaultValues: defaultValues,
-    context: {
-      loc_id: loc_id,
+    formProps: {
+      defaultValues: defaultValues,
+      context: {
+        loc_id: loc_id,
+      },
     },
+    mode: 'Add',
     initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : -1,
   });
 
@@ -90,11 +92,13 @@ const CreateStation = () => {
   const [timeseriesFormMethods, TimeseriesForm] = useTimeseriesForm<
     DefaultAddTimeseries | BoreholeAddTimeseries
   >({
-    mode: 'Add',
-    defaultValues: timeseriesValues,
-    context: {
-      loctype_id: loctype_id,
+    formProps: {
+      defaultValues: timeseriesValues,
+      context: {
+        loctype_id: loctype_id,
+      },
     },
+    mode: 'Add',
   });
 
   const {

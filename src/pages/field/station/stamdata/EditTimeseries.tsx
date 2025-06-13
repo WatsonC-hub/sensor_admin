@@ -45,12 +45,6 @@ const EditTimeseries = () => {
     del: deleteSync,
   } = useSync();
 
-  const isSyncAvailable =
-    metadata?.tstype_id === 1 ||
-    metadata?.tstype_id === 2 ||
-    metadata?.tstype_id === 8 ||
-    metadata?.tstype_id === 11;
-
   const metadataEditTimeseriesMutation = useMutation({
     mutationFn: async (data: any) => {
       const {data: out} = await apiClient.put(
@@ -97,29 +91,32 @@ const EditTimeseries = () => {
     intakeno: metadata?.intakeno,
   });
 
-  const SyncMethods = useForm<SyncFormValues>({
+  const syncMethods = useForm<SyncFormValues>({
     resolver: zodResolver(SyncSchema),
-    defaultValues: {
+    mode: 'onTouched',
+    values: {
       jupiter: sync_data?.jupiter ?? undefined,
       sync_dmp: sync_data?.owner_cvr ? true : undefined,
       owner_name: owner?.name ?? '',
       owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
     },
-    mode: 'onTouched',
   });
 
   const {
     getValues: getSyncValues,
     reset: resetSync,
     formState: {isDirty: syncIsDirty, isValid: syncIsValid},
-  } = SyncMethods;
+  } = syncMethods;
 
   const [formMethods, TimeseriesForm] = useTimeseriesForm({
-    defaultValues: defaultValues,
-    mode: 'Edit',
-    context: {
-      loctype_id: metadata?.loctype_id,
+    formProps: {
+      // defaultValues: defaultValues,
+      context: {
+        loctype_id: metadata?.loctype_id,
+      },
+      values: defaultValues,
     },
+    mode: 'Edit',
   });
 
   const {
@@ -128,23 +125,6 @@ const EditTimeseries = () => {
     getValues: getTimeseriesValues,
     trigger,
   } = formMethods;
-
-  useEffect(() => {
-    if (metadata != undefined) {
-      reset(defaultValues);
-    }
-  }, [metadata]);
-
-  useEffect(() => {
-    if (sync_data != undefined) {
-      SyncMethods.reset({
-        jupiter: sync_data?.jupiter ?? undefined,
-        sync_dmp: sync_data?.owner_cvr ? true : undefined,
-        owner_name: owner?.name ?? '',
-        owner_cvr: owner?.cvr ? parseInt(owner.cvr) : undefined,
-      });
-    }
-  }, [sync_data, owners]);
 
   useEffect(() => {
     if (error) {
@@ -161,10 +141,10 @@ const EditTimeseries = () => {
       metadataEditTimeseriesMutation.mutate(payload);
     }
 
-    if (isSyncAvailable && syncIsValid && syncIsDirty) {
+    if (syncIsValid && syncIsDirty) {
       const syncData = getSyncValues();
       const cvr = owners?.find((owner) => owner.name === syncData.owner_name)?.cvr;
-      console.log('cvr', cvr);
+
       const syncPayload = {
         path: `${ts_id}`,
         data: {
@@ -177,8 +157,6 @@ const EditTimeseries = () => {
           jupiter: syncData.jupiter,
         },
       };
-
-      console.log('syncPayload', syncPayload);
 
       postSync.mutate(syncPayload);
 
@@ -196,14 +174,15 @@ const EditTimeseries = () => {
             <TimeseriesForm size={size} loc_name={metadata?.loc_name} />
           </StamdataTimeseries>
         </FormFieldset>
-        {isSyncAvailable && (
-          <SyncForm
-            formMethods={SyncMethods}
-            loctype_id={location_data?.loctype_id}
-            tstype_id={metadata?.tstype_id}
-            owners={owners}
-          />
-        )}
+
+        <SyncForm
+          key={`sync-form-${ts_id}`}
+          formMethods={syncMethods}
+          loctype_id={location_data?.loctype_id}
+          tstype_id={metadata?.tstype_id}
+          owners={owners}
+        />
+
         <footer>
           <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
             <Button

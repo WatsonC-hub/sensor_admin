@@ -55,6 +55,10 @@ const FormInput = <TFieldValues extends FieldValues>({
           value = moment(value).format('YYYY-MM-DDTHH:mm') as any;
         }
 
+        if (type === 'time' && value) {
+          value = moment(value, 'HH:mm').format('HH:mm') as any;
+        }
+
         const errorMessage = !!get(errors, name) && get(errors, name).message;
         const warningMessage = warning && warning(value);
 

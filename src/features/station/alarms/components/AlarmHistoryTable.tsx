@@ -4,7 +4,7 @@ import React, {useMemo} from 'react';
 import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {AlarmHistory} from '~/types';
+import {AlarmHistory} from '../types';
 
 type AlarmHistoryTableProps = {
   alarmHistory: Array<AlarmHistory> | undefined;

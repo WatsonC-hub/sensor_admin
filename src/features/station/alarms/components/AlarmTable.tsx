@@ -3,11 +3,6 @@ import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-reac
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {alarmTable} from '~/types';
-import AlarmContactTable from './AlarmContactTable';
-import OtherAlarmsTable from './OtherAlarmsTable';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import RenderActions from '~/helpers/RowActions';
 import RestoreIcon from '@mui/icons-material/Restore';
 import {useQuery} from '@tanstack/react-query';
@@ -15,11 +10,18 @@ import {useAppContext} from '~/state/contexts';
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import AlarmHistoryTable from './AlarmHistoryTable';
+import {alarmTable} from '../types';
+import AlarmFormDialog from './AlarmFormDialog';
+import AlarmContactTable from './AlarmContactTable';
+import AlarmCriteriaTable from './AlarmCriteriaTable';
+import {useAlarm} from '../api/useAlarm';
+import DeleteAlert from '~/components/DeleteAlert';
 type AlarmTableProps = {
   alarm: alarmTable;
 };
 
 const AlarmTable = ({alarm}: AlarmTableProps) => {
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
   const {ts_id} = useAppContext(['ts_id']);
   const {data: alarmHistory} = useQuery({
     queryKey: ['alarm_history', ts_id],
@@ -32,13 +34,18 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
           alarm_low: boolean;
           name: string;
         }>
-      >(`/sensor_field/stamdata/contact/alarm_history/${ts_id}`);
+      >(`/sensor_field/stamdata/alarms/alarm_history/${ts_id}`);
       return data;
     },
     enabled: !!ts_id,
   });
 
-  const [alarmOn, setAlarmOn] = React.useState<boolean>(true);
+  const {del: deleteAlarm} = useAlarm();
+
+  const handleDelete = async () => {
+    deleteAlarm({path: `${ts_id}`});
+  };
+
   const [alarmHistoryOpen, setAlarmHistoryOpen] = React.useState<boolean>(false);
   const columns = useMemo<MRT_ColumnDef<alarmTable>[]>(
     () => [
@@ -48,41 +55,23 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
         size: 20,
       },
       {
-        header: 'Værdi',
-        accessorKey: 'value',
-        size: 20,
-        Cell: ({row}) => {
-          if (Object.keys(row.original).length > 0) {
-            return (
-              <Typography variant="body2" sx={{whiteSpace: 'nowrap'}}>
-                {'Ikke angivet'}
-              </Typography>
-            );
-          }
-          return;
-        },
+        header: 'Tidligste signalering',
+        accessorKey: 'earliest_timeofday',
       },
       {
-        header: 'Alarm tilstand',
-        accessorKey: 'alarmState',
-        size: 20,
-        Cell: ({row}) => {
-          if (Object.keys(row.original).length > 0) {
-            return (
-              <IconButton onClick={() => setAlarmOn(!alarmOn)} size="small">
-                {alarmOn ? (
-                  <NotificationsIcon color="inherit" />
-                ) : (
-                  <NotificationsOffIcon color="disabled" />
-                )}
-              </IconButton>
-            );
-          }
-          return;
-        },
+        header: 'Seneste signalering',
+        accessorKey: 'latest_timeofday',
+      },
+      {
+        header: 'Alarm Interval',
+        accessorKey: 'alarm_interval',
+      },
+      {
+        header: 'Note',
+        accessorKey: 'note_to_include',
       },
     ],
-    [alarmOn]
+    []
   );
 
   const options: Partial<MRT_TableOptions<alarmTable>> = {
@@ -109,28 +98,35 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
         width: 'fit-content',
       },
     },
+    muiDetailPanelProps: {
+      sx: {
+        width: '100%',
+        maxHeight: '100%',
+      },
+    },
     renderDetailPanel: ({row}) => {
       const alarmContacts = row.original.alarmContacts || [];
-      const otherAlarms = row.original.otherAlarms || [];
+      const otherAlarms = row.original.alarmCriteria || [];
       return (
         Object.keys(row.original).length > 0 && (
-          <Box sx={{padding: 2}} display={'flex'} flexDirection={'row'} gap={2}>
+          <Box
+            sx={{padding: 2}}
+            display={'flex'}
+            flexDirection={'row'}
+            height={'100%'}
+            justifyContent={'space-around'}
+          >
             {otherAlarms.length > 0 && (
               <Box>
-                <Typography variant="body2" fontWeight={'bold'} sx={{marginBottom: 2}}>
-                  Øvrige Alarmer
+                <Typography variant="body2" fontWeight={'bold'} height={34} alignContent={'center'}>
+                  Alarm kriterier
                 </Typography>
-                <OtherAlarmsTable otherAlarms={otherAlarms} />
+                <AlarmCriteriaTable otherAlarms={otherAlarms} />
               </Box>
             )}
             {alarmContacts && (
-              <Box display={'flex'} flexDirection={'column'} width={'100%'}>
-                <Box
-                  display={'flex'}
-                  gap={1}
-                  justifyContent={'space-between'}
-                  alignItems={'center'}
-                >
+              <Box display={'flex'} flexDirection={'column'}>
+                <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
                   <Typography variant="body2" alignContent={'center'} fontWeight={'bold'}>
                     Alarm Kontakter
                   </Typography>
@@ -154,19 +150,34 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
         )
       );
     },
-    renderRowActions: ({row}) => (
+    renderRowActions: ({row, table}) => (
       <RenderActions
         disabled={Object.keys(row.original).length === 0}
         handleEdit={() => {
-          console.log('Edit action clicked for row:', row.original);
-          // handleEdit(row.original);
+          table.setEditingRow(row);
         }}
         onDeleteBtnClick={() => {
-          console.log('Delete action clicked for row:', row.original);
-          // onDeleteBtnClick(row.original.gid);
+          setOpenDeleteDialog(true);
         }}
       />
     ),
+    renderEditRowDialogContent: ({row, table}) => {
+      return (
+        <Box py={4} px={2} boxShadow={6}>
+          <AlarmFormDialog
+            open={true}
+            onClose={() => {
+              table.setEditingRow(null);
+            }}
+            setOpen={(open) => table.setEditingRow(open ? row : null)}
+            alarm={row.original}
+          />
+        </Box>
+      );
+    },
+    onEditingRowCancel: ({table}) => {
+      table.setEditingRow(null);
+    },
   };
 
   const table = useTable<alarmTable>(
@@ -219,6 +230,11 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
           </Box>
         </Box>
       </Dialog>
+      <DeleteAlert
+        dialogOpen={openDeleteDialog}
+        setDialogOpen={setOpenDeleteDialog}
+        onOkDelete={handleDelete}
+      />
       <MaterialReactTable table={table} />
     </Box>
   );

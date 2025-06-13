@@ -158,6 +158,7 @@ const StationDrawer = () => {
           icon: <AlarmIcon />,
           requiredTsId: true,
           onHover: () => {},
+          disabled: !user?.superUser,
         },
         // {
         //   text: 'Stamdata',

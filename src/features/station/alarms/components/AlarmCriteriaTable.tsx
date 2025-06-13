@@ -3,32 +3,28 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {Alarm} from '~/types';
+import {CriteriaTable} from '../types';
 
-type OtherAlarmsTableProps = {
-  otherAlarms: Array<Alarm> | undefined;
+type AlarmCriteriaTableProps = {
+  otherAlarms: Array<CriteriaTable> | undefined;
 };
 
-const OtherAlarmsTable = ({otherAlarms}: OtherAlarmsTableProps) => {
-  const columns = useMemo<MRT_ColumnDef<Alarm>[]>(
+const AlarmCriteriaTable = ({otherAlarms}: AlarmCriteriaTableProps) => {
+  const columns = useMemo<MRT_ColumnDef<CriteriaTable>[]>(
     () => [
       {
         header: 'Navn',
-        accessorKey: 'name',
+        accessorKey: 'attention_level',
       },
       {
         header: 'Kriteria',
         accessorKey: 'criteria',
       },
-      {
-        header: 'Alarm Interval (timer)',
-        accessorKey: 'alarm_interval',
-      },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<Alarm>> = {
+  const options: Partial<MRT_TableOptions<CriteriaTable>> = {
     enableColumnActions: false,
     enableColumnFilters: false,
     enableSorting: false,
@@ -52,7 +48,7 @@ const OtherAlarmsTable = ({otherAlarms}: OtherAlarmsTableProps) => {
     },
   };
 
-  const table = useTable<Alarm>(
+  const table = useTable<CriteriaTable>(
     columns,
     otherAlarms,
     options,
@@ -68,4 +64,4 @@ const OtherAlarmsTable = ({otherAlarms}: OtherAlarmsTableProps) => {
   );
 };
 
-export default OtherAlarmsTable;
+export default AlarmCriteriaTable;

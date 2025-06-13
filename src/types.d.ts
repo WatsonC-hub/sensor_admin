@@ -213,37 +213,6 @@ export type ContactTable = {
   contact_role_name?: string;
 };
 
-/**
- * contact.name, contact.alarm_interval, contact.email, contact.sms, contact.call
- */
-export type AlarmContact = {
-  name: string;
-  alarm_interval: number;
-  sms: boolean;
-  email: boolean;
-  call: boolean;
-};
-
-export type AlarmHistory = {
-  date: string;
-  sent_type: string;
-  alarm: boolean;
-  alarm_low: boolean;
-  name: string;
-};
-
-export type Alarm = {
-  name: string;
-  criteria: string;
-  alarm_interval: number;
-};
-
-export type alarmTable = {
-  name: string | undefined;
-  otherAlarms: Array<Alarm>;
-  alarmContacts: Array<AlarmContact>;
-};
-
 export type Access = {
   id?: number;
   navn?: string;

@@ -3,14 +3,14 @@ import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-reac
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
-import {AlarmContact} from '~/types';
+import {ContactTable} from '../types';
 
 type AlarmContactTableProps = {
-  alarmContacts: Array<AlarmContact> | undefined;
+  alarmContacts: Array<ContactTable> | undefined;
 };
 
 const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
-  const columns = useMemo<MRT_ColumnDef<AlarmContact>[]>(
+  const columns = useMemo<MRT_ColumnDef<ContactTable>[]>(
     () => [
       {
         header: 'Navn',
@@ -33,16 +33,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
           );
         },
       },
-      {
-        header: 'Alarm Interval (timer)',
-        accessorKey: 'alarm_interval',
-        size: 20,
-      },
     ],
     []
   );
 
-  const options: Partial<MRT_TableOptions<AlarmContact>> = {
+  const options: Partial<MRT_TableOptions<ContactTable>> = {
     enableColumnActions: false,
     enableColumnFilters: false,
     enableSorting: false,
@@ -52,6 +47,7 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
     muiTablePaperProps: {
       sx: {
         width: 'fit-content',
+        height: '100%',
       },
     },
     muiTableBodyCellProps: {
@@ -64,9 +60,15 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         width: 'fit-content',
       },
     },
+    muiTableContainerProps: {
+      sx: {
+        width: '100%',
+        height: '100%',
+      },
+    },
   };
 
-  const table = useTable<AlarmContact>(
+  const table = useTable<ContactTable>(
     columns,
     alarmContacts,
     options,
@@ -76,7 +78,7 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
   );
 
   return (
-    <Box alignItems={'center'}>
+    <Box alignItems={'center'} height={'100%'} width={'100%'}>
       <MaterialReactTable table={table} />
     </Box>
   );

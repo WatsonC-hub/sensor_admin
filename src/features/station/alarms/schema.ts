@@ -1,0 +1,58 @@
+import {z} from 'zod';
+
+export const alarmContactSchema = z
+  .object({
+    contact_id: z.string().optional(),
+    name: z.string().optional(),
+    sms: z.boolean(),
+    email: z.boolean(),
+    call: z.boolean(),
+  })
+  .refine((contact) => contact.contact_id !== undefined && contact.contact_id !== '', {
+    path: ['contact_id'],
+    message: 'Kontakt er påkrævet',
+  });
+
+export const criteria = z
+  .object({
+    attention_level: z
+      .enum(['attention_high', 'attention_low', 'alarm_high', 'alarm_low', ''])
+      .optional(),
+    criteria: z.number().optional(),
+  })
+  .refine((criteria) => criteria.criteria !== undefined, {
+    path: ['criteria'],
+    message: 'Kriterium er påkrævet',
+  })
+  .refine((criteria) => criteria.attention_level !== '', {
+    path: ['attention_level'],
+    message: 'Vælg et niveau',
+  });
+
+export const alarmsSchema = z
+  .object({
+    name: z.string().min(1, 'Navn er påkrævet'),
+    from: z.string().min(1, 'start interval er påkrævet'),
+    to: z.string().min(1, 'slut interval er påkrævet'),
+    comment: z.string().optional(),
+    criteria: z.array(criteria).optional().default([]),
+    contacts: z.array(alarmContactSchema).optional().default([]),
+    interval: z.number({required_error: 'Alarm interval er påkrævet'}),
+  })
+  .refine((data) => data.from < data.to, {
+    path: ['to'],
+    message: 'slut interval skal være større end start interval',
+  });
+
+export const contactArray = z.object({
+  contacts: z.array(alarmContactSchema),
+});
+
+export const alarmCriteriaArray = z.object({
+  criteria: z.array(criteria),
+});
+
+export type AlarmsFormValues = z.infer<typeof alarmsSchema>;
+export type AlarmContactFormValues = z.infer<typeof alarmContactSchema>;
+export type AlarmContactArrayFormValues = z.infer<typeof contactArray>;
+export type AlarmCriteriaArrayFormValues = z.infer<typeof alarmCriteriaArray>;
