@@ -3,7 +3,7 @@ import {Box} from '@mui/material';
 import React from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import TaskMap from '~/pages/admin/opgaver/TaskMap';
+import TaskMap from '~/pages/admin/opgaver/Map';
 import TaskInfo from './TaskInfo';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {AppContext} from '~/state/contexts';
@@ -29,7 +29,7 @@ import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
 
-const TasksOverview = () => {
+const Overview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
     state.selectedTaskId,
     state.setSelectedTask,
@@ -292,4 +292,4 @@ const TasksOverview = () => {
   );
 };
 
-export default TasksOverview;
+export default Overview;

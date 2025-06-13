@@ -164,33 +164,6 @@ const NotificationList = () => {
                   notification.dato?.slice(0, 10)
                 }
               />
-              {/* <Typography variant="caption">{}</Typography> */}
-
-              {/* <IconButton
-                sx={{
-                  pointerEvents: 'auto',
-                }}
-                aria-label="Make task"
-                onClick={() => {
-                  setSelectedNotification(notification);
-                  setMakeTaskModalOpen(true);
-                }}
-              >
-                <AddTask />
-              </IconButton>
-
-              <IconButton
-                sx={{
-                  pointerEvents: 'auto',
-                }}
-                aria-label="Edit task"
-                onClick={() => {
-                  setSelectedNotification(notification);
-                  openUpdateModal();
-                }}
-              >
-                <Update />
-              </IconButton> */}
             </MenuItem>
           );
         })}
@@ -216,20 +189,6 @@ const NotificationList = () => {
         })}
       </Menu>
       {isModalOpen && <CreateManualTaskModal open={isModalOpen} closeModal={closeModal} />}
-      {/* {isUpdateModalOpen && (
-        <UpdateNotificationModal
-          open={isUpdateModalOpen}
-          closeModal={closeUpdateModal}
-          notification={selectedNotification}
-        />
-      )}
-      {isMakeTaskModalOpen && (
-        <ConvertTaskModal
-          open={isMakeTaskModalOpen}
-          closeModal={() => setMakeTaskModalOpen(false)}
-          notification={selectedNotification}
-        />
-      )} */}
     </div>
   );
 };
