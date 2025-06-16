@@ -50,9 +50,6 @@ const AlarmContactForm = ({index, remove, searchValue}: AlarmContact) => {
         onSelectChange={(option) => {
           return data?.find((item) => item.id === option) ?? null;
         }}
-        // isOptionEqualToValue={(option, value) => {
-        //   return option.id === value.id;
-        // }}
         textFieldsProps={{
           label: 'Kontakt',
           placeholder: 'Søg og vælg kontakt...',

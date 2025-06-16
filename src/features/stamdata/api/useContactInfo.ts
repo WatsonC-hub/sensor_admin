@@ -118,17 +118,6 @@ export const useContactInfo = (loc_id: number | undefined) => {
   const queryClient = useQueryClient();
   const get = useQuery(ContactInfoGetOptions(loc_id));
 
-  // const get_all = useQuery({
-  //   queryKey: ['all_contact_info'],
-  //   queryFn: async () => {
-  //     const {data} = await apiClient.get<Array<baseContactInfo>>(
-  //       `/sensor_field/stamdata/contact/all_contact_info`
-  //     );
-
-  //     return data;
-  //   },
-  // });
-
   const post = useMutation({
     ...contactInfoPostOptions,
     onSuccess: () => {
