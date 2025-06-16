@@ -30,10 +30,6 @@ const AlarmHistoryTable = ({alarmHistory}: AlarmHistoryTableProps) => {
         header: 'Alarm',
         accessorKey: 'alarm',
       },
-      {
-        header: 'Nedre alarm niveau',
-        accessorKey: 'alarm_low',
-      },
     ],
     []
   );

@@ -1,4 +1,4 @@
-import {Box, Dialog, IconButton, Typography} from '@mui/material';
+import {Box, Dialog, IconButton, Tooltip, Typography} from '@mui/material';
 import {MaterialReactTable, MRT_ColumnDef, MRT_TableOptions} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
@@ -17,12 +17,13 @@ import AlarmCriteriaTable from './AlarmCriteriaTable';
 import {useAlarm} from '../api/useAlarm';
 import DeleteAlert from '~/components/DeleteAlert';
 type AlarmTableProps = {
-  alarm: alarmTable;
+  alarms: Array<alarmTable> | undefined;
 };
 
-const AlarmTable = ({alarm}: AlarmTableProps) => {
+const AlarmTable = ({alarms}: AlarmTableProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
   const {ts_id} = useAppContext(['ts_id']);
+  const [selectedGid, setSelectedGid] = React.useState<number>(-1);
   const {data: alarmHistory} = useQuery({
     queryKey: ['alarm_history', ts_id],
     queryFn: async () => {
@@ -43,7 +44,7 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
   const {del: deleteAlarm} = useAlarm();
 
   const handleDelete = async () => {
-    deleteAlarm({path: `${ts_id}`});
+    deleteAlarm({path: `${ts_id}/delete/${selectedGid}`});
   };
 
   const [alarmHistoryOpen, setAlarmHistoryOpen] = React.useState<boolean>(false);
@@ -106,9 +107,9 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
     },
     renderDetailPanel: ({row}) => {
       const alarmContacts = row.original.alarmContacts || [];
-      const otherAlarms = row.original.alarmCriteria || [];
+      const alarmCriteria = row.original.alarmCriteria || [];
       return (
-        Object.keys(row.original).length > 0 && (
+        (alarmCriteria.length > 0 || alarmContacts.length > 0) && (
           <Box
             sx={{padding: 2}}
             display={'flex'}
@@ -116,32 +117,39 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
             height={'100%'}
             justifyContent={'space-around'}
           >
-            {otherAlarms.length > 0 && (
+            {alarmCriteria.length > 0 && (
               <Box>
                 <Typography variant="body2" fontWeight={'bold'} height={34} alignContent={'center'}>
                   Alarm kriterier
                 </Typography>
-                <AlarmCriteriaTable otherAlarms={otherAlarms} />
+                <AlarmCriteriaTable otherAlarms={alarmCriteria} />
               </Box>
             )}
-            {alarmContacts && (
+            {alarmContacts && alarmContacts.length > 0 && (
               <Box display={'flex'} flexDirection={'column'}>
                 <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
                   <Typography variant="body2" alignContent={'center'} fontWeight={'bold'}>
                     Alarm Kontakter
                   </Typography>
-                  <IconButton
-                    onClick={() => {
-                      setAlarmHistoryOpen(true);
-                    }}
-                    sx={{backgroundColor: 'transparent'}}
-                    size="small"
-                  >
-                    <RestoreIcon />
-                    <Typography variant="caption" sx={{textDecoration: 'underline'}} ml={1}>
-                      Se historik
-                    </Typography>
-                  </IconButton>
+                  <Tooltip title="Ingen historik tilgængelig" arrow>
+                    <Box>
+                      <IconButton
+                        onClick={() => {
+                          setAlarmHistoryOpen(true);
+                        }}
+                        disabled={alarmHistory?.length === 0}
+                        sx={{
+                          backgroundColor: 'transparent',
+                        }}
+                        size="small"
+                      >
+                        <RestoreIcon />
+                        <Typography variant="caption" sx={{textDecoration: 'underline'}} ml={1}>
+                          Se historik
+                        </Typography>
+                      </IconButton>
+                    </Box>
+                  </Tooltip>
                 </Box>
                 <AlarmContactTable alarmContacts={alarmContacts} />
               </Box>
@@ -157,6 +165,7 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
           table.setEditingRow(row);
         }}
         onDeleteBtnClick={() => {
+          setSelectedGid(row.original.gid);
           setOpenDeleteDialog(true);
         }}
       />
@@ -182,7 +191,7 @@ const AlarmTable = ({alarm}: AlarmTableProps) => {
 
   const table = useTable<alarmTable>(
     columns,
-    alarm ? [alarm] : [],
+    alarms,
     options,
     undefined,
     TableTypes.TABLE,

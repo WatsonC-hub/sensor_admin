@@ -25,11 +25,11 @@ const AlarmContactTable = ({alarmContacts}: AlarmContactTableProps) => {
         Cell: ({cell}) => {
           const {sms, email, call} = cell.row.original;
           return (
-            <>
+            <Box>
               <Checkbox checked={sms} disabled />
               <Checkbox checked={email} disabled />
               <Checkbox checked={call} disabled />
-            </>
+            </Box>
           );
         },
       },

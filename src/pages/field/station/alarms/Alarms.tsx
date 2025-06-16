@@ -1,43 +1,35 @@
 import {Box} from '@mui/material';
-import {useQuery} from '@tanstack/react-query';
 import React from 'react';
 import FabWrapper from '~/components/FabWrapper';
 import AlarmTable from '~/features/station/alarms/components/AlarmTable';
-import {useAppContext} from '~/state/contexts';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
-import {apiClient} from '~/apiClient';
-import {AlarmResponse, alarmTable} from '~/features/station/alarms/types';
+import {alarmTable} from '~/features/station/alarms/types';
 import AlarmFormDialog from '~/features/station/alarms/components/AlarmFormDialog';
+import {useAlarm} from '~/features/station/alarms/api/useAlarm';
 
 const Alarms = () => {
   const [pageToShow] = useStationPages();
   const [showForm] = useShowFormState();
   const [open, setOpen] = React.useState(false);
-  const {ts_id} = useAppContext(['ts_id']);
 
-  const {data: alarms} = useQuery({
-    queryKey: ['alarm', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<AlarmResponse>>(
-        `/sensor_field/stamdata/alarms/${ts_id}`
-      );
-      return data;
-    },
-    enabled: !!ts_id,
-  });
+  const {
+    get: {data: alarms},
+  } = useAlarm();
 
-  const alarm = alarms
-    ? {
-        name: alarms?.[0]?.name,
-        earliest_timeofday: alarms?.[0]?.earliest_timeofday,
-        latest_timeofday: alarms?.[0]?.latest_timeofday,
-        alarm_interval: alarms?.[0]?.alarm_interval,
-        note_to_include: alarms?.[0]?.note_to_include,
-        alarmCriteria: alarms?.[0]?.criteria ?? [],
-        alarmContacts: alarms?.[0]?.contacts ?? [],
-      }
-    : ({} as alarmTable);
+  const mapped_alarms = alarms?.map(
+    (alarm) =>
+      ({
+        gid: alarm.gid,
+        name: alarm.name,
+        earliest_timeofday: alarm.earliest_timeofday,
+        latest_timeofday: alarm.latest_timeofday,
+        alarm_interval: alarm.alarm_interval,
+        note_to_include: alarm.note_to_include,
+        alarmCriteria: alarm.criteria ?? [],
+        alarmContacts: alarm.contacts ?? [],
+      }) as alarmTable
+  );
 
   const cancel = () => {
     setOpen(false);
@@ -46,7 +38,7 @@ const Alarms = () => {
   return (
     <Box display="flex" flexDirection="column" gap={2} mt={1}>
       <AlarmFormDialog open={open} onClose={cancel} setOpen={setOpen} />
-      <AlarmTable alarm={alarm} />
+      <AlarmTable alarms={mapped_alarms} />
       <FabWrapper
         icon={<MoreTimeIcon />}
         text="Tilføj Alarm"

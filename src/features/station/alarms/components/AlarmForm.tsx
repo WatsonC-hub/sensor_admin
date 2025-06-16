@@ -29,7 +29,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       name: alarm?.name || '',
       from: alarm?.earliest_timeofday || '',
       to: alarm?.latest_timeofday || '',
-      criteria: alarm?.alarmCriteria || [],
+      criteria: alarm?.alarmCriteria,
       contacts: alarm?.alarmContacts || [],
       interval: alarm?.alarm_interval || undefined,
       comment: alarm?.note_to_include || '',
@@ -52,7 +52,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         attention_high: data.criteria.find((c) => c.attention_level === 'attention_high')?.criteria,
         attention_low: data.criteria.find((c) => c.attention_level === 'attention_low')?.criteria,
         note_to_include: data.comment,
-        alarm_contacts: data.contacts.map((contact) => ({
+        alarm_contacts: data.contacts?.map((contact) => ({
           contact_id: contact.contact_id,
           sms: contact.sms,
           email: contact.email,
@@ -84,8 +84,8 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         attention_low: data.criteria.find((c) => c.attention_level === 'attention_low')?.criteria,
         note_to_include: data.comment,
         alarm_contacts:
-          data.contacts.length > 0
-            ? data.contacts.map((contact) => ({
+          data.contacts && data.contacts.length > 0
+            ? data.contacts?.map((contact) => ({
                 contact_id: contact.contact_id,
                 sms: contact.sms,
                 email: contact.email,
@@ -93,10 +93,9 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
               }))
             : undefined,
       };
-      console.log(alarm_data);
 
       const payload = {
-        path: `${ts_id}`,
+        path: `${alarm.gid}`,
         data: alarm_data,
       };
 
@@ -127,8 +126,6 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     control,
     name: 'criteria',
   });
-
-  console.log('criteriaFields', criteriaFields);
 
   return (
     <Form formMethods={alarmMethods} label="Alarm">

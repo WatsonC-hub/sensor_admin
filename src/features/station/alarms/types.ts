@@ -38,6 +38,7 @@ export type Alarm = {
 };
 
 export type AlarmResponse = {
+  gid: number;
   name: string;
   alarm_interval: number;
   earliest_timeofday: string;
@@ -61,6 +62,7 @@ export type AlarmPost = {
 };
 
 export type alarmTable = {
+  gid: number;
   name: string;
   earliest_timeofday: string;
   latest_timeofday: string;

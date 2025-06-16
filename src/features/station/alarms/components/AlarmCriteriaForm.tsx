@@ -36,25 +36,25 @@ const AlarmCriteriaForm = ({index, remove}: AlarmCriteriaFormProps) => {
         </MenuItem>
         <MenuItem
           value="attention_high"
-          disabled={criteria.some((c) => c.attention_level === 'attention_high')}
+          disabled={criteria?.some((c) => c.attention_level === 'attention_high')}
         >
           Øvre opmærksomhedsniveau
         </MenuItem>
         <MenuItem
           value="attention_low"
-          disabled={criteria.some((c) => c.attention_level === 'attention_low')}
+          disabled={criteria?.some((c) => c.attention_level === 'attention_low')}
         >
           Nedre opmærksomhedsniveau
         </MenuItem>
         <MenuItem
           value="alarm_high"
-          disabled={criteria.some((c) => c.attention_level === 'alarm_high')}
+          disabled={criteria?.some((c) => c.attention_level === 'alarm_high')}
         >
           Øvre alarmniveau
         </MenuItem>
         <MenuItem
           value="alarm_low"
-          disabled={criteria.some((c) => c.attention_level === 'alarm_low')}
+          disabled={criteria?.some((c) => c.attention_level === 'alarm_low')}
         >
           Nedre alarmniveau
         </MenuItem>

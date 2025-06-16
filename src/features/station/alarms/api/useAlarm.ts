@@ -1,7 +1,7 @@
 import {apiClient} from '~/apiClient';
 import {MutateOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
-import {Alarm, AlarmPost} from '../types';
+import {AlarmPost, AlarmResponse} from '../types';
 import {queryClient} from '~/queryClient';
 
 interface AlarmBase {
@@ -59,7 +59,9 @@ export const alarmGetOptions = (ts_id: number | undefined) => {
   return {
     queryKey: ['alarm', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<Alarm>(`/sensor_field/stamdata/alarms/${ts_id}`);
+      const {data} = await apiClient.get<Array<AlarmResponse>>(
+        `/sensor_field/stamdata/alarms/${ts_id}`
+      );
       return data;
     },
     enabled: !!ts_id,
@@ -99,7 +101,7 @@ export const useAlarm = () => {
   });
 
   return {
-    get: () => get.data,
+    get,
     post: (data: AlarmsPost, options?: MutateOptions<any, Error, AlarmsPost, unknown>) =>
       post.mutate(data, options),
     put: (data: AlarmsPost, options?: MutateOptions<any, Error, AlarmsPost, unknown>) =>
