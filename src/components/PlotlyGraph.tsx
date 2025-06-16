@@ -76,6 +76,7 @@ export default function PlotlyGraph({
       icon: <ReplayIcon />,
       type: 'action',
       shortcut: 'G',
+      group: 'Station',
     },
     {
       id: 'downloadData',
@@ -87,6 +88,7 @@ export default function PlotlyGraph({
       icon: <Download />,
       type: 'action',
       shortcut: 'D',
+      group: 'Station',
     },
   ]);
 

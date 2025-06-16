@@ -30,6 +30,7 @@ export interface Notification {
   loctype_id: number;
   calculated: boolean | null;
   parking_id: number;
+  calypso_id: number | null;
 }
 
 export interface NotificationMap extends Notification {

@@ -1,18 +1,36 @@
 // components/CommandContext.tsx
 import React, {createContext, useContext, useRef} from 'react';
 
-export type CommandAction = {
+type BaseCommand<T = unknown> = {
   id: string;
   name: string;
-  perform: (inp?: string) => void;
-  icon?: React.ReactNode; // Optional icon for the command
-  description?: string; // Optional description for the command
-  type: 'action' | 'input' | 'selection'; // Type of command
-  inputPlaceholder?: string; // Placeholder for the input field
-  shortcut?: string; // Optional keyboard shortcut for the command
-  group?: string; // Optional group for categorizing commands
-  options?: {label: string; value: string}[]; // Options for selection type commands
+  icon?: React.ReactNode;
+  description?: string;
+  shortcut?: string;
+  group?: string;
+  type: string;
+  perform: (value: T) => void;
 };
+
+type ActionCommand = Omit<BaseCommand<void>, 'type' | 'perform'> & {
+  type: 'action';
+  perform: () => void;
+};
+
+type InputCommand = Omit<BaseCommand<string>, 'type'> & {
+  type: 'input';
+  inputPlaceholder?: string;
+};
+
+export type SelectionCommand<T> = Omit<BaseCommand<T>, 'type'> & {
+  type: 'selection';
+  inputPlaceholder?: string;
+  options: {label: string; value: T}[] | undefined;
+  filter?: (value: T, search: string) => number;
+};
+
+// Union of all types
+export type CommandAction = ActionCommand | InputCommand | SelectionCommand<any>;
 
 type CommandRegistry = {
   current: Map<string, CommandAction>;

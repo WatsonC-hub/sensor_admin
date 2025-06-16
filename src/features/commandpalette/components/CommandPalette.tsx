@@ -4,6 +4,7 @@ import {useState, useEffect} from 'react';
 import '../styles/cmdk.css';
 import {Box} from '@mui/material';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import Button from '~/components/Button';
 
 function CommandPalette() {
   const [open, setOpen] = useState(false);
@@ -73,6 +74,17 @@ function CommandPalette() {
     return () => window.removeEventListener('keydown', down);
   }, [open, page]);
 
+  const groupedActions = actions.reduce(
+    (acc, action) => {
+      if (!acc[action.group ?? 'no-group']) {
+        acc[action.group ?? 'no-group'] = [];
+      }
+      acc[action.group ?? 'no-group'].push(action);
+      return acc;
+    },
+    {} as Record<string, CommandAction[]>
+  );
+
   return (
     <Command.Dialog
       loop
@@ -85,7 +97,8 @@ function CommandPalette() {
       aria-describedby="cmdk-description"
     >
       <div className={`cmdk-container ${isMobile ? 'mobile' : ''}`}>
-        {page === 'input' && selectedAction ? (
+        {page === 'input' &&
+        (selectedAction?.type == 'input' || selectedAction?.type == 'selection') ? (
           <Command.Input
             placeholder={selectedAction.inputPlaceholder || 'Indtast din kommando...'}
             onKeyDown={(e) => {
@@ -111,12 +124,17 @@ function CommandPalette() {
             <Command.Empty className="cmdk-empty">Ingen resultater</Command.Empty>
           )}
           {page == 'selection' &&
+            selectedAction?.type === 'selection' &&
             selectedAction?.options
-              ?.filter((option) => option.label.toLowerCase().includes(search.toLowerCase()))
+              ?.filter((option) =>
+                selectedAction.filter
+                  ? selectedAction.filter(option.value, search)
+                  : option.label.toLowerCase().includes(search.toLowerCase())
+              )
               .slice(0, 20)
               .map((option) => (
                 <Command.Item
-                  key={option.value}
+                  key={JSON.stringify(option.value)}
                   value={option.value}
                   className="cmdk-item"
                   onSelect={() => {
@@ -128,32 +146,47 @@ function CommandPalette() {
                   {option.label}
                 </Command.Item>
               ))}
+
           {actions.length > 0 &&
             page == 'all' &&
-            actions.map((action) => (
-              <Command.Item
-                key={action.id}
-                value={action.name}
-                className="cmdk-item"
-                onSelect={() => {
-                  itemSelect(action);
-                }}
-              >
-                {action.icon ? action.icon : <div />}
-                <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                  {action.name}
-                  {action.shortcut && (
-                    <Box sx={{display: 'flex', alignItems: 'center', gap: 0.5}}>
-                      <kbd className="cmdk-shortcut">CTRL</kbd>
-                      <kbd key={action.shortcut} className="cmdk-shortcut">
-                        {action.shortcut}
-                      </kbd>
-                    </Box>
-                  )}
-                </Box>
-              </Command.Item>
+            Object.entries(groupedActions).map(([group, actions]) => (
+              <>
+                <Command.Group key={group} heading={group} className="cmdk-group">
+                  {actions.map((action) => (
+                    <Command.Item
+                      key={action.id}
+                      value={action.name}
+                      className="cmdk-item"
+                      onSelect={() => {
+                        itemSelect(action);
+                      }}
+                    >
+                      {action.icon ? action.icon : <div />}
+                      <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                        {action.name}
+                        {action.shortcut && (
+                          <Box sx={{display: 'flex', alignItems: 'center', gap: 0.5}}>
+                            <kbd className="cmdk-shortcut">CTRL</kbd>
+                            <kbd key={action.shortcut} className="cmdk-shortcut">
+                              {action.shortcut}
+                            </kbd>
+                          </Box>
+                        )}
+                      </Box>
+                    </Command.Item>
+                  ))}
+                </Command.Group>
+                {/* <Command.Separator key={`separator-${group}`} className="cmdk-separator" /> */}
+              </>
             ))}
         </Command.List>
+        <Box sx={{display: 'flex', justifyContent: 'flex-end', padding: 1}}>
+          {isMobile && (
+            <Button bttype="primary" onClick={onClose}>
+              Luk
+            </Button>
+          )}
+        </Box>
       </div>
     </Command.Dialog>
   );
