@@ -25,6 +25,7 @@ import {stationPages} from '~/helpers/EnumHelper';
 
 import {useAppContext} from '~/state/contexts';
 import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
+import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 type Props = {
   children: React.ReactNode;
@@ -444,7 +445,8 @@ const InitialProjectNo = (
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
   const {data: units} = useUnitHistory();
-  const unitPresent = units && units.length > 0 ? true : false;
+  const {data: metadata} = useTimeseriesData();
+  const unitPresent = units && units.length > 0 ? true : metadata?.calculated;
 
   return (
     <Controller
