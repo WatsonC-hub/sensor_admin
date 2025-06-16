@@ -5,9 +5,7 @@ import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import RenderActions from '~/helpers/RowActions';
 import RestoreIcon from '@mui/icons-material/Restore';
-import {useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
-import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import AlarmHistoryTable from './AlarmHistoryTable';
 import {alarmTable} from '../types';
@@ -24,24 +22,11 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
   const {ts_id} = useAppContext(['ts_id']);
   const [selectedGid, setSelectedGid] = React.useState<number>(-1);
-  const {data: alarmHistory} = useQuery({
-    queryKey: ['alarm_history', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<
-        Array<{
-          date: string;
-          sent_type: string;
-          alarm: boolean;
-          alarm_low: boolean;
-          name: string;
-        }>
-      >(`/sensor_field/stamdata/alarms/alarm_history/${ts_id}`);
-      return data;
-    },
-    enabled: !!ts_id,
-  });
 
-  const {del: deleteAlarm} = useAlarm();
+  const {
+    getHistory: {data: alarmHistory},
+    del: deleteAlarm,
+  } = useAlarm();
 
   const handleDelete = async () => {
     deleteAlarm({path: `${ts_id}/delete/${selectedGid}`});

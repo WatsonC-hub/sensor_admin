@@ -1,5 +1,5 @@
 import {apiClient} from '~/apiClient';
-import {MutateOptions, useMutation, useQuery} from '@tanstack/react-query';
+import {MutateOptions, queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
 import {AlarmPost, AlarmResponse} from '../types';
 import {queryClient} from '~/queryClient';
@@ -68,12 +68,32 @@ export const alarmGetOptions = (ts_id: number | undefined) => {
   };
 };
 
+export const AlarmHistoryGetOptions = (ts_id: number | undefined) =>
+  queryOptions({
+    queryKey: ['alarm_history', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<
+        Array<{
+          date: string;
+          sent_type: string;
+          alarm: boolean;
+          alarm_low: boolean;
+          name: string;
+        }>
+      >(`/sensor_field/stamdata/alarms/alarm_history/${ts_id}`);
+      return data;
+    },
+    enabled: !!ts_id,
+  });
+
 export const useAlarm = () => {
   const {ts_id} = useAppContext(['ts_id']);
 
   const get = useQuery({
     ...alarmGetOptions(ts_id),
   });
+
+  const getHistory = useQuery(AlarmHistoryGetOptions(ts_id));
 
   const post = useMutation({
     ...alarmPostOptions,
@@ -102,6 +122,7 @@ export const useAlarm = () => {
 
   return {
     get,
+    getHistory,
     post: (data: AlarmsPost, options?: MutateOptions<any, Error, AlarmsPost, unknown>) =>
       post.mutate(data, options),
     put: (data: AlarmsPost, options?: MutateOptions<any, Error, AlarmsPost, unknown>) =>
