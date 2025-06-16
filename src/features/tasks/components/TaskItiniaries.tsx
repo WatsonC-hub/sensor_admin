@@ -5,7 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
-import {useGuardedTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 
 import {useTasks} from '../api/useTasks';
 import {Task, Taskitinerary} from '../types';
@@ -66,7 +66,7 @@ const TaskItiniaries = () => {
   const user = useUser();
   const {
     get: {data},
-  } = useGuardedTaskItinerary(undefined, {
+  } = useTaskItinerary(undefined, {
     select: (data) => {
       const reduced = data.reduce(
         (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
@@ -99,7 +99,7 @@ const TaskItiniaries = () => {
     getUsers: {data: users},
   } = useTasks();
   const {tasks} = useTaskStore();
-  const {patch: updateItinerary} = useGuardedTaskItinerary();
+  const {patch: updateItinerary} = useTaskItinerary();
 
   return (
     <Box

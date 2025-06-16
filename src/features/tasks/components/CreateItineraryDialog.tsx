@@ -3,7 +3,7 @@ import React from 'react';
 
 import Button from '~/components/Button';
 
-import {useGuardedTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 
 import TaskForm, {FormValues} from './TaskForm';
 import FormInput from '~/components/FormInput';
@@ -14,7 +14,7 @@ type CreateItineraryDialogProps = {
 };
 
 const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialogProps) => {
-  const {createItinerary} = useGuardedTaskItinerary();
+  const {createItinerary} = useTaskItinerary();
 
   const onClose = () => {
     setDialogOpen(false);

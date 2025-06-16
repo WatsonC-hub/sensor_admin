@@ -1,10 +1,4 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  queryOptions,
-  UseQueryOptions,
-} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, UseQueryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -68,7 +62,9 @@ const useTaskItinerary = <T = Taskitinerary[]>(
   const queryClient = useQueryClient();
   const accessControl = useAccessControl();
 
-  const enabled = id !== null && id !== undefined && accessControl.advancedTaskPermission;
+  const idRequired = id !== null && id !== undefined;
+  const permissionRequired = accessControl.advancedTaskPermission;
+  const enabled = idRequired && permissionRequired;
 
   const get = useQuery({
     queryKey: ['itineraries'],
@@ -77,7 +73,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: enabled,
+    enabled: permissionRequired,
     ...options,
     select: options?.select as (data: Taskitinerary[]) => T,
   });

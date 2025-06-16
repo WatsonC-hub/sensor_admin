@@ -22,7 +22,7 @@ import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
 import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
-import useTaskItinerary, {useGuardedTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';

@@ -3,7 +3,7 @@ import React from 'react';
 
 import {useTaskManagement} from '~/features/opgavestyring/api/useTaskManagement';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
-import {useGuardedTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -14,7 +14,7 @@ const Trip = () => {
 
   const {
     getItineraryTasks: {data: tasks},
-  } = useGuardedTaskItinerary(itinerary_id!);
+  } = useTaskItinerary(itinerary_id!);
 
   const loc_ids = [...new Set(tasks?.map((task) => task.loc_id))];
   const {data} = useTaskManagement({loc_ids: loc_ids});

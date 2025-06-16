@@ -53,9 +53,9 @@ export const getColor = (iconDetails: IconDetails) => {
     if (moment(iconDetails.due_date).isBefore(moment().toDate()))
       return sensorColors[FlagEnum.WARNING].color;
     else if (
-      moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&
-      (iconDetails.itinerary_id === null ||
-        (iconDetails.simpleTaskPermission && !iconDetails.advancedTaskPermission))
+      (moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&
+        iconDetails.itinerary_id === null) ||
+      (!iconDetails.simpleTaskPermission && iconDetails.advancedTaskPermission)
     )
       return sensorColors[FlagEnum.INFO].color;
     return sensorColors[FlagEnum.OK].color;
@@ -118,9 +118,8 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
     if (
       iconDetails.has_task &&
       iconDetails.flag == null &&
-      (iconDetails.itinerary_id == null ||
-        iconDetails.simpleTaskPermission ||
-        iconDetails.advancedTaskPermission)
+      iconDetails.itinerary_id == null &&
+      (iconDetails.simpleTaskPermission || iconDetails.advancedTaskPermission)
     ) {
       return rawIcons['task'];
     }
@@ -145,9 +144,8 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
     if (
       iconDetails.has_task &&
       iconDetails.flag == null &&
-      (iconDetails.itinerary_id == null ||
-        iconDetails.simpleTaskPermission ||
-        iconDetails.advancedTaskPermission)
+      iconDetails.itinerary_id == null &&
+      (iconDetails.simpleTaskPermission || iconDetails.advancedTaskPermission)
     ) {
       const Component = reactIcons['task'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;

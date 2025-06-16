@@ -10,7 +10,7 @@ import {useTaskStore} from '../api/useTaskStore';
 import {Taskitinerary} from '../types';
 
 import Droppable from './Droppable';
-import {useGuardedTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 
 interface TaskItineraryCardProps {
   itinerary: Taskitinerary;
@@ -23,7 +23,7 @@ const TaskItineraryCard: React.FC<TaskItineraryCardProps> = ({itinerary}) => {
     getUsers: {data: users},
   } = useTasks();
 
-  const {complete, addLocationToTrip} = useGuardedTaskItinerary(itinerary.id);
+  const {complete, addLocationToTrip} = useTaskItinerary(itinerary.id);
 
   const {selectedTask, isDraggingTask, selectedLocIds, tasks} = useTaskStore();
 

@@ -6,7 +6,7 @@ import {useTaskStore} from '../api/useTaskStore';
 import {convertDate} from '~/helpers/dateConverter';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {Person} from '@mui/icons-material';
-import {useGuardedTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
@@ -42,7 +42,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
 
   const {
     getItinerary: {data: itinerary},
-  } = useGuardedTaskItinerary(itemData.itinerary_id);
+  } = useTaskItinerary(itemData.itinerary_id);
 
   return (
     <Box
