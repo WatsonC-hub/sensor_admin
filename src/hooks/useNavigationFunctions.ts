@@ -8,17 +8,21 @@ import {useDisplayState} from './ui';
 export const useNavigationFunctions = () => {
   const navigate = useNavigate();
 
-  const {setLocId, setTsId, setBoreholeNo, setIntakeNo} = useDisplayState((state) => {
+  const {setLocId, setTsId, setBoreholeNo, setIntakeNo, reset} = useDisplayState((state) => {
     return {
       setLocId: state.setLocId,
       setTsId: state.setTsId,
       setBoreholeNo: state.setBoreholeNo,
       setIntakeNo: state.setIntakeNo,
+      reset: state.reset,
     };
   });
 
   const homeFunctions = {
-    home: () => navigate('/', {replace: true}),
+    home: () => {
+      navigate('/', {replace: true});
+      reset();
+    },
     register: () => navigate('/register'),
   };
 

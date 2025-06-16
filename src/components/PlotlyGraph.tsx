@@ -27,6 +27,7 @@ import {useAppContext} from '~/state/contexts';
 
 import {DataToShow} from '~/types';
 import GraphSwitch from '~/features/station/components/GraphSwitch';
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -68,6 +69,31 @@ export default function PlotlyGraph({
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
+  usePageActions([
+    {
+      id: 'correctData',
+      name: 'Genberegn data',
+      perform: () => {
+        correctMutation.mutate();
+      },
+      icon: <ReplayIcon />,
+      type: 'action',
+      shortcut: 'G',
+      group: 'Station',
+    },
+    {
+      id: 'downloadData',
+      name: 'Download data',
+      perform: () => {
+        const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
+        window.open(url);
+      },
+      icon: <Download />,
+      type: 'action',
+      shortcut: 'D',
+      group: 'Station',
+    },
+  ]);
 
   const {isTouch, isMobile} = useBreakpoints();
 

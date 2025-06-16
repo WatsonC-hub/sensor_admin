@@ -33,6 +33,7 @@ export interface Notification {
   calculated: boolean | null;
   type: 'task' | 'notification' | 'itinerary' | 'none';
   parking_id: number;
+  calypso_id: number | null;
 }
 
 export interface NotificationMap extends Notification {
