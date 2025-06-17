@@ -112,7 +112,10 @@ const Map = ({clickCallback}: MapProps) => {
   ]);
   const [filteredData, setFilteredData] = useState<(NotificationMap | BoreholeMapData)[]>([]);
 
-  const {superUser, iotAccess, boreholeAccess} = useUser();
+  const {
+    superUser,
+    features: {iotAccess, boreholeAccess},
+  } = useUser();
 
   const {data: boreholeMapdata} = useBoreholeMap();
 

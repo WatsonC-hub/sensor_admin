@@ -9,7 +9,9 @@ import {withPermissionGuard} from '../withPermissionGuard';
 export const useBoreholeMap = <TData = BoreholeMapData[]>(
   select?: (data: BoreholeMapData[]) => TData
 ) => {
-  const {boreholeAccess} = useUser();
+  const {
+    features: {boreholeAccess},
+  } = useUser();
 
   const query = useQuery({
     queryKey: ['borehole_map'],

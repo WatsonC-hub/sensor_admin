@@ -62,7 +62,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user.iotAccess)
+  if (user.features.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',

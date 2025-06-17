@@ -5,15 +5,16 @@ import {apiClient} from '~/apiClient';
 type User = {
   user_id: number | null;
   org_id: number | null;
-  boreholeAccess: boolean;
-  iotAccess: boolean;
-  adminAccess: boolean;
+  // boreholeAccess: boolean;
+  // iotAccess: boolean;
+  // adminAccess: boolean;
   superUser: boolean;
-  advancedTaskPermission: boolean;
-  simpleTaskPermission: boolean;
-  QAPermission: boolean;
-  contactAndKeysPermission: boolean;
-  ressourcePermission: boolean;
+  // advancedTaskPermission: boolean;
+  // simpleTaskPermission: boolean;
+  // QAPermission: boolean;
+  // contactAndKeysPermission: boolean;
+  // ressourcePermission: boolean;
+  features: Features;
 };
 
 export type Features = {
@@ -76,8 +77,8 @@ export const useAccessControl = () => {
   const out: AccessControlReturnType = {
     ...(data as AccessControl),
     superUser: data?.role === 'superuser',
-    advancedTaskPermission: false, //data?.features.tasks === 'advanced',
-    simpleTaskPermission: false, //data?.features.tasks === 'simple' || data?.features.tasks === 'advanced',
+    advancedTaskPermission: data?.features.tasks === 'advanced',
+    simpleTaskPermission: data?.features.tasks === 'simple' || data?.features.tasks === 'advanced',
   };
 
   return out;

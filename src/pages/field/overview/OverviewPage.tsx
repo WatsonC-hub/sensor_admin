@@ -42,7 +42,7 @@ export default function OverviewPage() {
       const {data} = await apiClient.get(`/sensor_field/station_list`);
       return data;
     },
-    enabled: user?.iotAccess,
+    enabled: user?.features.iotAccess,
     // refetchInterval: 10000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
@@ -99,7 +99,7 @@ export default function OverviewPage() {
                 admin();
               },
             },
-            ...(user?.iotAccess
+            ...(user?.features.iotAccess
               ? [
                   {
                     title: 'Opret lokation',
@@ -149,19 +149,19 @@ export default function OverviewPage() {
           variant={isMobile ? 'fullWidth' : 'standard'}
           aria-label="full width tabs example"
         >
-          {user?.iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
-          {user?.boreholeAccess && (
-            <Tab label="Mine DGU boringer" {...a11yProps(user?.iotAccess ? 1 : 0)} />
+          {user?.features.iotAccess && <Tab label="Mine stationer" {...a11yProps(0)} />}
+          {user?.features.boreholeAccess && (
+            <Tab label="Mine DGU boringer" {...a11yProps(user?.features.iotAccess ? 1 : 0)} />
           )}
         </Tabs>
 
-        {user?.iotAccess && (
+        {user?.features.iotAccess && (
           <TabPanel value={tabValueInner} index={0}>
             <StationTable data={tabledata} />
           </TabPanel>
         )}
-        {user?.boreholeAccess && (
-          <TabPanel value={tabValueInner} index={user?.iotAccess ? 1 : 0}>
+        {user?.features.boreholeAccess && (
+          <TabPanel value={tabValueInner} index={user?.features.iotAccess ? 1 : 0}>
             <BoreholeTable data={boreholetabledata} />
           </TabPanel>
         )}

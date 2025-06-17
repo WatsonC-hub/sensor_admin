@@ -80,7 +80,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
         {accessControl.features.iotAccess && (
           <Grid
             item
-            sm={user?.boreholeAccess ? 6 : 12}
+            sm={user?.features.boreholeAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}

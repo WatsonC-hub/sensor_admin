@@ -97,7 +97,7 @@ const Boreholeno = () => {
   });
 
   useEffect(() => {
-    if (watlevmp.length > 0) {
+    if (watlevmp && watlevmp.length > 0) {
       const elev: number = watlevmp.filter((e2: Maalepunkt) => {
         return (
           moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
@@ -113,7 +113,7 @@ const Boreholeno = () => {
 
   useEffect(() => {
     let ctrls = [];
-    if (watlevmp.length > 0) {
+    if (watlevmp && watlevmp.length > 0) {
       ctrls = measurements.map((e: BoreholeMeasurement) => {
         const elev = watlevmp.filter((e2: Maalepunkt) => {
           return (

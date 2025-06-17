@@ -60,6 +60,7 @@ const EditLocation = () => {
     context: {
       loc_id: loc_id,
     },
+    loc_id: loc_id,
   });
 
   const {

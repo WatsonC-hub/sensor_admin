@@ -92,7 +92,9 @@ const nullState: Partial<Notification> = {
 // };
 
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
-  const {iotAccess} = useUser();
+  const {
+    features: {iotAccess},
+  } = useUser();
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async () => {
