@@ -26,10 +26,6 @@ const Router = () => {
   // early return of no IoT access or borehole access
   // redirect component
 
-  if (!user.features.iotAccess && !user.features.boreholeAccess) {
-    return <AccessDenied message="Der er manglende rettigheder til at tilgå denne side." />;
-  }
-
   const {home, location: locationNavigation, station} = useNavigationFunctions();
   const {data: locationData} = useNotificationOverview({
     select: (data) => {
@@ -142,6 +138,10 @@ const Router = () => {
       group: 'Generelt',
     },
   ]);
+
+  if (!user.features.iotAccess && !user.features.boreholeAccess) {
+    return <AccessDenied message="Der er manglende rettigheder til at tilgå denne side." />;
+  }
 
   return (
     <>
