@@ -1,38 +1,23 @@
 import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
+import {TaskPermission} from '../tasks/types';
 
 type User = {
   user_id: number | null;
   org_id: number | null;
-  // boreholeAccess: boolean;
-  // iotAccess: boolean;
-  // adminAccess: boolean;
   superUser: boolean;
-  // advancedTaskPermission: boolean;
-  // simpleTaskPermission: boolean;
-  // QAPermission: boolean;
-  // contactAndKeysPermission: boolean;
-  // ressourcePermission: boolean;
   features: Features;
 };
 
 export type Features = {
   iotAccess: boolean;
   boreholeAccess: boolean;
-  tasks: 'simple' | 'advanced' | 'none';
+  tasks: TaskPermission;
   contacts: boolean;
   keys: boolean;
   resources: boolean;
   routesAndParking: boolean;
-};
-
-type AccessControl = {
-  role: string;
-  features: Features;
-  attributes: {
-    [key: string]: string | number | boolean;
-  };
 };
 
 export const userQueryOptions = queryOptions({
@@ -50,36 +35,17 @@ export const userQueryOptions = queryOptions({
 export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
 
-  return data as User;
+  return {
+    ...data,
+    advancedTaskPermission: data?.features.tasks === TaskPermission.advanced,
+    simpleTaskPermission:
+      data?.features.tasks === TaskPermission.simple ||
+      data?.features.tasks === TaskPermission.advanced,
+  } as UserAccessControl;
 };
 
-export const accessControlQueryOptions = queryOptions({
-  queryKey: ['accessControl'],
-  queryFn: async () => {
-    const {data} = await apiClient.get<AccessControl>(`/auth/access-control`);
-    return data;
-  },
-  refetchOnWindowFocus: false,
-  refetchInterval: Infinity,
-  refetchOnMount: false,
-  refetchOnReconnect: false,
-});
-
-export type AccessControlReturnType = AccessControl & {
+export type UserAccessControl = User & {
   superUser: boolean;
   advancedTaskPermission: boolean;
   simpleTaskPermission: boolean;
-};
-
-export const useAccessControl = () => {
-  const {data} = useQuery(accessControlQueryOptions);
-
-  const out: AccessControlReturnType = {
-    ...(data as AccessControl),
-    superUser: data?.role === 'superuser',
-    advancedTaskPermission: data?.features.tasks === 'advanced',
-    simpleTaskPermission: data?.features.tasks === 'simple' || data?.features.tasks === 'advanced',
-  };
-
-  return out;
 };

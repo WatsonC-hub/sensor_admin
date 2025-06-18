@@ -10,7 +10,7 @@ import {Task} from '~/features/tasks/types';
 import {isSimpleTask} from '~/features/tasks/helpers';
 
 import {useLocationData} from '~/hooks/query/useMetadata';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 
 const sortTasks = (a: Task, b: Task) => {
   if ((a.blocks_notifications.includes(1) || a.blocks_notifications.includes(207)) && !a.is_created)
@@ -28,7 +28,7 @@ interface TaskListProps {
 const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const {tasks} = useTaskStore();
-  const {advancedTaskPermission} = useAccessControl();
+  const {advancedTaskPermission} = useUser();
   const {data: location_data} = useLocationData(loc_id);
 
   const location_tasks = tasks

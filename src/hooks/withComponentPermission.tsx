@@ -1,20 +1,20 @@
 import React from 'react';
-import {AccessControlReturnType, Features, useAccessControl} from '~/features/auth/useUser';
+import {UserAccessControl, Features, useUser} from '~/features/auth/useUser';
 import Login from '~/pages/login/Login';
 
 export function withComponentPermission<P>(
   WrappedComponent: React.ComponentType<P>,
-  value: keyof AccessControlReturnType,
+  value: keyof UserAccessControl,
   requiredPermission?: Array<keyof Features>
 ): React.ComponentType<React.PropsWithChildren<P>> {
   const WithPermissionWrapper = (props: React.PropsWithChildren<P>) => {
-    const accessControl = useAccessControl();
+    const user = useUser();
 
-    if (requiredPermission === undefined && accessControl[value] !== true) return <Login />;
+    if (requiredPermission === undefined && user[value] !== true) return <Login />;
 
     if (
       requiredPermission !== undefined &&
-      requiredPermission.every((feature) => accessControl.features[feature] !== true)
+      requiredPermission.every((feature) => user.features[feature] !== true)
     ) {
       return <Login />;
     }

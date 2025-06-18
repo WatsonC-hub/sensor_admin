@@ -11,7 +11,6 @@ import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAccessControl} from '~/features/auth/useUser';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
@@ -19,7 +18,6 @@ type Props = {
 
 const LocationListItem = ({itemData, onClick}: Props) => {
   const {tasks, setSelectedTask} = useTaskStore();
-  const {advancedTaskPermission, simpleTaskPermission} = useAccessControl();
   const {isMobile} = useBreakpoints();
   const {handleRef, ref} = useDraggable({
     id: itemData.loc_id,
@@ -32,8 +30,6 @@ const LocationListItem = ({itemData, onClick}: Props) => {
       has_task: true,
       itinerary_id: itemData.itinerary_id,
       notification_id: null,
-      advancedTaskPermission,
-      simpleTaskPermission,
     },
     false
   );
@@ -129,8 +125,6 @@ const LocationListItem = ({itemData, onClick}: Props) => {
                             flag: task.is_created ? null : task.flag,
                             itinerary_id: task.itinerary_id,
                             due_date: task.due_date,
-                            advancedTaskPermission,
-                            simpleTaskPermission,
                           }}
                         />
                         <Typography variant="body2">{task.name}</Typography>

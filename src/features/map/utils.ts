@@ -29,21 +29,15 @@ export const getBoreholesIcon = (marker: BoreholeMapData) => {
   });
 };
 
-export const getNotificationIcon = (
-  marker: MapOverview,
-  advancedTaskPermission: boolean,
-  simpleTaskPermission: boolean
-) => {
+export const getNotificationIcon = (marker: MapOverview) => {
   const icon = getIcon(
     {
       ...marker,
-      advancedTaskPermission: advancedTaskPermission,
-      simpleTaskPermission: simpleTaskPermission,
     },
     true
   );
   const iconURL = L.Util.template(dropletSVG, {
-    color: getColor({...marker, advancedTaskPermission, simpleTaskPermission}),
+    color: getColor({...marker}),
     icon: icon,
     num: '',
     locId: marker.loc_id,

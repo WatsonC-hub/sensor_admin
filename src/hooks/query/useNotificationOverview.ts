@@ -5,7 +5,6 @@ import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
 import {Group} from '~/types';
-import {withPermissionGuard} from '../withPermissionGuard';
 
 export interface Notification {
   loc_name: string;
@@ -206,11 +205,14 @@ type MapOverviewOptions<T> = Partial<
   Omit<UseQueryOptions<MapOverview[], Error, T>, 'queryKey' | 'queryFn'>
 >;
 
-const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
+export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
+  const user = useUser();
+
   return useQuery({
     ...mapOverviewOptions,
     ...options,
     select: options?.select as (data: MapOverview[]) => T,
+    enabled: user.features.iotAccess && user.features.boreholeAccess,
   });
 };
 
@@ -244,14 +246,9 @@ export const timeseriesStatusOptions = (loc_id: number) =>
   });
 
 export const useTimeseriesStatus = (loc_id: number) => {
-  return useQuery(timeseriesStatusOptions(loc_id));
+  const user = useUser();
+  return useQuery({
+    ...timeseriesStatusOptions(loc_id),
+    enabled: user.features.iotAccess,
+  });
 };
-
-export const useGuardedTimeseriesStatus = withPermissionGuard(useTimeseriesStatus, 'features', [
-  'iotAccess',
-]);
-
-export const useGuardedMapOverview = withPermissionGuard(useMapOverview, 'features', [
-  'iotAccess',
-  'boreholeAccess',
-]);

@@ -8,13 +8,13 @@ import {useState} from 'react';
 import CreateManuelTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 import ItineraryCardList from '~/features/station/components/sensorContent/taskListItemComponents/ItineraryCardList';
 import TaskHistoryList from '~/features/station/components/sensorContent/TaskHistoryList';
-import {useGuardedMapOverview} from '~/hooks/query/useNotificationOverview';
+import {useMapOverview} from '~/hooks/query/useNotificationOverview';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import AddToTripDialog from './AddToTripDialog';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
@@ -26,9 +26,9 @@ const SensorContent = () => {
   const {isMobile} = useBreakpoints();
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
-  const {simpleTaskPermission, advancedTaskPermission} = useAccessControl();
+  const {simpleTaskPermission, advancedTaskPermission} = useUser();
 
-  const {data: location} = useGuardedMapOverview({
+  const {data: location} = useMapOverview({
     select: (data) => {
       return data.find((location) => location.loc_id === loc_id);
     },

@@ -34,7 +34,7 @@ import {
   markerNumThreshold,
   defaultMapBox,
 } from '../mapConsts';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
@@ -47,7 +47,7 @@ const useMap = <TData extends object>(
   contextmenuItems: Array<L.ContextMenuItem>,
   selectCallback?: (data: TData | null) => void
 ) => {
-  const {advancedTaskPermission, simpleTaskPermission} = useAccessControl();
+  const {advancedTaskPermission, simpleTaskPermission} = useUser();
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.MarkerClusterGroup | null>(null);
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -68,7 +68,7 @@ const useMap = <TData extends object>(
   const {loc_id: selectedLocId} = useDisplayState((state) => state);
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
-  const accessControl = useAccessControl();
+  const user = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
@@ -333,7 +333,7 @@ const useMap = <TData extends object>(
               const geo = L.geoJSON(route.geo_route, {
                 onEachFeature: function onEachFeature(feature, layer) {
                   layer.bindContextMenu({
-                    contextmenu: accessControl.features.routesAndParking,
+                    contextmenu: user.features.routesAndParking,
                     contextmenuInheritItems: false,
                     contextmenuItems: [
                       {
@@ -403,7 +403,7 @@ const useMap = <TData extends object>(
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 
-          const parkingMenu = accessControl.features.routesAndParking
+          const parkingMenu = user.features.routesAndParking
             ? [
                 {
                   text: 'Slet parkering',
@@ -446,7 +446,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: accessControl.features.routesAndParking,
+            contextmenu: user.features.routesAndParking,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,

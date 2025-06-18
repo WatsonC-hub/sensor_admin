@@ -47,15 +47,13 @@ export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
   if (
     // !iconDetails?.itinerary_id &&
-    iconDetails?.has_task &&
-    (iconDetails.simpleTaskPermission || iconDetails.advancedTaskPermission)
+    iconDetails?.has_task
   ) {
     if (moment(iconDetails.due_date).isBefore(moment().toDate()))
       return sensorColors[FlagEnum.WARNING].color;
     else if (
-      (moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&
-        iconDetails.itinerary_id === null) ||
-      (!iconDetails.simpleTaskPermission && iconDetails.advancedTaskPermission)
+      moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&
+      iconDetails.itinerary_id === null
     )
       return sensorColors[FlagEnum.INFO].color;
     return sensorColors[FlagEnum.OK].color;
@@ -102,12 +100,9 @@ function getIcon<B extends boolean = false>(
   raw: B
 ): B extends true ? string : JSX.Element;
 function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
+  if (iconDetails.loc_id === 1511) console.log(iconDetails);
   if (raw == true) {
-    if (
-      iconDetails.flag == null &&
-      typeof iconDetails.itinerary_id == 'string' &&
-      iconDetails.advancedTaskPermission
-    ) {
+    if (iconDetails.flag == null && typeof iconDetails.itinerary_id == 'string') {
       return rawIcons['trip'];
     }
 
@@ -115,12 +110,7 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return rawIcons[iconDetails.notification_id];
     }
 
-    if (
-      iconDetails.has_task &&
-      iconDetails.flag == null &&
-      iconDetails.itinerary_id == null &&
-      (iconDetails.simpleTaskPermission || iconDetails.advancedTaskPermission)
-    ) {
+    if (iconDetails.has_task && iconDetails.flag == null && iconDetails.itinerary_id == null) {
       return rawIcons['task'];
     }
 
@@ -129,8 +119,7 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
     if (
       iconDetails.has_task &&
       iconDetails.flag == null &&
-      typeof iconDetails.itinerary_id == 'string' &&
-      iconDetails.advancedTaskPermission
+      typeof iconDetails.itinerary_id == 'string'
     ) {
       const Component = reactIcons['trip'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
@@ -141,12 +130,7 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 
-    if (
-      iconDetails.has_task &&
-      iconDetails.flag == null &&
-      iconDetails.itinerary_id == null &&
-      (iconDetails.simpleTaskPermission || iconDetails.advancedTaskPermission)
-    ) {
+    if (iconDetails.has_task && iconDetails.flag == null && iconDetails.itinerary_id == null) {
       const Component = reactIcons['task'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }

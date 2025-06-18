@@ -5,16 +5,16 @@ import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
 import {APIError} from '~/queryClient';
 
-import type {
-  completeItinerary,
-  AddLocationToItinerary,
-  PatchTaskitinerary,
-  PostTaskitinerary,
-  Task,
-  Taskitinerary,
+import {
+  type completeItinerary,
+  type AddLocationToItinerary,
+  type PatchTaskitinerary,
+  type PostTaskitinerary,
+  type Task,
+  type Taskitinerary,
+  TaskPermission,
 } from '../types';
-import {withPermissionGuard} from '~/hooks/withPermissionGuard';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 
 export const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
@@ -60,10 +60,10 @@ const useTaskItinerary = <T = Taskitinerary[]>(
   options?: ItineraryOptions<T>
 ) => {
   const queryClient = useQueryClient();
-  const accessControl = useAccessControl();
+  const user = useUser();
 
   const idRequired = id !== null && id !== undefined;
-  const permissionRequired = accessControl.advancedTaskPermission;
+  const permissionRequired = user.features.tasks === TaskPermission.advanced;
   const enabled = idRequired && permissionRequired;
 
   const get = useQuery({
@@ -155,8 +155,3 @@ const useTaskItinerary = <T = Taskitinerary[]>(
 };
 
 export default useTaskItinerary;
-
-export const useGuardedTaskItinerary = withPermissionGuard(
-  useTaskItinerary,
-  'advancedTaskPermission'
-);

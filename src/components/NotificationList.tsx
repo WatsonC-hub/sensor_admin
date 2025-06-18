@@ -16,11 +16,11 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
 import {getColor} from '~/features/notifications/utils';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 // Mock data for notifications
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const {simpleTaskPermission} = useAccessControl();
+  const {simpleTaskPermission} = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
   // const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   // const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);

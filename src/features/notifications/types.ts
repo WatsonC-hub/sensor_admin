@@ -5,8 +5,6 @@ export type IconDetails = Partial<
   MapOverview & {
     color?: string | null;
     due_date?: string | null;
-    advancedTaskPermission?: boolean;
-    simpleTaskPermission?: boolean;
   }
 >;
 export type BoreholeDetails = Partial<BoreholeMapData>;

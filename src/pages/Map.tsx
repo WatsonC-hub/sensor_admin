@@ -28,7 +28,7 @@ import {useFilteredMapData} from '~/features/map/hooks/useFilteredMapData';
 import {getBoreholesIcon, getNotificationIcon} from '~/features/map/utils';
 import {utm} from '../features/map/mapConsts';
 import {queryClient} from '~/queryClient';
-import {useAccessControl, useUser} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {debounce} from 'lodash';
 import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 
@@ -43,7 +43,6 @@ interface MapProps {
 }
 
 const Map = ({clickCallback}: MapProps) => {
-  const {simpleTaskPermission, advancedTaskPermission} = useAccessControl();
   const {createStamdata} = useNavigationFunctions();
   const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
@@ -129,7 +128,7 @@ const Map = ({clickCallback}: MapProps) => {
   const createLocationMarker = (element: MapOverview) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
     const marker = L.marker(point, {
-      icon: getNotificationIcon({...element}, advancedTaskPermission, simpleTaskPermission),
+      icon: getNotificationIcon({...element}),
       interactive: true,
       riseOnHover: true,
       title: element.loc_name,

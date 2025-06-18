@@ -218,3 +218,9 @@ export type AddLocationToItinerary = {
   path: string;
   data: {loc_id: Array<number>};
 };
+
+export enum TaskPermission {
+  none = 0,
+  simple = 1,
+  advanced = 2,
+}

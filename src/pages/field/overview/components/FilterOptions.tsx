@@ -7,7 +7,7 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
 import FormToggleSwitch from '~/components/FormToggleSwitch';
-import {useAccessControl, useUser} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
@@ -20,7 +20,6 @@ interface FilterOptionsProps {
 
 const FilterOptions = ({onClose}: FilterOptionsProps) => {
   const user = useUser();
-  const accessControl = useAccessControl();
   const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
     state.filters,
     state.setFilters,
@@ -39,7 +38,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       ...defaultMapFilter,
       sensor: {
         ...defaultMapFilter.sensor,
-        isCustomerService: accessControl.superUser ? false : true,
+        isCustomerService: user.superUser ? false : true,
       },
     };
 
@@ -58,8 +57,8 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       />
       <Divider />
       <Grid container spacing={2}>
-        {accessControl.features.boreholeAccess && (
-          <Grid item sm={accessControl.features.iotAccess ? 6 : 12} flexGrow={1}>
+        {user.features.boreholeAccess && (
+          <Grid item sm={user.features.iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">
               <u>Boringer</u>
             </Typography>
@@ -77,7 +76,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             />
           </Grid>
         )}
-        {accessControl.features.iotAccess && (
+        {user.features.iotAccess && (
           <Grid
             item
             sm={user?.features.boreholeAccess ? 6 : 12}
@@ -128,7 +127,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 </Typography>
               }
             />
-            {accessControl.superUser && (
+            {user.superUser && (
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
                 label="Vis kun enkeltmålinger"
@@ -161,7 +160,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
           )}
         />
       </Grid>
-      {accessControl.advancedTaskPermission && (
+      {user.advancedTaskPermission && (
         <Grid item xs={12}>
           <Controller
             name="itineraries"

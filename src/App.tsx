@@ -10,7 +10,7 @@ import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 import useBreakpoints from './hooks/useBreakpoints';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import {useUser, accessControlQueryOptions} from './features/auth/useUser';
+import {useUser, userQueryOptions} from './features/auth/useUser';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
 import {useQuery} from '@tanstack/react-query';
 
@@ -18,7 +18,7 @@ function App() {
   const {home} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const user = useUser();
-  const {isLoading} = useQuery(accessControlQueryOptions);
+  const {isLoading} = useQuery(userQueryOptions);
 
   useEffect(() => {
     if (isMobile && location.pathname == '/') {
@@ -27,7 +27,7 @@ function App() {
   }, [isMobile]);
 
   useEffect(() => {
-    // prefetch access control
+    // prefetch user
     const ele = document.getElementById('ipl-progress-indicator');
     if (ele) {
       // fade out

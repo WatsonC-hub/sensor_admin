@@ -3,7 +3,7 @@ import React from 'react';
 import NavBar from '~/components/NavBar';
 
 import useBreakpoints from '~/hooks/useBreakpoints';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import AddLocationAlt from '@mui/icons-material/AddLocationAlt';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {Box} from '@mui/material';
@@ -12,7 +12,7 @@ import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
-  const accessControl = useAccessControl();
+  const user = useUser();
   const {createStamdata} = useNavigationFunctions();
 
   return (
@@ -22,11 +22,11 @@ const Home = () => {
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         <Box display={'flex'}>
           <NavBar.LocationList />
-          {accessControl.advancedTaskPermission && <NavBar.TripList />}
+          {user.advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
             items={[
-              ...(accessControl.features.iotAccess
+              ...(user.features.iotAccess
                 ? [
                     {
                       title: 'Opret lokation',
