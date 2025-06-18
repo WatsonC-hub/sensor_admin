@@ -33,7 +33,9 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
     setLocIds([]);
   };
 
-  const reset = () => {
+  const {handleSubmit, reset, control} = formMethods;
+
+  const resetFilters = () => {
     const mapFilter: Filter = {
       ...defaultMapFilter,
       sensor: {
@@ -42,7 +44,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       },
     };
 
-    formMethods.reset(mapFilter);
+    reset(mapFilter);
     setMapFilter(mapFilter);
   };
 
@@ -53,7 +55,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
         name="freeText"
         label="Fritekst filtrering"
         placeholder="Indtast filtreringstekst..."
-        onBlurCallback={() => formMethods.handleSubmit(submit)()}
+        onBlurCallback={() => handleSubmit(submit)()}
       />
       <Divider />
       <Grid container spacing={2}>
@@ -67,7 +69,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               name="borehole.hasControlProgram"
               label="Del af pejleprogram"
               noSelectValue={'indeterminate'}
-              onChangeCallback={formMethods.handleSubmit(submit)}
+              onChangeCallback={handleSubmit(submit)}
               values={[
                 {label: <Typography>Ja</Typography>, value: true},
                 // {label: <RemoveIcon />, value: 'indeterminate'},
@@ -92,7 +94,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               name="sensor.isCustomerService"
               label="Serviceres af kunden"
               noSelectValue={'indeterminate'}
-              onChangeCallback={formMethods.handleSubmit(submit)}
+              onChangeCallback={handleSubmit(submit)}
               values={[
                 {label: <Typography>Ja</Typography>, value: true},
                 // {label: <RemoveIcon />, value: 'indeterminate'},
@@ -102,14 +104,14 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             <FormControlLabel
               control={
                 <Controller
-                  control={formMethods.control}
+                  control={control}
                   name="sensor.showInactive"
                   render={({field: {value, onChange, ...field}}) => (
                     <Checkbox
                       {...field}
                       onChange={(e) => {
                         onChange(e);
-                        formMethods.handleSubmit(submit)();
+                        handleSubmit(submit)();
                       }}
                       checked={!!value}
                     />
@@ -131,13 +133,13 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
                 label="Vis kun enkeltmålinger"
-                onChangeCallback={formMethods.handleSubmit(submit)}
+                onChangeCallback={handleSubmit(submit)}
               />
             )}
             <FormToggleSwitch
               name="sensor.hideLocationsWithoutNotifications"
               label="Skjul lokationer uden notifikationer"
-              onChangeCallback={formMethods.handleSubmit(submit)}
+              onChangeCallback={handleSubmit(submit)}
             />
           </Grid>
         )}
@@ -145,13 +147,13 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       <Grid item xs={12}>
         <Controller
           name="groups"
-          control={formMethods.control}
+          control={control}
           render={({field: {onChange, value}}) => (
             <LocationGroups
               value={value}
               setValue={(value) => {
                 onChange(value);
-                formMethods.handleSubmit(submit)();
+                handleSubmit(submit)();
               }}
               label="Filtrer grupper"
               disableLink
@@ -164,13 +166,13 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
         <Grid item xs={12}>
           <Controller
             name="itineraries"
-            control={formMethods.control}
+            control={control}
             render={({field: {onChange, value}}) => (
               <HighlightItineraries
                 value={value}
                 setValue={(value) => {
                   onChange(value);
-                  formMethods.handleSubmit(submit)();
+                  handleSubmit(submit)();
                 }}
                 label="Fremhæv ture"
               />
@@ -180,7 +182,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       )}
 
       <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
-        <Button bttype="tertiary" onClick={reset} startIcon={<RestartAlt />}>
+        <Button bttype="tertiary" onClick={resetFilters} startIcon={<RestartAlt />}>
           Nulstil
         </Button>
 

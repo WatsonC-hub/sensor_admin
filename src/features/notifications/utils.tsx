@@ -49,7 +49,7 @@ export const getColor = (iconDetails: IconDetails) => {
     // !iconDetails?.itinerary_id &&
     iconDetails?.has_task
   ) {
-    if (moment(iconDetails.due_date).isBefore(moment().toDate()))
+    if (moment(iconDetails.due_date).add(1, 'day').isBefore(moment().toDate()))
       return sensorColors[FlagEnum.WARNING].color;
     else if (
       moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&

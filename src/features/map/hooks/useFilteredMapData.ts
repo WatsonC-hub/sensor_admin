@@ -34,7 +34,10 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
   if (search_string === '') return data;
   return data.filter((elem) => searchElement(elem, search_string));
 };
-
+/**
+ * Filters the sensor data based on the provided filter criteria.
+ * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
+ */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   if (data.loctype_id === 12) return filter.isSingleMeasurement;
   const serviceFilter =
