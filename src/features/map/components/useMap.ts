@@ -508,10 +508,15 @@ const useMap = <TData extends object>(
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
-      disableClusteringAtZoom: 15,
+      disableClusteringAtZoom: 17,
       spiderfyOnMaxZoom: false,
       removeOutsideVisibleBounds: true,
-      maxClusterRadius: 50,
+      maxClusterRadius: (zoom) => {
+        if (zoom < 10) return 60;
+        if (zoom < 12) return 50;
+        if (zoom < 17) return 30;
+        return 80;
+      },
       zoomToBoundsOnClick: true,
       showCoverageOnHover: false,
 
