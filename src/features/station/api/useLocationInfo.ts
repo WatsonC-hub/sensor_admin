@@ -9,6 +9,8 @@ type LocationInfo = {
   project_info: string;
   projectno: string;
   loctype_name: string;
+  x: number;
+  y: number;
 };
 
 export const locationInfoOptions = (loc_id: number | undefined) =>

@@ -114,7 +114,7 @@ const useMap = <TData extends object>(
           );
         }
       },
-      icon: '/leaflet-images/map.png',
+      icon: '/leaflet-images/directions.png',
     },
     {
       text: 'Zoom ind',
@@ -583,11 +583,11 @@ const useMap = <TData extends object>(
 
   useEffect(() => {
     plotRoutesInLayer();
-  }, [data, leafletMapRoutes, geoJsonRef.current]);
+  }, [geoJsonRef.current, leafletMapRoutes, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     plotParkingsInLayer();
-  }, [parkingLayerRef.current, parkings, data]);
+  }, [parkingLayerRef.current, parkings, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);

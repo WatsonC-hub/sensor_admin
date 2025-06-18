@@ -103,7 +103,7 @@ const Map = ({clickCallback}: MapProps) => {
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
     doneRendering,
-  } = useMap('test', data, contextmenuItems, clickCallback);
+  } = useMap('test', filteredData, contextmenuItems, clickCallback);
 
   const prefetchQueries = (loc_id: number) => {
     queryClient.prefetchQuery(timeseriesStatusOptions(loc_id));
