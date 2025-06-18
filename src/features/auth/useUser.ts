@@ -67,7 +67,7 @@ export const useAccessControl = () => {
 
   const out = {
     ...(data as AccessControl),
-    superUser: data?.role === 'superuser',
+    superUser: data?.role.toLowerCase() === 'superuser',
     advancedTaskPermission: data?.features.tasks === 'advanced',
     simpleTaskPermission: data?.features.tasks === 'simple' || data?.features.tasks === 'advanced',
   };
