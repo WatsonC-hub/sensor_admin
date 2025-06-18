@@ -21,11 +21,11 @@ const Home = () => {
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         <Box display={'flex'}>
           <NavBar.LocationList />
-          {accessControl.features.tasks === 'advanced' && <NavBar.TripList />}
+          {accessControl?.features.tasks === 'advanced' && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
             items={[
-              ...(accessControl.features.iotAccess
+              ...(accessControl?.features.iotAccess
                 ? [
                     {
                       title: 'Opret lokation',
