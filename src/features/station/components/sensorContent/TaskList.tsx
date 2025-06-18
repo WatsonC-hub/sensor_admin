@@ -28,12 +28,13 @@ interface TaskListProps {
 const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const {tasks} = useTaskStore();
-  const {advancedTaskPermission} = useUser();
+  const user = useUser();
   const {data: location_data} = useLocationData(loc_id);
 
   const location_tasks = tasks
     ?.filter(
-      (task) => task.loc_id === loc_id && (task.itinerary_id === null || !advancedTaskPermission)
+      (task) =>
+        task.loc_id === loc_id && (task.itinerary_id === null || !user?.advancedTaskPermission)
     )
     .sort(sortTasks);
 

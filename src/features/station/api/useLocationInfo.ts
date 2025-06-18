@@ -28,6 +28,6 @@ export const useLocationInfo = (loc_id: number | undefined) => {
   const user = useUser();
   return useQuery({
     ...locationInfoOptions(loc_id),
-    enabled: user.features.iotAccess && loc_id !== undefined,
+    enabled: user?.features?.iotAccess && loc_id !== undefined,
   });
 };

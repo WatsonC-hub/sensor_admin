@@ -20,7 +20,7 @@ function App() {
   const {isMobile} = useBreakpoints();
   const user = useUser();
 
-  const {isLoading} = useQuery(userQueryOptions);
+  const {isPending} = useQuery(userQueryOptions);
 
   useEffect(() => {
     if (isMobile && location.pathname == '/') {
@@ -41,7 +41,7 @@ function App() {
     }
   }, []);
 
-  if (user === undefined || isLoading) {
+  if (user === undefined || isPending) {
     return <LoadingSkeleton />;
   }
 

@@ -10,11 +10,11 @@ export function withComponentPermission<P>(
   const WithPermissionWrapper = (props: React.PropsWithChildren<P>) => {
     const user = useUser();
 
-    if (requiredPermission === undefined && user[value] !== true) return <Login />;
+    if (requiredPermission === undefined && user?.[value] !== true) return <Login />;
 
     if (
       requiredPermission !== undefined &&
-      requiredPermission.every((feature) => user.features[feature] !== true)
+      requiredPermission.every((feature) => user?.features?.[feature] !== true)
     ) {
       return <Login />;
     }

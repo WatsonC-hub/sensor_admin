@@ -38,7 +38,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       ...defaultMapFilter,
       sensor: {
         ...defaultMapFilter.sensor,
-        isCustomerService: user.superUser ? false : true,
+        isCustomerService: user?.superUser ? false : true,
       },
     };
 
@@ -57,8 +57,8 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       />
       <Divider />
       <Grid container spacing={2}>
-        {user.features.boreholeAccess && (
-          <Grid item sm={user.features.iotAccess ? 6 : 12} flexGrow={1}>
+        {user?.features?.boreholeAccess && (
+          <Grid item sm={user?.features?.iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">
               <u>Boringer</u>
             </Typography>
@@ -76,10 +76,10 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             />
           </Grid>
         )}
-        {user.features.iotAccess && (
+        {user?.features?.iotAccess && (
           <Grid
             item
-            sm={user?.features.boreholeAccess ? 6 : 12}
+            sm={user?.features?.boreholeAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}
@@ -127,7 +127,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 </Typography>
               }
             />
-            {user.superUser && (
+            {user?.superUser && (
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
                 label="Vis kun enkeltmålinger"
@@ -160,7 +160,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
           )}
         />
       </Grid>
-      {user.advancedTaskPermission && (
+      {user?.advancedTaskPermission && (
         <Grid item xs={12}>
           <Controller
             name="itineraries"

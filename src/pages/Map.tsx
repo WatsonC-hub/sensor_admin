@@ -61,7 +61,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user.features.iotAccess)
+  if (user?.features?.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -154,7 +154,7 @@ const Map = ({clickCallback}: MapProps) => {
       },
     ];
 
-    if (user.superUser) {
+    if (user?.superUser) {
       locationMenu = [
         ...locationMenu,
         {

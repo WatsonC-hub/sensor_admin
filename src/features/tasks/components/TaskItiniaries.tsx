@@ -70,7 +70,7 @@ const TaskItiniaries = () => {
     select: (data) => {
       const reduced = data.reduce(
         (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
-          if (itinerary.assigned_to === user.user_id) {
+          if (itinerary.assigned_to === user?.user_id) {
             if (!acc['Mine ture']) {
               acc['Mine ture'] = [];
             }

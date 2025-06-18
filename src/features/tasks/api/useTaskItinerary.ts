@@ -63,7 +63,7 @@ const useTaskItinerary = <T = Taskitinerary[]>(
   const user = useUser();
 
   const idRequired = id !== null && id !== undefined;
-  const permissionRequired = user.features.tasks === TaskPermission.advanced;
+  const permissionRequired = user?.features?.tasks === TaskPermission.advanced;
   const enabled = idRequired && permissionRequired;
 
   const get = useQuery({

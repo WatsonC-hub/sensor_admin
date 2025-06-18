@@ -35,13 +35,15 @@ export const userQueryOptions = queryOptions({
 export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
 
-  return {
-    ...data,
-    advancedTaskPermission: data?.features.tasks === TaskPermission.advanced,
-    simpleTaskPermission:
-      data?.features.tasks === TaskPermission.simple ||
-      data?.features.tasks === TaskPermission.advanced,
-  } as UserAccessControl;
+  return data
+    ? ({
+        ...data,
+        advancedTaskPermission: data?.features.tasks === TaskPermission.advanced,
+        simpleTaskPermission:
+          data?.features.tasks === TaskPermission.simple ||
+          data?.features.tasks === TaskPermission.advanced,
+      } as UserAccessControl)
+    : null;
 };
 
 export type UserAccessControl = User & {

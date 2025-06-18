@@ -92,9 +92,7 @@ const nullState: Partial<Notification> = {
 // };
 
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
-  const {
-    features: {iotAccess},
-  } = useUser();
+  const user = useUser();
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async () => {
@@ -105,7 +103,7 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
     staleTime: 10 * 1000,
-    enabled: iotAccess,
+    enabled: user?.features?.iotAccess,
     ...options,
   });
   return query;
@@ -213,7 +211,7 @@ export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T
     ...mapOverviewOptions,
     ...options,
     select: options?.select as (data: MapOverview[]) => T,
-    enabled: user.features.iotAccess && user.features.boreholeAccess,
+    enabled: user?.features?.iotAccess && user?.features?.boreholeAccess,
   });
 };
 
@@ -250,6 +248,6 @@ export const useTimeseriesStatus = (loc_id: number) => {
   const user = useUser();
   return useQuery({
     ...timeseriesStatusOptions(loc_id),
-    enabled: user.features.iotAccess,
+    enabled: user?.features?.iotAccess,
   });
 };

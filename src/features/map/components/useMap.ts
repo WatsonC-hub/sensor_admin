@@ -47,7 +47,6 @@ const useMap = <TData extends object>(
   contextmenuItems: Array<L.ContextMenuItem>,
   selectCallback?: (data: TData | null) => void
 ) => {
-  const {advancedTaskPermission, simpleTaskPermission} = useUser();
   const mapRef = useRef<L.Map | null>(null);
   const markerLayerRef = useRef<L.MarkerClusterGroup | null>(null);
   const parkingLayerRef = useRef<L.FeatureGroup | null>(null);
@@ -333,7 +332,7 @@ const useMap = <TData extends object>(
               const geo = L.geoJSON(route.geo_route, {
                 onEachFeature: function onEachFeature(feature, layer) {
                   layer.bindContextMenu({
-                    contextmenu: user.features.routesAndParking,
+                    contextmenu: user?.features?.routesAndParking,
                     contextmenuInheritItems: false,
                     contextmenuItems: [
                       {
@@ -403,7 +402,7 @@ const useMap = <TData extends object>(
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 
-          const parkingMenu = user.features.routesAndParking
+          const parkingMenu = user?.features?.routesAndParking
             ? [
                 {
                   text: 'Slet parkering',
@@ -446,7 +445,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: user.features.routesAndParking,
+            contextmenu: user?.features?.routesAndParking,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,
@@ -523,7 +522,7 @@ const useMap = <TData extends object>(
 
         const colors = childMarkers.map((marker) => {
           if ('loc_id' in marker.options.data) {
-            return getColor({...marker.options.data, advancedTaskPermission, simpleTaskPermission});
+            return getColor(marker.options.data);
           }
           const max_status = Math.max(marker.options.data.status);
           return boreholeColors[max_status as keyof typeof boreholeColors]?.color;

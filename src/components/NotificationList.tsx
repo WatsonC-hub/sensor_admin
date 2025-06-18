@@ -20,7 +20,7 @@ import {useUser} from '~/features/auth/useUser';
 // Mock data for notifications
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const {simpleTaskPermission} = useUser();
+  const user = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
   // const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   // const [isMakeTaskModalOpen, setMakeTaskModalOpen] = useState(false);
@@ -126,7 +126,7 @@ const NotificationList = () => {
         keepMounted
         disableScrollLock
       >
-        {simpleTaskPermission && (
+        {user?.simpleTaskPermission && (
           <MenuItem
             disabled={permissions?.[ts_id] !== 'edit'}
             key="0"
@@ -142,7 +142,7 @@ const NotificationList = () => {
           </MenuItem>
         )}
         {isPending && <MenuItem>Indlæser...</MenuItem>}
-        {simpleTaskPermission &&
+        {user?.simpleTaskPermission &&
           notifications?.map((notification, index) => {
             const splitted = notification.ts_name.split(notification.loc_name);
             return (
@@ -178,7 +178,7 @@ const NotificationList = () => {
               key={index}
               sx={{gap: 0.5}}
               onClick={() => {
-                if (simpleTaskPermission) setSelectedTask(task.id);
+                if (user?.simpleTaskPermission) setSelectedTask(task.id);
               }}
             >
               <ListItemIcon

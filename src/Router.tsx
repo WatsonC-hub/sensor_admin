@@ -139,7 +139,7 @@ const Router = () => {
     },
   ]);
 
-  if (!user.features.iotAccess && !user.features.boreholeAccess) {
+  if (user && !user?.features?.iotAccess && !user?.features?.boreholeAccess) {
     return <AccessDenied message="Der er manglende rettigheder til at tilgå denne side." />;
   }
 

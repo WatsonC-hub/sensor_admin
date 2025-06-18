@@ -22,11 +22,11 @@ const Home = () => {
         {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
         <Box display={'flex'}>
           <NavBar.LocationList />
-          {user.advancedTaskPermission && <NavBar.TripList />}
+          {user?.advancedTaskPermission && <NavBar.TripList />}
           <NavBar.Menu
             disableProfile={false}
             items={[
-              ...(user.features.iotAccess
+              ...(user?.features?.iotAccess
                 ? [
                     {
                       title: 'Opret lokation',
