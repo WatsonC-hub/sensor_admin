@@ -28,7 +28,7 @@ import {
   qaSelection,
 } from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
-import {DataToShow, QaGraphLabel} from '~/types';
+import {DataToShow, HorizontalLine, QaGraphLabel} from '~/types';
 
 interface GraphManagerProps {
   dynamicMeasurement?: Array<string | number>;
@@ -112,6 +112,16 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
     },
     enabled: dataToShow['Nedbør'] && edgeDates !== undefined,
     refetchOnWindowFocus: false,
+  });
+
+  const {data: lines_data} = useQuery({
+    queryKey: ['lines_data', ts_id],
+    queryFn: async () => {
+      const {data} = await apiClient.get<HorizontalLine[]>(`/data/timeseries/${ts_id}/lines`);
+      return data;
+    },
+    select: (data) => data.filter((elem) => elem.tstype_id === timeseries_data?.tstype_id),
+    enabled: dataToShow['Horisontale linjer'],
   });
 
   const {data: rawData} = useQuery({
@@ -291,6 +301,41 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
           shapes = [...shapes, ...(qaShapes ?? [])];
           annotations = [...annotations, ...(qaAnnotate ?? [])];
           break;
+
+        case 'Horisontale linjer':
+          shapes = [
+            ...shapes,
+            ...(lines_data?.map((elem) => {
+              return {
+                x0: 0,
+                x1: 0.97,
+                y0: elem.level,
+                y1: elem.level,
+                name: elem.name,
+                type: 'scatter',
+                xref: 'paper',
+                line: elem.line ?? {width: 1, dash: 'dash'},
+                mode: elem.mode ?? 'lines',
+                // yaxis: 'y',
+              };
+            }) ?? []),
+          ];
+          annotations = [
+            ...annotations,
+            ...(lines_data?.map((elem) => {
+              return {
+                xref: 'paper',
+                yref: 'y',
+                x: 0,
+                xanchor: 'left',
+                yanchor: 'bottom',
+                showarrow: false,
+                text: elem.name,
+                y: elem.level,
+              };
+            }) ?? []),
+          ];
+          break;
         default:
           break;
       }
@@ -309,6 +354,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
       mode: 'lines+markers',
       marker: {symbol: '100', size: '3', color: '#177FC1'},
     },
+
     ...(dataToShow?.Rådata && !timeseries_data?.calculated
       ? [
           {

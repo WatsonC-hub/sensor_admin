@@ -27,6 +27,7 @@ import {useAppContext} from '~/state/contexts';
 
 import {DataToShow} from '~/types';
 import GraphSwitch from '~/features/station/components/GraphSwitch';
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -68,6 +69,31 @@ export default function PlotlyGraph({
   const [mergedLayout, setLayout] = usePlotlyLayout(MergeType.RECURSIVEMERGE, layout);
 
   const {mutation: correctMutation} = useCorrectData(metadata?.ts_id, 'graphData');
+  usePageActions([
+    {
+      id: 'correctData',
+      name: 'Genberegn data',
+      perform: () => {
+        correctMutation.mutate();
+      },
+      icon: <ReplayIcon />,
+      type: 'action',
+      shortcut: 'G',
+      group: 'Station',
+    },
+    {
+      id: 'downloadData',
+      name: 'Download data',
+      perform: () => {
+        const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
+        window.open(url);
+      },
+      icon: <Download />,
+      type: 'action',
+      shortcut: 'D',
+      group: 'Station',
+    },
+  ]);
 
   const {isTouch, isMobile} = useBreakpoints();
 
@@ -223,26 +249,29 @@ export default function PlotlyGraph({
                 {!isMobile && 'Genberegn'}
               </Button>
             </Tooltip>
-            <Tooltip title={'Download tidsserie data'} arrow placement="top">
-              <Button
-                bttype="link"
-                size="small"
-                onClick={() => {
-                  const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
-                  window.open(url);
-                }}
-                startIcon={!isMobile && <Download />}
-                sx={actionButtonStyle}
-              >
-                {isMobile && <Download fontSize="small" />}
-                {!isMobile && 'Download'}
-              </Button>
-            </Tooltip>
+            {!isMobile && (
+              <Tooltip title={'Download tidsserie data'} arrow placement="top">
+                <Button
+                  bttype="link"
+                  size="small"
+                  onClick={() => {
+                    const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
+                    window.open(url);
+                  }}
+                  startIcon={<Download />}
+                  sx={actionButtonStyle}
+                >
+                  Download
+                </Button>
+              </Tooltip>
+            )}
             <Button
-              bttype="secondary"
-              startIcon={!isMobile && <TuneRoundedIcon />}
-              sx={{textTransform: 'initial', my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
-              onClick={() => setIsOpen(!isOpen)}
+              bttype="tertiary"
+              startIcon={!isMobile && <TuneRoundedIcon fontSize="small" />}
+              sx={{my: 'auto', px: isMobile ? 0 : 2, minWidth: 32}}
+              onClick={() => {
+                setIsOpen(!isOpen);
+              }}
             >
               {isMobile && <TuneRoundedIcon fontSize="small" />}
               {!isMobile && 'Grafer'}
@@ -252,9 +281,22 @@ export default function PlotlyGraph({
       </Box>
 
       {isOpen && (
-        <ClickAwayListener onClickAway={() => setIsOpen(false)}>
+        <ClickAwayListener
+          onClickAway={(e) => {
+            if (
+              isMobile &&
+              e.target instanceof Element &&
+              e.target.localName !== 'svg' &&
+              e.target.localName !== 'button' &&
+              e.target.localName !== 'path'
+            ) {
+              setIsOpen(false);
+            }
+            if (isOpen && !isMobile) setIsOpen(false);
+          }}
+        >
           <Box>
-            <GraphSwitch dataToShow={dataToShow} setIsOpen={setIsOpen} />
+            <GraphSwitch dataToShow={dataToShow} setIsOpen={() => setIsOpen(!isOpen)} />
           </Box>
         </ClickAwayListener>
       )}

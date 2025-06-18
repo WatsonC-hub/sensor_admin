@@ -18,8 +18,8 @@ interface YRangeModalProps {
 }
 
 const schema = z.object({
-  min: z.string(),
-  max: z.string(),
+  min: z.string().or(z.number()),
+  max: z.string().or(z.number()),
 });
 
 type YRangeValues = z.infer<typeof schema>;

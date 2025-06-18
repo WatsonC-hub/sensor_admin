@@ -33,7 +33,6 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {queryClient} from '~/queryClient';
 import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
-import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -67,7 +66,6 @@ const CreateStation = () => {
       loc_id: loc_id,
     },
     initialLocTypeId: defaultValues.loctype_id ? defaultValues.loctype_id : -1,
-    loc_id: loc_id,
   });
 
   const {

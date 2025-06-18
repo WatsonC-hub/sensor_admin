@@ -13,11 +13,13 @@ import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import {useUser, userQueryOptions} from './features/auth/useUser';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
 import {useQuery} from '@tanstack/react-query';
+import CommandPalette from './features/commandpalette/components/CommandPalette';
 
 function App() {
   const {home} = useNavigationFunctions();
   const {isMobile} = useBreakpoints();
   const user = useUser();
+
   const {isLoading} = useQuery(userQueryOptions);
 
   useEffect(() => {
@@ -76,6 +78,7 @@ function App() {
           <Router />
         </DisplayStateProvider>
       </Suspense>
+      <CommandPalette />
     </ErrorBoundary>
   );
 }

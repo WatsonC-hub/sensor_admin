@@ -19,6 +19,7 @@ import theme from '~/theme';
 import App from './App';
 
 import '~/index.css';
+import {CommandProvider} from './features/commandpalette/components/CommandContext';
 import moment from 'moment';
 import 'moment/locale/da';
 import dayjs from 'dayjs';
@@ -63,9 +64,11 @@ root.render(
             }}
           >
             <CssBaseline />
-            <NuqsAdapter>
-              <App />
-            </NuqsAdapter>
+            <CommandProvider>
+              <NuqsAdapter>
+                <App />
+              </NuqsAdapter>
+            </CommandProvider>
             <ReactQueryDevtools initialIsOpen={false} />
             <ToastContainer
               draggablePercent={30}

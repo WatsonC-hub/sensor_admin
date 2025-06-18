@@ -3,6 +3,8 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import PlaceIcon from '@mui/icons-material/Place';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import {
   AppBar,
   Box,
@@ -269,34 +271,43 @@ const Close = ({onClick}: {onClick: () => void}) => {
 
 const LocationList = () => {
   const [loc_list, setLocList] = useDisplayState((state) => [state.loc_list, state.setLocList]);
+  const {isMobile} = useBreakpoints();
 
   return (
     <Button
       sx={{
         color: loc_list ? 'secondary.main' : 'inherit',
+        minWidth: isMobile ? 0 : undefined,
+        minHeight: isMobile ? 0 : undefined,
+        px: isMobile ? 1 : undefined,
       }}
       bttype={'primary'}
       onClick={() => setLocList(!loc_list)}
-      startIcon={<MapRounded />}
+      startIcon={!isMobile && <PlaceIcon />}
     >
-      Lokationsliste
+      {isMobile && <PlaceIcon />}
+      {!isMobile && 'Lokationsliste'}
     </Button>
   );
 };
 
 const TripList = () => {
   const [trip_list, setTripList] = useDisplayState((state) => [state.trip_list, state.setTripList]);
-
+  const {isMobile} = useBreakpoints();
   return (
     <Button
       sx={{
         color: trip_list ? 'secondary.main' : 'inherit',
+        minWidth: isMobile ? 0 : undefined,
+        minHeight: isMobile ? 0 : undefined,
+        px: isMobile ? 1 : undefined,
       }}
       bttype={'primary'}
       onClick={() => setTripList(!trip_list)}
-      startIcon={<MapRounded />}
+      startIcon={!isMobile && <DirectionsCarIcon />}
     >
-      Ture
+      {isMobile && <DirectionsCarIcon />}
+      {!isMobile && 'Ture'}
     </Button>
   );
 };

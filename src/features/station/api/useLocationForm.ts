@@ -23,15 +23,13 @@ type useLocationFormProps<T> =
       mode: 'Add';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
-      context: {loc_id: number};
-      loc_id?: number;
+      context: {loc_id: number | undefined};
     }
   | {
       mode: 'Edit';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
       context: {loc_id: number};
-      loc_id: number;
     };
 
 const getSchemaAndForm = <T extends FieldValues>(
@@ -80,12 +78,11 @@ const useLocationForm = <T extends BaseLocation>({
   mode,
   context,
   initialLocTypeId = -1,
-  loc_id,
 }: useLocationFormProps<T>) => {
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user, loc_id);
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user, context.loc_id);
 
   const {data, success} = schema.safeParse({
     ...defaultValues,

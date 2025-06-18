@@ -60,7 +60,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
   ]);
   const [locItems, setLocItems] = useState<LocItems[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const {isTouch} = useBreakpoints();
+  const {isMobile} = useBreakpoints();
   const user = useUser();
 
   const elasticSearch = (
@@ -150,7 +150,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
           />
         )}
         sx={{
-          width: isTouch ? '90%' : 300,
+          width: isMobile ? '90%' : 300,
           marginLeft: '16px',
           marginBottom: '12px',
           marginTop: '12px',
@@ -166,7 +166,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         onClose={() => {
           handleClose();
         }}
-        sx={{'& .MuiPaper-root': {width: isTouch ? '90%' : 500, p: 1}}}
+        sx={{'& .MuiPaper-root': {width: isMobile ? '90%' : 500, p: 1}}}
       >
         <FilterOptions onClose={handleClose} />
       </Menu>
