@@ -24,7 +24,6 @@ import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {stationPages} from '~/helpers/EnumHelper';
 
 import {useAppContext} from '~/state/contexts';
-import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 type Props = {
@@ -442,9 +441,8 @@ const InitialProjectNo = (
   const {control} = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-  const {data: units} = useUnitHistory();
   const {data: metadata} = useTimeseriesData();
-  const unitPresent = units && units.length > 0 ? true : metadata?.calculated;
+  const unitPresent = metadata?.calculated === true;
 
   return (
     <Controller

@@ -129,12 +129,14 @@ const Prefix = (
     <FormInput
       name="prefix"
       label="Navn"
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            {loc_name !== undefined && loc_name + ' - '}
-          </InputAdornment>
-        ),
+      slotProps={{
+        input: {
+          startAdornment: (
+            <InputAdornment position="start">
+              {loc_name !== undefined && loc_name !== '' && loc_name + ' - '}
+            </InputAdornment>
+          ),
+        },
       }}
       placeholder="f.eks. indtag 1"
       fullWidth

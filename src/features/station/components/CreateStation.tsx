@@ -50,7 +50,7 @@ const CreateStation = () => {
 
   state = state ?? {};
 
-  const loc_id = state?.loc_id ?? undefined;
+  const loc_id: number | undefined = state?.loc_id ?? undefined;
   const {data: locationData, isPending} = useLocationData(loc_id);
 
   const defaultValues = {
