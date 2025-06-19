@@ -1,17 +1,16 @@
 import {Grid2} from '@mui/material';
 import React from 'react';
 import StamdataLocation from '../StamdataLocation';
-import {useAppContext} from '~/state/contexts';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   size: number;
+  loc_id: number | undefined;
 };
 
-const BoreholeLocationEditForm = ({size}: Props) => {
+const BoreholeLocationEditForm = ({size, loc_id}: Props) => {
   const user = useUser();
-  const {loc_id} = useAppContext([], ['loc_id']);
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
