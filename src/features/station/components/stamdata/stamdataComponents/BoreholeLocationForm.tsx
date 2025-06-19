@@ -5,7 +5,7 @@ import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   size: number;
-  loc_id: number | undefined;
+  loc_id?: number;
 };
 
 const BoreholeLocationForm = ({size, loc_id}: Props) => {

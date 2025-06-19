@@ -5,7 +5,7 @@ import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   size: number;
-  loc_id: number | undefined;
+  loc_id: number | undefined; // Optional prop for location ID
 };
 
 const DefaultLocationForm = ({size, loc_id}: Props) => {

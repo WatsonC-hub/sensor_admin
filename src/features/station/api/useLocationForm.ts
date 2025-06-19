@@ -23,7 +23,7 @@ type useLocationFormProps<T> =
       mode: 'Add';
       defaultValues?: DefaultValues<T>;
       initialLocTypeId?: number;
-      context: {loc_id: number};
+      context: {loc_id: number | undefined};
     }
   | {
       mode: 'Edit';

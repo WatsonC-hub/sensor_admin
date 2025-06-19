@@ -89,7 +89,7 @@ const EditLocation = () => {
     <Box maxWidth={1080}>
       <FormProvider {...formMethods}>
         <StamdataLocation>
-          <LocationForm size={size} loc_id={metadata?.loc_id} />
+          <LocationForm size={size} loc_id={loc_id} />
         </StamdataLocation>
         <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
           <Button
