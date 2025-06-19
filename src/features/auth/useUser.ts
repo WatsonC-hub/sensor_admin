@@ -38,10 +38,10 @@ export const useUser = () => {
   return data
     ? ({
         ...data,
-        advancedTaskPermission: data?.features.tasks === TaskPermission.advanced,
+        advancedTaskPermission: data?.features?.tasks === TaskPermission.advanced,
         simpleTaskPermission:
-          data?.features.tasks === TaskPermission.simple ||
-          data?.features.tasks === TaskPermission.advanced,
+          data?.features?.tasks === TaskPermission.simple ||
+          data?.features?.tasks === TaskPermission.advanced,
       } as UserAccessControl)
     : null;
 };

@@ -44,15 +44,21 @@ const defaultStyling = {
 } as const;
 
 export const getColor = (iconDetails: IconDetails) => {
+  if (iconDetails.loc_id === 20167) {
+    console.log(iconDetails);
+    console.log(moment(iconDetails.due_date).add(1, 'day'));
+    console.log(moment('YYYY-MM-DD').toDate());
+  }
+
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
   if (
     // !iconDetails?.itinerary_id &&
     iconDetails?.has_task
   ) {
-    if (moment(iconDetails.due_date).add(1, 'day').isBefore(moment().toDate()))
+    if (moment(iconDetails.due_date).add(1, 'day').isSameOrBefore(moment().toDate()))
       return sensorColors[FlagEnum.WARNING].color;
     else if (
-      moment(iconDetails.due_date).isBefore(moment().add(1, 'month').toDate()) &&
+      moment(iconDetails.due_date).isSameOrBefore(moment().add(1, 'month').toDate()) &&
       iconDetails.itinerary_id === null
     )
       return sensorColors[FlagEnum.INFO].color;
