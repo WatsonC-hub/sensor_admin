@@ -1,7 +1,7 @@
 import {apiClient} from '~/apiClient';
 import {MutateOptions, queryOptions, useMutation, useQuery} from '@tanstack/react-query';
 import {useAppContext} from '~/state/contexts';
-import {AlarmPost, AlarmResponse} from '../types';
+import {AlarmHistory, AlarmPost, AlarmResponse} from '../types';
 import {queryClient} from '~/queryClient';
 
 interface AlarmBase {
@@ -72,15 +72,9 @@ export const AlarmHistoryGetOptions = (ts_id: number | undefined) =>
   queryOptions({
     queryKey: ['alarm_history', ts_id],
     queryFn: async () => {
-      const {data} = await apiClient.get<
-        Array<{
-          date: string;
-          sent_type: string;
-          alarm: boolean;
-          alarm_low: boolean;
-          name: string;
-        }>
-      >(`/sensor_field/stamdata/alarms/alarm_history/${ts_id}`);
+      const {data} = await apiClient.get<Array<AlarmHistory>>(
+        `/sensor_field/stamdata/alarms/alarm_history/${ts_id}`
+      );
       return data;
     },
     enabled: !!ts_id,

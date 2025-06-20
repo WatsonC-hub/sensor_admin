@@ -41,6 +41,22 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         size: 20,
       },
       {
+        header: 'Alarm Interval (timer)',
+        accessorKey: 'alarm_interval',
+      },
+      {
+        header: 'Kommentar',
+        accessorKey: 'note_to_include',
+        maxSize: 200,
+        muiTableBodyCellProps: () => {
+          return {
+            sx: {
+              lineBreak: 'auto',
+            },
+          };
+        },
+      },
+      {
         header: 'Tidligste signalering',
         accessorKey: 'earliest_timeofday',
       },
@@ -49,12 +65,10 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         accessorKey: 'latest_timeofday',
       },
       {
-        header: 'Alarm Interval',
-        accessorKey: 'alarm_interval',
-      },
-      {
-        header: 'Note',
-        accessorKey: 'note_to_include',
+        header: 'Signalering',
+        accessorKey: 'signal_warning',
+        size: 20,
+        Cell: ({renderedCellValue}) => (renderedCellValue ? 'Ja' : 'Nej'),
       },
     ],
     []
@@ -68,12 +82,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
     enablePagination: false,
     enableGlobalFilter: false,
     enableTopToolbar: false,
-    muiTablePaperProps: {
-      sx: {
-        width: 'fit-content',
-        height: '100%',
-      },
-    },
+    enableBottomToolbar: false,
     muiTableBodyCellProps: {
       sx: {
         width: 'fit-content',
@@ -90,6 +99,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         maxHeight: '100%',
       },
     },
+
     renderDetailPanel: ({row}) => {
       const alarmContacts = row.original.alarmContacts || [];
       const alarmCriteria = row.original.alarmCriteria || [];
@@ -143,6 +153,12 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
         )
       );
     },
+    muiTableContainerProps: {
+      sx: {
+        flex: '1 1 1',
+        maxHeight: 'fit-content',
+      },
+    },
     renderRowActions: ({row, table}) => (
       <RenderActions
         disabled={Object.keys(row.original).length === 0}
@@ -180,7 +196,7 @@ const AlarmTable = ({alarms}: AlarmTableProps) => {
     options,
     undefined,
     TableTypes.TABLE,
-    MergeType.SHALLOWMERGE
+    MergeType.RECURSIVEMERGE
   );
 
   return (

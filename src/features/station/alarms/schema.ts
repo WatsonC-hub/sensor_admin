@@ -35,6 +35,7 @@ export const alarmsSchema = z
     from: z.string().min(1, 'start interval er påkrævet'),
     to: z.string().min(1, 'slut interval er påkrævet'),
     comment: z.string().optional(),
+    signal_warning: z.boolean(),
     criteria: z.array(criteria), // skal der mindst være et kriterie?
     contacts: z.array(alarmContactSchema).optional(),
     interval: z.number({required_error: 'Alarm interval er påkrævet'}),

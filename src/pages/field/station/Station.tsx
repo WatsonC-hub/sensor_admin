@@ -117,9 +117,19 @@ export default function Station() {
         </>
       )}
       {pageToShow === stationPages.ALARM && user?.superUser && (
-        <StationPageBoxLayout key={ts_id}>
-          <Alarms />
-        </StationPageBoxLayout>
+        <>
+          <Box key={ts_id}>
+            <GraphManager
+              defaultDataToShow={{
+                Kontrolmålinger: true,
+              }}
+            />
+          </Box>
+          <Divider />
+          <StationPageBoxLayout key={`alarm-${ts_id}`}>
+            <Alarms />
+          </StationPageBoxLayout>
+        </>
       )}
       {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
         <StationPageBoxLayout key={loc_id}>

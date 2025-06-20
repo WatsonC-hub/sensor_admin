@@ -29,6 +29,7 @@ export type AlarmHistory = {
   alarm: boolean;
   alarm_low: boolean;
   name: string;
+  signal_warning: boolean;
 };
 
 export type Alarm = {
@@ -44,6 +45,7 @@ export type AlarmResponse = {
   earliest_timeofday: string;
   latest_timeofday: string;
   note_to_include?: string;
+  signal_warning: boolean;
   criteria: Array<CriteriaTable>;
   contacts: Array<ContactTable>;
 };
@@ -59,6 +61,7 @@ export type AlarmPost = {
   latest_timeofday: string;
   note_to_include?: string;
   alarm_contacts: Array<AlarmContact> | undefined;
+  signal_warning: boolean;
 };
 
 export type alarmTable = {
@@ -70,4 +73,5 @@ export type alarmTable = {
   note_to_include: string | undefined;
   alarmCriteria: Array<CriteriaTable>;
   alarmContacts: Array<ContactTable>;
+  signal_warning: boolean;
 };

@@ -28,6 +28,7 @@ const Alarms = () => {
         note_to_include: alarm.note_to_include,
         alarmCriteria: alarm.criteria ?? [],
         alarmContacts: alarm.contacts ?? [],
+        signal_warning: alarm.signal_warning ?? false,
       }) as alarmTable
   );
 

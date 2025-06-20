@@ -13,6 +13,8 @@ import {AlarmPost, alarmTable} from '../types';
 import {useAppContext} from '~/state/contexts';
 import {useAlarm} from '../api/useAlarm';
 import {toast} from 'react-toastify';
+import {useSetAtom} from 'jotai';
+import {tempHorizontalAtom} from '~/state/atoms';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
@@ -23,6 +25,7 @@ const Form = createTypedForm<AlarmsFormValues>();
 
 const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
+  const setTempLines = useSetAtom(tempHorizontalAtom);
   const alarmMethods = useForm<AlarmsFormValues>({
     resolver: zodResolver(alarmsSchema),
     defaultValues: {
@@ -33,11 +36,12 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
       contacts: alarm?.alarmContacts || [],
       interval: alarm?.alarm_interval || undefined,
       comment: alarm?.note_to_include || '',
+      signal_warning: alarm?.signal_warning || false,
     },
     mode: 'onTouched',
   });
 
-  const {control, reset} = alarmMethods;
+  const {control, reset, getValues} = alarmMethods;
   const {post: postAlarm, put: putAlarm} = useAlarm();
 
   const handleSubmit = (data: AlarmsFormValues) => {
@@ -52,6 +56,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         attention_high: data.criteria.find((c) => c.attention_level === 'attention_high')?.criteria,
         attention_low: data.criteria.find((c) => c.attention_level === 'attention_low')?.criteria,
         note_to_include: data.comment,
+        signal_warning: data.signal_warning,
         alarm_contacts: data.contacts?.map((contact) => ({
           contact_id: contact.contact_id,
           sms: contact.sms,
@@ -83,6 +88,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         attention_high: data.criteria.find((c) => c.attention_level === 'attention_high')?.criteria,
         attention_low: data.criteria.find((c) => c.attention_level === 'attention_low')?.criteria,
         note_to_include: data.comment,
+        signal_warning: data.signal_warning,
         alarm_contacts:
           data.contacts && data.contacts.length > 0
             ? data.contacts?.map((contact) => ({
@@ -127,6 +133,19 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     name: 'criteria',
   });
 
+  setTempLines(
+    getValues('criteria')
+      ?.filter((field) => field.criteria !== undefined && field.attention_level)
+      .map((field) => {
+        return {
+          level: field.criteria!,
+          name: field.attention_level!,
+          line: undefined,
+          mode: undefined,
+        };
+      })
+  );
+
   return (
     <Form formMethods={alarmMethods} label="Alarm">
       <Form.Input name="name" label="Alarm navn" placeholder="Indtast alarm navn" />
@@ -139,6 +158,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
 
       <Form.Input label="Start interval" type="time" name="from" />
       <Form.Input label="Slut interval" type="time" name="to" />
+      <Form.Checkbox name="signal_warning" label="Advar ved sender ikke" />
       <Form.Input
         name="comment"
         label="Kommentar"

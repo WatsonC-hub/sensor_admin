@@ -4,8 +4,6 @@ import AlarmForm from './AlarmForm';
 import {alarmTable} from '../types';
 
 type AlarmFormDialogProps = {
-  // Define the props for the AlarmFormDialog component
-  // For example:
   open: boolean;
   onClose: () => void;
   setOpen: (open: boolean) => void;

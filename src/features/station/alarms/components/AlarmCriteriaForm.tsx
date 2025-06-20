@@ -16,6 +16,7 @@ const AlarmCriteriaTypedForm = createTypedForm<AlarmCriteriaArrayFormValues>();
 const AlarmCriteriaForm = ({index, remove}: AlarmCriteriaFormProps) => {
   const {watch} = useFormContext<AlarmCriteriaArrayFormValues>();
   const criteria = watch(`criteria`);
+
   return (
     <Grid2 container spacing={1} style={{width: '100%'}}>
       <AlarmCriteriaTypedForm.Input
