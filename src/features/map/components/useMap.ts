@@ -158,6 +158,15 @@ const useMap = <TData extends object>(
 
     map.attributionControl.setPrefix(false);
 
+    L.control
+      .scale({
+        position: 'bottomleft',
+        imperial: false,
+        maxWidth: 100,
+        updateWhenIdle: true,
+      })
+      .addTo(map);
+
     new LocateControl({
       showPopup: false,
       strings: {title: 'Find mig'},
