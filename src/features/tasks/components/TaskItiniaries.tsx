@@ -93,9 +93,7 @@ const TaskItiniaries = () => {
   });
 
   const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
-  const [expandItinerary, setExpandItinerary] = useState<Array<{id: string; expanded: boolean}>>(
-    []
-  );
+  const [expandItinerary, setExpandItinerary] = useState<Record<string, boolean>>({});
   const [itinerary_id, setItineraryId, setLocId] = useDisplayState((state) => [
     state.itinerary_id,
     state.setItineraryId,
@@ -167,6 +165,8 @@ const TaskItiniaries = () => {
                   const due_date = itinerary.due_date
                     ? convertToShorthandDate(itinerary.due_date)
                     : 'Ingen dato';
+
+                  const expanded = expandItinerary?.[itinerary.id] ?? true;
 
                   return (
                     <Card
@@ -373,7 +373,7 @@ const TaskItiniaries = () => {
                             justifyContent={'space-between'}
                           >
                             <Box display="flex" gap={0.5} flexDirection={'column'}>
-                              {expandItinerary.find((e) => e.id === itinerary.id)?.expanded
+                              {expanded
                                 ? loc_ids.map((loc_id) => {
                                     return (
                                       <Box
@@ -401,40 +401,22 @@ const TaskItiniaries = () => {
                                   })
                                 : null}
                             </Box>
-                            {expandItinerary.find((e) => e.id === itinerary.id)?.expanded ? (
+                            {expanded ? (
                               <ExpandLess
                                 onClick={() => {
-                                  if (
-                                    expandItinerary.find((e) => e.id === itinerary.id) !== undefined
-                                  )
-                                    setExpandItinerary((prev) =>
-                                      prev.map((e) =>
-                                        e.id === itinerary.id ? {...e, expanded: false} : e
-                                      )
-                                    );
-                                  else
-                                    setExpandItinerary((prev) => [
-                                      ...prev,
-                                      {id: itinerary.id, expanded: false},
-                                    ]);
+                                  setExpandItinerary((prev) => ({
+                                    ...prev,
+                                    [itinerary.id]: false,
+                                  }));
                                 }}
                               />
                             ) : (
                               <ExpandMore
                                 onClick={() => {
-                                  if (
-                                    expandItinerary.find((e) => e.id === itinerary.id) !== undefined
-                                  )
-                                    setExpandItinerary((prev) =>
-                                      prev.map((e) =>
-                                        e.id === itinerary.id ? {...e, expanded: true} : e
-                                      )
-                                    );
-                                  else
-                                    setExpandItinerary((prev) => [
-                                      ...prev,
-                                      {id: itinerary.id, expanded: true},
-                                    ]);
+                                  setExpandItinerary((prev) => ({
+                                    ...prev,
+                                    [itinerary.id]: true,
+                                  }));
                                 }}
                               />
                             )}
