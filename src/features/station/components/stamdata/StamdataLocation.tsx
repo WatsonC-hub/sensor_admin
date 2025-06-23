@@ -24,7 +24,6 @@ import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {stationPages} from '~/helpers/EnumHelper';
 
 import {useAppContext} from '~/state/contexts';
-import {useUnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 
 type Props = {
@@ -106,6 +105,7 @@ const LoctypeSelect = (
           placeholder="Vælg type"
           select
           required
+          // fieldDescriptionText="Vælg lokationstype. "
           {...props}
         >
           <MenuItem value={-1} key={-1}>
@@ -348,6 +348,7 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
             label: 'DGU nummer',
             placeholder: 'Søg efter DGU boringer...',
           }}
+          // fieldDescriptionText={props.fieldDescriptionText}
           onInputChange={(event, searchValue) => {
             const searchString = {
               query: {
@@ -426,6 +427,7 @@ const Groups = (
           setValue={onChange}
           onBlur={onBlur}
           disable={props.disabled}
+          fieldDescriptionText={props.fieldDescriptionText}
         />
       )}
     />
@@ -444,9 +446,8 @@ const InitialProjectNo = (
   const {control} = useFormContext<
     DefaultAddLocation | DefaultEditLocation | BoreholeAddLocation | BoreholeEditLocation
   >();
-  const {data: units} = useUnitHistory();
   const {data: metadata} = useTimeseriesData();
-  const unitPresent = units && units.length > 0 ? true : metadata?.calculated;
+  const unitPresent = metadata?.calculated === true;
 
   return (
     <Controller

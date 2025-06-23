@@ -221,21 +221,22 @@ export default function PlotlyGraph({
                 {!isMobile && 'Genberegn'}
               </Button>
             </Tooltip>
-            <Tooltip title={'Download tidsserie data'} arrow placement="top">
-              <Button
-                bttype="link"
-                size="small"
-                onClick={() => {
-                  const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
-                  window.open(url);
-                }}
-                startIcon={!isMobile && <Download />}
-                sx={actionButtonStyle}
-              >
-                {isMobile && <Download fontSize="small" />}
-                {!isMobile && 'Download'}
-              </Button>
-            </Tooltip>
+            {!isMobile && (
+              <Tooltip title={'Download tidsserie data'} arrow placement="top">
+                <Button
+                  bttype="link"
+                  size="small"
+                  onClick={() => {
+                    const url = 'https://www.watsonc.dk/calypso/data_export/?ts_ids=' + ts_id;
+                    window.open(url);
+                  }}
+                  startIcon={<Download />}
+                  sx={actionButtonStyle}
+                >
+                  Download
+                </Button>
+              </Tooltip>
+            )}
             <Button
               bttype="tertiary"
               startIcon={!isMobile && <TuneRoundedIcon fontSize="small" />}
@@ -285,7 +286,7 @@ export default function PlotlyGraph({
           responsive: true,
           modeBarButtons: [
             boreholeno ? ['toImage'] : [],
-            ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+            ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d', 'select2d'],
           ],
           displaylogo: false,
           displayModeBar: true,

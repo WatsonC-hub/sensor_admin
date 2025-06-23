@@ -2,7 +2,7 @@ import {TextField, TextFieldProps} from '@mui/material';
 import moment from 'moment';
 import {ChangeEvent, FocusEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
-
+import LinkableTooltip from './LinkableTooltip';
 export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & {
   name: Path<TFieldValues>;
   warning?: (value: any) => string | undefined;
@@ -12,6 +12,7 @@ export type FormInputProps<TFieldValues extends FieldValues> = TextFieldProps & 
   onChangeCallback?: (value: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   onBlurCallback?: (value: FocusEvent<HTMLInputElement | HTMLTextAreaElement> | number) => void;
   type?: string;
+  fieldDescriptionText?: string;
 };
 
 const FormInput = <TFieldValues extends FieldValues>({
@@ -31,6 +32,7 @@ const FormInput = <TFieldValues extends FieldValues>({
   slotProps,
   onKeyDown,
   helperText,
+  fieldDescriptionText,
   fullWidth = true,
   ...otherProps
 }: FormInputProps<TFieldValues>) => {
@@ -110,6 +112,9 @@ const FormInput = <TFieldValues extends FieldValues>({
                 ...slotProps?.select,
               },
               input: {
+                endAdornment: fieldDescriptionText && (
+                  <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
+                ),
                 ...slotProps?.input,
                 sx:
                   type === 'number'

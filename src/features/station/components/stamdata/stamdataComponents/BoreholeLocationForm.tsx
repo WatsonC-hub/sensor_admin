@@ -5,7 +5,7 @@ import {useUser} from '~/features/auth/useUser';
 
 type Props = {
   size: number;
-  loc_id: number | undefined;
+  loc_id?: number;
 };
 
 const BoreholeLocationForm = ({size, loc_id}: Props) => {
@@ -19,7 +19,10 @@ const BoreholeLocationForm = ({size, loc_id}: Props) => {
       </Grid2>
       {user?.superUser && <Grid2 size={size}></Grid2>}
       <Grid2 size={size}>
-        <StamdataLocation.Boreholeno disabled={disabled} />
+        <StamdataLocation.Boreholeno
+          disabled={disabled}
+          //  fieldDescriptionText="Borehole number"
+        />
       </Grid2>
       <Grid2 size={size}>
         <StamdataLocation.BoreholeSuffix disabled={disabled} />
