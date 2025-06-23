@@ -1,4 +1,4 @@
-import {TextField, TextFieldProps} from '@mui/material';
+import {Box, InputAdornment, TextField, TextFieldProps} from '@mui/material';
 import moment from 'moment';
 import {ChangeEvent, FocusEvent} from 'react';
 import {Controller, FieldValues, Path, get, useFormContext} from 'react-hook-form';
@@ -104,10 +104,20 @@ const FormInput = <TFieldValues extends FieldValues>({
             }}
             slotProps={{
               input: {
-                endAdornment: fieldDescriptionText && (
-                  <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
-                ),
                 ...slotProps?.input,
+                endAdornment: (
+                  <>
+                    {slotProps?.input && 'endAdornment' in slotProps.input
+                      ? slotProps?.input.endAdornment
+                      : undefined}
+                    <Box sx={{display: 'flex', alignItems: 'center'}}>
+                      <InputAdornment position="end">
+                        {fieldDescriptionText && <LinkableTooltip text={fieldDescriptionText} />}
+                      </InputAdornment>
+                    </Box>
+                  </>
+                ),
+
                 sx:
                   type === 'number'
                     ? {

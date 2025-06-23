@@ -210,8 +210,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           </Tooltip>
         </Box>
 
-        <Box>
-          {/* <Tooltip arrow title={removeFromItineraryTitle}> */}
+        {/* <Box>
+
           <div>
             <Button
               bttype="primary"
@@ -225,8 +225,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               Færdiggør
             </Button>
           </div>
-          {/* </Tooltip> */}
-        </Box>
+
+        </Box> */}
       </Box>
       <DeleteAlert
         dialogOpen={dialogOpen}

@@ -25,7 +25,7 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
       <Grid2 size={size}>
         <StamdataLocation.Groups
           disabled={disabled}
-          // fieldDescriptionText="gruppering af lokationer"
+          // fieldDescriptionText="En gruppe er et linkbart navn på en kollektion af lokationer som f.eks. kan sorteres på i kortet. Under stamdata på en lokation kan du klikke på gruppenavnet for at blive viderestillet til en side med et overblik over alle lokationer i gruppen."
         />
       </Grid2>
       {user?.superUser && (
