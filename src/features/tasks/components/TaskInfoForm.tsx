@@ -1,6 +1,6 @@
 import {Delete} from '@mui/icons-material';
 // import DragHandleIcon from '@mui/icons-material/DragHandle';
-import {Box, Grid, IconButton, Tooltip, Typography} from '@mui/material';
+import {Box, Grid, IconButton, TextField, Tooltip, Typography} from '@mui/material';
 import React, {useState} from 'react';
 import {FieldValues, useFormContext} from 'react-hook-form';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
@@ -124,6 +124,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
               input: {
                 endAdornment: (
                   <IconButton
+                    disabled={!selectedTask.can_edit}
                     size="small"
                     onClick={() => {
                       setDueDateDialogOpen(true);
@@ -136,12 +137,27 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             }}
           />
         </Grid>
-        <Grid item mobile={12} tablet={12} laptop={6}>
-          <TaskForm.AssignedTo
-            onBlur={async () => {
-              await handlePatch('assigned_to');
-            }}
-          />
+        <Grid item mobile={12} tablet={12} laptop={6} alignContent={'center'} pb={0.5}>
+          {selectedTask.can_edit ? (
+            <TaskForm.AssignedTo
+              onBlur={async () => {
+                await handlePatch('assigned_to');
+              }}
+            />
+          ) : (
+            <TextField
+              label="Tildelt"
+              value={selectedTask.assigned_display_name}
+              fullWidth
+              disabled
+              sx={{
+                pb: 0,
+                '& .MuiInputBase-input': {
+                  padding: '8.2px !important',
+                },
+              }}
+            />
+          )}
         </Grid>
         <Grid item mobile={12} pb={1}>
           <Grid container display={'flex'} flexDirection={'row'} alignItems={'start'} spacing={0}>
