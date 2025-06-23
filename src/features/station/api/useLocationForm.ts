@@ -18,7 +18,7 @@ import {User} from '@sentry/react';
 import {zodResolver} from '@hookform/resolvers/zod';
 
 type useLocationFormProps<T extends FieldValues> = {
-  formProps: UseFormProps<T, {loc_id: number}>;
+  formProps: UseFormProps<T, {loc_id: number | undefined}>;
   mode: 'Add' | 'Edit';
   initialLocTypeId?: number;
 };
