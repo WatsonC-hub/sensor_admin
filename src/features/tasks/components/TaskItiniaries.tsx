@@ -22,6 +22,7 @@ import Button from '~/components/Button';
 import {useMapFilterStore} from '~/features/map/store';
 import {ItineraryColors} from '~/features/notifications/consts';
 import {useUser} from '~/features/auth/useUser';
+import {ExpandLess, ExpandMore} from '@mui/icons-material';
 
 export function Droppable({
   id,
@@ -92,6 +93,9 @@ const TaskItiniaries = () => {
   });
 
   const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
+  const [expandItinerary, setExpandItinerary] = useState<Array<{id: string; expanded: boolean}>>(
+    []
+  );
   const [itinerary_id, setItineraryId, setLocId] = useDisplayState((state) => [
     state.itinerary_id,
     state.setItineraryId,
@@ -361,31 +365,80 @@ const TaskItiniaries = () => {
                               />
                             </TaskForm>
                           </Box>
-                          {Array.from(loc_ids).map((loc_id) => {
-                            return (
-                              <Box
-                                key={loc_id}
-                                display="flex"
-                                gap={1}
-                                alignItems={'center'}
-                                flexWrap={'wrap'}
-                                flexDirection={'row'}
-                              >
-                                <Box display="flex" gap={0.5} flexDirection={'row'}>
-                                  <Typography fontSize={'small'} width={'fit-content'}>
-                                    <Link
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setLocId(loc_id);
-                                      }}
-                                    >
-                                      {grouped_location_tasks?.[loc_id][0].location_name}
-                                    </Link>
-                                  </Typography>
-                                </Box>
-                              </Box>
-                            );
-                          })}
+                          <Box
+                            display="flex"
+                            gap={0.5}
+                            flexDirection={'row'}
+                            alignItems={'start'}
+                            justifyContent={'space-between'}
+                          >
+                            <Box display="flex" gap={0.5} flexDirection={'column'}>
+                              {expandItinerary.find((e) => e.id === itinerary.id)?.expanded
+                                ? loc_ids.map((loc_id) => {
+                                    return (
+                                      <Box
+                                        key={loc_id}
+                                        display="flex"
+                                        gap={1}
+                                        alignItems={'center'}
+                                        flexWrap={'wrap'}
+                                        flexDirection={'row'}
+                                      >
+                                        <Box display="flex" gap={0.5} flexDirection={'row'}>
+                                          <Typography fontSize={'small'} width={'fit-content'}>
+                                            <Link
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setLocId(loc_id);
+                                              }}
+                                            >
+                                              {grouped_location_tasks?.[loc_id][0].location_name}
+                                            </Link>
+                                          </Typography>
+                                        </Box>
+                                      </Box>
+                                    );
+                                  })
+                                : null}
+                            </Box>
+                            {expandItinerary.find((e) => e.id === itinerary.id)?.expanded ? (
+                              <ExpandLess
+                                onClick={() => {
+                                  if (
+                                    expandItinerary.find((e) => e.id === itinerary.id) !== undefined
+                                  )
+                                    setExpandItinerary((prev) =>
+                                      prev.map((e) =>
+                                        e.id === itinerary.id ? {...e, expanded: false} : e
+                                      )
+                                    );
+                                  else
+                                    setExpandItinerary((prev) => [
+                                      ...prev,
+                                      {id: itinerary.id, expanded: false},
+                                    ]);
+                                }}
+                              />
+                            ) : (
+                              <ExpandMore
+                                onClick={() => {
+                                  if (
+                                    expandItinerary.find((e) => e.id === itinerary.id) !== undefined
+                                  )
+                                    setExpandItinerary((prev) =>
+                                      prev.map((e) =>
+                                        e.id === itinerary.id ? {...e, expanded: true} : e
+                                      )
+                                    );
+                                  else
+                                    setExpandItinerary((prev) => [
+                                      ...prev,
+                                      {id: itinerary.id, expanded: true},
+                                    ]);
+                                }}
+                              />
+                            )}
+                          </Box>
                           <Typography fontSize={'small'} width={'fit-content'}>
                             Der er {itinerary_tasks?.length ?? 0} opgaver på denne tur.
                           </Typography>
