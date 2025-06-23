@@ -23,7 +23,10 @@ const DefaultLocationForm = ({size, loc_id}: Props) => {
       </Grid2>
       {user?.superUser && <Grid2 size={size}></Grid2>}
       <Grid2 size={size}>
-        <StamdataLocation.Groups disabled={disabled} />
+        <StamdataLocation.Groups
+          disabled={disabled}
+          // fieldDescriptionText="gruppering af lokationer"
+        />
       </Grid2>
       {user?.superUser && (
         <Grid2 size={size}>

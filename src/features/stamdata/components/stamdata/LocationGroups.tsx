@@ -9,6 +9,7 @@ import Button from '~/components/Button';
 import {getGroupLink} from '~/helpers/links';
 import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
+import LinkableTooltip from '~/components/LinkableTooltip';
 
 const filter = createFilterOptions<Group>({
   ignoreCase: true,
@@ -23,6 +24,7 @@ interface LocationGroupsProps {
   disable?: boolean;
   disableLink?: boolean;
   creatable?: boolean;
+  fieldDescriptionText?: string;
 }
 
 const LocationGroups = ({
@@ -33,6 +35,7 @@ const LocationGroups = ({
   disable = false,
   disableLink = false,
   creatable = true,
+  fieldDescriptionText,
 }: LocationGroupsProps) => {
   const {data: options} = useQuery({
     queryKey: ['location_groups'],
@@ -129,11 +132,20 @@ const LocationGroups = ({
         <TextField
           {...params}
           fullWidth
-          InputLabelProps={{shrink: true}}
           variant="outlined"
           label={label}
           placeholder="Indtast gruppe(r)..."
           onBlur={onBlur}
+          slotProps={{
+            input: {
+              endAdornment: fieldDescriptionText && (
+                <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
+              ),
+            },
+            inputLabel: {
+              shrink: true,
+            },
+          }}
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {
               WebkitTextFillColor: '#000000',
