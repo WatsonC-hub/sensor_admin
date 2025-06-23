@@ -47,7 +47,8 @@ export const getColor = (iconDetails: IconDetails) => {
   if (iconDetails.loc_id === 20167) {
     console.log(iconDetails);
     console.log(moment(iconDetails.due_date).add(1, 'day'));
-    console.log(moment('YYYY-MM-DD').toDate());
+    console.log(moment(moment(), 'YYYY-MM-DD'));
+    console.log(moment(iconDetails.due_date).add(1, 'day').isSameOrBefore(moment('YYYY-MM-DD')));
   }
 
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
@@ -55,10 +56,10 @@ export const getColor = (iconDetails: IconDetails) => {
     // !iconDetails?.itinerary_id &&
     iconDetails?.has_task
   ) {
-    if (moment(iconDetails.due_date).add(1, 'day').isSameOrBefore(moment().toDate()))
+    if (moment(iconDetails.due_date).add(1, 'day').isBefore(moment(moment(), 'YYYY-MM-DD')))
       return sensorColors[FlagEnum.WARNING].color;
     else if (
-      moment(iconDetails.due_date).isSameOrBefore(moment().add(1, 'month').toDate()) &&
+      moment(iconDetails.due_date).isSameOrBefore(moment(moment(), 'YYYY-MM-DD').add(1, 'month')) &&
       iconDetails.itinerary_id === null
     )
       return sensorColors[FlagEnum.INFO].color;
