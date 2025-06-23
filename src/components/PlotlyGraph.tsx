@@ -314,7 +314,7 @@ export default function PlotlyGraph({
           responsive: true,
           modeBarButtons: [
             boreholeno ? ['toImage'] : [],
-            ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d'],
+            ['zoom2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'resetScale2d', 'select2d'],
           ],
           displaylogo: false,
           displayModeBar: true,

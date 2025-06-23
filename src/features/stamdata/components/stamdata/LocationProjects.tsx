@@ -46,7 +46,6 @@ const LocationProjects = ({value, setValue, error, onBlur, disable}: LocationPro
           }}
           id="tags-standard"
           options={options ?? []}
-          disabled={disable}
           getOptionLabel={getLabel}
           isOptionEqualToValue={(option, value) => option.project_no === value.project_no}
           renderInput={(params) => (
