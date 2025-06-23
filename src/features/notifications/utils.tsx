@@ -44,13 +44,6 @@ const defaultStyling = {
 } as const;
 
 export const getColor = (iconDetails: IconDetails) => {
-  if (iconDetails.loc_id === 20167) {
-    console.log(iconDetails);
-    console.log(moment(iconDetails.due_date).add(1, 'day'));
-    console.log(moment(moment(), 'YYYY-MM-DD'));
-    console.log(moment(iconDetails.due_date).add(1, 'day').isSameOrBefore(moment('YYYY-MM-DD')));
-  }
-
   if (iconDetails?.flag) return sensorColors[iconDetails?.flag].color;
   if (
     // !iconDetails?.itinerary_id &&
