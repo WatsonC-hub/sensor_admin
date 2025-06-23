@@ -22,7 +22,7 @@ import Button from '~/components/Button';
 import {useMapFilterStore} from '~/features/map/store';
 import {ItineraryColors} from '~/features/notifications/consts';
 import {useUser} from '~/features/auth/useUser';
-import {ExpandLess, ExpandMore} from '@mui/icons-material';
+import {Edit, ExpandLess, ExpandMore} from '@mui/icons-material';
 
 export function Droppable({
   id,
@@ -262,6 +262,7 @@ const TaskItiniaries = () => {
                                 }}
                               />
                             </LocalizationProvider>
+                            <Edit fontSize="small" sx={{ml: 0.5}} />
                           </Box>
                         </Box>
                         <Box
