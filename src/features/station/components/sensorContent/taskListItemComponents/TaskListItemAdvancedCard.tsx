@@ -149,46 +149,56 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
               </Grid2>
             )}
             <Grid2 size={6} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
-              <Person
-                sx={{
-                  color: 'grey.700',
-                }}
-              />
-              <TaskForm.AssignedToSelect
-                onBlurCallback={(e) => {
-                  if (typeof e === 'object' && 'value' in e.target) {
-                    const user = taskUsers?.find((user) => user.id === e.target.value);
-                    if (user !== undefined && task.assigned_to !== user.id)
-                      patchTaskAssignedTo(user.id);
-                  }
-                }}
-                placeholder="Vælg ansvarlig"
-                label=""
-                sx={{
-                  p: 0,
-                  size: 'small',
-                  width: 150,
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    fontSize: 'small',
-                    borderRadius: 2.5,
-                  },
+              {task.can_edit ? (
+                <>
+                  <Person
+                    sx={{
+                      color: 'grey.700',
+                    }}
+                  />
+                  <TaskForm.AssignedToSelect
+                    onBlurCallback={(e) => {
+                      if (typeof e === 'object' && 'value' in e.target) {
+                        const user = taskUsers?.find((user) => user.id === e.target.value);
+                        if (user !== undefined && task.assigned_to !== user.id)
+                          patchTaskAssignedTo(user.id);
+                      }
+                    }}
+                    placeholder="Vælg ansvarlig"
+                    label=""
+                    sx={{
+                      p: 0,
+                      size: 'small',
+                      width: 150,
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        fontSize: 'small',
+                        borderRadius: 2.5,
+                      },
 
-                  '& .MuiOutlinedInput-root': {
-                    fontSize: 'small',
-                  },
-                  '& .MuiInputLabel-root': {
-                    backgroundColor: 'white',
-                    transform: 'translate(10px, -9px) scale(0.9)',
-                  },
-                  '& .MuiSelect-select': {
-                    padding: '4px !important',
-                    pl: '14px !important',
-                  },
-                }}
-              />
+                      '& .MuiOutlinedInput-root': {
+                        fontSize: 'small',
+                      },
+                      '& .MuiInputLabel-root': {
+                        backgroundColor: 'white',
+                        transform: 'translate(10px, -9px) scale(0.9)',
+                      },
+                      '& .MuiSelect-select': {
+                        padding: '4px !important',
+                        pl: '14px !important',
+                      },
+                    }}
+                  />
+                </>
+              ) : (
+                <Box display={'flex'} flexDirection={'row'} gap={0.5} pt={0.5} alignItems="center">
+                  <Person fontSize="small" />
+                  <Typography variant="caption">{task.assigned_display_name}</Typography>
+                </Box>
+              )}
             </Grid2>
             <Grid2 size={6} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
               <TaskForm.StatusSelect
+                disabled={!task.can_edit}
                 onBlurCallback={(event) => {
                   if (typeof event !== 'number' && 'target' in event) {
                     const status = taskStatus?.find(
