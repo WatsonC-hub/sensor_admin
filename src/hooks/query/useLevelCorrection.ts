@@ -3,6 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {rerunToast} from '~/helpers/toasts';
+import {useAppContext} from '~/state/contexts';
 
 type LevelCorrectionPayload = {
   path: string;
@@ -45,6 +46,7 @@ const levelCorrectionDelOptions = {
 
 export const useLevelCorrection = () => {
   const queryClient = useQueryClient();
+  const {ts_id} = useAppContext(['ts_id']);
 
   const post = useMutation({
     ...levelCorrectionPostOptions,
@@ -55,7 +57,7 @@ export const useLevelCorrection = () => {
       queryClient.invalidateQueries({
         queryKey: ['qa_all', Number(variables.path)],
       });
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 
@@ -68,7 +70,7 @@ export const useLevelCorrection = () => {
       queryClient.invalidateQueries({
         queryKey: ['qa_all'],
       });
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 
@@ -81,7 +83,7 @@ export const useLevelCorrection = () => {
       queryClient.invalidateQueries({
         queryKey: ['qa_all'],
       });
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 

@@ -3,6 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {rerunToast} from '~/helpers/toasts';
+import {useAppContext} from '~/state/contexts';
 
 interface ExcludeBase {
   path: string;
@@ -55,6 +56,7 @@ export const excludeDelOptions = {
 };
 
 export const useExclude = () => {
+  const {ts_id} = useAppContext(['ts_id']);
   const queryClient = useQueryClient();
 
   const post = useMutation({
@@ -64,7 +66,7 @@ export const useExclude = () => {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({queryKey: ['qa_all', Number(variables.path)]});
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 
@@ -75,7 +77,7 @@ export const useExclude = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['qa_all']});
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 
@@ -86,7 +88,7 @@ export const useExclude = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({queryKey: ['qa_all']});
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 
