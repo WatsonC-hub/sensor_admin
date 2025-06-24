@@ -313,7 +313,6 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
           loading={isFetching}
           labelKey="boreholeno"
           onChange={(option) => {
-            console.log(option);
             if (option == null) {
               setValue('boreholeno', undefined);
               trigger('boreholeno');

@@ -100,7 +100,6 @@ function getIcon<B extends boolean = false>(
   raw: B
 ): B extends true ? string : JSX.Element;
 function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
-  if (iconDetails.loc_id === 1511) console.log(iconDetails);
   if (raw == true) {
     if (iconDetails.flag == null && typeof iconDetails.itinerary_id == 'string') {
       return rawIcons['trip'];

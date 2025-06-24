@@ -92,8 +92,6 @@ const Overview = () => {
     if (data === null) return;
 
     if ('loc_id' in data) {
-      // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
-      // console.log('data', data);
       setLocId(data.loc_id);
       setSelectedTask(null);
       document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
@@ -103,7 +101,6 @@ const Overview = () => {
         }
       });
     } else if ('boreholeno' in data) {
-      // console.log('boreholeno', data);
       setBoreholeNo(data.boreholeno);
     }
   };

@@ -50,8 +50,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
 
     const isDirty = dirtyFields[field_name];
 
-    console.log('handlePatch', field_name, field_value, isDirty);
-
     if (field_name === 'due_date' && field_value === '') field_value = null;
 
     const values = {[field_name]: field_value};
@@ -82,20 +80,12 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
     }
   };
 
-  // const removeFromItinerary = () => {
-  //   console.log(selectedTask);
-  //   deleteTaskFromItinerary.mutate({
-  //     path: `${selectedTask.itinerary_id}/tasks/${selectedTask.id}`,
-  //   });
-  // };
-
   const deleteTask = () => {
     del.mutate({
       path: `${selectedTask.id}`,
     });
   };
 
-  console.log('selectedTask', getValues().due_date);
   return (
     <Box display={'flex'} flexDirection={'column'}>
       <Typography variant="h6" fontWeight={600} mb={1}>

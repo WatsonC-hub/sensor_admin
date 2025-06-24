@@ -7,7 +7,7 @@ import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
-import L from 'leaflet';
+import L, {latLng} from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import './L.basemapControl';
@@ -40,6 +40,7 @@ import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
 
 const useMap = <TData extends object>(
   id: string,
@@ -72,7 +73,7 @@ const useMap = <TData extends object>(
     'Er du sikker du vil slette denne parkering?'
   );
   const [selectedMarker, setSelectedMarker] = useState<TData | null | undefined>(null);
-  const setLocIds = useMapFilterStore((state) => state.setLocIds);
+  const [filters, setLocIds] = useMapFilterStore((state) => [state.filters, state.setLocIds]);
 
   const setSelectedMarkerWithCallback = (data: TData | null | undefined) => {
     setSelectedMarker(data);
@@ -512,9 +513,6 @@ const useMap = <TData extends object>(
   };
 
   useEffect(() => {
-    // console.log('useMap useEffect', id, mapRef.current == null);
-    // const existingMap = L.DomUtil.get(id);
-    // if (existingMap && '_leaflet_id' in existingMap) existingMap._leaflet_id = null;
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
@@ -606,6 +604,35 @@ const useMap = <TData extends object>(
       if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
     };
   }, [leafletMapRoutes, parkings]);
+
+  useEffect(() => {
+    if (mapRef.current && filters && filters.itineraries.length > 0) {
+      const markers = markerLayerRef.current?.getLayers().filter((marker) => {
+        if (marker instanceof L.Marker) {
+          return filters.itineraries
+            .map((itinerary) => itinerary.id)
+            .includes((marker.options.data as MapOverview).itinerary_id);
+        }
+        return false;
+      });
+
+      if (markers == undefined) return;
+
+      const fg = new L.FeatureGroup();
+      for (const marker of markers) {
+        if (marker instanceof L.Marker) {
+          fg.addLayer(marker);
+        }
+      }
+
+      mapRef.current.fitBounds(fg.getBounds(), {
+        padding: [50, 50],
+        maxZoom: 17,
+      });
+
+      fg.clearLayers();
+    }
+  }, [filters.itineraries.length]);
 
   return {
     map: mapRef.current,
