@@ -3,6 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {rerunToast} from '~/helpers/toasts';
+import {useAppContext} from '~/state/contexts';
 
 type YRangePayload = {
   path: string;
@@ -37,6 +38,7 @@ const yRangeDelOptions = {
 
 export const useYRangeMutations = () => {
   const queryClient = useQueryClient();
+  const {ts_id} = useAppContext(['ts_id']);
 
   const post = useMutation({
     ...yRangePostOptions,
@@ -47,7 +49,7 @@ export const useYRangeMutations = () => {
       queryClient.invalidateQueries({
         queryKey: ['qa_all', Number(variables.path)],
       });
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 
@@ -60,7 +62,7 @@ export const useYRangeMutations = () => {
       queryClient.invalidateQueries({
         queryKey: ['qa_all'],
       });
-      rerunToast();
+      rerunToast(ts_id);
     },
   });
 

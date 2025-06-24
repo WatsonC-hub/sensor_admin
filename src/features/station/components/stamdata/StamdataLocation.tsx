@@ -103,6 +103,7 @@ const LoctypeSelect = (
           placeholder="Vælg type"
           select
           required
+          // fieldDescriptionText="Vælg lokationstype. "
           {...props}
         >
           <MenuItem value={-1} key={-1}>
@@ -345,6 +346,7 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
             label: 'DGU nummer',
             placeholder: 'Søg efter DGU boringer...',
           }}
+          // fieldDescriptionText={props.fieldDescriptionText}
           onInputChange={(event, searchValue) => {
             const searchString = {
               query: {
@@ -423,6 +425,7 @@ const Groups = (
           setValue={onChange}
           onBlur={onBlur}
           disable={props.disabled}
+          fieldDescriptionText={props.fieldDescriptionText}
         />
       )}
     />

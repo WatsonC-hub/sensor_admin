@@ -11,9 +11,11 @@ import UnAuntenticatedApp from '~/UnauthenticatedApp';
 import useBreakpoints from './hooks/useBreakpoints';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import {useUser} from './features/auth/useUser';
+import {usePostHog} from 'posthog-js/react';
 
 function App() {
   const {field} = useNavigationFunctions();
+  const posthog = usePostHog();
 
   const {isMobile} = useBreakpoints();
   const user = useUser();
@@ -35,6 +37,17 @@ function App() {
       }, 2000);
     }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      posthog.identify(user.user_id.toString(), {
+        isSuperAdmin: user.superUser,
+      });
+      if (user.org_id) posthog.group('organization', user.org_id.toString());
+    } else {
+      posthog.reset();
+    }
+  }, [user, posthog]);
 
   if (user === undefined) {
     return <LoadingSkeleton />;
