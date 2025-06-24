@@ -34,7 +34,6 @@ import Button from './Button';
 import {useDisplayState} from '~/hooks/ui';
 import {useNavigate} from 'react-router-dom';
 import {userQueryOptions} from '~/features/auth/useUser';
-import LinkableTooltip from './LinkableTooltip';
 
 const LogOut = ({children}: {children?: ReactNode}) => {
   const queryClient = useQueryClient();

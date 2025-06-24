@@ -84,8 +84,8 @@ export default function Station() {
           <EditTimeseries />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && user?.features.iotAccess && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && user?.features.iotAccess && <QAHistory />}
+      {pageToShow === stationPages.ALGORITHMS && <Algorithms />}
+      {pageToShow === stationPages.JUSTERINGER && <QAHistory />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
@@ -132,7 +132,6 @@ interface LayoutProps {
 const Layout = ({children}: LayoutProps) => {
   const {isTouch, isMobile} = useBreakpoints();
   const {data: locationdata} = useLocationData();
-  const user = useUser();
   const setTsId = useDisplayState((state) => state.setTsId);
   const [pageToShow, setPageToShow] = useStationPages();
   const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
@@ -164,7 +163,7 @@ const Layout = ({children}: LayoutProps) => {
             </Tooltip>
           )}
           <BatteryStatus />
-          {user?.features.iotAccess && <NotificationList />}
+          <NotificationList />
           {!isMobile && (
             <IconButton
               onClick={() => {

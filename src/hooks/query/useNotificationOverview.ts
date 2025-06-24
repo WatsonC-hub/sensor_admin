@@ -212,7 +212,7 @@ export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T
     ...mapOverviewOptions,
     ...options,
     select: options?.select as (data: MapOverview[]) => T,
-    enabled: user?.features?.iotAccess && user?.features?.boreholeAccess,
+    enabled: user?.features?.iotAccess,
   });
 };
 

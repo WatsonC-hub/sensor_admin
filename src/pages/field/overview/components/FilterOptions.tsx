@@ -14,6 +14,7 @@ import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import HighlightItineraries from './HighlightItineraries';
 import NotificationTypeFilter from './NotificationTypeFilter';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 interface FilterOptionsProps {
   onClose: () => void;
@@ -51,7 +52,12 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
 
   return (
     <FormProvider {...formMethods}>
-      <Typography variant="h6">Filtrer lokationer</Typography>
+      <TooltipWrapper
+        url="https://watsonc.dk/guides/filter-locations"
+        description="Se guide til filtrering af lokationer"
+      >
+        <Typography variant="h6">Filtrer lokationer</Typography>
+      </TooltipWrapper>
       <FormInput
         name="freeText"
         label="Fritekst filtrering"
