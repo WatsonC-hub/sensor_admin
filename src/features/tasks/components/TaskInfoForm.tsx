@@ -138,6 +138,9 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
             <TextField
               label="Tildelt"
               value={selectedTask.assigned_display_name}
+              slotProps={{
+                inputLabel: {shrink: true},
+              }}
               fullWidth
               disabled
               sx={{
