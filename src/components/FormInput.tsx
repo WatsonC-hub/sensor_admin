@@ -112,7 +112,9 @@ const FormInput = <TFieldValues extends FieldValues>({
                       : undefined}
                     <Box sx={{display: 'flex', alignItems: 'center'}}>
                       <InputAdornment position="end">
-                        {fieldDescriptionText && <LinkableTooltip text={fieldDescriptionText} />}
+                        {fieldDescriptionText && (
+                          <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
+                        )}
                       </InputAdornment>
                     </Box>
                   </>
