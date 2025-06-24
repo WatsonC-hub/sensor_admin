@@ -82,7 +82,6 @@ const Pejling = () => {
   }, [measurements]);
 
   const handlePejlingSubmit = (values: PejlingSchemaType | PejlingBoreholeSchemaType) => {
-    console.log('handlePejlingSubmit', values);
     const payload = {
       path: `${ts_id}`,
       data: {
@@ -119,7 +118,6 @@ const Pejling = () => {
 
   const handleEdit = (data: PejlingItem) => {
     data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-    console.log(data);
     reset(data);
     setShowForm(true);
     setGid(data.gid);
