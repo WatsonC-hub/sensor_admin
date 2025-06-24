@@ -4,7 +4,7 @@ import {apiClient} from '~/apiClient';
 import {TaskPermission} from '../tasks/types';
 
 type User = {
-  user_id: number | null;
+  user_id: number;
   org_id: number | null;
   superUser: boolean;
   features: Features;
