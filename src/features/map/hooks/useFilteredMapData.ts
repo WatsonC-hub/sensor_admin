@@ -82,6 +82,15 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
 
+  if (filter.notificationTypes?.length > 0) {
+    filteredData = filteredData.filter((elem) => {
+      if ('notification_id' in elem && elem.notification_id !== null) {
+        return filter.notificationTypes.some((type) => elem.notification_ids?.includes(type));
+      }
+      return false;
+    });
+  }
+
   if (filter.groups && filter.groups.length > 0) {
     filteredData = filteredData.filter((elem) => {
       if (elem.groups !== null) {

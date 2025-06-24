@@ -13,6 +13,7 @@ interface Filter {
     isSingleMeasurement: boolean;
     hideLocationsWithoutNotifications: boolean;
   };
+  notificationTypes: number[];
   groups: Group[];
   itineraries: SimpleItinerary[];
 }
@@ -28,6 +29,7 @@ const defaultMapFilter: Required<Filter> = {
     isSingleMeasurement: false,
     hideLocationsWithoutNotifications: false,
   },
+  notificationTypes: [],
   groups: [],
   itineraries: [],
 };

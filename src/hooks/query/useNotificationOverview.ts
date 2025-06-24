@@ -189,6 +189,7 @@ export interface MapOverview {
   flag: FlagEnum | null;
   notification_id: NotificationIDEnum | null;
   due_date: string | null;
+  notification_ids: NotificationIDEnum[] | null;
 }
 
 const mapOverviewOptions = queryOptions<MapOverview[]>({
@@ -249,5 +250,22 @@ export const useTimeseriesStatus = (loc_id: number) => {
   return useQuery({
     ...timeseriesStatusOptions(loc_id),
     enabled: user?.features?.iotAccess,
+  });
+};
+
+type NotificationType = {
+  gid: number;
+  name: string;
+  flag: FlagEnum;
+};
+
+export const useNotificationTypes = () => {
+  return useQuery({
+    queryKey: ['notification_types'],
+    queryFn: async () => {
+      const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
   });
 };

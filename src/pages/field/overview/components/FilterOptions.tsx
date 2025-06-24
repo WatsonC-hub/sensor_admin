@@ -13,6 +13,7 @@ import LocationGroups from '~/features/stamdata/components/stamdata/LocationGrou
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import HighlightItineraries from './HighlightItineraries';
+import NotificationTypeFilter from './NotificationTypeFilter';
 
 interface FilterOptionsProps {
   onClose: () => void;
@@ -143,6 +144,22 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             />
           </Grid>
         )}
+      </Grid>
+      <Grid item xs={12}>
+        <Controller
+          name="notificationTypes"
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <NotificationTypeFilter
+              value={value}
+              setValue={(value) => {
+                onChange(value);
+                handleSubmit(submit)();
+              }}
+              label="Notifikationer"
+            />
+          )}
+        />
       </Grid>
       <Grid item xs={12}>
         <Controller
