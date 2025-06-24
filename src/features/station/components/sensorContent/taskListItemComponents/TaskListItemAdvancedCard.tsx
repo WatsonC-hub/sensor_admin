@@ -1,5 +1,14 @@
 import {EditOutlined, Person, Warning} from '@mui/icons-material';
-import {Box, Typography, Card, CardHeader, CardContent, Button, Grid2} from '@mui/material';
+import {
+  Box,
+  Typography,
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  Grid2,
+  TextField,
+} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -192,43 +201,81 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
               ) : (
                 <Box display={'flex'} flexDirection={'row'} gap={0.5} pt={0.5} alignItems="center">
                   <Person fontSize="small" />
-                  <Typography variant="caption">{task.assigned_display_name}</Typography>
+                  <TextField
+                    value={task.assigned_display_name ?? ''}
+                    disabled
+                    size="small"
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        padding: '4px !important',
+                        fontSize: 'small',
+                      },
+                      '& .MuiInput-underline:before': {
+                        borderBottom: 'none',
+                      },
+                      '& .MuiInput-underline:after': {
+                        borderBottom: 'none',
+                      },
+                    }}
+                  />
                 </Box>
               )}
             </Grid2>
             <Grid2 size={6} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
-              <TaskForm.StatusSelect
-                disabled={!task.can_edit}
-                onBlurCallback={(event) => {
-                  if (typeof event !== 'number' && 'target' in event) {
-                    const status = taskStatus?.find(
-                      (status) => status.id === parseInt(event.target.value)
-                    );
-                    if (status !== undefined && task.status_id !== status.id)
-                      patchTaskStatus(status.id);
-                  }
-                }}
-                label={''}
-                sx={{
-                  p: 0,
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    fontSize: 'small',
-                    borderRadius: 2.5,
-                  },
+              {task.can_edit ? (
+                <TaskForm.StatusSelect
+                  disabled={!task.can_edit}
+                  onBlurCallback={(event) => {
+                    if (typeof event !== 'number' && 'target' in event) {
+                      const status = taskStatus?.find(
+                        (status) => status.id === parseInt(event.target.value)
+                      );
+                      if (status !== undefined && task.status_id !== status.id)
+                        patchTaskStatus(status.id);
+                    }
+                  }}
+                  label={''}
+                  sx={{
+                    p: 0,
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      fontSize: 'small',
+                      borderRadius: 2.5,
+                    },
 
-                  '& .MuiOutlinedInput-root': {
-                    fontSize: 'small',
-                  },
-                  '& .MuiInputLabel-root': {
-                    backgroundColor: 'white',
-                    transform: 'translate(10px, -9px) scale(0.9)',
-                  },
-                  '& .MuiSelect-select': {
-                    padding: '4px !important',
-                    pl: '14px !important',
-                  },
-                }}
-              />
+                    '& .MuiOutlinedInput-root': {
+                      fontSize: 'small',
+                    },
+                    '& .MuiInputLabel-root': {
+                      backgroundColor: 'white',
+                      transform: 'translate(10px, -9px) scale(0.9)',
+                    },
+                    '& .MuiSelect-select': {
+                      padding: '4px !important',
+                      pl: '14px !important',
+                    },
+                  }}
+                />
+              ) : (
+                <Box display={'flex'} flexDirection={'row'} gap={0.5} pt={0.5} alignItems="center">
+                  <TextField
+                    value={task.status_name}
+                    disabled
+                    size="small"
+                    sx={{
+                      '& .MuiInputBase-input': {
+                        padding: '4px !important',
+                        fontSize: 'small',
+                      },
+                      '& .MuiInput-underline:before': {
+                        borderBottom: 'none',
+                      },
+                      '& .MuiInput-underline:after': {
+                        borderBottom: 'none',
+                      },
+                    }}
+                  />
+                </Box>
+              )}
             </Grid2>
             <Grid2
               size={12}
@@ -279,40 +326,23 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
             </Grid2>
           </Grid2>
           <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
-            <EditOutlined
-              fontSize="small"
-              sx={{
-                color: 'grey.700',
-              }}
-            />
+            {task.can_edit && (
+              <EditOutlined
+                fontSize="small"
+                sx={{
+                  color: 'grey.700',
+                }}
+              />
+            )}
             <Button
               variant="text"
               size="small"
               onClick={() => setSelectedTask(task.id)}
               sx={{textTransform: 'initial', borderRadius: 2.5}}
             >
-              Rediger opgave
+              {task.can_edit ? 'Rediger opgave' : 'Se opgave'}
             </Button>
           </Box>
-          {/* <Box display="flex" flexDirection={'column'} alignItems="center" justifySelf={'flex-end'}>
-            <Box
-              display="flex"
-              flexDirection={'row'}
-              alignItems="center"
-              gap={0.5}
-              color="primary.main"
-            >
-              <Edit fontSize="small" />
-              <Button
-                variant="text"
-                size="small"
-                onClick={() => setSelectedTask(task.id)}
-                sx={{textTransform: 'initial', borderRadius: 2.5}}
-              >
-                Rediger opgave
-              </Button>
-            </Box>
-          </Box> */}
         </CardContent>
       </Card>
     </TaskForm>
