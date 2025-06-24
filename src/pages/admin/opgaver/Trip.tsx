@@ -3,7 +3,6 @@ import React from 'react';
 
 import {useTaskManagement} from '~/features/opgavestyring/api/useTaskManagement';
 import TripPreparation from '~/features/opgavestyring/components/TripPreparation';
-import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -12,12 +11,7 @@ const Trip = () => {
 
   const {itinerary_id} = useDisplayState((state) => state);
 
-  const {
-    getItineraryTasks: {data: tasks},
-  } = useTaskItinerary(itinerary_id!);
-
-  const loc_ids = [...new Set(tasks?.map((task) => task.loc_id))];
-  const {data} = useTaskManagement({loc_ids: loc_ids});
+  const {data} = useTaskManagement(itinerary_id);
 
   return (
     <Box display={'flex'} flexDirection={'column'} mt={4} mb={isMobile ? 0 : 2} overflow={'hidden'}>
