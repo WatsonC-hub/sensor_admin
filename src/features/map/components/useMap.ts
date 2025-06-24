@@ -7,7 +7,7 @@ import 'leaflet.markercluster';
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import {useAtom} from 'jotai';
-import L, {latLng} from 'leaflet';
+import L from 'leaflet';
 import {LocateControl} from 'leaflet.locatecontrol';
 import '~/css/leaflet.css';
 import './L.basemapControl';
@@ -625,7 +625,10 @@ const useMap = <TData extends object>(
         }
       }
 
-      mapRef.current.fitBounds(fg.getBounds(), {
+      const bounds = fg.getBounds();
+      if (!bounds.isValid()) return;
+
+      mapRef.current.fitBounds(bounds, {
         padding: [50, 50],
         maxZoom: 17,
       });

@@ -114,16 +114,15 @@ export const useFilteredMapData = () => {
     return [
       ...(!isEmptyObject(mapData) ? (mapData ?? []) : []),
       ...(!isEmptyObject(boreholeMapdata) ? (boreholeMapdata ?? []) : []),
-      ...(extraData ? [extraData] : []),
     ];
-  }, [mapData, boreholeMapdata, extraData]);
+  }, [mapData, boreholeMapdata]);
 
   const {filters, locIds} = useMapFilterStore((state) => state);
 
   const mapFilteredData = useMemo(() => {
     const filteredData = filterData(searchAcrossAll(data, filters.freeText ?? ''), filters);
-    return filteredData;
-  }, [data, filters]);
+    return [...filteredData, ...(extraData ? [extraData] : [])];
+  }, [data, filters, extraData]);
 
   const listFilteredData = useMemo(() => {
     let filteredList = mapFilteredData;

@@ -1,7 +1,7 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
-import {BoreholeData} from '~/types';
+import {BoreholeData, BoreholeMapData} from '~/types';
 
 export type Borehole = {
   boreholeno: string;
@@ -21,17 +21,25 @@ const boreholeListOptions = () => {
   });
 };
 
-export const useSearchBorehole = (boreholeno: string | undefined | null) => {
+export const searchBorehole = (boreholeno: string | undefined | null) => {
+  const innerFn = async () => {
+    if (!boreholeno) {
+      return [];
+    }
+    const {data} = await apiClient.get<Array<BoreholeMapData>>(
+      `/sensor_field/boreholes/${boreholeno}`
+    );
+
+    return data;
+  };
+  return innerFn;
+};
+
+const boreholeSearchOptions = (boreholeno: string | undefined | null) => {
   const user = useUser();
-  const searched_boreholes = useQuery({
+  return queryOptions({
     queryKey: ['search_borehole', boreholeno],
-    queryFn: async () => {
-      const response = await apiClient.get<Array<Borehole>>(
-        `/sensor_field/boreholes/${boreholeno}`
-      );
-      const data = response.data;
-      return data;
-    },
+    queryFn: searchBorehole(boreholeno),
     staleTime: 10 * 1000,
     enabled:
       boreholeno !== undefined &&
@@ -39,6 +47,10 @@ export const useSearchBorehole = (boreholeno: string | undefined | null) => {
       boreholeno !== '' &&
       user?.features.boreholeAccess,
   });
+};
+
+export const useSearchBorehole = (boreholeno: string | undefined | null) => {
+  const searched_boreholes = useQuery(boreholeSearchOptions(boreholeno));
   return searched_boreholes;
 };
 
