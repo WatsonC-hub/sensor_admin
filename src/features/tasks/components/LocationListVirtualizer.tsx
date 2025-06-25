@@ -34,10 +34,6 @@ const LocationListVirtualizer = () => {
   const boolArray = list.map((item) => typeof item == 'object' && locIds.includes(item?.loc_id));
   const firstNotInLocIds = boolArray.indexOf(false);
 
-  console.log(list);
-  console.log(locIds);
-  console.log(boolArray);
-
   if (firstNotInLocIds !== -1) {
     list.splice(firstNotInLocIds, 0, 'divider');
   }
