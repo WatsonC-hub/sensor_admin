@@ -40,6 +40,7 @@ const LogOut = ({children}: {children?: ReactNode}) => {
   const handleLogout = () => {
     home();
     apiClient.get('/auth/logout/secure');
+    queryClient.setQueryData(['user'], null);
     queryClient.clear();
     queryClient.fetchQuery(userQueryOptions);
   };

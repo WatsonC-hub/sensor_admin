@@ -51,15 +51,15 @@ export const useUser = () => {
   const output: OldUser = {
     user_id: data?.user_id ?? 0,
     org_id: data?.org_id ?? null,
-    boreholeAccess: data?.features.boreholeAccess ?? false,
-    iotAccess: data?.features.iotAccess ?? false,
+    boreholeAccess: data?.features?.boreholeAccess ?? false,
+    iotAccess: data?.features?.iotAccess ?? false,
     adminAccess: data?.superUser ?? false,
     superUser: data?.superUser ?? false,
     advancedTaskPermission: false,
     simpleTaskPermission: false, // Assuming this is the same as advanced for now
     QAPermission: true, // Assuming this is the same as ressources for now
-    contactAndKeysPermission: data?.features.contacts || data?.features.keys || false,
-    ressourcePermission: data?.features.ressources || false,
+    contactAndKeysPermission: data?.features?.contacts || data?.features?.keys || false,
+    ressourcePermission: data?.features?.ressources || false,
   };
 
   return (data == null ? null : output) as OldUser;
