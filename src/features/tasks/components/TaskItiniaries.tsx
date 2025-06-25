@@ -5,7 +5,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
-import {useTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 
 import {useTasks} from '../api/useTasks';
 import {Task, Taskitinerary} from '../types';
@@ -22,6 +22,7 @@ import Button from '~/components/Button';
 import {useMapFilterStore} from '~/features/map/store';
 import {ItineraryColors} from '~/features/notifications/consts';
 import {useUser} from '~/features/auth/useUser';
+import {Edit, ExpandLess, ExpandMore} from '@mui/icons-material';
 
 export function Droppable({
   id,
@@ -70,7 +71,7 @@ const TaskItiniaries = () => {
     select: (data) => {
       const reduced = data.reduce(
         (acc: Record<string, Taskitinerary[]>, itinerary: Taskitinerary) => {
-          if (itinerary.assigned_to === user.user_id) {
+          if (itinerary.assigned_to === user?.user_id) {
             if (!acc['Mine ture']) {
               acc['Mine ture'] = [];
             }
@@ -92,6 +93,7 @@ const TaskItiniaries = () => {
   });
 
   const [filters, setFilters] = useMapFilterStore((state) => [state.filters, state.setFilters]);
+  const [expandItinerary, setExpandItinerary] = useState<Record<string, boolean>>({});
   const [itinerary_id, setItineraryId, setLocId] = useDisplayState((state) => [
     state.itinerary_id,
     state.setItineraryId,
@@ -163,6 +165,8 @@ const TaskItiniaries = () => {
                   const due_date = itinerary.due_date
                     ? convertToShorthandDate(itinerary.due_date)
                     : 'Ingen dato';
+
+                  const expanded = expandItinerary?.[itinerary.id] ?? true;
 
                   return (
                     <Card
@@ -258,6 +262,7 @@ const TaskItiniaries = () => {
                                 }}
                               />
                             </LocalizationProvider>
+                            <Edit fontSize="small" sx={{ml: 0.5}} />
                           </Box>
                         </Box>
                         <Box
@@ -361,31 +366,62 @@ const TaskItiniaries = () => {
                               />
                             </TaskForm>
                           </Box>
-                          {Array.from(loc_ids).map((loc_id) => {
-                            return (
-                              <Box
-                                key={loc_id}
-                                display="flex"
-                                gap={1}
-                                alignItems={'center'}
-                                flexWrap={'wrap'}
-                                flexDirection={'row'}
-                              >
-                                <Box display="flex" gap={0.5} flexDirection={'row'}>
-                                  <Typography fontSize={'small'} width={'fit-content'}>
-                                    <Link
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setLocId(loc_id);
-                                      }}
-                                    >
-                                      {grouped_location_tasks?.[loc_id][0].location_name}
-                                    </Link>
-                                  </Typography>
-                                </Box>
-                              </Box>
-                            );
-                          })}
+                          <Box
+                            display="flex"
+                            gap={0.5}
+                            flexDirection={'row'}
+                            alignItems={'start'}
+                            justifyContent={'space-between'}
+                          >
+                            <Box display="flex" gap={0.5} flexDirection={'column'}>
+                              {expanded
+                                ? loc_ids.map((loc_id) => {
+                                    return (
+                                      <Box
+                                        key={loc_id}
+                                        display="flex"
+                                        gap={1}
+                                        alignItems={'center'}
+                                        flexWrap={'wrap'}
+                                        flexDirection={'row'}
+                                      >
+                                        <Box display="flex" gap={0.5} flexDirection={'row'}>
+                                          <Typography fontSize={'small'} width={'fit-content'}>
+                                            <Link
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                setLocId(loc_id);
+                                              }}
+                                            >
+                                              {grouped_location_tasks?.[loc_id][0].location_name}
+                                            </Link>
+                                          </Typography>
+                                        </Box>
+                                      </Box>
+                                    );
+                                  })
+                                : null}
+                            </Box>
+                            {expanded ? (
+                              <ExpandLess
+                                onClick={() => {
+                                  setExpandItinerary((prev) => ({
+                                    ...prev,
+                                    [itinerary.id]: false,
+                                  }));
+                                }}
+                              />
+                            ) : (
+                              <ExpandMore
+                                onClick={() => {
+                                  setExpandItinerary((prev) => ({
+                                    ...prev,
+                                    [itinerary.id]: true,
+                                  }));
+                                }}
+                              />
+                            )}
+                          </Box>
                           <Typography fontSize={'small'} width={'fit-content'}>
                             Der er {itinerary_tasks?.length ?? 0} opgaver på denne tur.
                           </Typography>

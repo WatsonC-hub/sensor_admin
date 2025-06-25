@@ -199,7 +199,9 @@ const AssignedTo = (props: Partial<AutoCompleteFieldProps<TaskUser>>) => {
           filterOptions={(options, params) => {
             const {inputValue} = params;
 
-            const filter = options.filter((option) => option.display_name?.includes(inputValue));
+            const filter = options.filter((option) =>
+              option.display_name?.toLowerCase().includes(inputValue.toLowerCase())
+            );
 
             return filter;
           }}

@@ -17,7 +17,6 @@ const DisplayStateProvider = ({children}: {children: React.ReactNode}) => {
     setIntakeNo: state.setIntakeNo,
   }));
 
-  // console.log('ts_id', ts_id);
   // Sync Zustand with URL params on mount
   useEffect(() => {
     if (loc_id) setLocId(loc_id);

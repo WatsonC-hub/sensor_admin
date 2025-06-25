@@ -105,25 +105,6 @@ const TaskListItemSimpleCard = ({task}: Props) => {
               Rediger opgave
             </Button>
           </Box>
-          {/* <Box display="flex" flexDirection={'column'} alignItems="center" justifySelf={'flex-end'}>
-            <Box
-              display="flex"
-              flexDirection={'row'}
-              alignItems="center"
-              gap={0.5}
-              color="primary.main"
-            >
-              <Edit fontSize="small" />
-              <Button
-                variant="text"
-                size="small"
-                onClick={() => setSelectedTask(task.id)}
-                sx={{textTransform: 'initial', borderRadius: 2.5}}
-              >
-                Rediger opgave
-              </Button>
-            </Box>
-          </Box> */}
         </CardContent>
       </Card>
     </TaskForm>

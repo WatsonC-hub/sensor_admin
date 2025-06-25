@@ -21,7 +21,7 @@ const mapFilterStore = create<MapFilterState>()(
     devtools((set) => ({
       search: '',
       setSearch: (search) => set({search}),
-      filters: defaultMapFilter,
+      filters: {...defaultMapFilter},
       setFilters: (filters) => set({filters}),
       locIds: [],
       setLocIds: (locIds) => set({locIds}),

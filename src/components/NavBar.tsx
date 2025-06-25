@@ -334,18 +334,15 @@ const ScannerAsTitle = () => {
 const Title = ({title}: {title: string}) => {
   const {isMobile} = useBreakpoints();
   return (
-    <>
-      <Typography
-        sx={{
-          position: 'absolute',
-          left: '50%',
-          transform: 'translateX(-50%)',
-        }}
-        variant={isMobile ? 'h6' : 'h4'}
-      >
+    <Box display={'flex'} justifyContent="center" alignContent="center">
+      <Typography sx={{}} variant={isMobile ? 'h6' : 'h4'}>
         {title}
       </Typography>
-    </>
+      {/* <LinkableTooltip
+        fieldDescriptionText="Læs mere om stamdata"
+        sx={{pb: 0, pl: 0.5, color: 'white'}}
+      /> */}
+    </Box>
   );
 };
 

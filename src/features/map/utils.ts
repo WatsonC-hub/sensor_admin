@@ -30,9 +30,14 @@ export const getBoreholesIcon = (marker: BoreholeMapData) => {
 };
 
 export const getNotificationIcon = (marker: MapOverview) => {
-  const icon = getIcon(marker, true);
+  const icon = getIcon(
+    {
+      ...marker,
+    },
+    true
+  );
   const iconURL = L.Util.template(dropletSVG, {
-    color: getColor(marker),
+    color: getColor({...marker}),
     icon: icon,
     num: '',
     locId: marker.loc_id,

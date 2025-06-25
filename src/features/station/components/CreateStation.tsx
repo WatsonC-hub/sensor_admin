@@ -33,6 +33,8 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {queryClient} from '~/queryClient';
 import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
+import {withComponentPermission} from '~/hooks/withComponentPermission';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -317,7 +319,13 @@ const CreateStation = () => {
     <>
       <NavBar>
         <NavBar.GoBack />
-        <NavBar.Title title="Opret Stamdata" />
+        <TooltipWrapper
+          color="white"
+          description="Læs mere hvordan en lokation oprettes"
+          url="https://docs.watsonc.dk/stamdata/opret-stamdata"
+        >
+          <NavBar.Title title="Opret Stamdata" />
+        </TooltipWrapper>
         <NavBar.Menu />
       </NavBar>
       <Box display="flex" flexDirection={'column'} overflow="auto">
@@ -513,4 +521,9 @@ const CreateStation = () => {
   );
 };
 
-export default CreateStation;
+const GuardedCreateStation = withComponentPermission(CreateStation, 'features', [
+  'boreholeAccess',
+  'iotAccess',
+]);
+
+export default GuardedCreateStation;

@@ -84,8 +84,8 @@ export default function Station() {
           <EditTimeseries />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.ALGORITHMS && user?.QAPermission && <Algorithms />}
-      {pageToShow === stationPages.JUSTERINGER && user?.QAPermission && <QAHistory />}
+      {pageToShow === stationPages.ALGORITHMS && <Algorithms />}
+      {pageToShow === stationPages.JUSTERINGER && <QAHistory />}
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
@@ -101,17 +101,17 @@ export default function Station() {
           </StationPageBoxLayout>
         </>
       )}
-      {pageToShow === stationPages.NØGLER && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.NØGLER && user?.features.keys && (
         <StationPageBoxLayout>
           <LocationAccess />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.KONTAKTER && user?.contactAndKeysPermission && (
+      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && (
         <StationPageBoxLayout>
           <ContactInfo />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.HUSKELISTE && user?.ressourcePermission && (
+      {pageToShow === stationPages.HUSKELISTE && user?.features.resources && (
         <StationPageBoxLayout>
           <Huskeliste />
         </StationPageBoxLayout>
@@ -132,7 +132,6 @@ interface LayoutProps {
 const Layout = ({children}: LayoutProps) => {
   const {isTouch, isMobile} = useBreakpoints();
   const {data: locationdata} = useLocationData();
-  const user = useUser();
   const setTsId = useDisplayState((state) => state.setTsId);
   const [pageToShow, setPageToShow] = useStationPages();
   const [fullscreen, setFullscreen] = useAtom(fullScreenAtom);
@@ -164,7 +163,7 @@ const Layout = ({children}: LayoutProps) => {
             </Tooltip>
           )}
           <BatteryStatus />
-          {user?.adminAccess && <NotificationList />}
+          <NotificationList />
           {!isMobile && (
             <IconButton
               onClick={() => {

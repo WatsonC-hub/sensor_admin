@@ -88,7 +88,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
         .sort((a, b) => a.name.localeCompare(b.name));
 
       let filteredBorehole: LocItems[] = [];
-      if (user?.boreholeAccess) {
+      if (user?.features.boreholeAccess) {
         const search = {query: {bool: {must: {query_string: {query: search_string}}}}};
         postElasticSearch(search).then((res) => {
           filteredBorehole = res.data.hits.hits.map((elem: any) => {

@@ -12,7 +12,7 @@ import TripTaskCardList from './TripTaskCardList';
 import Button from '~/components/Button';
 import {Check} from '@mui/icons-material';
 import AlertDialog from '~/components/AlertDialog';
-import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useDisplayState} from '~/hooks/ui';
 import LoadingSkeleton from '~/LoadingSkeleton';
 

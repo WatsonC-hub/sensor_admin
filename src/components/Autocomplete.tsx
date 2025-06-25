@@ -1,6 +1,14 @@
-import {Autocomplete, AutocompleteProps, TextField, TextFieldProps} from '@mui/material';
+import {
+  Autocomplete,
+  AutocompleteProps,
+  Box,
+  InputAdornment,
+  TextField,
+  TextFieldProps,
+} from '@mui/material';
 import {merge} from 'lodash';
 import React from 'react';
+import LinkableTooltip from './LinkableTooltip';
 
 export type AutoCompleteFieldProps<T> = Omit<
   AutocompleteProps<T, false, false, false>,
@@ -12,6 +20,7 @@ export type AutoCompleteFieldProps<T> = Omit<
   options: T[];
   error?: string | undefined;
   textFieldsProps: Partial<TextFieldProps>;
+  fieldDescriptionText?: string;
 };
 
 const ExtendedAutocomplete = <T extends object>({
@@ -21,6 +30,7 @@ const ExtendedAutocomplete = <T extends object>({
   labelKey,
   error,
   textFieldsProps,
+  fieldDescriptionText,
   ...autocompleteProps
 }: AutoCompleteFieldProps<T>): React.ReactElement => {
   return (
@@ -38,6 +48,7 @@ const ExtendedAutocomplete = <T extends object>({
       isOptionEqualToValue={(option, value) => option[labelKey] === value[labelKey]}
       getOptionLabel={(option) => (option[labelKey] ? `${option[labelKey]}` : '')}
       renderInput={(params) => {
+        const {InputProps} = params;
         let sx = {
           pb: 0,
           '& .MuiInputBase-input.Mui-disabled': {
@@ -61,13 +72,26 @@ const ExtendedAutocomplete = <T extends object>({
         }
         return (
           <TextField
-            {...textFieldsProps}
             {...params}
+            {...textFieldsProps}
             fullWidth
             margin="dense"
             slotProps={{
-              inputLabel: {
-                shrink: true,
+              inputLabel: {shrink: true},
+              input: {
+                ...InputProps,
+                endAdornment: (
+                  <>
+                    {InputProps.endAdornment}
+                    <Box sx={{display: 'flex', alignItems: 'center'}}>
+                      <InputAdornment position="end">
+                        {fieldDescriptionText && (
+                          <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
+                        )}
+                      </InputAdornment>
+                    </Box>
+                  </>
+                ),
               },
             }}
             variant="outlined"

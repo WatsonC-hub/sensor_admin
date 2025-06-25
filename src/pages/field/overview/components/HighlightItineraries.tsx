@@ -1,8 +1,9 @@
 import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
 import React from 'react';
 import {Noop} from 'react-hook-form';
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {ItineraryColors} from '~/features/notifications/consts';
-import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {SimpleItinerary} from '~/types';
 
@@ -31,104 +32,106 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
   });
 
   return (
-    <Autocomplete
-      sx={{
-        marginTop: '8px',
-        marginBottom: '4px',
-        pb: 1.5,
-      }}
-      freeSolo
-      forcePopupIcon={false}
-      multiple
-      fullWidth
-      value={value ?? []}
-      autoHighlight={true}
-      onChange={(event, newValue) => {
-        setValue(
-          newValue.map((item) => {
-            if (typeof item === 'string') {
-              return {name: item, id: '', assigned_to_name: '', due_date: ''};
-            }
-            return item;
-          })
-        );
-      }}
-      id="tags-standard"
-      options={options || []}
-      getOptionLabel={(option) => {
-        if (typeof option === 'string') {
-          return option;
-        }
+    <TooltipWrapper description="Fremhæv ture på kortet ved at vælge dem her. Dette indikeres ved en farvet cirkel i toppen af prikken på kortet som matcher farven på den valgte tur her i listen.">
+      <Autocomplete
+        sx={{
+          marginTop: '8px',
+          marginBottom: '4px',
+          pb: 1.5,
+        }}
+        freeSolo
+        forcePopupIcon={false}
+        multiple
+        fullWidth
+        value={value ?? []}
+        autoHighlight={true}
+        onChange={(event, newValue) => {
+          setValue(
+            newValue.map((item) => {
+              if (typeof item === 'string') {
+                return {name: item, id: '', assigned_to_name: '', due_date: ''};
+              }
+              return item;
+            })
+          );
+        }}
+        id="tags-standard"
+        options={options || []}
+        getOptionLabel={(option) => {
+          if (typeof option === 'string') {
+            return option;
+          }
 
-        return `${option.name ? option.name + ' - ' : ''}${
-          option.assigned_to_name ? `(${option.assigned_to_name})` : ''
-        }${option.due_date ? ` - ${option.due_date}` : ''}`;
-        // return `${option.id.slice(0, 4)} - ${option.group_name}`;
-      }}
-      isOptionEqualToValue={(option, value) => {
-        return option.id === value.id;
-      }}
-      renderTags={(value, getTagProps) => {
-        return value.map((option, index) => {
-          const content = (
+          return `${option.name ? option.name + ' - ' : ''}${
+            option.assigned_to_name ? `(${option.assigned_to_name})` : ''
+          }${option.due_date ? ` - ${option.due_date}` : ''}`;
+          // return `${option.id.slice(0, 4)} - ${option.group_name}`;
+        }}
+        isOptionEqualToValue={(option, value) => {
+          return option.id === value.id;
+        }}
+        renderTags={(value, getTagProps) => {
+          return value.map((option, index) => {
+            const content = (
+              <Typography display="inline" variant="body2">
+                {option.name ? option.name + ' - ' : ''}
+                {option.assigned_to_name ? ` ${option.assigned_to_name} -` : ''}
+                {option.due_date ? ` ${option.due_date}` : ''}
+              </Typography>
+            );
+
+            return (
+              <Chip
+                variant="outlined"
+                label={content}
+                sx={{
+                  backgroundColor: ItineraryColors[index],
+                  color: 'HighlightText',
+                  opacity: 0.8,
+                }}
+                component={'div'}
+                {...getTagProps({index})}
+                key={index}
+              />
+            );
+          });
+        }}
+        renderOption={(props, option) => (
+          <li {...props} key={option.id}>
             <Typography display="inline" variant="body2">
               {option.name ? option.name + ' - ' : ''}
               {option.assigned_to_name ? ` ${option.assigned_to_name} -` : ''}
               {option.due_date ? ` ${option.due_date}` : ''}
             </Typography>
-          );
-
-          return (
-            <Chip
-              variant="outlined"
-              label={content}
-              sx={{
-                backgroundColor: ItineraryColors[index],
-                color: 'HighlightText',
-                opacity: 0.8,
-              }}
-              component={'div'}
-              {...getTagProps({index})}
-              key={index}
-            />
-          );
-        });
-      }}
-      renderOption={(props, option) => (
-        <li {...props} key={option.id}>
-          <Typography display="inline" variant="body2">
-            {option.name ? option.name + ' - ' : ''}
-            {option.assigned_to_name ? ` ${option.assigned_to_name} -` : ''}
-            {option.due_date ? ` ${option.due_date}` : ''}
-          </Typography>
-        </li>
-      )}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          fullWidth
-          InputLabelProps={{shrink: true}}
-          variant="outlined"
-          label={label}
-          placeholder="Indtast tur navn..."
-          onBlur={onBlur}
-          sx={{
-            '& .MuiInputBase-input.Mui-disabled': {
-              WebkitTextFillColor: '#000000',
-            },
-            '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-            '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-            '& .MuiOutlinedInput-root': {
-              '& > fieldset': {borderColor: 'primary.main'},
-            },
-          }}
-        />
-      )}
-      filterSelectedOptions
-      selectOnFocus
-      clearOnBlur
-      handleHomeEndKeys
-    />
+          </li>
+        )}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            fullWidth
+            InputLabelProps={{shrink: true}}
+            variant="outlined"
+            label={label}
+            placeholder="Indtast tur navn..."
+            onBlur={onBlur}
+            sx={{
+              '& .MuiInputBase-input.Mui-disabled': {
+                WebkitTextFillColor: '#000000',
+              },
+              '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
+              '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+              '& .MuiOutlinedInput-root': {
+                '& > fieldset': {borderColor: 'primary.main'},
+              },
+            }}
+          />
+        )}
+        filterSelectedOptions
+        selectOnFocus
+        clearOnBlur
+        handleHomeEndKeys
+      />
+    </TooltipWrapper>
   );
 };
 

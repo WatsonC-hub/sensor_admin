@@ -34,12 +34,13 @@ import {
   markerNumThreshold,
   defaultMapBox,
 } from '../mapConsts';
-import {useAccessControl, useUser} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '../store';
 import {setIconSize} from '../utils';
 import {boreholeColors, getMaxColor} from '~/features/notifications/consts';
 import {getColor} from '~/features/notifications/utils';
 import {useDisplayState} from '~/hooks/ui';
+import {MapOverview} from '~/hooks/query/useNotificationOverview';
 
 const useMap = <TData extends object>(
   id: string,
@@ -67,12 +68,12 @@ const useMap = <TData extends object>(
   const {loc_id: selectedLocId} = useDisplayState((state) => state);
   const [, setHighlightedParking] = useState<L.Marker | null>();
   const [type, setType] = useState<string>('parkering');
-  const accessControl = useAccessControl();
+  const user = useUser();
   const [deleteTitle, setDeleteTitle] = useState<string>(
     'Er du sikker du vil slette denne parkering?'
   );
   const [selectedMarker, setSelectedMarker] = useState<TData | null | undefined>(null);
-  const setLocIds = useMapFilterStore((state) => state.setLocIds);
+  const [filters, setLocIds] = useMapFilterStore((state) => [state.filters, state.setLocIds]);
 
   const setSelectedMarkerWithCallback = (data: TData | null | undefined) => {
     setSelectedMarker(data);
@@ -114,7 +115,7 @@ const useMap = <TData extends object>(
           );
         }
       },
-      icon: '/leaflet-images/map.png',
+      icon: '/leaflet-images/directions.png',
     },
     {
       text: 'Zoom ind',
@@ -157,6 +158,15 @@ const useMap = <TData extends object>(
     map.pm.setLang('da');
 
     map.attributionControl.setPrefix(false);
+
+    L.control
+      .scale({
+        position: 'bottomleft',
+        imperial: false,
+        maxWidth: 100,
+        updateWhenIdle: true,
+      })
+      .addTo(map);
 
     new LocateControl({
       showPopup: false,
@@ -332,7 +342,7 @@ const useMap = <TData extends object>(
               const geo = L.geoJSON(route.geo_route, {
                 onEachFeature: function onEachFeature(feature, layer) {
                   layer.bindContextMenu({
-                    contextmenu: accessControl.features.routesAndParking,
+                    contextmenu: user?.features?.routesAndParking,
                     contextmenuInheritItems: false,
                     contextmenuItems: [
                       {
@@ -402,7 +412,7 @@ const useMap = <TData extends object>(
           const coords = utm.convertUtmToLatLng(parking.x, parking.y, 32, 'N');
           if (typeof coords != 'object') return;
 
-          const parkingMenu = accessControl.features.routesAndParking
+          const parkingMenu = user?.features?.routesAndParking
             ? [
                 {
                   text: 'Slet parkering',
@@ -445,7 +455,7 @@ const useMap = <TData extends object>(
           });
 
           parkingMarker.bindContextMenu({
-            contextmenu: accessControl.features.routesAndParking,
+            contextmenu: user?.features?.routesAndParking,
             contextmenuInheritItems: false,
             contextmenuItems: [
               ...parkingMenu,
@@ -503,15 +513,18 @@ const useMap = <TData extends object>(
   };
 
   useEffect(() => {
-    const existingMap = L.DomUtil.get(id);
-    if (existingMap && '_leaflet_id' in existingMap) existingMap._leaflet_id = null;
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
-      disableClusteringAtZoom: 15,
+      disableClusteringAtZoom: 17,
       spiderfyOnMaxZoom: false,
       removeOutsideVisibleBounds: true,
-      maxClusterRadius: 50,
+      maxClusterRadius: (zoom) => {
+        if (zoom < 10) return 60;
+        if (zoom < 12) return 50;
+        if (zoom < 17) return 30;
+        return 80;
+      },
       zoomToBoundsOnClick: true,
       showCoverageOnHover: false,
 
@@ -570,19 +583,19 @@ const useMap = <TData extends object>(
 
     return () => {
       setDoneRendering(false);
-      if (mapRef.current) {
+      if (mapRef.current && markerLayerRef.current) {
         mapRef.current.remove();
       }
     };
-  }, [mapRef.current == null]);
+  }, [mapRef.current == null, doneRendering]);
 
   useEffect(() => {
     plotRoutesInLayer();
-  }, [data, leafletMapRoutes, geoJsonRef.current]);
+  }, [geoJsonRef.current, leafletMapRoutes, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     plotParkingsInLayer();
-  }, [parkingLayerRef.current, parkings, data]);
+  }, [parkingLayerRef.current, parkings, data, zoom > zoomThresholdForParking]);
 
   useEffect(() => {
     if (mapRef.current) onMapMoveEndEvent(mapRef.current);
@@ -591,6 +604,38 @@ const useMap = <TData extends object>(
       if (mapRef.current) mapRef.current.removeEventListener('moveend', mapEvent);
     };
   }, [leafletMapRoutes, parkings]);
+
+  useEffect(() => {
+    if (mapRef.current && filters && filters.itineraries.length > 0) {
+      const markers = markerLayerRef.current?.getLayers().filter((marker) => {
+        if (marker instanceof L.Marker) {
+          return filters.itineraries
+            .map((itinerary) => itinerary.id)
+            .includes((marker.options.data as MapOverview).itinerary_id);
+        }
+        return false;
+      });
+
+      if (markers == undefined) return;
+
+      const fg = new L.FeatureGroup();
+      for (const marker of markers) {
+        if (marker instanceof L.Marker) {
+          fg.addLayer(marker);
+        }
+      }
+
+      const bounds = fg.getBounds();
+      if (!bounds.isValid()) return;
+
+      mapRef.current.fitBounds(bounds, {
+        padding: [50, 50],
+        maxZoom: 17,
+      });
+
+      fg.clearLayers();
+    }
+  }, [filters.itineraries.length]);
 
   return {
     map: mapRef.current,

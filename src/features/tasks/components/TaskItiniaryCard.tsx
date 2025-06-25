@@ -10,7 +10,7 @@ import {useTaskStore} from '../api/useTaskStore';
 import {Taskitinerary} from '../types';
 
 import Droppable from './Droppable';
-import {useTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 
 interface TaskItineraryCardProps {
   itinerary: Taskitinerary;

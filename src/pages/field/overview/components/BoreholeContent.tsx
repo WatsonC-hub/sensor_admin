@@ -3,16 +3,18 @@ import moment from 'moment';
 import React from 'react';
 import Button from '~/components/Button';
 import {boreholeColors} from '~/features/notifications/consts';
+import {useSearchBorehole} from '~/features/station/api/useBorehole';
 
-import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import TaskIcon from '~/pages/field/overview/components/TaskIcon';
 import {useAppContext} from '~/state/contexts';
 
 const BoreholeContent = () => {
   const {boreholeno} = useAppContext(['boreholeno']);
-  const {data} = useBoreholeMap((data) => data.find((item) => item.boreholeno === boreholeno));
   const {boreholeIntake} = useNavigationFunctions();
+
+  const {data: boreholes} = useSearchBorehole(boreholeno);
+  const data = boreholes?.find((borehole) => borehole.boreholeno === boreholeno);
 
   if (data === undefined) {
     return <Typography>Loading...</Typography>;

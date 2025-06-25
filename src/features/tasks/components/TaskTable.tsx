@@ -113,7 +113,7 @@ const TaskTable = () => {
     patch,
   } = useTasks();
 
-  const {user_id: userAuthId} = useUser();
+  const user = useUser();
 
   const handleBlurSubmit = (id: string, ts_id: number, values: any) => {
     const payload = {
@@ -664,7 +664,13 @@ const TaskTable = () => {
               onChange={(e) => {
                 const value = e.target.value as ViewValues;
                 setViewValue(value);
-                onSelectChange(value, table, taskUsers, userAuthId?.toString(), setShownMapTaskIds);
+                onSelectChange(
+                  value,
+                  table,
+                  taskUsers,
+                  user?.user_id?.toString(),
+                  setShownMapTaskIds
+                );
               }}
             >
               {/* <MenuItem value={'-1'}>Vælg filtrering...</MenuItem> */}
@@ -811,7 +817,7 @@ const TaskTable = () => {
         };
       },
     }),
-    [handleBlurSubmit, setSelectedTask, station, taskUsers, reset, userAuthId]
+    [handleBlurSubmit, setSelectedTask, station, taskUsers, reset, user?.user_id]
   );
 
   const table = useTable<Task>(

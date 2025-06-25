@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import Button from '~/components/Button';
-import {useTaskItinerary} from '~/features/tasks/api/useTaskItinerary';
+import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useTasks} from '~/features/tasks/api/useTasks';
 
 type AddToTripDialogProps = {

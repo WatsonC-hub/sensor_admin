@@ -10,17 +10,19 @@ import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
 import useBreakpoints from './hooks/useBreakpoints';
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
-import {useUser, accessControlQueryOptions} from './features/auth/useUser';
+import {useUser, userQueryOptions} from './features/auth/useUser';
+import {usePostHog} from 'posthog-js/react';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
 import {useQuery} from '@tanstack/react-query';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
 
 function App() {
   const {home} = useNavigationFunctions();
+  const posthog = usePostHog();
   const {isMobile} = useBreakpoints();
   const user = useUser();
 
-  const {isLoading} = useQuery(accessControlQueryOptions);
+  const {isPending} = useQuery(userQueryOptions);
 
   useEffect(() => {
     if (isMobile && location.pathname == '/') {
@@ -40,7 +42,18 @@ function App() {
     }
   }, []);
 
-  if (user === undefined || isLoading) {
+  useEffect(() => {
+    if (user) {
+      posthog.identify(user.user_id.toString(), {
+        isSuperAdmin: user.superUser,
+      });
+      if (user.org_id) posthog.group('organization', user.org_id.toString());
+    } else {
+      posthog.reset();
+    }
+  }, [user, posthog]);
+
+  if (user === undefined || isPending) {
     return <LoadingSkeleton />;
   }
 

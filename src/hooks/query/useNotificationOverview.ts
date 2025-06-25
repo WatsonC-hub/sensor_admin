@@ -92,7 +92,7 @@ const nullState: Partial<Notification> = {
 // };
 
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
-  const {iotAccess} = useUser();
+  const user = useUser();
   const query = useQuery<Notification[]>({
     queryKey: ['overblik'],
     queryFn: async () => {
@@ -103,7 +103,7 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
     refetchInterval: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
     staleTime: 10 * 1000,
-    enabled: iotAccess,
+    enabled: user?.features?.iotAccess,
     ...options,
   });
   return query;
@@ -189,6 +189,7 @@ export interface MapOverview {
   flag: FlagEnum | null;
   notification_id: NotificationIDEnum | null;
   due_date: string | null;
+  notification_ids: NotificationIDEnum[] | null;
 }
 
 const mapOverviewOptions = queryOptions<MapOverview[]>({
@@ -205,10 +206,13 @@ type MapOverviewOptions<T> = Partial<
 >;
 
 export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T>) => {
+  const user = useUser();
+
   return useQuery({
     ...mapOverviewOptions,
     ...options,
     select: options?.select as (data: MapOverview[]) => T,
+    enabled: user?.features?.iotAccess,
   });
 };
 
@@ -242,5 +246,26 @@ export const timeseriesStatusOptions = (loc_id: number) =>
   });
 
 export const useTimeseriesStatus = (loc_id: number) => {
-  return useQuery(timeseriesStatusOptions(loc_id));
+  const user = useUser();
+  return useQuery({
+    ...timeseriesStatusOptions(loc_id),
+    enabled: user?.features?.iotAccess,
+  });
+};
+
+type NotificationType = {
+  gid: number;
+  name: string;
+  flag: FlagEnum;
+};
+
+export const useNotificationTypes = () => {
+  return useQuery({
+    queryKey: ['notification_types'],
+    queryFn: async () => {
+      const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
+      return data;
+    },
+    staleTime: 1000 * 60 * 60,
+  });
 };

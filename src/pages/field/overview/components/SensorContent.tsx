@@ -14,7 +14,7 @@ import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import AddToTripDialog from './AddToTripDialog';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
@@ -26,7 +26,7 @@ const SensorContent = () => {
   const {isMobile} = useBreakpoints();
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
-  const {simpleTaskPermission, advancedTaskPermission} = useAccessControl();
+  const user = useUser();
 
   const {data: location} = useMapOverview({
     select: (data) => {
@@ -38,12 +38,12 @@ const SensorContent = () => {
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
       <LocationInfo />
       <TimeseriesList />
-      {simpleTaskPermission && <TaskList setCreateTaskDialog={setCreateTaskDialog} />}
-      {location?.itinerary_id && advancedTaskPermission && (
+      {user?.simpleTaskPermission && <TaskList setCreateTaskDialog={setCreateTaskDialog} />}
+      {location?.itinerary_id && user?.advancedTaskPermission && (
         <ItineraryCardList itinerary_id={location.itinerary_id} />
       )}
 
-      {advancedTaskPermission && (
+      {user?.advancedTaskPermission && (
         <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
           {!isMobile ? (
             <Box
@@ -74,15 +74,15 @@ const SensorContent = () => {
         </Box>
       )}
 
-      {simpleTaskPermission && <TaskHistoryList />}
+      {user?.simpleTaskPermission && <TaskHistoryList />}
 
-      {simpleTaskPermission && (
+      {user?.simpleTaskPermission && (
         <CreateManuelTaskModal
           open={createTaskDialog}
           closeModal={() => setCreateTaskDialog(false)}
         />
       )}
-      {advancedTaskPermission && (
+      {user?.advancedTaskPermission && (
         <AddToTripDialog
           open={openTripDialog}
           onClose={() => setOpenTripDialog(false)}

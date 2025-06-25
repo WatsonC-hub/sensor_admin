@@ -8,6 +8,7 @@ import {assignedToAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import moment from 'moment';
+import {isEmptyObject} from '~/helpers/guardHelper';
 
 const searchValue = (value: any, search_string: string): boolean => {
   if (typeof value === 'string') {
@@ -33,7 +34,10 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
   if (search_string === '') return data;
   return data.filter((elem) => searchElement(elem, search_string));
 };
-
+/**
+ * Filters the sensor data based on the provided filter criteria.
+ * if keepLocationsWithoutNotifications is false it will hide locations without notifications - inactive locations included.
+ */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   if (data.loctype_id === 12) return filter.isSingleMeasurement;
   const serviceFilter =
@@ -78,6 +82,15 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
     'boreholeno' in elem ? filterBorehole(elem, filter.borehole) : true
   );
 
+  if (filter.notificationTypes?.length > 0) {
+    filteredData = filteredData.filter((elem) => {
+      if ('notification_id' in elem && elem.notification_id !== null) {
+        return filter.notificationTypes.some((type) => elem.notification_ids?.includes(type));
+      }
+      return false;
+    });
+  }
+
   if (filter.groups && filter.groups.length > 0) {
     filteredData = filteredData.filter((elem) => {
       if (elem.groups !== null) {
@@ -98,15 +111,18 @@ export const useFilteredMapData = () => {
   const {tasks} = useTaskStore();
 
   const data = useMemo(() => {
-    return [...(mapData ?? []), ...(boreholeMapdata ?? []), ...(extraData ? [extraData] : [])];
-  }, [mapData, boreholeMapdata, extraData]);
+    return [
+      ...(!isEmptyObject(mapData) ? (mapData ?? []) : []),
+      ...(!isEmptyObject(boreholeMapdata) ? (boreholeMapdata ?? []) : []),
+    ];
+  }, [mapData, boreholeMapdata]);
 
   const {filters, locIds} = useMapFilterStore((state) => state);
 
   const mapFilteredData = useMemo(() => {
     const filteredData = filterData(searchAcrossAll(data, filters.freeText ?? ''), filters);
-    return filteredData;
-  }, [data, filters]);
+    return [...filteredData, ...(extraData ? [extraData] : [])];
+  }, [data, filters, extraData]);
 
   const listFilteredData = useMemo(() => {
     let filteredList = mapFilteredData;

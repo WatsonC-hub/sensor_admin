@@ -22,12 +22,13 @@ import LocationList from './LocationList';
 import TaskItiniaries from './TaskItiniaries';
 import LocationRouter from '~/features/station/components/LocationRouter';
 import Trip from '~/pages/admin/opgaver/Trip';
-import {useTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 import {useAtomValue} from 'jotai';
 import {fullScreenAtom} from '~/state/atoms';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import LocationHighlighter from '~/features/map/components/LocationHighlighter';
 import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter';
+import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Overview = () => {
   const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
@@ -57,6 +58,7 @@ const Overview = () => {
   const {data: metadata} = useQuery(metadataQueryOptions(ts_id || undefined));
   const {data: locationData} = useQuery(locationMetadataQueryOptions(loc_id || undefined));
   const {addLocationToTrip} = useTaskItinerary();
+
   const {isMobile, isTouch} = useBreakpoints();
   const fullScreen = useAtomValue(fullScreenAtom);
 
@@ -90,8 +92,6 @@ const Overview = () => {
     if (data === null) return;
 
     if ('loc_id' in data) {
-      // onColumnFiltersChange && onColumnFiltersChange([{id: 'loc_id', value: data.loc_id}]);
-      // console.log('data', data);
       setLocId(data.loc_id);
       setSelectedTask(null);
       document.querySelectorAll('svg[data-loc-id]').forEach((svg) => {
@@ -101,7 +101,6 @@ const Overview = () => {
         }
       });
     } else if ('boreholeno' in data) {
-      // console.log('boreholeno', data);
       setBoreholeNo(data.boreholeno);
     }
   };
@@ -292,4 +291,9 @@ const Overview = () => {
   );
 };
 
-export default Overview;
+const GuardedOverview = withComponentPermission(Overview, 'features', [
+  'boreholeAccess',
+  'iotAccess',
+]);
+
+export default GuardedOverview;

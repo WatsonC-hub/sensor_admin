@@ -52,9 +52,6 @@ export const useTaskStore = () => {
       return {shownTasks: [], hiddenTasks: [], mapFilteredTasks: []};
     }
     const shownTasks = filterTasks(tasks, [shownListTaskIds, shownMapTaskIds]);
-    // console.log('shownTasks', shownTasks);
-    // console.log('shownListTaskIds', shownListTaskIds);
-    // console.log('shownMapTaskIds', shownMapTaskIds);
     const mapFilteredTasks = filterTasks(tasks, [shownMapTaskIds]);
 
     return {

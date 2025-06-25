@@ -3,10 +3,12 @@ import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
-import Home from './pages/admin/opgaver/Home';
 import {AppContext} from './state/contexts';
-import CreateStation from './features/station/components/CreateStation';
 import ScanComponent from './components/ScanComponent';
+import GuardedHome from './pages/Home';
+import GuardedCreateStation from './features/station/components/CreateStation';
+import {useUser} from './features/auth/useUser';
+import AccessDenied from './accessDenied';
 import {
   NotListedLocation,
   QueryStats,
@@ -20,6 +22,10 @@ import {Notification, useNotificationOverview} from './hooks/query/useNotificati
 import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 
 const Router = () => {
+  const user = useUser();
+  // early return of no IoT access or borehole access
+  // redirect component
+
   const {home, location: locationNavigation, station} = useNavigationFunctions();
   const {data: locationData} = useNotificationOverview({
     select: (data) => {
@@ -133,6 +139,10 @@ const Router = () => {
     },
   ]);
 
+  if (user && !user?.features?.iotAccess && !user?.features?.boreholeAccess) {
+    return <AccessDenied message="Der er manglende rettigheder til at tilgå denne side." />;
+  }
+
   return (
     <>
       <RemoveTrailingSlash />
@@ -141,7 +151,7 @@ const Router = () => {
           path="/"
           element={
             <AppContext.Provider value={{}}>
-              <Home />
+              <GuardedHome />
             </AppContext.Provider>
           }
         />
@@ -149,7 +159,7 @@ const Router = () => {
           path="stamdata"
           element={
             <AppContext.Provider value={{}}>
-              <CreateStation />
+              <GuardedCreateStation />
             </AppContext.Provider>
           }
         />

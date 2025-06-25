@@ -1,31 +1,20 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  queryOptions,
-  UseQueryOptions,
-} from '@tanstack/react-query';
+import {useQuery, useMutation, useQueryClient, UseQueryOptions} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
 import {APIError} from '~/queryClient';
 
-import type {
-  completeItinerary,
-  AddLocationToItinerary,
-  PatchTaskitinerary,
-  PostTaskitinerary,
-  Task,
-  Taskitinerary,
-  // DeleteTaskFromItinerary,
-  // MoveTaskToDifferentItinerary,
+import {
+  type completeItinerary,
+  type AddLocationToItinerary,
+  type PatchTaskitinerary,
+  type PostTaskitinerary,
+  type Task,
+  type Taskitinerary,
+  TaskPermission,
 } from '../types';
-
-// type Mutation<TData> = {
-//   path: string;
-//   data: TData;
-// };
+import {useUser} from '~/features/auth/useUser';
 
 export const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
@@ -62,56 +51,32 @@ export const addLocationToItineraryOptions = {
   },
 };
 
-// export const deleteTaskFromItineraryOptions = {
-//   mutationKey: ['taskItinerary_delete'],
-//   mutationFn: async (mutation_data: DeleteTaskFromItinerary) => {
-//     const {path} = mutation_data;
-//     const {data: result} = await apiClient.delete(`/sensor_admin/tasks/itineraries/${path}`);
-//     return result;
-//   },
-// };
+type ItineraryOptions<T> = Partial<
+  Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
+>;
 
-// export const moveTasksToItineraryOptions = {
-//   mutationKey: ['taskItinerary_move'],
-//   mutationFn: async (mutation_data: MoveTaskToDifferentItinerary) => {
-//     const {path, data} = mutation_data;
-//     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries/${path}`, data);
-//     return result;
-//   },
-// };
+const useTaskItinerary = <T = Taskitinerary[]>(
+  id?: string | null,
+  options?: ItineraryOptions<T>
+) => {
+  const queryClient = useQueryClient();
+  const user = useUser();
 
-export const itineraryGetOptions = (itinerary_id?: string | null) =>
-  queryOptions<Taskitinerary[], APIError>({
+  const idRequired = id !== null && id !== undefined;
+  const permissionRequired = user?.features?.tasks === TaskPermission.advanced;
+  const enabled = idRequired && permissionRequired;
+
+  const get = useQuery({
     queryKey: ['itineraries'],
     queryFn: async () => {
       const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
       return data;
     },
-    enabled: itinerary_id !== null,
     staleTime: 1000 * 60 * 5,
-  });
-
-type ItineraryOptions<T> = Partial<
-  Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
->;
-
-export const useTaskItinerary = <T = Taskitinerary[]>(
-  id?: string | null,
-  options?: ItineraryOptions<T>
-) => {
-  const queryClient = useQueryClient();
-
-  const get = useQuery({
-    ...itineraryGetOptions(id),
+    enabled: permissionRequired,
     ...options,
     select: options?.select as (data: Taskitinerary[]) => T,
   });
-
-  // const getByMonths = useQuery({
-  //   ...itineraryGetOptions(id),
-  //   ...options,
-  //   select: options?.select as (data: Taskitinerary[]) => T,
-  // });
 
   const getItinerary = useQuery<Taskitinerary, APIError>({
     queryKey: ['itineraries', id],
@@ -120,7 +85,7 @@ export const useTaskItinerary = <T = Taskitinerary[]>(
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: id !== null && id !== undefined,
+    enabled: enabled,
   });
 
   const getItineraryTasks = useQuery<Task[], APIError>({
@@ -130,7 +95,7 @@ export const useTaskItinerary = <T = Taskitinerary[]>(
       return data;
     },
     staleTime: 1000 * 60 * 5,
-    enabled: id !== undefined,
+    enabled: enabled,
   });
 
   const createItinerary = useMutation<unknown, APIError, PostTaskitinerary>({
@@ -186,8 +151,7 @@ export const useTaskItinerary = <T = Taskitinerary[]>(
     getItineraryTasks,
     complete,
     addLocationToTrip,
-    // deleteTaskFromItinerary,
-    // moveTasks,
-    // getProjects,
   };
 };
+
+export default useTaskItinerary;

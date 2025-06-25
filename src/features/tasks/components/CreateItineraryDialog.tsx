@@ -3,7 +3,7 @@ import React from 'react';
 
 import Button from '~/components/Button';
 
-import {useTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 
 import TaskForm from './TaskForm';
 import FormInput from '~/components/FormInput';

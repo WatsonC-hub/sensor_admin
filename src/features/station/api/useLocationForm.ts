@@ -14,8 +14,7 @@ import BoreholeLocationForm from '../components/stamdata/stamdataComponents/Bore
 import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLocationForm';
 import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
 import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
-import {useUser} from '~/features/auth/useUser';
-import {User} from '@sentry/react';
+import {UserAccessControl, useUser} from '~/features/auth/useUser';
 import {zodResolver} from '@hookform/resolvers/zod';
 
 type useLocationFormProps<T> =
@@ -35,7 +34,7 @@ type useLocationFormProps<T> =
 const getSchemaAndForm = <T extends FieldValues>(
   loctype_id: number,
   mode: 'Add' | 'Edit',
-  user: User,
+  user: UserAccessControl | null | undefined,
   loc_id?: number
 ) => {
   let selectedSchema: ZodObject<Record<string, any>> = baseLocationSchema;

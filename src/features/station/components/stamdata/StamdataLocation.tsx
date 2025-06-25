@@ -103,6 +103,7 @@ const LoctypeSelect = (
           placeholder="Vælg type"
           select
           required
+          infoText="Lokationstypen kan betyde hvilke muligheder der er for at tilføje data til lokationen. F.eks. kan DGU boringer oprettes smartere og synkroniseres til GEUS."
           {...props}
         >
           <MenuItem value={-1} key={-1}>
@@ -136,10 +137,11 @@ const X = (
   return (
     <FormInput
       name="x"
-      label="X koordinat"
+      label="X [UTM32]"
       type="number"
       required
       placeholder="Indtast X-koordinat"
+      infoText="X-koordinaten er i UTM32 koordinatsystemet. For Danmark er det mellem 400000 og 900000."
       warning={(value) => {
         if (value < 400000 || value > 900000) {
           return 'X-koordinat er uden for Danmark';
@@ -172,7 +174,7 @@ const Y = (
   return (
     <FormInput
       name="y"
-      label="Y koordinat"
+      label="Y [UTM32]"
       type="number"
       required
       placeholder="Indtast Y-koordinat"
@@ -312,7 +314,6 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
           loading={isFetching}
           labelKey="boreholeno"
           onChange={(option) => {
-            console.log(option);
             if (option == null) {
               setValue('boreholeno', undefined);
               trigger('boreholeno');
@@ -345,6 +346,7 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
             label: 'DGU nummer',
             placeholder: 'Søg efter DGU boringer...',
           }}
+          // fieldDescriptionText={props.fieldDescriptionText}
           onInputChange={(event, searchValue) => {
             const searchString = {
               query: {
@@ -423,6 +425,7 @@ const Groups = (
           setValue={onChange}
           onBlur={onBlur}
           disable={props.disabled}
+          fieldDescriptionText={props.infoText}
         />
       )}
     />

@@ -6,7 +6,7 @@ import {useTaskStore} from '../api/useTaskStore';
 import {convertDate} from '~/helpers/dateConverter';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {Person} from '@mui/icons-material';
-import {useTaskItinerary} from '../api/useTaskItinerary';
+import useTaskItinerary from '../api/useTaskItinerary';
 import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
@@ -16,15 +16,6 @@ type Props = {
   onClick: () => void;
 };
 
-const TripIcon = getIcon(
-  {
-    has_task: true,
-    itinerary_id: 'hej',
-    notification_id: null,
-  },
-  false
-);
-
 const LocationListItem = ({itemData, onClick}: Props) => {
   const {tasks, setSelectedTask} = useTaskStore();
   const {isMobile} = useBreakpoints();
@@ -33,6 +24,15 @@ const LocationListItem = ({itemData, onClick}: Props) => {
     data: {loc_id: itemData.loc_id},
     feedback: 'clone',
   });
+
+  const TripIcon = getIcon(
+    {
+      has_task: true,
+      itinerary_id: itemData.itinerary_id,
+      notification_id: null,
+    },
+    false
+  );
 
   const filteredTasks = tasks?.filter((task) => task.loc_id === itemData.loc_id);
 

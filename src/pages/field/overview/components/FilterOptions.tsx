@@ -7,19 +7,21 @@ import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import FormToggleGroup from '~/components/FormToggleGroup';
 import FormToggleSwitch from '~/components/FormToggleSwitch';
-import {useAccessControl} from '~/features/auth/useUser';
+import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import HighlightItineraries from './HighlightItineraries';
+import NotificationTypeFilter from './NotificationTypeFilter';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 interface FilterOptionsProps {
   onClose: () => void;
 }
 
 const FilterOptions = ({onClose}: FilterOptionsProps) => {
-  const accessControl = useAccessControl();
+  const user = useUser();
   const [filters, setMapFilter, setLocIds] = useMapFilterStore((state) => [
     state.filters,
     state.setFilters,
@@ -33,32 +35,39 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
     setLocIds([]);
   };
 
-  const reset = () => {
+  const {handleSubmit, reset, control} = formMethods;
+
+  const resetFilters = () => {
     const mapFilter: Filter = {
       ...defaultMapFilter,
       sensor: {
         ...defaultMapFilter.sensor,
-        isCustomerService: accessControl.superUser ? false : true,
+        isCustomerService: user?.superUser ? false : true,
       },
     };
 
-    formMethods.reset(mapFilter);
+    reset(mapFilter);
     setMapFilter(mapFilter);
   };
 
   return (
     <FormProvider {...formMethods}>
-      <Typography variant="h6">Filtrer lokationer</Typography>
+      <TooltipWrapper
+        url="https://watsonc.dk/guides/filter-locations"
+        description="Se guide til filtrering af lokationer"
+      >
+        <Typography variant="h6">Filtrer lokationer</Typography>
+      </TooltipWrapper>
       <FormInput
         name="freeText"
         label="Fritekst filtrering"
         placeholder="Indtast filtreringstekst..."
-        onBlurCallback={() => formMethods.handleSubmit(submit)()}
+        onBlurCallback={() => handleSubmit(submit)()}
       />
       <Divider />
       <Grid container spacing={2}>
-        {accessControl.features.boreholeAccess && (
-          <Grid item sm={accessControl.features.iotAccess ? 6 : 12} flexGrow={1}>
+        {user?.features?.boreholeAccess && (
+          <Grid item sm={user?.features?.iotAccess ? 6 : 12} flexGrow={1}>
             <Typography variant="subtitle1">
               <u>Boringer</u>
             </Typography>
@@ -67,7 +76,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               name="borehole.hasControlProgram"
               label="Del af pejleprogram"
               noSelectValue={'indeterminate'}
-              onChangeCallback={formMethods.handleSubmit(submit)}
+              onChangeCallback={handleSubmit(submit)}
               values={[
                 {label: <Typography>Ja</Typography>, value: true},
                 // {label: <RemoveIcon />, value: 'indeterminate'},
@@ -76,10 +85,10 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             />
           </Grid>
         )}
-        {accessControl.features.iotAccess && (
+        {user?.features?.iotAccess && (
           <Grid
             item
-            sm={accessControl.features.boreholeAccess ? 6 : 12}
+            sm={user?.features?.boreholeAccess ? 6 : 12}
             display="flex"
             flexDirection="column"
             flexGrow={1}
@@ -92,7 +101,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
               name="sensor.isCustomerService"
               label="Serviceres af kunden"
               noSelectValue={'indeterminate'}
-              onChangeCallback={formMethods.handleSubmit(submit)}
+              onChangeCallback={handleSubmit(submit)}
               values={[
                 {label: <Typography>Ja</Typography>, value: true},
                 // {label: <RemoveIcon />, value: 'indeterminate'},
@@ -102,14 +111,14 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             <FormControlLabel
               control={
                 <Controller
-                  control={formMethods.control}
+                  control={control}
                   name="sensor.showInactive"
                   render={({field: {value, onChange, ...field}}) => (
                     <Checkbox
                       {...field}
                       onChange={(e) => {
                         onChange(e);
-                        formMethods.handleSubmit(submit)();
+                        handleSubmit(submit)();
                       }}
                       checked={!!value}
                     />
@@ -127,31 +136,47 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 </Typography>
               }
             />
-            {accessControl.superUser && (
+            {user?.superUser && (
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
                 label="Vis kun enkeltmålinger"
-                onChangeCallback={formMethods.handleSubmit(submit)}
+                onChangeCallback={handleSubmit(submit)}
               />
             )}
             <FormToggleSwitch
               name="sensor.hideLocationsWithoutNotifications"
               label="Skjul lokationer uden notifikationer"
-              onChangeCallback={formMethods.handleSubmit(submit)}
+              onChangeCallback={handleSubmit(submit)}
             />
           </Grid>
         )}
       </Grid>
       <Grid item xs={12}>
         <Controller
+          name="notificationTypes"
+          control={control}
+          render={({field: {onChange, value}}) => (
+            <NotificationTypeFilter
+              value={value}
+              setValue={(value) => {
+                onChange(value);
+                handleSubmit(submit)();
+              }}
+              label="Notifikationer"
+            />
+          )}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Controller
           name="groups"
-          control={formMethods.control}
+          control={control}
           render={({field: {onChange, value}}) => (
             <LocationGroups
               value={value}
               setValue={(value) => {
                 onChange(value);
-                formMethods.handleSubmit(submit)();
+                handleSubmit(submit)();
               }}
               label="Filtrer grupper"
               disableLink
@@ -160,17 +185,17 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
           )}
         />
       </Grid>
-      {accessControl.advancedTaskPermission && (
+      {user?.advancedTaskPermission && (
         <Grid item xs={12}>
           <Controller
             name="itineraries"
-            control={formMethods.control}
+            control={control}
             render={({field: {onChange, value}}) => (
               <HighlightItineraries
                 value={value}
                 setValue={(value) => {
                   onChange(value);
-                  formMethods.handleSubmit(submit)();
+                  handleSubmit(submit)();
                 }}
                 label="Fremhæv ture"
               />
@@ -180,7 +205,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       )}
 
       <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: 1}}>
-        <Button bttype="tertiary" onClick={reset} startIcon={<RestartAlt />}>
+        <Button bttype="tertiary" onClick={resetFilters} startIcon={<RestartAlt />}>
           Nulstil
         </Button>
 

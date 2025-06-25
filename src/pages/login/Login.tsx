@@ -13,7 +13,7 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {apiClient} from '~/apiClient';
 import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
-import {accessControlQueryOptions} from '~/features/auth/useUser';
+import {userQueryOptions} from '~/features/auth/useUser';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -48,7 +48,7 @@ export default function Login() {
               return data;
             },
           });
-          queryClient.prefetchQuery(accessControlQueryOptions);
+          queryClient.prefetchQuery(userQueryOptions);
           home();
         },
       }

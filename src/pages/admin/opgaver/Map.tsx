@@ -9,7 +9,6 @@ import '~/css/leaflet.css';
 import {useEffect, SyntheticEvent, useCallback} from 'react';
 import {toast} from 'react-toastify';
 import '~/features/map/map.css';
-import {apiClient} from '~/apiClient';
 import AlertDialog from '~/components/AlertDialog';
 import DeleteAlert from '~/components/DeleteAlert';
 import {MapOverview, timeseriesStatusOptions} from '~/hooks/query/useNotificationOverview';
@@ -31,6 +30,7 @@ import {queryClient} from '~/queryClient';
 import {useUser} from '~/features/auth/useUser';
 import {debounce} from 'lodash';
 import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
+import {searchBorehole} from '~/features/station/api/useBorehole';
 
 interface LocItems {
   name: string;
@@ -61,7 +61,7 @@ const Map = ({clickCallback}: MapProps) => {
 
   const contextmenuItems: Array<L.ContextMenuItem> = [];
 
-  if (user.iotAccess)
+  if (user?.features?.iotAccess)
     contextmenuItems.push(
       {
         text: 'Opret ny lokation',
@@ -103,7 +103,7 @@ const Map = ({clickCallback}: MapProps) => {
     warning: {displayAlert, setDisplayAlert},
     defaultContextmenuItems,
     doneRendering,
-  } = useMap('test', data, contextmenuItems, clickCallback);
+  } = useMap('test', filteredData, contextmenuItems, clickCallback);
 
   const prefetchQueries = (loc_id: number) => {
     queryClient.prefetchQuery(timeseriesStatusOptions(loc_id));
@@ -127,9 +127,8 @@ const Map = ({clickCallback}: MapProps) => {
 
   const createLocationMarker = (element: MapOverview) => {
     const point: L.LatLngExpression = [element.latitude, element.longitude];
-    const debounced = debounce(() => prefetchQueries(element.loc_id), 250);
     const marker = L.marker(point, {
-      icon: getNotificationIcon(element),
+      icon: getNotificationIcon({...element}),
       interactive: true,
       riseOnHover: true,
       title: element.loc_name,
@@ -139,6 +138,7 @@ const Map = ({clickCallback}: MapProps) => {
       zIndexOffset: 1000 * (element.flag ?? 0),
     });
 
+    const debounced = debounce(() => prefetchQueries(element.loc_id), 250);
     marker.addEventListener('mouseover', () => debounced());
     marker.addEventListener('mouseout', () => {
       debounced.cancel();
@@ -154,7 +154,7 @@ const Map = ({clickCallback}: MapProps) => {
       },
     ];
 
-    if (user.superUser) {
+    if (user?.superUser) {
       locationMenu = [
         ...locationMenu,
         {
@@ -221,7 +221,7 @@ const Map = ({clickCallback}: MapProps) => {
   };
 
   const handleSearchSelect = useCallback(
-    (e: SyntheticEvent, value: string | LocItems | null) => {
+    async (e: SyntheticEvent, value: string | LocItems | null) => {
       if (value !== null && typeof value == 'object' && markerLayer && map) {
         if (value.sensor) {
           // @ts-expect-error Getlayers returns markers
@@ -232,11 +232,13 @@ const Map = ({clickCallback}: MapProps) => {
             marker.openPopup();
             map?.flyTo(marker.getLatLng(), 14, {animate: false});
             marker.fire('click');
+            setExtraData(null);
             setSelectedMarker(marker.options.data);
           } else {
             const newData = data
               ?.filter((item) => 'loc_id' in item)
               .find((item) => item.loc_name == value.name);
+
             if (newData) {
               const hiddenMarker = createLocationMarker(newData);
               setExtraData(newData);
@@ -250,24 +252,20 @@ const Map = ({clickCallback}: MapProps) => {
             }
           }
         } else {
-          apiClient
-            .get<BoreholeMapData>(`/sensor_field/jupiter/search/${value.name}`)
-            .then((res) => {
-              const element = res.data;
+          const data = await searchBorehole(value.name)();
 
-              const point: L.LatLngExpression = [element.latitude, element.longitude];
+          const element = data[0];
 
-              const marker = createBoreholeMarker(element);
+          const point: L.LatLngExpression = [element.latitude, element.longitude];
 
-              marker.on('add', function () {
-                map?.flyTo(point, 16, {animate: false});
-                marker.fire('click');
-                setSelectedMarker(element);
-              });
-              if (markerLayer) {
-                marker.addTo(markerLayer);
-              }
-            });
+          const marker = createBoreholeMarker(element);
+
+          if (markerLayer) {
+            marker.addTo(markerLayer);
+            map?.flyTo(point, 17, {animate: false});
+            marker.fire('click');
+            setSelectedMarker(element);
+          }
         }
       }
     },
@@ -310,7 +308,7 @@ const Map = ({clickCallback}: MapProps) => {
       }
     });
 
-    markerLayer?.addLayers(markers || []);
+    markerLayer?.addLayers(markers);
   }, [filteredData, doneRendering]);
 
   return (
