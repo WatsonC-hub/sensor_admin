@@ -6,7 +6,7 @@ import {RemoveTrailingSlash} from '~/RemoveTrailingSlash';
 
 import {useNotificationOverview} from './hooks/query/useNotificationOverview';
 import {useUser} from './features/auth/useUser';
-import Home from './pages/admin/opgaver/Home';
+import Home from './pages/Home';
 
 const Redirecter = () => {
   const {home} = useNavigationFunctions();

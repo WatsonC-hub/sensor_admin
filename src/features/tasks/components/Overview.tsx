@@ -3,7 +3,7 @@ import {Box} from '@mui/material';
 import React from 'react';
 import WindowManager from '~/components/ui/WindowManager';
 import {DragDropProvider} from '@dnd-kit/react';
-import TaskMap from '~/pages/admin/opgaver/Map';
+import TaskMap from '~/pages/Map';
 import TaskInfo from './TaskInfo';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {AppContext} from '~/state/contexts';
