@@ -144,14 +144,10 @@ const useMap = <TData extends object>(
 
   const buildMap = () => {
     const map = L.map(id, {
-      center: pan,
-      zoom: zoom,
-      maxZoom: 18,
-      layers: [defaultMapBox],
       tapHold: true,
       contextmenu: true,
       contextmenuItems: items,
-    });
+    }).setView(pan, zoom);
 
     map.zoomControl.setPosition('bottomright');
 
