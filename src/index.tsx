@@ -65,6 +65,8 @@ root.render(
                 api_host: '/events',
                 capture_exceptions: true,
                 debug: import.meta.env.MODE === 'development',
+                opt_out_capturing_by_default: import.meta.env.MODE === 'development',
+                autocapture: import.meta.env.MODE !== 'development',
               }}
             >
               <NuqsAdapter>
