@@ -25,9 +25,9 @@ L.BasemapControl = L.Control.extend({
       scrollWheelZoom: false,
     });
 
-    const options = this.options.layers[this._currentIndex].layer.options;
-
-    // strip out zoomlevels and zoomOffset
+    const options = {
+      ...this.options.layers[this._currentIndex].layer.options,
+    };
     delete options.zoomOffset;
     delete options.zoomLevels;
     delete options.maxZoom;
@@ -86,20 +86,7 @@ L.BasemapControl = L.Control.extend({
       const nextIndex = (this._currentIndex + 1) % this.options.layers.length;
       const nextLayer = this.options.layers[nextIndex].layer;
 
-      const options = this.options.layers[this._currentIndex].layer.options;
-
-      // strip out zoomlevels and zoomOffset
-      delete options.zoomOffset;
-      delete options.zoomLevels;
-      delete options.maxZoom;
-      delete options.minZoom;
-      delete options.tileSize;
-
-      let specificUrl = nextLayer._url.replace('{s}', 'a');
-
-      Object.entries(nextLayer.options).forEach(([key, value]) => {
-        specificUrl = specificUrl.replace(`{${key}}`, value);
-      });
+      const specificUrl = nextLayer._url.replace('{s}', 'a');
 
       this._switchLayer.setUrl(specificUrl);
 
