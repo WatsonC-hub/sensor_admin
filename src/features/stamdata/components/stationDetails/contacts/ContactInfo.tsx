@@ -74,7 +74,7 @@ const ContactInfo = () => {
       <FabWrapper
         icon={<PersonAddIcon />}
         text="Tilføj kontakt"
-        disabled={!user?.features.contacts || location_permissions !== 'edit'}
+        disabled={!user?.features?.contacts || location_permissions !== 'edit'}
         onClick={() => {
           reset();
           setOpenContactInfoDialog(true);

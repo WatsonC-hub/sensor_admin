@@ -8,7 +8,7 @@ type Props = {
   // For example:
   description?: string;
   url?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   // Add any other props you need
   color?: string;
 };
@@ -19,7 +19,7 @@ const TooltipWrapper = ({description = '', url, children, color = 'grey.700'}: P
       display="flex"
       alignItems="center"
       alignContent="center"
-      justifyContent="space-between"
+      justifyContent={children ? 'space-between' : 'end'}
       gap={1}
     >
       {children}
@@ -38,12 +38,14 @@ const TooltipWrapper = ({description = '', url, children, color = 'grey.700'}: P
           >
             {description && (
               <InfoOutlined
+                fontSize="small"
                 sx={{
                   color: color,
                 }}
               />
             )}
             <OpenInNewOutlinedIcon
+              fontSize="small"
               sx={{
                 color: color,
               }}
@@ -57,6 +59,7 @@ const TooltipWrapper = ({description = '', url, children, color = 'grey.700'}: P
             }}
           >
             <InfoOutlined
+              fontSize="small"
               sx={{
                 cursor: 'help',
                 color: color,

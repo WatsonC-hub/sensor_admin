@@ -16,7 +16,7 @@ export type Features = {
   tasks: TaskPermission;
   contacts: boolean;
   keys: boolean;
-  resources: boolean;
+  ressources: boolean;
   routesAndParking: boolean;
 };
 

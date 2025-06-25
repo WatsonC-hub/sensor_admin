@@ -11,12 +11,14 @@ import {getIcon} from '~/features/notifications/utils';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
+import {useUser} from '~/features/auth/useUser';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
 };
 
 const LocationListItem = ({itemData, onClick}: Props) => {
+  const user = useUser();
   const {tasks, setSelectedTask} = useTaskStore();
   const {isMobile} = useBreakpoints();
   const {handleRef, ref} = useDraggable({
@@ -53,7 +55,7 @@ const LocationListItem = ({itemData, onClick}: Props) => {
         },
       }}
     >
-      {!isMobile && (
+      {!isMobile && user?.advancedTaskPermission && (
         <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
           <DragIndicatorIcon ref={handleRef} sx={{cursor: 'grab'}} fontSize="small" />
         </Box>

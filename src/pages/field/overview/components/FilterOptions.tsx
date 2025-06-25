@@ -53,7 +53,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
   return (
     <FormProvider {...formMethods}>
       <TooltipWrapper
-        url="https://watsonc.dk/guides/filter-locations"
+        url="https://watsonc.dk/guides/kort-filtrering"
         description="Se guide til filtrering af lokationer"
       >
         <Typography variant="h6">Filtrer lokationer</Typography>
@@ -68,9 +68,14 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       <Grid container spacing={2}>
         {user?.features?.boreholeAccess && (
           <Grid item sm={user?.features?.iotAccess ? 6 : 12} flexGrow={1}>
+            {/* <TooltipWrapper
+              description="Boring filtre anvendes til at filtrere lokationer som er en del af et pejleprogram. Tryk på link ikonet for at læse mere om hvad pejleprogrammet er."
+              url="https://watsonc.dk/guides/filter-boreholes"
+            > */}
             <Typography variant="subtitle1">
-              <u>Boringer</u>
+              <u>Boring filtre</u>
             </Typography>
+            {/* </TooltipWrapper> */}
 
             <FormToggleGroup
               name="borehole.hasControlProgram"
@@ -93,21 +98,31 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             flexDirection="column"
             flexGrow={1}
           >
+            {/* <TooltipWrapper
+              description="IoT filtre anvendes til at filtrere lokationer baseret på forskellige parametre som f.eks. om de er serviceret af kunden, om de er inaktive, eller om de har notifikationer. Tryk på link ikonet for at læse mere om filtrering."
+              url="https://watsonc.dk/guides/filter-iot"
+            > */}
             <Typography variant="subtitle1">
               <u>Iot filtre</u>
             </Typography>
+            {/* </TooltipWrapper> */}
 
-            <FormToggleGroup
-              name="sensor.isCustomerService"
-              label="Serviceres af kunden"
-              noSelectValue={'indeterminate'}
-              onChangeCallback={handleSubmit(submit)}
-              values={[
-                {label: <Typography>Ja</Typography>, value: true},
-                // {label: <RemoveIcon />, value: 'indeterminate'},
-                {label: <Typography>Nej</Typography>, value: false},
-              ]}
-            />
+            <Typography variant="subtitle1">Serviceret af kunden</Typography>
+            {/* <TooltipWrapper description="Serviceret af kunden kan filtrere efter tre muligheder: Ja, Nej, eller ingen (hvis du ikke ønsker at filtrere på dette felt. Det indikeres ved at der hverken er valgt ja eller nej)."> */}
+            <Box>
+              <FormToggleGroup
+                name="sensor.isCustomerService"
+                label=""
+                noSelectValue={'indeterminate'}
+                onChangeCallback={handleSubmit(submit)}
+                values={[
+                  {label: <Typography>Ja</Typography>, value: true},
+                  // {label: <RemoveIcon />, value: 'indeterminate'},
+                  {label: <Typography>Nej</Typography>, value: false},
+                ]}
+              />
+            </Box>
+            {/* </TooltipWrapper> */}
             <FormControlLabel
               control={
                 <Controller
@@ -143,15 +158,19 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 onChangeCallback={handleSubmit(submit)}
               />
             )}
+            {/* <TooltipWrapper description="Skjul lokationer uden notifikationer kan filtrere lokationer baseret på om de har notifikationer eller ej. Hvis du vælger at skjule lokationer uden notifikationer, vil kun lokationer med aktive notifikationer blive vist."> */}
             <FormToggleSwitch
               name="sensor.hideLocationsWithoutNotifications"
               label="Skjul lokationer uden notifikationer"
+              sx={{mr: 0}}
               onChangeCallback={handleSubmit(submit)}
             />
+            {/* </TooltipWrapper> */}
           </Grid>
         )}
       </Grid>
       <Grid item xs={12}>
+        {/* <TooltipWrapper description="Lokationer kan filtreres baseret på forskellige notifikationstyper, såsom data sender ikke, lav iltindhold, eller andre specifikke notifikationstyper. Dette giver dig mulighed for at fokusere på de notifikationer, der er mest relevante for dig."> */}
         <Controller
           name="notificationTypes"
           control={control}
@@ -166,8 +185,13 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             />
           )}
         />
+        {/* </TooltipWrapper> */}
       </Grid>
       <Grid item xs={12}>
+        {/* <TooltipWrapper
+          description="Grupper kan filtrere lokationer som har samme gruppe tilknyttet. Dette kan være nyttigt for at organisere og sortere lokationer baseret på deres tilhørsforhold til specifikke grupper. Du kan vælge en eller flere grupper for at filtrere lokationer, der er en del af disse grupper."
+          // url="https://watsonc.dk/guides/filter-groups"
+        > */}
         <Controller
           name="groups"
           control={control}
@@ -184,6 +208,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             />
           )}
         />
+        {/* </TooltipWrapper> */}
       </Grid>
       {user?.advancedTaskPermission && (
         <Grid item xs={12}>

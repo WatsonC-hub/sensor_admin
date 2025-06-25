@@ -11,6 +11,7 @@ import {isSimpleTask} from '~/features/tasks/helpers';
 
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {useUser} from '~/features/auth/useUser';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 const sortTasks = (a: Task, b: Task) => {
   if ((a.blocks_notifications.includes(1) || a.blocks_notifications.includes(207)) && !a.is_created)
@@ -38,6 +39,8 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
     )
     .sort(sortTasks);
 
+    console.log(location_tasks)
+
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
       <Box
@@ -46,9 +49,14 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
         justifyContent={'space-between'}
         alignItems={'center'}
       >
-        <Typography variant="h6" fontWeight={'bold'}>
-          Opgaver
-        </Typography>
+        <TooltipWrapper
+          description="Opgaver kan oprettes ud fra notifikationer eller som manuelle opgaver. En opgave kan være simpel eller avanceret. En simpel opgave er en opgave, der ikke kræver yderligere information, mens en avanceret opgave kan have flere detaljer og krav. Dette har en betydning når man skal lave ture. Læs mere om opgaver i dokumentationen."
+          url="https://watsonc.dk/guides/tasks"
+        >
+          <Typography variant="h6" fontWeight={'bold'}>
+            Opgaver
+          </Typography>
+        </TooltipWrapper>
         <Tooltip
           title={
             location_data?.timeseries.length === 0
