@@ -2,7 +2,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 
-type User = {
+type OldUser = {
   user_id: number;
   org_id: number | null;
   boreholeAccess: boolean;
@@ -14,6 +14,23 @@ type User = {
   QAPermission: boolean;
   contactAndKeysPermission: boolean;
   ressourcePermission: boolean;
+};
+
+type User = {
+  user_id: number;
+  org_id: number | null;
+  superUser: boolean;
+  features: Features;
+};
+
+export type Features = {
+  iotAccess: boolean;
+  boreholeAccess: boolean;
+  // tasks: TaskPermission;
+  contacts: boolean;
+  keys: boolean;
+  ressources: boolean;
+  routesAndParking: boolean;
 };
 
 export const userQueryOptions = queryOptions({
@@ -31,5 +48,19 @@ export const userQueryOptions = queryOptions({
 export const useUser = () => {
   const {data} = useQuery(userQueryOptions);
 
-  return data as User;
+  const output: OldUser = {
+    user_id: data?.user_id ?? 0,
+    org_id: data?.org_id ?? null,
+    boreholeAccess: data?.features.boreholeAccess ?? false,
+    iotAccess: data?.features.iotAccess ?? false,
+    adminAccess: data?.superUser ?? false,
+    superUser: data?.superUser ?? false,
+    advancedTaskPermission: false,
+    simpleTaskPermission: false, // Assuming this is the same as advanced for now
+    QAPermission: true, // Assuming this is the same as ressources for now
+    contactAndKeysPermission: data?.features.contacts || data?.features.keys || false,
+    ressourcePermission: data?.features.ressources || false,
+  };
+
+  return (data == null ? null : output) as OldUser;
 };
