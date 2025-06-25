@@ -42,6 +42,10 @@ export type ID = string;
 
 // };
 
+export enum StatusEnum {
+  FIELD = 2,
+}
+
 export type Task = {
   id: ID;
   ts_id: number;
@@ -51,7 +55,7 @@ export type Task = {
   latitude: number;
   name: string;
   description: string | null;
-  status_id: number;
+  status_id: number | StatusEnum;
   status_name: string;
   status_category: 'unstarted' | 'started' | 'closed';
   due_date: string | null;

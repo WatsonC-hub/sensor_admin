@@ -1,4 +1,4 @@
-import {Box} from '@mui/material';
+import {Box, Tooltip} from '@mui/material';
 import Button from '~/components/Button';
 import LocationInfo from '~/features/station/components/sensorContent/LocationInfo';
 import TaskList from '~/features/station/components/sensorContent/TaskList';
@@ -15,6 +15,8 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import AddToTripDialog from './AddToTripDialog';
 import {useUser} from '~/features/auth/useUser';
+import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {StatusEnum} from '~/features/tasks/types';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
@@ -27,12 +29,17 @@ const SensorContent = () => {
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
   const user = useUser();
+  const {tasks} = useTaskStore();
 
   const {data: location} = useMapOverview({
     select: (data) => {
       return data.find((location) => location.loc_id === loc_id);
     },
   });
+
+  const enableDragToTrip = tasks?.some(
+    (task) => task.loc_id === loc_id && task.status_id == StatusEnum.FIELD
+  );
 
   return (
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">
@@ -45,32 +52,43 @@ const SensorContent = () => {
 
       {user?.advancedTaskPermission && (
         <Box display="flex" gap={2} flexDirection={'row'} alignSelf={'center'}>
-          {!isMobile ? (
-            <Box
-              display="flex"
-              ref={ref}
-              flexDirection={'row'}
-              alignItems={'center'}
-              alignSelf={'center'}
-            >
-              <Button
-                bttype="primary"
-                startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+          <Tooltip
+            title={
+              !enableDragToTrip
+                ? 'Lav en opgave til feltarbejde for at kunne trække til tur'
+                : 'Træk til tur for at tilføje opgaver'
+            }
+            arrow
+          >
+            {!isMobile ? (
+              <Box
+                display="flex"
+                ref={ref}
+                flexDirection={'row'}
+                alignItems={'center'}
+                alignSelf={'center'}
               >
-                Træk til tur
-              </Button>
-            </Box>
-          ) : (
-            <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
-              <Button
-                bttype="primary"
-                onClick={() => setOpenTripDialog(true)}
-                startIcon={<DriveEtaIcon sx={{cursor: 'auto'}} fontSize="small" />}
-              >
-                Tilføj til tur
-              </Button>
-            </Box>
-          )}
+                <Button
+                  bttype="primary"
+                  startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+                  disabled={!enableDragToTrip}
+                >
+                  Træk til tur
+                </Button>
+              </Box>
+            ) : (
+              <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>
+                <Button
+                  bttype="primary"
+                  onClick={() => setOpenTripDialog(true)}
+                  startIcon={<DriveEtaIcon sx={{cursor: 'auto'}} fontSize="small" />}
+                  disabled={!enableDragToTrip}
+                >
+                  Tilføj til tur
+                </Button>
+              </Box>
+            )}
+          </Tooltip>
         </Box>
       )}
 
