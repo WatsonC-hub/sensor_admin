@@ -63,7 +63,7 @@ const BatteryStatus = () => {
     <>
       {battery_status && (
         <Tooltip arrow title={<Box whiteSpace="pre-line">{tooltipText}</Box>} enterTouchDelay={0}>
-          <Box height="24px">
+          <Box height="24px" onClick={() => {}}>
             <BatteryIndicator percentage={(battery_status.battery_percentage ?? 0) * 100} />
           </Box>
         </Tooltip>
