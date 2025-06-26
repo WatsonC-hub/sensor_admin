@@ -110,7 +110,7 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     setAnchorEl(null);
   };
 
-  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter);
+  const numFilters = getNumberOfNonDefaultFilters(mapFilter, defaultMapFilter(user?.superUser));
   return (
     <>
       <Autocomplete

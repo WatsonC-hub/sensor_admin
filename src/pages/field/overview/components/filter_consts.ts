@@ -18,7 +18,7 @@ interface Filter {
   itineraries: SimpleItinerary[];
 }
 
-const defaultMapFilter: Required<Filter> = {
+const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
   freeText: '',
   borehole: {
     showHasControlProgram: true,
@@ -26,15 +26,15 @@ const defaultMapFilter: Required<Filter> = {
   },
   sensor: {
     showInactive: false,
-    showCustomerService: false,
-    showWatsonCService: false,
+    showCustomerService: !superUser,
+    showWatsonCService: superUser,
     isSingleMeasurement: false,
     hideLocationsWithoutNotifications: false,
   },
   notificationTypes: [],
   groups: [],
   itineraries: [],
-};
+});
 
 export {defaultMapFilter};
 export type {Filter};

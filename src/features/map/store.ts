@@ -12,8 +12,6 @@ type MapFilterState = {
 
   locIds: (number | string)[];
   setLocIds: (locIds: (number | string)[]) => void;
-
-  resetFilter: () => void;
 };
 
 const mapFilterStore = create<MapFilterState>()(
@@ -21,20 +19,16 @@ const mapFilterStore = create<MapFilterState>()(
     devtools((set) => ({
       search: '',
       setSearch: (search) => set({search}),
-      filters: {...defaultMapFilter},
+      filters: {...defaultMapFilter()},
       setFilters: (filters) => set({filters}),
       locIds: [],
       setLocIds: (locIds) => set({locIds}),
-      resetFilter: () =>
-        set({
-          filters: defaultMapFilter,
-        }),
     })),
     {
       name: 'calypso-map-filter',
       storage: createJSONStorage(() => localStorage),
       merge: (persistedState, currentState) => {
-        const merged = merge({filters: defaultMapFilter}, currentState, persistedState);
+        const merged = merge({filters: {...defaultMapFilter()}}, currentState, persistedState);
         return merged;
       },
     }
