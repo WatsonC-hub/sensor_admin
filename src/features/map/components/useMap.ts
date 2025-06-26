@@ -17,7 +17,7 @@ import {toast} from 'react-toastify';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
 import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
-import {LeafletMapRoute, Parking, PartialBy} from '~/types';
+import {BoreholeMapData, LeafletMapRoute, Parking, PartialBy} from '~/types';
 import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import {
@@ -259,23 +259,28 @@ const useMap = <TData extends object>(
     setPan(map.getCenter());
 
     const layer = markerLayerRef.current;
-    if (!layer) return;
+    // if (!layer) return;
 
     const parkingLayer = parkingLayerRef.current;
-    if (!parkingLayer) return;
+    // if (!parkingLayer) return;
 
     const geoJsonLayer = geoJsonRef.current;
-    if (!geoJsonLayer) return;
+    // if (!geoJsonLayer) return;
 
     const tooltipLayer = tooltipRef.current;
-    if (!tooltipLayer) return;
+    // if (!tooltipLayer) return;
 
-    if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
-      geoJsonLayer.addTo(map);
-    } else map.removeLayer(geoJsonLayer);
+    if (geoJsonLayer) {
+      if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
+        geoJsonLayer.addTo(map);
+      } else map.removeLayer(geoJsonLayer);
+    }
 
-    if (zoom > zoomThresholdForParking && parkings && parkings.length > 0) parkingLayer.addTo(map);
-    else map.removeLayer(parkingLayer);
+    if (parkingLayer) {
+      if (zoom > zoomThresholdForParking && parkings && parkings.length > 0)
+        parkingLayer.addTo(map);
+      else map.removeLayer(parkingLayer);
+    }
 
     const bounds = map.getBounds();
     const markersInViewport: (L.Marker | L.CircleMarker)[] = [];
@@ -289,9 +294,11 @@ const useMap = <TData extends object>(
 
     setLocIds(
       markersInViewport.map((marker) => {
-        if (marker instanceof L.Marker || marker instanceof L.CircleMarker) {
-          return marker.options.data?.loc_id;
+        const data = marker.options.data as MapOverview | BoreholeMapData;
+        if ('loc_id' in data) {
+          return data.loc_id;
         }
+        return data.boreholeno;
       })
     );
 
@@ -300,26 +307,27 @@ const useMap = <TData extends object>(
     } else {
       setIconSize(48);
     }
+    if (tooltipLayer) {
+      if (zoom > zoomThreshold || markersInViewport.length < markerNumThreshold) {
+        tooltipLayer.clearLayers();
 
-    if (zoom > zoomThreshold || markersInViewport.length < markerNumThreshold) {
-      tooltipLayer.clearLayers();
+        markersInViewport.forEach(function (layer) {
+          const tooltip = L.tooltip({
+            opacity: 0.7,
+            className: 'custom-tooltip',
+            permanent: true,
+            offset: [13, -1],
+          })
+            .setLatLng(layer.getLatLng())
+            .setContent(layer.options.title?.toString() || '');
 
-      markersInViewport.forEach(function (layer) {
-        const tooltip = L.tooltip({
-          opacity: 0.7,
-          className: 'custom-tooltip',
-          permanent: true,
-          offset: [13, -1],
-        })
-          .setLatLng(layer.getLatLng())
-          .setContent(layer.options.title?.toString() || '');
+          tooltip.addTo(tooltipLayer);
+        });
 
-        tooltip.addTo(tooltipLayer);
-      });
-
-      tooltipLayer.addTo(map);
-    } else {
-      map.removeLayer(tooltipLayer);
+        tooltipLayer.addTo(map);
+      } else {
+        map.removeLayer(tooltipLayer);
+      }
     }
   };
 
@@ -512,14 +520,14 @@ const useMap = <TData extends object>(
     mapRef.current = buildMap();
     parkingLayerRef.current = L.featureGroup().addTo(mapRef.current);
     markerLayerRef.current = L.markerClusterGroup({
-      disableClusteringAtZoom: 17,
-      spiderfyOnMaxZoom: false,
+      // disableClusteringAtZoom: 17,
+      spiderfyOnMaxZoom: true,
       removeOutsideVisibleBounds: true,
       maxClusterRadius: (zoom) => {
         if (zoom < 10) return 60;
         if (zoom < 12) return 50;
         if (zoom < 17) return 30;
-        return 80;
+        return 5;
       },
       zoomToBoundsOnClick: true,
       showCoverageOnHover: false,

@@ -17,7 +17,7 @@ const boreholeListOptions = () => {
       const {data} = await apiClient.get<Array<BoreholeData>>(`/sensor_field/borehole_list`);
       return data;
     },
-    enabled: user?.features.boreholeAccess,
+    enabled: user?.features?.boreholeAccess,
   });
 };
 
@@ -45,7 +45,7 @@ const boreholeSearchOptions = (boreholeno: string | undefined | null) => {
       boreholeno !== undefined &&
       boreholeno !== null &&
       boreholeno !== '' &&
-      user?.features.boreholeAccess,
+      user?.features?.boreholeAccess,
   });
 };
 

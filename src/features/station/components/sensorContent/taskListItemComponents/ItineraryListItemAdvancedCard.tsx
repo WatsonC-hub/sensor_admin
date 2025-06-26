@@ -1,5 +1,5 @@
 import {EditOutlined, Warning} from '@mui/icons-material';
-import {Box, Typography, Button, Grid2} from '@mui/material';
+import {Box, Typography, Button, Grid2, TextField} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -127,55 +127,76 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
           </Grid2>
         </Grid2>
         <Grid2 size={isMobile ? 6 : 4} display={'flex'} flexDirection={'row'} gap={1}>
-          <TaskForm.StatusSelect
-            onBlurCallback={(event) => {
-              if (typeof event !== 'number' && 'target' in event) {
-                const status = taskStatus?.find(
-                  (status) => status.id === parseInt(event.target.value)
-                );
-                if (status !== undefined && task.status_id !== status.id)
-                  patchTaskStatus(status.id);
-              }
-            }}
-            label={''}
-            sx={{
-              p: 0,
-              '& .MuiOutlinedInput-notchedOutline': {
-                fontSize: 'small',
-                borderRadius: 2.5,
-              },
+          {task.can_edit ? (
+            <TaskForm.StatusSelect
+              onBlurCallback={(event) => {
+                if (typeof event !== 'number' && 'target' in event) {
+                  const status = taskStatus?.find(
+                    (status) => status.id === parseInt(event.target.value)
+                  );
+                  if (status !== undefined && task.status_id !== status.id)
+                    patchTaskStatus(status.id);
+                }
+              }}
+              label={''}
+              sx={{
+                p: 0,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  fontSize: 'small',
+                  borderRadius: 2.5,
+                },
 
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: 'white',
-                borderRadius: 2.5,
-                fontSize: 'small',
-              },
-              '& .MuiInputLabel-root': {
-                backgroundColor: 'white',
-                transform: 'translate(10px, -9px) scale(0.9)',
-              },
-              '& .MuiSelect-select': {
-                padding: '4px !important',
-                pl: '14px !important',
-              },
-            }}
-          />
+                '& .MuiOutlinedInput-root': {
+                  backgroundColor: 'white',
+                  borderRadius: 2.5,
+                  fontSize: 'small',
+                },
+                '& .MuiInputLabel-root': {
+                  backgroundColor: 'white',
+                  transform: 'translate(10px, -9px) scale(0.9)',
+                },
+                '& .MuiSelect-select': {
+                  padding: '4px !important',
+                  pl: '14px !important',
+                },
+              }}
+            />
+          ) : (
+            <Box pt={0.5} alignItems="center">
+              <TextField
+                value={task.status_name}
+                disabled
+                size="small"
+                sx={{
+                  '& .MuiInputBase-input': {
+                    padding: '4px !important',
+                    fontSize: 'small',
+                  },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2.5,
+                  },
+                }}
+              />
+            </Box>
+          )}
         </Grid2>
         <Grid2 size={6}>
           <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
-            <EditOutlined
-              fontSize="small"
-              sx={{
-                color: 'grey.700',
-              }}
-            />
+            {task.can_edit && (
+              <EditOutlined
+                fontSize="small"
+                sx={{
+                  color: 'grey.700',
+                }}
+              />
+            )}
             <Button
               variant="text"
               size="small"
               onClick={() => setSelectedTask(task.id)}
               sx={{textTransform: 'initial', borderRadius: 2.5}}
             >
-              Rediger opgave
+              {task.can_edit ? 'Rediger opgave' : 'Se opgave'}
             </Button>
           </Box>
         </Grid2>

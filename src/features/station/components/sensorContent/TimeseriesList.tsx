@@ -19,9 +19,11 @@ const TimeseriesList = () => {
 
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
+      {/* <TooltipWrapper description=""> */}
       <Typography variant="h6" fontWeight={'bold'}>
         Tidsserier
       </Typography>
+      {/* </TooltipWrapper> */}
       {data?.map((timeseries, index) => {
         return (
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">

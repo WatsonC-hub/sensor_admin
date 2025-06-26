@@ -9,6 +9,9 @@ import {Box, Divider, Typography} from '@mui/material';
 import {useMapFilterStore} from '~/features/map/store';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import moment from 'moment';
+import TooltipWrapper from '~/components/TooltipWrapper';
+import {BoreholeMapData} from '~/types';
+import BoreholeListItem from './BoreholeListItem';
 
 function easeInOutQuint(t: number) {
   return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
@@ -18,19 +21,30 @@ const LocationListVirtualizer = () => {
   const {listFilteredData} = useFilteredMapData();
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollingRef = useRef<number>(0);
-  const setLocId = useDisplayState((state) => state.setLocId);
+  const [setLocId, setBoreholeNo] = useDisplayState((state) => [
+    state.setLocId,
+    state.setBoreholeNo,
+  ]);
   const getScrollElement = useCallback(() => parentRef.current, []);
   const insertionDirection = useRef<'forward' | 'backward'>('forward');
   const locIds = useMapFilterStore((state) => state.locIds);
-  const list: (MapOverview | 'divider')[] = listFilteredData
-    .filter((item) => 'loc_id' in item)
+  const list: (MapOverview | BoreholeMapData | 'divider')[] = listFilteredData
+    .filter((item) => typeof item === 'object')
     .sort((a, b) => {
-      if (moment(a.due_date).isBefore(b.due_date)) return -1;
-      if (moment(a.due_date).isAfter(b.due_date)) return 1;
+      if ('loc_id' in a && 'loc_id' in b) {
+        // tasks that are in locIds should be at the top of the list
+        if (moment(a.due_date).isBefore(b.due_date)) return -1;
+        if (moment(a.due_date).isAfter(b.due_date)) return 1;
+      }
+      if ('loc_id' in a) return -1;
+      if ('loc_id' in b) return 1;
       return 0;
     });
 
-  const boolArray = list.map((item) => typeof item == 'object' && locIds.includes(item?.loc_id));
+  const boolArray = list.map((item) => {
+    if (typeof item == 'object' && 'loc_id' in item) return locIds.includes(item?.loc_id);
+    return true;
+  });
   const firstNotInLocIds = boolArray.indexOf(false);
 
   if (firstNotInLocIds !== -1) {
@@ -120,7 +134,9 @@ const LocationListVirtualizer = () => {
                   ref={(element) => virtualizer.measureElement(element)}
                 >
                   <Box px={1} py={2} borderTop={2} borderColor="grey.700">
-                    <Typography variant="h6">Uden for zoom</Typography>
+                    <TooltipWrapper description=" Uden for zoom viser de lokationer som ligger udenfor det nuværende kortudsnit.">
+                      <Typography variant="h6">Uden for zoom</Typography>
+                    </TooltipWrapper>
                   </Box>
                 </div>
               </div>
@@ -148,7 +164,14 @@ const LocationListVirtualizer = () => {
                     width: '100%',
                   }}
                 >
-                  <LocationListItem itemData={item} onClick={() => setLocId(item.loc_id)} />
+                  {'loc_id' in item ? (
+                    <LocationListItem itemData={item} onClick={() => setLocId(item.loc_id)} />
+                  ) : (
+                    <BoreholeListItem
+                      itemData={item}
+                      onClick={() => setBoreholeNo(item.boreholeno)}
+                    />
+                  )}
                   {virtualRow.index !==
                     list.length -
                       1 -

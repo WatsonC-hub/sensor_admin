@@ -157,14 +157,16 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                 </Typography>
               </Grid2>
             )}
-            <Grid2 size={6} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
-              {task.can_edit ? (
-                <>
+            {task.can_edit ? (
+              <Grid2 container size={6}>
+                <Grid2 size={2} alignItems={'center'} display={'flex'}>
                   <Person
                     sx={{
                       color: 'grey.700',
                     }}
                   />
+                </Grid2>
+                <Grid2 size={10}>
                   <TaskForm.AssignedToSelect
                     onBlurCallback={(e) => {
                       if (typeof e === 'object' && 'value' in e.target) {
@@ -178,7 +180,6 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                     sx={{
                       p: 0,
                       size: 'small',
-                      width: 150,
                       '& .MuiOutlinedInput-notchedOutline': {
                         fontSize: 'small',
                         borderRadius: 2.5,
@@ -197,10 +198,12 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                       },
                     }}
                   />
-                </>
-              ) : (
+                </Grid2>
+              </Grid2>
+            ) : (
+              <Grid2 size={6}>
                 <Box display={'flex'} flexDirection={'row'} gap={0.5} pt={0.5} alignItems="center">
-                  <Person fontSize="small" />
+                  <Person />
                   <TextField
                     value={task.assigned_display_name ?? ''}
                     disabled
@@ -210,18 +213,15 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                         padding: '4px !important',
                         fontSize: 'small',
                       },
-                      '& .MuiInput-underline:before': {
-                        borderBottom: 'none',
-                      },
-                      '& .MuiInput-underline:after': {
-                        borderBottom: 'none',
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2.5,
                       },
                     }}
                   />
                 </Box>
-              )}
-            </Grid2>
-            <Grid2 size={6} display={'flex'} flexDirection={'row'} gap={1} alignItems="center">
+              </Grid2>
+            )}
+            <Grid2 size={6}>
               {task.can_edit ? (
                 <TaskForm.StatusSelect
                   disabled={!task.can_edit}
@@ -256,7 +256,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   }}
                 />
               ) : (
-                <Box display={'flex'} flexDirection={'row'} gap={0.5} pt={0.5} alignItems="center">
+                <Box pt={0.5} alignItems="center">
                   <TextField
                     value={task.status_name}
                     disabled
@@ -265,12 +265,10 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                       '& .MuiInputBase-input': {
                         padding: '4px !important',
                         fontSize: 'small',
+                        borderRadius: 2.5,
                       },
-                      '& .MuiInput-underline:before': {
-                        borderBottom: 'none',
-                      },
-                      '& .MuiInput-underline:after': {
-                        borderBottom: 'none',
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2.5,
                       },
                     }}
                   />
