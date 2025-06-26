@@ -126,11 +126,12 @@ export const useFilteredMapData = () => {
 
   const listFilteredData = useMemo(() => {
     let filteredList = mapFilteredData;
-    if (locIds.length > 0 && assignedToListFilter == null) {
+    if (assignedToListFilter == null) {
       const filteredLocIds = new Set(locIds);
-      filteredList = mapFilteredData.filter(
-        (elem) => 'loc_id' in elem && filteredLocIds.has(elem.loc_id)
-      );
+      filteredList = mapFilteredData.filter((elem) => {
+        if ('loc_id' in elem) return filteredLocIds.has(elem.loc_id);
+        return filteredLocIds.has(elem.boreholeno);
+      });
     }
 
     if (assignedToListFilter) {

@@ -6,7 +6,6 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useAppContext} from '~/state/contexts';
 import {CalendarIcon} from '@mui/x-date-pickers';
-import TooltipWrapper from '~/components/TooltipWrapper';
 
 const TimeseriesList = () => {
   const {loc_id} = useAppContext(['loc_id']);
@@ -20,11 +19,11 @@ const TimeseriesList = () => {
 
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
-      <TooltipWrapper description="Tryk på tidsserie navnet til højre for ikonet for at åbne tidsserien. I tilfælde af at der er en notifikation eller opgave knyttet til tidsserien, vil datoen for notifikationen/opgaven blive vist til højre for tidsserien.">
-        <Typography variant="h6" fontWeight={'bold'}>
-          Tidsserier
-        </Typography>
-      </TooltipWrapper>
+      {/* <TooltipWrapper description=""> */}
+      <Typography variant="h6" fontWeight={'bold'}>
+        Tidsserier
+      </Typography>
+      {/* </TooltipWrapper> */}
       {data?.map((timeseries, index) => {
         return (
           <Box key={index} display="flex" justifyContent={'space-between'} alignItems="center">

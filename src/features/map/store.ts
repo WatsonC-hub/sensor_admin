@@ -10,8 +10,8 @@ type MapFilterState = {
   filters: Filter;
   setFilters: (filters: Filter) => void;
 
-  locIds: number[];
-  setLocIds: (locIds: number[]) => void;
+  locIds: (number | string)[];
+  setLocIds: (locIds: (number | string)[]) => void;
 
   resetFilter: () => void;
 };

@@ -17,7 +17,6 @@ import AddToTripDialog from './AddToTripDialog';
 import {useUser} from '~/features/auth/useUser';
 import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {StatusEnum} from '~/features/tasks/types';
-import TooltipWrapper from '~/components/TooltipWrapper';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
@@ -69,15 +68,13 @@ const SensorContent = () => {
                 alignItems={'center'}
                 alignSelf={'center'}
               >
-                <TooltipWrapper description="Træk for at tilføje denne lokation til en eksisterende tur. Når du trækker lokationen, vil tur listen automatisk blive vist.">
-                  <Button
-                    bttype="primary"
-                    startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
-                    disabled={!enableDragToTrip}
-                  >
-                    Træk til tur
-                  </Button>
-                </TooltipWrapper>
+                <Button
+                  bttype="primary"
+                  startIcon={<DragIndicatorIcon sx={{cursor: 'grab'}} fontSize="small" />}
+                  disabled={!enableDragToTrip}
+                >
+                  Træk til tur
+                </Button>
               </Box>
             ) : (
               <Box display="flex" flexDirection={'row'} alignItems={'center'} alignSelf={'center'}>

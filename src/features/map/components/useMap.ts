@@ -17,7 +17,7 @@ import {toast} from 'react-toastify';
 import {useParkering} from '~/features/parkering/api/useParkering';
 import {useLeafletMapRoute} from '~/features/parkeringRute/api/useLeafletMapRoute';
 import {useMapUtilityStore, mapUtilityStore} from '~/state/store';
-import {LeafletMapRoute, Parking, PartialBy} from '~/types';
+import {BoreholeMapData, LeafletMapRoute, Parking, PartialBy} from '~/types';
 import dropletSVG from '~/features/notifications/icons/droplet.svg?raw';
 
 import {
@@ -289,9 +289,11 @@ const useMap = <TData extends object>(
 
     setLocIds(
       markersInViewport.map((marker) => {
-        if (marker instanceof L.Marker || marker instanceof L.CircleMarker) {
-          return marker.options.data?.loc_id;
+        const data = marker.options.data as MapOverview | BoreholeMapData;
+        if ('loc_id' in data) {
+          return data.loc_id;
         }
+        return data.boreholeno;
       })
     );
 
