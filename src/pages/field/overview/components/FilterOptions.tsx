@@ -25,7 +25,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
     state.setLocIds,
   ]);
 
-  const formMethods = useForm<Filter>({values: filters});
+  const formMethods = useForm<Filter>({defaultValues: filters});
 
   const submit = (data: Filter) => {
     setMapFilter(data);
@@ -36,9 +36,9 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
 
   const resetFilters = () => {
     const mapFilter: Filter = {
-      ...defaultMapFilter,
+      ...defaultMapFilter(user?.superUser),
       sensor: {
-        ...defaultMapFilter.sensor,
+        ...defaultMapFilter(user?.superUser).sensor,
         showCustomerService: user?.superUser ? false : true,
         showWatsonCService: user?.superUser ? true : false,
       },
