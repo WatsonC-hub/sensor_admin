@@ -36,6 +36,8 @@ const LocationListVirtualizer = () => {
         if (moment(a.due_date).isBefore(b.due_date)) return -1;
         if (moment(a.due_date).isAfter(b.due_date)) return 1;
       }
+      if ('loc_id' in a) return -1;
+      if ('loc_id' in b) return 1;
       return 0;
     });
 
