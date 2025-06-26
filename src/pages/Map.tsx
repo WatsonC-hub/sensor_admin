@@ -31,6 +31,10 @@ import {useUser} from '~/features/auth/useUser';
 import {debounce} from 'lodash';
 import {locationInfoOptions} from '~/features/station/api/useLocationInfo';
 import {searchBorehole} from '~/features/station/api/useBorehole';
+import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
+import {SelectionCommand} from '~/features/commandpalette/components/CommandContext';
+
+import {NotListedLocation} from '@mui/icons-material';
 
 interface LocItems {
   name: string;
@@ -43,7 +47,7 @@ interface MapProps {
 }
 
 const Map = ({clickCallback}: MapProps) => {
-  const {createStamdata} = useNavigationFunctions();
+  const {createStamdata, location} = useNavigationFunctions();
   const [setSelectLocId, setEditRouteLayer, setEditParkingLayer] = useMapUtilityStore((state) => [
     state.setSelectedLocId,
     state.setEditRouteLayer,
@@ -220,37 +224,67 @@ const Map = ({clickCallback}: MapProps) => {
     return marker;
   };
 
+  const createHiddenLocationMarker = (loc_name: string) => {
+    // @ts-expect-error Getlayers returns markers
+    const markers: L.Marker[] = markerLayer.getLayers();
+    const marker = markers.find((marker) => marker.options.title == loc_name);
+
+    if (marker) {
+      marker.openPopup();
+      map?.flyTo(marker.getLatLng(), 14, {animate: false});
+      marker.fire('click');
+      setExtraData(null);
+      setSelectedMarker(marker.options.data);
+    } else {
+      const newData = data
+        ?.filter((item) => 'loc_id' in item)
+        .find((item) => item.loc_name == loc_name);
+
+      if (newData) {
+        const hiddenMarker = createLocationMarker(newData);
+        setExtraData(newData);
+        setSelectedMarker(newData);
+        if (hiddenMarker) {
+          // hightlightedMarker = marker;
+          hiddenMarker.openPopup();
+          map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
+          hiddenMarker.fire('click');
+        }
+      }
+    }
+  };
+
+  usePageActions([
+    {
+      id: 'searchLocations',
+      name: 'Søg i lokationer',
+      type: 'selection',
+      perform: (inp) => {
+        createHiddenLocationMarker(inp.loc_name);
+        map?.flyTo([inp.latitude, inp.longitude], 14, {animate: false});
+        location(inp.loc_id);
+      },
+      icon: <NotListedLocation />,
+      shortcut: 'S',
+      options: data
+        ?.filter((item) => 'loc_id' in item)
+        ?.map((item) => ({
+          label: item.loc_name,
+          value: item,
+        })), // This will be populated dynamically
+      filter: (value, search) => {
+        // Filter function to match loc_name with search term
+        return value.loc_name.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+      },
+      group: 'Generelt',
+    } as SelectionCommand<MapOverview>,
+  ]);
+
   const handleSearchSelect = useCallback(
     async (e: SyntheticEvent, value: string | LocItems | null) => {
       if (value !== null && typeof value == 'object' && markerLayer && map) {
         if (value.sensor) {
-          // @ts-expect-error Getlayers returns markers
-          const markers: L.Marker[] = markerLayer.getLayers();
-          const marker = markers.find((marker) => marker.options.title == value.name);
-
-          if (marker) {
-            marker.openPopup();
-            map?.flyTo(marker.getLatLng(), 14, {animate: false});
-            marker.fire('click');
-            setExtraData(null);
-            setSelectedMarker(marker.options.data);
-          } else {
-            const newData = data
-              ?.filter((item) => 'loc_id' in item)
-              .find((item) => item.loc_name == value.name);
-
-            if (newData) {
-              const hiddenMarker = createLocationMarker(newData);
-              setExtraData(newData);
-              setSelectedMarker(newData);
-              if (hiddenMarker) {
-                // hightlightedMarker = marker;
-                hiddenMarker.openPopup();
-                map?.flyTo(hiddenMarker.getLatLng(), 14, {animate: false});
-                hiddenMarker.fire('click');
-              }
-            }
-          }
+          createHiddenLocationMarker(value.name);
         } else {
           const data = await searchBorehole(value.name)();
 
