@@ -303,7 +303,7 @@ const Map = ({clickCallback}: MapProps) => {
         }
       }
     },
-    [markerLayer]
+    [markerLayer, createHiddenLocationMarker]
   );
 
   useEffect(() => {
