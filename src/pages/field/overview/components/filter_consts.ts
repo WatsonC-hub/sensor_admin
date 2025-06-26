@@ -1,15 +1,15 @@
 import type {Group, SimpleItinerary} from '~/types';
 
-type Inderterminate = boolean | 'indeterminate';
-
 interface Filter {
   freeText?: string;
   borehole: {
-    hasControlProgram: Inderterminate;
+    showHasControlProgram: boolean;
+    showNoControlProgram: boolean;
   };
   sensor: {
     showInactive: boolean;
-    isCustomerService: Inderterminate;
+    showCustomerService: boolean;
+    showWatsonCService: boolean;
     isSingleMeasurement: boolean;
     hideLocationsWithoutNotifications: boolean;
   };
@@ -21,11 +21,13 @@ interface Filter {
 const defaultMapFilter: Required<Filter> = {
   freeText: '',
   borehole: {
-    hasControlProgram: 'indeterminate',
+    showHasControlProgram: true,
+    showNoControlProgram: true,
   },
   sensor: {
     showInactive: false,
-    isCustomerService: 'indeterminate',
+    showCustomerService: false,
+    showWatsonCService: false,
     isSingleMeasurement: false,
     hideLocationsWithoutNotifications: false,
   },

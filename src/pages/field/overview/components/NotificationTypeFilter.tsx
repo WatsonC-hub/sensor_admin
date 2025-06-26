@@ -83,7 +83,7 @@ const NotificationTypeFilter = ({setValue, value, onBlur, label = 'Notifikatione
           InputLabelProps={{shrink: true}}
           variant="outlined"
           label={label}
-          placeholder="Indtast notifikation type"
+          placeholder="Vælg notifikations type(r)"
           onBlur={onBlur}
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {

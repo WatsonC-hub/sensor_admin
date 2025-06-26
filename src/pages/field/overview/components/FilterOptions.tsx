@@ -1,17 +1,14 @@
 import {CloseOutlined, RestartAlt} from '@mui/icons-material';
-import {Box, Typography, FormControlLabel, Checkbox, Divider, Grid} from '@mui/material';
+import {Box, Typography, Grid} from '@mui/material';
 import React from 'react';
 import {useForm, FormProvider, Controller} from 'react-hook-form';
 
 import Button from '~/components/Button';
-import FormInput from '~/components/FormInput';
-import FormToggleGroup from '~/components/FormToggleGroup';
 import FormToggleSwitch from '~/components/FormToggleSwitch';
 import {useUser} from '~/features/auth/useUser';
 import {useMapFilterStore} from '~/features/map/store';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
 import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter_consts';
-import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import HighlightItineraries from './HighlightItineraries';
 import NotificationTypeFilter from './NotificationTypeFilter';
 import TooltipWrapper from '~/components/TooltipWrapper';
@@ -42,7 +39,8 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       ...defaultMapFilter,
       sensor: {
         ...defaultMapFilter.sensor,
-        isCustomerService: user?.superUser ? false : true,
+        showCustomerService: user?.superUser ? false : true,
+        showWatsonCService: user?.superUser ? true : false,
       },
     };
 
@@ -58,36 +56,52 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
       >
         <Typography variant="h6">Filtrer lokationer</Typography>
       </TooltipWrapper>
-      <FormInput
+      {/* <FormInput
         name="freeText"
         label="Fritekst filtrering"
         placeholder="Indtast filtreringstekst..."
         onBlurCallback={() => handleSubmit(submit)()}
-      />
-      <Divider />
-      <Grid container spacing={2}>
+      /> */}
+      {/* <Divider /> */}
+      <Grid container spacing={0}>
         {user?.features?.boreholeAccess && (
-          <Grid item sm={user?.features?.iotAccess ? 6 : 12} flexGrow={1}>
+          <Grid
+            item
+            sm={user?.features?.iotAccess ? 6 : 12}
+            display="flex"
+            flexDirection="column"
+            flexGrow={1}
+            gap={1}
+          >
             {/* <TooltipWrapper
               description="Boring filtre anvendes til at filtrere lokationer som er en del af et pejleprogram. Tryk på link ikonet for at læse mere om hvad pejleprogrammet er."
               url="https://watsonc.dk/guides/filter-boreholes"
             > */}
-            <Typography variant="subtitle1">
-              <u>Boring filtre</u>
-            </Typography>
+            <Typography variant="subtitle1">Borings filtre</Typography>
             {/* </TooltipWrapper> */}
 
-            <FormToggleGroup
-              name="borehole.hasControlProgram"
-              label="Del af pejleprogram"
-              noSelectValue={'indeterminate'}
-              onChangeCallback={handleSubmit(submit)}
-              values={[
-                {label: <Typography>Ja</Typography>, value: true},
-                // {label: <RemoveIcon />, value: 'indeterminate'},
-                {label: <Typography>Nej</Typography>, value: false},
-              ]}
-            />
+            <TooltipWrapper
+              description="Vis boringer som har et pejleprogram tilknyttet. "
+              withIcon={false}
+            >
+              <FormToggleSwitch
+                name="borehole.showHasControlProgram"
+                label="Har kontrolprogram"
+                sx={{mr: 0}}
+                onChangeCallback={handleSubmit(submit)}
+              />
+            </TooltipWrapper>
+            <TooltipWrapper
+              description="Vis boringer som ikke har et pejleprogram tilknyttet. "
+              withIcon={false}
+            >
+              <FormToggleSwitch
+                name="borehole.showNoControlProgram"
+                label="Har ikke kontrolprogram"
+                sx={{mr: 0}}
+                onChangeCallback={handleSubmit(submit)}
+              />
+            </TooltipWrapper>
           </Grid>
         )}
         {user?.features?.iotAccess && (
@@ -97,75 +111,68 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
             display="flex"
             flexDirection="column"
             flexGrow={1}
+            gap={1}
           >
             {/* <TooltipWrapper
               description="IoT filtre anvendes til at filtrere lokationer baseret på forskellige parametre som f.eks. om de er serviceret af kunden, om de er inaktive, eller om de har notifikationer. Tryk på link ikonet for at læse mere om filtrering."
               url="https://watsonc.dk/guides/filter-iot"
             > */}
-            <Typography variant="subtitle1">
-              <u>Iot filtre</u>
-            </Typography>
+            <Typography variant="subtitle1">IoT filtre</Typography>
             {/* </TooltipWrapper> */}
 
-            <Typography variant="subtitle1">Serviceret af kunden</Typography>
-            {/* <TooltipWrapper description="Serviceret af kunden kan filtrere efter tre muligheder: Ja, Nej, eller ingen (hvis du ikke ønsker at filtrere på dette felt. Det indikeres ved at der hverken er valgt ja eller nej)."> */}
-            <Box>
-              <FormToggleGroup
-                name="sensor.isCustomerService"
-                label=""
-                noSelectValue={'indeterminate'}
-                onChangeCallback={handleSubmit(submit)}
-                values={[
-                  {label: <Typography>Ja</Typography>, value: true},
-                  // {label: <RemoveIcon />, value: 'indeterminate'},
-                  {label: <Typography>Nej</Typography>, value: false},
-                ]}
-              />
-            </Box>
             {/* </TooltipWrapper> */}
-            <FormControlLabel
-              control={
-                <Controller
-                  control={control}
-                  name="sensor.showInactive"
-                  render={({field: {value, onChange, ...field}}) => (
-                    <Checkbox
-                      {...field}
-                      onChange={(e) => {
-                        onChange(e);
-                        handleSubmit(submit)();
-                      }}
-                      checked={!!value}
-                    />
-                  )}
-                />
-              }
-              label={
-                <Typography
-                  variant="body1"
-                  component="span"
-                  sx={{display: 'flex', gap: 1, alignItems: 'center'}}
-                >
-                  <NotificationIcon iconDetails={{color: 'grey'}} />
-                  Vis inaktive lokationer
-                </Typography>
-              }
-            />
+            <TooltipWrapper
+              description="Vis lokationer som serviceres af kunden. "
+              withIcon={false}
+            >
+              <FormToggleSwitch
+                name="sensor.showCustomerService"
+                label="Serviceres af kunden"
+                sx={{mr: 0}}
+                onChangeCallback={handleSubmit(submit)}
+              />
+            </TooltipWrapper>
+            <TooltipWrapper
+              description="Vis lokationer som serviceres af WatsonC. "
+              withIcon={false}
+            >
+              <FormToggleSwitch
+                name="sensor.showWatsonCService"
+                label="Serviceres af WatsonC"
+                sx={{mr: 0}}
+                onChangeCallback={handleSubmit(submit)}
+              />
+            </TooltipWrapper>
+            <TooltipWrapper
+              description="Vis lokaliteter der er inactive, men hvor der tidligere er indsamlet kontinuerte data"
+              withIcon={false}
+            >
+              <FormToggleSwitch
+                name="sensor.showInactive"
+                label="Inaktive målestationer"
+                sx={{mr: 0}}
+                onChangeCallback={handleSubmit(submit)}
+              />
+            </TooltipWrapper>
+
             {user?.superUser && (
               <FormToggleSwitch
                 name="sensor.isSingleMeasurement"
-                label="Vis kun enkeltmålinger"
+                label="Enkeltmålestationer"
                 onChangeCallback={handleSubmit(submit)}
               />
             )}
-            {/* <TooltipWrapper description="Skjul lokationer uden notifikationer kan filtrere lokationer baseret på om de har notifikationer eller ej. Hvis du vælger at skjule lokationer uden notifikationer, vil kun lokationer med aktive notifikationer blive vist."> */}
-            <FormToggleSwitch
-              name="sensor.hideLocationsWithoutNotifications"
-              label="Skjul lokationer uden notifikationer"
-              sx={{mr: 0}}
-              onChangeCallback={handleSubmit(submit)}
-            />
-            {/* </TooltipWrapper> */}
+            <TooltipWrapper
+              withIcon={false}
+              description="Viser kun lokaliteter hvor der er notifikationer eller opgaver"
+            >
+              <FormToggleSwitch
+                name="sensor.hideLocationsWithoutNotifications"
+                label="Skjul lokationer uden notifikationer"
+                sx={{mr: 0}}
+                onChangeCallback={handleSubmit(submit)}
+              />
+            </TooltipWrapper>
           </Grid>
         )}
       </Grid>
@@ -181,7 +188,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 onChange(value);
                 handleSubmit(submit)();
               }}
-              label="Notifikationer"
+              label="Vis notifikationer"
             />
           )}
         />
@@ -202,7 +209,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 onChange(value);
                 handleSubmit(submit)();
               }}
-              label="Filtrer grupper"
+              label="Vis grupper"
               disableLink
               creatable={false}
             />
@@ -222,7 +229,7 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                   onChange(value);
                   handleSubmit(submit)();
                 }}
-                label="Fremhæv ture"
+                label="Vis serviceture"
               />
             )}
           />

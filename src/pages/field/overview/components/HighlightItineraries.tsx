@@ -1,7 +1,6 @@
 import {Autocomplete, Chip, TextField, Typography} from '@mui/material';
 import React from 'react';
 import {Noop} from 'react-hook-form';
-import TooltipWrapper from '~/components/TooltipWrapper';
 import {ItineraryColors} from '~/features/notifications/consts';
 import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -112,7 +111,7 @@ const HighlightItineraries = ({setValue, value, onBlur, label = 'Itineraries'}: 
           InputLabelProps={{shrink: true}}
           variant="outlined"
           label={label}
-          placeholder="Indtast tur navn..."
+          placeholder="Vælg tur(e)"
           onBlur={onBlur}
           sx={{
             '& .MuiInputBase-input.Mui-disabled': {
