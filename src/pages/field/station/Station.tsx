@@ -111,7 +111,7 @@ export default function Station() {
           <ContactInfo />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.HUSKELISTE && user?.features.resources && (
+      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && (
         <StationPageBoxLayout>
           <Huskeliste />
         </StationPageBoxLayout>

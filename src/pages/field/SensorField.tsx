@@ -9,7 +9,6 @@ import ScanComponent from '~/components/ScanComponent';
 import LocationRouter from '~/features/station/components/LocationRouter';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import BoreholeRouter from '~/pages/field/boreholeno/BoreholeRouter';
-import OverviewPage from '~/pages/field/overview/OverviewPage';
 import {captureDialogAtom} from '~/state/atoms';
 import BoreholeRouterProvider from '~/state/BoreholeRouterProvider';
 import CreateStamdataProvider from '~/state/CreateStamdataProvider';
@@ -76,7 +75,7 @@ function SensorField() {
     <div className="App">
       {open && <CaptureDialog open={open} handleClose={handleClose} handleScan={handleScan} />}
       <Routes>
-        <Route path="/" element={<OverviewPage />} />
+        {/* <Route path="/" element={<OverviewPage />} /> */}
         <Route
           path="location/:locid/:ts_id"
           element={

@@ -23,6 +23,7 @@ import {useMapFilterStore} from '~/features/map/store';
 import {ItineraryColors} from '~/features/notifications/consts';
 import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore} from '@mui/icons-material';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 export function Droppable({
   id,
@@ -115,21 +116,26 @@ const TaskItiniaries = () => {
       overflow={'hidden'}
     >
       <Box px={1}>
-        <Button
-          bttype="primary"
-          onClick={() => {
-            setOpenDialog(true);
-          }}
-          sx={{
-            width: '100%',
-            height: 40,
-            borderRadius: 2.5,
-            fontSize: 'small',
-            fontWeight: 'bold',
-          }}
+        <TooltipWrapper
+          description="Læs mere om ture i vores dokumentation for at få et bedre overblik over hvordan du kan bruge ture i Field appen"
+          url="https://watsonc.dk/guides/field#ture"
         >
-          Opret ny tur
-        </Button>
+          <Button
+            bttype="primary"
+            onClick={() => {
+              setOpenDialog(true);
+            }}
+            sx={{
+              width: '100%',
+              height: 40,
+              borderRadius: 2.5,
+              fontSize: 'small',
+              fontWeight: 'bold',
+            }}
+          >
+            Opret ny tur
+          </Button>
+        </TooltipWrapper>
       </Box>
       {data && (
         <Box overflow={'auto'} pb={0.5}>

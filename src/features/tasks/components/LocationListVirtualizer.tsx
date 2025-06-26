@@ -9,6 +9,7 @@ import {Box, Divider, Typography} from '@mui/material';
 import {useMapFilterStore} from '~/features/map/store';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import moment from 'moment';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 function easeInOutQuint(t: number) {
   return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
@@ -120,7 +121,9 @@ const LocationListVirtualizer = () => {
                   ref={(element) => virtualizer.measureElement(element)}
                 >
                   <Box px={1} py={2} borderTop={2} borderColor="grey.700">
-                    <Typography variant="h6">Uden for zoom</Typography>
+                    <TooltipWrapper description=" Uden for zoom viser de lokationer som ligger udenfor det nuværende kortudsnit.">
+                      <Typography variant="h6">Uden for zoom</Typography>
+                    </TooltipWrapper>
                   </Box>
                 </div>
               </div>

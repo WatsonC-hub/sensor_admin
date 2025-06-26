@@ -48,7 +48,9 @@ const PejlingBoreholeForm = () => {
         )}
       </Grid2>
       <CompoundPejling.Correction />
-      <CompoundPejling.Comment />
+      <Grid2 size={12}>
+        <CompoundPejling.Comment fullWidth />
+      </Grid2>
     </Grid2>
   );
 };

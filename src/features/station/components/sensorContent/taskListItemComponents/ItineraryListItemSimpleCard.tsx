@@ -35,19 +35,21 @@ const ItineraryListItemSimpleCard = ({task}: Props) => {
         </Grid2>
         <Grid2 size={6} gap={1}>
           <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
-            <EditOutlined
-              fontSize="small"
-              sx={{
-                color: 'grey.700',
-              }}
-            />
+            {task.can_edit && (
+              <EditOutlined
+                fontSize="small"
+                sx={{
+                  color: 'grey.700',
+                }}
+              />
+            )}
             <Button
               variant="text"
               size="small"
               onClick={() => setSelectedTask(task.id)}
               sx={{textTransform: 'initial', borderRadius: 2.5}}
             >
-              Rediger opgave
+              {task.can_edit ? 'Rediger opgave' : 'Se opgave'}
             </Button>
           </Box>
         </Grid2>
