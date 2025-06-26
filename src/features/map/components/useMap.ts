@@ -259,23 +259,28 @@ const useMap = <TData extends object>(
     setPan(map.getCenter());
 
     const layer = markerLayerRef.current;
-    if (!layer) return;
+    // if (!layer) return;
 
     const parkingLayer = parkingLayerRef.current;
-    if (!parkingLayer) return;
+    // if (!parkingLayer) return;
 
     const geoJsonLayer = geoJsonRef.current;
-    if (!geoJsonLayer) return;
+    // if (!geoJsonLayer) return;
 
     const tooltipLayer = tooltipRef.current;
-    if (!tooltipLayer) return;
+    // if (!tooltipLayer) return;
 
-    if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
-      geoJsonLayer.addTo(map);
-    } else map.removeLayer(geoJsonLayer);
+    if (geoJsonLayer) {
+      if (zoom > zoomThresholdForParking && leafletMapRoutes && leafletMapRoutes.length > 0) {
+        geoJsonLayer.addTo(map);
+      } else map.removeLayer(geoJsonLayer);
+    }
 
-    if (zoom > zoomThresholdForParking && parkings && parkings.length > 0) parkingLayer.addTo(map);
-    else map.removeLayer(parkingLayer);
+    if (parkingLayer) {
+      if (zoom > zoomThresholdForParking && parkings && parkings.length > 0)
+        parkingLayer.addTo(map);
+      else map.removeLayer(parkingLayer);
+    }
 
     const bounds = map.getBounds();
     const markersInViewport: (L.Marker | L.CircleMarker)[] = [];
@@ -302,26 +307,27 @@ const useMap = <TData extends object>(
     } else {
       setIconSize(48);
     }
+    if (tooltipLayer) {
+      if (zoom > zoomThreshold || markersInViewport.length < markerNumThreshold) {
+        tooltipLayer.clearLayers();
 
-    if (zoom > zoomThreshold || markersInViewport.length < markerNumThreshold) {
-      tooltipLayer.clearLayers();
+        markersInViewport.forEach(function (layer) {
+          const tooltip = L.tooltip({
+            opacity: 0.7,
+            className: 'custom-tooltip',
+            permanent: true,
+            offset: [13, -1],
+          })
+            .setLatLng(layer.getLatLng())
+            .setContent(layer.options.title?.toString() || '');
 
-      markersInViewport.forEach(function (layer) {
-        const tooltip = L.tooltip({
-          opacity: 0.7,
-          className: 'custom-tooltip',
-          permanent: true,
-          offset: [13, -1],
-        })
-          .setLatLng(layer.getLatLng())
-          .setContent(layer.options.title?.toString() || '');
+          tooltip.addTo(tooltipLayer);
+        });
 
-        tooltip.addTo(tooltipLayer);
-      });
-
-      tooltipLayer.addTo(map);
-    } else {
-      map.removeLayer(tooltipLayer);
+        tooltipLayer.addTo(map);
+      } else {
+        map.removeLayer(tooltipLayer);
+      }
     }
   };
 
