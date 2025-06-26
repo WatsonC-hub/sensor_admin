@@ -94,7 +94,7 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
 
   if (filter.notificationTypes?.length > 0) {
     filteredData = filteredData.filter((elem) => {
-      if ('notification_id' in elem && elem.notification_id !== null) {
+      if ('loc_id' in elem) {
         return filter.notificationTypes.some((type) => elem.notification_ids?.includes(type));
       }
       return false;
