@@ -9,7 +9,6 @@ import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {Box} from '@mui/material';
 import GuardedOverview from '~/features/tasks/components/Overview';
 import {withComponentPermission} from '~/hooks/withComponentPermission';
-import TooltipWrapper from '~/components/TooltipWrapper';
 
 const Home = () => {
   const {isMobile} = useBreakpoints();
@@ -20,13 +19,13 @@ const Home = () => {
     <>
       <NavBar key="map" zIndex={100}>
         <NavBar.Logo />
-        <TooltipWrapper
+        {/* <TooltipWrapper
           color="white"
           url="https://www.watsonc.dk/guides/kortet/"
           description="Læs mere om hvad du kan på kortet i Field appen"
-        >
-          {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
-        </TooltipWrapper>
+        > */}
+        {isMobile ? <NavBar.Scanner /> : <NavBar.Title title="Field" />}
+        {/* </TooltipWrapper> */}
         <Box display={'flex'}>
           <NavBar.LocationList />
           {user?.advancedTaskPermission && <NavBar.TripList />}

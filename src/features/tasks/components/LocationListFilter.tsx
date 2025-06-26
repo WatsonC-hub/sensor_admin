@@ -20,8 +20,8 @@ const LocationListFilter = () => {
   ];
 
   return (
-    <Box p={1} display={'flex'} flexDirection={'column'} mt={3} gap={1}>
-      <Typography variant={'h6'} fontWeight={'bold'}>
+    <Box p={1} display={'flex'} flexDirection={'column'} gap={1}>
+      <Typography variant={'body2'} fontWeight={'bold'}>
         Filtrering
       </Typography>
       <Box

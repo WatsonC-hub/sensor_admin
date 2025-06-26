@@ -1,4 +1,4 @@
-import {MapRounded, Person, Menu as MenuIcon} from '@mui/icons-material';
+import {MapRounded, Person, Menu as MenuIcon, Help} from '@mui/icons-material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -207,6 +207,17 @@ const NavBarMenu = ({
             Profil
           </MenuItem>
         )}
+        <MenuItem
+          key="guides"
+          onClick={() => {
+            window.open('https://www.watsonc.dk/guides/', '_blank');
+          }}
+        >
+          <ListItemIcon>
+            <Help />
+          </ListItemIcon>
+          Guides
+        </MenuItem>
         {!disableLogout && (
           <MenuItem onClick={handleClose}>
             <LogOut>

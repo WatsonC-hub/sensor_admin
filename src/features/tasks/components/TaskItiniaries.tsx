@@ -107,14 +107,10 @@ const TaskItiniaries = () => {
   const {patch: updateItinerary} = useTaskItinerary();
 
   return (
-    <Box
-      display="flex"
-      maxHeight={'100%'}
-      gap={1}
-      mt={4}
-      flexDirection={'column'}
-      overflow={'hidden'}
-    >
+    <Box display="flex" maxHeight={'100%'} gap={1} flexDirection={'column'} overflow={'hidden'}>
+      <Typography variant="h6" sx={{padding: 1}}>
+        Ture
+      </Typography>
       <Box px={1}>
         <TooltipWrapper
           description="Læs mere om ture i vores dokumentation for at få et bedre overblik over hvordan du kan bruge ture i Field appen"
