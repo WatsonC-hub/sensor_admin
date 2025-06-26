@@ -134,7 +134,7 @@ const LocationGroups = ({
           fullWidth
           variant="outlined"
           label={label}
-          placeholder="Indtast gruppe(r)..."
+          placeholder="Vælg gruppe(r)..."
           onBlur={onBlur}
           slotProps={{
             input: {

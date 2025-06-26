@@ -40,10 +40,15 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
  */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   if (data.loctype_id === 12) return filter.isSingleMeasurement;
+
+  const customerServiceFilter = filter.showCustomerService == data.is_customer_service;
+  const watsoncServiceFilter =
+    filter.showWatsonCService == !data.is_customer_service || data.is_customer_service === null;
+
   const serviceFilter =
-    filter.isCustomerService === 'indeterminate'
-      ? true
-      : data.is_customer_service === filter.isCustomerService || data.is_customer_service === null;
+    (watsoncServiceFilter && customerServiceFilter) ||
+    (filter.showCustomerService && filter.showWatsonCService);
+
   const activeFilter = data.inactive != true ? true : filter.showInactive || data.has_task;
   const keepLocationsWithoutNotifications =
     (!data.has_task || !moment(data.due_date).isBefore(moment().add(1, 'month').toDate())) &&
@@ -61,14 +66,19 @@ const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
 };
 
 const filterBorehole = (data: BoreholeMapData, filter: Filter['borehole']) => {
-  switch (filter.hasControlProgram) {
-    case true:
-      return data.num_controls_in_a_year.some((num) => num > 0);
-    case false:
-      return !data.num_controls_in_a_year.some((num) => num > 0);
-    case 'indeterminate':
-      return true;
+  if (filter.showHasControlProgram && filter.showNoControlProgram) return true;
+
+  const hasControlProgram = data.num_controls_in_a_year.some((num) => num > 0);
+
+  if (filter.showHasControlProgram && hasControlProgram) {
+    return true;
   }
+
+  if (filter.showNoControlProgram && !hasControlProgram) {
+    return true;
+  }
+
+  return false;
 };
 
 const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => {

@@ -10,10 +10,25 @@ type Props = {
   url?: string;
   children?: React.ReactNode;
   // Add any other props you need
+  withIcon?: boolean;
   color?: string;
 };
 
-const TooltipWrapper = ({description = '', url, children, color = 'grey.700'}: Props) => {
+const TooltipWrapper = ({
+  description = '',
+  url,
+  children,
+  color = 'grey.700',
+  withIcon = true,
+}: Props) => {
+  if (!withIcon) {
+    return (
+      <Tooltip disableInteractive title={description} arrow enterTouchDelay={0}>
+        <Box>{children}</Box>
+      </Tooltip>
+    );
+  }
+
   return (
     <Box
       display="flex"
