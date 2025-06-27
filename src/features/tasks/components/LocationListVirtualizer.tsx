@@ -41,11 +41,21 @@ const LocationListVirtualizer = () => {
       return 0;
     });
 
-  const boolArray = list.map((item) => {
-    if (typeof item == 'object' && 'loc_id' in item) return locIds.includes(item?.loc_id);
-    return true;
-  });
-  const firstNotInLocIds = boolArray.indexOf(false);
+  const boolArray = list
+    .sort((a, b) => {
+      return typeof a == 'object' && 'loc_id' in a && locIds.includes(a?.loc_id)
+        ? -1
+        : typeof b == 'object' && 'loc_id' in b && locIds.includes(b?.loc_id)
+          ? 1
+          : 0;
+    })
+    .map((item) => {
+      if (typeof item == 'object' && 'loc_id' in item) return locIds.includes(item?.loc_id);
+      return true;
+    });
+  const firstNotInLocIds = boolArray
+    .sort((a, b) => (a && !b ? -1 : b && !a ? 1 : 0))
+    .indexOf(false);
 
   if (firstNotInLocIds !== -1) {
     list.splice(firstNotInLocIds, 0, 'divider');
@@ -134,7 +144,7 @@ const LocationListVirtualizer = () => {
                   ref={(element) => virtualizer.measureElement(element)}
                 >
                   <Box px={1} py={2} borderTop={2} borderColor="grey.700">
-                    <TooltipWrapper description=" Uden for zoom viser de lokationer som ligger udenfor det nuværende kortudsnit.">
+                    <TooltipWrapper description=" Uden for zoom viser de lokationer som ligger udenfor det nuværende kortudsnit som er tilknyttet den valgte bruger i filtreringen.">
                       <Typography variant="h6">Uden for zoom</Typography>
                     </TooltipWrapper>
                   </Box>
@@ -143,6 +153,8 @@ const LocationListVirtualizer = () => {
             );
           }
 
+          const dividerIndex =
+            list.length - 1 - boolArray.filter((boolean) => boolean === false).length;
           return (
             <div
               key={virtualRow.key}
@@ -172,11 +184,7 @@ const LocationListVirtualizer = () => {
                       onClick={() => setBoreholeNo(item.boreholeno)}
                     />
                   )}
-                  {virtualRow.index !==
-                    list.length -
-                      1 -
-                      boolArray.filter((boolean) => boolean === false).length -
-                      1 && <Divider />}
+                  {virtualRow.index > dividerIndex && <Divider />}
                 </div>
               </div>
             </div>
