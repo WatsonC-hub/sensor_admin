@@ -39,8 +39,6 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
     )
     .sort(sortTasks);
 
-    console.log(location_tasks)
-
   return (
     <Box display="flex" gap={1} flexDirection={'column'}>
       <Box

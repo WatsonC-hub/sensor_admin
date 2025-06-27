@@ -25,7 +25,6 @@ import {LatestMeasurement, Maalepunkt} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
-import TooltipWrapper from '~/components/TooltipWrapper';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -257,12 +256,7 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
       render={({field: {value, onChange}, fieldState: {error}}) => {
         return (
           <FormControl component="fieldset">
-            <TooltipWrapper
-              description="Vælg hvordan pejlingen skal anvendes i forhold til korrektion af målinger. For at læse mere om pejling og korrektion, se vores guide."
-              url="https://watsonc.dk/guides/pejling-og-korrektion"
-            >
-              <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
-            </TooltipWrapper>
+            <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
             <RadioGroup
               value={value + ''}
               onChange={(e) => {
