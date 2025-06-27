@@ -322,7 +322,7 @@ const CreateStation = () => {
         <TooltipWrapper
           color="white"
           description="Læs mere hvordan en lokation oprettes"
-          url="https://docs.watsonc.dk/stamdata/opret-stamdata"
+          url="https://www.watsonc.dk/guides/opret-ny-lokation-tidsserie/"
         >
           <NavBar.Title title="Opret Stamdata" />
         </TooltipWrapper>

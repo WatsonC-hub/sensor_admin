@@ -47,6 +47,7 @@ import {getImageOptions} from '../api/useImages';
 import {stationPages, StationPages} from '~/helpers/EnumHelper';
 import MinimalSelect from './MinimalSelect';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 const drawerWidth = 200;
 
@@ -58,6 +59,7 @@ type Item = {
   onHover?: () => void;
   requiredTsId: boolean;
   disabled?: boolean;
+  info?: ReactNode;
 };
 
 type DrawerItems = {
@@ -163,6 +165,15 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
+          info: (
+            <TooltipWrapper
+              url="https://watsonc.dk/guides/kvalitetssikring"
+              description="På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer. Læs mere om hvad du kan i dokumentationen."
+              color="white"
+            >
+              Juster data
+            </TooltipWrapper>
+          ),
         },
         {
           text: 'Juster advarsler',
@@ -171,6 +182,15 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
+          info: (
+            <TooltipWrapper
+              url="https://watsonc.dk/guides/kvalitetssikring"
+              description="På denne side kan du justere advarsler for din tidsserie. Læs mere om hvad du kan i dokumentationen."
+              color="white"
+            >
+              Juster advarsler
+            </TooltipWrapper>
+          ),
         },
       ],
     },
@@ -309,7 +329,7 @@ const StationDrawer = () => {
                   <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText>{item.text}</ListItemText>
+                  <ListItemText>{item.info ? item.info : item.text}</ListItemText>
                 </ListItemButton>
               </ListItem>
             );
@@ -373,12 +393,18 @@ const Layout = ({children, variant}: LayoutProps) => {
       }}
     >
       <Box pt={2} px={1}>
-        {!isTouch && <MinimalSelect />}
-        {isTouch && (
-          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
-            {locationdata?.loc_name}
-          </Typography>
-        )}
+        <TooltipWrapper
+          description="Læs mere om hvad undersiderne i Field appen kan bruges til"
+          url="https://www.watsonc.dk/guides/side-oversigt/"
+          color="white"
+        >
+          {!isTouch && <MinimalSelect />}
+          {isTouch && (
+            <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
+              {locationdata?.loc_name}
+            </Typography>
+          )}
+        </TooltipWrapper>
       </Box>
       <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
         <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>
