@@ -3,7 +3,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {TaskPermission} from '../tasks/types';
 
-export type User = {
+type User = {
   user_id: number;
   org_id: number | null;
   superUser: boolean;
