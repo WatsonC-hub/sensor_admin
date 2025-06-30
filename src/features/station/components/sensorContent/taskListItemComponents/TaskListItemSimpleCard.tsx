@@ -1,4 +1,4 @@
-import {Box, Button, Card, CardContent, CardHeader, Typography} from '@mui/material';
+import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
 import React, {useMemo} from 'react';
 import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
@@ -8,6 +8,7 @@ import TaskForm from '~/features/tasks/components/TaskForm';
 import {convertDate} from '~/helpers/dateConverter';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 type Props = {
   task: Task;
@@ -15,6 +16,7 @@ type Props = {
 
 const TaskListItemSimpleCard = ({task}: Props) => {
   const {setSelectedTask} = useTaskStore();
+  const {station} = useNavigationFunctions();
 
   const defaultValues = useMemo(() => {
     if (!task) return;
@@ -75,7 +77,18 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Typography variant="caption">{task.name}</Typography>
+                <Link
+                  onClick={() => station(task.ts_id)}
+                  sx={{cursor: 'pointer', textDecoration: 'underline', color: 'white'}}
+                >
+                  <Typography variant="caption">
+                    {task.prefix ? `${task.prefix} - ` : ''}
+                    {task.tstype_name}:{' '}
+                    <span style={{display: 'inline-block', textDecoration: 'underline'}}>
+                      {task.name}
+                    </span>
+                  </Typography>
+                </Link>
               </Box>
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1}>

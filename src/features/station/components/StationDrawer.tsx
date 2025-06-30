@@ -59,7 +59,6 @@ type Item = {
   onHover?: () => void;
   requiredTsId: boolean;
   disabled?: boolean;
-  info?: ReactNode;
 };
 
 type DrawerItems = {
@@ -165,15 +164,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
-          info: (
-            <TooltipWrapper
-              url="https://watsonc.dk/guides/kvalitetssikring"
-              description="På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer. Læs mere om hvad du kan i dokumentationen."
-              color="white"
-            >
-              Juster data
-            </TooltipWrapper>
-          ),
         },
         {
           text: 'Juster advarsler',
@@ -182,15 +172,6 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
-          info: (
-            <TooltipWrapper
-              url="https://watsonc.dk/guides/kvalitetssikring"
-              description="På denne side kan du justere advarsler for din tidsserie. Læs mere om hvad du kan i dokumentationen."
-              color="white"
-            >
-              Juster advarsler
-            </TooltipWrapper>
-          ),
         },
       ],
     },
@@ -329,7 +310,7 @@ const StationDrawer = () => {
                   <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText>{item.info ? item.info : item.text}</ListItemText>
+                  <ListItemText>{item.text}</ListItemText>
                 </ListItemButton>
               </ListItem>
             );

@@ -34,6 +34,7 @@ import moment from 'moment';
 import Button from '~/components/Button';
 import {toast} from 'react-toastify';
 import GraphManager from '~/features/station/components/GraphManager';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -201,7 +202,14 @@ export default function QAHistory() {
       <Divider />
       <StationPageBoxLayout>
         <StepWizard />
-        <Typography variant="h5">Aktive justeringer</Typography>
+        <Box display={'flex'}>
+          <TooltipWrapper
+            url="https://watsonc.dk/guides/kvalitetssikring"
+            description="På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer. Læs mere om hvad du kan i dokumentationen."
+          >
+            <Typography variant="h5">Aktive justeringer</Typography>
+          </TooltipWrapper>
+        </Box>
         <AdjustmentDataTable data={data} />
         <CustomSpeedDial actions={speedDialActions} />
       </StationPageBoxLayout>
