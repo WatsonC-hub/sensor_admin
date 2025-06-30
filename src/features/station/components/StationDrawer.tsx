@@ -59,6 +59,7 @@ type Item = {
   onHover?: () => void;
   requiredTsId: boolean;
   disabled?: boolean;
+  tooltip?: string;
 };
 
 type DrawerItems = {
@@ -140,6 +141,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(tilsynGetOptions(ts_id)),
+          // tooltip: 'På denne side kan du se og redigere tilsyn for din tidsserie.',
         },
         {
           text: 'Målepunkt',
@@ -148,6 +150,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
           onHover: () => handlePrefetch(getMaalepunktOptions(ts_id)),
+          // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
           text: 'Udstyr',
@@ -156,6 +159,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: metadata?.calculated,
           onHover: () => handlePrefetch(metadataQueryOptions(ts_id)),
+          // tooltip: 'På denne side kan du se og redigere udstyr til din tidsserie.',
         },
         {
           text: 'Juster data',
@@ -164,6 +168,8 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
+          tooltip:
+            'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',
         },
         {
           text: 'Juster advarsler',
@@ -172,6 +178,7 @@ const StationDrawer = () => {
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
           onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
+          tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
         },
       ],
     },
@@ -285,6 +292,8 @@ const StationDrawer = () => {
               clearTimeout(timer);
             };
 
+            const Wrapper = item.tooltip ? TooltipWrapper : React.Fragment;
+
             return (
               <ListItem
                 key={item.text}
@@ -310,7 +319,11 @@ const StationDrawer = () => {
                   <ListItemIcon sx={{color: navIconStyle(pageToShow === item.page), minWidth: 42}}>
                     {item.icon}
                   </ListItemIcon>
-                  <ListItemText>{item.text}</ListItemText>
+                  <ListItemText>
+                    <Wrapper description={item.tooltip} withIcon={false}>
+                      {item.text}
+                    </Wrapper>
+                  </ListItemText>
                 </ListItemButton>
               </ListItem>
             );
@@ -374,18 +387,14 @@ const Layout = ({children, variant}: LayoutProps) => {
       }}
     >
       <Box pt={2} px={1}>
-        <TooltipWrapper
-          description="Læs mere om hvad undersiderne i Field appen kan bruges til"
-          url="https://www.watsonc.dk/guides/side-oversigt/"
-          color="white"
-        >
-          {!isTouch && <MinimalSelect />}
-          {isTouch && (
-            <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
-              {locationdata?.loc_name}
-            </Typography>
-          )}
-        </TooltipWrapper>
+        {/* <TooltipWrapper description="" color="white"> */}
+        {!isTouch && <MinimalSelect />}
+        {isTouch && (
+          <Typography textOverflow="ellipsis" overflow="hidden" whiteSpace="wrap" color="white">
+            {locationdata?.loc_name}
+          </Typography>
+        )}
+        {/* </TooltipWrapper> */}
       </Box>
       <ClickAwayListener onClickAway={() => open && toggleDrawer(false)}>
         <Box sx={{overflowY: 'auto', overflowX: 'hidden', p: 0}}>{children}</Box>

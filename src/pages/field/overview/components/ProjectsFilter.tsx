@@ -56,8 +56,8 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
         return value.map((option, index) => {
           const content = (
             <Typography display="inline" variant="body2">
-              {option.customer_name ? option.customer_name + ' - ' : ''}
-              {option.project_no ? ` ${option.project_no} -` : ''}
+              {/* {option.customer_name ? option.customer_name + ' - ' : ''} */}
+              {option.project_info ? ` ${option.project_no} -` : option.project_no}
               {option.project_info ? ` ${option.project_info}` : ''}
             </Typography>
           );
@@ -77,7 +77,7 @@ const ProjectsFilter = ({setValue, value, onBlur, label = 'Projekter'}: Props) =
         <li {...props} key={option.project_no}>
           <Typography display="inline" variant="body2">
             {option.customer_name ? option.customer_name + ' - ' : ''}
-            {option.project_no ? ` ${option.project_no} -` : ''}
+            {option.project_info ? ` ${option.project_no} -` : option.project_no}
             {option.project_info ? ` ${option.project_info}` : ''}
           </Typography>
         </li>

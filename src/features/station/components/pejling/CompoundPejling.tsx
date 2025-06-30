@@ -25,6 +25,7 @@ import {LatestMeasurement, Maalepunkt} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -256,7 +257,12 @@ const Correction = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
       render={({field: {value, onChange}, fieldState: {error}}) => {
         return (
           <FormControl component="fieldset">
-            <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
+            <TooltipWrapper
+              description="Anvendelsen af en pejling er et vigtigt aspekt af at få en korrekt kotesat vandstand. Læs mere på linket hvis du er i tvivl om hvad anvendelserne gør."
+              url="https://www.watsonc.dk/guides/kontrolpejling/#%F0%9F%9B%A0%EF%B8%8F-anvendelsestyper"
+            >
+              <FormLabel>Hvordan skal pejlingen anvendes?</FormLabel>{' '}
+            </TooltipWrapper>
             <RadioGroup
               value={value + ''}
               onChange={(e) => {
@@ -326,19 +332,24 @@ const NotPossible = () => {
   const {setValue} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
 
   return (
-    <FormControlLabel
-      control={
-        <Checkbox
-          checked={notPossible}
-          onChange={(e) => {
-            setValue('measurement', e.target.checked ? null : 0);
-            setValue('extrema', e.target.checked ? 'A' : undefined);
-            setNotPossible(e.target.checked);
-          }}
-        />
-      }
-      label="Måling ikke mulig"
-    />
+    <TooltipWrapper
+      withIcon={false}
+      description="Dette bruges til at dokumentere hvorvidt en pejling har været umuligt grundet eks. overtryk eller tørlægning."
+    >
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={notPossible}
+            onChange={(e) => {
+              setValue('measurement', e.target.checked ? null : 0);
+              setValue('extrema', e.target.checked ? 'A' : undefined);
+              setNotPossible(e.target.checked);
+            }}
+          />
+        }
+        label="Måling ikke mulig"
+      />
+    </TooltipWrapper>
   );
 };
 

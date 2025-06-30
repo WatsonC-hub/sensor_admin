@@ -202,10 +202,10 @@ export default function QAHistory() {
       <Divider />
       <StationPageBoxLayout>
         <StepWizard />
-        <Box display={'flex'}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
           <TooltipWrapper
-            url="https://watsonc.dk/guides/kvalitetssikring"
-            description="På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer. Læs mere om hvad du kan i dokumentationen."
+            description="På denne side kan du se historikken for justeringer af tidsserien. Læs mere om justeringer i guiden."
+            url="https://www.watsonc.dk/guides/side-oversigt/#%F0%9F%93%88-juster-data"
           >
             <Typography variant="h5">Aktive justeringer</Typography>
           </TooltipWrapper>

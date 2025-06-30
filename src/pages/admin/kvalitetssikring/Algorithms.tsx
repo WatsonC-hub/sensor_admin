@@ -31,12 +31,12 @@ const Algorithms = () => {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <Box display={'flex'}>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
           <TooltipWrapper
-            url="https://watsonc.dk/guides/kvalitetssikring"
-            description="På denne side kan du justere advarsler for din tidsserie. Læs mere om hvad du kan i dokumentationen."
+            description="På denne side kan du se de algoritmer, der er tilgængelige for tidsserien. Læs mere om algoritmer i guiden."
+            url="https://www.watsonc.dk/guides/side-oversigt/#%E2%88%91-juster-advarsler"
           >
-            <Typography variant="h5">Juster advarsler</Typography>
+            <Typography variant="h5">Advarsler</Typography>
           </TooltipWrapper>
         </Box>
         <Grid
