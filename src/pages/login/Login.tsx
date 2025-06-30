@@ -119,6 +119,17 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             error={!!loginError}
             helperText={!!loginError && loginError}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSubmit();
+              } else if (e.key === 'Escape') {
+                e.preventDefault();
+                setUserName('');
+                setPassword('');
+                setLoginError('');
+              }
+            }}
           />
           <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2}}>
             <Button
