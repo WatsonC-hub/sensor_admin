@@ -34,6 +34,7 @@ import moment from 'moment';
 import Button from '~/components/Button';
 import {toast} from 'react-toastify';
 import GraphManager from '~/features/station/components/GraphManager';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -201,7 +202,14 @@ export default function QAHistory() {
       <Divider />
       <StationPageBoxLayout>
         <StepWizard />
-        <Typography variant="h5">Aktive justeringer</Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <TooltipWrapper
+            description="På denne side kan du se historikken for justeringer af tidsserien. Læs mere om justeringer i guiden."
+            url="https://www.watsonc.dk/guides/side-oversigt/#%F0%9F%93%88-juster-data"
+          >
+            <Typography variant="h5">Aktive justeringer</Typography>
+          </TooltipWrapper>
+        </Box>
         <AdjustmentDataTable data={data} />
         <CustomSpeedDial actions={speedDialActions} />
       </StationPageBoxLayout>

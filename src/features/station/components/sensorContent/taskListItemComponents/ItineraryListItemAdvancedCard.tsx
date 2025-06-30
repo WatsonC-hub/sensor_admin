@@ -1,5 +1,5 @@
 import {EditOutlined, Warning} from '@mui/icons-material';
-import {Box, Typography, Button, Grid2, TextField} from '@mui/material';
+import {Box, Typography, Button, Grid2, TextField, Link} from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
 import {useTasks} from '~/features/tasks/api/useTasks';
@@ -10,6 +10,8 @@ import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
+
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 type Props = {
   task: Task;
 };
@@ -17,6 +19,7 @@ type Props = {
 const ItineraryListItemAdvancedCard = ({task}: Props) => {
   const {isMobile} = useBreakpoints();
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
+  const {station} = useNavigationFunctions();
   const {
     patch: updateTask,
     getStatus: {data: taskStatus},
@@ -83,9 +86,22 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
               <>
                 <DescriptionIcon fontSize="small" />
                 <Box display="flex" flexDirection={'column'} gap={0}>
-                  <Typography variant="caption" fontWeight="bold">
-                    {task.name}
-                  </Typography>
+                  <Link
+                    onClick={() => station(task.ts_id)}
+                    color="inherit"
+                    variant="caption"
+                    underline="always"
+                    display="flex"
+                    flexWrap="wrap"
+                    gap={0.5}
+                    sx={{
+                      cursor: 'pointer',
+                      textDecorationColor: 'rgba(97, 97, 97, 0.6)',
+                    }}
+                  >
+                    {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
+                    <Box>{task.name}</Box>
+                  </Link>
                   <Typography variant="caption" sx={{wordBreak: 'break-word'}}>
                     {task.description}
                   </Typography>

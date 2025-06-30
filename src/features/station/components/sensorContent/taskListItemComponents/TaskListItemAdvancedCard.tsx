@@ -8,6 +8,7 @@ import {
   Button,
   Grid2,
   TextField,
+  Link,
 } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import React, {useMemo, useState} from 'react';
@@ -22,12 +23,15 @@ import TaskForm from '~/features/tasks/components/TaskForm';
 import {getColor} from '~/features/notifications/utils';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+
 type Props = {
   task: Task;
 };
 
 const TaskListItemAdvancedCard = ({task}: Props) => {
   const [showAllComments, setShowAllComments] = useState<boolean>(false);
+  const {station} = useNavigationFunctions();
   const {
     patch: updateTask,
     getUsers: {data: taskUsers},
@@ -126,12 +130,29 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Typography variant="caption">{task.name}</Typography>
+                <Link
+                  onClick={() => station(task.ts_id)}
+                  color="inherit"
+                  variant="caption"
+                  underline="always"
+                  display="flex"
+                  flexWrap="wrap"
+                  gap={0.5}
+                  sx={{
+                    cursor: 'pointer',
+                    textDecorationColor: 'rgba(255, 255, 255, 0.6)',
+                  }}
+                >
+                  {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
+                  <Box>{task.name}</Box>
+                </Link>
               </Box>
               {task.due_date && (
-                <Box display="flex" flexDirection={'row'} gap={1}>
+                <Box display="flex" flexDirection={'row'} gap={1} alignItems={'center'}>
                   <PendingActionsIcon fontSize="small" />
-                  <Typography variant="caption">{convertDate(task.due_date)}</Typography>
+                  <Typography variant="caption" noWrap>
+                    {convertDate(task.due_date)}
+                  </Typography>
                 </Box>
               )}
             </Box>

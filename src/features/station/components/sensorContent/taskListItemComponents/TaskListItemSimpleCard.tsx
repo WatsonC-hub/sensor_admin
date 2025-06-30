@@ -1,4 +1,4 @@
-import {Box, Button, Card, CardContent, CardHeader, Typography} from '@mui/material';
+import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui/material';
 import React, {useMemo} from 'react';
 import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
@@ -8,6 +8,7 @@ import TaskForm from '~/features/tasks/components/TaskForm';
 import {convertDate} from '~/helpers/dateConverter';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
+import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 
 type Props = {
   task: Task;
@@ -15,6 +16,7 @@ type Props = {
 
 const TaskListItemSimpleCard = ({task}: Props) => {
   const {setSelectedTask} = useTaskStore();
+  const {station} = useNavigationFunctions();
 
   const defaultValues = useMemo(() => {
     if (!task) return;
@@ -75,12 +77,29 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                   }}
                   noCircle={true}
                 />
-                <Typography variant="caption">{task.name}</Typography>
+                <Link
+                  onClick={() => station(task.ts_id)}
+                  color="inherit"
+                  variant="caption"
+                  underline="always"
+                  display="flex"
+                  flexWrap="wrap"
+                  gap={0.5}
+                  sx={{
+                    cursor: 'pointer',
+                    textDecorationColor: 'rgba(255, 255, 255, 0.6)',
+                  }}
+                >
+                  {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
+                  <Box>{task.name}</Box>
+                </Link>
               </Box>
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1}>
                   <PendingActionsIcon fontSize="small" />
-                  <Typography variant="caption">{convertDate(task.due_date)}</Typography>
+                  <Typography variant="caption" noWrap>
+                    {convertDate(task.due_date)}
+                  </Typography>
                 </Box>
               )}
             </Box>

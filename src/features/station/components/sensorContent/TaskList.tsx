@@ -49,7 +49,7 @@ const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
       >
         <TooltipWrapper
           description="Opgaver kan oprettes ud fra notifikationer eller som manuelle opgaver. En opgave kan være simpel eller avanceret. En simpel opgave er en opgave, der ikke kræver yderligere information, mens en avanceret opgave kan have flere detaljer og krav. Dette har en betydning når man skal lave ture. Læs mere om opgaver i dokumentationen."
-          url="https://watsonc.dk/guides/tasks"
+          url="https://www.watsonc.dk/guides/opgavestyring/"
         >
           <Typography variant="h6" fontWeight={'bold'}>
             Opgaver

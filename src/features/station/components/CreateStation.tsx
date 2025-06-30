@@ -319,13 +319,9 @@ const CreateStation = () => {
     <>
       <NavBar>
         <NavBar.GoBack />
-        <TooltipWrapper
-          color="white"
-          description="Læs mere hvordan en lokation oprettes"
-          url="https://www.watsonc.dk/guides/opret-ny-lokation-tidsserie/"
-        >
-          <NavBar.Title title="Opret Stamdata" />
-        </TooltipWrapper>
+
+        <NavBar.Logo />
+
         <NavBar.Menu />
       </NavBar>
       <Box display="flex" flexDirection={'column'} overflow="auto">
@@ -341,6 +337,16 @@ const CreateStation = () => {
           size={size}
           py={2}
         >
+          <Box display={'flex'} flexDirection={'row'} justifyContent={'center'} width="100%">
+            <TooltipWrapper
+              description="Læs mere om hvordan en lokation oprettes"
+              url="https://www.watsonc.dk/guides/opret-ny-lokation-tidsserie/"
+            >
+              <Typography variant="h5" textAlign={'center'} fontWeight={'bold'}>
+                Opret ny station
+              </Typography>
+            </TooltipWrapper>
+          </Box>
           <Stepper nonLinear activeStep={activeStep} alternativeLabel>
             <Step
               key={'lokation'}

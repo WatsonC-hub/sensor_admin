@@ -34,8 +34,8 @@ type useLocationFormProps<T> =
 const getSchemaAndForm = <T extends FieldValues>(
   loctype_id: number,
   mode: 'Add' | 'Edit',
-  user: UserAccessControl | null | undefined,
-  loc_id?: number
+  user: User,
+  loc_id: number | undefined
 ) => {
   let selectedSchema: ZodObject<Record<string, any>> = baseLocationSchema;
   let selectedForm = DefaultLocationForm;

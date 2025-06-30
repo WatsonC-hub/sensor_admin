@@ -9,6 +9,7 @@ import DeleteAlert from '~/components/DeleteAlert';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {Task} from '~/features/tasks/types';
+import {useDisplayState} from '~/hooks/ui';
 
 // import {useTaskStore} from '../api/useTaskStore';
 
@@ -20,6 +21,8 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dueDateDialogOpen, setDueDateDialogOpen] = useState<boolean>(false);
   const deleteTaskTitle = selectedTask.id.includes(':') ? 'Notifikationen kan ikke slettes' : '';
+
+  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   // const removeFromItineraryTitle = !selectedTask.itinerary_id
   //   ? 'Opgaven er ikke tilknyttet en tur'
   //   : '';
@@ -206,16 +209,14 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
       <Box display={'flex'} flexDirection={'row'} alignItems={'center'} gap={1}>
         <Box>
           <Tooltip arrow title={deleteTaskTitle}>
-            <div>
-              <Button
-                bttype="primary"
-                disabled={selectedTask.id.includes(':') || selectedTask.can_edit === false}
-                onClick={() => setDialogOpen(true)}
-                startIcon={<Delete />}
-              >
-                Slet
-              </Button>
-            </div>
+            <Button
+              bttype="primary"
+              disabled={selectedTask.id.includes(':') || selectedTask.can_edit === false}
+              onClick={() => setDialogOpen(true)}
+              startIcon={<Delete />}
+            >
+              Slet
+            </Button>
           </Tooltip>
         </Box>
 
@@ -243,6 +244,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         measurementId={selectedTask.id}
         onOkDelete={() => {
           deleteTask();
+          setSelectedTask(null);
         }}
       />
       <TaskForm.DueDateDialog
