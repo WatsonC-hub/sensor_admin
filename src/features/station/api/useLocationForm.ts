@@ -15,7 +15,6 @@ import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLoca
 import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
 import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
 import {useUser} from '~/features/auth/useUser';
-import {User} from '@sentry/react';
 import {zodResolver} from '@hookform/resolvers/zod';
 
 type useLocationFormProps<T> =
@@ -35,7 +34,7 @@ type useLocationFormProps<T> =
 const getSchemaAndForm = <T extends FieldValues>(
   loctype_id: number,
   mode: 'Add' | 'Edit',
-  user: User
+  superUser: boolean | undefined
 ) => {
   let selectedSchema: ZodObject<Record<string, any>> = baseLocationSchema;
   let selectedForm = DefaultLocationForm;
@@ -63,7 +62,7 @@ const getSchemaAndForm = <T extends FieldValues>(
       break;
   }
 
-  if (user?.superUser === false && mode === 'Add') {
+  if (superUser === false && mode === 'Add') {
     selectedSchema = selectedSchema.extend({
       initial_project_no: z.string().nullish(),
     });
@@ -81,7 +80,7 @@ const useLocationForm = <T extends BaseLocation>({
   const user = useUser();
   const [loctype_id, setLoctypeId] = React.useState<number>(initialLocTypeId);
 
-  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user);
+  const [schema, form] = getSchemaAndForm<T>(loctype_id, mode, user.superUser);
 
   const {data, success} = schema.safeParse({
     ...defaultValues,

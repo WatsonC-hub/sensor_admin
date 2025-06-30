@@ -76,13 +76,6 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
     setOpen(false);
   };
 
-  // const handleDelete = () => {
-  //   console.log(data);
-  //   del.mutate({
-  //     path: `${data.ts_id}/${data.gid}`,
-  //   });
-  // };
-
   return (
     <FormProvider {...formMethods}>
       <Box
