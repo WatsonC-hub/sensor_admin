@@ -29,7 +29,7 @@ const PejlingForm = () => {
         <CompoundPejling.WaterlevelAlert />
       </Grid2>
       <Grid2 container spacing={1} size={12} mb={2} display={'flex'} flexDirection={'row'}>
-        <CompoundPejling.TimeOfMeas sx={{mb: 0}} label="Tidspunkt for pejling" />
+        <CompoundPejling.TimeOfMeas sx={{mb: 0}} label="Tidspunkt" />
       </Grid2>
       <CompoundPejling.Correction />
       <CompoundPejling.Comment />

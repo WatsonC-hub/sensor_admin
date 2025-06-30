@@ -1,4 +1,4 @@
-import {Box, Divider, Grid2 as Grid} from '@mui/material';
+import {Box, Divider, Grid2 as Grid, Typography} from '@mui/material';
 
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
@@ -6,6 +6,7 @@ import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
 import {useAppContext} from '~/state/contexts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import GraphManager from '~/features/station/components/GraphManager';
+import TooltipWrapper from '~/components/TooltipWrapper';
 
 const Algorithms = () => {
   const {ts_id} = useAppContext(['ts_id']);
@@ -30,6 +31,14 @@ const Algorithms = () => {
       </Box>
       <Divider />
       <StationPageBoxLayout>
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <TooltipWrapper
+            description="På denne side kan du se de algoritmer, der er tilgængelige for tidsserien. Læs mere om algoritmer i guiden."
+            url="https://www.watsonc.dk/guides/side-oversigt/#%E2%88%91-juster-advarsler"
+          >
+            <Typography variant="h5">Advarsler</Typography>
+          </TooltipWrapper>
+        </Box>
         <Grid
           container
           direction={'row'}
