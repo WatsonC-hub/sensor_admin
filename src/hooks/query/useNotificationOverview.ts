@@ -190,6 +190,7 @@ export interface MapOverview {
   notification_id: NotificationIDEnum | null;
   due_date: string | null;
   notification_ids: NotificationIDEnum[] | null;
+  mapicontype: 'notification' | 'task' | 'trip';
 }
 
 const mapOverviewOptions = queryOptions<MapOverview[]>({
