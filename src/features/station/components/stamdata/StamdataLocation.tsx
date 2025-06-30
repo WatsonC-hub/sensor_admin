@@ -313,9 +313,8 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
           loading={isFetching}
           labelKey="boreholeno"
           onChange={(option) => {
-            console.log(option);
             if (option == null) {
-              setValue('boreholeno', undefined);
+              setValue('boreholeno', '');
               trigger('boreholeno');
               return;
             }
@@ -345,6 +344,7 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
           textFieldsProps={{
             label: 'DGU nummer',
             placeholder: 'Søg efter DGU boringer...',
+            required: true,
           }}
           // fieldDescriptionText={props.fieldDescriptionText}
           onInputChange={(event, searchValue) => {
@@ -371,7 +371,7 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
                 );
               });
             if (searchValue === '' && loctype_id) {
-              setValue('boreholeno', undefined);
+              setValue('boreholeno', '');
             }
             setSearch(searchValue);
           }}
