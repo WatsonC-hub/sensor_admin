@@ -2,7 +2,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 
-export type User = {
+type User = {
   user_id: number;
   org_id: number | null;
   boreholeAccess: boolean;

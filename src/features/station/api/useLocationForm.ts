@@ -15,7 +15,6 @@ import BaseLocationForm from '../components/stamdata/stamdataComponents/BaseLoca
 import BoreholeLocationEditForm from '../components/stamdata/stamdataComponents/BoreholeLocationEditForm';
 import DefaultLocationEditForm from '../components/stamdata/stamdataComponents/DefaultLocationEditForm';
 import {useUser} from '~/features/auth/useUser';
-import {User} from '@sentry/react';
 import {zodResolver} from '@hookform/resolvers/zod';
 
 type useLocationFormProps<T> =
