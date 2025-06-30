@@ -97,7 +97,9 @@ const TaskListItemSimpleCard = ({task}: Props) => {
               {task.due_date && (
                 <Box display="flex" flexDirection={'row'} gap={1}>
                   <PendingActionsIcon fontSize="small" />
-                  <Typography variant="caption">{convertDate(task.due_date)}</Typography>
+                  <Typography variant="caption" noWrap>
+                    {convertDate(task.due_date)}
+                  </Typography>
                 </Box>
               )}
             </Box>
