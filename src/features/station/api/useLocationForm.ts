@@ -63,6 +63,12 @@ const getSchemaAndForm = <T extends FieldValues>(
       break;
   }
 
+  if (loctype_id === 9) {
+    selectedSchema = selectedSchema.extend({
+      boreholeno: z.string().nullish(),
+    });
+  }
+
   if (superUser === false || (mode === 'Add' && loc_id !== undefined)) {
     selectedSchema = selectedSchema.extend({
       initial_project_no: z.string().nullish(),
