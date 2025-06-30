@@ -88,14 +88,19 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
                 <Box display="flex" flexDirection={'column'} gap={0}>
                   <Link
                     onClick={() => station(task.ts_id)}
-                    sx={{cursor: 'pointer', textDecoration: 'underline'}}
+                    color="inherit"
+                    variant="caption"
+                    underline="always"
+                    display="flex"
+                    flexWrap="wrap"
+                    gap={0.5}
+                    sx={{
+                      cursor: 'pointer',
+                      textDecorationColor: 'rgba(97, 97, 97, 0.6)',
+                    }}
                   >
-                    <Typography variant="caption">
-                      {task.prefix ? `${task.prefix} - ` : ''} {task.tstype_name}:{' '}
-                      <span style={{display: 'inline-block', textDecoration: 'underline'}}>
-                        {task.name}
-                      </span>
-                    </Typography>
+                    {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
+                    <Box>{task.name}</Box>
                   </Link>
                   <Typography variant="caption" sx={{wordBreak: 'break-word'}}>
                     {task.description}

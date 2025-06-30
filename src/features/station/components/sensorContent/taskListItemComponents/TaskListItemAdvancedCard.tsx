@@ -132,26 +132,19 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                 />
                 <Link
                   onClick={() => station(task.ts_id)}
+                  color="inherit"
+                  variant="caption"
+                  underline="always"
+                  display="flex"
+                  flexWrap="wrap"
+                  gap={0.5}
                   sx={{
-                    color: 'white',
                     cursor: 'pointer',
-                    textDecoration: 'underline',
-                    display: 'inline',
-                    wordBreak: 'break-word',
-                    whiteSpace: 'normal',
+                    textDecorationColor: 'rgba(255, 255, 255, 0.6)',
                   }}
                 >
-                  <Typography
-                    variant="caption"
-                    component="span"
-                    sx={{display: 'inline', whiteSpace: 'normal', wordBreak: 'break-word'}}
-                  >
-                    {task.prefix ? `${task.prefix} - ` : ''}
-                    {task.tstype_name}:{' '}
-                    <span style={{display: 'inline-block', textDecoration: 'underline'}}>
-                      {task.name}
-                    </span>
-                  </Typography>
+                  {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
+                  <Box>{task.name}</Box>
                 </Link>
               </Box>
               {task.due_date && (

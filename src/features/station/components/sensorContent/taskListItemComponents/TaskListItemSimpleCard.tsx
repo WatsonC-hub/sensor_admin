@@ -79,15 +79,19 @@ const TaskListItemSimpleCard = ({task}: Props) => {
                 />
                 <Link
                   onClick={() => station(task.ts_id)}
-                  sx={{cursor: 'pointer', textDecoration: 'underline', color: 'white'}}
+                  color="inherit"
+                  variant="caption"
+                  underline="always"
+                  display="flex"
+                  flexWrap="wrap"
+                  gap={0.5}
+                  sx={{
+                    cursor: 'pointer',
+                    textDecorationColor: 'rgba(255, 255, 255, 0.6)',
+                  }}
                 >
-                  <Typography variant="caption">
-                    {task.prefix ? `${task.prefix} - ` : ''}
-                    {task.tstype_name}:{' '}
-                    <span style={{display: 'inline-block', textDecoration: 'underline'}}>
-                      {task.name}
-                    </span>
-                  </Typography>
+                  {task.prefix ? `${task.prefix} - ${task.tstype_name}` : task.tstype_name}:
+                  <Box>{task.name}</Box>
                 </Link>
               </Box>
               {task.due_date && (

@@ -176,10 +176,12 @@ const TaskItiniaries = () => {
                       sx={{
                         borderRadius: 2.5,
                         mx: 1,
-                        border:
+                        outlineWidth: '2px',
+                        outlineStyle: 'solid',
+                        outlineColor:
                           itinerary_id === itinerary.id
-                            ? `2px solid oklch(70.8% 0.243 264.376)`
-                            : 'none',
+                            ? `oklch(70.8% 0.243 264.376)`
+                            : 'transparent',
                       }}
                     >
                       <Droppable id={itinerary.id} color={color}>
