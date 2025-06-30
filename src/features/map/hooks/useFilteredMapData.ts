@@ -110,6 +110,15 @@ const filterData = (data: (MapOverview | BoreholeMapData)[], filter: Filter) => 
     });
   }
 
+  if (filter.projects && filter.projects.length > 0) {
+    filteredData = filteredData.filter((elem) => {
+      if ('loc_id' in elem && elem.projectno) {
+        return filter.projects.some((project) => elem.projectno === project.project_no);
+      }
+      return false;
+    });
+  }
+
   return filteredData;
 };
 

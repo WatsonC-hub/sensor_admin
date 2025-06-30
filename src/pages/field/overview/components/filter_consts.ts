@@ -1,3 +1,4 @@
+import {Project} from '~/features/stamdata/api/useLocationProject';
 import type {Group, SimpleItinerary} from '~/types';
 
 interface Filter {
@@ -16,6 +17,7 @@ interface Filter {
   notificationTypes: number[];
   groups: Group[];
   itineraries: SimpleItinerary[];
+  projects: Project[];
 }
 
 const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
@@ -34,6 +36,7 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
   notificationTypes: [],
   groups: [],
   itineraries: [],
+  projects: [],
 });
 
 export {defaultMapFilter};

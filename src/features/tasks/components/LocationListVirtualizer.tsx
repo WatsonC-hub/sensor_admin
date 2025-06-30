@@ -33,6 +33,8 @@ const LocationListVirtualizer = () => {
     .sort((a, b) => {
       if ('loc_id' in a && 'loc_id' in b) {
         // tasks that are in locIds should be at the top of the list
+        if (locIds.includes(a.loc_id) && !locIds.includes(b.loc_id)) return -1;
+        if (!locIds.includes(a.loc_id) && locIds.includes(b.loc_id)) return 1;
         if (moment(a.due_date).isBefore(b.due_date)) return -1;
         if (moment(a.due_date).isAfter(b.due_date)) return 1;
       }
@@ -41,20 +43,13 @@ const LocationListVirtualizer = () => {
       return 0;
     });
 
-  const boolArray = list
-    .sort((a, b) => {
-      return typeof a == 'object' && 'loc_id' in a && locIds.includes(a?.loc_id)
-        ? -1
-        : typeof b == 'object' && 'loc_id' in b && locIds.includes(b?.loc_id)
-          ? 1
-          : 0;
-    })
-    .map((item) => {
-      if (typeof item == 'object' && 'loc_id' in item) return locIds.includes(item?.loc_id);
-      return true;
-    });
+  const boolArray = list.map((item) => {
+    if (typeof item == 'object' && 'loc_id' in item) return locIds.includes(item?.loc_id);
+    return true;
+  });
+
   const firstNotInLocIds = boolArray
-    .sort((a, b) => (a && !b ? -1 : b && !a ? 1 : 0))
+    // .sort((a, b) => (a && !b ? -1 : b && !a ? 1 : 0))
     .indexOf(false);
 
   if (firstNotInLocIds !== -1) {

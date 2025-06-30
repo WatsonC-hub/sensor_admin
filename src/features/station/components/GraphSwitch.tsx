@@ -2,6 +2,7 @@ import {Box, FormControlLabel, Switch, Typography} from '@mui/material';
 import {useSetAtom} from 'jotai';
 import React from 'react';
 import Button from '~/components/Button';
+import TooltipWrapper from '~/components/TooltipWrapper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {dataToShowAtom} from '~/state/atoms';
@@ -63,6 +64,10 @@ const GraphSwitch = ({dataToShow, setIsOpen}: GraphSwitchProps) => {
         mt: 0.5,
       }}
     >
+      <Box px={0.5}>
+        <TooltipWrapper description='"test' />
+      </Box>
+
       {items.map((item) => (
         <Box key={item.key} mb={1}>
           <FormControlLabel

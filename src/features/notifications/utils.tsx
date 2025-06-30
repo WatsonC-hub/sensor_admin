@@ -101,12 +101,20 @@ function getIcon<B extends boolean = false>(
 ): B extends true ? string : JSX.Element;
 function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
   if (raw == true) {
-    if (iconDetails.flag == null && typeof iconDetails.itinerary_id == 'string') {
+    if (iconDetails.mapicontype === 'trip') {
       return rawIcons['trip'];
     }
 
     if (iconDetails.notification_id && iconDetails.notification_id in rawIcons) {
       return rawIcons[iconDetails.notification_id];
+    }
+
+    if (iconDetails.mapicontype === 'task') {
+      return rawIcons['task'];
+    }
+
+    if (iconDetails.flag == null && typeof iconDetails.itinerary_id == 'string') {
+      return rawIcons['trip'];
     }
 
     if (iconDetails.has_task && iconDetails.flag == null && iconDetails.itinerary_id == null) {
@@ -115,17 +123,23 @@ function getIcon(iconDetails: IconDetails, raw: boolean): string | JSX.Element {
 
     return '';
   } else {
-    if (
-      iconDetails.has_task &&
-      iconDetails.flag == null &&
-      typeof iconDetails.itinerary_id == 'string'
-    ) {
+    if (iconDetails.mapicontype === 'trip') {
       const Component = reactIcons['trip'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 
     if (iconDetails.notification_id && iconDetails.notification_id in reactIcons) {
       const Component = reactIcons[iconDetails.notification_id];
+      return <Component style={defaultStyling} viewBox="0 0 24 24" />;
+    }
+
+    if (iconDetails.mapicontype === 'task') {
+      const Component = reactIcons['task'];
+      return <Component style={defaultStyling} viewBox="0 0 24 24" />;
+    }
+
+    if (iconDetails.flag == null && typeof iconDetails.itinerary_id == 'string') {
+      const Component = reactIcons['trip'];
       return <Component style={defaultStyling} viewBox="0 0 24 24" />;
     }
 

@@ -12,6 +12,7 @@ import {Filter, defaultMapFilter} from '~/pages/field/overview/components/filter
 import HighlightItineraries from './HighlightItineraries';
 import NotificationTypeFilter from './NotificationTypeFilter';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import ProjectsFilter from './ProjectsFilter';
 
 interface FilterOptionsProps {
   onClose: () => void;
@@ -230,6 +231,24 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                   handleSubmit(submit)();
                 }}
                 label="Vis serviceture"
+              />
+            )}
+          />
+        </Grid>
+      )}
+      {user?.superUser && (
+        <Grid item xs={12}>
+          <Controller
+            name="projects"
+            control={control}
+            render={({field: {onChange, value}}) => (
+              <ProjectsFilter
+                value={value}
+                setValue={(value) => {
+                  onChange(value);
+                  handleSubmit(submit)();
+                }}
+                label="Vis projekter"
               />
             )}
           />
