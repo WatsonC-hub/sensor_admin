@@ -98,12 +98,6 @@ export type PatchTask = Partial<Omit<DBTask, 'id' | 'blocks_notifications' | 'cr
   is_created?: boolean;
 };
 
-export type TaskItiniary = {
-  tasks: Pick<Task, 'id'>[];
-  due_date: string;
-  assigned_to: number;
-};
-
 export type DBTaskComment = {
   id: ID;
   comment: string;
@@ -137,12 +131,6 @@ export type TaskStatus = {
 export type TaskUser = {
   id: string;
   display_name: string;
-};
-
-export type TaskProject = {
-  project_no: string;
-  customer_name: string;
-  project_info: string;
 };
 
 // class Taskitinerary(SensorDrift, table=True):
@@ -189,14 +177,6 @@ export type Taskitinerary = {
   name: string;
 };
 
-export type TaskitineraryItem = {
-  id: ID;
-  task_itinerary_id: ID;
-  task_id: ID;
-  created_by: string;
-  created_at: string;
-};
-
 export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'> & {
   loc_ids: number[];
 };
@@ -204,10 +184,6 @@ export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'creat
 export type PatchTaskitinerary = {
   path: string;
   data: Partial<Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'>>;
-};
-
-export type AddTasksToitinerary = {
-  task_ids: ID[];
 };
 
 export type DeleteTaskFromItinerary = {

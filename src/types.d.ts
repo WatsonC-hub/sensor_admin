@@ -1,7 +1,6 @@
 import {SvgIconProps} from '@mui/material';
 import {ReactNode} from 'react';
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export interface Image {
@@ -17,26 +16,6 @@ export interface Image {
   imageurl: string;
   organisationid?: number;
 }
-
-export type TableData = {
-  ts_id: number;
-  calypso_id: number;
-  ts_name: string;
-  tstype_name: string;
-  customer_name: string;
-  loc_id: number;
-  color: string;
-  opgave: string;
-  active: boolean;
-  flag: number;
-  loctype_id: number;
-  loc_name: string;
-  prefix: string;
-  calculated: boolean;
-  x: number;
-  y: number;
-  notification_id: number;
-};
 
 export interface BoreholeMapData {
   boreholeno: string;
@@ -353,16 +332,7 @@ export type DialAction = {
   dialog?: boolean;
 };
 
-export type TaskCollection = {
-  contacts: Array<TaskContact>;
-  location_access: Array<TaskLocationAccess>;
-  ressourcer: Array<TaskRessources>;
-  units: Array<TaskUnits>;
-  notifications: Array<TaskNotifications>;
-  tasks: Array<LocationTasks>;
-};
-
-export type TaskContact = {
+type TaskContact = {
   id: string;
   navn: string;
   telefonnummer: Optional[string];
@@ -373,7 +343,7 @@ export type TaskContact = {
   loc_name: string;
 };
 
-export type TaskLocationAccess = {
+type TaskLocationAccess = {
   id: number;
   navn: string;
   type: string;
@@ -382,6 +352,26 @@ export type TaskLocationAccess = {
   kode: string;
   loc_name: string;
   contact_name: string;
+};
+
+type TaskNotifications = {
+  loc_id: number;
+  ts_id: number;
+  tstype_name: string;
+  ts_name: string;
+  notification_id: number;
+  opgave: string;
+  color: string;
+  flag: number;
+};
+
+export type TaskCollection = {
+  contacts: Array<TaskContact>;
+  location_access: Array<TaskLocationAccess>;
+  ressourcer: Array<TaskRessources>;
+  units: Array<TaskUnits>;
+  notifications: Array<TaskNotifications>;
+  tasks: Array<LocationTasks>;
 };
 
 export type TaskRessources = {
@@ -399,17 +389,6 @@ export type TaskUnits = {
   tstype_name: string;
   startdate: string;
   enddate: string;
-};
-
-export type TaskNotifications = {
-  loc_id: number;
-  ts_id: number;
-  tstype_name: string;
-  ts_name: string;
-  notification_id: number;
-  opgave: string;
-  color: string;
-  flag: number;
 };
 
 export type LocationTasks = {

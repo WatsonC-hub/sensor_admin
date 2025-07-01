@@ -3,7 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
-import {APIError, GetQueryOptions} from '~/queryClient';
+import {APIError} from '~/queryClient';
 
 import {
   type Task,
@@ -42,14 +42,14 @@ type TaskConvert = {
 
 type PostTask = Omit<TaskConvert, 'notification_id'>;
 
-export const tasksPostOptions = {
+const tasksPostOptions = {
   mutationKey: ['tasks_post'],
   mutationFn: async (mutation_data: PostTask) => {
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/`, mutation_data);
     return result;
   },
 };
-export const taskPatchOptions = {
+const taskPatchOptions = {
   mutationKey: ['tasks_patch'],
   mutationFn: async (mutation_data: Mutation<PatchTask>) => {
     const {path, data} = mutation_data;
@@ -57,7 +57,7 @@ export const taskPatchOptions = {
     return result;
   },
 };
-export const tasksDelOptions = {
+const tasksDelOptions = {
   mutationKey: ['tasks_del'],
   mutationFn: async (mutation_data: Mutation<any>) => {
     const {path} = mutation_data;
@@ -66,7 +66,7 @@ export const tasksDelOptions = {
   },
 };
 
-export const convertNotificationToTaskOptions = {
+const convertNotificationToTaskOptions = {
   mutationKey: ['tasks_convert'],
   mutationFn: async (data: TaskConvert) => {
     const {data: res} = await apiClient.post(`/sensor_admin/tasks/convert_notification`, data);
@@ -74,7 +74,7 @@ export const convertNotificationToTaskOptions = {
   },
 };
 
-export const notificationUpdateStatus = {
+const notificationUpdateStatus = {
   mutationKey: ['notification_update'],
   mutationFn: async (data: UpdateNotification[]) => {
     const {data: res} = await apiClient.post<UpdateNotification>(
@@ -85,18 +85,7 @@ export const notificationUpdateStatus = {
   },
 };
 
-export const RelatedTasksOptions = <TData>(
-  loc_ids: Array<number> | undefined
-): GetQueryOptions<TData> => ({
-  queryKey: ['tasks', loc_ids],
-  queryFn: async () => {
-    const {data} = await apiClient.get<TData>(`/sensor_admin/tasks/${loc_ids}`);
-    return data;
-  },
-  enabled: loc_ids !== undefined && loc_ids !== null && loc_ids.length > 0,
-});
-
-export const deleteTaskFromItineraryOptions = {
+const deleteTaskFromItineraryOptions = {
   mutationKey: ['taskItinerary_delete'],
   mutationFn: async (mutation_data: DeleteTaskFromItinerary) => {
     const {path} = mutation_data;

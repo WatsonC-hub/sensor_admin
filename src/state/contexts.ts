@@ -1,11 +1,5 @@
 import {createContext, useContext} from 'react';
 
-export const DrawerContext = createContext<'closed' | 'half' | 'full'>('closed');
-
-export const useDrawerContext = () => {
-  return useContext(DrawerContext);
-};
-
 type AppContextType = {
   loc_id?: number;
   ts_id?: number;

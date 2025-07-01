@@ -25,15 +25,7 @@ import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
-export function Droppable({
-  id,
-  children,
-  color,
-}: {
-  id: string;
-  children: ReactNode;
-  color?: string;
-}) {
+function Droppable({id, children, color}: {id: string; children: ReactNode; color?: string}) {
   const {isDropTarget, ref: setNodeRef} = useDroppable({
     id: id,
     data: {itinerary_id: id},

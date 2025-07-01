@@ -16,7 +16,7 @@ import {
 } from '../types';
 import {useUser} from '~/features/auth/useUser';
 
-export const itineraryPostOptions = {
+const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
   mutationFn: async (mutation_data: PostTaskitinerary) => {
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/itineraries`, mutation_data);
@@ -24,7 +24,7 @@ export const itineraryPostOptions = {
   },
 };
 
-export const completeItineraryOptions = {
+const completeItineraryOptions = {
   mutationKey: ['itinerary_complete'],
   mutationFn: async (mutation_data: completeItinerary) => {
     const {path} = mutation_data;
@@ -33,7 +33,7 @@ export const completeItineraryOptions = {
   },
 };
 
-export const patchItineraryOptions = {
+const patchItineraryOptions = {
   mutationKey: ['itinerary_patch'],
   mutationFn: async (mutation_data: PatchTaskitinerary) => {
     const {path, data} = mutation_data;
@@ -42,7 +42,7 @@ export const patchItineraryOptions = {
   },
 };
 
-export const addLocationToItineraryOptions = {
+const addLocationToItineraryOptions = {
   mutationKey: ['taskItinerary_move'],
   mutationFn: async (mutation_data: AddLocationToItinerary) => {
     const {path, data} = mutation_data;
