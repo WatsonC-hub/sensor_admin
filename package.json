@@ -47,7 +47,6 @@
     "react-plotly.js": "^2.6.0",
     "react-router-dom": "^6.4.3",
     "react-toastify": "^11.0.3",
-    "swiper": "^11.2.3",
     "use-sync-external-store": "^1.4.0",
     "utm-latlng": "^1.0.8",
     "workbox-window": "^7.3.0",

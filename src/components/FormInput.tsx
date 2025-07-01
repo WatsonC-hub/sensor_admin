@@ -94,9 +94,8 @@ const FormInput = <TFieldValues extends FieldValues>({
                 },
                 ...sx,
               }}
-              className={'swiper-no-swiping' + (className ? ' ' + className : '')}
+              className={className ?? ''}
               variant={variant}
-              InputLabelProps={{shrink: true, style: {zIndex: 0}, ...InputLabelProps}}
               fullWidth={fullWidth}
               margin={margin}
               onKeyDown={(e) => {
@@ -109,8 +108,9 @@ const FormInput = <TFieldValues extends FieldValues>({
                 input: {
                   ...slotProps?.input,
 
-                  sx:
-                    type === 'number'
+                  sx: {
+                    minHeight: '40px',
+                    ...(type === 'number'
                       ? {
                           '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
                             {
@@ -120,7 +120,8 @@ const FormInput = <TFieldValues extends FieldValues>({
                             MozAppearance: 'textfield',
                           },
                         }
-                      : {},
+                      : {}),
+                  },
                 },
                 inputLabel: {
                   shrink: true,
