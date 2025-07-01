@@ -73,31 +73,15 @@ export default function LocationRouter() {
             </StationPageBoxLayout>
           </Box>
         )}
-      {pageToShow === stationPages.BILLEDER && (
-        <StationPageBoxLayout>
-          <ImagePage />
-        </StationPageBoxLayout>
-      )}
+      {pageToShow === stationPages.BILLEDER && <ImagePage />}
       {pageToShow === stationPages.GENERELTLOKATION && (
         <StationPageBoxLayout>
           <EditLocation />
         </StationPageBoxLayout>
       )}
-      {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && (
-        <StationPageBoxLayout>
-          <ContactInfo />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && (
-        <StationPageBoxLayout>
-          <Huskeliste />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.NØGLER && user?.features?.keys && (
-        <StationPageBoxLayout>
-          <LocationAccess />
-        </StationPageBoxLayout>
-      )}
+      {pageToShow === stationPages.KONTAKTER && user?.features?.contacts && <ContactInfo />}
+      {pageToShow === stationPages.HUSKELISTE && user?.features?.ressources && <Huskeliste />}
+      {pageToShow === stationPages.NØGLER && user?.features?.keys && <LocationAccess />}
     </Layout>
   );
 }
