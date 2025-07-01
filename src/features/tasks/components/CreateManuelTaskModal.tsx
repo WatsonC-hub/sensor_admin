@@ -4,6 +4,8 @@ import React from 'react';
 import Button from '~/components/Button';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskForm, {FormValues} from '~/features/tasks/components/TaskForm';
+import {useLocationData} from '~/hooks/query/useMetadata';
+import {useDisplayState} from '~/hooks/ui';
 
 interface Props {
   open: boolean;
@@ -12,6 +14,10 @@ interface Props {
 
 const CreateManuelTaskModal = ({open, closeModal}: Props) => {
   const {post: createTask} = useTasks();
+  const ts_id_display = useDisplayState((state) => state.ts_id);
+  const {data: metadata} = useLocationData();
+
+  const ts_id = metadata?.timeseries.length === 1 ? metadata.timeseries[0].ts_id : ts_id_display;
 
   const submitTask = async (values: FormValues) => {
     if (values.ts_id === undefined) return;
@@ -39,7 +45,13 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
   return (
     <Dialog open={open} onClose={closeModal}>
       <DialogTitle>Registrer opgave</DialogTitle>
-      <TaskForm onSubmit={submitTask} defaultValues={{}}>
+      <TaskForm
+        onSubmit={submitTask}
+        defaultValues={{
+          ts_id: ts_id ?? undefined,
+          status_id: 1,
+        }}
+      >
         <DialogContent
           sx={{
             display: 'flex',
@@ -53,7 +65,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
           {/* <TaskForm.Input name="status_id" label="Status" /> */}
           <TaskForm.DueDate />
           <TaskForm.AssignedTo />
-          <TaskForm.StatusSelect />
+          <TaskForm.StatusSelect disableClosedStatus />
           <TaskForm.Input name="description" label="Beskrivelse" multiline rows={5} />
         </DialogContent>
         <DialogActions>

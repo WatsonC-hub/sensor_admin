@@ -245,6 +245,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
             <Grid2 size={6}>
               {task.can_edit ? (
                 <TaskForm.StatusSelect
+                  disableClosedStatus={!task.is_created}
                   disabled={!task.can_edit}
                   onBlurCallback={(event) => {
                     if (typeof event !== 'number' && 'target' in event) {
