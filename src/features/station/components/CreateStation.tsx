@@ -54,9 +54,12 @@ const CreateStation = () => {
   const loc_id: number | undefined = state?.loc_id ?? undefined;
   const {data: locationData, isPending} = useLocationData(loc_id);
 
+  const {data: metadata} = useLocationData(loc_id);
+
   const defaultValues = {
-    ...(loc_id ? {...locationData, initial_project_no: locationData?.projectno} : state),
+    ...metadata,
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
+    initial_project_no: metadata?.projectno ?? '',
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
   const [locationFormMethods, LocationForm] = useLocationForm<

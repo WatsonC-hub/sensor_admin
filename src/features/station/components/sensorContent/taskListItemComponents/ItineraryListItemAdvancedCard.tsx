@@ -5,13 +5,13 @@ import React, {useMemo, useState} from 'react';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import {Task} from '~/features/tasks/types';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useDisplayState} from '~/hooks/ui';
 type Props = {
   task: Task;
 };
@@ -25,7 +25,7 @@ const ItineraryListItemAdvancedCard = ({task}: Props) => {
     getStatus: {data: taskStatus},
   } = useTasks();
 
-  const {setSelectedTask} = useTaskStore();
+  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
 
   const patchTaskStatus = (status_id: number) => {
     const data = {

@@ -15,7 +15,7 @@ interface TaskCommentPost {
 interface TaskCommentPut extends TaskCommentBase {
   data: DBTaskComment;
 }
-export const taskCommentPostOptions = {
+const taskCommentPostOptions = {
   mutationKey: ['taskComments_post'],
   mutationFn: async (mutation_data: TaskCommentPost) => {
     const {data} = mutation_data;
@@ -23,7 +23,7 @@ export const taskCommentPostOptions = {
     return result;
   },
 };
-export const taskCommentPutOptions = {
+const taskCommentPutOptions = {
   mutationKey: ['taskComments_put'],
   mutationFn: async (mutation_data: TaskCommentPut) => {
     const {path, data} = mutation_data;
@@ -31,7 +31,7 @@ export const taskCommentPutOptions = {
     return result;
   },
 };
-export const taskCommentDelOptions = {
+const taskCommentDelOptions = {
   mutationKey: ['taskComments_del'],
   mutationFn: async (mutation_data: TaskCommentBase) => {
     const {path} = mutation_data;

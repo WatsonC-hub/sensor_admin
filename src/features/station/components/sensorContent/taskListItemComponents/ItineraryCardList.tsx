@@ -11,7 +11,7 @@ import {
 import React from 'react';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import useTaskItinerary from '~/features/tasks/api/useTaskItinerary';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {useAppContext} from '~/state/contexts';
 import {useTasks} from '~/features/tasks/api/useTasks';
 import CloseIcon from '@mui/icons-material/Close';
@@ -29,7 +29,7 @@ interface ItineraryCardListProps {
 const ItineraryCardList = ({itinerary_id}: ItineraryCardListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
   const [openDialog, setOpenDialog] = React.useState(false);
-  const {tasks} = useTaskStore();
+  const {tasks} = useTaskState();
 
   const itinerary_tasks = tasks?.filter(
     (task) => task.loc_id === loc_id && task.itinerary_id == itinerary_id

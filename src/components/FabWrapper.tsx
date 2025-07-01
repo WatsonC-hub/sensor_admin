@@ -1,4 +1,4 @@
-import {Fab, FabProps, SvgIconProps, Typography} from '@mui/material';
+import {Box, Fab, FabProps, SvgIconProps, Typography} from '@mui/material';
 import {merge} from 'lodash';
 import React from 'react';
 
@@ -22,23 +22,29 @@ const FabWrapper = ({text, icon, onClick, showText = false, ...otherProps}: Prop
     position: 'sticky',
     bottom: 10,
     right: 20,
-    padding: 2,
     ml: 'auto',
-    width: isTouch && !showText ? 75 : 'fit-content',
-    height: 60,
-    borderRadius: 4.5,
-    color: 'white',
   };
 
   sx = merge(sx, otherProps.sx);
 
   return (
-    // <div>
-    <Fab {...otherProps} color="secondary" aria-label="add" onClick={onClick} sx={sx}>
-      {icon}
-      {(!isTouch || showText) && <Typography sx={fabTextStyle}>{text}</Typography>}
-    </Fab>
-    // </div>
+    <Box sx={sx}>
+      <Fab
+        {...otherProps}
+        color="secondary"
+        aria-label="add"
+        onClick={onClick}
+        sx={{
+          width: isTouch && !showText ? 75 : 'fit-content',
+          borderRadius: 4.5,
+          color: 'white',
+          p: 2,
+        }}
+      >
+        {icon}
+        {(!isTouch || showText) && <Typography sx={fabTextStyle}>{text}</Typography>}
+      </Fab>
+    </Box>
   );
 };
 

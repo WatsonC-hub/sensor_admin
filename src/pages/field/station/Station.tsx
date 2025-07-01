@@ -62,16 +62,10 @@ export default function Station() {
       {pageToShow === stationPages.GENERELTUDSTYR && (
         <>
           <Box>
-            <GraphManager
-              defaultDataToShow={{
-                Kontrolmålinger: true,
-              }}
-            />
+            <GraphManager />
           </Box>
           <Divider />
-          <StationPageBoxLayout>
-            <EditUnit />
-          </StationPageBoxLayout>
+          <EditUnit />
         </>
       )}
       {pageToShow === stationPages.GENERELTLOKATION && (
@@ -89,38 +83,16 @@ export default function Station() {
       {pageToShow === stationPages.MAALEPUNKT && (
         <>
           <Box>
-            <GraphManager
-              defaultDataToShow={{
-                Kontrolmålinger: true,
-              }}
-            />
+            <GraphManager />
           </Box>
           <Divider />
-          <StationPageBoxLayout>
-            <ReferenceForm />
-          </StationPageBoxLayout>
+          <ReferenceForm />
         </>
       )}
-      {pageToShow === stationPages.NØGLER && user?.features.keys && (
-        <StationPageBoxLayout>
-          <LocationAccess />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && (
-        <StationPageBoxLayout>
-          <ContactInfo />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && (
-        <StationPageBoxLayout>
-          <Huskeliste />
-        </StationPageBoxLayout>
-      )}
-      {pageToShow === stationPages.BILLEDER && (
-        <StationPageBoxLayout>
-          <ImagePage />
-        </StationPageBoxLayout>
-      )}
+      {pageToShow === stationPages.NØGLER && user?.features.keys && <LocationAccess />}
+      {pageToShow === stationPages.KONTAKTER && user?.features.contacts && <ContactInfo />}
+      {pageToShow === stationPages.HUSKELISTE && user?.features.ressources && <Huskeliste />}
+      {pageToShow === stationPages.BILLEDER && <ImagePage />}
     </Layout>
   );
 }

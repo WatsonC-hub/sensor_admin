@@ -102,27 +102,25 @@ const EditTimeseries = () => {
         <StamdataTimeseries boreholeno={metadata?.boreholeno ?? undefined}>
           <TimeseriesForm size={size} loc_name={metadata?.loc_name} />
         </StamdataTimeseries>
-        <footer>
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button
-              bttype="tertiary"
-              onClick={() => reset(defaultValues)}
-              disabled={location_permissions !== 'edit'}
-            >
-              Annuller
-            </Button>
+        <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+          <Button
+            bttype="tertiary"
+            onClick={() => reset(defaultValues)}
+            disabled={location_permissions !== 'edit'}
+          >
+            Annuller
+          </Button>
 
-            <Button
-              bttype="primary"
-              disabled={!isDirty || !isValid || location_permissions !== 'edit'}
-              onClick={handleSubmit(Submit)}
-              startIcon={<SaveIcon />}
-              sx={{marginRight: 1}}
-            >
-              Gem
-            </Button>
-          </Box>
-        </footer>
+          <Button
+            bttype="primary"
+            disabled={!isDirty || !isValid || location_permissions !== 'edit'}
+            onClick={handleSubmit(Submit)}
+            startIcon={<SaveIcon />}
+            sx={{marginRight: 1}}
+          >
+            Gem
+          </Button>
+        </Box>
       </FormProvider>
     </Box>
   );

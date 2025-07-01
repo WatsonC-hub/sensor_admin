@@ -19,7 +19,7 @@ import FormInput, {FormInputProps} from '~/components/FormInput';
 import {getNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
-import {useTaskStore} from '../api/useTaskStore';
+import {useTaskState} from '../api/useTaskState';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import moment from 'moment';
@@ -29,8 +29,8 @@ const zodSchema = z.object({
   ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
   name: z
     .string({required_error: 'Navn skal være angivet'})
-    .max(255, 'Navn må maks være 255 tegn')
-    .optional(),
+    .min(5, 'Navn skal være mindst 5 tegn')
+    .max(255, 'Navn må maks være 255 tegn'),
   description: z.string().nullish(),
   status_id: z.number().optional(),
   due_date: z.string().nullish(),
@@ -111,6 +111,7 @@ const Input = (props: FormInputProps<FormValues>) => {
   const {disabled} = React.useContext(TaskFormContext);
   return <FormInput {...props} size="small" disabled={disabled || props.disabled} />;
 };
+
 const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
   return (
@@ -129,7 +130,11 @@ const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   );
 };
 
-const StatusSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+interface StatusSelectProps extends Omit<FormInputProps<FormValues>, 'name'> {
+  disableClosedStatus?: boolean;
+}
+
+const StatusSelect = ({disableClosedStatus = false, ...props}: StatusSelectProps) => {
   const {disabled} = React.useContext(TaskFormContext);
   const {
     getStatus: {data: task_status},
@@ -146,13 +151,15 @@ const StatusSelect = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       {...props}
       disabled={disabled || props.disabled}
     >
-      {task_status?.map((status) => {
-        return (
-          <MenuItem key={status.id} value={status.id}>
-            {status.name}
-          </MenuItem>
-        );
-      })}
+      {task_status
+        ?.filter((item) => !(disableClosedStatus && item.category == 'closed'))
+        .map((status) => {
+          return (
+            <MenuItem key={status.id} value={status.id}>
+              {status.name}
+            </MenuItem>
+          );
+        })}
     </FormInput>
   );
 };
@@ -360,7 +367,7 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
 };
 
 const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
-  const {selectedTask} = useTaskStore();
+  const {selectedTask} = useTaskState();
   const {disabled} = React.useContext(TaskFormContext);
 
   return (

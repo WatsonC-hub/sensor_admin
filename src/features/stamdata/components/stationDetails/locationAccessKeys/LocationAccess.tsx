@@ -18,6 +18,7 @@ import {
   adgangsforhold,
   AdgangsForhold,
 } from '~/features/stamdata/components/stationDetails/zodSchemas';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {useAppContext} from '~/state/contexts';
 import {Access, AccessTable} from '~/types';
 
@@ -103,44 +104,46 @@ const LocationAccess = () => {
 
   return (
     <>
-      <FormProvider {...formMethods}>
-        <LocationAccessTable editLocationAccess={handleEdit} delLocationAccess={handleDelete} />
-        {openDialog && (
-          <Dialog
-            open={openDialog}
-            onClose={handleClose}
-            aria-labelledby="form-dialog-title"
-            fullWidth
-          >
-            <DialogTitle id="form-dialog-title">Vælg nøgle eller kode</DialogTitle>
-            <DialogContent>
-              <SelectLocationAccess
-                loc_id={loc_id}
-                createNew={createNew}
-                setCreateNew={setCreateNew}
-              />
-              <Divider sx={{bgcolor: 'primary.main', paddingTop: 0.1, paddingBottom: 0.1}} />
-              <LocationAccessFormDialog
-                loc_id={loc_id}
-                createNew={createNew}
-                setCreateNew={setCreateNew}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} bttype="tertiary">
-                Annuller
-              </Button>
-              <Button
-                onClick={handleSubmit(handleSave, (error) => console.log(error))}
-                bttype="primary"
-                startIcon={<Save />}
-              >
-                Gem
-              </Button>
-            </DialogActions>
-          </Dialog>
-        )}
-      </FormProvider>
+      <StationPageBoxLayout>
+        <FormProvider {...formMethods}>
+          <LocationAccessTable editLocationAccess={handleEdit} delLocationAccess={handleDelete} />
+          {openDialog && (
+            <Dialog
+              open={openDialog}
+              onClose={handleClose}
+              aria-labelledby="form-dialog-title"
+              fullWidth
+            >
+              <DialogTitle id="form-dialog-title">Vælg nøgle eller kode</DialogTitle>
+              <DialogContent>
+                <SelectLocationAccess
+                  loc_id={loc_id}
+                  createNew={createNew}
+                  setCreateNew={setCreateNew}
+                />
+                <Divider sx={{bgcolor: 'primary.main', paddingTop: 0.1, paddingBottom: 0.1}} />
+                <LocationAccessFormDialog
+                  loc_id={loc_id}
+                  createNew={createNew}
+                  setCreateNew={setCreateNew}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleClose} bttype="tertiary">
+                  Annuller
+                </Button>
+                <Button
+                  onClick={handleSubmit(handleSave, (error) => console.log(error))}
+                  bttype="primary"
+                  startIcon={<Save />}
+                >
+                  Gem
+                </Button>
+              </DialogActions>
+            </Dialog>
+          )}
+        </FormProvider>
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<KeyIcon />}
         text="Tilføj nøgle eller kode"

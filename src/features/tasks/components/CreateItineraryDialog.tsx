@@ -27,7 +27,7 @@ const zodSchema = z.object({
     .transform((value) => (value === '' ? null : value)),
 });
 
-export type FormValues = z.infer<typeof zodSchema>;
+type FormValues = z.infer<typeof zodSchema>;
 
 const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialogProps) => {
   const {createItinerary} = useTaskItinerary();

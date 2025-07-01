@@ -9,7 +9,7 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import TaskInfoChanges from '~/features/tasks/components/TaskInfoChanges';
 import TaskInfoComment from '~/features/tasks/components/TaskInfoComment';
 
-import {useTaskStore} from '../api/useTaskStore';
+import {useTaskState} from '../api/useTaskState';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
 const taskCommentSchema = z.object({
@@ -40,7 +40,7 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
     getStatus: {data: taskStatus},
   } = useTasks();
 
-  const {selectedTask} = useTaskStore();
+  const {selectedTask} = useTaskState();
 
   const {isMonitor} = useBreakpoints();
 
@@ -100,7 +100,11 @@ const TaskInfoCommentForm = ({selectedTaskId}: TaskInfoCommentFormProps) => {
             fullWidth
             name="comment"
             label={'Kommentar'}
-            disabled={selectedTaskId.includes(':') || selectedTask?.can_edit === false}
+            disabled={
+              selectedTaskId.includes(':') ||
+              selectedTask?.can_edit === false ||
+              selectedTask === undefined
+            }
             multiline
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {

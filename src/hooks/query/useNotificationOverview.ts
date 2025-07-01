@@ -1,5 +1,4 @@
-import {UseQueryResult, queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
-import {sortBy} from 'lodash';
+import {queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
@@ -36,60 +35,9 @@ export interface Notification {
   calypso_id: number | null;
 }
 
-export interface NotificationMap extends Notification {
-  otherNotifications: Notification[];
-  obsNotifications: Notification[];
-}
-
 type NotificationOverviewOptions = Partial<
   Omit<UseQueryOptions<Notification[]>, 'queryKey' | 'queryFn'>
 >;
-
-const sortByType = (item: Notification) => {
-  switch (item.type) {
-    case 'notification':
-      return 0;
-    case 'task':
-      return 2;
-    case 'itinerary':
-      return 1;
-    default:
-      return 3;
-  }
-};
-
-const nullState: Partial<Notification> = {
-  opgave: null,
-  dato: null,
-  color: null,
-  flag: 0,
-  notification_id: 0,
-  status: null,
-  enddate: null,
-  notify_type: null,
-};
-
-// const tmpGetFlag = (item: Notification) => {
-//   if (item.notify_type === 'obs' && item.notification_id === 42) {
-//     return 2;
-//   } else if ([141, 171].includes(item.notification_id)) {
-//     return 2;
-//   } else if ([12].includes(item.notification_id)) {
-//     return 3;
-//   } else {
-//     return item.flag;
-//   }
-// };
-
-// const tempNotificationTransform = (data: Notification[]): Notification[] => {
-//   return data.map((item) => {
-//     return {
-//       ...item,
-//       notify_type: 'primary',
-//       flag: tmpGetFlag(item),
-//     };
-//   });
-// };
 
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
   const user = useUser();
@@ -118,57 +66,6 @@ export const useLocationNotificationOverview = (loc_id: number | undefined) => {
     },
     staleTime: 10,
     enabled: loc_id !== undefined && loc_id !== -1,
-  });
-};
-
-export const useNotificationOverviewMap = (
-  options?: NotificationOverviewOptions
-): UseQueryResult<NotificationMap[], Error> => {
-  // @ts-expect-error - This is a valid use case for the hook
-  return useNotificationOverview({
-    select: (data) => {
-      const sorted = sortBy(data, [
-        sortByType,
-        (item) => -item.flag,
-        (item) => (item.projectno ? item.projectno : ''),
-      ]);
-
-      const grouped = sorted.reduce((acc: NotificationMap[], item: Notification) => {
-        const existing = acc.find((accItem) => accItem.loc_id === item.loc_id);
-
-        if (existing) {
-          // if (item.type === 'task') {
-          //   existing.type = 'task';
-          // }
-          // if (item.type === 'notification' && existing.type !== 'task') {
-          //   existing.type = 'notification';
-          // }
-
-          if (item.notify_type === 'obs') {
-            existing.obsNotifications.push(item);
-          }
-          existing.otherNotifications.push(item);
-
-          if (existing.active == null) {
-            existing.active = item.active;
-          } else {
-            existing.active = item.active || existing.active;
-          }
-        } else {
-          if (item.notify_type === 'primary') {
-            acc.push({...item, otherNotifications: [], obsNotifications: []});
-          } else if (item.notify_type === 'obs') {
-            acc.push({...item, ...nullState, otherNotifications: [item], obsNotifications: [item]});
-          } else {
-            acc.push({...item, ...nullState, otherNotifications: [item], obsNotifications: []});
-          }
-        }
-        return acc;
-      }, []);
-
-      return grouped;
-    },
-    ...options,
   });
 };
 
@@ -217,7 +114,7 @@ export const useMapOverview = <T = MapOverview[]>(options?: MapOverviewOptions<T
   });
 };
 
-export interface TimeseriesStatus {
+interface TimeseriesStatus {
   ts_id: number;
   loc_id: number;
   parameter: string;
@@ -243,7 +140,7 @@ export const timeseriesStatusOptions = (loc_id: number) =>
       );
       return data;
     },
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 1,
   });
 
 export const useTimeseriesStatus = (loc_id: number) => {
@@ -267,6 +164,6 @@ export const useNotificationTypes = () => {
       const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
       return data;
     },
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 15,
   });
 };

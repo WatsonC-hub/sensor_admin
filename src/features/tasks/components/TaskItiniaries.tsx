@@ -3,7 +3,7 @@ import React, {ReactNode, useState} from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 
 import useTaskItinerary from '../api/useTaskItinerary';
 
@@ -25,15 +25,7 @@ import {useUser} from '~/features/auth/useUser';
 import {Edit, ExpandLess, ExpandMore} from '@mui/icons-material';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
-export function Droppable({
-  id,
-  children,
-  color,
-}: {
-  id: string;
-  children: ReactNode;
-  color?: string;
-}) {
+function Droppable({id, children, color}: {id: string; children: ReactNode; color?: string}) {
   const {isDropTarget, ref: setNodeRef} = useDroppable({
     id: id,
     data: {itinerary_id: id},
@@ -103,7 +95,7 @@ const TaskItiniaries = () => {
   const {
     getUsers: {data: users},
   } = useTasks();
-  const {tasks} = useTaskStore();
+  const {tasks} = useTaskState();
   const {patch: updateItinerary} = useTaskItinerary();
 
   return (

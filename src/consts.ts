@@ -37,9 +37,7 @@ export const setGraphHeight = (matches: boolean) => {
 
 export const qaHistorySkeletonHeight = '40px';
 
-export const tabsHeight = '48px';
-
-export const calculateContentHeight = (pixelToSubtract: number) => {
+const calculateContentHeight = (pixelToSubtract: number) => {
   return `calc(100dvh - ${pixelToSubtract}px)`;
 };
 

@@ -3,9 +3,8 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
-import {APIError, GetQueryOptions} from '~/queryClient';
+import {APIError} from '~/queryClient';
 
-import {useRawTaskStore} from '../store';
 import {
   type Task,
   type PatchTask,
@@ -14,6 +13,7 @@ import {
   DBTask,
   DeleteTaskFromItinerary,
 } from '../types';
+import {useDisplayState} from '~/hooks/ui';
 
 type Mutation<TData> = {
   path: string;
@@ -42,14 +42,14 @@ type TaskConvert = {
 
 type PostTask = Omit<TaskConvert, 'notification_id'>;
 
-export const tasksPostOptions = {
+const tasksPostOptions = {
   mutationKey: ['tasks_post'],
   mutationFn: async (mutation_data: PostTask) => {
     const {data: result} = await apiClient.post(`/sensor_admin/tasks/`, mutation_data);
     return result;
   },
 };
-export const taskPatchOptions = {
+const taskPatchOptions = {
   mutationKey: ['tasks_patch'],
   mutationFn: async (mutation_data: Mutation<PatchTask>) => {
     const {path, data} = mutation_data;
@@ -57,7 +57,7 @@ export const taskPatchOptions = {
     return result;
   },
 };
-export const tasksDelOptions = {
+const tasksDelOptions = {
   mutationKey: ['tasks_del'],
   mutationFn: async (mutation_data: Mutation<any>) => {
     const {path} = mutation_data;
@@ -66,7 +66,7 @@ export const tasksDelOptions = {
   },
 };
 
-export const convertNotificationToTaskOptions = {
+const convertNotificationToTaskOptions = {
   mutationKey: ['tasks_convert'],
   mutationFn: async (data: TaskConvert) => {
     const {data: res} = await apiClient.post(`/sensor_admin/tasks/convert_notification`, data);
@@ -74,7 +74,7 @@ export const convertNotificationToTaskOptions = {
   },
 };
 
-export const notificationUpdateStatus = {
+const notificationUpdateStatus = {
   mutationKey: ['notification_update'],
   mutationFn: async (data: UpdateNotification[]) => {
     const {data: res} = await apiClient.post<UpdateNotification>(
@@ -85,18 +85,7 @@ export const notificationUpdateStatus = {
   },
 };
 
-export const RelatedTasksOptions = <TData>(
-  loc_ids: Array<number> | undefined
-): GetQueryOptions<TData> => ({
-  queryKey: ['tasks', loc_ids],
-  queryFn: async () => {
-    const {data} = await apiClient.get<TData>(`/sensor_admin/tasks/${loc_ids}`);
-    return data;
-  },
-  enabled: loc_ids !== undefined && loc_ids !== null && loc_ids.length > 0,
-});
-
-export const deleteTaskFromItineraryOptions = {
+const deleteTaskFromItineraryOptions = {
   mutationKey: ['taskItinerary_delete'],
   mutationFn: async (mutation_data: DeleteTaskFromItinerary) => {
     const {path} = mutation_data;
@@ -123,19 +112,15 @@ export const getNextDueDate = (ts_id: number, open: boolean) => {
 export const useTasks = () => {
   const queryClient = useQueryClient();
 
-  const [setSelectedTask, shownMapTaskIds, setShownMapTaskIds] = useRawTaskStore((state) => [
-    state.setSelectedTask,
-    state.shownMapTaskIds,
-    state.setShownMapTaskIds,
-  ]);
+  const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
 
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks'],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/tasks`, {});
+      const {data} = await apiClient.get(`/sensor_admin/tasks`);
       return data;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 1,
   });
 
   const post = useMutation<unknown, APIError, PostTask>({
@@ -183,7 +168,6 @@ export const useTasks = () => {
           })
         );
 
-        setShownMapTaskIds([...shownMapTaskIds, data.id]);
         setSelectedTask(data.id);
       }
 
@@ -193,8 +177,6 @@ export const useTasks = () => {
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['map']});
       queryClient.invalidateQueries({queryKey: ['timeseries']});
-
-      toast.success('Opgave ændret');
     },
     onError: () => {
       queryClient.invalidateQueries({queryKey: ['tasks']});
@@ -230,7 +212,6 @@ export const useTasks = () => {
   const updateNotification = useMutation({
     ...notificationUpdateStatus,
     onSuccess: () => {
-      toast.success('Opgave opdateret');
       queryClient.invalidateQueries({queryKey: ['overblik']});
       queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['itineraries']});

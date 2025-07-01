@@ -12,7 +12,6 @@ import Station from '~/pages/field/station/Station';
 import {BoreholeMapData} from '~/types';
 import SensorContent from '~/pages/field/overview/components/SensorContent';
 import BoreholeContent from '~/pages/field/overview/components/BoreholeContent';
-import {useRawTaskStore} from '../store';
 import {locationMetadataQueryOptions, metadataQueryOptions} from '~/hooks/query/useMetadata';
 import {useQuery} from '@tanstack/react-query';
 import {displayStore, useDisplayState} from '~/hooks/ui';
@@ -31,8 +30,8 @@ import ItineraryHighlighter from '~/features/map/components/ItineraryHighlighter
 import {withComponentPermission} from '~/hooks/withComponentPermission';
 
 const Overview = () => {
-  const [selectedTask, setSelectedTask] = useRawTaskStore((state) => [
-    state.selectedTaskId,
+  const [selectedTask, setSelectedTask] = useDisplayState((state) => [
+    state.selectedTask,
     state.setSelectedTask,
   ]);
 

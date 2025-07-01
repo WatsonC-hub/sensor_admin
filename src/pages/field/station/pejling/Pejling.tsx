@@ -176,22 +176,10 @@ const Pejling = () => {
                 alignItems: 'center',
               }}
             >
-              {/* <TooltipWrapper
-                description={
-                  timeseries_data?.tstype_id !== 1
-                    ? 'Der er to forskellige typer kontrolmålinger. Vandstandskontrol og ikke-vandstandskontrol. Denne kontrol er ikke vandstandskontrol. Læs mere om forskellen på kontrolmålinger i guiden.'
-                    : 'Der er to forskellige typer kontrolmålinger. Vandstandskontrol og ikke-vandstandskontrol. Denne kontrol er vandstandskontrol. Læs mere om forskellen på kontrolmålinger i guiden.'
-                }
-                url={
-                  timeseries_data?.tstype_id !== 1
-                    ? 'https://www.watsonc.dk/guides/kontrolmaling-ikke-vandstand/'
-                    : 'https://www.watsonc.dk/guides/kontrolpejling'
-                }
-              > */}
               <Typography variant="h5" component="h3">
                 {gid === undefined ? 'Indberet kontrol' : 'Rediger kontrol'}
               </Typography>
-              {/* </TooltipWrapper> */}
+
               <CompoundPejling
                 submit={handlePejlingSubmit}
                 cancel={handleCancel}
@@ -215,18 +203,18 @@ const Pejling = () => {
             disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
           />
         </Box>
-        <FabWrapper
-          icon={<AddCircle />}
-          text="Tilføj kontrol"
-          disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
-          onClick={() => {
-            setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
-            reset(getInitialData());
-            setShowForm(true);
-          }}
-          sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
-        />
       </StationPageBoxLayout>
+      <FabWrapper
+        icon={<AddCircle />}
+        text="Tilføj kontrol"
+        disabled={permissions?.[ts_id] !== 'edit' && location_permissions !== 'edit'}
+        onClick={() => {
+          setIsPump(measurements?.[0]?.pumpstop || measurements?.[0]?.service ? true : false);
+          reset(getInitialData());
+          setShowForm(true);
+        }}
+        sx={{visibility: showForm === null ? 'visible' : 'hidden'}}
+      />
     </>
   );
 };

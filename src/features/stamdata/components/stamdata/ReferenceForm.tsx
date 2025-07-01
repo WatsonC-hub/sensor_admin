@@ -15,6 +15,7 @@ import {useAppContext} from '~/state/contexts';
 import {initialWatlevmpData} from './const';
 import {Maalepunkt} from '~/types';
 import moment from 'moment';
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 
 const schema = z.object({
   gid: z.number().optional(),
@@ -62,22 +63,24 @@ export default function ReferenceForm() {
 
   return (
     <>
-      {showForm && <WatlevMPForm formMethods={formMethods} />}
-      {isMobile ? (
-        <MaalepunktTableMobile
-          data={watlevmp}
-          handleEdit={handleEdit}
-          handleDelete={handleDeleteMaalepunkt}
-          disabled={disabled}
-        />
-      ) : (
-        <MaalepunktTableDesktop
-          data={watlevmp}
-          handleEdit={handleEdit}
-          handleDelete={handleDeleteMaalepunkt}
-          disabled={disabled}
-        />
-      )}
+      <StationPageBoxLayout>
+        {showForm && <WatlevMPForm formMethods={formMethods} />}
+        {isMobile ? (
+          <MaalepunktTableMobile
+            data={watlevmp}
+            handleEdit={handleEdit}
+            handleDelete={handleDeleteMaalepunkt}
+            disabled={disabled}
+          />
+        ) : (
+          <MaalepunktTableDesktop
+            data={watlevmp}
+            handleEdit={handleEdit}
+            handleDelete={handleDeleteMaalepunkt}
+            disabled={disabled}
+          />
+        )}
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<AddCircle />}
         text="Tilføj målepunkt"

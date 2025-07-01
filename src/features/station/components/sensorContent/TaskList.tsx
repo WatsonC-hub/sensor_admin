@@ -2,7 +2,7 @@ import {Box, Typography, Tooltip, IconButton} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 import React from 'react';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {useAppContext} from '~/state/contexts';
 import TaskListItemSimpleCard from './taskListItemComponents/TaskListItemSimpleCard';
 import TaskListItemAdvancedCard from './taskListItemComponents/TaskListItemAdvancedCard';
@@ -28,7 +28,7 @@ interface TaskListProps {
 
 const TaskList = ({setCreateTaskDialog}: TaskListProps) => {
   const {loc_id} = useAppContext(['loc_id']);
-  const {tasks} = useTaskStore();
+  const {tasks} = useTaskState();
   const user = useUser();
   const {data: location_data} = useLocationData(loc_id);
 
