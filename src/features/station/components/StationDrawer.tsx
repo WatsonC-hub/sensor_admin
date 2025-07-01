@@ -320,7 +320,9 @@ const StationDrawer = () => {
                     {item.icon}
                   </ListItemIcon>
                   <ListItemText>
-                    <Wrapper description={item.tooltip} withIcon={false}>
+                    <Wrapper
+                      {...(item.tooltip ? {description: item.tooltip, withIcon: false} : {})}
+                    >
                       {item.text}
                     </Wrapper>
                   </ListItemText>
