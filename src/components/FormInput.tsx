@@ -28,7 +28,6 @@ const FormInput = <TFieldValues extends FieldValues>({
   variant = 'outlined',
   sx,
   className,
-  InputLabelProps,
   slotProps,
   onKeyDown,
   helperText,
@@ -76,8 +75,6 @@ const FormInput = <TFieldValues extends FieldValues>({
               }}
               ref={ref}
               sx={{
-                // pt: 1,
-                // pt: 2,
                 pb: 1,
                 '& .MuiInputBase-input.Mui-disabled': {
                   WebkitTextFillColor: '#000000',
@@ -109,7 +106,6 @@ const FormInput = <TFieldValues extends FieldValues>({
                   ...slotProps?.input,
 
                   sx: {
-                    minHeight: '40px',
                     ...(type === 'number'
                       ? {
                           '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
