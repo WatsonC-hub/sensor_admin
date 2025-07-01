@@ -243,7 +243,7 @@ export const timeseriesStatusOptions = (loc_id: number) =>
       );
       return data;
     },
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 1,
   });
 
 export const useTimeseriesStatus = (loc_id: number) => {
@@ -267,6 +267,6 @@ export const useNotificationTypes = () => {
       const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
       return data;
     },
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 60 * 15,
   });
 };

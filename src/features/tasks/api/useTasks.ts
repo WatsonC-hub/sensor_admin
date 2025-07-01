@@ -123,19 +123,15 @@ export const getNextDueDate = (ts_id: number, open: boolean) => {
 export const useTasks = () => {
   const queryClient = useQueryClient();
 
-  const [setSelectedTask, shownMapTaskIds, setShownMapTaskIds] = useRawTaskStore((state) => [
-    state.setSelectedTask,
-    state.shownMapTaskIds,
-    state.setShownMapTaskIds,
-  ]);
+  const [setSelectedTask] = useRawTaskStore((state) => [state.setSelectedTask]);
 
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks'],
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/tasks`, {});
+      const {data} = await apiClient.get(`/sensor_admin/tasks`);
       return data;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 1,
   });
 
   const post = useMutation<unknown, APIError, PostTask>({
@@ -183,7 +179,6 @@ export const useTasks = () => {
           })
         );
 
-        setShownMapTaskIds([...shownMapTaskIds, data.id]);
         setSelectedTask(data.id);
       }
 
