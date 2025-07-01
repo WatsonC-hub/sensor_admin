@@ -211,7 +211,11 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           <Tooltip arrow title={deleteTaskTitle}>
             <Button
               bttype="primary"
-              disabled={selectedTask.id.includes(':') || selectedTask.can_edit === false}
+              disabled={
+                selectedTask.id.includes(':') ||
+                selectedTask.can_edit === false ||
+                selectedTask.status_category === 'closed'
+              }
               onClick={() => setDialogOpen(true)}
               startIcon={<Delete />}
             >

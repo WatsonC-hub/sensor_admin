@@ -2,19 +2,19 @@ import {Box, Button, Grid2, Link} from '@mui/material';
 import React, {useMemo} from 'react';
 import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import TaskForm from '~/features/tasks/components/TaskForm';
 
 import DescriptionIcon from '@mui/icons-material/Description';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useDisplayState} from '~/hooks/ui';
 
 type Props = {
   task: Task;
 };
 
 const ItineraryListItemSimpleCard = ({task}: Props) => {
-  const {setSelectedTask} = useTaskStore();
+  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {station} = useNavigationFunctions();
   const defaultValues = useMemo(() => {
     if (!task) return;

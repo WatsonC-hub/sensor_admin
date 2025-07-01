@@ -5,7 +5,6 @@ import {apiClient} from '~/apiClient';
 // import {Notification} from '~/hooks/query/useNotificationOverview';
 import {APIError, GetQueryOptions} from '~/queryClient';
 
-import {useRawTaskStore} from '../store';
 import {
   type Task,
   type PatchTask,
@@ -14,6 +13,7 @@ import {
   DBTask,
   DeleteTaskFromItinerary,
 } from '../types';
+import {useDisplayState} from '~/hooks/ui';
 
 type Mutation<TData> = {
   path: string;
@@ -123,7 +123,7 @@ export const getNextDueDate = (ts_id: number, open: boolean) => {
 export const useTasks = () => {
   const queryClient = useQueryClient();
 
-  const [setSelectedTask] = useRawTaskStore((state) => [state.setSelectedTask]);
+  const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
 
   const get = useQuery<Task[], APIError>({
     queryKey: ['tasks'],

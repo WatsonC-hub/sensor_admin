@@ -2,7 +2,7 @@ import {Box, Grid2, Link, Typography} from '@mui/material';
 import React from 'react';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
-import {useTaskStore} from '../api/useTaskStore';
+import {useTaskState} from '../api/useTaskState';
 import {convertDate} from '~/helpers/dateConverter';
 import {CalendarIcon} from '@mui/x-date-pickers';
 import {Person} from '@mui/icons-material';
@@ -12,6 +12,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {useDraggable} from '@dnd-kit/react';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useUser} from '~/features/auth/useUser';
+import {useDisplayState} from '~/hooks/ui';
 type Props = {
   itemData: MapOverview;
   onClick: () => void;
@@ -19,7 +20,8 @@ type Props = {
 
 const LocationListItem = ({itemData, onClick}: Props) => {
   const user = useUser();
-  const {tasks, setSelectedTask} = useTaskStore();
+  const {tasks} = useTaskState();
+  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {isMobile} = useBreakpoints();
   const {handleRef, ref} = useDraggable({
     id: itemData.loc_id,

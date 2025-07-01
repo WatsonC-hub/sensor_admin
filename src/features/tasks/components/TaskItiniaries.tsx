@@ -3,7 +3,7 @@ import React, {ReactNode, useState} from 'react';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 
 import useTaskItinerary from '../api/useTaskItinerary';
 
@@ -103,7 +103,7 @@ const TaskItiniaries = () => {
   const {
     getUsers: {data: users},
   } = useTasks();
-  const {tasks} = useTaskStore();
+  const {tasks} = useTaskState();
   const {patch: updateItinerary} = useTaskItinerary();
 
   return (

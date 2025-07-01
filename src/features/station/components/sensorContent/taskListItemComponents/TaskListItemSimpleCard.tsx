@@ -2,20 +2,20 @@ import {Box, Button, Card, CardContent, CardHeader, Link, Typography} from '@mui
 import React, {useMemo} from 'react';
 import {Task} from '~/features/tasks/types';
 import {EditOutlined} from '@mui/icons-material';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {getColor} from '~/features/notifications/utils';
 import TaskForm from '~/features/tasks/components/TaskForm';
 import {convertDate} from '~/helpers/dateConverter';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useDisplayState} from '~/hooks/ui';
 
 type Props = {
   task: Task;
 };
 
 const TaskListItemSimpleCard = ({task}: Props) => {
-  const {setSelectedTask} = useTaskStore();
+  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {station} = useNavigationFunctions();
 
   const defaultValues = useMemo(() => {
@@ -109,19 +109,21 @@ const TaskListItemSimpleCard = ({task}: Props) => {
           sx={{paddingBottom: 0, paddingX: 1, '&.MuiCardContent-root:last-child': {paddingY: 1}}}
         >
           <Box display={'flex'} flexDirection={'row'} alignItems="center" justifyContent="end">
-            <EditOutlined
-              fontSize="small"
-              sx={{
-                color: 'grey.700',
-              }}
-            />
+            {task.can_edit && (
+              <EditOutlined
+                fontSize="small"
+                sx={{
+                  color: 'grey.700',
+                }}
+              />
+            )}
             <Button
               variant="text"
               size="small"
               onClick={() => setSelectedTask(task.id)}
               sx={{textTransform: 'initial', borderRadius: 2.5}}
             >
-              Rediger opgave
+              {task.can_edit ? 'Rediger opgave' : 'Se opgave'}
             </Button>
           </Box>
         </CardContent>

@@ -2,7 +2,7 @@ import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {Task} from '../types';
 
-export const locationTaskHistoryOptions = (loc_id: number) =>
+export const locationTaskHistoryOptions = (loc_id: number | undefined) =>
   queryOptions({
     queryKey: ['closed_tasks', loc_id],
     queryFn: async () => {
@@ -12,7 +12,7 @@ export const locationTaskHistoryOptions = (loc_id: number) =>
     enabled: false,
   });
 
-const useLocationTaskHistory = (loc_id: number) => {
+const useLocationTaskHistory = (loc_id: number | undefined) => {
   return useQuery(locationTaskHistoryOptions(loc_id));
 };
 

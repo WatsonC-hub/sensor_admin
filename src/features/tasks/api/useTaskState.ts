@@ -1,19 +1,10 @@
 import {useMemo} from 'react';
 
-import {useRawTaskStore} from '../store';
-
 import {useTasks} from './useTasks';
+import {useDisplayState} from '~/hooks/ui';
 
-export const useTaskStore = () => {
-  const {
-    selectedTaskId,
-    selectedLocIds,
-    isDraggingTask,
-    setSelectedTask,
-    setSelectedLocIds,
-    setIsDraggingTask,
-  } = useRawTaskStore((state) => state);
-
+export const useTaskState = () => {
+  const selectedTaskId = useDisplayState((state) => state.selectedTask);
   const {
     get: {data: tasks},
   } = useTasks();
@@ -29,14 +20,6 @@ export const useTaskStore = () => {
 
   return {
     tasks,
-
     selectedTask,
-    selectedLocIds,
-    isDraggingTask,
-
-    setSelectedTask,
-
-    setSelectedLocIds,
-    setIsDraggingTask,
   };
 };

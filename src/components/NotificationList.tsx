@@ -5,7 +5,7 @@ import {Avatar, Badge, IconButton, ListItemIcon, ListItemText, Menu, MenuItem} f
 import {groupBy, map, maxBy, sortBy} from 'lodash';
 import React, {useState} from 'react';
 
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 // import ConvertTaskModal from '~/features/tasks/components/ConvertTaskModal';
 import CreateManualTaskModal from '~/features/tasks/components/CreateManuelTaskModal';
 // import UpdateNotificationModal from '~/features/tasks/components/UpdateNotificationModal';
@@ -17,6 +17,7 @@ import NotificationIcon from '~/pages/field/overview/components/NotificationIcon
 import {useAppContext} from '~/state/contexts';
 import {getColor} from '~/features/notifications/utils';
 import {useUser} from '~/features/auth/useUser';
+import {useDisplayState} from '~/hooks/ui';
 // Mock data for notifications
 const NotificationList = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -28,7 +29,8 @@ const NotificationList = () => {
   const {ts_id, loc_id: app_loc_id} = useAppContext(['ts_id'], ['loc_id']);
 
   let loc_id = undefined;
-  const {setSelectedTask, tasks} = useTaskStore();
+  const {tasks} = useTaskState();
+  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
   const {tasks: tasksNavigation} = useNavigationFunctions();
   const {data: metadata} = useTimeseriesData();
 

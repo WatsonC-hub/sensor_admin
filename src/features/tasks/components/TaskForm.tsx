@@ -19,7 +19,7 @@ import FormInput, {FormInputProps} from '~/components/FormInput';
 import {getNextDueDate, useTasks} from '~/features/tasks/api/useTasks';
 import {TaskUser} from '~/features/tasks/types';
 
-import {useTaskStore} from '../api/useTaskStore';
+import {useTaskState} from '../api/useTaskState';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import moment from 'moment';
@@ -367,7 +367,7 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
 };
 
 const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
-  const {selectedTask} = useTaskStore();
+  const {selectedTask} = useTaskState();
   const {disabled} = React.useContext(TaskFormContext);
 
   return (

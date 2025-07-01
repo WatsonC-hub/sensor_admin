@@ -16,7 +16,6 @@ import {useTasks} from '~/features/tasks/api/useTasks';
 import {Task} from '~/features/tasks/types';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import {useTaskHistory} from '~/features/tasks/api/useTaskHistory';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
 import {convertDate} from '~/helpers/dateConverter';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import TaskForm from '~/features/tasks/components/TaskForm';
@@ -24,6 +23,7 @@ import {getColor} from '~/features/notifications/utils';
 import NotificationIcon from '~/pages/field/overview/components/NotificationIcon';
 
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
+import {useDisplayState} from '~/hooks/ui';
 
 type Props = {
   task: Task;
@@ -38,7 +38,7 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
     getStatus: {data: taskStatus},
   } = useTasks();
 
-  const {setSelectedTask} = useTaskStore();
+  const setSelectedTask = useDisplayState((state) => state.setSelectedTask);
 
   const patchTaskStatus = (status_id: number) => {
     const data = {

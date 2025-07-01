@@ -6,7 +6,7 @@ import {useMemo, useState} from 'react';
 import {useBoreholeMap} from '~/hooks/query/useBoreholeMap';
 import {assignedToAtom} from '~/state/atoms';
 import {useAtomValue} from 'jotai';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 import moment from 'moment';
 import {isEmptyObject} from '~/helpers/guardHelper';
 
@@ -127,7 +127,7 @@ export const useFilteredMapData = () => {
   const assignedToListFilter = useAtomValue(assignedToAtom);
   const {data: boreholeMapdata} = useBoreholeMap();
   const [extraData, setExtraData] = useState<MapOverview | BoreholeMapData | null>(null);
-  const {tasks} = useTaskStore();
+  const {tasks} = useTaskState();
 
   const data = useMemo(() => {
     return [

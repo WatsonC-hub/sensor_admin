@@ -15,7 +15,7 @@ import useBreakpoints from '~/hooks/useBreakpoints';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
 import AddToTripDialog from './AddToTripDialog';
 import {useUser} from '~/features/auth/useUser';
-import {useTaskStore} from '~/features/tasks/api/useTaskStore';
+import {useTaskState} from '~/features/tasks/api/useTaskState';
 import {StatusEnum} from '~/features/tasks/types';
 
 const SensorContent = () => {
@@ -29,7 +29,7 @@ const SensorContent = () => {
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
   const user = useUser();
-  const {tasks} = useTaskStore();
+  const {tasks} = useTaskState();
 
   const {data: location} = useMapOverview({
     select: (data) => {
