@@ -60,7 +60,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
           }}
         >
           <TaskForm.SelectTimeseries label="Tidsserie" />
-          <TaskForm.Input name="name" label="Navn" />
+          <TaskForm.Input name="name" label="Opgavenavn" />
           {/* <TaskForm.Input name="status_id" label="Status" /> */}
           <TaskForm.DueDate />
           <TaskForm.AssignedTo />

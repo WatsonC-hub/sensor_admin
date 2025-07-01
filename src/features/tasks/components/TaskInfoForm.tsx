@@ -102,7 +102,7 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
         <Grid item mobile={12} tablet={12} laptop={6}>
           <TaskForm.Input
             sx={{pb: 0}}
-            label={'Navn'}
+            label={'Opgavenavn'}
             name="name"
             onBlurCallback={async () => await handlePatch('name')}
           />
