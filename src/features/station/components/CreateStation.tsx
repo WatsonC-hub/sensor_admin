@@ -31,6 +31,7 @@ import {toast} from 'react-toastify';
 import {ArrowBack, Save} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AlertDialog from '~/components/AlertDialog';
+import {useLocationData} from '~/hooks/query/useMetadata';
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -48,9 +49,12 @@ const CreateStation = () => {
 
   const loc_id: number | undefined = state?.loc_id ?? undefined;
 
+  const {data: metadata} = useLocationData(loc_id);
+
   const defaultValues = {
-    ...state,
+    ...metadata,
     loctype_id: 'loctype_id' in state ? state.loctype_id : -1,
+    initial_project_no: metadata?.projectno ?? '',
   } as Partial<DefaultAddLocation | BoreholeAddLocation>;
 
   const [locationFormMethods, LocationForm] = useLocationForm<
