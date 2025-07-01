@@ -193,8 +193,6 @@ export const useTasks = () => {
       queryClient.invalidateQueries({queryKey: ['itineraries']});
       queryClient.invalidateQueries({queryKey: ['map']});
       queryClient.invalidateQueries({queryKey: ['timeseries']});
-
-      toast.success('Opgave ændret');
     },
     onError: () => {
       queryClient.invalidateQueries({queryKey: ['tasks']});
@@ -230,7 +228,6 @@ export const useTasks = () => {
   const updateNotification = useMutation({
     ...notificationUpdateStatus,
     onSuccess: () => {
-      toast.success('Opgave opdateret');
       queryClient.invalidateQueries({queryKey: ['overblik']});
       queryClient.invalidateQueries({queryKey: ['tasks']});
       queryClient.invalidateQueries({queryKey: ['itineraries']});
