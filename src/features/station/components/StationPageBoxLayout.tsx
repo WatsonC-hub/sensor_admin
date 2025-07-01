@@ -1,11 +1,13 @@
 import {Box} from '@mui/material';
 import React from 'react';
+import useBreakpoints from '~/hooks/useBreakpoints';
 
 type StationPageBoxLayoutProps = {
   children: React.ReactNode;
 };
 
 const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
+  const {isTouch} = useBreakpoints();
   return (
     <Box
       sx={{
@@ -16,6 +18,7 @@ const StationPageBoxLayout = ({children}: StationPageBoxLayoutProps) => {
         minWidth: 0,
         maxWidth: '100%',
         gap: 1,
+        flexGrow: isTouch ? 1 : 0,
       }}
       px={{
         xs: 2,

@@ -32,6 +32,7 @@ const CustomSpeedDial = ({actions}: CustomSpeedDialProps) => {
       sx={{
         position: 'sticky',
         bottom: 10,
+        right: 20,
         ml: 'auto',
         alignItems: 'end',
         '.MuiSpeedDial-actions': {

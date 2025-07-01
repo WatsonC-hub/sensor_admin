@@ -14,7 +14,7 @@ import UnitForm from '~/features/stamdata/components/stamdata/UnitForm';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
-
+import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import UdstyrReplace from './UdstyrReplace';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import FabWrapper from '~/components/FabWrapper';
@@ -101,53 +101,54 @@ const EditUnit = () => {
 
   return (
     <>
-      <Box
-        maxWidth={1080}
-        sx={{
-          borderRadius: 4,
-          boxShadow: 3,
-          padding: '16px',
-        }}
-      >
-        <FormProvider {...formMethods}>
-          <UdstyrReplace selected={selectedUnit} setSelected={setSelectedUnit} />
-          <UnitForm mode="edit" />
+      <StationPageBoxLayout>
+        <Box
+          maxWidth={1080}
+          sx={{
+            borderRadius: 4,
+            boxShadow: 3,
+            padding: '16px',
+          }}
+        >
+          <FormProvider {...formMethods}>
+            <UdstyrReplace selected={selectedUnit} setSelected={setSelectedUnit} />
+            <UnitForm mode="edit" />
 
-          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-            <Button
-              bttype="tertiary"
-              disabled={disabled}
-              onClick={() => {
-                reset(defaultValues);
-              }}
-            >
-              Annuller
-            </Button>
+            <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+              <Button
+                bttype="tertiary"
+                disabled={disabled}
+                onClick={() => {
+                  reset(defaultValues);
+                }}
+              >
+                Annuller
+              </Button>
 
-            <Button
-              bttype="primary"
-              disabled={!isDirty || !metadata?.unit_uuid || disabled}
-              onClick={handleSubmit(Submit)}
-              startIcon={<SaveIcon />}
-              sx={{marginRight: 1}}
-            >
-              Gem
-            </Button>
-          </Box>
-          <UnitEndDateDialog
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-            unit={unit_history?.[0]}
-          />
-          <AddUnitForm
-            udstyrDialogOpen={openAddUdstyr}
-            setUdstyrDialogOpen={setOpenAddUdstyr}
-            tstype_id={tstype_id}
-            mode="edit"
-          />
-        </FormProvider>
-      </Box>
-
+              <Button
+                bttype="primary"
+                disabled={!isDirty || !metadata?.unit_uuid || disabled}
+                onClick={handleSubmit(Submit)}
+                startIcon={<SaveIcon />}
+                sx={{marginRight: 1}}
+              >
+                Gem
+              </Button>
+            </Box>
+            <UnitEndDateDialog
+              openDialog={openDialog}
+              setOpenDialog={setOpenDialog}
+              unit={unit_history?.[0]}
+            />
+            <AddUnitForm
+              udstyrDialogOpen={openAddUdstyr}
+              setUdstyrDialogOpen={setOpenAddUdstyr}
+              tstype_id={tstype_id}
+              mode="edit"
+            />
+          </FormProvider>
+        </Box>
+      </StationPageBoxLayout>
       <FabWrapper
         icon={<BuildRounded />}
         text={fabText}
