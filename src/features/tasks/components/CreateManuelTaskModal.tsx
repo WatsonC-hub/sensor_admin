@@ -43,7 +43,7 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
   };
 
   return (
-    <Dialog open={open} onClose={closeModal}>
+    <Dialog open={open} onClose={closeModal} fullWidth>
       <DialogTitle>Registrer opgave</DialogTitle>
       <TaskForm
         onSubmit={submitTask}
@@ -57,7 +57,6 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
-            minWidth: 400,
           }}
         >
           <TaskForm.SelectTimeseries label="Tidsserie" />
