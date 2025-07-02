@@ -76,15 +76,15 @@ const FormInput = <TFieldValues extends FieldValues>({
               ref={ref}
               sx={{
                 pb: 1,
-                '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  minHeight: '40px',
-                },
-                '.MuiFormHelperText-root': {
-                  color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
-                  position: 'absolute',
-                  top: 'calc(100% - 8px)',
-                },
+                // '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+                // '& .MuiOutlinedInput-root': {
+                //   minHeight: '40px',
+                // },
+                // '.MuiFormHelperText-root': {
+                //   color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
+                //   position: 'absolute',
+                //   top: 'calc(100% - 8px)',
+                // },
                 ...sx,
               }}
               className={className ?? ''}
@@ -98,13 +98,25 @@ const FormInput = <TFieldValues extends FieldValues>({
                 if (onKeyDown) onKeyDown(e);
               }}
               slotProps={{
+                htmlInput: {
+                  ...slotProps?.htmlInput,
+                  sx: {
+                    borderColor: 'primary.main',
+                    '& .Mui-focused': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                },
                 input: {
-                  ...slotProps?.input,
                   sx: {
                     '& .Mui-disabled': {
                       WebkitTextFillColor: '#000000',
+                      color: 'rgba(0, 0, 0, 0.38)',
                     },
-                    '& > fieldset': {borderColor: 'primary.main'},
+
+                    '& > fieldset': {
+                      borderColor: 'primary.main',
+                    },
                     ...(type === 'number'
                       ? {
                           '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
@@ -117,11 +129,21 @@ const FormInput = <TFieldValues extends FieldValues>({
                         }
                       : {}),
                   },
+                  ...slotProps?.input,
+                },
+                formHelperText: {
+                  sx: {
+                    color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
+                    position: 'absolute',
+                    top: 'calc(100% - 8px)',
+                  },
+                  ...slotProps?.formHelperText,
                 },
                 inputLabel: {
                   shrink: true,
 
                   sx: {
+                    '& .Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'},
                     color: 'primary.main',
                     zIndex: 0,
                   },

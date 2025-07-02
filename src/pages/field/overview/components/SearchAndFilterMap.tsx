@@ -102,7 +102,8 @@ const SearchAndFilter = ({data, handleSearchSelect}: Props) => {
     }
   };
 
-  const handleOpenFilter: MouseEventHandler<HTMLButtonElement> = () => {
+  const handleOpenFilter: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation();
     setAnchorEl(searchRef.current);
   };
 

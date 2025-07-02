@@ -202,62 +202,56 @@ const TaskItiniaries = () => {
                             })}
                           </Box>
                           <Box sx={{position: 'relative'}}>
-                            <LocalizationProvider
+                            <DatePicker
                               key={itinerary.id}
-                              dateAdapter={AdapterDayjs}
-                              adapterLocale="da"
-                            >
-                              <DatePicker
-                                key={itinerary.id}
-                                onChange={(date) => {
-                                  if (date) {
-                                    const payload = {
-                                      path: `${itinerary.id}`,
-                                      data: {
-                                        due_date: date?.format('YYYY-MM-DD'),
-                                      },
-                                    };
-                                    updateItinerary.mutate(payload);
-                                  }
-                                }}
-                                sx={{
-                                  '& .MuiInputBase-root, .MuiOutlinedInput-input': {
-                                    display: 'none',
-                                    width: '90px',
+                              onChange={(date) => {
+                                if (date) {
+                                  const payload = {
+                                    path: `${itinerary.id}`,
+                                    data: {
+                                      due_date: date?.format('YYYY-MM-DD'),
+                                    },
+                                  };
+                                  updateItinerary.mutate(payload);
+                                }
+                              }}
+                              sx={{
+                                '& .MuiInputBase-root, .MuiOutlinedInput-input': {
+                                  display: 'none',
+                                  width: '90px',
+                                  height: '80px',
+                                },
+                              }}
+                              slotProps={{
+                                inputAdornment: {
+                                  sx: {
+                                    display: 'flex',
+                                    justifyContent: 'end',
+                                    width: '125px',
                                     height: '80px',
-                                  },
-                                }}
-                                slotProps={{
-                                  inputAdornment: {
-                                    sx: {
-                                      display: 'flex',
-                                      justifyContent: 'end',
+                                    maxHeight: '80px',
+                                    m: 0,
+                                    '& .MuiIconButton-root, .MuiSvgIcon-root': {
                                       width: '125px',
                                       height: '80px',
-                                      maxHeight: '80px',
-                                      m: 0,
-                                      '& .MuiIconButton-root, .MuiSvgIcon-root': {
-                                        width: '125px',
-                                        height: '80px',
-                                        borderRadius: 0,
-                                      },
+                                      borderRadius: 0,
                                     },
                                   },
-                                  textField: {
-                                    sx: {
-                                      justifyContent: 'flex-end',
-                                      position: 'absolute',
-                                      width: '90px',
-                                      height: '80px',
-                                      opacity: 0,
-                                      left: -115,
-                                      top: -35,
-                                      cursor: 'pointer',
-                                    },
+                                },
+                                textField: {
+                                  sx: {
+                                    justifyContent: 'flex-end',
+                                    position: 'absolute',
+                                    width: '90px',
+                                    height: '80px',
+                                    opacity: 0,
+                                    left: -115,
+                                    top: -35,
+                                    cursor: 'pointer',
                                   },
-                                }}
-                              />
-                            </LocalizationProvider>
+                                },
+                              }}
+                            />
                             <Edit fontSize="small" sx={{ml: 0.5}} />
                           </Box>
                         </Box>

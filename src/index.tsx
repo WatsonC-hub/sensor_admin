@@ -24,6 +24,8 @@ import {CommandProvider} from './features/commandpalette/components/CommandConte
 import moment from 'moment';
 import 'moment/locale/da';
 import dayjs from 'dayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 dayjs.locale('da');
 moment.locale('da');
 
@@ -77,7 +79,9 @@ root.render(
             >
               <CommandProvider>
                 <NuqsAdapter>
-                  <App />
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
+                    <App />
+                  </LocalizationProvider>
                 </NuqsAdapter>
               </CommandProvider>
             </PostHogProvider>

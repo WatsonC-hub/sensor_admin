@@ -1,4 +1,5 @@
 import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -15,7 +16,7 @@ interface PejlingPost extends PejlingBase {
   data: {
     comment?: string;
     measurement: number | null;
-    timeofmeas: string;
+    timeofmeas: dayjs.Dayjs;
     useforcorrection: number;
     extrema?: string | null;
     pumpstop?: string | null;
