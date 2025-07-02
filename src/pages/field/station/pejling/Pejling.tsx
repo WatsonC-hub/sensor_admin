@@ -86,7 +86,7 @@ const Pejling = () => {
       path: `${ts_id}`,
       data: {
         ...values,
-        timeofmeas: moment(values.timeofmeas).toISOString(),
+        timeofmeas: moment(values.timeofmeas),
       },
     };
 

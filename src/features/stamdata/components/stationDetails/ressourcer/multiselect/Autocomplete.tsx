@@ -1,5 +1,5 @@
-import {ExpandLess, ExpandMore} from '@mui/icons-material';
-import {Collapse, List, ListItemText, Popper, Typography} from '@mui/material';
+import {ExpandLess, ExpandMore, Save} from '@mui/icons-material';
+import {Box, Collapse, List, ListItemText, Popper, Typography} from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import * as React from 'react';
@@ -81,7 +81,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
   return (
     <>
       {options && options.length > 0 && (
-        <>
+        <Box display={'flex'} flexDirection={'column'}>
           <Autocomplete
             multiple
             disabled={disabled}
@@ -89,6 +89,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             options={
               (options && options.sort((a, b) => b.kategori.localeCompare(a.kategori))) ?? []
             }
+            fullWidth
             value={selected}
             filterSelectedOptions
             groupBy={(option) => option.kategori}
@@ -123,7 +124,7 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
                   >
                     <Collapse
                       key={group}
-                      in={collapsed.includes(group)}
+                      in={!collapsed.includes(group)}
                       timeout="auto"
                       unmountOnExit
                     >
@@ -136,7 +137,9 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
             disableCloseOnSelect
             getOptionLabel={(option) => option.navn}
             isOptionEqualToValue={(option, value) => option.id === value.id}
-            style={{maxWidth: 500}}
+            sx={{
+              minWidth: 300,
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Huskeliste" placeholder="Udvalgt" />
             )}
@@ -145,10 +148,18 @@ export default function CheckboxesTags({value, setValue}: CheckboxesTagsProps) {
               setValue(newValue);
             }}
           />
-          <Button bttype="primary" disabled={disabled} onClick={handleSave} sx={{mt: 5}}>
-            Gem huskeliste
-          </Button>
-        </>
+          <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
+            <Button
+              bttype="primary"
+              disabled={disabled}
+              onClick={handleSave}
+              sx={{mt: 5}}
+              startIcon={<Save />}
+            >
+              Gem
+            </Button>
+          </Box>
+        </Box>
       )}
     </>
   );
