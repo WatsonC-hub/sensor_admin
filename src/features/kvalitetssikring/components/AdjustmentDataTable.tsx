@@ -8,7 +8,6 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -33,6 +32,13 @@ type AdjustmentData = {
 type Props = {
   data: Array<AdjustmentData> | undefined;
 };
+
+const sortMap = new Map<AdjustmentTypes, number>();
+sortMap.set(AdjustmentTypes.EXLUDETIME, 1);
+sortMap.set(AdjustmentTypes.LEVELCORRECTION, 2);
+sortMap.set(AdjustmentTypes.EXLUDEPOINTS, 3);
+sortMap.set(AdjustmentTypes.MINMAX, 4);
+sortMap.set(AdjustmentTypes.APPROVED, 5);
 
 const AdjustmentDataTable = ({data}: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -67,19 +73,12 @@ const AdjustmentDataTable = ({data}: Props) => {
   };
 
   const result = data?.sort((a, b) => {
-    const map = new Map<AdjustmentTypes, number>();
-    map.set(AdjustmentTypes.EXLUDETIME, 1);
-    map.set(AdjustmentTypes.LEVELCORRECTION, 2);
-    map.set(AdjustmentTypes.EXLUDEPOINTS, 3);
-    map.set(AdjustmentTypes.MINMAX, 4);
-    map.set(AdjustmentTypes.APPROVED, 5);
-
-    const mapA = map.get(a.type);
-    const mapB = map.get(b.type);
-    if (mapA && mapB && mapA < mapB) {
+    const sortA = sortMap.get(a.type);
+    const sortB = sortMap.get(b.type);
+    if (sortA && sortB && sortA < sortB) {
       return -1;
     }
-    if (mapA && mapB && mapA > mapB) {
+    if (sortA && sortB && sortA > sortB) {
       return 1;
     }
 
@@ -89,15 +88,15 @@ const AdjustmentDataTable = ({data}: Props) => {
   const columns = useMemo<MRT_ColumnDef<AdjustmentData>[]>(
     () => [
       {
-        header: 'Justeringstype',
+        header: isMobile ? 'Type' : 'Justeringstype',
         accessorFn: (row) => row.type,
         id: 'type',
-        size: 100,
+        size: 10,
       },
       {
         header: 'Indhold',
         accessorFn: (row) => row.data,
-        size: 200,
+        // size: 80,
         Cell: ({row}) => {
           if (
             row.original.type === AdjustmentTypes.EXLUDETIME ||
@@ -296,18 +295,18 @@ const AdjustmentDataTable = ({data}: Props) => {
     options,
     undefined,
     TableTypes.TABLE,
-    MergeType.RECURSIVEMERGE
+    MergeType.SHALLOWMERGE
   );
 
   return (
-    <Box sx={isMobile ? {} : setTableBoxStyle(665)}>
+    <>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => handleDelete(id, gid, type)}
       />
       <MaterialReactTable table={table} />
-    </Box>
+    </>
   );
 };
 

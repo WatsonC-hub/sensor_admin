@@ -8,8 +8,6 @@ import LoadingSkeleton from '~/LoadingSkeleton';
 import Router from '~/Router';
 import UnAuntenticatedApp from '~/UnauthenticatedApp';
 
-import useBreakpoints from './hooks/useBreakpoints';
-import {useNavigationFunctions} from './hooks/useNavigationFunctions';
 import {useUser, userQueryOptions} from './features/auth/useUser';
 import {usePostHog} from 'posthog-js/react';
 import DisplayStateProvider from './helpers/DisplayStateProvider';
@@ -17,18 +15,10 @@ import {useQuery} from '@tanstack/react-query';
 import CommandPalette from './features/commandpalette/components/CommandPalette';
 
 function App() {
-  const {home} = useNavigationFunctions();
   const posthog = usePostHog();
-  const {isMobile} = useBreakpoints();
   const user = useUser();
 
   const {isPending} = useQuery(userQueryOptions);
-
-  useEffect(() => {
-    if (isMobile && location.pathname == '/') {
-      home();
-    }
-  }, [isMobile]);
 
   useEffect(() => {
     // prefetch user
