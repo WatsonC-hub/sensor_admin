@@ -8,7 +8,6 @@ import {
 import React, {useMemo, useState} from 'react';
 
 import DeleteAlert from '~/components/DeleteAlert';
-import {setTableBoxStyle} from '~/consts';
 import {convertDateWithTimeStamp, limitDecimalNumbers} from '~/helpers/dateConverter';
 import {AdjustmentTypes, MergeType, TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
@@ -89,15 +88,15 @@ const AdjustmentDataTable = ({data}: Props) => {
   const columns = useMemo<MRT_ColumnDef<AdjustmentData>[]>(
     () => [
       {
-        header: 'Justeringstype',
+        header: isMobile ? 'Type' : 'Justeringstype',
         accessorFn: (row) => row.type,
         id: 'type',
-        size: 100,
+        size: 10,
       },
       {
         header: 'Indhold',
         accessorFn: (row) => row.data,
-        size: 200,
+        // size: 80,
         Cell: ({row}) => {
           if (
             row.original.type === AdjustmentTypes.EXLUDETIME ||
@@ -296,18 +295,18 @@ const AdjustmentDataTable = ({data}: Props) => {
     options,
     undefined,
     TableTypes.TABLE,
-    MergeType.RECURSIVEMERGE
+    MergeType.SHALLOWMERGE
   );
 
   return (
-    <Box sx={isMobile ? {} : setTableBoxStyle(665)}>
+    <>
       <DeleteAlert
         dialogOpen={dialogOpen}
         setDialogOpen={setDialogOpen}
         onOkDelete={() => handleDelete(id, gid, type)}
       />
       <MaterialReactTable table={table} />
-    </Box>
+    </>
   );
 };
 

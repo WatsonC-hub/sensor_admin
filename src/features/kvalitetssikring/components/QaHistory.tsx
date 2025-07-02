@@ -201,7 +201,7 @@ export default function QAHistory() {
       </Box>
       <Divider />
       <StationPageBoxLayout>
-        <Box sx={{minWidth: 800}}>
+        <Box>
           <StepWizard />
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <TooltipWrapper
