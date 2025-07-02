@@ -20,13 +20,12 @@ import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import moment from 'moment';
 import {LatestMeasurement, Maalepunkt} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 import TooltipWrapper from '~/components/TooltipWrapper';
-import FormDateTime, {FormDateTimeProps} from '~/components/FormDatetime';
+import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -100,7 +99,7 @@ const CompoundPejling = ({
 
       if (internalCurrentMP) {
         dynamicMeas = internalCurrentMP.elevation - Number(measurement);
-        setDynamic([timeofmeas, dynamicMeas]);
+        setDynamic([timeofmeas.locale(), dynamicMeas]);
         latestmeas = latestMeasurement?.measurement;
 
         const diff = timeofmeas.diff(latestMeasurement?.timeofmeas, 'days');
@@ -111,7 +110,7 @@ const CompoundPejling = ({
       }
     } else {
       dynamicMeas = Number(measurement);
-      setDynamic([timeofmeas, dynamicMeas]);
+      setDynamic([timeofmeas.locale(), dynamicMeas]);
     }
     if (latestmeas == undefined || dynamicMeas == undefined) setElevationDiff(undefined);
     else setElevationDiff(Math.abs(dynamicMeas - latestmeas));
