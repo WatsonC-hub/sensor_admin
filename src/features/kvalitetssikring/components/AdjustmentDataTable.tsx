@@ -33,6 +33,13 @@ type Props = {
   data: Array<AdjustmentData> | undefined;
 };
 
+const sortMap = new Map<AdjustmentTypes, number>();
+sortMap.set(AdjustmentTypes.EXLUDETIME, 1);
+sortMap.set(AdjustmentTypes.LEVELCORRECTION, 2);
+sortMap.set(AdjustmentTypes.EXLUDEPOINTS, 3);
+sortMap.set(AdjustmentTypes.MINMAX, 4);
+sortMap.set(AdjustmentTypes.APPROVED, 5);
+
 const AdjustmentDataTable = ({data}: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -66,19 +73,12 @@ const AdjustmentDataTable = ({data}: Props) => {
   };
 
   const result = data?.sort((a, b) => {
-    const map = new Map<AdjustmentTypes, number>();
-    map.set(AdjustmentTypes.EXLUDETIME, 1);
-    map.set(AdjustmentTypes.LEVELCORRECTION, 2);
-    map.set(AdjustmentTypes.EXLUDEPOINTS, 3);
-    map.set(AdjustmentTypes.MINMAX, 4);
-    map.set(AdjustmentTypes.APPROVED, 5);
-
-    const mapA = map.get(a.type);
-    const mapB = map.get(b.type);
-    if (mapA && mapB && mapA < mapB) {
+    const sortA = sortMap.get(a.type);
+    const sortB = sortMap.get(b.type);
+    if (sortA && sortB && sortA < sortB) {
       return -1;
     }
-    if (mapA && mapB && mapA > mapB) {
+    if (sortA && sortB && sortA > sortB) {
       return 1;
     }
 
