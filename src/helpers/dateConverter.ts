@@ -4,14 +4,9 @@ Adding one to the month is mainly done because the method date.getMonth return a
 
 import dayjs from 'dayjs';
 import moment from 'moment';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-
-dayjs.extend(localizedFormat);
-dayjs.extend(isSameOrAfter);
 
 const convertDate = (date: string) => {
-  return dayjs(date).locale('da').format('DD-MM-YYYY');
+  return dayjs(date).locale('da').format('L');
 };
 
 const convertDateWithTimeStamp = (dateString: string | null | undefined) => {

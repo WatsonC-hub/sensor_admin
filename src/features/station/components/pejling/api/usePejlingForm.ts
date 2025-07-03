@@ -75,7 +75,12 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
 
       const mpData = opts[1]?.mpData;
       const out = await zodResolver(schema)(...opts);
-      const mp = mpData?.filter((elem) => {
+
+      if (values.timeofmeas == null) {
+        return out;
+      }
+
+      const mp = mpData?.some((elem) => {
         if (
           values.timeofmeas.isSameOrAfter(elem.startdate) &&
           values.timeofmeas.isBefore(elem.enddate)
@@ -84,7 +89,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
         }
       });
 
-      if (mpData && (!mp || mp.length === 0) && tstype_id === 1) {
+      if (!mp && tstype_id === 1 && values.timeofmeas != null) {
         out.errors = {
           ...out.errors,
           timeofmeas: {

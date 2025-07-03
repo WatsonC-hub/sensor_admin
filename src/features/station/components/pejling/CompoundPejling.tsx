@@ -88,6 +88,14 @@ const CompoundPejling = ({
   useEffect(() => {
     let latestmeas: number | undefined = undefined;
     let dynamicMeas: number | undefined = undefined;
+    if (timeofmeas == null) {
+      setDynamic([]);
+      setHide(true);
+      setCurrentMP(null);
+      setElevationDiff(undefined);
+      return;
+    }
+
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
         if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {
@@ -217,6 +225,7 @@ const TimeOfMeas = (
         }
       }}
       required
+      openTo="hours"
       {...props}
     />
   );

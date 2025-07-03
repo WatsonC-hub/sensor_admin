@@ -26,6 +26,11 @@ import 'moment/locale/da';
 import dayjs from 'dayjs';
 import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
+dayjs.extend(localizedFormat);
+dayjs.extend(isSameOrAfter);
 dayjs.locale('da');
 moment.locale('da');
 

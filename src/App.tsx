@@ -69,11 +69,7 @@ function App() {
         </>
       )}
       onError={(error) => {
-        console.error('application crash', error);
         Sentry.captureException(error);
-        if (error.message.includes('Failed to fetch dynamically imported module')) {
-          // window.location.reload(true);
-        }
       }}
     >
       <Suspense fallback={<LoadingSkeleton />}>

@@ -1,18 +1,11 @@
-import dayjs from 'dayjs';
 import moment from 'moment';
 import {z} from 'zod';
+import {zodDayjs} from '~/helpers/schemas';
 
 const baseSchema = z.object({
-  measurement: z.number().nullable(),
+  measurement: z.number().min(0).nullable(),
   // timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
-  timeofmeas: z.custom<dayjs.Dayjs>(
-    (val) => {
-      return dayjs.isDayjs(val) && val.isValid();
-    },
-    {
-      message: 'Tidspunkt skal udfyldes',
-    }
-  ),
+  timeofmeas: zodDayjs('Tidspunkt skal udfyldes'),
   comment: z.string().optional(),
   useforcorrection: z.coerce.number().default(0),
 });
