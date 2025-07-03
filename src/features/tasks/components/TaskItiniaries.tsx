@@ -181,8 +181,9 @@ const TaskItiniaries = () => {
                           display={'flex'}
                           width={'20%'}
                           color={'white'}
-                          justifyContent={'center'}
+                          flexDirection={'row'}
                           alignItems={'center'}
+                          justifyContent={'center'}
                           sx={{backgroundColor: color ? color : 'primary.main'}}
                         >
                           <Box display={'flex'} flexDirection={'column'}>
@@ -200,7 +201,12 @@ const TaskItiniaries = () => {
                               );
                             })}
                           </Box>
-                          <Box sx={{position: 'relative'}}>
+                          <Box
+                            display={'flex'}
+                            component={'span'}
+                            alignItems={'center'}
+                            sx={{position: 'relative'}}
+                          >
                             <DatePicker
                               key={itinerary.id}
                               onChange={(date) => {
@@ -215,10 +221,13 @@ const TaskItiniaries = () => {
                                 }
                               }}
                               sx={{
+                                '& .MuiIconButton-root, .MuiSvgIcon-root': {
+                                  width: '125px',
+                                  height: '80px',
+                                  borderRadius: 0,
+                                },
                                 '& .MuiInputBase-root, .MuiOutlinedInput-input': {
                                   display: 'none',
-                                  width: '90px',
-                                  height: '80px',
                                 },
                               }}
                               slotProps={{
@@ -226,26 +235,31 @@ const TaskItiniaries = () => {
                                   sx: {
                                     display: 'flex',
                                     justifyContent: 'end',
-                                    width: '125px',
+                                    width: '100% !important',
                                     height: '80px',
                                     maxHeight: '80px',
-                                    m: 0,
-                                    '& .MuiIconButton-root, .MuiSvgIcon-root': {
-                                      width: '125px',
+                                    '& .MuiButtonBase-root': {
+                                      width: '100% !important',
                                       height: '80px',
-                                      borderRadius: 0,
                                     },
+                                    m: 0,
                                   },
                                 },
                                 textField: {
+                                  slotProps: {
+                                    input: {
+                                      sx: {
+                                        display: 'none',
+                                      },
+                                    },
+                                  },
                                   sx: {
                                     justifyContent: 'flex-end',
                                     position: 'absolute',
-                                    width: '90px',
-                                    height: '80px',
+                                    height: '60px',
                                     opacity: 0,
-                                    left: -115,
-                                    top: -35,
+                                    left: -15,
+                                    top: -15,
                                     cursor: 'pointer',
                                   },
                                 },
