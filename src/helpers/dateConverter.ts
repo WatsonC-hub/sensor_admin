@@ -29,7 +29,7 @@ const calculatePumpstop = (
   service: boolean | null
 ) => {
   return pumpstop !== null && pumpstop !== undefined
-    ? moment(timeofmeas).diff(moment(pumpstop), 'hours') + ' timer siden'
+    ? dayjs(timeofmeas).diff(dayjs(pumpstop), 'hours') + ' timer siden'
     : service === true
       ? 'I drift'
       : '-';
@@ -45,7 +45,7 @@ const limitDecimalNumbers = (value: number | null) => {
 };
 
 const splitTimeFromDate = (dateString: string) => {
-  const date = moment(dateString).format('DD-MM-YYYY HH:mm');
+  const date = dayjs(dateString).format('L LT');
   const time = date.split(' ');
   return time;
 };

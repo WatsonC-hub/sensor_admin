@@ -108,7 +108,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
     },
   });
 
-  return [formMethods, form, table, getInitialData] as const;
+  return [formMethods, form, table, getInitialData, schema] as const;
 };
 
 export default usePejlingForm;

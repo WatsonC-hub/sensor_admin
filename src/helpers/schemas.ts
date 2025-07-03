@@ -1,14 +1,26 @@
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import {z} from 'zod';
 
 const zodDayjs = (message: string) =>
-  z.custom<dayjs.Dayjs>(
+  z.preprocess(
     (val) => {
-      return dayjs.isDayjs(val) && val.isValid();
+      if (typeof val === 'string' || val instanceof Date) {
+        const parsed = dayjs(val);
+        return parsed.isValid() ? parsed : null;
+      }
+      if (dayjs.isDayjs(val)) {
+        return val;
+      }
+      return null;
     },
-    {
-      message,
-    }
+    z.custom<Dayjs>(
+      (val) => {
+        return dayjs.isDayjs(val);
+      },
+      {
+        message,
+      }
+    )
   );
 
 export {zodDayjs};

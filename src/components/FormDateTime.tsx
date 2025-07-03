@@ -4,9 +4,10 @@ import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 import {DateTimePicker, DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
 
 import dayjs from 'dayjs';
+import {PickersActionBarAction} from '@mui/x-date-pickers';
 
 export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
-  DateTimePickerProps<dayjs.Dayjs>,
+  DateTimePickerProps,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
@@ -16,7 +17,6 @@ export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
   margin?: 'none' | 'dense' | undefined;
   variant?: 'filled' | 'outlined' | 'standard';
   onChangeCallback?: (value: dayjs.Dayjs | null) => void;
-  warning?: (value: dayjs.Dayjs | null) => string | undefined;
 };
 
 const FormDateTime = <TFieldValues extends FieldValues>({
@@ -27,11 +27,9 @@ const FormDateTime = <TFieldValues extends FieldValues>({
   margin = 'dense',
   variant = 'outlined',
   onChangeCallback,
-  warning,
   ...pickerProps
 }: FormDateTimeProps<TFieldValues>) => {
   const {control} = useFormContext<TFieldValues>();
-
   return (
     <Controller
       name={name}
@@ -52,34 +50,38 @@ const FormDateTime = <TFieldValues extends FieldValues>({
             }}
             disabled={disabled}
             ampmInClock={false}
-            {...pickerProps}
             slotProps={{
+              toolbar: {
+                sx: {
+                  '& .MuiTypography-root': {
+                    textTransform: 'inherit',
+                  },
+                },
+              },
+              actionBar: {
+                sx: {
+                  '& .MuiButton-root': {
+                    textTransform: 'inherit',
+                  },
+                },
+                actions: ['cancel', 'clear', 'today', 'accept'] as PickersActionBarAction[],
+              },
               textField: {
                 onBlur: onBlur,
                 variant: variant,
                 margin: margin,
-                sx: {
-                  '& .MuiOutlinedInput-root': {
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: !error ? 'primary.main' : undefined,
-                    },
-                  },
-                },
-                slotProps: {
-                  formHelperText: {
-                    sx: {
-                      color: error ? 'red' : warning ? 'orange' : undefined,
-                      position: 'absolute',
-                      top: 'calc(100% - 8px)',
-                    },
-                  },
-                },
                 fullWidth: true,
                 error: !!error,
                 helperText: error?.message,
                 InputLabelProps: {shrink: true},
+                sx: {
+                  '& > fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
               },
             }}
+            {...pickerProps}
           />
         );
       }}
