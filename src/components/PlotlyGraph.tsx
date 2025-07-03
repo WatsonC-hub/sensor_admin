@@ -1,5 +1,4 @@
 import {Box, ClickAwayListener, Tooltip} from '@mui/material';
-import moment from 'moment';
 import type {
   Layout,
   PlotData,
@@ -28,6 +27,7 @@ import {useAppContext} from '~/state/contexts';
 import {DataToShow} from '~/types';
 import GraphSwitch from '~/features/station/components/GraphSwitch';
 import {usePageActions} from '~/features/commandpalette/hooks/usePageActions';
+import dayjs from 'dayjs';
 
 interface PlotlyGraphProps {
   plotEventProps?: {
@@ -157,18 +157,18 @@ export default function PlotlyGraph({
 
     if (dates.firstDate && dates.lastDate) {
       let range: Array<string> = [];
-      const lastDate = moment(dates.lastDate).format('YYYY-MM-DDTHH:mm');
+      const lastDate = dayjs(dates.lastDate).format('YYYY-MM-DDTHH:mm');
       if (type === 'all') {
-        const startDate = moment(dates.firstDate).format('YYYY-MM-DDTHH:mm');
+        const startDate = dayjs(dates.firstDate).format('YYYY-MM-DDTHH:mm');
         range = [startDate, lastDate];
       } else if (type === 'year') {
-        const x = moment(dates.lastDate).subtract(1, 'year').format('YYYY-MM-DDTHH:mm');
+        const x = dayjs(dates.lastDate).subtract(1, 'year').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       } else if (type === 'month') {
-        const x = moment(dates.lastDate).subtract(1, 'month').format('YYYY-MM-DDTHH:mm');
+        const x = dayjs(dates.lastDate).subtract(1, 'month').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       } else if (type === 'week') {
-        const x = moment(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
+        const x = dayjs(dates.lastDate).subtract(7, 'days').format('YYYY-MM-DDTHH:mm');
         range = [x, lastDate];
       }
 

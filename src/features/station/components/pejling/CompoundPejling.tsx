@@ -97,7 +97,7 @@ const CompoundPejling = ({
       return;
     }
 
-    const formattedTimeofMeas = convertDateWithTimeStamp(timeofmeas.format());
+    const formattedTimeofMeas = convertDateWithTimeStamp(timeofmeas.format('L LT'));
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
         if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {

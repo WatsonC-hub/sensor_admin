@@ -14,7 +14,8 @@ const convertDateWithTimeStamp = (dateString: string | null | undefined) => {
     return '';
   }
 
-  return dayjs(dateString).format('L LT');
+  const date = dayjs(dateString).format('L LT');
+  return date;
 };
 
 const checkEndDateIsUnset = (dateString: string) => {
