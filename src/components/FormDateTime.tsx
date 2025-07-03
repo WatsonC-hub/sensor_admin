@@ -54,13 +54,7 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 fullWidth: true,
                 error: !!error,
                 helperText: error?.message,
-                ...(pickerProps.slotProps?.textField || {}),
-                slotProps: {
-                  inputLabel: {
-                    shrink: true,
-                    required: required,
-                  },
-                },
+                InputLabelProps: {shrink: true},
               },
             }}
           />

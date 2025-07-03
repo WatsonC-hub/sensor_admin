@@ -50,7 +50,7 @@ const splitTimeFromDate = (dateString: string) => {
 };
 
 const convertToShorthandDate = (date: string | null | undefined) => {
-  return dayjs(date).format('DD MMM YYYY');
+  return dayjs(date).format('ll');
 };
 
 export {
