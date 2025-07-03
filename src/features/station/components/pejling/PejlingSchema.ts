@@ -18,19 +18,18 @@ const pejlingBoreholeSchema = baseSchema
     pumpstop: z.string().nullish(),
     service: z.boolean().nullish().default(false),
   })
-  // .refine(
-  //   (data) => {
-  //     if (data.service === false && data.pumpstop && data.pumpstop > data.timeofmeas) {
-  //       return false;
-  //     }
-  //     return true;
-  //   },
-  //   {
-  //     path: ['pumpstop'],
-  //     message: 'Pumpestop skal være før pejletidspunkt',
-  //   }
-  // )
-  // .transform((data) => (data.notPossible ? {...data, measurement: null} : data))
+  .refine(
+    (data) => {
+      if (data.service === false && data.pumpstop && data.timeofmeas.isBefore(data.pumpstop)) {
+        return false;
+      }
+      return true;
+    },
+    {
+      path: ['pumpstop'],
+      message: 'Pumpestop skal være før pejletidspunkt',
+    }
+  )
   .transform((data) =>
     data.service
       ? {...data, pumpstop: null}

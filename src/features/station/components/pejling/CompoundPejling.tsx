@@ -26,6 +26,7 @@ import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -96,6 +97,7 @@ const CompoundPejling = ({
       return;
     }
 
+    const formattedTimeofMeas = convertDateWithTimeStamp(timeofmeas.format());
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
         if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {
@@ -107,7 +109,7 @@ const CompoundPejling = ({
 
       if (internalCurrentMP) {
         dynamicMeas = internalCurrentMP.elevation - Number(measurement);
-        setDynamic([timeofmeas.locale(), dynamicMeas]);
+        setDynamic([formattedTimeofMeas, dynamicMeas]);
         latestmeas = latestMeasurement?.measurement;
 
         const diff = timeofmeas.diff(latestMeasurement?.timeofmeas, 'days');
@@ -118,7 +120,7 @@ const CompoundPejling = ({
       }
     } else {
       dynamicMeas = Number(measurement);
-      setDynamic([timeofmeas.locale(), dynamicMeas]);
+      setDynamic([formattedTimeofMeas, dynamicMeas]);
     }
     if (latestmeas == undefined || dynamicMeas == undefined) setElevationDiff(undefined);
     else setElevationDiff(Math.abs(dynamicMeas - latestmeas));
@@ -216,7 +218,7 @@ const TimeOfMeas = (
   const service = watch('service');
 
   return (
-    <FormDateTime
+    <FormDateTime<PejlingSchemaType | PejlingBoreholeSchemaType>
       name="timeofmeas"
       label="Dato"
       onChangeCallback={() => {

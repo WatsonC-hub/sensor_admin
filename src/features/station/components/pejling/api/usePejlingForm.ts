@@ -76,7 +76,7 @@ const usePejlingForm = ({loctype_id, tstype_id}: PejlingFormProps) => {
       const mpData = opts[1]?.mpData;
       const out = await zodResolver(schema)(...opts);
 
-      if (values.timeofmeas == null) {
+      if (values.timeofmeas === null) {
         return out;
       }
 
