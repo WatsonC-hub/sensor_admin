@@ -1,4 +1,5 @@
 import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import moment from 'moment';
 import {toast} from 'react-toastify';
 
@@ -14,8 +15,8 @@ interface MaalepunktBase {
 
 interface MaalepunktPost extends MaalepunktBase {
   data: {
-    startdate: string;
-    enddate: string;
+    startdate: Dayjs;
+    enddate: Dayjs;
     elevation: number | null;
     mp_description?: string;
   };
@@ -24,8 +25,8 @@ interface MaalepunktPost extends MaalepunktBase {
 interface MaalepunktPut extends MaalepunktPost {
   data: {
     gid?: number;
-    startdate: string;
-    enddate: string;
+    startdate: Dayjs;
+    enddate: Dayjs;
     elevation: number | null;
     mp_description?: string;
   };

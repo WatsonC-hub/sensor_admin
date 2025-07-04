@@ -1,9 +1,9 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 export const initialWatlevmpData = () => ({
   gid: undefined,
-  startdate: moment().format('YYYY-MM-DDTHH:mm'),
-  enddate: moment('2099-01-01').format('YYYY-MM-DDTHH:mm'),
+  startdate: dayjs(),
+  enddate: dayjs('2099-01-01'),
   elevation: null,
   mp_description: '',
 });
