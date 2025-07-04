@@ -1,4 +1,5 @@
 import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -15,10 +16,9 @@ interface TilsynPost extends TilsynBase {
   data: {
     batteriskift: boolean;
     tilsyn: boolean;
-    dato: string;
+    dato: Dayjs;
     gid: number;
     kommentar?: string;
-    user_id: string | null;
   };
 }
 
@@ -26,10 +26,9 @@ interface TilsynPut extends TilsynPost {
   data: {
     batteriskift: boolean;
     tilsyn: boolean;
-    dato: string;
+    dato: Dayjs;
     gid: number;
     kommentar?: string;
-    user_id: string | null;
   };
 }
 
