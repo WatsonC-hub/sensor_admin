@@ -2,7 +2,6 @@ import {AddCircle} from '@mui/icons-material';
 import {Card, Box, Divider, Typography} from '@mui/material';
 
 import {useQuery} from '@tanstack/react-query';
-import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {FormProvider} from 'react-hook-form';
 
@@ -54,7 +53,7 @@ const Pejling = () => {
     location_permissions,
   } = usePermissions(loc_id);
 
-  const [formMethods, PejlingForm, Table, getInitialData] = usePejlingForm({
+  const [formMethods, PejlingForm, Table, getInitialData, schema] = usePejlingForm({
     loctype_id: timeseries_data?.loctype_id,
     tstype_id: timeseries_data?.tstype_id,
   });
@@ -86,7 +85,7 @@ const Pejling = () => {
       path: `${ts_id}`,
       data: {
         ...values,
-        timeofmeas: moment(values.timeofmeas).toISOString(),
+        timeofmeas: values.timeofmeas,
       },
     };
 
@@ -117,8 +116,9 @@ const Pejling = () => {
   };
 
   const handleEdit = (data: PejlingItem) => {
-    data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
-    reset(data);
+    // data.timeofmeas = data.timeofmeas.replace(' ', 'T').substr(0, 19);
+    const {data: parsedData} = schema.safeParse(data);
+    reset(parsedData);
     setShowForm(true);
     setGid(data.gid);
   };

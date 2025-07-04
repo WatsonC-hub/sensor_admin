@@ -28,7 +28,6 @@ const FormInput = <TFieldValues extends FieldValues>({
   variant = 'outlined',
   sx,
   className,
-  InputLabelProps,
   slotProps,
   onKeyDown,
   helperText,
@@ -76,27 +75,20 @@ const FormInput = <TFieldValues extends FieldValues>({
               }}
               ref={ref}
               sx={{
-                // pt: 1,
-                // pt: 2,
                 pb: 1,
-                '& .MuiInputBase-input.Mui-disabled': {
-                  WebkitTextFillColor: '#000000',
-                },
-                '& .MuiInputLabel-root': {color: 'primary.main'}, //styles the label
-                '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
-                '& .MuiOutlinedInput-root': {
-                  '& > fieldset': {borderColor: 'primary.main'},
-                },
-                '.MuiFormHelperText-root': {
-                  color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
-                  position: 'absolute',
-                  top: 'calc(100% - 8px)',
-                },
+                // '& .MuiInputLabel-root.Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'}, //styles the label
+                // '& .MuiOutlinedInput-root': {
+                //   minHeight: '40px',
+                // },
+                // '.MuiFormHelperText-root': {
+                //   color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
+                //   position: 'absolute',
+                //   top: 'calc(100% - 8px)',
+                // },
                 ...sx,
               }}
-              className={'swiper-no-swiping' + (className ? ' ' + className : '')}
+              className={className ?? ''}
               variant={variant}
-              InputLabelProps={{shrink: true, style: {zIndex: 0}, ...InputLabelProps}}
               fullWidth={fullWidth}
               margin={margin}
               onKeyDown={(e) => {
@@ -106,11 +98,26 @@ const FormInput = <TFieldValues extends FieldValues>({
                 if (onKeyDown) onKeyDown(e);
               }}
               slotProps={{
+                htmlInput: {
+                  ...slotProps?.htmlInput,
+                  sx: {
+                    borderColor: 'primary.main',
+                    '& .Mui-focused': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                },
                 input: {
-                  ...slotProps?.input,
+                  sx: {
+                    '& .Mui-disabled': {
+                      WebkitTextFillColor: '#000000',
+                      color: 'rgba(0, 0, 0, 0.38)',
+                    },
 
-                  sx:
-                    type === 'number'
+                    '& > fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                    ...(type === 'number'
                       ? {
                           '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
                             {
@@ -120,11 +127,24 @@ const FormInput = <TFieldValues extends FieldValues>({
                             MozAppearance: 'textfield',
                           },
                         }
-                      : {},
+                      : {}),
+                  },
+                  ...slotProps?.input,
+                },
+                formHelperText: {
+                  sx: {
+                    color: errorMessage ? 'red' : warningMessage ? 'orange' : undefined,
+                    position: 'absolute',
+                    top: 'calc(100% - 8px)',
+                  },
+                  ...slotProps?.formHelperText,
                 },
                 inputLabel: {
                   shrink: true,
+
                   sx: {
+                    '& .Mui-disabled': {color: 'rgba(0, 0, 0, 0.38)'},
+                    color: 'primary.main',
                     zIndex: 0,
                   },
                   ...slotProps?.inputLabel,

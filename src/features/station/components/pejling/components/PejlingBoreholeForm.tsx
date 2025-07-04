@@ -17,6 +17,7 @@ const PejlingBoreholeForm = () => {
       alignContent={'center'}
       justifyContent={'center'}
       spacing={2}
+      maxWidth={400}
     >
       <Grid2
         container

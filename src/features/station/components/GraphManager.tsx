@@ -1,7 +1,8 @@
 import {Box, useTheme} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import {useAtom, useAtomValue, useSetAtom} from 'jotai';
-import moment from 'moment';
+
 import {Layout} from 'plotly.js';
 import React, {useEffect, useMemo, useState} from 'react';
 import {toast} from 'react-toastify';
@@ -36,8 +37,8 @@ interface GraphManagerProps {
 }
 
 const initRange = [
-  moment('1900-01-01').format('YYYY-MM-DDTHH:mm'),
-  moment().format('YYYY-MM-DDTHH:mm'),
+  dayjs('1900-01-01').format('YYYY-MM-DDTHH:mm'),
+  dayjs().format('YYYY-MM-DDTHH:mm'),
 ];
 
 const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps) => {
@@ -103,8 +104,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: precipitation_data} = useQuery({
     queryKey: ['precipitation_data', ts_id],
     queryFn: async () => {
-      const starttime = moment(edgeDates?.firstDate).format('YYYY-MM-DDTHH:mm');
-      const stoptime = moment(edgeDates?.lastDate).format('YYYY-MM-DDTHH:mm');
+      const starttime = dayjs(edgeDates?.firstDate);
+      const stoptime = dayjs(edgeDates?.lastDate);
       const {data} = await apiClient.get(
         `/data/timeseries/${ts_id}/precipitation/1?start=${starttime}&stop=${stoptime}`
       );
@@ -156,7 +157,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 type: 'rect',
                 x0: edgeDates?.firstDate,
-                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x1: dayjs(d.date),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -174,7 +175,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 xref: 'x',
                 yref: 'paper',
-                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x: dayjs(d.date),
                 xanchor: 'right',
                 yanchor: 'bottom',
                 showarrow: false,
@@ -250,8 +251,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
             ...(adjustmentData?.levelcorrection?.map((d) => {
               return {
                 type: 'line',
-                x0: moment(d.date).format('YYYY-MM-DD HH:mm'),
-                x1: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x0: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
+                x1: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -268,7 +269,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 xref: 'x',
                 yref: 'paper',
-                x: moment(d.date).format('YYYY-MM-DD HH:mm'),
+                x: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 xanchor: 'left',
                 yanchor: 'bottom',
                 showarrow: false,
@@ -284,8 +285,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
             ...(certifedData?.map((data) => {
               return {
                 type: 'line',
-                x0: moment(data.date).format('YYYY-MM-DD HH:mm'),
-                x1: moment(data.date).format('YYYY-MM-DD HH:mm'),
+                x0: dayjs(data.date).format('YYYY-MM-DDTHH:mm'),
+                x1: dayjs(data.date).format('YYYY-MM-DDTHH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -423,10 +424,10 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   ];
 
   useEffect(() => {
-    if (dynamicMeasurement?.[0] != undefined) {
+    if (dynamicMeasurement?.[0] != undefined && dynamicMeasurement?.[0] !== null) {
       setXRange([
-        moment(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DD'),
-        moment(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DD'),
+        dayjs(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DDTHH:mm'),
+        dayjs(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DDTHH:mm'),
       ]);
     }
   }, [dynamicMeasurement?.[0]]);
@@ -447,8 +448,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
         ) {
           const prevIndex =
             graphData.x
-              .map((x) => moment(x).toISOString())
-              .indexOf(moment(eventData.points[0].x).toISOString()) - 1;
+              .map((x) => dayjs(x).toISOString())
+              .indexOf(dayjs(eventData.points[0].x).toISOString()) - 1;
           const prevDate = graphData.x.at(prevIndex);
           const prevValue = graphData.y.at(prevIndex);
 
@@ -568,7 +569,7 @@ const transformQAData = (data: Array<QaGraphLabel>) => {
   });
 
   const annotateList = data
-    ?.sort((a, b) => moment(a.startdate).diff(moment(b.startdate)))
+    ?.sort((a, b) => dayjs(a.startdate).diff(dayjs(b.startdate)))
     .map((d, index) => {
       let y;
       switch (index % 4) {

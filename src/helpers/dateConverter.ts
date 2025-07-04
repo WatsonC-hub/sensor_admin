@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import moment from 'moment';
 
 const convertDate = (date: string) => {
-  return moment(date).format('DD-MM-YYYY');
+  return dayjs(date).locale('da').format('L');
 };
 
 const convertDateWithTimeStamp = (dateString: string | null | undefined) => {
@@ -14,7 +14,8 @@ const convertDateWithTimeStamp = (dateString: string | null | undefined) => {
     return '';
   }
 
-  return moment(dateString).format('DD-MM-YYYY HH:mm');
+  const date = dayjs(dateString).format('L LT');
+  return date;
 };
 
 const checkEndDateIsUnset = (dateString: string) => {
@@ -28,7 +29,7 @@ const calculatePumpstop = (
   service: boolean | null
 ) => {
   return pumpstop !== null && pumpstop !== undefined
-    ? moment(timeofmeas).diff(moment(pumpstop), 'hours') + ' timer siden'
+    ? dayjs(timeofmeas).diff(dayjs(pumpstop), 'hours') + ' timer siden'
     : service === true
       ? 'I drift'
       : '-';
@@ -44,13 +45,13 @@ const limitDecimalNumbers = (value: number | null) => {
 };
 
 const splitTimeFromDate = (dateString: string) => {
-  const date = moment(dateString).format('DD-MM-YYYY HH:mm');
+  const date = dayjs(dateString).format('L LT');
   const time = date.split(' ');
   return time;
 };
 
 const convertToShorthandDate = (date: string | null | undefined) => {
-  return dayjs(date).format('DD MMM YYYY');
+  return dayjs(date).format('ll');
 };
 
 export {

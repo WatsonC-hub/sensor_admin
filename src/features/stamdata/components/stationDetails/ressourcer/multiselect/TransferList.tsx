@@ -1,7 +1,6 @@
 import {ExpandLess, ExpandMore} from '@mui/icons-material';
 import {Box, Collapse, Divider, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -266,7 +265,7 @@ export default function TranserList({value, setValue}: TransferListProps) {
     <>
       {options && options.length > 0 && categories && categories.length > 0 && (
         <Box my={1} gap={1} display={'flex'} flexDirection={'row'}>
-          {customList(left ?? [], leftCategory ?? [], 'Liste')}
+          {customList(left ?? [], leftCategory ?? [], 'Valgbare')}
           <Box display={'flex'} flexDirection="column" justifyContent="center">
             <Button
               sx={{my: 0.5}}

@@ -11,8 +11,7 @@ import {useTasks} from '../api/useTasks';
 import {Task, Taskitinerary} from '../types';
 import {convertToShorthandDate} from '~/helpers/dateConverter';
 import {useDisplayState} from '~/hooks/ui';
-import {DatePicker, LocalizationProvider} from '@mui/x-date-pickers';
-import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {DatePicker} from '@mui/x-date-pickers';
 import TaskForm from './TaskForm';
 import {useDroppable} from '@dnd-kit/react';
 import dayjs from 'dayjs';
@@ -182,8 +181,9 @@ const TaskItiniaries = () => {
                           display={'flex'}
                           width={'20%'}
                           color={'white'}
-                          justifyContent={'center'}
+                          flexDirection={'row'}
                           alignItems={'center'}
+                          justifyContent={'center'}
                           sx={{backgroundColor: color ? color : 'primary.main'}}
                         >
                           <Box display={'flex'} flexDirection={'column'}>
@@ -201,63 +201,70 @@ const TaskItiniaries = () => {
                               );
                             })}
                           </Box>
-                          <Box sx={{position: 'relative'}}>
-                            <LocalizationProvider
+                          <Box
+                            display={'flex'}
+                            component={'span'}
+                            alignItems={'center'}
+                            sx={{position: 'relative'}}
+                          >
+                            <DatePicker
                               key={itinerary.id}
-                              dateAdapter={AdapterDayjs}
-                              adapterLocale="da"
-                            >
-                              <DatePicker
-                                key={itinerary.id}
-                                onChange={(date) => {
-                                  if (date) {
-                                    const payload = {
-                                      path: `${itinerary.id}`,
-                                      data: {
-                                        due_date: date?.format('YYYY-MM-DD'),
-                                      },
-                                    };
-                                    updateItinerary.mutate(payload);
-                                  }
-                                }}
-                                sx={{
-                                  '& .MuiInputBase-root, .MuiOutlinedInput-input': {
-                                    display: 'none',
-                                    width: '90px',
+                              onChange={(date) => {
+                                if (date) {
+                                  const payload = {
+                                    path: `${itinerary.id}`,
+                                    data: {
+                                      due_date: date?.format('YYYY-MM-DD'),
+                                    },
+                                  };
+                                  updateItinerary.mutate(payload);
+                                }
+                              }}
+                              sx={{
+                                '& .MuiIconButton-root, .MuiSvgIcon-root': {
+                                  width: '125px',
+                                  height: '80px',
+                                  borderRadius: 0,
+                                },
+                                '& .MuiInputBase-root, .MuiOutlinedInput-input': {
+                                  display: 'none',
+                                },
+                              }}
+                              slotProps={{
+                                inputAdornment: {
+                                  sx: {
+                                    display: 'flex',
+                                    justifyContent: 'end',
+                                    width: '100% !important',
                                     height: '80px',
-                                  },
-                                }}
-                                slotProps={{
-                                  inputAdornment: {
-                                    sx: {
-                                      display: 'flex',
-                                      justifyContent: 'end',
-                                      width: '125px',
+                                    maxHeight: '80px',
+                                    '& .MuiButtonBase-root': {
+                                      width: '100% !important',
                                       height: '80px',
-                                      maxHeight: '80px',
-                                      m: 0,
-                                      '& .MuiIconButton-root, .MuiSvgIcon-root': {
-                                        width: '125px',
-                                        height: '80px',
-                                        borderRadius: 0,
+                                    },
+                                    m: 0,
+                                  },
+                                },
+                                textField: {
+                                  slotProps: {
+                                    input: {
+                                      sx: {
+                                        display: 'none',
                                       },
                                     },
                                   },
-                                  textField: {
-                                    sx: {
-                                      justifyContent: 'flex-end',
-                                      position: 'absolute',
-                                      width: '90px',
-                                      height: '80px',
-                                      opacity: 0,
-                                      left: -115,
-                                      top: -35,
-                                      cursor: 'pointer',
-                                    },
+                                  sx: {
+                                    justifyContent: 'flex-end',
+                                    position: 'absolute',
+                                    height: '60px',
+                                    opacity: 0,
+                                    left: -15,
+                                    top: -15,
+                                    cursor: 'pointer',
                                   },
-                                }}
-                              />
-                            </LocalizationProvider>
+                                },
+                              }}
+                            />
                             <Edit fontSize="small" sx={{ml: 0.5}} />
                           </Box>
                         </Box>

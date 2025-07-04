@@ -20,12 +20,13 @@ import Button from '~/components/Button';
 import {Save} from '@mui/icons-material';
 import {useAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
-import moment from 'moment';
 import {LatestMeasurement, Maalepunkt} from '~/types';
 import {useMaalepunkt} from '~/hooks/query/useMaalepunkt';
 import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
+import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -88,12 +89,23 @@ const CompoundPejling = ({
   useEffect(() => {
     let latestmeas: number | undefined = undefined;
     let dynamicMeas: number | undefined = undefined;
+    if (timeofmeas == null) {
+      setDynamic([]);
+      setHide(true);
+      setCurrentMP(null);
+      setElevationDiff(undefined);
+      return;
+    }
+
+    console.log('CompoundPejling timeofmeas:', timeofmeas);
+    const formattedTimeofMeas =
+      typeof timeofmeas === 'object'
+        ? convertDateWithTimeStamp(timeofmeas.format('L LT'))
+        : convertDateWithTimeStamp(timeofmeas);
+
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
-        if (
-          moment(timeofmeas).isSameOrAfter(elem.startdate) &&
-          moment(timeofmeas).isBefore(elem.enddate)
-        ) {
+        if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {
           return true;
         }
       });
@@ -102,10 +114,10 @@ const CompoundPejling = ({
 
       if (internalCurrentMP) {
         dynamicMeas = internalCurrentMP.elevation - Number(measurement);
-        setDynamic([timeofmeas, dynamicMeas]);
+        setDynamic([formattedTimeofMeas, dynamicMeas]);
         latestmeas = latestMeasurement?.measurement;
 
-        const diff = moment(timeofmeas).diff(moment(latestMeasurement?.timeofmeas), 'days');
+        const diff = timeofmeas.diff(latestMeasurement?.timeofmeas, 'days');
         setHide(Math.abs(diff) > 1);
       } else {
         setDynamic([]);
@@ -113,7 +125,7 @@ const CompoundPejling = ({
       }
     } else {
       dynamicMeas = Number(measurement);
-      setDynamic([timeofmeas, dynamicMeas]);
+      setDynamic([formattedTimeofMeas, dynamicMeas]);
     }
     if (latestmeas == undefined || dynamicMeas == undefined) setElevationDiff(undefined);
     else setElevationDiff(Math.abs(dynamicMeas - latestmeas));
@@ -205,26 +217,42 @@ const Measurement = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => 
 };
 
 const TimeOfMeas = (
-  props: Omit<FormInputProps<PejlingSchemaType | PejlingBoreholeSchemaType>, 'name'>
+  props: Omit<FormDateTimeProps<PejlingSchemaType | PejlingBoreholeSchemaType>, 'name'>
 ) => {
   const {watch, trigger} = useFormContext<PejlingSchemaType | PejlingBoreholeSchemaType>();
   const service = watch('service');
+
   return (
-    <FormInput
+    <FormDateTime<PejlingSchemaType | PejlingBoreholeSchemaType>
       name="timeofmeas"
       label="Dato"
-      fullWidth
-      type="datetime-local"
       onChangeCallback={() => {
         if (!service) {
           trigger('pumpstop');
         }
       }}
       required
-      sx={{mb: 2}}
+      openTo="hours"
       {...props}
     />
   );
+
+  // return (
+  //   <FormInput
+  //     name="timeofmeas"
+  //     label="Dato"
+  //     fullWidth
+  //     type="datetime-local"
+  //     onChangeCallback={() => {
+  //       if (!service) {
+  //         trigger('pumpstop');
+  //       }
+  //     }}
+  //     required
+  //     sx={{mb: 2}}
+  //     {...props}
+  //   />
+  // );
 };
 
 const Comment = (props: Omit<FormInputProps<PejlingSchemaType>, 'name'>) => {
@@ -470,7 +498,7 @@ const PumpStop = (props: Omit<FormInputProps<PejlingBoreholeSchemaType>, 'name'>
       disabled={!!service}
       slotProps={{
         htmlInput: {
-          max: moment(timeofmeas).format('YYYY-MM-DDTHH:mm:ss'),
+          max: timeofmeas.format('YYYY-MM-DDTHH:mm:ss'),
         },
       }}
       {...props}

@@ -209,10 +209,6 @@ const TaskListItemAdvancedCard = ({task}: Props) => {
                       '& .MuiOutlinedInput-root': {
                         fontSize: 'small',
                       },
-                      '& .MuiInputLabel-root': {
-                        backgroundColor: 'white',
-                        transform: 'translate(10px, -9px) scale(0.9)',
-                      },
                       '& .MuiSelect-select': {
                         padding: '4px !important',
                         pl: '14px !important',

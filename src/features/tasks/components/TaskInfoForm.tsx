@@ -262,9 +262,6 @@ const TaskInfoForm = ({selectedTask}: TaskInfoFormProps) => {
           setDueDateDialogOpen(false);
           reset();
         }}
-        sx={{
-          maxWidth: 200,
-        }}
       />
     </Box>
   );

@@ -20,11 +20,7 @@ import {StatusEnum} from '~/features/tasks/types';
 
 const SensorContent = () => {
   const {loc_id} = useAppContext(['loc_id'], []);
-  const {ref} = useDraggable({
-    id: 'location' + loc_id,
-    data: {loc_id},
-    feedback: 'clone',
-  });
+
   const {isMobile} = useBreakpoints();
   const [createTaskDialog, setCreateTaskDialog] = useState(false);
   const [openTripDialog, setOpenTripDialog] = useState(false);
@@ -40,6 +36,13 @@ const SensorContent = () => {
   const enableDragToTrip = tasks?.some(
     (task) => task.loc_id === loc_id && task.status_id == StatusEnum.FIELD
   );
+
+  const {ref} = useDraggable({
+    id: 'location' + loc_id,
+    data: {loc_id},
+    feedback: 'clone',
+    disabled: !enableDragToTrip,
+  });
 
   return (
     <Box display={'flex'} flexDirection={'column'} py={3} px={2} gap={3} overflow="auto">

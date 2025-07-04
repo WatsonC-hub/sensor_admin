@@ -1,4 +1,4 @@
-import {Box, Fab, FabProps, SvgIconProps, Typography} from '@mui/material';
+import {Box, Fab, FabProps, SvgIconProps, Typography, useTheme} from '@mui/material';
 import {merge} from 'lodash';
 import React from 'react';
 
@@ -17,12 +17,14 @@ const fabTextStyle = {
 };
 
 const FabWrapper = ({text, icon, onClick, showText = false, ...otherProps}: Props) => {
+  const theme = useTheme();
   const {isTouch} = useBreakpoints();
   let sx = {
     position: 'sticky',
     bottom: 10,
     right: 20,
     ml: 'auto',
+    zIndex: theme.zIndex.fab,
   };
 
   sx = merge(sx, otherProps.sx);

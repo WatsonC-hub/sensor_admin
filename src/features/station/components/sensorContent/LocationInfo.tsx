@@ -1,7 +1,6 @@
-import {Box, Grid2, IconButton, Link, Typography} from '@mui/material';
+import {Box, Chip, Grid2, IconButton, Link, Typography} from '@mui/material';
 import React from 'react';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import {Group} from '~/types';
 import {getGroupLink} from '~/helpers/links';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {useAppContext} from '~/state/contexts';
@@ -21,7 +20,7 @@ const LocationInfo = () => {
   const {isMobile} = useBreakpoints();
 
   return (
-    <Box display={'flex'} flexDirection={'column'} mt={2}>
+    <Box display={'flex'} flexDirection={'column'} mt={1} gap={0.5}>
       <Box
         display={'flex'}
         flexDirection={'row'}
@@ -68,14 +67,22 @@ const LocationInfo = () => {
       {location_data?.projectno !== null && location_data?.projectno !== undefined && (
         <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
           <Typography variant={'body2'}>Projekt nr.: </Typography>
-          <Box display={'flex'} flexDirection={'row'} gap={1}>
+          <Box display={'flex'} flexDirection={'row'} gap={1} alignItems={'center'}>
             <Typography variant={'body2'}>{location_data?.projectno}</Typography>
             <Link
               href={`https://www.watsonc.dk/calypso/projekt/?project=${location_data?.projectno}`}
               target="_blank"
               rel="noopener"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
             >
-              <OpenInNewIcon fontSize="small" />
+              <OpenInNewIcon
+                sx={{
+                  fontSize: '1rem',
+                }}
+              />
             </Link>
           </Box>
         </Box>
@@ -92,33 +99,65 @@ const LocationInfo = () => {
           <Grid2 container gap={0.25} display={'flex'} flexDirection={'row'} justifyContent={'end'}>
             {location_data && (
               <>
-                {location_data.groups?.map((group, index, groups) => {
-                  const newGrp = {} as Group;
-
-                  if (typeof group === 'object' && 'id' in group) {
-                    newGrp.id = (group as Group).id;
-                    newGrp.group_name = (group as Group).group_name;
-                  }
-
+                {location_data.groups?.map((group) => {
                   return (
                     <Grid2
-                      size={isMobile ? 6 : undefined}
+                      size={undefined}
                       display={'flex'}
                       flexDirection={'row'}
                       justifyContent={'flex-end'}
-                      key={newGrp.id}
+                      key={group.id}
                     >
-                      <Link href={getGroupLink(newGrp.id)} key={newGrp.id}>
-                        <Typography variant="caption">{newGrp.group_name}</Typography>
-                      </Link>
-                      {groups.length - 1 !== index && !isMobile && (
-                        <Typography variant="caption"> | </Typography>
-                      )}
+                      <Chip
+                        variant="outlined"
+                        size="small"
+                        label={
+                          <Box
+                            sx={{
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              maxWidth: isMobile ? '100px' : '150px',
+                            }}
+                          >
+                            <Link href={getGroupLink(group.id)} key={group.id}>
+                              {group.group_name}
+                            </Link>
+                          </Box>
+                        }
+                      />
                     </Grid2>
                   );
                 })}
               </>
             )}
+          </Grid2>
+        </Box>
+      )}
+      {location_data?.ressources && location_data?.ressources.length > 0 && (
+        <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'}>
+          <Typography variant={'body2'}>Huskeliste:</Typography>
+          <Grid2
+            container
+            gap={0.25}
+            display={'flex'}
+            flexDirection={'row'}
+            justifyContent={'end'}
+            alignItems={'center'}
+          >
+            {location_data.ressources.map((ressource) => (
+              <Grid2
+                size={undefined}
+                display={'flex'}
+                flexDirection={'row'}
+                justifyContent={'flex-end'}
+                alignItems={'center'}
+                alignContent={'center'}
+                key={ressource}
+              >
+                <Chip variant="outlined" size="small" label={ressource} />
+              </Grid2>
+            ))}
           </Grid2>
         </Box>
       )}

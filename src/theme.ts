@@ -1,5 +1,6 @@
 import {createTheme} from '@mui/material';
 import {daDK} from '@mui/material/locale';
+import {daDK as dateDaDK} from '@mui/x-date-pickers/locales';
 
 declare module '@mui/material' {
   interface BreakpointOverrides {
@@ -59,7 +60,8 @@ const theme = createTheme(
       },
     },
   },
-  daDK
+  daDK,
+  dateDaDK
 );
 
 export default theme;

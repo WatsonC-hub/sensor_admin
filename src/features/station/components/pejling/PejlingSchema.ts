@@ -1,9 +1,11 @@
 import moment from 'moment';
 import {z} from 'zod';
+import {zodDayjs} from '~/helpers/schemas';
 
 const baseSchema = z.object({
-  measurement: z.number().nullable(),
-  timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
+  measurement: z.number().min(0).nullable(),
+  // timeofmeas: z.string().min(1, 'Tidspunkt skal udfyldes'),
+  timeofmeas: zodDayjs('Tidspunkt skal udfyldes'),
   comment: z.string().optional(),
   useforcorrection: z.coerce.number().default(0),
 });
@@ -18,7 +20,7 @@ const pejlingBoreholeSchema = baseSchema
   })
   .refine(
     (data) => {
-      if (data.service === false && data.pumpstop && data.pumpstop > data.timeofmeas) {
+      if (data.service === false && data.pumpstop && data.timeofmeas.isBefore(data.pumpstop)) {
         return false;
       }
       return true;
@@ -28,7 +30,6 @@ const pejlingBoreholeSchema = baseSchema
       message: 'Pumpestop skal være før pejletidspunkt',
     }
   )
-  // .transform((data) => (data.notPossible ? {...data, measurement: null} : data))
   .transform((data) =>
     data.service
       ? {...data, pumpstop: null}

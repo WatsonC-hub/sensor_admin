@@ -24,7 +24,15 @@ import {CommandProvider} from './features/commandpalette/components/CommandConte
 import moment from 'moment';
 import 'moment/locale/da';
 import dayjs from 'dayjs';
-dayjs.locale('da');
+import dayDA from 'dayjs/locale/da';
+import {LocalizationProvider} from '@mui/x-date-pickers';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+
+dayjs.extend(localizedFormat);
+dayjs.extend(isSameOrAfter);
+dayjs.locale('da', dayDA);
 moment.locale('da');
 
 if (import.meta.env.PROD) {
@@ -77,7 +85,9 @@ root.render(
             >
               <CommandProvider>
                 <NuqsAdapter>
-                  <App />
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
+                    <App />
+                  </LocalizationProvider>
                 </NuqsAdapter>
               </CommandProvider>
             </PostHogProvider>

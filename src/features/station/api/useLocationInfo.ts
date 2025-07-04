@@ -12,6 +12,7 @@ type LocationInfo = {
   loctype_name: string;
   x: number;
   y: number;
+  ressources: string[];
 };
 
 export const locationInfoOptions = (loc_id: number | undefined) =>

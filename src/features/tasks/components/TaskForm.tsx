@@ -117,7 +117,7 @@ const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
   return (
     <FormInput
       name="due_date"
-      label="Due date"
+      label="Forfaldsdato"
       type="date"
       size="small"
       placeholder="Sæt forfaldsdato"
@@ -474,29 +474,28 @@ const DueDateDialog = (
     <>
       {error === null && !isPending && (
         <Dialog open={open} onClose={onClose}>
-          <Box display={'flex'} flexDirection={'column'} gap={2} p={2} alignItems={'center'}>
+          <Box display={'flex'} flexDirection={'column'} gap={2} p={2}>
             <Typography variant="h6">Sæt forfaldsdato til næste kontrol måling</Typography>
             <FormInput name="due_date" label="Forfaldsdato" type="date" size="small" {...props} />
-          </Box>
-          <Box
-            display={'flex'}
-            flexDirection={'row'}
-            justifyContent={'flex-end'}
-            alignItems={'center'}
-            p={2}
-          >
-            <Button bttype="tertiary" onClick={onClose} sx={{mr: 1}}>
-              Luk
-            </Button>
-            <Button
-              bttype="primary"
-              onClick={() => {
-                onSubmit();
-              }}
-              startIcon={<Save />}
+            <Box
+              display={'flex'}
+              flexDirection={'row'}
+              justifyContent={'flex-end'}
+              alignItems={'center'}
             >
-              Gem
-            </Button>
+              <Button bttype="tertiary" onClick={onClose} sx={{mr: 1}}>
+                Luk
+              </Button>
+              <Button
+                bttype="primary"
+                onClick={() => {
+                  onSubmit();
+                }}
+                startIcon={<Save />}
+              >
+                Gem
+              </Button>
+            </Box>
           </Box>
         </Dialog>
       )}
