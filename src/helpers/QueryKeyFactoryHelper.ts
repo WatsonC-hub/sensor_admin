@@ -20,6 +20,7 @@ export const queryKeys = {
   },
   Tasks: {
     all: () => ['tasks'] as const,
+    byItinerary: (itinerary_id: string | null) => ['tasks', itinerary_id] as const,
   },
   Udstyr: {
     all: (ts_id: number) => ['udstyr', ts_id] as const,
@@ -35,6 +36,16 @@ export const queryKeys = {
   },
   QA: {
     all: (ts_id: number) => ['qa_all', ts_id] as const,
+  },
+  Parking: {
+    all: () => ['parking'] as const,
+  },
+  Routes: {
+    all: () => ['leaflet_map_route'] as const,
+  },
+  contacts: {
+    all: (loc_id: number) => ['contact_info', loc_id] as const,
+    search: (search: string) => ['search_contact_info', search] as const,
   },
 };
 
@@ -53,12 +64,5 @@ export const TilsynInvalidation = (ts_id: number, loc_id: number) => {
     queryKeys.Timeseries.all(loc_id),
     queryKeys.Tasks.all(),
     queryKeys.Map.all(),
-  ];
-};
-export const MetadataInvalidation = (ts_id: number, loc_id: number) => {
-  return [
-    queryKeys.Metadata.timeseries(ts_id),
-    queryKeys.Timeseries.all(loc_id),
-    queryKeys.LocationInfo.all(loc_id),
   ];
 };

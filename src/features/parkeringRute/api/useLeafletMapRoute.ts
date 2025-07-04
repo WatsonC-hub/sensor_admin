@@ -2,6 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {LeafletMapRoute} from '~/types';
 
 interface LeafletMapRouteBase {
@@ -51,7 +52,7 @@ const leafletMapRouteDelOptions = {
 export const useLeafletMapRoute = () => {
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: ['leaflet_map_route'],
+    queryKey: [queryKeys.Routes.all()],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<LeafletMapRoute>>(`/sensor_field/leaflet_map_route`);
 
@@ -64,7 +65,7 @@ export const useLeafletMapRoute = () => {
     ...leafletMapRoutePostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['leaflet_map_route'],
+        queryKey: [queryKeys.Routes.all()],
       });
       toast.success('Rute gemt');
     },
@@ -74,7 +75,7 @@ export const useLeafletMapRoute = () => {
     ...leafletMapRoutePutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['leaflet_map_route'],
+        queryKey: [queryKeys.Routes.all()],
       });
       toast.success('Rute ændret');
     },
@@ -83,10 +84,10 @@ export const useLeafletMapRoute = () => {
   const del = useMutation({
     ...leafletMapRouteDelOptions,
     onSuccess: () => {
-      toast.success('Rute slettet');
       queryClient.invalidateQueries({
-        queryKey: ['leaflet_map_route'],
+        queryKey: [queryKeys.Routes.all()],
       });
+      toast.success('Rute slettet');
     },
   });
 

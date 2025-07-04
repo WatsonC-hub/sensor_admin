@@ -2,6 +2,7 @@ import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/rea
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {ContactInfo, ContactTable} from '~/types';
 
@@ -52,9 +53,9 @@ const contactInfoDelOptions = {
   },
 };
 
-export const ContactInfoGetOptions = (loc_id: number | undefined) =>
+export const ContactInfoGetOptions = (loc_id: number) =>
   queryOptions<Array<ContactTable>, APIError>({
-    queryKey: ['contact_info', loc_id],
+    queryKey: [queryKeys.contacts.all(loc_id)],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<ContactTable>>(
         `/sensor_field/stamdata/contact/contact_info/${loc_id}`
@@ -67,7 +68,7 @@ export const ContactInfoGetOptions = (loc_id: number | undefined) =>
 
 export const useSearchContact = (loc_id: number | undefined, searchString: string) => {
   const searched_contacts = useQuery({
-    queryKey: ['search_contact_info', searchString],
+    queryKey: [queryKeys.contacts.search(searchString)],
     queryFn: async () => {
       let data;
       if (searchString == '') {
@@ -89,26 +90,15 @@ export const useSearchContact = (loc_id: number | undefined, searchString: strin
   return searched_contacts;
 };
 
-export const useContactInfo = (loc_id: number | undefined) => {
+export const useContactInfo = (loc_id: number) => {
   const queryClient = useQueryClient();
   const get = useQuery(ContactInfoGetOptions(loc_id));
-
-  // const get_all = useQuery({
-  //   queryKey: ['all_contact_info'],
-  //   queryFn: async () => {
-  //     const {data} = await apiClient.get<Array<baseContactInfo>>(
-  //       `/sensor_field/stamdata/contact/all_contact_info`
-  //     );
-
-  //     return data;
-  //   },
-  // });
 
   const post = useMutation({
     ...contactInfoPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contact_info'],
+        queryKey: [queryKeys.contacts.all(loc_id)],
       });
 
       toast.success('Kontakt information gemt');
@@ -119,7 +109,7 @@ export const useContactInfo = (loc_id: number | undefined) => {
     ...contactInfoPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['contact_info'],
+        queryKey: [queryKeys.contacts.all(loc_id)],
       });
 
       toast.success('Kontakt information ændret');
@@ -131,7 +121,7 @@ export const useContactInfo = (loc_id: number | undefined) => {
     onSuccess: () => {
       toast.success('Kontakt information slettet');
       queryClient.invalidateQueries({
-        queryKey: ['contact_info'],
+        queryKey: [queryKeys.contacts.all(loc_id)],
       });
     },
   });

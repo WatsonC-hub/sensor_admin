@@ -71,7 +71,7 @@ export const useCertifyQa = () => {
   const {ts_id} = useAppContext(['ts_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: ['certifyQa', ts_id],
+    queryKey: [queryKeys.CertifyQa.all(ts_id)],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<CertifyQa>>(
         `/sensor_admin/certified_quality/${ts_id}`
