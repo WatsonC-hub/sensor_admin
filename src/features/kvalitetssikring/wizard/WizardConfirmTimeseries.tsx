@@ -53,7 +53,7 @@ const WizardConfirmTimeseries = ({
   const {
     get: {data: qaData},
     post: postQaData,
-  } = useCertifyQa(ts_id);
+  } = useCertifyQa();
 
   const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);

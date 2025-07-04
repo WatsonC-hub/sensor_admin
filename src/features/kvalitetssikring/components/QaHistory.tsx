@@ -47,7 +47,7 @@ export default function QAHistory() {
   const {
     get: {data: certify},
     post: postQaData,
-  } = useCertifyQa(ts_id);
+  } = useCertifyQa();
 
   const {data, isPending} = useQAHistory(ts_id);
 

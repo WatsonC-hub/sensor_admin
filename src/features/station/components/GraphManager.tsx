@@ -73,7 +73,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
 
   const {
     get: {data: certifedData},
-  } = useCertifyQa(ts_id);
+  } = useCertifyQa();
   const {
     get: {data: controlData},
   } = usePejling();

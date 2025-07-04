@@ -3,17 +3,15 @@ import {Box, Divider, Grid2 as Grid, Typography} from '@mui/material';
 import {useAlgorithms} from '~/features/kvalitetssikring/api/useAlgorithms';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import AlgorithmCard from '~/pages/admin/kvalitetssikring/AlgorithmCard';
-import {useAppContext} from '~/state/contexts';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import GraphManager from '~/features/station/components/GraphManager';
 import TooltipWrapper from '~/components/TooltipWrapper';
 
 const Algorithms = () => {
-  const {ts_id} = useAppContext(['ts_id']);
   const {isMobile} = useBreakpoints();
   const {
     get: {data},
-  } = useAlgorithms(ts_id);
+  } = useAlgorithms();
 
   return (
     <>

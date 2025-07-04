@@ -2,6 +2,9 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useAppContext} from '~/state/contexts';
 
 export interface CertifyQa {
   id?: number;
@@ -50,7 +53,22 @@ const certifyQaDelOptions = {
   },
 };
 
-export const useCertifyQa = (ts_id: number | undefined) => {
+const onMutateCertifyQa = (ts_id: number) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.CertifyQa.all(ts_id),
+        queryKeys.Timeseries.all(ts_id),
+        queryKeys.Map.all(),
+        queryKeys.Metadata.timeseries(ts_id),
+        queryKeys.QA.all(ts_id),
+      ],
+    },
+  };
+};
+
+export const useCertifyQa = () => {
+  const {ts_id} = useAppContext(['ts_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: ['certifyQa', ts_id],
@@ -65,33 +83,27 @@ export const useCertifyQa = (ts_id: number | undefined) => {
 
   const post = useMutation({
     ...certifyQaPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['certifyQa', ts_id],
-      });
+    onMutate: async () => onMutateCertifyQa(ts_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Kvalitetsstempel gemt');
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all', ts_id],
-      });
     },
   });
 
   const put = useMutation({
     ...certifyQaPutOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['certifyQa', ts_id],
-      });
+    onMutate: async () => onMutateCertifyQa(ts_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Kvalitetsstempel ændret');
     },
   });
 
   const del = useMutation({
     ...certifyQaDelOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['certifyQa', ts_id],
-      });
+    onMutate: async () => onMutateCertifyQa(ts_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Kvalitetsstempel slettet');
     },
   });

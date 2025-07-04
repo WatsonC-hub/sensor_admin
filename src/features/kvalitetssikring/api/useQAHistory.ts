@@ -1,11 +1,12 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {AdjustmentTypes} from '~/helpers/EnumHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
-export const getQAHistoryOptions = (ts_id: number | undefined) =>
+export const getQAHistoryOptions = (ts_id: number) =>
   queryOptions<any, APIError>({
-    queryKey: ['qa_all', ts_id],
+    queryKey: [queryKeys.QA.all(ts_id)],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/qa_all/${ts_id}`);
       return data;

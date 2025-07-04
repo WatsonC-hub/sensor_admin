@@ -24,6 +24,18 @@ export const queryKeys = {
   Udstyr: {
     all: (ts_id: number) => ['udstyr', ts_id] as const,
   },
+  Maalepunkt: {
+    all: (ts_id: number) => ['watlevmp', ts_id] as const,
+  },
+  Algorithms: {
+    all: (ts_id: number) => ['algorithms', ts_id] as const,
+  },
+  CertifyQa: {
+    all: (ts_id: number) => ['certifyQa', ts_id] as const,
+  },
+  QA: {
+    all: (ts_id: number) => ['qa_all', ts_id] as const,
+  },
 };
 
 export const PejlingInvalidation = (ts_id: number, loc_id: number) => {
