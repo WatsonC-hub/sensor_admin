@@ -3,7 +3,6 @@ Adding one to the month is mainly done because the method date.getMonth return a
 */
 
 import dayjs from 'dayjs';
-import moment from 'moment';
 
 const convertDate = (date: string) => {
   return dayjs(date).locale('da').format('L');

@@ -100,9 +100,10 @@ const CompoundPejling = ({
     console.log('CompoundPejling timeofmeas:', timeofmeas);
     const formattedTimeofMeas =
       typeof timeofmeas === 'object'
-        ? convertDateWithTimeStamp(timeofmeas.format('L LT'))
+        ? timeofmeas.format('L LT')
         : convertDateWithTimeStamp(timeofmeas);
 
+    console.log('CompoundPejling formattedTimeofMeas:', formattedTimeofMeas);
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
         if (timeofmeas.isSameOrAfter(elem.startdate) && timeofmeas.isBefore(elem.enddate)) {
