@@ -129,7 +129,6 @@ export type TilsynItem = {
   gid: number;
   kommentar?: string | undefined;
   tilsyn: boolean;
-  user_id: string | null;
   display_name?: string;
 };
 
