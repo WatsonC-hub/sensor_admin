@@ -17,7 +17,7 @@ const PejlingBoreholeForm = () => {
       alignContent={'center'}
       justifyContent={'center'}
       spacing={2}
-      maxWidth={400}
+      maxWidth={600}
     >
       <Grid2
         container
@@ -32,21 +32,25 @@ const PejlingBoreholeForm = () => {
       </Grid2>
       <CompoundPejling.Extrema />
 
-      <Grid2 size={12} maxWidth={400}>
+      <Grid2 size={12}>
         <CompoundPejling.Measurement />
         <CompoundPejling.WaterlevelAlert />
       </Grid2>
-      <Grid2 container spacing={1} size={12} mb={2} display={'flex'} flexDirection={'row'}>
-        <CompoundPejling.TimeOfMeas
-          sx={{mb: 0, maxWidth: isPump ? 200 : undefined}}
-          label="Tidspunkt for pejling"
-        />
-        {isPump && (
-          <>
-            <CompoundPejling.Service />
-            <CompoundPejling.PumpStop sx={{maxWidth: 200}} />
-          </>
-        )}
+      <Grid2 container spacing={1} size={12} mb={2} display={'flex'} flexDirection={'column'}>
+        <Grid2>
+          <CompoundPejling.TimeOfMeas
+            sx={{mb: 0, maxWidth: isPump ? 200 : undefined}}
+            label="Tidspunkt for pejling"
+          />
+        </Grid2>
+        <Grid2 display={'flex'} flexDirection={'row'}>
+          {isPump && (
+            <>
+              <CompoundPejling.Service />
+              <CompoundPejling.PumpStop />
+            </>
+          )}
+        </Grid2>
       </Grid2>
       <CompoundPejling.Correction />
       <Grid2 size={12}>
