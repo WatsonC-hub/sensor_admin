@@ -12,13 +12,27 @@ import usePermissions from '~/features/permissions/api/usePermissions';
 import useTimeseriesForm from '~/features/station/api/useTimeseriesForm';
 import StamdataTimeseries from '~/features/station/components/stamdata/StamdataTimeseries';
 import {boreholeEditTimeseriesSchema, defaultEditTimeseriesSchema} from '~/features/station/schema';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
+const onMutateTimeseries = async (ts_id: number, loc_id: number) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Timeseries.all(ts_id),
+        queryKeys.Metadata.timeseries(ts_id),
+        queryKeys.LocationInfo.all(loc_id),
+      ],
+    },
+  };
+};
+
 const EditTimeseries = () => {
-  const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
+  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData(ts_id);
   const {location_permissions} = usePermissions(loc_id);
   const {isMobile} = useBreakpoints();
@@ -32,11 +46,9 @@ const EditTimeseries = () => {
       );
       return out;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['metadata', ts_id],
-      });
-      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
+    onMutate: async () => onMutateTimeseries(ts_id, loc_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Tidsserie er opdateret');
     },
   });
@@ -86,7 +98,12 @@ const EditTimeseries = () => {
     const payload = {
       ...data,
     };
-    metadataEditTimeseriesMutation.mutate(payload);
+    metadataEditTimeseriesMutation.mutate(payload, {
+      onSuccess: (data, variables, context) => {
+        invalidateFromMeta(queryClient, context.meta);
+        toast.success('Tidsserie er opdateret');
+      },
+    });
   };
 
   return (

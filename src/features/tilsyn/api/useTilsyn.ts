@@ -3,6 +3,8 @@ import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import {queryKeys, TilsynInvalidation} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {TilsynItem} from '~/types';
@@ -61,7 +63,7 @@ const tilsynDelOptions = {
 
 export const tilsynGetOptions = (ts_id: number | undefined) =>
   queryOptions<Array<TilsynItem>, APIError>({
-    queryKey: ['service', ts_id],
+    queryKey: [queryKeys.Tilsyn.all(ts_id!)],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
       return data;
@@ -69,33 +71,44 @@ export const tilsynGetOptions = (ts_id: number | undefined) =>
     enabled: ts_id !== undefined && ts_id !== null,
   });
 
+const onMutateTilsyn = async (ts_id: number, loc_id: number) => {
+  return {
+    meta: {
+      invalidates: TilsynInvalidation(ts_id, loc_id),
+    },
+  };
+};
+
 export const useTilsyn = () => {
   const queryClient = useQueryClient();
 
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const get = useQuery(tilsynGetOptions(ts_id));
 
   const post = useMutation({
     ...tilsynPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
+    onMutate: async () => onMutateTilsyn(ts_id, loc_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Tilsyn gemt');
     },
   });
 
   const put = useMutation({
     ...tilsynPutOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
+    onMutate: async () => onMutateTilsyn(ts_id, loc_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Tilsyn ændret');
     },
   });
 
   const del = useMutation({
     ...tilsynDelOptions,
-    onSuccess: () => {
+    onMutate: async () => onMutateTilsyn(ts_id, loc_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Tilsyn slettet');
-      queryClient.invalidateQueries({queryKey: ['service', ts_id]});
     },
   });
 

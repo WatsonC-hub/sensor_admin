@@ -23,9 +23,24 @@ import AddUnitForm from '~/features/stamdata/components/stamdata/AddUnitForm';
 import UnitEndDateDialog from './UnitEndDialog';
 import useUnitForm from '~/features/station/api/useUnitForm';
 import {EditUnit as EditUnitType, editUnitSchema} from '~/features/station/schema';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+
+const onMutateUnit = (ts_id: number, loc_id: number) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Udstyr.all(ts_id),
+        queryKeys.Timeseries.all(loc_id),
+        queryKeys.Metadata.timeseries(ts_id),
+        queryKeys.Map.all(),
+      ],
+    },
+  };
+};
 
 const EditUnit = () => {
-  const {ts_id, loc_id} = useAppContext(['ts_id'], ['loc_id']);
+  const {ts_id, loc_id} = useAppContext(['loc_id', 'ts_id']);
   const {data: metadata} = useTimeseriesData();
   const {data: unit_history} = useUnitHistory();
   const [selectedUnit, setSelectedUnit] = useState<number | ''>(unit_history?.[0]?.gid ?? '');
@@ -45,9 +60,10 @@ const EditUnit = () => {
       const {data: out} = await apiClient.put(`/sensor_field/stamdata/update_unit/${ts_id}`, data);
       return out;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
-      queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
+    onMutate: async () => onMutateUnit(ts_id, loc_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
+      toast.success('Udstyr er opdateret');
     },
   });
 
@@ -90,10 +106,8 @@ const EditUnit = () => {
       enddate: moment(data.enddate).toISOString(),
     };
     metadataEditUnitMutation.mutate(payload, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ['metadata', ts_id],
-        });
+      onSuccess: (data, variables, context) => {
+        invalidateFromMeta(queryClient, context.meta);
         toast.success('Udstyr er opdateret');
       },
     });
