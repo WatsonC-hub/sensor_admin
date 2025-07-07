@@ -13,6 +13,7 @@ interface Filter {
     showWatsonCService: boolean;
     isSingleMeasurement: boolean;
     hideLocationsWithoutNotifications: boolean;
+    nyOpsætning: boolean;
   };
   notificationTypes: number[];
   groups: Group[];
@@ -32,6 +33,7 @@ const defaultMapFilter = (superUser: boolean = false): Required<Filter> => ({
     showWatsonCService: superUser,
     isSingleMeasurement: false,
     hideLocationsWithoutNotifications: false,
+    nyOpsætning: false,
   },
   notificationTypes: [],
   groups: [],
