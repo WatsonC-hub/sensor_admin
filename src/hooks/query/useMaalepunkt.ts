@@ -64,9 +64,9 @@ const onMutateMaalepunkt = (ts_id: number) => {
   return {
     meta: {
       invalidates: [
-        queryKeys.Maalepunkt.all(ts_id),
-        queryKeys.Pejling.all(ts_id),
-        queryKeys.Metadata.timeseries(ts_id),
+        queryKeys.Timeseries.maalepunkt(ts_id),
+        queryKeys.Timeseries.pejling(ts_id),
+        queryKeys.Timeseries.metadata(ts_id),
       ],
     },
   };
@@ -74,7 +74,7 @@ const onMutateMaalepunkt = (ts_id: number) => {
 
 export const getMaalepunktOptions = (ts_id: number) =>
   queryOptions<Array<Maalepunkt>, APIError>({
-    queryKey: [queryKeys.Maalepunkt.all(ts_id)],
+    queryKey: [queryKeys.Timeseries.maalepunkt(ts_id)],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Maalepunkt>>(
         `/sensor_field/station/watlevmp/${ts_id}`

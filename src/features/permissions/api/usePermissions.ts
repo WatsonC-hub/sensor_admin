@@ -1,5 +1,6 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 type LocationPermissions = Record<number, 'read' | 'edit'>;
 
@@ -14,7 +15,7 @@ type GlobalPermissions = {
 
 const useGlobalPermissionsQueryOptions = () => {
   return queryOptions({
-    queryKey: ['borehole_permissions'],
+    queryKey: queryKeys.BoreholePermissions.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<GlobalPermissions>(`/auth/me/permissions`);
       return data;
@@ -25,7 +26,7 @@ const useGlobalPermissionsQueryOptions = () => {
 
 const usePermissionsQueryOptions = (loc_id?: number) => {
   return queryOptions({
-    queryKey: ['permissions', loc_id],
+    queryKey: queryKeys.Location.permissions(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<LocationPermissions>(
         `/auth/me/location_permissions/${loc_id}`

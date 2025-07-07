@@ -57,7 +57,7 @@ const pejlingDelOptions = {
 
 export const pejlingGetOptions = (ts_id: number | undefined) =>
   queryOptions<Array<PejlingItem>, APIError>({
-    queryKey: [queryKeys.Pejling.all(ts_id!)],
+    queryKey: [queryKeys.Timeseries.pejling(ts_id!)],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<PejlingItem>>(
         `/sensor_field/station/measurements/${ts_id}`

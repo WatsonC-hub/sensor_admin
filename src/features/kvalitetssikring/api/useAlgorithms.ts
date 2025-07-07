@@ -65,14 +65,14 @@ const algorithmsRevertOptions = {
   },
 };
 
-const onMutateAlgorithms = (ts_id: number) => {
+const onMutateAlgorithms = (ts_id: number, loc_id: number) => {
   return {
     meta: {
       invalidates: [
-        queryKeys.Algorithms.all(ts_id),
-        queryKeys.Timeseries.all(ts_id),
+        queryKeys.Timeseries.algorithms(ts_id),
+        queryKeys.Location.timeseries(loc_id),
         queryKeys.Map.all(),
-        queryKeys.Metadata.timeseries(ts_id),
+        queryKeys.Timeseries.metadata(ts_id),
       ],
     },
   };
@@ -80,7 +80,7 @@ const onMutateAlgorithms = (ts_id: number) => {
 
 export const getAlgorithmOptions = (ts_id: number) =>
   queryOptions<Array<QaAlgorithms>, APIError>({
-    queryKey: [queryKeys.Algorithms.all(ts_id)],
+    queryKey: [queryKeys.Timeseries.algorithms(ts_id)],
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/algorithms/${ts_id}`);
       return data;
@@ -89,13 +89,13 @@ export const getAlgorithmOptions = (ts_id: number) =>
   });
 
 export const useAlgorithms = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const queryClient = useQueryClient();
   const get = useQuery(getAlgorithmOptions(ts_id));
 
   const handlePrefetch = () => {
     queryClient.prefetchQuery({
-      queryKey: [queryKeys.Algorithms.all(ts_id)],
+      queryKey: [queryKeys.Timeseries.algorithms(ts_id)],
       queryFn: async () => {
         const {data} = await apiClient.get<Array<QaAlgorithms>>(
           `/sensor_admin/algorithms/${ts_id}`
@@ -107,7 +107,7 @@ export const useAlgorithms = () => {
 
   const put = useMutation({
     ...algorithmsPutOptions,
-    onMutate: async () => onMutateAlgorithms(ts_id),
+    onMutate: async () => onMutateAlgorithms(ts_id, loc_id),
     onSuccess: (data, variables, context) => {
       invalidateFromMeta(queryClient, context.meta);
       toast.success('Ændringer gemt');
@@ -115,7 +115,7 @@ export const useAlgorithms = () => {
   });
   const del = useMutation({
     ...algorithmsDelOptions,
-    onMutate: async () => onMutateAlgorithms(ts_id),
+    onMutate: async () => onMutateAlgorithms(ts_id, loc_id),
     onSuccess: (data, variables, context) => {
       invalidateFromMeta(queryClient, context.meta);
       toast.success('Algorithms slettet');
@@ -124,7 +124,7 @@ export const useAlgorithms = () => {
 
   const revert = useMutation({
     ...algorithmsRevertOptions,
-    onMutate: async () => onMutateAlgorithms(ts_id),
+    onMutate: async () => onMutateAlgorithms(ts_id, loc_id),
     onSuccess: (data, variables, context) => {
       invalidateFromMeta(queryClient, context.meta);
       toast.success('Algoritme nulstillet');

@@ -35,6 +35,19 @@ import AlertDialog from '~/components/AlertDialog';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {withComponentPermission} from '~/hooks/withComponentPermission';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+
+const onMutateTimeseries = (ts_id: number, loc_id: number) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Location.timeseries(loc_id),
+        queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.Location.info(loc_id),
+      ],
+    },
+  };
+};
 
 const CreateStation = () => {
   const {isMobile} = useBreakpoints();
@@ -147,7 +160,7 @@ const CreateStation = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({queryKey: ['timeseries', loc_id]});
+      queryClient.invalidateQueries({queryKey: queryKeys.Location.timeseries(loc_id)});
       toast.success('Lokation oprettet');
       locationNavigate(data.loc_id);
     },
@@ -165,6 +178,7 @@ const CreateStation = () => {
       );
       return out;
     },
+    onMutate: async () => onMutateTimeseries(-1, loc_id ?? -1),
     onSuccess: (data) => {
       toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
       queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});

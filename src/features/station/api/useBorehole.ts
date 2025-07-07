@@ -1,6 +1,7 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {BoreholeMapData} from '~/types';
 
 export type Borehole = {
@@ -26,7 +27,7 @@ export const searchBorehole = (boreholeno: string | undefined | null) => {
 const boreholeSearchOptions = (boreholeno: string | undefined | null) => {
   const user = useUser();
   return queryOptions({
-    queryKey: ['search_borehole', boreholeno],
+    queryKey: queryKeys.Borehole.boreholeSearch(boreholeno),
     queryFn: searchBorehole(boreholeno),
     staleTime: 10 * 1000,
     enabled:

@@ -53,25 +53,25 @@ const certifyQaDelOptions = {
   },
 };
 
-const onMutateCertifyQa = (ts_id: number) => {
+const onMutateCertifyQa = (ts_id: number, loc_id: number) => {
   return {
     meta: {
       invalidates: [
-        queryKeys.CertifyQa.all(ts_id),
-        queryKeys.Timeseries.all(ts_id),
+        queryKeys.Timeseries.certifyQa(ts_id),
+        queryKeys.Location.timeseries(loc_id),
         queryKeys.Map.all(),
-        queryKeys.Metadata.timeseries(ts_id),
-        queryKeys.QA.all(ts_id),
+        queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.Timeseries.QA(ts_id),
       ],
     },
   };
 };
 
 export const useCertifyQa = () => {
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: [queryKeys.CertifyQa.all(ts_id)],
+    queryKey: [queryKeys.Timeseries.certifyQa(ts_id)],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<CertifyQa>>(
         `/sensor_admin/certified_quality/${ts_id}`
@@ -83,7 +83,7 @@ export const useCertifyQa = () => {
 
   const post = useMutation({
     ...certifyQaPostOptions,
-    onMutate: async () => onMutateCertifyQa(ts_id),
+    onMutate: async () => onMutateCertifyQa(ts_id, loc_id),
     onSuccess: (data, variables, context) => {
       invalidateFromMeta(queryClient, context.meta);
       toast.success('Kvalitetsstempel gemt');
@@ -92,7 +92,7 @@ export const useCertifyQa = () => {
 
   const put = useMutation({
     ...certifyQaPutOptions,
-    onMutate: async () => onMutateCertifyQa(ts_id),
+    onMutate: async () => onMutateCertifyQa(ts_id, loc_id),
     onSuccess: (data, variables, context) => {
       invalidateFromMeta(queryClient, context.meta);
       toast.success('Kvalitetsstempel ændret');
@@ -101,7 +101,7 @@ export const useCertifyQa = () => {
 
   const del = useMutation({
     ...certifyQaDelOptions,
-    onMutate: async () => onMutateCertifyQa(ts_id),
+    onMutate: async () => onMutateCertifyQa(ts_id, loc_id),
     onSuccess: (data, variables, context) => {
       invalidateFromMeta(queryClient, context.meta);
       toast.success('Kvalitetsstempel slettet');

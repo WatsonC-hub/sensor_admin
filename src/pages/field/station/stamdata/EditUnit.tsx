@@ -30,9 +30,9 @@ const onMutateUnit = (ts_id: number, loc_id: number) => {
   return {
     meta: {
       invalidates: [
-        queryKeys.Udstyr.all(ts_id),
-        queryKeys.Timeseries.all(loc_id),
-        queryKeys.Metadata.timeseries(ts_id),
+        queryKeys.Timeseries.availableUnits(ts_id),
+        queryKeys.Location.timeseries(loc_id),
+        queryKeys.Timeseries.metadata(ts_id),
         queryKeys.Map.all(),
       ],
     },

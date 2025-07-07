@@ -23,9 +23,9 @@ const onMutateTimeseries = async (ts_id: number, loc_id: number) => {
   return {
     meta: {
       invalidates: [
-        queryKeys.Timeseries.all(ts_id),
-        queryKeys.Metadata.timeseries(ts_id),
-        queryKeys.LocationInfo.all(loc_id),
+        queryKeys.Location.timeseries(loc_id),
+        queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.Location.info(loc_id),
       ],
     },
   };

@@ -2,6 +2,7 @@ import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/rea
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {Access, AccessTable} from '~/types';
 
@@ -50,9 +51,9 @@ const locationAccessDelOptions = {
   },
 };
 
-export const LocationAccessGetOptions = (loc_id: number | undefined) =>
+export const LocationAccessGetOptions = (loc_id: number) =>
   queryOptions<Array<AccessTable>, APIError>({
-    queryKey: ['location_access', loc_id],
+    queryKey: queryKeys.Location.keys(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/location_access/${loc_id}`);
 
@@ -60,9 +61,9 @@ export const LocationAccessGetOptions = (loc_id: number | undefined) =>
     },
   });
 
-export const useSearchLocationAccess = (loc_id: number | undefined, searchString: string) => {
+export const useSearchLocationAccess = (loc_id: number, searchString: string) => {
   const searched_location_access = useQuery({
-    queryKey: ['search_location_access', searchString],
+    queryKey: queryKeys.Location.searchKeys(searchString),
     queryFn: async () => {
       let data;
       if (searchString.trim() === '') {
@@ -83,7 +84,7 @@ export const useSearchLocationAccess = (loc_id: number | undefined, searchString
   return searched_location_access;
 };
 
-export const useLocationAccess = (loc_id: number | undefined) => {
+export const useLocationAccess = (loc_id: number) => {
   const queryClient = useQueryClient();
   const get = useQuery(LocationAccessGetOptions(loc_id));
 
@@ -91,7 +92,7 @@ export const useLocationAccess = (loc_id: number | undefined) => {
     ...locationAccessPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['location_access', loc_id],
+        queryKey: queryKeys.Location.keys(loc_id),
       });
 
       toast.success('Adgangsinformation gemt');
@@ -102,7 +103,7 @@ export const useLocationAccess = (loc_id: number | undefined) => {
     ...locationAccessPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['location_access', loc_id],
+        queryKey: queryKeys.Location.keys(loc_id),
       });
 
       toast.success('Adgangsinformation ændret');
@@ -114,7 +115,7 @@ export const useLocationAccess = (loc_id: number | undefined) => {
     onSuccess: () => {
       toast.success('Adgangsinformation slettet');
       queryClient.invalidateQueries({
-        queryKey: ['location_access', loc_id],
+        queryKey: queryKeys.Location.keys(loc_id),
       });
     },
   });

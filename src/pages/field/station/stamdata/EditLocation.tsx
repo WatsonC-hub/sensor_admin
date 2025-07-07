@@ -24,9 +24,9 @@ const onMutateLocation = (ts_id: number | undefined, loc_id: number) => {
   return {
     meta: {
       invalidates: [
-        queryKeys.LocationInfo.all(loc_id),
-        queryKeys.Metadata.timeseries(ts_id),
-        queryKeys.Metadata.location(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.Location.metadata(loc_id),
         queryKeys.Map.all(),
       ],
     },

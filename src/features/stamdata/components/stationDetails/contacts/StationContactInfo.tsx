@@ -8,6 +8,7 @@ import {apiClient} from '~/apiClient';
 import FormInput from '~/components/FormInput';
 import {InferContactInfo} from '~/features/stamdata/components/stationDetails/zodSchemas';
 import {ContactInfoType} from '~/helpers/EnumHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 interface ModalProps {
   isEditing: boolean;
@@ -31,7 +32,7 @@ export default function StationContactInfo({
   const {setValue, getValues, watch} = useFormContext<InferContactInfo>();
   const regEx = new RegExp(/(?:(?:00|\+)?45)?\d{8}/);
   const {data: contactRoles} = useQuery({
-    queryKey: ['contact_roles'],
+    queryKey: queryKeys.contactRoles(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<ContactRole>>(
         `/sensor_field/stamdata/contact/contact_roles`
