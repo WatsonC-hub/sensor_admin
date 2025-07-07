@@ -152,7 +152,13 @@ const Map = ({clickCallback}: MapProps) => {
       {
         text: 'Opret tidsserie',
         callback: () => {
-          createStamdata({state: element});
+          createStamdata({
+            state: {
+              ...element,
+              x: element.longitude,
+              y: element.latitude,
+            },
+          });
         },
         icon: '/leaflet-images/marker.png',
       },
