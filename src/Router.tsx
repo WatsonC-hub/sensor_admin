@@ -74,7 +74,7 @@ const Router = () => {
       name: 'Søg i lokationer',
       type: 'selection',
       perform: (inp) => {
-        locationNavigation(inp.loc_id);
+        locationNavigation(inp.loc_id, true);
       },
       icon: <NotListedLocation />,
       shortcut: 'S',
@@ -93,7 +93,7 @@ const Router = () => {
       name: 'Søg i Calypso ID',
       type: 'selection',
       perform: (inp) => {
-        locationNavigation(inp.loc_id);
+        locationNavigation(inp.loc_id, true);
         station(inp.ts_id);
       },
       icon: <QueryStats />,
@@ -114,7 +114,7 @@ const Router = () => {
       type: 'input',
       inputPlaceholder: 'Indtast lokations id...',
       perform: (input) => {
-        locationNavigation(Number(input));
+        locationNavigation(Number(input), true);
       },
       icon: <LocationOn />,
       shortcut: 'L',
@@ -128,7 +128,7 @@ const Router = () => {
       perform: (input) => {
         const tsId = Number(input);
         if (tsId) {
-          station(tsId);
+          station(tsId, true);
         } else {
           console.error('Invalid timeseries ID:', input);
         }
