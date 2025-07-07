@@ -5,7 +5,7 @@ import {APIError} from '~/queryClient';
 
 export const getImageOptions = (typeId: string | number, imageType: string, type: string) =>
   queryOptions<any, APIError>({
-    queryKey: queryKeys.images(typeId),
+    queryKey: queryKeys.imagesById(typeId),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/${type}/${imageType}/${typeId}`);
       return data;

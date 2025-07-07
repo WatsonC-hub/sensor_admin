@@ -14,6 +14,8 @@ import {
   DeleteTaskFromItinerary,
 } from '../types';
 import {useDisplayState} from '~/hooks/ui';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 
 type Mutation<TData> = {
   path: string;
@@ -96,7 +98,7 @@ const deleteTaskFromItineraryOptions = {
 
 const getNextDueDateOptions = (ts_id: number, open: boolean) =>
   queryOptions<string, APIError>({
-    queryKey: ['next_due_date', ts_id],
+    queryKey: queryKeys.Tasks.nextDueDate(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks/next_due_date/${ts_id}`);
       return data;
@@ -108,6 +110,41 @@ export const getNextDueDate = (ts_id: number, open: boolean) => {
   return useQuery(getNextDueDateOptions(ts_id, open));
 };
 
+const onMutateTasks = () => {
+  return {
+    meta: {
+      invalidates: [queryKeys.Tasks.all(), queryKeys.Itineraries.all(), queryKeys.Map.all()],
+    },
+  };
+};
+
+const onPutTasks = (task_id: string) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Tasks.taskHistory(task_id),
+        queryKeys.Tasks.all(),
+        queryKeys.Map.all(),
+        queryKeys.Itineraries.all(),
+        queryKeys.Timeseries.all(),
+      ],
+    },
+  };
+};
+
+const onMutateItinerary = (itinerary_id: string) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Itineraries.byId(itinerary_id),
+        queryKeys.Itineraries.itineraryTasks(itinerary_id),
+        queryKeys.Tasks.all(),
+        queryKeys.Map.all(),
+      ],
+    },
+  };
+};
+
 // /location_related_tasks/{loc_id}
 export const useTasks = () => {
   const queryClient = useQueryClient();
@@ -115,7 +152,7 @@ export const useTasks = () => {
   const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
 
   const get = useQuery<Task[], APIError>({
-    queryKey: ['tasks'],
+    queryKey: queryKeys.Tasks.all(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks`);
       return data;
@@ -123,14 +160,11 @@ export const useTasks = () => {
     staleTime: 1000 * 60 * 1,
   });
 
-  const post = useMutation<unknown, APIError, PostTask>({
+  const post = useMutation({
     ...tasksPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['map']});
-
+    onMutate: onMutateTasks,
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Opgaver gemt');
     },
   });
@@ -140,7 +174,7 @@ export const useTasks = () => {
     onMutate: async (mutation_data) => {
       const {path, data} = mutation_data;
       const previous = queryClient.getQueryData<Task[]>(['tasks']);
-      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
       queryClient.setQueryData<Task[]>(
         ['tasks'],
         previous?.map((task) => {
@@ -170,25 +204,18 @@ export const useTasks = () => {
 
         setSelectedTask(data.id);
       }
-
-      queryClient.invalidateQueries({queryKey: ['taskHistory', path]});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['map']});
-      queryClient.invalidateQueries({queryKey: ['timeseries']});
+      const context = onPutTasks(data.id);
+      invalidateFromMeta(queryClient, context.meta);
     },
     onError: () => {
-      queryClient.invalidateQueries({queryKey: ['tasks']});
+      queryClient.invalidateQueries({queryKey: queryKeys.Tasks.all()});
     },
   });
   const del = useMutation({
     ...tasksDelOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['map']});
+    onMutate: () => onMutateTasks(),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
 
       toast.success('Opgave slettet');
     },
@@ -196,31 +223,26 @@ export const useTasks = () => {
 
   const convertNotificationToTask = useMutation({
     ...convertNotificationToTaskOptions,
+    onMutate: onMutateTasks,
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['map']});
-
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Opgave oprettet');
     },
   });
 
   const updateNotification = useMutation({
     ...notificationUpdateStatus,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['map']});
+    onMutate: () => onMutateTasks(),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
     },
   });
 
   const getUsers = useQuery<TaskUser[], APIError>({
-    queryKey: ['task_users'],
+    queryKey: queryKeys.Tasks.taskUsers(),
     queryFn: async () => {
       const {data} = await apiClient.get('/sensor_admin/tasks/task_users');
 
@@ -230,7 +252,7 @@ export const useTasks = () => {
   });
 
   const getStatus = useQuery<TaskStatus[], APIError>({
-    queryKey: ['task_status'],
+    queryKey: queryKeys.Tasks.taskStatus(),
     queryFn: async () => {
       const {data} = await apiClient.get('/sensor_admin/tasks/status');
 
@@ -239,9 +261,15 @@ export const useTasks = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  const deleteTaskFromItinerary = useMutation<unknown, APIError, DeleteTaskFromItinerary>({
+  const deleteTaskFromItinerary = useMutation({
     ...deleteTaskFromItineraryOptions,
-    onSuccess: (data, variables) => {
+    onMutate: (variables) => {
+      const {path} = variables;
+      const splitted = path.split('/');
+      const id = splitted[splitted.length - 1];
+      return onMutateItinerary(id);
+    },
+    onSuccess: (data, variables, context) => {
       const {path} = variables;
       const splitted = path.split('/');
       const id = splitted[splitted.length - 1];
@@ -257,10 +285,8 @@ export const useTasks = () => {
           return task;
         })
       );
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['map']});
-      queryClient.invalidateQueries({queryKey: ['itineraries', splitted[0]]});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
+
+      invalidateFromMeta(queryClient, context.meta);
 
       toast.success('Opgaver fjernet fra tur');
     },

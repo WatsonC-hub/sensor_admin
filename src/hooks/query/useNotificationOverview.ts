@@ -3,6 +3,7 @@ import {queryOptions, useQuery, type UseQueryOptions} from '@tanstack/react-quer
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
 import {FlagEnum, NotificationIDEnum} from '~/features/notifications/consts';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {Group} from '~/types';
 
 export interface Notification {
@@ -42,7 +43,7 @@ type NotificationOverviewOptions = Partial<
 export const useNotificationOverview = (options?: NotificationOverviewOptions) => {
   const user = useUser();
   const query = useQuery<Notification[]>({
-    queryKey: ['overblik'],
+    queryKey: queryKeys.overblik(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/overblik`);
 
@@ -59,7 +60,7 @@ export const useNotificationOverview = (options?: NotificationOverviewOptions) =
 
 export const useLocationNotificationOverview = (loc_id: number | undefined) => {
   return useQuery<Notification[]>({
-    queryKey: ['overblik', loc_id],
+    queryKey: queryKeys.overblikByLocId(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/overblik/${loc_id}`);
       return data;
@@ -91,7 +92,7 @@ export interface MapOverview {
 }
 
 const mapOverviewOptions = queryOptions<MapOverview[]>({
-  queryKey: ['map'],
+  queryKey: queryKeys.Map.all(),
   queryFn: async () => {
     const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
     return data;
@@ -133,7 +134,7 @@ interface TimeseriesStatus {
 
 export const timeseriesStatusOptions = (loc_id: number) =>
   queryOptions({
-    queryKey: ['timeseries', loc_id],
+    queryKey: queryKeys.Location.timeseries(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<TimeseriesStatus[]>(
         `/sensor_field/timeseries_status/${loc_id}`
@@ -159,7 +160,7 @@ type NotificationType = {
 
 export const useNotificationTypes = () => {
   return useQuery({
-    queryKey: ['notification_types'],
+    queryKey: queryKeys.notificationTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
       return data;

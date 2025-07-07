@@ -2,6 +2,7 @@ import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {GraphData} from '~/types';
 
 export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) => {
@@ -13,7 +14,7 @@ export const useGraphData = (ts_id: number | undefined, xRange: Array<string>) =
   const end = x1.add(Math.max(daysdiff * 0.2, 1), 'days');
 
   const query = useQuery({
-    queryKey: ['graphData', ts_id, [start, end]],
+    queryKey: queryKeys.Timeseries.graphData(ts_id, [start, end]),
     queryFn: async () => {
       const {data} = await apiClient.get<GraphData>(`/data/timeseriesV2/${ts_id}`, {
         params: {

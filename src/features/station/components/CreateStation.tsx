@@ -36,15 +36,12 @@ import {useLocationData} from '~/hooks/query/useMetadata';
 import {withComponentPermission} from '~/hooks/withComponentPermission';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 
-const onMutateTimeseries = (ts_id: number, loc_id: number) => {
+const onMutateTimeseries = (loc_id: number | undefined) => {
   return {
     meta: {
-      invalidates: [
-        queryKeys.Location.timeseries(loc_id),
-        queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Location.info(loc_id),
-      ],
+      invalidates: [queryKeys.Location.timeseries(loc_id), queryKeys.Location.info(loc_id)],
     },
   };
 };
@@ -178,12 +175,11 @@ const CreateStation = () => {
       );
       return out;
     },
-    onMutate: async () => onMutateTimeseries(-1, loc_id ?? -1),
-    onSuccess: (data) => {
+    onMutate: async () => onMutateTimeseries(loc_id),
+    onSuccess: (data, variables, context) => {
       toast.success(loc_id ? 'Tidsserie oprettet' : 'Lokation og tidsserie oprettet');
-      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
+      invalidateFromMeta(queryClient, context.meta);
       queryClient.invalidateQueries({queryKey: ['metadata', data.ts_id]});
-      queryClient.invalidateQueries({queryKey: ['timeseries', loc_id]});
       navigate('/');
       stationNavigate(data.ts_id);
     },
@@ -202,13 +198,13 @@ const CreateStation = () => {
       );
       return out;
     },
-    onSuccess: (data) => {
+    onMutate: async () => onMutateTimeseries(loc_id),
+    onSuccess: (data, variables, context) => {
       toast.success(
         loc_id ? 'Tidsserie og udstyr oprettet' : 'Lokation, tidsserie og udstyr oprettet'
       );
-      queryClient.invalidateQueries({queryKey: ['location_data', loc_id]});
+      invalidateFromMeta(queryClient, context.meta);
       queryClient.invalidateQueries({queryKey: ['metadata', data.ts_id]});
-      queryClient.invalidateQueries({queryKey: ['timeseries', loc_id]});
       navigate('/');
       stationNavigate(data.ts_id);
     },

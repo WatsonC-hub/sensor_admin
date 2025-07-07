@@ -2,6 +2,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {rerunToast} from '~/helpers/toasts';
 import {useAppContext} from '~/state/contexts';
 
@@ -55,7 +56,7 @@ export const useLevelCorrection = () => {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['qa_all', Number(variables.path)],
+        queryKey: queryKeys.Timeseries.QAWithTsId(Number(variables.path)),
       });
       rerunToast(ts_id);
     },
@@ -68,7 +69,7 @@ export const useLevelCorrection = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['qa_all'],
+        queryKey: queryKeys.Timeseries.QA(),
       });
       rerunToast(ts_id);
     },
@@ -81,7 +82,7 @@ export const useLevelCorrection = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['qa_all'],
+        queryKey: queryKeys.Timeseries.QA(),
       });
       rerunToast(ts_id);
     },

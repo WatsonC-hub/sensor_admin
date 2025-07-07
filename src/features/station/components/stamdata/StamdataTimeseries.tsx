@@ -11,6 +11,7 @@ import {
 } from '../../schema';
 import FormTextField from '~/components/FormTextField';
 import {useAppContext} from '~/state/contexts';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 type Props = {
   children: React.ReactNode;
@@ -33,7 +34,7 @@ const TypeSelect = (
   props: Omit<FormInputProps<DefaultAddTimeseries | BoreholeAddTimeseries>, 'name'>
 ) => {
   const {data: timeseries_types} = useQuery({
-    queryKey: ['timeseries_types'],
+    queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<{tstype_id: number; tstype_name: string}>>(
         `/sensor_field/timeseries_types`
@@ -62,7 +63,7 @@ const TypeSelect = (
 
 const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
   const {data: timeseries_types} = useQuery({
-    queryKey: ['timeseries_types'],
+    queryKey: queryKeys.timeseriesTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
       return data;
@@ -88,7 +89,7 @@ const Intakeno = (
   const {boreholeno} = React.useContext(TimeseriesContext);
 
   const {data: intake_list} = useQuery({
-    queryKey: ['intake_list', boreholeno],
+    queryKey: queryKeys.Borehole.intakeList(boreholeno),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<{intakeno: number}>>(
         `/sensor_field/intake_list/${boreholeno}`

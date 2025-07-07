@@ -5,6 +5,7 @@ import {apiClient} from '~/apiClient';
 import {APIError} from '~/queryClient';
 
 import {DBTaskComment, PostComment, TaskChanges, TaskComment} from '../types';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 interface TaskCommentBase {
   path: string;
   data?: any;
@@ -39,10 +40,10 @@ const taskCommentDelOptions = {
     return result;
   },
 };
-export const useTaskHistory = (task_id: string | undefined) => {
+export const useTaskHistory = (task_id: string) => {
   const queryClient = useQueryClient();
   const get = useQuery<Array<TaskComment | TaskChanges>, APIError>({
-    queryKey: ['taskHistory', task_id],
+    queryKey: queryKeys.Tasks.taskHistory(task_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<TaskComment | TaskChanges>>(
         `sensor_admin/tasks/comments/${task_id}`
@@ -55,7 +56,7 @@ export const useTaskHistory = (task_id: string | undefined) => {
     ...taskCommentPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskHistory', task_id],
+        queryKey: queryKeys.Tasks.taskHistory(task_id),
       });
     },
   });
@@ -66,30 +67,15 @@ export const useTaskHistory = (task_id: string | undefined) => {
     },
     onError: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskHistory', task_id],
+        queryKey: queryKeys.Tasks.taskHistory(task_id),
       });
     },
-    // onMutate: async (mutation_data) => {
-    //   const {path, data} = mutation_data;
-
-    //   const previous = queryClient.getQueryData<Array<TaskComment>>(['taskComments']);
-
-    //   queryClient.setQueryData<Array<TaskComment>>(
-    //     ['taskComments', task_id],
-    //     previous?.map((taskComment) => {
-    //       if (taskComment.id === path) {
-    //         return {id: taskComment.id, ...data};
-    //       }
-    //       return taskComment;
-    //     })
-    //   );
-    // },
   });
   const deleteTaskComment = useMutation({
     ...taskCommentDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['taskHistory', task_id],
+        queryKey: queryKeys.Tasks.taskHistory(task_id),
       });
       toast.success('Opgave kommentar slettet');
     },

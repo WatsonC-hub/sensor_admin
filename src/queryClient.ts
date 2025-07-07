@@ -92,7 +92,7 @@ const queryClient = new QueryClient({
 
 queryClient.setMutationDefaults(['pejling'], {
   mutationFn: async (data: {gid: number; stationid: number}) => {
-    await queryClient.cancelQueries({queryKey: ['measurements']});
+    await queryClient.cancelQueries({queryKey: queryKeys.Timeseries.allPejling()});
     if (data.gid === -1) {
       return apiClient.post(`/sensor_field/station/measurements/${data.stationid}`, data);
     } else {

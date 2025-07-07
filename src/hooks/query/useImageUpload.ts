@@ -2,6 +2,7 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 type ImageData = {
   comment: string;
@@ -70,7 +71,7 @@ export const useImageUpload = (endpoint: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['images'],
+        queryKey: queryKeys.images(),
       });
     },
   });
@@ -84,7 +85,7 @@ export const useImageUpload = (endpoint: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['images'],
+        queryKey: queryKeys.images(),
       });
       toast.success('Ændringerne er blevet gemt');
     },
@@ -99,12 +100,12 @@ export const useImageUpload = (endpoint: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['images'],
+        queryKey: queryKeys.images(),
       });
     },
     onError: () => {
       queryClient.invalidateQueries({
-        queryKey: ['images'],
+        queryKey: queryKeys.images(),
       });
     },
   });

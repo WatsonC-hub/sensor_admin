@@ -61,7 +61,7 @@ const onMutateCertifyQa = (ts_id: number, loc_id: number) => {
         queryKeys.Location.timeseries(loc_id),
         queryKeys.Map.all(),
         queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Timeseries.QA(ts_id),
+        queryKeys.Timeseries.QAWithTsId(ts_id),
       ],
     },
   };

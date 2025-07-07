@@ -31,6 +31,7 @@ import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -64,7 +65,7 @@ const Pejling = () => {
     isError,
     error,
   } = useQuery<LatestMeasurement, APIError>({
-    queryKey: ['latest_measurement', ts_id],
+    queryKey: queryKeys.Timeseries.latestMeasurement(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<LatestMeasurement>(
         `/sensor_field/station/latest_measurement/${ts_id}`

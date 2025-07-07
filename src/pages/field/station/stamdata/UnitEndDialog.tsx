@@ -11,6 +11,7 @@ import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
 interface UnitEndDateDialogProps {
@@ -59,7 +60,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   };
 
   const {data: changeReasons} = useQuery<ChangeReason[]>({
-    queryKey: ['change_reasons'],
+    queryKey: queryKeys.changeReasons(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
       return data;
@@ -69,7 +70,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   });
 
   const {data: actions} = useQuery<Action[]>({
-    queryKey: ['actions', unit?.uuid],
+    queryKey: queryKeys.actions(unit?.uuid),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit.uuid}`);
       return data;
@@ -89,7 +90,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     onSuccess: () => {
       handleClose();
       toast.success('Udstyret er hjemtaget');
-      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
+      queryClient.invalidateQueries({queryKey: queryKeys.Timeseries.availableUnits(ts_id)});
     },
   });
 
