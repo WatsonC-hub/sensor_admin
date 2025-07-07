@@ -3,6 +3,7 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {useAppContext} from '~/state/contexts';
 
 export interface Unit {
   terminal_type: string;
@@ -35,9 +36,9 @@ interface UnitBase {
 export interface UnitPost extends UnitBase {
   data: TypeUnitPost;
 }
-interface UnitPut extends UnitBase {
-  data: TypeUnitPost;
-}
+// interface UnitPut extends UnitBase {
+//   data: TypeUnitPost;
+// }
 const unitPostOptions = {
   mutationKey: ['unit_post'],
   mutationFn: async (mutation_data: UnitPost) => {
@@ -49,28 +50,45 @@ const unitPostOptions = {
     return result;
   },
 };
-const unitPutOptions = {
-  mutationKey: ['unit_put'],
-  mutationFn: async (mutation_data: UnitPut) => {
-    const {path, data} = mutation_data;
-    const {data: result} = await apiClient.put(
-      `//${path}`,
-      data
-    ); /* Write the url for the endpoint  */
-    return result;
-  },
+// const unitPutOptions = {
+//   mutationKey: ['unit_put'],
+//   mutationFn: async (mutation_data: UnitPut) => {
+//     const {path, data} = mutation_data;
+//     const {data: result} = await apiClient.put(
+//       `//${path}`,
+//       data
+//     ); /* Write the url for the endpoint  */
+//     return result;
+//   },
+// };
+// const unitDelOptions = {
+//   mutationKey: ['unit_del'],
+//   mutationFn: async (mutation_data: UnitBase) => {
+//     const {path} = mutation_data;
+//     const {data: result} = await apiClient.delete(
+//       `//${path}`
+//     ); /* Write the url for the endpoint  */
+//     return result;
+//   },
+// };
+
+const onAddUnitMutation = (loc_id: number | undefined, ts_id: number | undefined) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.AvailableUnits.all(),
+        queryKeys.Location.timeseries(loc_id),
+        queryKeys.Location.metadata(loc_id),
+        queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.Tasks.all(),
+        queryKeys.Map.all(),
+      ],
+    },
+  };
 };
-const unitDelOptions = {
-  mutationKey: ['unit_del'],
-  mutationFn: async (mutation_data: UnitBase) => {
-    const {path} = mutation_data;
-    const {data: result} = await apiClient.delete(
-      `//${path}`
-    ); /* Write the url for the endpoint  */
-    return result;
-  },
-};
+
 export const useUnit = () => {
+  const {loc_id, ts_id} = useAppContext([], ['loc_id', 'ts_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
     queryKey: queryKeys.AvailableUnits.all(),
@@ -81,6 +99,7 @@ export const useUnit = () => {
   });
   const post = useMutation({
     ...unitPostOptions,
+    onMutate: () => onAddUnitMutation(loc_id, ts_id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.AvailableUnits.all(),
@@ -88,23 +107,24 @@ export const useUnit = () => {
       toast.success('Enhed gemt');
     },
   });
-  const put = useMutation({
-    ...unitPutOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.AvailableUnits.all(),
-      });
-      toast.success('Enhed ændret');
-    },
-  });
-  const del = useMutation({
-    ...unitDelOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.AvailableUnits.all(),
-      });
-      toast.success('Enhed slettet');
-    },
-  });
-  return {get, post, put, del};
+  // const put = useMutation({
+  //   ...unitPutOptions,
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({
+  //       queryKey: queryKeys.AvailableUnits.all(),
+  //     });
+  //     toast.success('Enhed ændret');
+  //   },
+  // });
+  // const del = useMutation({
+  //   ...unitDelOptions,
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({
+  //       queryKey: queryKeys.AvailableUnits.all(),
+  //     });
+  //     toast.success('Enhed slettet');
+  //   },
+  // });
+  // return {get, post, put, del};
+  return {get, post};
 };

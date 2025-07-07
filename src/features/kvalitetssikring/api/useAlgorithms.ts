@@ -72,7 +72,10 @@ const onMutateAlgorithms = (ts_id: number, loc_id: number) => {
         queryKeys.Timeseries.algorithms(ts_id),
         queryKeys.Location.timeseries(loc_id),
         queryKeys.Map.all(),
+        queryKeys.Tasks.all(),
+        queryKeys.Itineraries.all(),
         queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.overblikByLocId(loc_id),
       ],
     },
   };

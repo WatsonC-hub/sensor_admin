@@ -116,7 +116,9 @@ export const PejlingInvalidation = (ts_id: number, loc_id: number) => {
     queryKeys.Timeseries.pejling(ts_id),
     queryKeys.Location.timeseries(loc_id),
     queryKeys.Tasks.all(),
+    queryKeys.Itineraries.all(),
     queryKeys.Map.all(),
+    queryKeys.overblikByLocId(loc_id),
   ];
 };
 
@@ -124,7 +126,26 @@ export const TilsynInvalidation = (ts_id: number, loc_id: number) => {
   return [
     queryKeys.Timeseries.tilsyn(ts_id),
     queryKeys.Location.timeseries(loc_id),
+    queryKeys.Itineraries.all(),
     queryKeys.Tasks.all(),
     queryKeys.Map.all(),
+    queryKeys.overblikByLocId(loc_id),
   ];
+};
+
+export const onAdjustmentMutation = (ts_id: number, loc_id: number, isPost: boolean) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Timeseries.metadata(ts_id),
+        isPost ? queryKeys.Timeseries.QAWithTsId(ts_id) : queryKeys.Timeseries.QA(),
+        queryKeys.Location.metadata(loc_id),
+        queryKeys.Location.timeseries(loc_id),
+        queryKeys.Tasks.all(),
+        queryKeys.Itineraries.all(),
+        queryKeys.Map.all(),
+        queryKeys.overblikByLocId(loc_id),
+      ],
+    },
+  };
 };
