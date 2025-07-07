@@ -174,6 +174,17 @@ const FilterOptions = ({onClose}: FilterOptionsProps) => {
                 onChangeCallback={handleSubmit(submit)}
               />
             </TooltipWrapper>
+            <TooltipWrapper
+              withIcon={false}
+              description="Viser kun lokationer som er nyopsætninger, dvs. hvor der ikke er tilknyttet en måleenhed"
+            >
+              <FormToggleSwitch
+                name="sensor.nyOpsætning"
+                label="Vis kun nyopsætninger"
+                sx={{mr: 0}}
+                onChangeCallback={handleSubmit(submit)}
+              />
+            </TooltipWrapper>
           </Grid>
         )}
       </Grid>

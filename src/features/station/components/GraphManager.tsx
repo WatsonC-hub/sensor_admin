@@ -73,7 +73,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
 
   const {
     get: {data: certifedData},
-  } = useCertifyQa(ts_id);
+  } = useCertifyQa();
   const {
     get: {data: controlData},
   } = usePejling();
@@ -426,8 +426,10 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   useEffect(() => {
     if (dynamicMeasurement?.[0] != undefined && dynamicMeasurement?.[0] !== null) {
       setXRange([
-        dayjs(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DDTHH:mm'),
-        dayjs(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DDTHH:mm'),
+        dayjs(dynamicMeasurement?.[0], 'DD.MM.YYYY HH:mm')
+          .subtract(4, 'day')
+          .format('YYYY-MM-DDTHH:mm'),
+        dayjs(dynamicMeasurement?.[0], 'DD.MM.YYYY HH:mm').add(3, 'day').format('YYYY-MM-DDTHH:mm'),
       ]);
     }
   }, [dynamicMeasurement?.[0]]);

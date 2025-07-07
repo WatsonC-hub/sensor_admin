@@ -1,5 +1,6 @@
 import {useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 export interface Project {
   project_no: string;
@@ -9,7 +10,7 @@ export interface Project {
 
 const useLocationProject = () => {
   const get = useQuery({
-    queryKey: ['location_projects'],
+    queryKey: queryKeys.LocationProjects.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Project>>(
         '/sensor_field/stamdata/location_projects'

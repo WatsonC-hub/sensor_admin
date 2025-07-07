@@ -31,7 +31,7 @@ const AlgorithmCard = ({qaAlgorithm}: AlgorithCardProps) => {
   const {mutation: rerunQAMutation} = useRunQA(ts_id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const {put: submitData, revert: revertToDefaults} = useAlgorithms(ts_id);
+  const {put: submitData, revert: revertToDefaults} = useAlgorithms();
 
   const handleRevert = () => {
     setDeleteDialogOpen(true);

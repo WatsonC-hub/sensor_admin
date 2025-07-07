@@ -1,8 +1,10 @@
 import {useQuery, useMutation, queryOptions} from '@tanstack/react-query';
-import moment from 'moment';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError, queryClient} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {Maalepunkt} from '~/types';
@@ -14,8 +16,8 @@ interface MaalepunktBase {
 
 interface MaalepunktPost extends MaalepunktBase {
   data: {
-    startdate: string;
-    enddate: string;
+    startdate: Dayjs;
+    enddate: Dayjs;
     elevation: number | null;
     mp_description?: string;
   };
@@ -24,8 +26,8 @@ interface MaalepunktPost extends MaalepunktBase {
 interface MaalepunktPut extends MaalepunktPost {
   data: {
     gid?: number;
-    startdate: string;
-    enddate: string;
+    startdate: Dayjs;
+    enddate: Dayjs;
     elevation: number | null;
     mp_description?: string;
   };
@@ -58,21 +60,27 @@ const maalepunktDelOptions = {
   },
 };
 
-export const getMaalepunktOptions = (ts_id: number | undefined) =>
+const onMutateMaalepunkt = (ts_id: number) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Timeseries.maalepunkt(ts_id),
+        queryKeys.Timeseries.pejling(ts_id),
+        queryKeys.Timeseries.metadata(ts_id),
+      ],
+    },
+  };
+};
+
+export const getMaalepunktOptions = (ts_id: number) =>
   queryOptions<Array<Maalepunkt>, APIError>({
-    queryKey: ['watlevmp', ts_id],
+    queryKey: [queryKeys.Timeseries.maalepunkt(ts_id)],
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Maalepunkt>>(
         `/sensor_field/station/watlevmp/${ts_id}`
       );
 
-      return data.map((m) => {
-        return {
-          ...m,
-          startDate: moment(m.startdate).format('YYYY-MM-DD HH:mm:ss'),
-          endDate: moment(m.enddate).format('YYYY-MM-DD HH:mm:ss'),
-        };
-      });
+      return data;
     },
     staleTime: 1000 * 60 * 1,
     enabled: ts_id !== null || ts_id !== undefined,
@@ -85,27 +93,30 @@ export const useMaalepunkt = () => {
 
   const post = useMutation({
     ...maalepunktPostOptions,
-    onSuccess: () => {
+    onMutate: () => onMutateMaalepunkt(ts_id),
+    onSuccess: (data, variables, context) => {
       get.refetch();
-      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Målepunkt gemt');
     },
   });
 
   const put = useMutation({
     ...maalepunktPutOptions,
-    onSuccess: () => {
+    onMutate: () => onMutateMaalepunkt(ts_id),
+    onSuccess: (data, variables, context) => {
       get.refetch();
-      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Målepunkt ændret');
     },
   });
 
   const del = useMutation({
     ...maalepunktDelOptions,
-    onSuccess: () => {
+    onMutate: () => onMutateMaalepunkt(ts_id),
+    onSuccess: (data, variables, context) => {
       get.refetch();
-      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Målepunkt slettet');
     },
   });

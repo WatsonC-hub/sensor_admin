@@ -6,6 +6,7 @@ import {toast} from 'react-toastify';
 import {apiClient} from '~/apiClient';
 import {httpStatusDescriptions} from '~/consts';
 import {excludeDelOptions, excludePostOptions, excludePutOptions} from '~/hooks/query/useExclude';
+import {queryKeys} from './helpers/QueryKeyFactoryHelper';
 
 type ErrorDetail = {
   type: string;
@@ -44,7 +45,7 @@ const queryClient = new QueryClient({
   },
   mutationCache: new MutationCache({
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['map']});
+      queryClient.invalidateQueries({queryKey: queryKeys.Map.all()});
     },
     onError: (error) => {
       if (axios.isAxiosError(error)) {

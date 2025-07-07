@@ -17,7 +17,6 @@ interface TilsynFormPops {
 
 export default function TilsynForm({handleServiceSubmit, cancel}: TilsynFormPops) {
   const {getValues, control, handleSubmit} = useFormContext<TilsynSchemaType>();
-  console.log('TilsynForm getValues', getValues());
   return (
     <Card
       style={{marginBottom: 25}}

@@ -20,6 +20,7 @@ import OwnDatePicker from '~/components/OwnDatePicker';
 import {useUser} from '~/features/auth/useUser';
 import {UnitPost, useUnit} from '~/features/stamdata/api/useAddUnit';
 import {AddUnit} from '~/features/station/schema';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
 interface AddUnitFormProps {
@@ -130,7 +131,7 @@ export default function AddUnitForm({
     addUnit.mutate(payload, {
       onSuccess: () => {
         toast.success('Udstyr tilføjet');
-        queryClient.invalidateQueries({queryKey: ['metadata', ts_id]});
+        queryClient.invalidateQueries({queryKey: queryKeys.Timeseries.metadata(ts_id)});
         setUdstyrDialogOpen(false);
         setConfirmDialogOpen(false);
       },

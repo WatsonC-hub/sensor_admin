@@ -40,6 +40,7 @@ const searchAcrossAll = (data: (MapOverview | BoreholeMapData)[], search_string:
  */
 const filterSensor = (data: MapOverview, filter: Filter['sensor']) => {
   if (data.loctype_id === 12) return filter.isSingleMeasurement;
+  if (filter.nyOpsætning) return data.no_unit && !data.inactive && !data.has_task;
 
   const customerServiceFilter = filter.showCustomerService == data.is_customer_service;
   const watsoncServiceFilter =

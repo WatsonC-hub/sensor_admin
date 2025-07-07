@@ -2,6 +2,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 export interface Unit {
   terminal_type: string;
@@ -72,7 +73,7 @@ const unitDelOptions = {
 export const useUnit = () => {
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: ['unit'],
+    queryKey: queryKeys.AvailableUnits.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Unit>>(`/sensor_field/stamdata/available_units`);
       return data;
@@ -82,7 +83,7 @@ export const useUnit = () => {
     ...unitPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['udstyr'],
+        queryKey: queryKeys.AvailableUnits.all(),
       });
       toast.success('Enhed gemt');
     },
@@ -91,7 +92,7 @@ export const useUnit = () => {
     ...unitPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['udstyr'],
+        queryKey: queryKeys.AvailableUnits.all(),
       });
       toast.success('Enhed ændret');
     },
@@ -100,7 +101,7 @@ export const useUnit = () => {
     ...unitDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['udstyr'],
+        queryKey: queryKeys.AvailableUnits.all(),
       });
       toast.success('Enhed slettet');
     },

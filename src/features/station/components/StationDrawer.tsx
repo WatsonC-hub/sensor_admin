@@ -149,7 +149,7 @@ const StationDrawer = () => {
           icon: <StraightenRounded />,
           requiredTsId: true,
           disabled: metadata?.tstype_id != 1 || metadata?.calculated,
-          onHover: () => handlePrefetch(getMaalepunktOptions(ts_id)),
+          onHover: () => handlePrefetch(getMaalepunktOptions(ts_id!)),
           // tooltip: 'På denne side kan du se og redigere målepunkter til din tidsserie.',
         },
         {
@@ -167,7 +167,7 @@ const StationDrawer = () => {
           icon: <QueryStatsIcon />,
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
-          onHover: () => handlePrefetch(getQAHistoryOptions(ts_id)),
+          onHover: () => handlePrefetch(getQAHistoryOptions(ts_id!)),
           tooltip:
             'På denne side kan du kvalitetssikre din tidsserie ved blandt andet at justere data, fjerne data og se historik for ændringer.',
         },
@@ -177,7 +177,7 @@ const StationDrawer = () => {
           icon: <FunctionsIcon />,
           requiredTsId: true,
           disabled: !user?.features?.iotAccess || metadata?.calculated,
-          onHover: () => handlePrefetch(getAlgorithmOptions(ts_id)),
+          onHover: () => handlePrefetch(getAlgorithmOptions(ts_id!)),
           tooltip: 'På denne side kan du justere advarsler for din tidsserie.',
         },
       ],

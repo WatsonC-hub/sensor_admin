@@ -10,6 +10,7 @@ import {getGroupLink} from '~/helpers/links';
 import {apiClient} from '~/apiClient';
 import {Group} from '~/types';
 import LinkableTooltip from '~/components/LinkableTooltip';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const filter = createFilterOptions<Group>({
   ignoreCase: true,
@@ -38,7 +39,7 @@ const LocationGroups = ({
   fieldDescriptionText,
 }: LocationGroupsProps) => {
   const {data: options} = useQuery({
-    queryKey: ['location_groups'],
+    queryKey: queryKeys.Groups.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Group>>('/sensor_field/stamdata/location_groups');
       return data;

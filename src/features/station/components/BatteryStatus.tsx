@@ -5,13 +5,14 @@ import React from 'react';
 
 import {apiClient} from '~/apiClient';
 import BatteryIndicator from '~/components/BatteryIndicator';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 import {BatteryStatusType} from '~/types';
 
 const BatteryStatus = () => {
   const {ts_id} = useAppContext([], ['ts_id']);
   const {data: battery_status} = useQuery({
-    queryKey: ['battery_status', ts_id],
+    queryKey: queryKeys.Timeseries.batteryStatus(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<BatteryStatusType>(
         `/sensor_field/station/battery_status/${ts_id}`

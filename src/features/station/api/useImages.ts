@@ -1,10 +1,11 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 
 export const getImageOptions = (typeId: string | number, imageType: string, type: string) =>
   queryOptions<any, APIError>({
-    queryKey: ['images', typeId],
+    queryKey: queryKeys.images(typeId),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/${type}/${imageType}/${typeId}`);
       return data;

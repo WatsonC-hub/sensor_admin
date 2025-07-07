@@ -1,6 +1,7 @@
 import {queryOptions, useQuery} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {Group} from '~/types';
 
 type LocationInfo = {
@@ -15,9 +16,9 @@ type LocationInfo = {
   ressources: string[];
 };
 
-export const locationInfoOptions = (loc_id: number | undefined) =>
+export const locationInfoOptions = (loc_id: number) =>
   queryOptions<LocationInfo>({
-    queryKey: ['location_info', loc_id],
+    queryKey: queryKeys.Location.info(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get<LocationInfo>(
         `/sensor_field/stamdata/location_data/${loc_id}`
@@ -27,7 +28,7 @@ export const locationInfoOptions = (loc_id: number | undefined) =>
     enabled: loc_id !== undefined,
   });
 
-export const useLocationInfo = (loc_id: number | undefined) => {
+export const useLocationInfo = (loc_id: number) => {
   const user = useUser();
   return useQuery({
     ...locationInfoOptions(loc_id),

@@ -3,6 +3,8 @@ import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
 import {Ressourcer} from '~/features/stamdata/components/stationDetails/ressourcer/multiselect/types';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 
@@ -50,9 +52,9 @@ const ressourcerDelOptions = {
   },
 };
 
-export const getRessourcerOptions = (loc_id: number | undefined) =>
+export const getRessourcerOptions = (loc_id: number) =>
   queryOptions<Array<Ressourcer>, APIError>({
-    queryKey: ['ressourcer', loc_id],
+    queryKey: queryKeys.Location.locationRessources(loc_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/ressourcer/${loc_id}`);
 
@@ -60,11 +62,19 @@ export const getRessourcerOptions = (loc_id: number | undefined) =>
     },
   });
 
+const onMutateRessources = (loc_id: number) => {
+  return {
+    meta: {
+      invalidates: [queryKeys.Location.ressources(), queryKeys.Location.locationRessources(loc_id)],
+    },
+  };
+};
+
 export const useRessourcer = () => {
   const {loc_id} = useAppContext(['loc_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: ['ressourcer'],
+    queryKey: queryKeys.Location.ressources(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Ressourcer>>(`/sensor_field/stamdata/ressourcer`);
 
@@ -77,40 +87,28 @@ export const useRessourcer = () => {
 
   const post = useMutation({
     ...ressourcerPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer', loc_id],
-      });
+    onMutate: () => onMutateRessources(loc_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Huskeliste gemt');
     },
   });
 
   const put = useMutation({
     ...ressourcerPutOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer', loc_id],
-      });
+    onMutate: () => onMutateRessources(loc_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       toast.success('Huskeliste ændret');
     },
   });
 
   const del = useMutation({
     ...ressourcerDelOptions,
-    onSuccess: () => {
+    onMutate: () => onMutateRessources(loc_id),
+    onSuccess: (data, variables, context) => {
       toast.success('Huskeliste slettet');
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['ressourcer', loc_id],
-      });
+      invalidateFromMeta(queryClient, context.meta);
     },
   });
 
