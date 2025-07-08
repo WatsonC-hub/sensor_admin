@@ -20,7 +20,7 @@ const BatteryStatus = () => {
       return data;
     },
     enabled: ts_id !== undefined && ts_id !== null,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 60 * 4, // 4 hours
   });
 
   let tooltipText = '';

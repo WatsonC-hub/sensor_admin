@@ -14,6 +14,8 @@ export const useTaskManagement = (itinerary_id: string | null) => {
       );
       return data;
     },
+    staleTime: 1000 * 60 * 1, // 1 minute
+    refetchInterval: 1000 * 60 * 60, // 1 hour
     enabled: itinerary_id !== undefined && itinerary_id !== null,
   });
 

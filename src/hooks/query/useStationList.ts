@@ -19,6 +19,7 @@ const useStationList = (loc_id: number) => {
       return data;
     },
     enabled: loc_id !== undefined,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   return {data, error, isPending};

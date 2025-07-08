@@ -88,6 +88,7 @@ export const getAlgorithmOptions = (ts_id: number) =>
       const {data} = await apiClient.get(`/sensor_admin/algorithms/${ts_id}`);
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: ts_id !== undefined,
   });
 

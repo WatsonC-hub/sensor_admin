@@ -80,6 +80,7 @@ export const useCertifyQa = () => {
       );
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: ts_id !== undefined,
   });
 

@@ -70,6 +70,7 @@ export const metadataQueryOptions = (ts_id?: number) => {
     },
     enabled: ts_id !== undefined,
     refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 1, // 1 minute
   });
 };
 

@@ -44,7 +44,7 @@ const LocationGroups = ({
       const {data} = await apiClient.get<Array<Group>>('/sensor_field/stamdata/location_groups');
       return data;
     },
-    staleTime: 10 * 1000,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   return (

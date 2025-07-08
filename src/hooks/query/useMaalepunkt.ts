@@ -82,7 +82,7 @@ export const getMaalepunktOptions = (ts_id: number) =>
 
       return data;
     },
-    staleTime: 1000 * 60 * 1,
+    staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== null || ts_id !== undefined,
   });
 

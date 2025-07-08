@@ -41,7 +41,11 @@ import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 const onMutateTimeseries = (loc_id: number | undefined) => {
   return {
     meta: {
-      invalidates: [queryKeys.Location.timeseries(loc_id), queryKeys.Location.info(loc_id)],
+      invalidates: [
+        queryKeys.Location.timeseries(loc_id),
+        queryKeys.Location.info(loc_id),
+        queryKeys.Location.permissions(loc_id),
+      ],
     },
   };
 };
@@ -158,6 +162,7 @@ const CreateStation = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({queryKey: queryKeys.Location.timeseries(loc_id)});
+      queryClient.invalidateQueries({queryKey: queryKeys.Location.permissions(data.loc_id)});
       toast.success('Lokation oprettet');
       locationNavigate(data.loc_id, true);
     },

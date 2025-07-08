@@ -40,6 +40,7 @@ export default function StationContactInfo({
 
       return data;
     },
+    staleTime: 1000 * 60 * 24, // 24 hours
   });
 
   const id = setIsEditing && watch('id');

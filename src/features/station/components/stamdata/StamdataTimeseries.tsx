@@ -41,6 +41,8 @@ const TypeSelect = (
       );
       return data;
     },
+    staleTime: Infinity, // Cache indefinitely
+    refetchInterval: 1000 * 60 * 60 * 24, // Refetch every 24 hours
   });
 
   const menuItems = timeseries_types
@@ -68,6 +70,8 @@ const TimeseriesTypeField = ({tstype_id}: {tstype_id: number | undefined}) => {
       const {data} = await apiClient.get(`/sensor_field/timeseries_types`);
       return data;
     },
+    staleTime: Infinity, // Cache indefinitely
+    refetchInterval: 1000 * 60 * 60 * 24, // Refetch every 24 hours
   });
 
   return (
@@ -96,6 +100,7 @@ const Intakeno = (
       );
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: boreholeno !== undefined && boreholeno !== null,
   });
 

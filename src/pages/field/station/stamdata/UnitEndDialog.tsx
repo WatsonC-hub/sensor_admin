@@ -34,6 +34,7 @@ const onTakeHomeMutation = (ts_id: number) => {
         queryKeys.Timeseries.metadata(ts_id),
         queryKeys.Map.all(),
         queryKeys.Tasks.all(),
+        queryKeys.AvailableUnits.all(),
       ],
     },
   };
@@ -81,7 +82,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       return data;
     },
     enabled: user?.superUser,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 60,
   });
 
   const {data: actions} = useQuery<Action[]>({
@@ -91,7 +92,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       return data;
     },
     enabled: user?.superUser && !!unit?.uuid,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 60,
   });
 
   const takeHomeMutation = useMutation({

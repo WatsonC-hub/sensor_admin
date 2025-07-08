@@ -69,6 +69,7 @@ export const tilsynGetOptions = (ts_id: number | undefined) =>
       return data;
     },
     enabled: ts_id !== undefined && ts_id !== null,
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
 const onMutateTilsyn = async (ts_id: number, loc_id: number) => {

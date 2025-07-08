@@ -65,6 +65,7 @@ export const pejlingGetOptions = (ts_id: number | undefined) =>
 
       return data;
     },
+    staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
   });
 

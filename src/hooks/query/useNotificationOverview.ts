@@ -97,7 +97,10 @@ const mapOverviewOptions = queryOptions<MapOverview[]>({
     const {data} = await apiClient.get<MapOverview[]>(`/sensor_field/map_data`);
     return data;
   },
-  refetchInterval: 1000 * 60 * 60,
+  staleTime: 30 * 1000, // Data is fresh for 30 seconds
+  refetchInterval: 60 * 1000, // Background refresh every 1 min
+  refetchOnWindowFocus: false,
+  refetchOnMount: false,
 });
 
 type MapOverviewOptions<T> = Partial<
@@ -165,6 +168,6 @@ export const useNotificationTypes = () => {
       const {data} = await apiClient.get<NotificationType[]>('/sensor_admin/notification-types');
       return data;
     },
-    staleTime: 1000 * 60 * 15,
+    staleTime: 1000 * 60 * 60,
   });
 };
