@@ -1,15 +1,14 @@
 import {Grid2} from '@mui/material';
-import moment from 'moment';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
 
-import FormInput from '~/components/FormInput';
 import FormTextField from '~/components/FormTextField';
 
 import {Unit, useUnit} from '../../api/useAddUnit';
 import {UnitHistory, useUnitHistory} from '../../api/useUnitHistory';
 import {useAppContext} from '~/state/contexts';
 import usePermissions from '~/features/permissions/api/usePermissions';
+import FormDateTime from '~/components/FormDateTime';
 
 interface UnitFormProps {
   mode: string;
@@ -61,26 +60,22 @@ export default function UnitForm({mode}: UnitFormProps) {
       </Grid2>
       <Grid2 size={{xs: 12, sm: 6}}></Grid2>
       <Grid2 size={{xs: 12, sm: 6}}>
-        <FormInput
+        <FormDateTime
           name="startdate"
           label="Startdato"
           disabled={!unit || startdato === undefined || disabled}
-          fullWidth
-          type="datetime-local"
           required
           sx={{minWidth: '200px'}}
         />
       </Grid2>
       <Grid2 size={{xs: 12, sm: 6}}>
         {editMode && (
-          <FormInput
+          <FormDateTime
             name="enddate"
             label="Slutdato"
-            fullWidth
             disabled={!unit || startdato === undefined || disabled}
-            type="datetime-local"
             required
-            inputProps={{min: moment(startdato).format('YYYY-MM-DDTHH:mm')}}
+            maxDate={startdato}
             sx={{minWidth: '200px'}}
           />
         )}

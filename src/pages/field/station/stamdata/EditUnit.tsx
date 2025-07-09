@@ -68,8 +68,8 @@ const EditUnit = () => {
 
   const {data: defaultValues} = editUnitSchema.safeParse({
     unit_uuid: unit?.uuid,
-    startdate: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm'),
-    enddate: moment(unit?.slutdato).format('YYYY-MM-DDTHH:mm'),
+    startdate: unit?.startdato,
+    enddate: unit?.slutdato,
   });
 
   const formMethods = useUnitForm<EditUnitType>({
@@ -81,15 +81,8 @@ const EditUnit = () => {
     const payload = {
       gid: selectedUnit,
       ...data,
-      startdate: moment(data.startdate).toISOString(),
-      enddate: moment(data.enddate).toISOString(),
     };
-    metadataEditUnitMutation.mutate(payload, {
-      onSuccess: (data, variables, context) => {
-        invalidateFromMeta(queryClient, context.meta);
-        toast.success('Udstyr er opdateret');
-      },
-    });
+    metadataEditUnitMutation.mutate(payload);
   };
 
   return (
