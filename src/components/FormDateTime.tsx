@@ -1,21 +1,23 @@
 // FormDateTime.tsx
 import React from 'react';
+import {TextFieldVariants} from '@mui/material';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
 import {DateTimePicker, DateTimePickerProps} from '@mui/x-date-pickers/DateTimePicker';
 
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import {PickersActionBarAction} from '@mui/x-date-pickers';
 
 export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
-  DateTimePickerProps,
+  DateTimePickerProps<true>,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
   label?: string;
   required?: boolean;
   disabled?: boolean;
+  rules?: Record<string, any>;
   margin?: 'none' | 'dense' | undefined;
-  variant?: 'filled' | 'outlined' | 'standard';
+  variant?: TextFieldVariants;
   onChangeCallback?: (value: dayjs.Dayjs | null) => void;
 };
 
@@ -25,8 +27,8 @@ const FormDateTime = <TFieldValues extends FieldValues>({
   required = false,
   disabled = false,
   margin = 'dense',
-  variant = 'outlined',
   onChangeCallback,
+  slotProps,
   ...pickerProps
 }: FormDateTimeProps<TFieldValues>) => {
   const {control} = useFormContext<TFieldValues>();
@@ -38,6 +40,7 @@ const FormDateTime = <TFieldValues extends FieldValues>({
       render={({field: {onChange, onBlur, value}, fieldState: {error}}) => {
         return (
           <DateTimePicker
+            {...pickerProps}
             label={label}
             value={value}
             onChange={(newValue) => {
@@ -51,7 +54,9 @@ const FormDateTime = <TFieldValues extends FieldValues>({
             disabled={disabled}
             ampmInClock={false}
             slotProps={{
+              ...slotProps,
               toolbar: {
+                ...slotProps?.toolbar,
                 sx: {
                   '& .MuiTypography-root': {
                     textTransform: 'inherit',
@@ -59,21 +64,30 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 },
               },
               actionBar: {
+                ...slotProps?.actionBar,
                 sx: {
                   '& .MuiButton-root': {
                     textTransform: 'inherit',
                   },
                 },
                 actions: ['cancel', 'clear', 'today', 'accept'] as PickersActionBarAction[],
+                disableSpacing: true,
               },
               textField: {
+                ...slotProps?.textField,
                 onBlur: onBlur,
-                variant: variant,
                 margin: margin,
                 fullWidth: true,
                 error: !!error,
                 helperText: error?.message,
-                InputLabelProps: {shrink: true},
+                InputLabelProps: {
+                  shrink: true,
+                  sx: {
+                    '& > fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                },
                 sx: {
                   '& > fieldset': {
                     borderColor: 'primary.main',
@@ -81,7 +95,6 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 },
               },
             }}
-            {...pickerProps}
           />
         );
       }}

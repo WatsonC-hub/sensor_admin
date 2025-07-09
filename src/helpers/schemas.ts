@@ -1,7 +1,7 @@
 import dayjs, {Dayjs} from 'dayjs';
 import {z} from 'zod';
 
-const zodDayjs = (message: string) =>
+const zodDayjs = (message?: string) =>
   z.preprocess(
     (val) => {
       if (typeof val === 'string' || val instanceof Date) {

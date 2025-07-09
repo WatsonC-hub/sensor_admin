@@ -167,13 +167,9 @@ const Pejling = () => {
           {showForm === true && (
             <Card
               sx={{
-                marginLeft: {xs: '0%'},
-                mb: 3,
-                padding: 2,
                 borderRadius: 2.5,
                 display: 'flex',
                 flexDirection: 'column',
-                textAlign: 'center',
                 alignItems: 'center',
               }}
             >
