@@ -5,6 +5,7 @@ import React from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 import {useAppContext} from '~/state/contexts';
 import {Maalepunkt, MaalepunktPost} from '~/types';
@@ -20,7 +21,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
 
   const queryClient = useQueryClient();
   const {data, isLoading, isError, isSuccess} = useQuery({
-    queryKey: ['last_jupiter_mp', boreholeno, intakeno],
+    queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
@@ -48,7 +49,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
       onSuccess: () => {
         toast.success('Målepunkt gemt');
         queryClient.invalidateQueries({
-          queryKey: ['watlevmp', boreholeno],
+          queryKey: queryKeys.Borehole.watlevmp(boreholeno),
         });
         setAddMPOpen(null);
       },

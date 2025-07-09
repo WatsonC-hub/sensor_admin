@@ -2,6 +2,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 
 import {apiClient} from '~/apiClient';
 import {TaskPermission} from '../tasks/types';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 type User = {
   user_id: number;
@@ -21,7 +22,7 @@ export type Features = {
 };
 
 export const userQueryOptions = queryOptions({
-  queryKey: ['user'],
+  queryKey: queryKeys.user(),
   queryFn: async () => {
     const {data} = await apiClient.get<User>(`/auth/me/secure`);
     return data;

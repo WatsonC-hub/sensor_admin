@@ -11,6 +11,8 @@ import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAppContext} from '~/state/contexts';
 
 interface UnitEndDateDialogProps {
@@ -22,6 +24,21 @@ interface UnitEndDateDialogProps {
 type ChangeReason = {id: number; reason: string; default_actions: string | null};
 
 type Action = {action: string; label: string};
+
+const onTakeHomeMutation = (ts_id: number) => {
+  return {
+    meta: {
+      invalidates: [
+        queryKeys.Timeseries.availableUnits(ts_id),
+        queryKeys.Location.timeseries(ts_id),
+        queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.Map.all(),
+        queryKeys.Tasks.all(),
+        queryKeys.AvailableUnits.all(),
+      ],
+    },
+  };
+};
 
 const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogProps) => {
   const queryClient = useQueryClient();
@@ -59,23 +76,23 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   };
 
   const {data: changeReasons} = useQuery<ChangeReason[]>({
-    queryKey: ['change_reasons'],
+    queryKey: queryKeys.changeReasons(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/change-reasons`);
       return data;
     },
     enabled: user?.superUser,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 60,
   });
 
   const {data: actions} = useQuery<Action[]>({
-    queryKey: ['actions', unit?.uuid],
+    queryKey: queryKeys.actions(unit?.uuid),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit.uuid}`);
       return data;
     },
     enabled: user?.superUser && !!unit?.uuid,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 60,
   });
 
   const takeHomeMutation = useMutation({
@@ -86,10 +103,11 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       );
       return data;
     },
-    onSuccess: () => {
+    onMutate: () => onTakeHomeMutation(ts_id),
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       handleClose();
       toast.success('Udstyret er hjemtaget');
-      queryClient.invalidateQueries({queryKey: ['udstyr', ts_id]});
     },
   });
 

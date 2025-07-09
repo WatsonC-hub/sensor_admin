@@ -3,6 +3,7 @@ import {useState, useEffect} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const TOAST_ID = 'qa-toast';
 
@@ -11,7 +12,7 @@ export const useRunQA = (ts_id: number | undefined) => {
   const [refetchInterval, setRefetchInterval] = useState<number | false>(false);
   // TODO: Check me
   const {data: pollData, dataUpdatedAt} = useQuery({
-    queryKey: ['pollQA', ts_id],
+    queryKey: queryKeys.Timeseries.pollQA(ts_id),
     queryFn: async () => {
       const {status} = await apiClient.get(`/sensor_admin/rerun_qa/poll/${ts_id}`);
       return status;
@@ -24,7 +25,7 @@ export const useRunQA = (ts_id: number | undefined) => {
   useEffect(() => {
     if (pollData === 200) {
       setRefetchInterval(false);
-      queryClient.invalidateQueries({queryKey: ['qa_labels', ts_id]});
+      queryClient.invalidateQueries({queryKey: queryKeys.Timeseries.qaLabels(ts_id)});
       toast.update(TOAST_ID, {
         render: 'Genberegnet',
         type: 'success',

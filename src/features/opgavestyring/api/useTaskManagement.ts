@@ -6,7 +6,7 @@ import {PejlingItem, TaskCollection, TilsynItem} from '~/types';
 
 export const useTaskManagement = (itinerary_id: string | null) => {
   const {data} = useQuery({
-    queryKey: [queryKeys.Tasks.byItinerary(itinerary_id)],
+    queryKey: queryKeys.Tasks.byItinerary(itinerary_id),
     queryFn: async () => {
       const {data} = await apiClient.get<TaskCollection>(
         `/sensor_admin/tasks/task_collection/${itinerary_id}`,
@@ -14,6 +14,8 @@ export const useTaskManagement = (itinerary_id: string | null) => {
       );
       return data;
     },
+    staleTime: 1000 * 60 * 1, // 1 minute
+    refetchInterval: 1000 * 60 * 60, // 1 hour
     enabled: itinerary_id !== undefined && itinerary_id !== null,
   });
 

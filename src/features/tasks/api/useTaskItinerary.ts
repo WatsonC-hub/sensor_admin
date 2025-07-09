@@ -15,6 +15,8 @@ import {
   TaskPermission,
 } from '../types';
 import {useUser} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 
 const itineraryPostOptions = {
   mutationKey: ['itinerary_post'],
@@ -55,6 +57,14 @@ type ItineraryOptions<T> = Partial<
   Omit<UseQueryOptions<Taskitinerary[], APIError, T>, 'queryKey' | 'queryFn'>
 >;
 
+const onMutateItinerary = () => {
+  return {
+    meta: {
+      invalidates: [queryKeys.Itineraries.all(), queryKeys.Tasks.all(), queryKeys.Map.all()],
+    },
+  };
+};
+
 const useTaskItinerary = <T = Taskitinerary[]>(
   id?: string | null,
   options?: ItineraryOptions<T>
@@ -67,77 +77,72 @@ const useTaskItinerary = <T = Taskitinerary[]>(
   const enabled = idRequired && permissionRequired;
 
   const get = useQuery({
-    queryKey: ['itineraries'],
+    queryKey: queryKeys.Itineraries.all(),
     queryFn: async () => {
       const {data} = await apiClient.get('/sensor_admin/tasks/itineraries');
       return data;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
     enabled: permissionRequired,
     ...options,
     select: options?.select as (data: Taskitinerary[]) => T,
   });
 
   const getItinerary = useQuery<Taskitinerary, APIError>({
-    queryKey: ['itineraries', id],
+    queryKey: queryKeys.Itineraries.byId(id ?? undefined),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks/itineraries/${id}`);
       return data;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
     enabled: enabled,
   });
 
   const getItineraryTasks = useQuery<Task[], APIError>({
-    queryKey: ['itineraries_tasks', id],
+    queryKey: queryKeys.Itineraries.itineraryTasks(id ?? undefined),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/tasks/itineraries/${id}/tasks`);
       return data;
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 2,
     enabled: enabled,
   });
 
-  const createItinerary = useMutation<unknown, APIError, PostTaskitinerary>({
+  const createItinerary = useMutation({
     ...itineraryPostOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['overblik']});
+    onMutate: onMutateItinerary,
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
 
       toast.success('Tur oprettet');
     },
   });
 
-  const patch = useMutation<unknown, APIError, PatchTaskitinerary>({
+  const patch = useMutation({
     ...patchItineraryOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['overblik']});
+    onMutate: onMutateItinerary,
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
 
       toast.success('Tur opdateret');
     },
   });
 
-  const complete = useMutation<unknown, APIError, completeItinerary>({
+  const complete = useMutation({
     ...completeItineraryOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['overblik']});
+    onMutate: onMutateItinerary,
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
 
       toast.success('Tur færdiggjort');
     },
   });
 
-  const addLocationToTrip = useMutation<unknown, APIError, AddLocationToItinerary>({
+  const addLocationToTrip = useMutation({
     ...addLocationToItineraryOptions,
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['overblik']});
-      queryClient.invalidateQueries({queryKey: ['itineraries']});
-      queryClient.invalidateQueries({queryKey: ['tasks']});
-      queryClient.invalidateQueries({queryKey: ['map']});
+    onMutate: onMutateItinerary,
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
 
       toast.success('Opgaver tilføjet til tur');
     },

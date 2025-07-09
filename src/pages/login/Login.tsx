@@ -14,6 +14,7 @@ import {apiClient} from '~/apiClient';
 import {loginAPI, resetPassword} from '~/pages/field/fieldAPI';
 import {queryClient} from '~/queryClient';
 import {userQueryOptions} from '~/features/auth/useUser';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -42,7 +43,7 @@ export default function Login() {
             updatedAt: Date.now(),
           });
           queryClient.prefetchQuery({
-            queryKey: ['overblik'],
+            queryKey: queryKeys.overblik(),
             queryFn: async ({signal}) => {
               const {data} = await apiClient.get(`/sensor_admin/overblik`, {signal});
               return data;

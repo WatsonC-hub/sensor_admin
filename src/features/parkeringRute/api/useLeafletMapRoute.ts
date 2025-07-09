@@ -52,7 +52,7 @@ const leafletMapRouteDelOptions = {
 export const useLeafletMapRoute = () => {
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: [queryKeys.Routes.all()],
+    queryKey: queryKeys.Routes.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<LeafletMapRoute>>(`/sensor_field/leaflet_map_route`);
 
@@ -65,7 +65,7 @@ export const useLeafletMapRoute = () => {
     ...leafletMapRoutePostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.Routes.all()],
+        queryKey: queryKeys.Routes.all(),
       });
       toast.success('Rute gemt');
     },
@@ -75,7 +75,7 @@ export const useLeafletMapRoute = () => {
     ...leafletMapRoutePutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.Routes.all()],
+        queryKey: queryKeys.Routes.all(),
       });
       toast.success('Rute ændret');
     },
@@ -85,7 +85,7 @@ export const useLeafletMapRoute = () => {
     ...leafletMapRouteDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.Routes.all()],
+        queryKey: queryKeys.Routes.all(),
       });
       toast.success('Rute slettet');
     },

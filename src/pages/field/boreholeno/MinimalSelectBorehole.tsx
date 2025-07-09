@@ -4,6 +4,7 @@ import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useNavigationFunctions} from '~/hooks/useNavigationFunctions';
 import {useAppContext} from '~/state/contexts';
 import {BoreholeData} from '~/types';
@@ -24,7 +25,7 @@ const MinimalSelect = () => {
   };
 
   const {data: data} = useQuery({
-    queryKey: ['borehole', boreholeno],
+    queryKey: queryKeys.Borehole.minimalSelect(boreholeno),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<BoreholeData>>(
         `/sensor_field/borehole/jupiter/${boreholeno}`

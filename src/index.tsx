@@ -29,9 +29,11 @@ import {LocalizationProvider} from '@mui/x-date-pickers';
 import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
 dayjs.locale('da', dayDA);
 moment.locale('da');
 

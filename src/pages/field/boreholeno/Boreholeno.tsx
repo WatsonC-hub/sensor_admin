@@ -13,6 +13,7 @@ import SaveImageDialog from '~/components/SaveImageDialog';
 import usePermissions from '~/features/permissions/api/usePermissions';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import {stationPages} from '~/helpers/EnumHelper';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import useFormData from '~/hooks/useFormData';
 import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters';
 import PlotGraph from '~/pages/field/boreholeno/BoreholeGraph';
@@ -73,7 +74,7 @@ const Boreholeno = () => {
   const [dynamic, setDynamic] = useState<Array<string | number>>([]);
 
   const {data: measurements} = useQuery({
-    queryKey: ['measurements', boreholeno, intakeno],
+    queryKey: queryKeys.Borehole.measurementsWithIntake(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
@@ -85,7 +86,7 @@ const Boreholeno = () => {
   });
 
   const {data: watlevmp} = useQuery({
-    queryKey: ['watlevmp', boreholeno, intakeno],
+    queryKey: queryKeys.Borehole.watlevmpWithIntake(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
@@ -165,7 +166,7 @@ const Boreholeno = () => {
         setShowForm(null);
         toast.success('Kontrolmåling gemt');
         queryClient.invalidateQueries({
-          queryKey: ['measurements', boreholeno],
+          queryKey: queryKeys.Borehole.measurements(boreholeno),
         });
       },
       onError: () => {
@@ -192,7 +193,7 @@ const Boreholeno = () => {
         setShowForm(null);
         toast.success('Målepunkt gemt');
         queryClient.invalidateQueries({
-          queryKey: ['watlevmp', boreholeno],
+          queryKey: queryKeys.Borehole.watlevmp(boreholeno),
         });
       },
       onError: () => {
@@ -219,7 +220,7 @@ const Boreholeno = () => {
       return (gid: number) => {
         apiClient.delete(`/sensor_field/borehole/watlevmp/${gid}`).then(() => {
           queryClient.invalidateQueries({
-            queryKey: ['watlevmp', boreholeno],
+            queryKey: queryKeys.Borehole.watlevmp(boreholeno),
           });
           resetMpData();
           toast.success('Målepunkt slettet');
@@ -229,7 +230,7 @@ const Boreholeno = () => {
       return (gid: number) => {
         apiClient.delete(`/sensor_field/borehole/measurements/${gid}`).then(() => {
           queryClient.invalidateQueries({
-            queryKey: ['measurements', boreholeno],
+            queryKey: queryKeys.Borehole.measurements(boreholeno),
           });
           resetPejlingData();
           toast.success('Kontrolmåling slettet');

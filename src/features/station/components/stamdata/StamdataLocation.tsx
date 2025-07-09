@@ -25,6 +25,7 @@ import {stationPages} from '~/helpers/EnumHelper';
 
 import {useAppContext} from '~/state/contexts';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 type Props = {
   children: React.ReactNode;
@@ -54,7 +55,7 @@ const StamdataLocation = ({children}: Props) => {
     isSuccess,
     refetch: refetchDTM,
   } = useQuery({
-    queryKey: ['dtm'],
+    queryKey: queryKeys.dtm(),
     queryFn: () => getDTMQuota(x, y),
     refetchOnWindowFocus: false,
     enabled: x !== undefined && y !== undefined,
@@ -86,7 +87,7 @@ const LoctypeSelect = (
   >
 ) => {
   const {data} = useQuery({
-    queryKey: ['location_types'],
+    queryKey: queryKeys.locationTypes(),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/stamdata/location_types`);
       return data;

@@ -15,6 +15,7 @@ import {
 } from '~/consts';
 import {useCertifyQa} from '~/features/kvalitetssikring/api/useCertifyQa';
 import {usePejling} from '~/features/pejling/api/usePejling';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useAdjustmentData} from '~/hooks/query/useAdjustmentData';
 import {useEdgeDates} from '~/hooks/query/useEdgeDates';
 import {useGraphData} from '~/hooks/query/useGraphData';
@@ -81,7 +82,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: adjustmentData} = useAdjustmentData(ts_id);
 
   const {data: qaData} = useQuery({
-    queryKey: ['qa_labels', ts_id],
+    queryKey: queryKeys.Timeseries.qaLabels(ts_id),
     queryFn: async ({signal}) => {
       const {data} = await apiClient.get<Array<QaGraphLabel>>(`/sensor_admin/qa_labels/${ts_id}`, {
         signal,
@@ -92,7 +93,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: removed_data} = useQuery({
-    queryKey: ['removed_data', ts_id],
+    queryKey: queryKeys.Timeseries.removedData(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/removed_data/${ts_id}`);
       return data;
@@ -102,7 +103,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: precipitation_data} = useQuery({
-    queryKey: ['precipitation_data', ts_id],
+    queryKey: queryKeys.Timeseries.precipitationData(ts_id),
     queryFn: async () => {
       const starttime = dayjs(edgeDates?.firstDate);
       const stoptime = dayjs(edgeDates?.lastDate);
@@ -116,7 +117,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: lines_data} = useQuery({
-    queryKey: ['lines_data', ts_id],
+    queryKey: queryKeys.Timeseries.linesData(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<HorizontalLine[]>(`/data/timeseries/${ts_id}/lines`);
       return data;
@@ -126,7 +127,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   });
 
   const {data: rawData} = useQuery({
-    queryKey: ['rawdata', ts_id],
+    queryKey: queryKeys.Timeseries.rawData(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/rawdata/${ts_id}`);
       if (data === null) {

@@ -74,7 +74,7 @@ const onMutateMaalepunkt = (ts_id: number) => {
 
 export const getMaalepunktOptions = (ts_id: number) =>
   queryOptions<Array<Maalepunkt>, APIError>({
-    queryKey: [queryKeys.Timeseries.maalepunkt(ts_id)],
+    queryKey: queryKeys.Timeseries.maalepunkt(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Maalepunkt>>(
         `/sensor_field/station/watlevmp/${ts_id}`
@@ -82,7 +82,7 @@ export const getMaalepunktOptions = (ts_id: number) =>
 
       return data;
     },
-    staleTime: 1000 * 60 * 1,
+    staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== null || ts_id !== undefined,
   });
 

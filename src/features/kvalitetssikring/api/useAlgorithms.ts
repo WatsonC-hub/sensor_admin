@@ -72,7 +72,10 @@ const onMutateAlgorithms = (ts_id: number, loc_id: number) => {
         queryKeys.Timeseries.algorithms(ts_id),
         queryKeys.Location.timeseries(loc_id),
         queryKeys.Map.all(),
+        queryKeys.Tasks.all(),
+        queryKeys.Itineraries.all(),
         queryKeys.Timeseries.metadata(ts_id),
+        queryKeys.overblikByLocId(loc_id),
       ],
     },
   };
@@ -80,11 +83,12 @@ const onMutateAlgorithms = (ts_id: number, loc_id: number) => {
 
 export const getAlgorithmOptions = (ts_id: number) =>
   queryOptions<Array<QaAlgorithms>, APIError>({
-    queryKey: [queryKeys.Timeseries.algorithms(ts_id)],
+    queryKey: queryKeys.Timeseries.algorithms(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/algorithms/${ts_id}`);
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: ts_id !== undefined,
   });
 
@@ -95,7 +99,7 @@ export const useAlgorithms = () => {
 
   const handlePrefetch = () => {
     queryClient.prefetchQuery({
-      queryKey: [queryKeys.Timeseries.algorithms(ts_id)],
+      queryKey: queryKeys.Timeseries.algorithms(ts_id),
       queryFn: async () => {
         const {data} = await apiClient.get<Array<QaAlgorithms>>(
           `/sensor_admin/algorithms/${ts_id}`

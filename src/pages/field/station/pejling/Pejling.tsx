@@ -31,6 +31,7 @@ import {APIError} from '~/queryClient';
 import {useAppContext} from '~/state/contexts';
 import {useSetAtom} from 'jotai';
 import {boreholeIsPumpAtom} from '~/state/atoms';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 
 const Pejling = () => {
   const {loc_id, ts_id} = useAppContext(['loc_id', 'ts_id']);
@@ -64,7 +65,7 @@ const Pejling = () => {
     isError,
     error,
   } = useQuery<LatestMeasurement, APIError>({
-    queryKey: ['latest_measurement', ts_id],
+    queryKey: queryKeys.Timeseries.latestMeasurement(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<LatestMeasurement>(
         `/sensor_field/station/latest_measurement/${ts_id}`
@@ -72,7 +73,7 @@ const Pejling = () => {
 
       return data;
     },
-    staleTime: 10,
+    staleTime: 1000 * 60 * 2,
     enabled: ts_id !== undefined && ts_id !== null && ts_id !== -1,
   });
 
@@ -166,13 +167,9 @@ const Pejling = () => {
           {showForm === true && (
             <Card
               sx={{
-                marginLeft: {xs: '0%'},
-                mb: 3,
-                padding: 2,
                 borderRadius: 2.5,
                 display: 'flex',
                 flexDirection: 'column',
-                textAlign: 'center',
                 alignItems: 'center',
               }}
             >

@@ -17,6 +17,7 @@ const useLocationProject = () => {
       );
       return data;
     },
+    staleTime: 1000 * 60 * 15, // 15 minutes
   });
 
   return {get};

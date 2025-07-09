@@ -1,5 +1,5 @@
 import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/react-query';
-import dayjs from 'dayjs';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -18,10 +18,10 @@ interface PejlingPost extends PejlingBase {
   data: {
     comment?: string;
     measurement: number | null;
-    timeofmeas: dayjs.Dayjs;
+    timeofmeas: Dayjs;
     useforcorrection: number;
     extrema?: string | null;
-    pumpstop?: string | null;
+    pumpstop?: Dayjs | null;
     service?: boolean | null;
   };
 }
@@ -57,7 +57,7 @@ const pejlingDelOptions = {
 
 export const pejlingGetOptions = (ts_id: number | undefined) =>
   queryOptions<Array<PejlingItem>, APIError>({
-    queryKey: [queryKeys.Timeseries.pejling(ts_id!)],
+    queryKey: queryKeys.Timeseries.pejling(ts_id!),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<PejlingItem>>(
         `/sensor_field/station/measurements/${ts_id}`
@@ -65,6 +65,7 @@ export const pejlingGetOptions = (ts_id: number | undefined) =>
 
       return data;
     },
+    staleTime: 1000 * 60 * 2, // 2 minutes
     enabled: ts_id !== 0 && ts_id !== null && ts_id !== undefined,
   });
 

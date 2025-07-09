@@ -12,6 +12,7 @@ import Button from '~/components/Button';
 import CaptureDialog from '~/components/CaptureDialog';
 import FormInput from '~/components/FormInput';
 import LocationGroups from '~/features/stamdata/components/stamdata/LocationGroups';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import ConfirmCalypsoIDDialog from '~/pages/field/boreholeno/components/ConfirmCalypsoIDDialog';
 import {useAppContext} from '~/state/contexts';
 
@@ -36,7 +37,7 @@ const BoreholeStamdata = () => {
   const queryClient = useQueryClient();
 
   const {data: stamdata} = useQuery({
-    queryKey: ['borehole_stamdata', boreholeno, intakeno],
+    queryKey: queryKeys.Borehole.stamdata(boreholeno, intakeno),
     queryFn: async () => {
       const {data} = await apiClient.get(
         `/sensor_field/borehole/stamdata/${boreholeno}/${intakeno}`
@@ -58,7 +59,7 @@ const BoreholeStamdata = () => {
       return out;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: ['borehole_stamdata']});
+      queryClient.invalidateQueries({queryKey: queryKeys.Borehole.allStamdata()});
     },
   });
 

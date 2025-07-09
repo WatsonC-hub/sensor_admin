@@ -2,6 +2,8 @@ import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import {onAdjustmentMutation} from '~/helpers/QueryKeyFactoryHelper';
 import {rerunToast} from '~/helpers/toasts';
 import {useAppContext} from '~/state/contexts';
 
@@ -46,43 +48,40 @@ const levelCorrectionDelOptions = {
 
 export const useLevelCorrection = () => {
   const queryClient = useQueryClient();
-  const {ts_id} = useAppContext(['ts_id']);
+  const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
 
   const post = useMutation({
     ...levelCorrectionPostOptions,
+    onMutate: () => onAdjustmentMutation(ts_id, loc_id, true),
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all', Number(variables.path)],
-      });
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       rerunToast(ts_id);
     },
   });
 
   const put = useMutation({
     ...levelCorrectionPutOptions,
+    onMutate: () => onAdjustmentMutation(ts_id, loc_id, false),
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all'],
-      });
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       rerunToast(ts_id);
     },
   });
 
   const del = useMutation({
     ...levelCorrectionDelOptions,
+    onMutate: () => onAdjustmentMutation(ts_id, loc_id, false),
     onError: () => {
       toast.error('Noget gik galt');
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['qa_all'],
-      });
+    onSuccess: (data, variables, context) => {
+      invalidateFromMeta(queryClient, context.meta);
       rerunToast(ts_id);
     },
   });

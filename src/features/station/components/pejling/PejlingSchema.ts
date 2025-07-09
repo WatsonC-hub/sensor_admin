@@ -1,4 +1,3 @@
-import moment from 'moment';
 import {z} from 'zod';
 import {zodDayjs} from '~/helpers/schemas';
 
@@ -15,12 +14,16 @@ const pejlingSchema = baseSchema;
 const pejlingBoreholeSchema = baseSchema
   .extend({
     extrema: z.string().nullish(),
-    pumpstop: z.string().nullish(),
+    pumpstop: zodDayjs().nullish(),
     service: z.boolean().nullish().default(false),
   })
   .refine(
     (data) => {
-      if (data.service === false && data.pumpstop && data.timeofmeas.isBefore(data.pumpstop)) {
+      if (
+        data.service === false &&
+        data.pumpstop &&
+        data.timeofmeas.isSameOrBefore(data.pumpstop)
+      ) {
         return false;
       }
       return true;
@@ -34,7 +37,7 @@ const pejlingBoreholeSchema = baseSchema
     data.service
       ? {...data, pumpstop: null}
       : data.pumpstop !== undefined && data.pumpstop !== null
-        ? {...data, pumpstop: moment(data.pumpstop).toISOString()}
+        ? {...data, pumpstop: data.pumpstop}
         : {...data}
   );
 

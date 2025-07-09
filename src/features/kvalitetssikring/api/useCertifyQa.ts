@@ -60,8 +60,10 @@ const onMutateCertifyQa = (ts_id: number, loc_id: number) => {
         queryKeys.Timeseries.certifyQa(ts_id),
         queryKeys.Location.timeseries(loc_id),
         queryKeys.Map.all(),
+        queryKeys.Tasks.all(),
+        queryKeys.Itineraries.all(),
         queryKeys.Timeseries.metadata(ts_id),
-        queryKeys.Timeseries.QA(ts_id),
+        queryKeys.Timeseries.QAWithTsId(ts_id),
       ],
     },
   };
@@ -71,13 +73,14 @@ export const useCertifyQa = () => {
   const {ts_id, loc_id} = useAppContext(['ts_id', 'loc_id']);
   const queryClient = useQueryClient();
   const get = useQuery({
-    queryKey: [queryKeys.Timeseries.certifyQa(ts_id)],
+    queryKey: queryKeys.Timeseries.certifyQa(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<CertifyQa>>(
         `/sensor_admin/certified_quality/${ts_id}`
       );
       return data;
     },
+    staleTime: 1000 * 60 * 5, // 5 minutes
     enabled: ts_id !== undefined,
   });
 

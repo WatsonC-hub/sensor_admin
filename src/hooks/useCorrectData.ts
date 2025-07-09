@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {useRunQA} from '~/hooks/useRunQA';
 
 const TOAST_ID = 'correct-toast';
@@ -13,7 +14,7 @@ export const useCorrectData = (ts_id: number | undefined, queryKey: string) => {
   const {mutation: rerunQAMutation} = useRunQA(ts_id);
   // TODO: Check me
   const {data: pollData, dataUpdatedAt} = useQuery({
-    queryKey: ['pollData', ts_id],
+    queryKey: queryKeys.Timeseries.pollData(ts_id),
     queryFn: async () => {
       const {status} = await apiClient.get(`/sensor_field/station/correct/poll/${ts_id}`);
       return status;

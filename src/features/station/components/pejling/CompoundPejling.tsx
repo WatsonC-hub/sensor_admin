@@ -486,22 +486,20 @@ const Service = () => {
   );
 };
 
-const PumpStop = (props: Omit<FormInputProps<PejlingBoreholeSchemaType>, 'name'>) => {
+const PumpStop = (
+  props: Omit<FormDateTimeProps<PejlingSchemaType | PejlingBoreholeSchemaType>, 'name'>
+) => {
   const {watch} = useFormContext<PejlingBoreholeSchemaType>();
   const timeofmeas = watch('timeofmeas');
   const service = watch('service');
+
   return (
-    <FormInput
-      type="datetime-local"
+    <FormDateTime<PejlingSchemaType | PejlingBoreholeSchemaType>
       name="pumpstop"
       label="Tidspunkt for pumpestop"
-      fullWidth
       disabled={!!service}
-      slotProps={{
-        htmlInput: {
-          max: timeofmeas.format('YYYY-MM-DDTHH:mm:ss'),
-        },
-      }}
+      rules={{required: !service}}
+      maxDate={timeofmeas}
       {...props}
     />
   );

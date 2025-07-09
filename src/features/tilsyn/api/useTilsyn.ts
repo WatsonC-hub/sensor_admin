@@ -63,12 +63,13 @@ const tilsynDelOptions = {
 
 export const tilsynGetOptions = (ts_id: number | undefined) =>
   queryOptions<Array<TilsynItem>, APIError>({
-    queryKey: [queryKeys.Timeseries.tilsyn(ts_id!)],
+    queryKey: queryKeys.Timeseries.tilsyn(ts_id!),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_field/station/service/${ts_id}`);
       return data;
     },
     enabled: ts_id !== undefined && ts_id !== null,
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
 const onMutateTilsyn = async (ts_id: number, loc_id: number) => {
