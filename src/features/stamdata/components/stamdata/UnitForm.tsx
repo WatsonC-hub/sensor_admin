@@ -1,4 +1,4 @@
-import {Grid} from '@mui/material';
+import {Grid, Grid2} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
@@ -23,8 +23,8 @@ export default function UnitForm({mode}: UnitFormProps) {
   const {location_permissions} = usePermissions(loc_id);
   const disabled = location_permissions !== 'edit';
 
-  const startdate = watch('startdate');
-  // const enddate = watch('unit.enddate');
+  const startdato = watch('startdate');
+  // const enddato = watch('unit.enddato');
   const unit_uuid: string = watch('unit_uuid');
 
   const {
@@ -45,51 +45,54 @@ export default function UnitForm({mode}: UnitFormProps) {
   // }, [startdate, enddate]);
 
   return (
-    <Grid container spacing={2} alignItems="center" justifyContent="center">
-      <Grid item xs={12} sm={6}>
+    <Grid2 container spacing={2} width={'100%'}>
+      <Grid2 size={{xs: 12, sm: 6}}>
         <FormTextField disabled value={unit?.terminal_type ?? ''} label="Terminal" />
-      </Grid>
-      <Grid item xs={12} sm={6}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 6}}>
         <FormTextField disabled label="Terminal ID" value={unit?.terminal_id ?? ''} />
-      </Grid>
-      <Grid item xs={12} sm={6}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 6}}>
         <FormTextField
           disabled
           label="CALYPSO ID"
           value={unit?.calypso_id ? String(unit?.calypso_id) : ''}
         />
-      </Grid>
-      <Grid item xs={12} sm={6}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 6}}>
         <FormTextField disabled label="Sensor" value={unit?.sensorinfo ?? ''} />
-      </Grid>
-      <Grid item xs={12} sm={6}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 6}}>
         <FormTextField disabled label="Sensor ID" value={unit?.sensor_id ?? ''} />
-      </Grid>
-      <Grid item xs={12} sm={3}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 6}}></Grid2>
+      <Grid2 size={{xs: 12, sm: 6}}>
         <FormInput
           name="startdate"
           label="Startdato"
-          disabled={!unit || startdate === undefined || disabled}
+          disabled={!unit || startdato === undefined || disabled}
           fullWidth
           type="datetime-local"
           sx={{p: 0}}
           required
+          sx={{minWidth: '210px'}}
         />
-      </Grid>
-      <Grid item xs={12} sm={3}>
+      </Grid2>
+      <Grid2 size={{xs: 12, sm: 6}}>
         {editMode && (
           <FormInput
             name="enddate"
             label="Slutdato"
             fullWidth
-            disabled={!unit || startdate === undefined || disabled}
+            disabled={!unit || startdato === undefined || disabled}
             type="datetime-local"
             required
             sx={{p: 0}}
-            inputProps={{min: moment(startdate).format('YYYY-MM-DDTHH:mm')}}
+            inputProps={{min: moment(startdato).format('YYYY-MM-DDTHH:mm')}}
+            sx={{minWidth: '210px'}}
           />
         )}
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }
