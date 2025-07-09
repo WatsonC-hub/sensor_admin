@@ -6,24 +6,27 @@ import React from 'react';
 interface Props {
   disabled?: boolean;
   handleEdit: () => void;
-  onDeleteBtnClick: () => void;
+  onDeleteBtnClick?: () => void;
 }
 
 const RenderActions = ({handleEdit, onDeleteBtnClick, disabled}: Props) => {
+  console.log(onDeleteBtnClick);
   return (
     <Box margin="0 auto" display="flex" justifyContent="flex-end">
       <IconButton edge="end" onClick={handleEdit} disabled={disabled} size="large">
         <EditIcon />
       </IconButton>
-      <IconButton
-        edge="end"
-        onClick={onDeleteBtnClick}
-        disabled={disabled}
-        size="large"
-        style={{marginRight: '2px'}}
-      >
-        <DeleteIcon />
-      </IconButton>
+      {onDeleteBtnClick && (
+        <IconButton
+          edge="end"
+          onClick={onDeleteBtnClick}
+          disabled={disabled}
+          size="large"
+          style={{marginRight: '2px'}}
+        >
+          <DeleteIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };
