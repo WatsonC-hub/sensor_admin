@@ -97,11 +97,13 @@ const EditUnit = () => {
         >
           <FormProvider {...formMethods}>
             <UnitHistoryTable submit={Submit} setSelectedUnit={setSelectedUnit} />
-            <UnitEndDateDialog
-              openDialog={openDialog}
-              setOpenDialog={setOpenDialog}
-              unit={unit_history?.[0]}
-            />
+            {openDialog && (
+              <UnitEndDateDialog
+                openDialog={openDialog}
+                setOpenDialog={setOpenDialog}
+                unit={unit_history?.[0]}
+              />
+            )}
             <AddUnitForm
               udstyrDialogOpen={openAddUdstyr}
               setUdstyrDialogOpen={setOpenAddUdstyr}
