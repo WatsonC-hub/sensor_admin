@@ -1,13 +1,14 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Box, Grid} from '@mui/material';
-import moment from 'moment';
-import React, {useEffect} from 'react';
+import React from 'react';
 import {FormProvider, useForm} from 'react-hook-form';
 import * as z from 'zod';
 
 import Button from '~/components/Button';
+import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
+import {zodDayjs} from '~/helpers/schemas';
 import {ExcludeData, useExclude} from '~/hooks/query/useExclude';
 import useBreakpoints from '~/hooks/useBreakpoints';
 
@@ -23,14 +24,8 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
   const {isTouch, isLaptop} = useBreakpoints();
 
   let schema = z.object({
-    startdate: z
-      .string()
-      .min(1, {message: 'Dato ugyldig'})
-      .transform((value) => moment(value).toISOString()),
-    enddate: z
-      .string()
-      .min(1, {message: 'Dato ugyldig'})
-      .transform((value) => moment(value).toISOString()),
+    startdate: zodDayjs('Dato fra er påkrævet'),
+    enddate: zodDayjs('Dato til er påkrævet'),
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
   });
 
@@ -45,9 +40,11 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
     });
   }
 
-  const formMethods = useForm({
+  const {data: parsedData} = schema.safeParse(data);
+
+  const formMethods = useForm<ExcludeData>({
     resolver: zodResolver(schema),
-    defaultValues: data,
+    defaultValues: parsedData,
   });
 
   const {
@@ -55,10 +52,6 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
     formState: {dirtyFields},
     handleSubmit,
   } = formMethods;
-
-  useEffect(() => {
-    reset(data);
-  }, [data]);
 
   const submit = (values: ExcludeData) => {
     if (Object.keys(dirtyFields).length > 0) {
@@ -96,8 +89,8 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
               flexDirection={isLaptop || isTouch ? 'column' : 'row'}
               gap={1}
             >
-              <FormInput name="startdate" label="Fra" type="datetime-local" required />
-              <FormInput name="enddate" label="Til" type="datetime-local" required />
+              <FormDateTime name="startdate" label="Fra" required />
+              <FormDateTime name="enddate" label="Til" required />
             </Box>
           </Grid>
           {isWithYValues && (

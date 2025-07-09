@@ -30,10 +30,12 @@ import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import minMax from 'dayjs/plugin/minMax';
 
 dayjs.extend(localizedFormat);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(minMax);
 dayjs.locale('da', dayDA);
 moment.locale('da');
 

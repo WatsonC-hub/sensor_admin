@@ -1,4 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -17,8 +18,8 @@ export type ExcludeData = {
   gid?: number;
   min_value: number | null;
   max_value: number | null;
-  startdate: string | null;
-  enddate: string | null;
+  startdate: Dayjs;
+  enddate: Dayjs;
   comment?: string;
 };
 
