@@ -17,6 +17,10 @@ const convertDateWithTimeStamp = (dateString: string | null | undefined) => {
   return date;
 };
 
+const convertToLocalDate = (date: dayjs.Dayjs | undefined) => {
+  return date?.format('L LT');
+};
+
 const checkEndDateIsUnset = (dateString: string) => {
   const date: Date = new Date(dateString);
   return date.getFullYear() === 2099;
@@ -61,4 +65,5 @@ export {
   limitDecimalNumbers,
   splitTimeFromDate,
   convertToShorthandDate,
+  convertToLocalDate,
 };

@@ -1,4 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -10,8 +11,8 @@ import {useAppContext} from '~/state/contexts';
 type LevelCorrectionPayload = {
   path: string;
   data: {
-    date: string;
-    comment: string | undefined;
+    date: Dayjs;
+    comment?: string | null;
   };
 };
 

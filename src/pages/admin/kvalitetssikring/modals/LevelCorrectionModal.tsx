@@ -1,8 +1,8 @@
 import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 import {Box, Typography} from '@mui/material';
+import dayjs from 'dayjs';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
 import {useEffect} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
@@ -10,6 +10,8 @@ import {z} from 'zod';
 
 import Button from '~/components/Button';
 import FormInput from '~/components/FormInput';
+import {convertToLocalDate} from '~/helpers/dateConverter';
+import {zodDayjs} from '~/helpers/schemas';
 import {useLevelCorrection} from '~/hooks/query/useLevelCorrection';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {qaSelection} from '~/state/atoms';
@@ -18,7 +20,7 @@ interface LevelCorrectionModal {
   onClose: () => void;
 }
 
-const schema = z.object({date: z.string(), comment: z.string().optional()});
+const schema = z.object({date: zodDayjs(), comment: z.string().optional()});
 
 type CorrectionValues = z.infer<typeof schema>;
 
@@ -31,7 +33,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const prevY = (
     selection?.points?.[0]?.data?.y[selection?.points?.[0]?.pointIndex - 1] as number
   )?.toFixed(4);
-  const prevX = moment(
+  const prevX = dayjs(
     selection?.points?.[0]?.data?.x[selection?.points?.[0]?.pointIndex - 1] as string
   );
   const y = (selection?.points?.[0]?.y as number)?.toFixed(4);
@@ -46,7 +48,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
     levelCorrectionMutation.mutate(
       {
         path: `${timeseries_data?.ts_id}`,
-        data: {date: moment(values.date).toISOString(), comment: values.comment},
+        data: {date: values.date, comment: values.comment},
       },
       {
         onSuccess: () => {
@@ -61,7 +63,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
   const x = watch('date');
 
   useEffect(() => {
-    setValue('date', moment(selection?.points?.[0]?.x).format('YYYY-MM-DD HH:mm'));
+    setValue('date', dayjs(selection?.points?.[0]?.x));
   }, [selection]);
 
   return (
@@ -78,7 +80,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
           <Box display={'flex'} flexDirection={'row'}>
             <b style={{width: 150}}>Forrige punkt:</b>
             <Typography gutterBottom>
-              {prevX.format('YYYY-MM-DD HH:mm')} - {prevY + ' '}
+              {convertToLocalDate(prevX)} - {prevY + ' '}
               {unit}
             </Typography>
           </Box>
@@ -86,7 +88,7 @@ const LevelCorrectionModal = ({onClose}: LevelCorrectionModal) => {
         <Box display={'flex'} flexDirection={'row'}>
           <b style={{width: 150}}>Nuværende punkt:</b>
           <Typography gutterBottom>
-            {x} - {y + ' '} {unit}
+            {convertToLocalDate(x)} - {y + ' '} {unit}
           </Typography>
         </Box>
       </Box>
