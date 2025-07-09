@@ -158,7 +158,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 type: 'rect',
                 x0: edgeDates?.firstDate,
-                x1: dayjs(d.date),
+                x1: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 y0: 0,
                 y1: 1,
                 yref: 'paper',
@@ -176,7 +176,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
               return {
                 xref: 'x',
                 yref: 'paper',
-                x: dayjs(d.date),
+                x: dayjs(d.date).format('YYYY-MM-DDTHH:mm'),
                 xanchor: 'right',
                 yanchor: 'bottom',
                 showarrow: false,
@@ -427,10 +427,8 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   useEffect(() => {
     if (dynamicMeasurement?.[0] != undefined && dynamicMeasurement?.[0] !== null) {
       setXRange([
-        dayjs(dynamicMeasurement?.[0], 'DD.MM.YYYY HH:mm')
-          .subtract(4, 'day')
-          .format('YYYY-MM-DDTHH:mm'),
-        dayjs(dynamicMeasurement?.[0], 'DD.MM.YYYY HH:mm').add(3, 'day').format('YYYY-MM-DDTHH:mm'),
+        dayjs(dynamicMeasurement?.[0]).subtract(4, 'day').format('YYYY-MM-DDTHH:mm'),
+        dayjs(dynamicMeasurement?.[0]).add(3, 'day').format('YYYY-MM-DDTHH:mm'),
       ]);
     }
   }, [dynamicMeasurement?.[0]]);

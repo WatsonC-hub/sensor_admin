@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-import moment from 'moment';
 import {z} from 'zod';
 import {zodDayjs} from '~/helpers/schemas';
 
@@ -77,7 +75,7 @@ const watlevmpAddSchema = z.object({
 
 const addUnitSchema = z.object({
   unit_uuid: z.string(),
-  startdate: zodDayjs('Startdato skal udfyldes'),
+  startdate: zodDayjs('Startdato skal udfyldes').optional(),
 });
 
 const editUnitSchema = z

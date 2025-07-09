@@ -26,7 +26,6 @@ import {get} from 'lodash';
 import DisplayWaterlevelAlert from '~/features/pejling/components/WaterlevelAlert';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
-import {convertDateWithTimeStamp} from '~/helpers/dateConverter';
 
 interface PejlingProps {
   submit: (values: PejlingSchemaType | PejlingBoreholeSchemaType) => void;
@@ -98,11 +97,7 @@ const CompoundPejling = ({
     }
 
     console.log('CompoundPejling timeofmeas:', timeofmeas);
-    const formattedTimeofMeas =
-      typeof timeofmeas === 'object'
-        ? timeofmeas.format('L LT')
-        : convertDateWithTimeStamp(timeofmeas);
-
+    const formattedTimeofMeas = timeofmeas.format('YYYY-MM-DD HH:mm');
     console.log('CompoundPejling formattedTimeofMeas:', formattedTimeofMeas);
     if (isWaterLevel && mpData !== undefined && mpData.length > 0) {
       const mp: Maalepunkt[] = mpData.filter((elem: Maalepunkt) => {
@@ -114,7 +109,7 @@ const CompoundPejling = ({
       setCurrentMP(internalCurrentMP);
 
       if (internalCurrentMP) {
-        dynamicMeas = internalCurrentMP.elevation - Number(measurement);
+        dynamicMeas = Math.abs(internalCurrentMP.elevation - Number(measurement));
         setDynamic([formattedTimeofMeas, dynamicMeas]);
         latestmeas = latestMeasurement?.measurement;
 

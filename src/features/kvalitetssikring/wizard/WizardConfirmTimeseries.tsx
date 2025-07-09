@@ -2,22 +2,22 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {Save} from '@mui/icons-material';
 // import HighlightAltIcon from '@mui/icons-material/HighlightAlt';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import {Box, CardContent, Tooltip, Typography} from '@mui/material';
+import {Box, Tooltip, Typography} from '@mui/material';
 import {useAtomValue} from 'jotai';
-import moment from 'moment';
 import {parseAsString, useQueryState} from 'nuqs';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {FormProvider, SubmitHandler, useForm} from 'react-hook-form';
 import {z} from 'zod';
 
 import Button from '~/components/Button';
-import FormInput from '~/components/FormInput';
-// import {QaStampLevel} from '~/helpers/EnumHelper';
 import useBreakpoints from '~/hooks/useBreakpoints';
 import {qaSelection} from '~/state/atoms';
 import {useAppContext} from '~/state/contexts';
 
-import {CertifyQa, useCertifyQa} from '../api/useCertifyQa';
+import {useCertifyQa} from '../api/useCertifyQa';
+import {zodDayjs} from '~/helpers/schemas';
+import dayjs from 'dayjs';
+import FormDateTime from '~/components/FormDateTime';
 
 interface WizardConfirmTimeseriesProps {
   initiateConfirmTimeseries: boolean;
@@ -27,14 +27,14 @@ interface WizardConfirmTimeseriesProps {
 const schema = z
   .object({
     id: z.number().optional(),
-    startDate: z.string().optional(),
-    date: z.string(),
+    startDate: zodDayjs().optional(),
+    date: zodDayjs('Dato er påkrævet'),
     level: z.number(),
     // comment: z.string().optional(),
   })
   .refine(
     ({date, startDate}) => {
-      return !startDate || moment(startDate).isBefore(moment(date));
+      return !startDate || (startDate && startDate.isBefore(date));
     },
     {path: ['date'], message: 'Dato må ikke være tidligere end sidst godkendt'}
   );
@@ -46,7 +46,7 @@ const WizardConfirmTimeseries = ({
   onClose,
 }: WizardConfirmTimeseriesProps) => {
   const {ts_id} = useAppContext(['ts_id']);
-  const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
+  // const [qaStamp, setQaStamp] = useState<number | undefined>(undefined);
   const {isMobile} = useBreakpoints();
   const selection = useAtomValue(qaSelection);
 
@@ -55,46 +55,37 @@ const WizardConfirmTimeseries = ({
     post: postQaData,
   } = useCertifyQa();
 
-  const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
+  // const [selectedQaData, setSelectedQaData] = useState<CertifyQa | undefined>();
   const [, setDataAdjustment] = useQueryState('adjust', parseAsString);
+
+  const x = dayjs(selection?.points?.[0].x);
+  const {data: parsedData} = schema.safeParse({
+    startDate: qaData?.[0]?.date,
+    date: x,
+    level: 1,
+  });
 
   const formMethods = useForm<CertifyQaValues>({
     resolver: zodResolver(schema),
-    defaultValues: {startDate: selectedQaData?.date, level: 1},
+    defaultValues: parsedData,
     mode: 'onTouched',
   });
 
   const {watch, handleSubmit, setValue} = formMethods;
 
-  const qaStampWatch = watch('level');
   const enddateWatch = watch('date');
 
   useEffect(() => {
-    if (qaStampWatch !== qaStamp) {
-      setQaStamp(qaStampWatch);
-      setSelectedQaData(qaData?.find((qa) => qa.level === qaStampWatch));
-    }
-  }, [qaStampWatch, qaStamp, qaData]);
-
-  useEffect(() => {
     if (selection.points && selection.points.length > 0) {
-      const x = selection.points[0].x;
-      if (x) setValue('date', moment(x.toString()).format('YYYY-MM-DD HH:mm'));
-    } else {
-      setValue('date', '');
+      const x = dayjs(selection.points[0].x);
+      if (x) setValue('date', x);
     }
   }, [selection]);
-
-  useEffect(() => {
-    if (selectedQaData) {
-      setValue('startDate', selectedQaData.date);
-    }
-  }, [selectedQaData]);
 
   const handleSave: SubmitHandler<CertifyQaValues> = async (certifyQa) => {
     const payload = {
       path: `${ts_id}`,
-      data: {...certifyQa, date: moment(certifyQa.date).toISOString()},
+      data: {...certifyQa, date: certifyQa.date},
     };
     postQaData.mutateAsync(payload);
     setDataAdjustment(null);
@@ -102,134 +93,67 @@ const WizardConfirmTimeseries = ({
   };
   return (
     <FormProvider {...formMethods}>
-      <Box alignSelf={'center'} width={'inherit'} height={'inherit'} justifySelf={'center'}>
-        <CardContent
-          sx={{display: 'flex', flexDirection: 'column', height: 'inherit', alignContent: 'center'}}
-        >
-          <Box display={'flex'} flexDirection="row" justifyContent={'center'} mb={1} gap={1}>
-            <Typography
-              alignSelf={'center'}
-              variant={isMobile ? 'h6' : 'h5'}
-              component="h2"
-              fontWeight={'bold'}
-            >
-              Godkend tidsserie
-            </Typography>
-            <Tooltip
-              placement="right"
-              enterTouchDelay={0}
-              slotProps={{
-                tooltip: {sx: {bgcolor: 'primary.main'}},
-                arrow: {sx: {color: 'primary.main'}},
-              }}
-              arrow={true}
-              title={
-                <p>
-                  Markér et punkt på grafen som du gerne vil godkende tidsserien frem til. Datoen
-                  vil blive brugt som tidsstempel for hvornår tidsserien sidst er blevet godkendt
-                </p>
-              }
-              sx={{alignSelf: 'center'}}
-            >
-              <InfoOutlinedIcon color="info" />
-            </Tooltip>
-          </Box>
-          <Box
-            display={'flex'}
-            flexDirection={'column'}
-            alignItems={'center'}
-            width={'100%'}
+      <Box alignSelf={'center'} justifySelf={'center'}>
+        <Box display={'flex'} flexDirection="row" justifyContent={'center'} mb={1} gap={1}>
+          <Typography
             alignSelf={'center'}
-            gap={1}
+            variant={isMobile ? 'h6' : 'h5'}
+            component="h2"
+            fontWeight={'bold'}
           >
-            <Box
-              display={'flex'}
-              width={'100%'}
-              flexDirection={'row'}
-              alignItems={'center'}
-              flexWrap={'wrap'}
-              justifyContent={'center'}
-              gap={1}
-            >
-              <FormInput
-                name={'startDate'}
-                type={selectedQaData ? 'datetime-local' : undefined}
-                variant="outlined"
-                label={'Sidst godkendt'}
-                placeholder="Fra start"
-                fullWidth
-                disabled={true}
-                style={{minWidth: 195, width: isMobile ? 'fit-content' : 195}}
-              />
-              <FormInput
-                name="date"
-                label="Godkend til"
-                type={'datetime-local'}
-                disabled={!initiateConfirmTimeseries}
-                style={{minWidth: 195, width: isMobile ? 'fit-content' : 195}}
-              />
-            </Box>
-            {/* <FormInput
-              name="qa_stamp"
-              label="Kvalitetsniveau"
-              placeholder="Kvalitetsniveau..."
-              disabled={disabled}
-              select
-              style={{
-                minWidth: 195,
-                width: isMobile ? 'fit-content' : 400,
-                alignSelf: isMobile ? 'start' : 'center',
+            Godkend tidsserie
+          </Typography>
+          <Tooltip
+            placement="right"
+            enterTouchDelay={0}
+            slotProps={{
+              tooltip: {sx: {bgcolor: 'primary.main'}},
+              arrow: {sx: {color: 'primary.main'}},
+            }}
+            arrow={true}
+            title={
+              <p>
+                Markér et punkt på grafen som du gerne vil godkende tidsserien frem til. Datoen vil
+                blive brugt som tidsstempel for hvornår tidsserien sidst er blevet godkendt
+              </p>
+            }
+            sx={{alignSelf: 'center'}}
+          >
+            <InfoOutlinedIcon color="info" />
+          </Tooltip>
+        </Box>
+        <Box
+          display={'flex'}
+          flexDirection={'column'}
+          alignItems={'center'}
+          alignSelf={'center'}
+          gap={1}
+        >
+          <FormDateTime name={'startDate'} label={'Sidst godkendt'} disabled={true} />
+          <FormDateTime name="date" label="Godkend til" disabled={!initiateConfirmTimeseries} />
+          <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
+            <Button
+              bttype="tertiary"
+              onClick={() => {
+                setDataAdjustment(null);
+                onClose();
+                // reset();
               }}
             >
-              <MenuItem value={-1} key={-1}>
-                Vælg kvalitetsniveau
-              </MenuItem>
-              {Object.entries(QaStampLevel).map((entry) => (
-                <MenuItem key={entry[0]} value={entry[1]}>
-                  {entry[1]}
-                </MenuItem>
-              ))}
-            </FormInput>
-            <FormInput
-              name="comment"
-              label="Kommentar"
-              multiline
-              disabled={disabled}
-              rows={3}
-              placeholder="Kommentar"
-              style={{
-                minWidth: 218,
-                width: isMobile ? '100%' : 400,
-              }}
-            /> */}
-
-            <Box display={'flex'} mt={2.5} flexDirection={'row'} alignSelf={'center'} gap={1}>
-              <Button
-                bttype="tertiary"
-                onClick={() => {
-                  setDataAdjustment(null);
-                  onClose();
-                  // reset();
-                }}
-              >
-                Annuller
-              </Button>
-              <Button
-                bttype="primary"
-                startIcon={<Save />}
-                disabled={
-                  moment(selectedQaData?.date).isAfter(enddateWatch) &&
-                  selectedQaData?.date != undefined
-                }
-                onClick={handleSubmit(handleSave, (e) => {
-                  console.log(e);
-                })}
-              >
-                Godkend
-              </Button>
-            </Box>
+              Annuller
+            </Button>
+            <Button
+              bttype="primary"
+              startIcon={<Save />}
+              disabled={parsedData?.date.isAfter(enddateWatch) && parsedData?.date != undefined}
+              onClick={handleSubmit(handleSave, (e) => {
+                console.log(e);
+              })}
+            >
+              Godkend
+            </Button>
           </Box>
-        </CardContent>
+        </Box>
       </Box>
     </FormProvider>
   );

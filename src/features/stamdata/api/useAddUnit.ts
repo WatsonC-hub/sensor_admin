@@ -1,4 +1,5 @@
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -24,8 +25,8 @@ export interface Unit {
 
 interface TypeUnitPost {
   unit_uuid: string;
-  startdate: string;
-  enddate: string;
+  startdate: Dayjs | undefined;
+  enddate: Dayjs;
   inherit_invoice?: boolean;
 }
 

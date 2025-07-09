@@ -1,4 +1,5 @@
 import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -17,17 +18,27 @@ export type ExcludeData = {
   gid?: number;
   min_value: number | null;
   max_value: number | null;
-  startdate: string | null;
-  enddate: string | null;
+  startdate: string;
+  enddate: string;
   comment?: string;
 };
 
+type ExcludeDataPost = Omit<ExcludeData, 'gid' | 'startdate' | 'enddate'> & {
+  startdate: Dayjs;
+  enddate: Dayjs;
+};
+
+type ExcludeDataPut = Omit<ExcludeData, 'startdate' | 'enddate'> & {
+  startdate: Dayjs;
+  enddate: Dayjs;
+};
+
 interface ExcludePost extends ExcludeBase {
-  data: ExcludeData;
+  data: ExcludeDataPost;
 }
 
-interface ExcludePut extends ExcludePost {
-  data: ExcludeData;
+interface ExcludePut extends ExcludeBase {
+  data: ExcludeDataPut;
 }
 
 export const excludePostOptions = {

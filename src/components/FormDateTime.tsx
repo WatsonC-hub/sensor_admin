@@ -82,11 +82,6 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 helperText: error?.message,
                 InputLabelProps: {
                   shrink: true,
-                  sx: {
-                    '& > fieldset': {
-                      borderColor: 'primary.main',
-                    },
-                  },
                 },
                 sx: {
                   '& > fieldset': {

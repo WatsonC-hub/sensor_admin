@@ -1,4 +1,5 @@
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import {Dayjs} from 'dayjs';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
@@ -18,8 +19,12 @@ interface CertifyQaBase {
   data?: any;
 }
 
+interface PostData extends Omit<CertifyQa, 'date'> {
+  date: Dayjs;
+}
+
 interface CertifyQaPost extends CertifyQaBase {
-  data: CertifyQa;
+  data: PostData;
 }
 
 interface CertifyQaPut extends CertifyQaBase {
