@@ -1,4 +1,4 @@
-import {Grid, Grid2} from '@mui/material';
+import {Grid2} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import {useFormContext} from 'react-hook-form';
@@ -24,7 +24,6 @@ export default function UnitForm({mode}: UnitFormProps) {
   const disabled = location_permissions !== 'edit';
 
   const startdato = watch('startdate');
-  // const enddato = watch('unit.enddato');
   const unit_uuid: string = watch('unit_uuid');
 
   const {
@@ -38,11 +37,6 @@ export default function UnitForm({mode}: UnitFormProps) {
   } else {
     unit = availableUnits?.find((u) => u.unit_uuid === unit_uuid);
   }
-
-  // useEffect(() => {
-  //   if (getFieldState('unit.startdate').error || getFieldState('unit.enddate').error)
-  //     trigger('unit');
-  // }, [startdate, enddate]);
 
   return (
     <Grid2 container spacing={2} width={'100%'}>
@@ -73,9 +67,8 @@ export default function UnitForm({mode}: UnitFormProps) {
           disabled={!unit || startdato === undefined || disabled}
           fullWidth
           type="datetime-local"
-          sx={{p: 0}}
           required
-          sx={{minWidth: '210px'}}
+          sx={{minWidth: '200px'}}
         />
       </Grid2>
       <Grid2 size={{xs: 12, sm: 6}}>
@@ -87,9 +80,8 @@ export default function UnitForm({mode}: UnitFormProps) {
             disabled={!unit || startdato === undefined || disabled}
             type="datetime-local"
             required
-            sx={{p: 0}}
             inputProps={{min: moment(startdato).format('YYYY-MM-DDTHH:mm')}}
-            sx={{minWidth: '210px'}}
+            sx={{minWidth: '200px'}}
           />
         )}
       </Grid2>

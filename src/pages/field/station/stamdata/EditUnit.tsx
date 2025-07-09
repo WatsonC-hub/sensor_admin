@@ -99,35 +99,11 @@ const EditUnit = () => {
           maxWidth={1080}
           sx={{
             borderRadius: 4,
-            boxShadow: 3,
             padding: '16px',
           }}
         >
           <FormProvider {...formMethods}>
-            <UdstyrReplace selected={selectedUnit} setSelected={setSelectedUnit} />
-            <UnitForm mode="edit" />
-
-            <Box display="flex" gap={1} justifyContent="flex-end" justifySelf="end">
-              <Button
-                bttype="tertiary"
-                disabled={disabled}
-                onClick={() => {
-                  reset(defaultValues);
-                }}
-              >
-                Annuller
-              </Button>
-
-              <Button
-                bttype="primary"
-                disabled={!isDirty || !metadata?.unit_uuid || disabled}
-                onClick={handleSubmit(Submit)}
-                startIcon={<SaveIcon />}
-                sx={{marginRight: 1}}
-              >
-                Gem
-              </Button>
-            </Box>
+            <UnitHistoryTable submit={Submit} setSelectedUnit={setSelectedUnit} />
             <UnitEndDateDialog
               openDialog={openDialog}
               setOpenDialog={setOpenDialog}
