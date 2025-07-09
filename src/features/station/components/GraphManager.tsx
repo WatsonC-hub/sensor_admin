@@ -60,7 +60,6 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const {data: edgeDates} = useEdgeDates(ts_id);
   const theme = useTheme();
 
-  console.log(dynamicMeasurement);
   const layout: Partial<Layout> = {
     yaxis3: {
       visible: false,

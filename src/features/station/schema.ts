@@ -75,7 +75,7 @@ const watlevmpAddSchema = z.object({
 
 const addUnitSchema = z.object({
   unit_uuid: z.string(),
-  startdate: zodDayjs('Startdato skal udfyldes'),
+  startdate: zodDayjs('Startdato skal udfyldes').optional(),
 });
 
 const editUnitSchema = z

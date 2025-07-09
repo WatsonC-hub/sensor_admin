@@ -23,26 +23,33 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
   const {put} = useExclude();
   const {isTouch, isLaptop} = useBreakpoints();
 
-  let schema = z.object({
+  const schema = z.object({
     startdate: zodDayjs('Dato fra er påkrævet'),
     enddate: zodDayjs('Dato til er påkrævet'),
     comment: z.string().min(0).max(255, {message: 'Maks 255 tegn'}),
+    min_value: isWithYValues
+      ? z.number({
+          invalid_type_error: 'Feltet må ikke være tom',
+        })
+      : z
+          .number({
+            invalid_type_error: 'Feltet må ikke være tom',
+          })
+          .nullable(),
+    max_value: isWithYValues
+      ? z.number({
+          invalid_type_error: 'Feltet må ikke være tom',
+        })
+      : z
+          .number({
+            invalid_type_error: 'Feltet må ikke være tom',
+          })
+          .nullable(),
   });
-
-  if (isWithYValues) {
-    schema = schema.extend({
-      min_value: z.number({
-        invalid_type_error: 'Feltet må ikke være tom',
-      }),
-      max_value: z.number({
-        invalid_type_error: 'Feltet må ikke være tom',
-      }),
-    });
-  }
 
   const {data: parsedData} = schema.safeParse(data);
 
-  const formMethods = useForm<ExcludeData>({
+  const formMethods = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: parsedData,
   });
@@ -53,7 +60,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
     handleSubmit,
   } = formMethods;
 
-  const submit = (values: ExcludeData) => {
+  const submit = (values: z.infer<typeof schema>) => {
     if (Object.keys(dirtyFields).length > 0) {
       put.mutate({
         path: `${data.ts_id}/${data.gid}`,
@@ -135,7 +142,7 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
                 bttype="tertiary"
                 size="small"
                 onClick={() => {
-                  reset(data);
+                  reset(parsedData);
                   setOpen(false);
                 }}
               >
@@ -153,21 +160,6 @@ const ExcludeRow = ({data, index, isWithYValues = false, setOpen}: ExcludeRowPro
           </Grid>
         </Grid>
       </Box>
-      {/* {!lastElement && (
-        <Divider
-          sx={{
-            mt: 1,
-            mb: 1,
-            borderBottomWidth: 2, 
-          }}
-        />
-      )} */}
-      {/* <DeleteAlert
-        title="Vil du slette ekskluderingen?"
-        dialogOpen={confirmDelete}
-        setDialogOpen={setConfirmDelete}
-        onOkDelete={handleDelete}
-      /> */}
     </FormProvider>
   );
 };

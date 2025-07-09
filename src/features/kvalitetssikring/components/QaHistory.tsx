@@ -30,11 +30,11 @@ import {
 import StepWizard from '../wizard/StepWizard';
 import StationPageBoxLayout from '~/features/station/components/StationPageBoxLayout';
 import useQAHistory from '../api/useQAHistory';
-import moment from 'moment';
 import Button from '~/components/Button';
 import {toast} from 'react-toastify';
 import GraphManager from '~/features/station/components/GraphManager';
 import TooltipWrapper from '~/components/TooltipWrapper';
+import dayjs from 'dayjs';
 
 export default function QAHistory() {
   const {ts_id} = useAppContext(['ts_id']);
@@ -131,7 +131,7 @@ export default function QAHistory() {
   const handleSubmit = () => {
     const payload = {
       path: `${ts_id}`,
-      data: {level: 1, date: moment().toISOString()},
+      data: {level: 1, date: dayjs()},
     };
     postQaData.mutate(payload);
     setDataAdjustment(null);
