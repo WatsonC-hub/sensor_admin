@@ -2,23 +2,27 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import SaveIcon from '@mui/icons-material/Save';
 import {Dialog, DialogTitle, DialogContent, MenuItem, DialogActions} from '@mui/material';
 import {useQueryClient, useQuery, useMutation} from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import moment from 'moment';
 import {useForm, FormProvider} from 'react-hook-form';
 import {toast} from 'react-toastify';
-import {z, ZodObject} from 'zod';
+import {z} from 'zod';
 
 import {apiClient} from '~/apiClient';
 import Button from '~/components/Button';
+import FormDateTime from '~/components/FormDateTime';
 import FormInput from '~/components/FormInput';
 import {useUser} from '~/features/auth/useUser';
+import {UnitHistory} from '~/features/stamdata/api/useUnitHistory';
 import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import {zodDayjs} from '~/helpers/schemas';
 import {useAppContext} from '~/state/contexts';
 
 interface UnitEndDateDialogProps {
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
-  unit: any;
+  unit: UnitHistory | undefined;
 }
 
 type ChangeReason = {id: number; reason: string; default_actions: string | null};
@@ -45,15 +49,14 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   const {ts_id} = useAppContext(['ts_id']);
   const user = useUser();
 
-  let unitEndSchema: ZodObject<any>;
+  let unitEndSchema;
 
   const requiredUnitEndSchema = z.object({
-    enddate: z.string(),
-    change_reason: z.number({required_error: 'Vælg årsag'}),
-    action: z.string({required_error: 'Vælg handling'}),
+    enddate: zodDayjs('slutdato er påkrævet'),
+    change_reason: z.number({required_error: 'Vælg årsag'}).default(-1),
+    action: z.string({required_error: 'Vælg handling'}).default('-1'),
     comment: z.string().optional(),
   });
-
   type UnitEndFormValues = z.infer<typeof requiredUnitEndSchema>;
 
   unitEndSchema = requiredUnitEndSchema;
@@ -65,9 +68,26 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     });
   }
 
+  unitEndSchema = unitEndSchema.refine(
+    (data) => {
+      // Ensure enddate is after unit start date
+      return data.enddate.isAfter(unit?.startdato);
+    },
+    {
+      message: 'Enddato skal være efter startdato',
+    }
+  );
+
+  const {data: parsed} = unitEndSchema.safeParse({
+    ...unit,
+    enddate: dayjs(),
+  });
+
+  console.log('UnitEndDateDialog parsed data:', parsed);
+
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
-    defaultValues: {enddate: moment().toISOString()},
+    defaultValues: parsed,
   });
 
   const handleClose = () => {
@@ -88,7 +108,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   const {data: actions} = useQuery<Action[]>({
     queryKey: queryKeys.actions(unit?.uuid),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit.uuid}`);
+      const {data} = await apiClient.get(`/sensor_field/stamdata/unit-actions/${unit?.uuid}`);
       return data;
     },
     enabled: user?.superUser && !!unit?.uuid,
@@ -98,7 +118,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   const takeHomeMutation = useMutation({
     mutationFn: async (payload: UnitEndFormValues) => {
       const {data} = await apiClient.post(
-        `/sensor_field/stamdata/unit_history/end/${ts_id}/${unit.gid}`,
+        `/sensor_field/stamdata/unit_history/end/${ts_id}/${unit?.gid}`,
         payload
       );
       return data;
@@ -112,7 +132,6 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
   });
 
   const submit = (values: UnitEndFormValues) => {
-    values.enddate = moment(values.enddate).toISOString();
     takeHomeMutation.mutate(values);
   };
 
@@ -121,19 +140,7 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
       <DialogTitle>Angiv information</DialogTitle>
       <DialogContent sx={{width: 300, display: 'flex', flexDirection: 'column', gap: 1}}>
         <FormProvider {...formMethods}>
-          <FormInput
-            name="enddate"
-            label="Fra"
-            fullWidth
-            type="datetime-local"
-            required
-            warning={(value) => {
-              if (moment(value) < moment(unit?.startdato)) {
-                return 'Vælg dato efter startdato';
-              }
-            }}
-            inputProps={{min: moment(unit?.startdato).format('YYYY-MM-DDTHH:mm')}}
-          />
+          <FormDateTime name="enddate" label="Fra" required minDate={dayjs(unit?.startdato)} />
 
           {user?.superUser && (
             <>
@@ -142,6 +149,11 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                 fullWidth
                 select
                 label="Årsag"
+                slotProps={{
+                  select: {
+                    displayEmpty: true,
+                  },
+                }}
                 placeholder="Vælg årsag"
                 onChangeCallback={(e) => {
                   const reason = changeReasons?.find(
@@ -160,6 +172,9 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                   }
                 }}
               >
+                <MenuItem value={-1} disabled>
+                  <em>Vælg årsag</em>
+                </MenuItem>
                 {changeReasons?.map((reason) => (
                   <MenuItem key={reason.id} value={reason.id}>
                     {reason.reason}
@@ -174,7 +189,15 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
                 label="Handling"
                 placeholder="Handling"
                 // disabled={formMethods.watch('change_reason') !== 1}
+                slotProps={{
+                  select: {
+                    displayEmpty: true,
+                  },
+                }}
               >
+                <MenuItem value={'-1'} disabled>
+                  <em>Vælg handling</em>
+                </MenuItem>
                 {actions?.map((action) => (
                   <MenuItem key={action.action} value={action.action}>
                     {action.label}

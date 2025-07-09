@@ -37,6 +37,7 @@ import {withComponentPermission} from '~/hooks/withComponentPermission';
 import TooltipWrapper from '~/components/TooltipWrapper';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import dayjs from 'dayjs';
 
 const onMutateTimeseries = (loc_id: number | undefined) => {
   return {
@@ -132,7 +133,7 @@ const CreateStation = () => {
   const unitFormMethods = useUnitForm<AddUnit>({
     mode: 'Add',
     defaultValues: {
-      startdate: '',
+      startdate: dayjs(),
       unit_uuid: '',
     },
   });
