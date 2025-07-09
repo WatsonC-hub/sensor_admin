@@ -55,7 +55,7 @@ export const useParkering = () => {
   const queryClient = useQueryClient();
 
   const get = useQuery({
-    queryKey: [queryKeys.Parking.all()],
+    queryKey: queryKeys.Parking.all(),
     queryFn: async () => {
       const {data} = await apiClient.get<Array<Parking>>(`/sensor_field/stamdata/parking`);
 
@@ -68,7 +68,7 @@ export const useParkering = () => {
     ...parkeringPostOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.Parking.all()],
+        queryKey: queryKeys.Parking.all(),
       });
       toast.success('Parkering gemt');
     },
@@ -78,7 +78,7 @@ export const useParkering = () => {
     ...parkeringPutOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.Parking.all()],
+        queryKey: queryKeys.Parking.all(),
       });
       toast.success('Parkering ændret');
     },
@@ -88,7 +88,7 @@ export const useParkering = () => {
     ...parkeringDelOptions,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [queryKeys.Parking.all()],
+        queryKey: queryKeys.Parking.all(),
       });
       toast.success('Parkering slettet');
     },

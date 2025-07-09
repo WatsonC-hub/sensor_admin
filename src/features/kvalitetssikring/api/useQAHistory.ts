@@ -6,7 +6,7 @@ import {APIError} from '~/queryClient';
 
 export const getQAHistoryOptions = (ts_id: number) =>
   queryOptions<any, APIError>({
-    queryKey: [queryKeys.Timeseries.QAWithTsId(ts_id)],
+    queryKey: queryKeys.Timeseries.QAWithTsId(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/qa_all/${ts_id}`);
       return data;

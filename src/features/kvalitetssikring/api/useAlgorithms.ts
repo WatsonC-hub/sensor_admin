@@ -83,7 +83,7 @@ const onMutateAlgorithms = (ts_id: number, loc_id: number) => {
 
 export const getAlgorithmOptions = (ts_id: number) =>
   queryOptions<Array<QaAlgorithms>, APIError>({
-    queryKey: [queryKeys.Timeseries.algorithms(ts_id)],
+    queryKey: queryKeys.Timeseries.algorithms(ts_id),
     queryFn: async () => {
       const {data} = await apiClient.get(`/sensor_admin/algorithms/${ts_id}`);
       return data;
@@ -99,7 +99,7 @@ export const useAlgorithms = () => {
 
   const handlePrefetch = () => {
     queryClient.prefetchQuery({
-      queryKey: [queryKeys.Timeseries.algorithms(ts_id)],
+      queryKey: queryKeys.Timeseries.algorithms(ts_id),
       queryFn: async () => {
         const {data} = await apiClient.get<Array<QaAlgorithms>>(
           `/sensor_admin/algorithms/${ts_id}`
