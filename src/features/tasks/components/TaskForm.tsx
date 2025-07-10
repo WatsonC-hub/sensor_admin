@@ -23,8 +23,8 @@ import {useTaskState} from '../api/useTaskState';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
 import {toast} from 'react-toastify';
-import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
 import {zodDayjs} from '~/helpers/schemas';
+import FormDatePicker, {FormDatePickerProps} from '~/components/FormDatePicker';
 
 const zodSchema = z.object({
   ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
@@ -113,17 +113,13 @@ const Input = (props: FormInputProps<FormValues>) => {
   return <FormInput {...props} size="small" disabled={disabled || props.disabled} />;
 };
 
-const DueDate = (props: Omit<FormDateTimeProps<FormValues>, 'name'>) => {
+const DueDate = (props: Omit<FormDatePickerProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
   return (
-    <FormDateTime
+    <FormDatePicker
       name="due_date"
       label="Forfaldsdato"
       format="L"
-      viewRenderers={{
-        hours: null,
-        minutes: null,
-      }}
       slotProps={{
         textField: {
           size: 'small',

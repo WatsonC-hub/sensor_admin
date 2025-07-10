@@ -1,5 +1,4 @@
 import {Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
-import dayjs from 'dayjs';
 import React from 'react';
 
 import Button from '~/components/Button';
@@ -24,7 +23,6 @@ const CreateManuelTaskModal = ({open, closeModal}: Props) => {
     if (values.ts_id === undefined) return;
     const submit = {
       ...values,
-      due_date: dayjs(values.due_date).format('YYYY-MM-DD'),
       name: values.name!,
       block_on_location:
         values.block_on_location === undefined
