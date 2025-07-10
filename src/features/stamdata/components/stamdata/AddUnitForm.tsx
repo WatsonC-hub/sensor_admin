@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import {PickerValue} from '@mui/x-date-pickers/internals';
 import {useQueryClient} from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
@@ -59,7 +60,7 @@ export default function AddUnitForm({
     calypso_id: '',
     sensor_id: '',
     uuid: '',
-    fra: new Date(),
+    fra: dayjs(),
   });
 
   const uniqueCalypsoIds = [
@@ -123,9 +124,9 @@ export default function AddUnitForm({
     setUnitData({...unitData, uuid: event.target.value});
   };
 
-  const handleDateChange = (date: Date) => {
+  const handleDateChange = (date: PickerValue) => {
     trigger();
-    setUnitData({...unitData, fra: date});
+    setUnitData({...unitData, fra: dayjs(date)});
   };
 
   const handleAddUnit = (payload: UnitPost) => {
@@ -202,8 +203,7 @@ export default function AddUnitForm({
   };
 
   useEffect(() => {
-    if (udstyrDialogOpen === true)
-      setUnitData((currentUnit) => ({...currentUnit, fra: new Date()}));
+    if (udstyrDialogOpen === true) setUnitData((currentUnit) => ({...currentUnit, fra: dayjs()}));
   }, [udstyrDialogOpen, setUnitData]);
 
   return (
@@ -288,8 +288,8 @@ export default function AddUnitForm({
               </TextField>
               <OwnDatePicker
                 label={'Fra'}
-                value={dayjs(unitData.fra).toDate()}
-                onChange={(date: Date) => handleDateChange(date)}
+                value={dayjs(unitData.fra)}
+                onChange={(date) => handleDateChange(date)}
               />
             </DialogContent>
             <DialogActions>

@@ -1,7 +1,7 @@
 import {AddAPhotoRounded, AddCircle} from '@mui/icons-material';
 import {Box, Divider} from '@mui/material';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
+import dayjs, {Dayjs} from 'dayjs';
 import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import {toast} from 'react-toastify';
 
@@ -25,11 +25,42 @@ import PejlingMeasurements from '~/pages/field/boreholeno/PejlingMeasurements';
 import {useAppContext} from '~/state/contexts';
 import {
   Kontrol,
-  Maalepunkt,
   MaalepunktPost,
-  MaalepunktTableData,
   BoreholeMeasurement,
+  BoreholeMeasurementAPI,
+  MaalepunktTableData,
 } from '~/types';
+
+const dateUpdated = () => {
+  return dayjs();
+};
+
+const endDateUpdated = () => {
+  return dayjs('2099-01-01');
+};
+
+type BoreholePejling = {
+  gid: number;
+  timeofmeas: Dayjs;
+  pumpstop: null | Dayjs;
+  disttowatertable_m: number;
+  service: boolean;
+  comment: string;
+  extrema: string | null;
+};
+
+export type BoreholeMaalepunkt = {
+  gid: number;
+  startdate: Dayjs;
+  enddate: Dayjs;
+  elevation: number | null;
+  mp_description: string;
+};
+
+export type OmittedKontrol = Omit<
+  Kontrol,
+  'useforcorrection' | 'organisationid' | 'organisationname' | 'uploaded_status' | 'display_name'
+>;
 
 const Boreholeno = () => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno'], ['intakeno']);
@@ -41,15 +72,16 @@ const Boreholeno = () => {
     borehole_permission_query: {data: permissions},
   } = usePermissions();
 
-  const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] = useFormData({
-    gid: -1,
-    timeofmeas: () => moment().toISOString(),
-    pumpstop: null,
-    disttowatertable_m: 0,
-    service: false,
-    comment: '',
-    extrema: null,
-  });
+  const [pejlingData, setPejlingData, changePejlingData, resetPejlingData] =
+    useFormData<OmittedKontrol>({
+      gid: -1,
+      timeofmeas: dateUpdated(),
+      pumpstop: null,
+      disttowatertable_m: 0,
+      service: false,
+      comment: '',
+      extrema: null,
+    });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dataUri, setdataUri] = useState<string | ArrayBuffer | null>('');
@@ -59,28 +91,38 @@ const Boreholeno = () => {
     type: boreholeno,
     comment: '',
     public: false,
-    date: moment().toISOString(),
+    date: dayjs(),
   });
 
-  const [mpData, setMpData, changeMpData, resetMpData] = useFormData({
+  const [mpData, setMpData, changeMpData, resetMpData] = useFormData<BoreholeMaalepunkt>({
     gid: -1,
-    startdate: () => moment().toISOString(),
-    enddate: () => moment('2099-01-01').toISOString(),
+    startdate: dateUpdated(),
+    enddate: endDateUpdated(),
     elevation: null,
     mp_description: '',
   });
 
-  const [control, setcontrol] = useState();
+  const [control, setcontrol] = useState<Array<BoreholeMeasurement> | undefined>();
   const [dynamic, setDynamic] = useState<Array<string | number>>([]);
 
-  const {data: measurements} = useQuery({
+  const {data: measurements} = useQuery<
+    Array<BoreholeMeasurementAPI>,
+    Error,
+    Array<BoreholeMeasurement>
+  >({
     queryKey: queryKeys.Borehole.measurementsWithIntake(boreholeno, intakeno),
     queryFn: async () => {
-      const {data} = await apiClient.get(
+      const {data} = await apiClient.get<Array<BoreholeMeasurementAPI>>(
         `/sensor_field/borehole/measurements/${boreholeno}/${intakeno}`
       );
       return data;
     },
+    select: (data): Array<BoreholeMeasurement> =>
+      data.map((e) => ({
+        ...e,
+        timeofmeas: dayjs(e.timeofmeas),
+        pumpstop: e.pumpstop ? dayjs(e.pumpstop) : null,
+      })),
     enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
     placeholderData: [],
   });
@@ -88,7 +130,7 @@ const Boreholeno = () => {
   const {data: watlevmp} = useQuery({
     queryKey: queryKeys.Borehole.watlevmpWithIntake(boreholeno, intakeno),
     queryFn: async () => {
-      const {data} = await apiClient.get(
+      const {data} = await apiClient.get<Array<MaalepunktTableData>>(
         `/sensor_field/borehole/watlevmp/${boreholeno}/${intakeno}`
       );
       return data;
@@ -99,14 +141,14 @@ const Boreholeno = () => {
 
   useEffect(() => {
     if (watlevmp && watlevmp.length > 0) {
-      const elev: number = watlevmp.filter((e2: Maalepunkt) => {
+      const elev: number = watlevmp.filter((e2) => {
         return (
-          moment(pejlingData.timeofmeas) >= moment(e2.startdate) &&
-          moment(pejlingData.timeofmeas) < moment(e2.enddate)
+          pejlingData.timeofmeas.isSameOrAfter(e2.startdate) &&
+          pejlingData.timeofmeas.isSameOrBefore(e2.enddate)
         );
       })[0]?.elevation;
 
-      const dynamicDate: string = pejlingData.timeofmeas;
+      const dynamicDate = pejlingData.timeofmeas.format('YYYY-MM-DD HH:mm:ss');
       const dynamicMeas: number = elev - pejlingData.disttowatertable_m;
       setDynamic([dynamicDate, dynamicMeas]);
     }
@@ -114,27 +156,28 @@ const Boreholeno = () => {
 
   useEffect(() => {
     let ctrls = [];
-    if (watlevmp && watlevmp.length > 0) {
-      ctrls = measurements.map((e: BoreholeMeasurement) => {
-        const elev = watlevmp.filter((e2: Maalepunkt) => {
-          return (
-            moment(e.timeofmeas) >= moment(e2.startdate) &&
-            moment(e.timeofmeas) < moment(e2.enddate)
-          );
-        })[0].elevation;
+    if (measurements !== undefined) {
+      if (watlevmp && watlevmp.length > 0) {
+        ctrls = measurements?.map((e) => {
+          const elev = watlevmp.filter((e2) => {
+            return (
+              e.timeofmeas.isSameOrAfter(e2.startdate) && e.timeofmeas.isSameOrBefore(e2.enddate)
+            );
+          })[0].elevation;
 
-        return {
-          ...e,
-          waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
-        };
-      });
-    } else {
-      ctrls = measurements?.map((elem: BoreholeMeasurement) => {
-        return {...elem, waterlevel: elem.disttowatertable_m};
-      });
+          return {
+            ...e,
+            waterlevel: e.disttowatertable_m ? elev - e.disttowatertable_m : null,
+          };
+        });
+      } else {
+        ctrls = measurements?.map((elem) => {
+          return {...elem, waterlevel: elem.disttowatertable_m};
+        });
+      }
+      setcontrol(ctrls);
     }
-    setcontrol(ctrls);
-  }, [watlevmp, measurements]);
+  }, [watlevmp, measurements !== undefined]);
 
   const handleMpCancel = () => {
     resetMpData();
@@ -157,7 +200,7 @@ const Boreholeno = () => {
   });
 
   const handlePejlingSubmit = () => {
-    const payload = {...pejlingData};
+    const payload = {...pejlingData} as Kontrol;
     if (payload.service) payload.pumpstop = null;
     addOrEditPejling.mutate(payload, {
       onSuccess: () => {
@@ -204,15 +247,12 @@ const Boreholeno = () => {
 
   const handleEditPejling = (data: Kontrol) => {
     setShowForm(true);
-    data.timeofmeas = moment(data.timeofmeas).toISOString();
-    setPejlingData(data);
+    setPejlingData(data as BoreholePejling);
   };
 
-  const handleEditWatlevmp = (data: MaalepunktTableData) => {
+  const handleEditWatlevmp = (data: BoreholeMaalepunkt) => {
     setShowForm(true);
-    data.startdate = moment(data.startdate).toISOString();
-    data.enddate = moment(data.enddate).toISOString();
-    setMpData(data);
+    setMpData(data as BoreholeMaalepunkt);
   };
 
   const handleDelete = (type: string) => {
@@ -266,7 +306,7 @@ const Boreholeno = () => {
       type: boreholeno,
       comment: '',
       public: false,
-      date: moment().toISOString(),
+      date: dayjs(),
     });
     setOpenSave(true);
   };

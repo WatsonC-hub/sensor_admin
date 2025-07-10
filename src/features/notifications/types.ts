@@ -1,10 +1,11 @@
+import {Dayjs} from 'dayjs';
 import {MapOverview} from '~/hooks/query/useNotificationOverview';
 import {BoreholeMapData} from '~/types';
 
 export type IconDetails = Partial<
   MapOverview & {
     color?: string | null;
-    due_date?: string | null;
+    due_date?: Dayjs | null;
   }
 >;
 export type BoreholeDetails = Partial<BoreholeMapData>;

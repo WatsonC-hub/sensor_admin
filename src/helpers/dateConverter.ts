@@ -2,15 +2,22 @@
 Adding one to the month is mainly done because the method date.getMonth return a zero based value, which means it will show the previous month
 */
 
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 
-const convertDate = (date: string) => {
+const convertDate = (date: string | Dayjs) => {
+  if (dayjs.isDayjs(date)) {
+    return date.locale('da').format('L');
+  }
   return dayjs(date).locale('da').format('L');
 };
 
-const convertDateWithTimeStamp = (dateString: string | null | undefined) => {
+const convertDateWithTimeStamp = (dateString: string | Dayjs | Date | null | undefined) => {
   if (dateString === null) {
     return '';
+  }
+
+  if (dayjs.isDayjs(dateString)) {
+    return dateString.format('L LT');
   }
 
   const date = dayjs(dateString).format('L LT');
@@ -21,16 +28,27 @@ const convertToLocalDate = (date: dayjs.Dayjs | undefined) => {
   return date?.format('L LT');
 };
 
-const checkEndDateIsUnset = (dateString: string) => {
-  const date: Date = new Date(dateString);
-  return date.getFullYear() === 2099;
+const checkEndDateIsUnset = (dateString: string | Dayjs) => {
+  if (dayjs.isDayjs(dateString)) {
+    return dateString.year() === 2099;
+  }
+
+  const date = dayjs(dateString);
+  return date.year() === 2099;
 };
 
 const calculatePumpstop = (
-  timeofmeas: string,
-  pumpstop: string | null | undefined,
+  timeofmeas: string | Dayjs,
+  pumpstop: string | Dayjs | null | undefined,
   service: boolean | null
 ) => {
+  if (dayjs.isDayjs(timeofmeas)) {
+    timeofmeas = timeofmeas.toISOString();
+  }
+  if (dayjs.isDayjs(pumpstop)) {
+    pumpstop = pumpstop.toISOString();
+  }
+
   return pumpstop !== null && pumpstop !== undefined
     ? dayjs(timeofmeas).diff(dayjs(pumpstop), 'hours') + ' timer siden'
     : service === true

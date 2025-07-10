@@ -1,4 +1,3 @@
-// FormDateTime.tsx
 import React from 'react';
 import {TextFieldVariants} from '@mui/material';
 import {Controller, FieldValues, Path, useFormContext} from 'react-hook-form';
@@ -8,7 +7,7 @@ import dayjs, {Dayjs} from 'dayjs';
 import {PickersActionBarAction} from '@mui/x-date-pickers';
 
 export type FormDateTimeProps<TFieldValues extends FieldValues> = Omit<
-  DateTimePickerProps<true>,
+  DateTimePickerProps<false>,
   'value' | 'onChange' | 'renderInput'
 > & {
   name: Path<TFieldValues>;
@@ -75,6 +74,16 @@ const FormDateTime = <TFieldValues extends FieldValues>({
               },
               textField: {
                 ...slotProps?.textField,
+                InputProps: {
+                  sx: {
+                    '& .MuiInputBase-input': {
+                      padding: '8.2px !important',
+                    },
+                    '& > fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                },
                 onBlur: onBlur,
                 margin: margin,
                 fullWidth: true,
@@ -82,10 +91,8 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 helperText: error?.message,
                 InputLabelProps: {
                   shrink: true,
-                },
-                sx: {
-                  '& > fieldset': {
-                    borderColor: 'primary.main',
+                  sx: {
+                    color: 'primary.main',
                   },
                 },
               },

@@ -83,8 +83,6 @@ const UnitEndDateDialog = ({openDialog, setOpenDialog, unit}: UnitEndDateDialogP
     enddate: dayjs(),
   });
 
-  console.log('UnitEndDateDialog parsed data:', parsed);
-
   const formMethods = useForm<UnitEndFormValues>({
     resolver: zodResolver(unitEndSchema),
     defaultValues: parsed,

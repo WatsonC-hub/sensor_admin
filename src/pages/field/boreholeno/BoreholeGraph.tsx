@@ -83,7 +83,7 @@ export default function PlotGraph({ourData, dynamicMeasurement}: PlotGraphProps)
   });
 
   const plotOurData: Partial<PlotData> = {
-    x: xOurData,
+    x: Array.prototype.map((item) => item.toISOString(), xOurData),
     y: yOurData,
     name: 'Calypso data',
     type: 'scattergl',

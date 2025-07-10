@@ -22,8 +22,9 @@ import {TaskUser} from '~/features/tasks/types';
 import {useTaskState} from '../api/useTaskState';
 import {merge} from 'lodash';
 import {useLocationData} from '~/hooks/query/useMetadata';
-import moment from 'moment';
 import {toast} from 'react-toastify';
+import FormDateTime, {FormDateTimeProps} from '~/components/FormDateTime';
+import {zodDayjs} from '~/helpers/schemas';
 
 const zodSchema = z.object({
   ts_id: z.number({required_error: 'Tidsserie skal være angivet'}),
@@ -33,7 +34,7 @@ const zodSchema = z.object({
     .max(255, 'Navn må maks være 255 tegn'),
   description: z.string().nullish(),
   status_id: z.number().optional(),
-  due_date: z.string().nullish(),
+  due_date: zodDayjs().nullish(),
   assigned_to: z
     .string()
     .nullish()
@@ -112,18 +113,22 @@ const Input = (props: FormInputProps<FormValues>) => {
   return <FormInput {...props} size="small" disabled={disabled || props.disabled} />;
 };
 
-const DueDate = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
+const DueDate = (props: Omit<FormDateTimeProps<FormValues>, 'name'>) => {
   const {disabled} = React.useContext(TaskFormContext);
   return (
-    <FormInput
+    <FormDateTime
       name="due_date"
       label="Forfaldsdato"
-      type="date"
-      size="small"
-      placeholder="Sæt forfaldsdato"
-      // transform={(value) => {
-      //   return moment(value.target.value).toISOString();
-      // }}
+      format="L"
+      viewRenderers={{
+        hours: null,
+        minutes: null,
+      }}
+      slotProps={{
+        textField: {
+          size: 'small',
+        },
+      }}
       {...props}
       disabled={disabled || props.disabled}
     />
@@ -456,7 +461,7 @@ const DueDateDialog = (
 
   useEffect(() => {
     if (nextDueDate && open && !isPending) {
-      setValue('due_date', moment(nextDueDate).format('YYYY-MM-DD'), {
+      setValue('due_date', nextDueDate, {
         shouldDirty: true,
         shouldTouch: true,
       });

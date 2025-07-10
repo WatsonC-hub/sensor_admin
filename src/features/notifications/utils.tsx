@@ -1,4 +1,3 @@
-import moment from 'moment';
 import {
   boreholeColors,
   BoreHoleFlagEnum,
@@ -10,6 +9,7 @@ import {
 import {BoreholeDetails, IconDetails} from './types';
 
 import {JSX} from 'react';
+import dayjs from 'dayjs';
 
 const rawIcons = Object.fromEntries(
   Object.entries(
@@ -49,10 +49,10 @@ export const getColor = (iconDetails: IconDetails) => {
     // !iconDetails?.itinerary_id &&
     iconDetails?.has_task
   ) {
-    if (moment(iconDetails.due_date).add(1, 'day').isBefore(moment(moment(), 'YYYY-MM-DD')))
+    if (iconDetails.due_date?.add(1, 'day').isBefore(dayjs()))
       return sensorColors[FlagEnum.WARNING].color;
     else if (
-      moment(iconDetails.due_date).isSameOrBefore(moment(moment(), 'YYYY-MM-DD').add(1, 'month')) &&
+      iconDetails.due_date?.isSameOrBefore(dayjs().add(1, 'month')) &&
       iconDetails.itinerary_id === null
     )
       return sensorColors[FlagEnum.INFO].color;

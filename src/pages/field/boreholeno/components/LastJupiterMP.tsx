@@ -1,62 +1,83 @@
 import {Box, Button, CircularProgress, Typography} from '@mui/material';
 import {UseMutationResult, useQuery, useQueryClient} from '@tanstack/react-query';
-import moment from 'moment';
+import dayjs, {Dayjs} from 'dayjs';
 import React from 'react';
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
+import {convertDate} from '~/helpers/dateConverter';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import LastMPCard from '~/pages/field/boreholeno/components/LastMPCard';
 import {useAppContext} from '~/state/contexts';
-import {Maalepunkt, MaalepunktPost} from '~/types';
+import {MaalepunktPost, MaalepunktTableData} from '~/types';
 
 interface JupiterMPProps {
-  lastOurMP: Maalepunkt;
+  lastOurMP: MaalepunktTableData | undefined;
   watlevmpMutate: UseMutationResult<void, Error, MaalepunktPost, unknown>;
   setAddMPOpen: (open: boolean | null) => void;
 }
 
+type LastJupiterMPData = {
+  descriptio: string | undefined;
+  elevation: number | null;
+  startdate: Dayjs;
+};
+
+type LastJupiterMPAPI = {
+  descriptio: string | undefined;
+  elevation: number | null;
+  startdate: string;
+};
+
 const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps) => {
   const {boreholeno, intakeno} = useAppContext(['boreholeno', 'intakeno']);
-
   const queryClient = useQueryClient();
   const {data, isLoading, isError, isSuccess} = useQuery({
     queryKey: queryKeys.Borehole.lastMP(boreholeno, intakeno),
     queryFn: async () => {
-      const {data} = await apiClient.get(
+      const {data} = await apiClient.get<LastJupiterMPAPI>(
         `/sensor_field/borehole/last_mp/${boreholeno}/${intakeno}`
       );
       return data;
     },
+    select: (data) =>
+      ({
+        descriptio: data.descriptio,
+        elevation: data.elevation,
+        startdate: dayjs(data.startdate),
+      }) as LastJupiterMPData,
     enabled: boreholeno !== undefined && boreholeno !== null && intakeno !== undefined,
   });
 
   const showQuickAdd = data
     ? lastOurMP
-      ? moment(data?.startdate).isAfter(moment(lastOurMP?.startdate))
+      ? data?.startdate.isAfter(lastOurMP?.startdate)
       : true
     : false;
 
   const handleQuickAdd = () => {
-    const payload: MaalepunktPost = {
-      gid: -1,
-      startdate: moment(data.startdate).toISOString(),
-      enddate: moment('2099-01-01').toISOString(),
-      elevation: data.elevation,
-      mp_description: data.descriptio,
-    };
-    watlevmpMutate.mutate(payload, {
-      onSuccess: () => {
-        toast.success('Målepunkt gemt');
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.Borehole.watlevmp(boreholeno),
-        });
-        setAddMPOpen(null);
-      },
-      onError: () => {
-        toast.error('Der skete en fejl');
-      },
-    });
+    if (data) {
+      const payload: MaalepunktPost = {
+        gid: -1,
+        startdate: data.startdate,
+        enddate: dayjs('2099-01-01'),
+        elevation: data.elevation,
+        mp_description: data.descriptio,
+      };
+
+      watlevmpMutate.mutate(payload, {
+        onSuccess: () => {
+          toast.success('Målepunkt gemt');
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.Borehole.watlevmp(boreholeno),
+          });
+          setAddMPOpen(null);
+        },
+        onError: () => {
+          toast.error('Der skete en fejl');
+        },
+      });
+    }
   };
 
   return (
@@ -76,7 +97,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
           )}
           {lastOurMP && (
             <Typography color="grey.400" ml={1}>
-              {moment(lastOurMP?.startdate).format('YYYY-MM-DD')}
+              {convertDate(lastOurMP.startdate)}
             </Typography>
           )}
         </Box>
@@ -107,7 +128,7 @@ const LastJupiterMP = ({lastOurMP, watlevmpMutate, setAddMPOpen}: JupiterMPProps
 
           {isSuccess && (
             <Typography color="grey.400" ml={1}>
-              {moment(data.startdate).format('YYYY-MM-DD')}
+              {data.startdate.format('L')}
             </Typography>
           )}
         </Box>

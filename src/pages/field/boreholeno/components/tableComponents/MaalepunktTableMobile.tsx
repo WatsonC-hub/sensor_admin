@@ -20,10 +20,12 @@ import {TableTypes} from '~/helpers/EnumHelper';
 import RenderActions from '~/helpers/RowActions';
 import {useTable} from '~/hooks/useTable';
 import {MaalepunktTableData} from '~/types';
+import {BoreholeMaalepunkt} from '../../Boreholeno';
+import dayjs from 'dayjs';
 
 interface Props {
-  data: MaalepunktTableData[];
-  handleEdit: (maalepunkt: MaalepunktTableData) => void;
+  data: MaalepunktTableData[] | undefined;
+  handleEdit: (maalepunkt: BoreholeMaalepunkt) => void;
   handleDelete: (gid: number) => void;
   disabled: boolean;
 }
@@ -75,7 +77,12 @@ export default function MaalepunktTableMobile({data, handleEdit, handleDelete, d
             <Box marginLeft={'auto'}>
               <RenderActions
                 handleEdit={() => {
-                  handleEdit(row.original);
+                  const maalepunkt: BoreholeMaalepunkt = {
+                    ...row.original,
+                    startdate: dayjs(row.original.startdate),
+                    enddate: dayjs(row.original.enddate),
+                  };
+                  handleEdit(maalepunkt);
                 }}
                 onDeleteBtnClick={() => {
                   onDeleteBtnClick(row.original.gid);

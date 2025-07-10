@@ -12,10 +12,12 @@ import {
   type TaskStatus,
   DBTask,
   DeleteTaskFromItinerary,
+  TaskAPI,
 } from '../types';
 import {useDisplayState} from '~/hooks/ui';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
 import {invalidateFromMeta} from '~/helpers/InvalidationHelper';
+import dayjs, {Dayjs} from 'dayjs';
 
 type Mutation<TData> = {
   path: string;
@@ -42,7 +44,9 @@ type TaskConvert = {
   block_on_location?: boolean;
 };
 
-type PostTask = Omit<TaskConvert, 'notification_id'>;
+type PostTask = Omit<TaskConvert, 'notification_id'> & {
+  // due_date?: Dayjs | null;
+};
 
 const tasksPostOptions = {
   mutationKey: ['tasks_post'],
@@ -97,11 +101,14 @@ const deleteTaskFromItineraryOptions = {
 };
 
 const getNextDueDateOptions = (ts_id: number, open: boolean) =>
-  queryOptions<string, APIError>({
+  queryOptions<string, APIError, Dayjs>({
     queryKey: queryKeys.Tasks.nextDueDate(ts_id),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/tasks/next_due_date/${ts_id}`);
+      const {data} = await apiClient.get<string>(`/sensor_admin/tasks/next_due_date/${ts_id}`);
       return data;
+    },
+    select: (data): Dayjs => {
+      return dayjs(data);
     },
     enabled: ts_id !== undefined && ts_id !== null && open,
   });
@@ -151,12 +158,17 @@ export const useTasks = () => {
 
   const [setSelectedTask] = useDisplayState((state) => [state.setSelectedTask]);
 
-  const get = useQuery<Task[], APIError>({
+  const get = useQuery<Array<TaskAPI>, APIError, Task[]>({
     queryKey: queryKeys.Tasks.all(),
     queryFn: async () => {
-      const {data} = await apiClient.get(`/sensor_admin/tasks`);
+      const {data} = await apiClient.get<Array<TaskAPI>>(`/sensor_admin/tasks`);
       return data;
     },
+    select: (data): Array<Task> =>
+      data.map((task) => ({
+        ...task,
+        due_date: task.due_date ? dayjs(task.due_date) : null,
+      })),
     staleTime: 1000 * 60 * 1,
   });
 

@@ -11,6 +11,7 @@
 //     longitude: '{{floating(8.24402, 14.70664)}}'
 //   }
 
+import {Dayjs} from 'dayjs';
 import {FlagEnum} from '../notifications/consts';
 
 export type ID = string;
@@ -58,7 +59,7 @@ export type Task = {
   status_id: number | StatusEnum;
   status_name: string;
   status_category: 'unstarted' | 'started' | 'closed';
-  due_date: string | null;
+  due_date: Dayjs | null;
   assigned_to: string | null;
   assigned_display_name: string | null;
   blocks_notifications: number[];
@@ -80,13 +81,17 @@ export type Task = {
   prefix: string | null;
 };
 
+export type TaskAPI = Omit<Task, 'due_date'> & {
+  due_date: string | null;
+};
+
 export type DBTask = {
   id: ID;
   ts_id: number;
   name: string;
   description?: string | null | undefined;
   status_id: number;
-  due_date: string | null;
+  due_date: Dayjs | null;
   assigned_to: string | null;
   blocks_notifications: number[];
   created_by: string;
@@ -177,8 +182,12 @@ export type Taskitinerary = {
   name: string;
 };
 
-export type PostTaskitinerary = Omit<Taskitinerary, 'id' | 'created_at' | 'created_by'> & {
+export type PostTaskitinerary = Omit<
+  Taskitinerary,
+  'id' | 'due_date' | 'created_at' | 'created_by'
+> & {
   loc_ids: number[];
+  due_date?: Dayjs | null;
 };
 
 export type PatchTaskitinerary = {
