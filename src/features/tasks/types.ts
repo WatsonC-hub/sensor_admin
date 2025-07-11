@@ -187,7 +187,7 @@ export type PostTaskitinerary = Omit<
   'id' | 'due_date' | 'created_at' | 'created_by'
 > & {
   loc_ids: number[];
-  due_date?: Dayjs | null;
+  due_date?: string | null;
 };
 
 export type PatchTaskitinerary = {

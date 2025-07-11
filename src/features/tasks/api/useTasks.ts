@@ -45,7 +45,7 @@ type TaskConvert = {
 };
 
 type PostTask = Omit<TaskConvert, 'notification_id' | 'due_date'> & {
-  due_date?: Dayjs | null;
+  due_date?: string | null;
 };
 
 const tasksPostOptions = {

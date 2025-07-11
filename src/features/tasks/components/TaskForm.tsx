@@ -324,7 +324,6 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       select
       size="small"
       placeholder="Vælg..."
-      // style={{width: 175}}
       {...props}
       disabled={disabled || props.disabled}
     >
@@ -335,35 +334,6 @@ const BlockOnLocation = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
         lokation
       </MenuItem>
     </FormInput>
-    // <Controller<FormValues, 'block_on_location'>
-    //   control={control}
-    //   name={'block_on_location'}
-    //   render={({field: {value, onChange, ref, name}}) => {
-    //     return (
-    //       <Stack direction="row" alignItems="center" justifyContent="center">
-    //         <Typography variant="body2">Tidsserien</Typography>
-    //         <FormControlLabel
-    //           labelPlacement="top"
-    //           control={
-    //             <Switch
-    //               ref={ref}
-    //               checked={value}
-    //               size="small"
-    //               color="primary"
-    //               aria-label={name}
-    //               onChange={(e, value) => {
-    //                 onChange(value);
-    //                 onChangeCallback && onChangeCallback(e);
-    //               }}
-    //             />
-    //           }
-    //           label={'Bloker på'}
-    //         />
-    //         <Typography variant="body2">Lokationen</Typography>
-    //       </Stack>
-    //     );
-    //   }}
-    // />
   );
 };
 
@@ -377,7 +347,6 @@ const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
       select
       placeholder="Vælg..."
       size="small"
-      // style={{width: 175}}
       {...props}
       disabled={disabled || props.disabled}
     >
@@ -388,33 +357,6 @@ const BlockAll = (props: Omit<FormInputProps<FormValues>, 'name'>) => {
         alle
       </MenuItem>
     </FormInput>
-    // <Stack direction="row" alignItems="center" justifyContent="center">
-    //   <Controller<FormValues, 'block_all'>
-    //     control={control}
-    //     name={'block_all'}
-    //     render={({field: {value, onChange, ref, name}}) => {
-    //       return (
-    //         <FormControlLabel
-    //           labelPlacement="top"
-    //           control={
-    //             <Switch
-    //               ref={ref}
-    //               checked={value}
-    //               size="small"
-    //               color="primary"
-    //               aria-label={name}
-    //               onChange={(e, value) => {
-    //                 onChange(value);
-    //                 onChangeCallback && onChangeCallback(e);
-    //               }}
-    //             />
-    //           }
-    //           label={'Bloker alle notifikationer'}
-    //         />
-    //       );
-    //     }}
-    //   />
-    // </Stack>
   );
 };
 

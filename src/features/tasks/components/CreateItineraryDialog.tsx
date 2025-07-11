@@ -41,7 +41,7 @@ const CreateItineraryDialog = ({dialogOpen, setDialogOpen}: CreateItineraryDialo
     createItinerary.mutate(
       {
         loc_ids: [],
-        due_date: data.due_date,
+        due_date: data.due_date?.format('YYYY-MM-DD'),
         assigned_to: data.assigned_to,
         name: data.name ?? '',
       },
