@@ -76,9 +76,6 @@ const FormDateTime = <TFieldValues extends FieldValues>({
                 ...slotProps?.textField,
                 InputProps: {
                   sx: {
-                    '& .MuiInputBase-input': {
-                      padding: '8.2px !important',
-                    },
                     '& > fieldset': {
                       borderColor: 'primary.main',
                     },

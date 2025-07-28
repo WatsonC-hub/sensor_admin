@@ -217,7 +217,6 @@ const Boreholeno = () => {
       },
     });
   };
-  // infer usemutation type for LASTJUPITERMP.tsx
   const addOrEditWatlevmp = useMutation({
     mutationFn: async (data: MaalepunktPost) => {
       if (data.gid === -1) {

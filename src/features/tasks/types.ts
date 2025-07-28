@@ -14,7 +14,7 @@
 import {Dayjs} from 'dayjs';
 import {FlagEnum} from '../notifications/consts';
 
-export type ID = string;
+type ID = string;
 
 // const example = {
 //   id: '07e2a045-e473-4a6f-9097-d9f622542a19',

@@ -46,6 +46,13 @@ const OwnDatePicker = ({
           InputLabelProps: {
             shrink: true,
           },
+          InputProps: {
+            sx: {
+              '& > fieldset': {
+                borderColor: 'primary.main',
+              },
+            },
+          },
           error: error,
           helperText: helperText,
         },
