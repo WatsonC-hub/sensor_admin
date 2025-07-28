@@ -1,9 +1,16 @@
-import {Box} from '@mui/material';
+import {Box, Checkbox} from '@mui/material';
 import {MRT_ColumnDef, MRT_TableOptions, MaterialReactTable} from 'material-react-table';
 import React, {useMemo} from 'react';
 import {MergeType, TableTypes} from '~/helpers/EnumHelper';
 import {useTable} from '~/hooks/useTable';
 import {CriteriaTable} from '../types';
+
+const criteriaTypes = [
+  {id: 'alarm_high', name: 'Øvre alarmniveau'},
+  {id: 'alarm_low', name: 'Nedre alarmniveau'},
+  {id: 'attention_high', name: 'Øvre opmærksomhedsniveau'},
+  {id: 'attention_low', name: 'Nedre opmærksomhedsniveau'},
+] as const;
 
 type AlarmCriteriaTableProps = {
   otherAlarms: Array<CriteriaTable> | undefined;
@@ -14,11 +21,28 @@ const AlarmCriteriaTable = ({otherAlarms}: AlarmCriteriaTableProps) => {
     () => [
       {
         header: 'Navn',
-        accessorKey: 'attention_level',
+        id: 'name',
+        accessorFn: (row) => criteriaTypes.find((c) => c.id === row.name)?.name || row.name,
       },
       {
         header: 'Kriteria',
         accessorKey: 'criteria',
+      },
+      {
+        header: 'SMS/Mail/Mobil',
+        accessorKey: 'contactType',
+        size: 20,
+        maxSize: 20,
+        Cell: ({cell}) => {
+          const {sms, email, call} = cell.row.original;
+          return (
+            <Box>
+              <Checkbox checked={sms} disabled />
+              <Checkbox checked={email} disabled />
+              <Checkbox checked={call} disabled />
+            </Box>
+          );
+        },
       },
     ],
     []

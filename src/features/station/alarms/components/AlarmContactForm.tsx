@@ -65,21 +65,6 @@ const AlarmContactForm = ({index, remove, searchValue}: AlarmContact) => {
         clearOnBlur
         handleHomeEndKeys
       />
-      <AlarmContactTypedForm.Checkbox
-        name={`contacts.${index}.sms`}
-        label={`SMS`}
-        gridSizes={{xs: 12, sm: 2}}
-      />
-      <AlarmContactTypedForm.Checkbox
-        name={`contacts.${index}.email`}
-        label={`Email`}
-        gridSizes={{xs: 12, sm: 2}}
-      />
-      <AlarmContactTypedForm.Checkbox
-        name={`contacts.${index}.call`}
-        label={`Opkald`}
-        gridSizes={{xs: 12, sm: 2}}
-      />
       <Grid2 size={{xs: 6, sm: 2}} ml={'auto'} mr={2}>
         <Button
           bttype="tertiary"

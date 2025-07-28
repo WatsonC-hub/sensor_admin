@@ -1,26 +1,32 @@
 export type AlarmCriteria = {
-  attentionLevel: 'attention_high' | 'attention_low' | 'alarm_high' | 'alarm_low' | '';
-  criteria: number;
+  id: number | undefined;
+  criteria: number | undefined;
+  sms: boolean;
+  email: boolean;
+  call: boolean;
+};
+
+export type AlarmCriteriaType = {
+  id: number;
+  name: string;
 };
 
 export type CriteriaTable = {
-  attention_level: 'attention_high' | 'attention_low' | 'alarm_high' | 'alarm_low';
+  id: number;
+  name: string;
   criteria: number;
+  sms: boolean;
+  email: boolean;
+  call: boolean;
 };
 
 export type AlarmContact = {
   contact_id: string | undefined;
-  sms: boolean;
-  email: boolean;
-  call: boolean;
 };
 
 export type ContactTable = {
   contact_id: string | undefined;
   name: string;
-  sms: boolean;
-  email: boolean;
-  call: boolean;
 };
 
 export type AlarmHistory = {
@@ -61,6 +67,7 @@ export type AlarmPost = {
   latest_timeofday: string;
   note_to_include?: string;
   alarm_contacts: Array<AlarmContact> | undefined;
+  alarm_criteria: Array<AlarmCriteria> | undefined;
   signal_warning: boolean;
 };
 

@@ -143,7 +143,7 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   const yControl = controlData?.map((d) => d.referenced_measurement);
   const textControl = controlData?.map((d) => correction_map[d.useforcorrection]);
 
-  console.log('templines', tempLines);
+  // console.log('templines', tempLines);
   const [shapes, annotations] = useMemo(() => {
     const [qaShapes, qaAnnotate] = transformQAData(qaData ?? []);
     let shapes: Array<object> = [

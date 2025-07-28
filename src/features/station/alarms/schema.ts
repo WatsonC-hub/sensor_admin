@@ -4,9 +4,6 @@ export const alarmContactSchema = z
   .object({
     contact_id: z.string().optional(),
     name: z.string().optional(),
-    sms: z.boolean(),
-    email: z.boolean(),
-    call: z.boolean(),
   })
   .refine((contact) => contact.contact_id !== undefined && contact.contact_id !== '', {
     path: ['contact_id'],
@@ -15,17 +12,19 @@ export const alarmContactSchema = z
 
 export const criteria = z
   .object({
-    attention_level: z
-      .enum(['attention_high', 'attention_low', 'alarm_high', 'alarm_low', ''])
-      .optional(),
+    id: z.number().int().optional(),
+    name: z.string(),
     criteria: z.number().optional(),
+    sms: z.boolean().default(false),
+    email: z.boolean().default(false),
+    call: z.boolean().default(false),
   })
   .refine((criteria) => criteria.criteria !== undefined, {
     path: ['criteria'],
     message: 'Kriterium er påkrævet',
   })
-  .refine((criteria) => criteria.attention_level !== '', {
-    path: ['attention_level'],
+  .refine((criteria) => criteria.name !== '', {
+    path: ['name'],
     message: 'Vælg et niveau',
   });
 
