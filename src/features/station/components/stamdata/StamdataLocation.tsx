@@ -1,6 +1,6 @@
 import {MenuItem, Typography, InputAdornment, TextField} from '@mui/material';
 import {useQuery} from '@tanstack/react-query';
-import React, {ChangeEvent, useEffect} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {useFormContext, Controller} from 'react-hook-form';
 import {apiClient} from '~/apiClient';
 import FormInput, {FormInputProps} from '~/components/FormInput';
@@ -17,8 +17,6 @@ import {getDTMQuota} from '~/pages/field/fieldAPI';
 import ExtendedAutocomplete, {AutoCompleteFieldProps} from '~/components/Autocomplete';
 import {Borehole, useSearchBorehole} from '../../api/useBorehole';
 import {utm} from '~/features/map/mapConsts';
-import {useAtom} from 'jotai';
-import {boreholeSearchAtom} from '~/state/atoms';
 import {postElasticSearch} from '~/pages/field/boreholeAPI';
 import {useStationPages} from '~/hooks/useQueryStateParameters';
 import {stationPages} from '~/helpers/EnumHelper';
@@ -26,6 +24,7 @@ import {stationPages} from '~/helpers/EnumHelper';
 import {useAppContext} from '~/state/contexts';
 import {useTimeseriesData} from '~/hooks/query/useMetadata';
 import {queryKeys} from '~/helpers/QueryKeyFactoryHelper';
+import useDebouncedValue from '~/hooks/useDebouncedValue';
 
 type Props = {
   children: React.ReactNode;
@@ -277,25 +276,28 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
   const [pageToShow] = useStationPages();
   const {
     setValue,
+    control,
     formState: {errors},
     watch,
     trigger,
   } = useFormContext<BoreholeAddLocation | BoreholeEditLocation>();
-  const [search, setSearch] = useAtom(boreholeSearchAtom);
+  const [searchBorehole, setSearchBorehole] = useState<Borehole | null>(null);
+  const [search, setSearch] = useState<string>('');
+  const debouncedSearch = useDebouncedValue(search, 500);
   const [filteredOptions, setFilteredOptions] = React.useState<Borehole[]>([]);
   const loctype_id = watch('loctype_id', 9);
   const boreholeno = watch('boreholeno');
 
-  const {data: searchOptions, isFetching} = useSearchBorehole(boreholeno);
+  const {data: searchOptions} = useSearchBorehole(debouncedSearch);
 
   useEffect(() => {
     if (
-      boreholeno !== undefined &&
+      searchBorehole !== undefined &&
       searchOptions &&
       searchOptions.length > 0 &&
       pageToShow !== stationPages.GENERELTLOKATION
     ) {
-      const borehole = searchOptions?.find((opt) => opt.boreholeno === boreholeno);
+      const borehole = searchOptions?.find((opt) => opt.boreholeno === searchBorehole?.boreholeno);
       // @ts-expect-error error in type definition
       const latlng = utm.convertLatLngToUtm(borehole?.latitude, borehole?.longitude, 32);
 
@@ -306,80 +308,94 @@ const Boreholeno = (props: Partial<AutoCompleteFieldProps<Borehole>>) => {
     }
   }, [searchOptions]);
 
+  useEffect(() => {
+    if (boreholeno) {
+      setSearchBorehole({boreholeno} as Borehole);
+    }
+  }, [boreholeno !== null && boreholeno !== undefined]);
+
   return (
-    <>
-      {loctype_id && (
-        <ExtendedAutocomplete<Borehole>
-          {...props}
-          options={filteredOptions ?? []}
-          loading={isFetching}
-          labelKey="boreholeno"
-          onChange={(option) => {
-            if (option == null) {
-              setValue('boreholeno', '');
-              trigger('boreholeno');
-              return;
-            }
-            if ('boreholeno' in option) {
-              setValue('boreholeno', option.boreholeno, {shouldDirty: true});
-              trigger('boreholeno');
-            }
-          }}
-          error={errors.boreholeno?.message}
-          selectValue={boreholeno !== undefined ? ({boreholeno: boreholeno} as Borehole) : null}
-          // selectValue={boreholeno !== undefined ? ({boreholeno: boreholeno} as Borehole) : null}
-          filterOptions={(options, params) => {
-            const {inputValue} = params;
+    <Controller
+      name="boreholeno"
+      control={control}
+      render={({field: {onChange}}) => {
+        return (
+          <>
+            {loctype_id === 9 && (
+              <ExtendedAutocomplete<Borehole>
+                {...props}
+                options={filteredOptions ?? []}
+                labelKey="boreholeno"
+                onChange={(option) => {
+                  if (option == null) {
+                    onChange(null);
+                    setSearchBorehole(null);
+                    trigger('boreholeno');
+                    return;
+                  }
+                  if ('boreholeno' in option) {
+                    onChange(option.boreholeno);
+                    setSearchBorehole(option);
+                    trigger('boreholeno');
+                  }
+                }}
+                error={errors.boreholeno?.message}
+                selectValue={searchBorehole}
+                filterOptions={(options, params) => {
+                  const {inputValue} = params;
 
-            const filter = options.filter((option) => option.boreholeno?.includes(inputValue));
+                  const filter = options.filter((option) =>
+                    option.boreholeno?.includes(inputValue)
+                  );
 
-            return filter;
-          }}
-          inputValue={search}
-          renderOption={(props, option) => {
-            return (
-              <li {...props} key={option.boreholeno}>
-                <Typography>{option.boreholeno}</Typography>
-              </li>
-            );
-          }}
-          textFieldsProps={{
-            label: 'DGU nummer',
-            placeholder: 'Søg efter DGU boringer...',
-            required: true,
-          }}
-          // fieldDescriptionText={props.fieldDescriptionText}
-          onInputChange={(event, searchValue) => {
-            const searchString = {
-              query: {
-                bool: {
-                  must: {
-                    query_string: {
-                      query: searchValue,
-                    },
-                  },
-                },
-              },
-            };
-
-            if (searchValue !== '' && loctype_id)
-              postElasticSearch(searchString).then((res) => {
-                setFilteredOptions(
-                  res.data.hits.hits.map((hit: any) => {
-                    return {
-                      boreholeno: hit._source.properties.boreholeno,
+                  return filter;
+                }}
+                inputValue={search}
+                renderOption={(props, option) => {
+                  return (
+                    <li {...props} key={option.boreholeno}>
+                      <Typography>{option.boreholeno}</Typography>
+                    </li>
+                  );
+                }}
+                textFieldsProps={{
+                  label: 'DGU nummer',
+                  placeholder: 'Søg efter DGU boringer...',
+                  required: true,
+                }}
+                onInputChange={(event, searchValue) => {
+                  if (searchValue !== '' && loctype_id === 9) {
+                    const searchString = {
+                      query: {
+                        bool: {
+                          must: {
+                            query_string: {
+                              query: searchValue,
+                            },
+                          },
+                        },
+                      },
                     };
-                  })
-                );
-              });
-            if (searchValue === '' && loctype_id) {
-              setValue('boreholeno', '');
-            }
-            setSearch(searchValue);
-          }}
-        />
-      )}
-    </>
+                    postElasticSearch(searchString).then((res) => {
+                      setFilteredOptions(
+                        res.data.hits.hits.map((hit: any) => {
+                          return {
+                            boreholeno: hit._source.properties.boreholeno,
+                          };
+                        })
+                      );
+                    });
+                  }
+                  setSearch(searchValue);
+
+                  return searchValue;
+                }}
+              />
+            )}
+          </>
+        );
+      }}
+    />
   );
 };
 

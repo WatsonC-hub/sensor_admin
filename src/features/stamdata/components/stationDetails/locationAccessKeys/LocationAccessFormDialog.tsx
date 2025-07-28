@@ -88,7 +88,7 @@ const LocationAccessFormDialog = ({loc_id, editMode, createNew, setCreateNew}: P
                             setSelectedContactInfo(option);
                           }
                         }}
-                        selectValue={selectedContactInfo!}
+                        selectValue={selectedContactInfo}
                         filterOptions={(options) => {
                           return options;
                         }}
