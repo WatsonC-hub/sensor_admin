@@ -1,13 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useFieldArray, useForm} from 'react-hook-form';
 import {createTypedForm} from '~/components/formComponents/Form';
 import AlarmCriteriaForm from './AlarmCriteriaForm';
 import {AlarmsFormValues, alarmsSchema} from '../schema';
 import {Box} from '@mui/material';
 import AlarmContactTypedForm from './AlarmContactForm';
-import {AddCircle} from '@mui/icons-material';
+import {AddCircle, ExpandLess, ExpandMore} from '@mui/icons-material';
 import Button from '~/components/Button';
-import FormFieldset from '~/components/FormFieldset';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {AlarmPost, alarmTable} from '../types';
 import {useAppContext} from '~/state/contexts';
@@ -15,6 +14,7 @@ import {useAlarm} from '../api/useAlarm';
 import {useSetAtom} from 'jotai';
 import {tempHorizontalAtom} from '~/state/atoms';
 import {toast} from 'react-toastify';
+import FormFieldset from '~/components/formComponents/FormFieldset';
 
 type AlarmFormProps = {
   setOpen: (open: boolean) => void;
@@ -25,6 +25,8 @@ const Form = createTypedForm<AlarmsFormValues>();
 
 const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
   const {ts_id} = useAppContext(['ts_id']);
+  const [criteriaCollapsed, setCriteriaCollapsed] = useState(false);
+  const [contactsCollapsed, setContactsCollapsed] = useState(false);
   const {
     post: postAlarm,
     put: putAlarm,
@@ -78,13 +80,15 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
         alarm_contacts: data.contacts?.map((contact) => ({
           contact_id: contact.contact_id,
         })),
-        alarm_criteria: data.criteria?.map((criteria) => ({
-          id: criteria.id,
-          criteria: criteria.criteria,
-          sms: criteria.sms,
-          email: criteria.email,
-          call: criteria.call,
-        })),
+        alarm_criteria: data.criteria
+          ?.filter((c) => c.criteria !== undefined)
+          .map((criteria) => ({
+            id: criteria.id,
+            criteria: criteria.criteria,
+            sms: criteria.sms,
+            email: criteria.email,
+            call: criteria.call,
+          })),
       };
 
       const payload = {
@@ -117,13 +121,15 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
                 contact_id: contact.contact_id,
               }))
             : undefined,
-        alarm_criteria: data.criteria?.map((criteria) => ({
-          id: criteria.id,
-          criteria: criteria.criteria,
-          sms: criteria.sms,
-          email: criteria.email,
-          call: criteria.call,
-        })),
+        alarm_criteria: data.criteria
+          ?.filter((c) => c.criteria !== undefined)
+          .map((criteria) => ({
+            id: criteria.id,
+            criteria: criteria.criteria,
+            sms: criteria.sms,
+            email: criteria.email,
+            call: criteria.call,
+          })),
       };
 
       const payload = {
@@ -150,7 +156,7 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
     name: 'contacts',
   });
 
-  const {fields: criteriaFields, remove: removeCriteria} = useFieldArray({
+  const {fields: criteriaFields} = useFieldArray({
     control,
     name: 'criteria',
   });
@@ -170,46 +176,55 @@ const AlarmForm = ({setOpen, alarm}: AlarmFormProps) => {
 
   return (
     <Form formMethods={alarmMethods} label="Alarm">
-      <FormFieldset label="Kriterier" sx={{marginTop: 1, width: '100%'}}>
-        {criteriaFields.map((field, index) => (
-          <AlarmCriteriaForm key={field.id} index={index} remove={removeCriteria} />
-        ))}
-        {/* <Box ml={'auto'} display="flex" mt={1}>
-          <Button
-            bttype="primary"
-            startIcon={<AddCircle />}
-            disabled={criteriaFields.length === 4}
-            onClick={() => {
-              addCriteria({name: '', criteria: undefined, sms: false, email: false, call: false});
-            }}
-            sx={{ml: 'auto'}}
-          >
-            Tilføj
-          </Button>
-        </Box> */}
+      <FormFieldset
+        label="Kriterier"
+        sx={{width: '100%', px: 1}}
+        icon={criteriaCollapsed ? <ExpandMore /> : <ExpandLess />}
+        onClick={() => setCriteriaCollapsed(!criteriaCollapsed)}
+      >
+        {!criteriaCollapsed && (
+          <>
+            {criteriaFields.map((field, index) => (
+              <AlarmCriteriaForm key={field.id} index={index} />
+            ))}
+          </>
+        )}
       </FormFieldset>
 
-      <FormFieldset label="Kontakter" sx={{marginTop: 1, width: '100%'}}>
-        {contactFields.map((field, index) => (
-          <div key={field.id}>
-            <AlarmContactTypedForm index={index} searchValue={field.name} remove={removeContact} />
-          </div>
-        ))}
-        <Box ml={'auto'} display="flex" mt={1}>
-          <Button
-            bttype="primary"
-            startIcon={<AddCircle />}
-            onClick={() => {
-              addContact({
-                contact_id: '',
-                name: '',
-              });
-            }}
-            sx={{ml: 'auto'}}
-          >
-            Tilføj
-          </Button>
-        </Box>
+      <FormFieldset
+        label="Kontakter"
+        sx={{width: '100%', px: 1}}
+        icon={contactsCollapsed ? <ExpandMore /> : <ExpandLess />}
+        onClick={() => setContactsCollapsed(!contactsCollapsed)}
+      >
+        {!contactsCollapsed && (
+          <>
+            {contactFields.map((field, index) => (
+              <div key={field.id}>
+                <AlarmContactTypedForm
+                  index={index}
+                  searchValue={field.name}
+                  remove={removeContact}
+                />
+              </div>
+            ))}
+            <Box ml={'auto'} display="flex" mt={1}>
+              <Button
+                bttype="primary"
+                startIcon={<AddCircle />}
+                onClick={() => {
+                  addContact({
+                    contact_id: '',
+                    name: '',
+                  });
+                }}
+                sx={{ml: 'auto'}}
+              >
+                Tilføj
+              </Button>
+            </Box>
+          </>
+        )}
       </FormFieldset>
       <Form.Input name="name" label="Alarm navn" placeholder="Indtast alarm navn" />
       <Form.Input

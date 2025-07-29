@@ -1,5 +1,5 @@
 import {Box} from '@mui/material';
-import React from 'react';
+import React, {useEffect} from 'react';
 import FabWrapper from '~/components/FabWrapper';
 import AlarmTable from '~/features/station/alarms/components/AlarmTable';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
@@ -7,12 +7,14 @@ import {useShowFormState, useStationPages} from '~/hooks/useQueryStateParameters
 import {alarmTable} from '~/features/station/alarms/types';
 import AlarmFormDialog from '~/features/station/alarms/components/AlarmFormDialog';
 import {useAlarm} from '~/features/station/alarms/api/useAlarm';
+import {useSetAtom} from 'jotai';
+import {tempHorizontalAtom} from '~/state/atoms';
 
 const Alarms = () => {
   const [pageToShow] = useStationPages();
   const [showForm] = useShowFormState();
   const [open, setOpen] = React.useState(false);
-
+  const setTempLines = useSetAtom(tempHorizontalAtom);
   const {
     get: {data: alarms},
   } = useAlarm();
@@ -35,6 +37,18 @@ const Alarms = () => {
   const cancel = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    if (!mapped_alarms) return;
+    setTempLines(
+      mapped_alarms?.[0]?.alarmCriteria.map((criteria) => ({
+        level: criteria.criteria,
+        name: criteria.name,
+        line: undefined,
+        mode: undefined,
+      }))
+    );
+  }, [mapped_alarms !== undefined]);
 
   return (
     <Box display="flex" flexDirection="column" gap={2} mt={1}>

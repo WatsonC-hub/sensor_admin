@@ -10,23 +10,25 @@ export const alarmContactSchema = z
     message: 'Kontakt er påkrævet',
   });
 
-export const criteria = z
-  .object({
-    id: z.number().int().optional(),
-    name: z.string(),
-    criteria: z.number().optional(),
-    sms: z.boolean().default(false),
-    email: z.boolean().default(false),
-    call: z.boolean().default(false),
-  })
-  .refine((criteria) => criteria.criteria !== undefined, {
-    path: ['criteria'],
-    message: 'Kriterium er påkrævet',
-  })
-  .refine((criteria) => criteria.name !== '', {
-    path: ['name'],
-    message: 'Vælg et niveau',
-  });
+export const criteria = z.object({
+  id: z.number().int().optional(),
+  name: z.string(),
+  criteria: z
+    .number()
+    .nullish()
+    .transform((val) => (val === null ? undefined : val)),
+  sms: z.boolean().default(false),
+  email: z.boolean().default(false),
+  call: z.boolean().default(false),
+});
+// .refine((criteria) => criteria.criteria !== undefined, {
+//   path: ['criteria'],
+//   message: 'Kriterium er påkrævet',
+// })
+// .refine((criteria) => criteria.name !== '', {
+//   path: ['name'],
+//   message: 'Vælg et niveau',
+// });
 
 export const alarmsSchema = z
   .object({
@@ -35,7 +37,7 @@ export const alarmsSchema = z
     to: z.string().min(1, 'slut interval er påkrævet'),
     comment: z.string().optional(),
     signal_warning: z.boolean(),
-    criteria: z.array(criteria), // skal der mindst være et kriterie?
+    criteria: z.array(criteria),
     contacts: z.array(alarmContactSchema).optional(),
     interval: z.number({required_error: 'Alarm interval er påkrævet'}),
   })

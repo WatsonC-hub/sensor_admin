@@ -146,40 +146,45 @@ const GraphManager = ({dynamicMeasurement, defaultDataToShow}: GraphManagerProps
   // console.log('templines', tempLines);
   const [shapes, annotations] = useMemo(() => {
     const [qaShapes, qaAnnotate] = transformQAData(qaData ?? []);
-    let shapes: Array<object> = [
-      ...(tempLines?.map((elem) => {
-        return {
-          x0: 0,
-          x1: 0.97,
-          y0: elem.level,
-          y1: elem.level,
-          name: elem.name,
-          type: 'scatter',
-          xref: 'paper',
-          line: {width: 1, dash: 'dash'},
-          mode: 'lines',
-          // yaxis: 'y',
-        };
-      }) ?? []),
-    ];
-    let annotations: Array<object> = [
-      ...(tempLines?.map((elem) => {
-        return {
-          xref: 'paper',
-          yref: 'y',
-          x: 0,
-          xanchor: 'left',
-          yanchor: 'bottom',
-          showarrow: false,
-          text: elem.name,
-          y: elem.level,
-        };
-      }) ?? []),
-    ];
+    let shapes: Array<object> = [];
+    let annotations: Array<object> = [];
 
     Object.entries(dataToShow).forEach((entry) => {
       if (entry[1] == false) return;
       switch (entry[0]) {
+        case 'Alarm linjer':
+          shapes = [
+            ...shapes,
+            ...(tempLines?.map((elem) => {
+              return {
+                x0: 0,
+                x1: 0.97,
+                y0: elem.level,
+                y1: elem.level,
+                name: elem.name,
+                type: 'scatter',
+                xref: 'paper',
+                line: elem.line ?? {width: 1, dash: 'dash'},
+                mode: elem.mode ?? 'lines',
+              };
+            }) ?? []),
+          ];
+          annotations = [
+            ...annotations,
+            ...(tempLines?.map((elem) => {
+              return {
+                xref: 'paper',
+                yref: 'y',
+                x: 0,
+                xanchor: 'left',
+                yanchor: 'bottom',
+                showarrow: false,
+                text: elem.name,
+                y: elem.level,
+              };
+            }) ?? []),
+          ];
+          break;
         case 'Godkendt':
           shapes = [
             ...shapes,

@@ -1,7 +1,6 @@
 import {ExpandLess, ExpandMore} from '@mui/icons-material';
 import {Box, Collapse, Divider, Typography} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';

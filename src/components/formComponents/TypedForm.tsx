@@ -19,8 +19,8 @@ const TypedForm = <T extends FieldValues>({
   return (
     <FormContext.Provider value={{gridSizes}}>
       <FormProvider {...formMethods}>
-        <FormFieldset label={label}>
-          <Grid2 container spacing={1} sx={{marginTop: 1}}>
+        <FormFieldset label={label} sx={{px: 1}}>
+          <Grid2 container spacing={1}>
             {children}
           </Grid2>
         </FormFieldset>

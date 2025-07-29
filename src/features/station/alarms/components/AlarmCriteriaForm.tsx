@@ -6,7 +6,6 @@ import {useFormContext} from 'react-hook-form';
 
 type AlarmCriteriaFormProps = {
   index: number;
-  remove: (index: number) => void;
 };
 
 const AlarmCriteriaTypedForm = createTypedForm<AlarmCriteriaArrayFormValues>();
@@ -21,7 +20,6 @@ const AlarmCriteriaForm = ({index}: AlarmCriteriaFormProps) => {
         name={`criteria.${index}.name`}
         select
         fullWidth
-        required
         label="Vælg niveau"
         slotProps={{
           select: {
@@ -56,7 +54,6 @@ const AlarmCriteriaForm = ({index}: AlarmCriteriaFormProps) => {
         name={`criteria.${index}.criteria`}
         type="number"
         fullWidth
-        required
         placeholder="Indtast kriterium"
         label="Kriterium"
         gridSizes={{xs: 12, sm: 6}}
@@ -76,17 +73,6 @@ const AlarmCriteriaForm = ({index}: AlarmCriteriaFormProps) => {
         label={`Opkald`}
         gridSizes={{xs: 12, sm: 2}}
       />
-      {/* <Grid2 size={{xs: 6, sm: 2}} height={'fit-content'} alignSelf={'center'} display="flex">
-        <Button
-          bttype="tertiary"
-          startIcon={<Delete />}
-          onClick={() => {
-            remove(index);
-          }}
-        >
-          Fjern
-        </Button>
-      </Grid2> */}
     </Grid2>
   );
 };
