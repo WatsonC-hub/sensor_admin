@@ -68,7 +68,7 @@ const alarmCriteriaGetOptions = (ts_id: number | undefined) => {
   };
 };
 
-export const alarmGetOptions = (ts_id: number | undefined) => {
+const alarmGetOptions = (ts_id: number | undefined) => {
   return {
     queryKey: ['alarm', ts_id],
     queryFn: async () => {
@@ -81,7 +81,7 @@ export const alarmGetOptions = (ts_id: number | undefined) => {
   };
 };
 
-export const AlarmHistoryGetOptions = (ts_id: number | undefined) =>
+const AlarmHistoryGetOptions = (ts_id: number | undefined) =>
   queryOptions({
     queryKey: ['alarm_history', ts_id],
     queryFn: async () => {

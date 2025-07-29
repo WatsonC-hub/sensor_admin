@@ -2,7 +2,6 @@ import {useQuery, useMutation, useQueryClient, queryOptions} from '@tanstack/rea
 import {toast} from 'react-toastify';
 
 import {apiClient} from '~/apiClient';
-import {AlarmContact} from '~/features/station/alarms/types';
 import {APIError} from '~/queryClient';
 import {ContactInfo, ContactTable} from '~/types';
 
@@ -64,18 +63,6 @@ export const ContactInfoGetOptions = (loc_id: number | undefined) =>
       return data;
     },
     enabled: loc_id !== undefined && loc_id !== null,
-  });
-
-export const getAlarmContacts = (ts_id: number | undefined) =>
-  queryOptions<Array<AlarmContact> | undefined, APIError>({
-    queryKey: ['contact_with_role', ts_id],
-    queryFn: async () => {
-      const {data} = await apiClient.get<Array<AlarmContact>>(
-        `/sensor_field/stamdata/contact/alarm_contact/${ts_id}`
-      );
-      return data;
-    },
-    enabled: ts_id !== undefined,
   });
 
 export const useSearchContact = (

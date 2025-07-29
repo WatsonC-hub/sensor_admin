@@ -9,7 +9,7 @@ interface SyncBase {
   path: string;
 }
 
-export type Sync = SyncFormValues;
+type Sync = SyncFormValues;
 
 interface SyncPost extends SyncBase {
   data: Sync;

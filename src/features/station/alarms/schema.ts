@@ -1,6 +1,6 @@
 import {z} from 'zod';
 
-export const alarmContactSchema = z
+const alarmContactSchema = z
   .object({
     contact_id: z.string().optional(),
     name: z.string().optional(),
@@ -10,7 +10,7 @@ export const alarmContactSchema = z
     message: 'Kontakt er påkrævet',
   });
 
-export const criteria = z.object({
+const criteria = z.object({
   id: z.number().int().optional(),
   name: z.string(),
   criteria: z
@@ -30,6 +30,14 @@ export const criteria = z.object({
 //   message: 'Vælg et niveau',
 // });
 
+const contactArray = z.object({
+  contacts: z.array(alarmContactSchema),
+});
+
+const alarmCriteriaArray = z.object({
+  criteria: z.array(criteria),
+});
+
 export const alarmsSchema = z
   .object({
     name: z.string().min(1, 'Navn er påkrævet'),
@@ -37,8 +45,8 @@ export const alarmsSchema = z
     to: z.string().min(1, 'slut interval er påkrævet'),
     comment: z.string().optional(),
     signal_warning: z.boolean(),
-    criteria: z.array(criteria),
-    contacts: z.array(alarmContactSchema).optional(),
+    criteria: alarmCriteriaArray.shape.criteria,
+    contacts: contactArray.shape.contacts.optional(),
     interval: z.number({required_error: 'Alarm interval er påkrævet'}),
   })
   .refine((data) => data.from < data.to, {
@@ -46,15 +54,6 @@ export const alarmsSchema = z
     message: 'slut interval skal være større end start interval',
   });
 
-export const contactArray = z.object({
-  contacts: z.array(alarmContactSchema),
-});
-
-export const alarmCriteriaArray = z.object({
-  criteria: z.array(criteria),
-});
-
 export type AlarmsFormValues = z.infer<typeof alarmsSchema>;
-export type AlarmContactFormValues = z.infer<typeof alarmContactSchema>;
 export type AlarmContactArrayFormValues = z.infer<typeof contactArray>;
 export type AlarmCriteriaArrayFormValues = z.infer<typeof alarmCriteriaArray>;

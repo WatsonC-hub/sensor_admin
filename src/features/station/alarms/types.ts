@@ -1,4 +1,4 @@
-export type AlarmCriteria = {
+type AlarmCriteria = {
   id: number | undefined;
   criteria: number | undefined | null;
   sms: boolean;
@@ -36,12 +36,6 @@ export type AlarmHistory = {
   alarm_low: boolean;
   name: string;
   signal_warning: boolean;
-};
-
-export type Alarm = {
-  name: string;
-  criteria: string;
-  alarm_interval: number;
 };
 
 export type AlarmResponse = {
