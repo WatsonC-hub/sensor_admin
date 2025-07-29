@@ -3,7 +3,7 @@ import {useQuery, queryOptions} from '@tanstack/react-query';
 import {apiClient} from '~/apiClient';
 
 type User = {
-  user_id: number | null;
+  user_id: number;
   org_id: number | null;
   boreholeAccess: boolean;
   iotAccess: boolean;

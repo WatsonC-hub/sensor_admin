@@ -8,6 +8,7 @@ import {createRoot} from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {PostHogProvider} from 'posthog-js/react';
 
 // @ts-expect-error this is a workaround for the missing types
 import {registerSW} from 'virtual:pwa-register';
@@ -58,9 +59,20 @@ root.render(
             }}
           >
             <CssBaseline />
-            <NuqsAdapter>
-              <App />
-            </NuqsAdapter>
+            <PostHogProvider
+              apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+              options={{
+                api_host: '/events',
+                capture_exceptions: true,
+                debug: import.meta.env.MODE === 'development',
+                opt_out_capturing_by_default: import.meta.env.MODE === 'development',
+                autocapture: import.meta.env.MODE !== 'development',
+              }}
+            >
+              <NuqsAdapter>
+                <App />
+              </NuqsAdapter>
+            </PostHogProvider>
             <ReactQueryDevtools initialIsOpen={false} />
             <ToastContainer
               draggablePercent={30}

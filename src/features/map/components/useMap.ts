@@ -146,6 +146,15 @@ const useMap = <TData extends object>(
 
     L.control.layers(baseMaps).addTo(map);
 
+    L.control
+      .scale({
+        position: 'bottomleft',
+        imperial: false,
+        maxWidth: 100,
+        updateWhenIdle: true,
+      })
+      .addTo(map);
+
     new LocateControl({
       showPopup: false,
       strings: {title: 'Find mig'},

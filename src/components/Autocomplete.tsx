@@ -79,7 +79,7 @@ const ExtendedAutocomplete = <T extends object>({
             slotProps={{
               inputLabel: {shrink: true},
               input: {
-                ...params.InputProps,
+                ...InputProps,
                 endAdornment: (
                   <>
                     {InputProps.endAdornment}

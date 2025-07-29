@@ -1,4 +1,4 @@
-import {Typography} from '@mui/material';
+import {InputAdornment, Typography} from '@mui/material';
 import Autocomplete, {createFilterOptions} from '@mui/material/Autocomplete';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
@@ -138,8 +138,16 @@ const LocationGroups = ({
           onBlur={onBlur}
           slotProps={{
             input: {
-              endAdornment: fieldDescriptionText && (
-                <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {params.InputProps.endAdornment}
+                  <InputAdornment position="end">
+                    {fieldDescriptionText && (
+                      <LinkableTooltip fieldDescriptionText={fieldDescriptionText} />
+                    )}
+                  </InputAdornment>
+                </>
               ),
             },
             inputLabel: {

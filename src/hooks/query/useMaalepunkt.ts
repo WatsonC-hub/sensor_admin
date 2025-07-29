@@ -86,8 +86,7 @@ export const useMaalepunkt = () => {
   const post = useMutation({
     ...maalepunktPostOptions,
     onSuccess: () => {
-      get.refetch();
-      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
+      queryClient.invalidateQueries({queryKey: ['watlevmp', ts_id]});
       toast.success('Målepunkt gemt');
     },
   });
@@ -95,8 +94,7 @@ export const useMaalepunkt = () => {
   const put = useMutation({
     ...maalepunktPutOptions,
     onSuccess: () => {
-      get.refetch();
-      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
+      queryClient.invalidateQueries({queryKey: ['watlevmp', ts_id]});
       toast.success('Målepunkt ændret');
     },
   });
@@ -104,8 +102,7 @@ export const useMaalepunkt = () => {
   const del = useMutation({
     ...maalepunktDelOptions,
     onSuccess: () => {
-      get.refetch();
-      queryClient.invalidateQueries({queryKey: ['measurements', ts_id]});
+      queryClient.invalidateQueries({queryKey: ['watlevmp', ts_id]});
       toast.success('Målepunkt slettet');
     },
   });

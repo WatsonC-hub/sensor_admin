@@ -141,6 +141,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      '/events': {
+        target: 'https://eu.i.posthog.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/events/, ''),
+      },
       '/static/images': {
         target: 'https://dhmol4s2b971r.cloudfront.net',
         changeOrigin: true,
